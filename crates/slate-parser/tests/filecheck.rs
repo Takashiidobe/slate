@@ -1,3 +1,6 @@
+#[path = "filecheck/matcher.rs"]
+mod matcher;
+
 use clang_ast::Node;
 use serde::Deserialize;
 use slate_parser::ast::*;
@@ -519,50 +522,9 @@ fn run_fixture(
         return;
     }
 
-    let work = tempfile::tempdir().expect("create FileCheck work directory");
-    let input = work.path().join("rendered.txt");
-    std::fs::write(&input, checked).expect("write rendered AST");
-
-    let result = Command::new(filecheck())
-        .arg(fixture)
-        .arg(format!("--check-prefix={prefix}"))
-        .arg("--input-file")
-        .arg(&input)
-        .arg("--dump-input=fail")
-        .output()
-        .expect("run FileCheck");
-    if !result.status.success() {
-        panic!(
-            "FileCheck failed for {} ({prefix}), input kept at {}:\n{}{}",
-            fixture.display(),
-            work.keep().join("rendered.txt").display(),
-            String::from_utf8_lossy(&result.stdout),
-            String::from_utf8_lossy(&result.stderr)
-        );
-    }
-
+    check_output(fixture, prefix, &checked);
     if warnings {
-        let ir_work = tempfile::tempdir().expect("create FileCheck IR work directory");
-        let ir_input = ir_work.path().join("rendered.txt");
-        std::fs::write(&ir_input, &rendered.stdout).expect("write rendered IR");
-        let ir_prefix = format!("IR-{prefix}");
-        let ir_result = Command::new(filecheck())
-            .arg(fixture)
-            .arg(format!("--check-prefix={ir_prefix}"))
-            .arg("--input-file")
-            .arg(&ir_input)
-            .arg("--dump-input=fail")
-            .output()
-            .expect("run IR FileCheck");
-        if !ir_result.status.success() {
-            panic!(
-                "IR FileCheck failed for {} ({ir_prefix}), input kept at {}:\n{}{}",
-                fixture.display(),
-                ir_work.keep().join("rendered.txt").display(),
-                String::from_utf8_lossy(&ir_result.stdout),
-                String::from_utf8_lossy(&ir_result.stderr)
-            );
-        }
+        check_output(fixture, &format!("IR-{prefix}"), &rendered.stdout);
     }
 
     if std::env::var_os("SLATE_CLANG_ORACLE").is_some() {
@@ -664,27 +626,40 @@ fn run_expected_failure_fixture(
         fixture.display()
     );
 
-    let work = tempfile::tempdir().expect("create FileCheck work directory");
-    let input = work.path().join("diagnostic.txt");
     let diagnostic = String::from_utf8_lossy(&output.stderr).replace(&parsed.name(), &file_name);
-    std::fs::write(&input, diagnostic).expect("write diagnostic");
-    let result = Command::new(filecheck())
+    check_output(fixture, prefix, diagnostic.as_bytes());
+}
+
+/// Checks rendered output with the harness matcher, and runs FileCheck only
+/// on a mismatch, for its annotated input dump.
+fn check_output(fixture: &Path, prefix: &str, output: &[u8]) {
+    let checks = decode_source_bytes(&std::fs::read(fixture).expect("read fixture checks"));
+    let Err(error) = matcher::check(&checks, prefix, &String::from_utf8_lossy(output)) else {
+        return;
+    };
+    let work = tempfile::tempdir().expect("create FileCheck work directory");
+    let input = work.path().join("rendered.txt");
+    std::fs::write(&input, output).expect("write rendered output");
+    let filecheck_report = Command::new(filecheck())
         .arg(fixture)
         .arg(format!("--check-prefix={prefix}"))
         .arg("--input-file")
         .arg(&input)
         .arg("--dump-input=fail")
         .output()
-        .expect("run FileCheck");
-    if !result.status.success() {
-        panic!(
-            "diagnostic FileCheck failed for {} ({prefix}), input kept at {}:\n{}{}",
-            fixture.display(),
-            work.keep().join("diagnostic.txt").display(),
-            String::from_utf8_lossy(&result.stdout),
-            String::from_utf8_lossy(&result.stderr)
-        );
-    }
+        .map(|result| {
+            format!(
+                "{}{}",
+                String::from_utf8_lossy(&result.stdout),
+                String::from_utf8_lossy(&result.stderr)
+            )
+        })
+        .unwrap_or_else(|error| format!("could not run FileCheck: {error}"));
+    panic!(
+        "check failed for {} ({prefix}), input kept at {}:\n{error}\n\nFileCheck:\n{filecheck_report}",
+        fixture.display(),
+        work.keep().join("rendered.txt").display(),
+    );
 }
 
 fn assert_evaluated_matches_clang(fixture: &Path, defines: &[String], isystem: &[String]) {

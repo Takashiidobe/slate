@@ -79,15 +79,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: u8 [synthetic] = read<u8>(%[[VALUE_u8_0]]);
 // DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE14]]))), const<i32>(1))));
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_u8_0]], read<u8>(%[[VALUE15]]));
-// DEFAULT-NEXT:         return add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32,
-// DEFAULT-SAME: reason=promotion>(read<u8>(%[[VALUE_u8_0]]))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32,
-// DEFAULT-SAME: reason=promotion>(read<u16>(%[[VALUE_u16_0]])))))),
-// DEFAULT-SAME: read<u64>(%[[VALUE_u64_0]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion,
-// DEFAULT-SAME: fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_u8_1]])))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64,
-// DEFAULT-SAME: reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_u16_1]])))))),
-// DEFAULT-SAME: read<u64>(%[[VALUE_u64_1]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion,
-// DEFAULT-SAME: fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_u8_3]])))))),
-// DEFAULT-SAME: read<u64>(%[[VALUE_u64_3]]));
+// DEFAULT-NEXT:         return add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_u8_0]]))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_u16_0]])))))), read<u64>(%[[VALUE_u64_0]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_u8_1]])))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_u16_1]])))))), read<u64>(%[[VALUE_u64_1]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_u8_3]])))))), read<u64>(%[[VALUE_u64_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

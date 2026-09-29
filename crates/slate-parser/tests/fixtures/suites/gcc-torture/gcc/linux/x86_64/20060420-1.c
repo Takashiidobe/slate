@@ -241,14 +241,7 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %[[VALUE_e:[0-9]+]] e: f32 [storage=automatic] = add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(add<f32, rounding=nearest_even,
-// DEFAULT-SAME: exceptions=observable, contract=fast>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even,
-// DEFAULT-SAME: exceptions=observable>(read<i32>(%[[VALUE_i_2]])), mul<f32, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f32, reason=usual_arith,
-// DEFAULT-SAME: exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(11)), int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even,
-// DEFAULT-SAME: exceptions=observable>(read<i32>(%[[VALUE_i_2]])))), int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even,
-// DEFAULT-SAME: exceptions=observable>(read<i32>(%[[VALUE_i_2]]))), mul<f32, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f32, reason=usual_arith,
-// DEFAULT-SAME: exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(12)), int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even,
-// DEFAULT-SAME: exceptions=observable>(read<i32>(%[[VALUE_i_2]]))));
+// DEFAULT-NEXT:                     let %[[VALUE_e:[0-9]+]] e: f32 [storage=automatic] = add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_i_2]])), mul<f32, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(11)), int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_i_2]])))), int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_i_2]]))), mul<f32, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(12)), int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_i_2]]))));
 // DEFAULT-NEXT:                     if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%[[VALUE_dst_2]]), read<i32>(%[[VALUE_i_2]])))), read<f32>(%[[VALUE_e]]))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }

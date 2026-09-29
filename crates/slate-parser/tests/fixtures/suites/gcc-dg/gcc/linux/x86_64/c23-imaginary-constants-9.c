@@ -63,23 +63,7 @@ main ()
 // DEFAULT-NEXT:     global %[[VALUE_h:[0-9]+]] h: complex<f80> [storage=static] = aggregate<complex<f80>, zero_fill=false>(index0 = const<f80>(0), index1 = const<f80>(4)) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even, exceptions=observable,
-// DEFAULT-SAME: range=full>(read<complex<f80>>(%[[VALUE_a]]),
-// DEFAULT-SAME: read<complex<f80>>(%[[VALUE_a]])), neg<f80>(const<f80>(1))), ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even,
-// DEFAULT-SAME: exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_b]]),
-// DEFAULT-SAME: read<complex<f80>>(%[[VALUE_b]])), neg<f80>(const<f80>(4)))), ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even,
-// DEFAULT-SAME: exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_c]]),
-// DEFAULT-SAME: read<complex<f80>>(%[[VALUE_c]])), neg<f80>(const<f80>(9)))), ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even,
-// DEFAULT-SAME: exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_d]]),
-// DEFAULT-SAME: read<complex<f80>>(%[[VALUE_d]])), neg<f80>(const<f80>(16)))), ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even,
-// DEFAULT-SAME: exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_e]]),
-// DEFAULT-SAME: read<complex<f80>>(%[[VALUE_e]])), neg<f80>(const<f80>(1)))), ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even,
-// DEFAULT-SAME: exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_f]]),
-// DEFAULT-SAME: read<complex<f80>>(%[[VALUE_f]])), neg<f80>(const<f80>(4)))), ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even,
-// DEFAULT-SAME: exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_g]]),
-// DEFAULT-SAME: read<complex<f80>>(%[[VALUE_g]])), neg<f80>(const<f80>(9)))), ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even,
-// DEFAULT-SAME: exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_h]]),
-// DEFAULT-SAME: read<complex<f80>>(%[[VALUE_h]])), neg<f80>(const<f80>(16))))
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_a]]), read<complex<f80>>(%[[VALUE_a]])), neg<f80>(const<f80>(1))), ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_b]]), read<complex<f80>>(%[[VALUE_b]])), neg<f80>(const<f80>(4)))), ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_c]]), read<complex<f80>>(%[[VALUE_c]])), neg<f80>(const<f80>(9)))), ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_d]]), read<complex<f80>>(%[[VALUE_d]])), neg<f80>(const<f80>(16)))), ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_e]]), read<complex<f80>>(%[[VALUE_e]])), neg<f80>(const<f80>(1)))), ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_f]]), read<complex<f80>>(%[[VALUE_f]])), neg<f80>(const<f80>(4)))), ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_g]]), read<complex<f80>>(%[[VALUE_g]])), neg<f80>(const<f80>(9)))), ne<complex<f80>, exceptions=observable>(mul<complex<f80>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_h]]), read<complex<f80>>(%[[VALUE_h]])), neg<f80>(const<f80>(16))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

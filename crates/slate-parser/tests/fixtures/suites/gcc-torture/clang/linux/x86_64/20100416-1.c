@@ -59,15 +59,7 @@ int main() {
 // DEFAULT-NEXT:         field0 val: i64;
 // DEFAULT-NEXT:         field1 ret: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %[[VALUE_tests:[0-9]+]] tests:
-// DEFAULT-SAME: array<@type[[TYPE_test]], 5> [storage=static] [align=16] =
-// DEFAULT-SAME: aggregate<array<@type[[TYPE_test]], 5>, zero_fill=false>(index0 =
-// DEFAULT-SAME: aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(17293822569102704640)), field1 = neg<i32,
-// DEFAULT-SAME: overflow=ub>(const<i32>(1))), index1 = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = reinterpret<i64, reason=assign,
-// DEFAULT-SAME: fits=unknown>(const<u64>(17293822569102704639)), field1 = const<i32>(1)), index2 = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = reinterpret<i64,
-// DEFAULT-SAME: reason=assign, fits=unknown>(const<u64>(17293822569102704641)), field1 = neg<i32, overflow=ub>(const<i32>(1))), index3 = aggregate<@type[[TYPE_test]],
-// DEFAULT-SAME: zero_fill=false>(field0 = const<i64>(0), field1 = neg<i32, overflow=ub>(const<i32>(1))), index4 = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 =
-// DEFAULT-SAME: reinterpret<i64, reason=assign, fits=unknown>(const<u64>(9223372036854775808)), field1 = const<i32>(1))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_tests:[0-9]+]] tests: array<@type[[TYPE_test]], 5> [storage=static] [align=16] = aggregate<array<@type[[TYPE_test]], 5>, zero_fill=false>(index0 = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(17293822569102704640)), field1 = neg<i32, overflow=ub>(const<i32>(1))), index1 = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(17293822569102704639)), field1 = const<i32>(1)), index2 = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(17293822569102704641)), field1 = neg<i32, overflow=ub>(const<i32>(1))), index3 = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = const<i64>(0), field1 = neg<i32, overflow=ub>(const<i32>(1))), index4 = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(9223372036854775808)), field1 = const<i32>(1))) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_movegt:[0-9]+]] @movegt(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32, %[[VALUE_a:[0-9]+]] a: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];

@@ -107,17 +107,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_packed:[0-9]+]] packed: @type[[TYPE_GNUPragmaPacked]] [storage=automatic] = aggregate<@type[[TYPE_GNUPragmaPacked]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(29))), field1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(31)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
-// DEFAULT-SAME: length=Some(25)>(%[[VALUE_str]])), const<i32>(5),
-// DEFAULT-SAME: read<i32>(%[[VALUE_gnu_pragma_inner_macro]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_gnu_pragma_outer_macro]]), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(5))),
-// DEFAULT-SAME: reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1))), call<i32, signature=fn(i32) ->
-// DEFAULT-SAME: i32>(%[[VALUE_gnu_pragma_hidden]], const<i32>(37)), call<i32, signature=fn() ->
-// DEFAULT-SAME: i32>(%[[VALUE_gnu_pragma_weak_alias]]), add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn() ->
-// DEFAULT-SAME: i32>(%[[VALUE_gnu_pragma_renamed]]), call<i32, signature=fn() ->
-// DEFAULT-SAME: i32>(%[[VALUE_gnu_pragma_diagnostic]])), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32,
-// DEFAULT-SAME: reason=promotion>(read<u8>(field0(%[[VALUE_packed]]))))), reinterpret<i32, reason=explicit,
-// DEFAULT-SAME: fits=unknown>(read<u32>(field1(%[[VALUE_packed]])))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(25)>(%[[VALUE_str]])), const<i32>(5), read<i32>(%[[VALUE_gnu_pragma_inner_macro]]), read<i32>(%[[VALUE_gnu_pragma_outer_macro]]), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(5))), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(1))), call<i32, signature=fn(i32) -> i32>(%[[VALUE_gnu_pragma_hidden]], const<i32>(37)), call<i32, signature=fn() -> i32>(%[[VALUE_gnu_pragma_weak_alias]]), add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_gnu_pragma_renamed]]), call<i32, signature=fn() -> i32>(%[[VALUE_gnu_pragma_diagnostic]])), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(%[[VALUE_packed]]))))), reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(field1(%[[VALUE_packed]])))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

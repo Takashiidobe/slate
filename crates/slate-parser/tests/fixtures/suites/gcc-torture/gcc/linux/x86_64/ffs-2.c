@@ -67,17 +67,7 @@ int main(void) {
 // DEFAULT-NEXT:         field0 input: i32;
 // DEFAULT-NEXT:         field1 output: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %[[VALUE_ffstesttab:[0-9]+]] ffstesttab:
-// DEFAULT-SAME: array<@type[[TYPE0]], 8> [storage=static] [align=16] =
-// DEFAULT-SAME: aggregate<array<@type[[TYPE0]], 8>, zero_fill=false>(index0 =
-// DEFAULT-SAME: aggregate<@type[[TYPE0]], zero_fill=false>(field0 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(2147483648)), field1 = const<i32>(32)), index1 =
-// DEFAULT-SAME: aggregate<@type[[TYPE0]], zero_fill=false>(field0 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(2779096485)), field1 = const<i32>(1)), index2 =
-// DEFAULT-SAME: aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(1515870810), field1 = const<i32>(2)), index3 =
-// DEFAULT-SAME: aggregate<@type[[TYPE0]], zero_fill=false>(field0 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(3405643776)), field1 = const<i32>(18)), index4 =
-// DEFAULT-SAME: aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(32768), field1 = const<i32>(16)), index5 =
-// DEFAULT-SAME: aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(42405), field1 = const<i32>(1)), index6 =
-// DEFAULT-SAME: aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(23130), field1 = const<i32>(2)), index7 =
-// DEFAULT-SAME: aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(3232), field1 = const<i32>(6))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ffstesttab:[0-9]+]] ffstesttab: array<@type[[TYPE0]], 8> [storage=static] [align=16] = aggregate<array<@type[[TYPE0]], 8>, zero_fill=false>(index0 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(2147483648)), field1 = const<i32>(32)), index1 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(2779096485)), field1 = const<i32>(1)), index2 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(1515870810), field1 = const<i32>(2)), index3 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(3405643776)), field1 = const<i32>(18)), index4 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(32768), field1 = const<i32>(16)), index5 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(42405), field1 = const<i32>(1)), index6 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(23130), field1 = const<i32>(2)), index7 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(3232), field1 = const<i32>(6))) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_ffs:[0-9]+]] @__builtin_ffs(%[[VALUE1:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [memory=none];

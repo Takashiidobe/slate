@@ -75,22 +75,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_offset_base:[0-9]+]] offset_base: ptr<u8> [storage=automatic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(8)>(%[[VALUE_buf]]), const<i32>(2));
 // DEFAULT-NEXT:         let %[[VALUE_offset:[0-9]+]] offset: ptr<u8> [storage=automatic] = pointer_cast<ptr<u8>, reason=explicit>(call<ptr<void>, signature=fn(ptr<const void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memchr]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<u8>>(%[[VALUE_offset_base]])), read<i32>(%[[VALUE_needle]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2)))));
 // DEFAULT-NEXT:         let %[[VALUE_const_hit:[0-9]+]] const_hit: ptr<const u8> [storage=automatic] = pointer_cast<ptr<const u8>, reason=explicit>(call<ptr<void>, signature=fn(ptr<const void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memchr]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const u8>, length=Some(4)>(%[[VALUE_cbuf]])), const<i32>(7), const<u64>(4)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
-// DEFAULT-SAME: length=Some(33)>(%[[VALUE_str]])), ptr_diff<i64, element=u8, same_array=required,
-// DEFAULT-SAME: overflow=ub>(read<ptr<u8>>(%[[VALUE_hit]]), array_decay<ptr<u8>,
-// DEFAULT-SAME: length=Some(8)>(%[[VALUE_buf]])), from_bool<i32,
-// DEFAULT-SAME: reason=vararg>(eq<ptr<u8>>(read<ptr<u8>>(%[[VALUE_miss]]), null<ptr<u8>>)), from_bool<i32,
-// DEFAULT-SAME: reason=vararg>(eq<ptr<u8>>(read<ptr<u8>>(%[[VALUE_zero]]), null<ptr<u8>>)), ptr_diff<i64, element=i8, same_array=required,
-// DEFAULT-SAME: overflow=ub>(read<ptr<i8>>(%[[VALUE_nul_after]]), array_decay<ptr<i8>,
-// DEFAULT-SAME: length=Some(4)>(%[[VALUE_word]])), from_bool<i32,
-// DEFAULT-SAME: reason=vararg>(eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_nul_equal]]), null<ptr<i8>>)), from_bool<i32,
-// DEFAULT-SAME: reason=vararg>(eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_nul_before]]), null<ptr<i8>>)), ptr_diff<i64, element=u8, same_array=required,
-// DEFAULT-SAME: overflow=ub>(read<ptr<u8>>(%[[VALUE_partial]]), array_decay<ptr<u8>,
-// DEFAULT-SAME: length=Some(8)>(%[[VALUE_buf]])), ptr_diff<i64, element=u8, same_array=required,
-// DEFAULT-SAME: overflow=ub>(read<ptr<u8>>(%[[VALUE_offset]]),
-// DEFAULT-SAME: read<ptr<u8>>(%[[VALUE_offset_base]])), ptr_diff<i64, element=u8, same_array=required, overflow=ub>(read<ptr<const
-// DEFAULT-SAME: u8>>(%[[VALUE_const_hit]]), array_decay<ptr<const u8>,
-// DEFAULT-SAME: length=Some(4)>(%[[VALUE_cbuf]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(33)>(%[[VALUE_str]])), ptr_diff<i64, element=u8, same_array=required, overflow=ub>(read<ptr<u8>>(%[[VALUE_hit]]), array_decay<ptr<u8>, length=Some(8)>(%[[VALUE_buf]])), from_bool<i32, reason=vararg>(eq<ptr<u8>>(read<ptr<u8>>(%[[VALUE_miss]]), null<ptr<u8>>)), from_bool<i32, reason=vararg>(eq<ptr<u8>>(read<ptr<u8>>(%[[VALUE_zero]]), null<ptr<u8>>)), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%[[VALUE_nul_after]]), array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_word]])), from_bool<i32, reason=vararg>(eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_nul_equal]]), null<ptr<i8>>)), from_bool<i32, reason=vararg>(eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_nul_before]]), null<ptr<i8>>)), ptr_diff<i64, element=u8, same_array=required, overflow=ub>(read<ptr<u8>>(%[[VALUE_partial]]), array_decay<ptr<u8>, length=Some(8)>(%[[VALUE_buf]])), ptr_diff<i64, element=u8, same_array=required, overflow=ub>(read<ptr<u8>>(%[[VALUE_offset]]), read<ptr<u8>>(%[[VALUE_offset_base]])), ptr_diff<i64, element=u8, same_array=required, overflow=ub>(read<ptr<const u8>>(%[[VALUE_const_hit]]), array_decay<ptr<const u8>, length=Some(4)>(%[[VALUE_cbuf]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

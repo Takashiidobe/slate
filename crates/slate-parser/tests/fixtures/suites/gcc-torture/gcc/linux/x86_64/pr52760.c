@@ -69,58 +69,10 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<u16>(field0(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_T]],
-// DEFAULT-SAME: overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_i]])))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(or<i32>(and<i32>(const<i32>(255), shr<i32,
-// DEFAULT-SAME: amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32,
-// DEFAULT-SAME: reason=promotion>(read<u16>(field0(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_T]],
-// DEFAULT-SAME: overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_i]]))))))), const<i32>(8))), and<i32>(const<i32>(65280), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32,
-// DEFAULT-SAME: reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field0(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_T]],
-// DEFAULT-SAME: overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_i]]))))))), const<i32>(8)))))));
-// DEFAULT-NEXT:                     write<u16>(field1(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_T]],
-// DEFAULT-SAME: overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_i]])))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(or<i32>(and<i32>(const<i32>(255), shr<i32,
-// DEFAULT-SAME: amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32,
-// DEFAULT-SAME: reason=promotion>(read<u16>(field1(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_T]],
-// DEFAULT-SAME: overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_i]]))))))), const<i32>(8))), and<i32>(const<i32>(65280), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32,
-// DEFAULT-SAME: reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field1(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_T]],
-// DEFAULT-SAME: overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_i]]))))))), const<i32>(8)))))));
-// DEFAULT-NEXT:                     write<u16>(field2(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_T]],
-// DEFAULT-SAME: overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_i]])))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(or<i32>(and<i32>(const<i32>(255), shr<i32,
-// DEFAULT-SAME: amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32,
-// DEFAULT-SAME: reason=promotion>(read<u16>(field2(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_T]],
-// DEFAULT-SAME: overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_i]]))))))), const<i32>(8))), and<i32>(const<i32>(65280), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32,
-// DEFAULT-SAME: reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field2(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_T]],
-// DEFAULT-SAME: overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_i]]))))))), const<i32>(8)))))));
-// DEFAULT-NEXT:                     write<u16>(field3(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_T]],
-// DEFAULT-SAME: overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_i]])))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(or<i32>(and<i32>(const<i32>(255), shr<i32,
-// DEFAULT-SAME: amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32,
-// DEFAULT-SAME: reason=promotion>(read<u16>(field3(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_T]],
-// DEFAULT-SAME: overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_i]]))))))), const<i32>(8))), and<i32>(const<i32>(65280), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32,
-// DEFAULT-SAME: reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_T]],
-// DEFAULT-SAME: overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_i]]))))))), const<i32>(8)))))));
+// DEFAULT-NEXT:                     write<u16>(field0(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false, element=@type[[TYPE_T]], overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]])))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(or<i32>(and<i32>(const<i32>(255), shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field0(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false, element=@type[[TYPE_T]], overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]]))))))), const<i32>(8))), and<i32>(const<i32>(65280), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field0(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false, element=@type[[TYPE_T]], overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]]))))))), const<i32>(8)))))));
+// DEFAULT-NEXT:                     write<u16>(field1(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false, element=@type[[TYPE_T]], overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]])))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(or<i32>(and<i32>(const<i32>(255), shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field1(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false, element=@type[[TYPE_T]], overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]]))))))), const<i32>(8))), and<i32>(const<i32>(65280), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field1(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false, element=@type[[TYPE_T]], overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]]))))))), const<i32>(8)))))));
+// DEFAULT-NEXT:                     write<u16>(field2(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false, element=@type[[TYPE_T]], overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]])))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(or<i32>(and<i32>(const<i32>(255), shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field2(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false, element=@type[[TYPE_T]], overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]]))))))), const<i32>(8))), and<i32>(const<i32>(65280), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field2(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false, element=@type[[TYPE_T]], overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]]))))))), const<i32>(8)))))));
+// DEFAULT-NEXT:                     write<u16>(field3(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false, element=@type[[TYPE_T]], overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]])))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(or<i32>(and<i32>(const<i32>(255), shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false, element=@type[[TYPE_T]], overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]]))))))), const<i32>(8))), and<i32>(const<i32>(65280), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(deref(ptr_offset<ptr<@type[[TYPE_T]]>, subtract=false, element=@type[[TYPE_T]], overflow=ub>(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_y]]), read<i32>(%[[VALUE_i]]))))))), const<i32>(8)))))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];

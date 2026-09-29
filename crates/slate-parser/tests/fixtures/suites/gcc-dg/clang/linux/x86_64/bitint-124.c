@@ -62,21 +62,7 @@ main ()
 // DEFAULT-NEXT:         return read<i156b>(bitfield0<unit=0, bytes=0..17, bits=0..135>(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]), const<i32>(1)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i156b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a:
-// DEFAULT-SAME: array<@type[[TYPE_A]], 12> [storage=automatic] [align=16] =
-// DEFAULT-SAME: aggregate<array<@type[[TYPE_A]], 12>, zero_fill=false>(index0 =
-// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index1 =
-// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index2 =
-// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(neg<i135b,
-// DEFAULT-SAME: overflow=ub>(const<i135b>(13055525270329736316393717310914023773847)))), index3 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b,
-// DEFAULT-SAME: reason=assign>(const<i32>(1))), index4 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index5 =
-// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index6 =
-// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index7 =
-// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index8 =
-// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index9 =
-// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index10 =
-// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index11 =
-// DEFAULT-SAME: aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: array<@type[[TYPE_A]], 12> [storage=automatic] [align=16] = aggregate<array<@type[[TYPE_A]], 12>, zero_fill=false>(index0 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index1 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index2 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(neg<i135b, overflow=ub>(const<i135b>(13055525270329736316393717310914023773847)))), index3 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index4 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index5 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index6 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index7 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index8 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index9 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index10 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))), index11 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i156b, reason=assign>(const<i32>(1))));
 // DEFAULT-NEXT:         return call<i156b, signature=fn(ptr<@type[[TYPE_A]]>) -> i156b>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_A]]>>(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(12)>(%[[VALUE_a]]), const<i32>(1)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];

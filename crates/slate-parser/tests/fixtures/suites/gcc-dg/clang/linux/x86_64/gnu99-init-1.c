@@ -147,10 +147,7 @@ int main (void)
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: i32 [storage=automatic];
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(2)>(deref(ptr_offset<ptr<array<array<i32, 4>, 2>>, subtract=false, element=array<array<i32, 4>, 2>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 2>>,
-// DEFAULT-SAME: length=Some(5)>(%[[VALUE_a]]), const<i32>(2)))), const<i32>(0)))), const<i32>(0)))), const<i32>(2)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>,
-// DEFAULT-SAME: subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(2)>(deref(ptr_offset<ptr<array<array<i32, 4>, 2>>, subtract=false, element=array<array<i32, 4>, 2>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 2>>,
-// DEFAULT-SAME: length=Some(5)>(%[[VALUE_a]]), const<i32>(2)))), const<i32>(0)))), const<i32>(2)))), const<i32>(3)))
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(2)>(deref(ptr_offset<ptr<array<array<i32, 4>, 2>>, subtract=false, element=array<array<i32, 4>, 2>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 2>>, length=Some(5)>(%[[VALUE_a]]), const<i32>(2)))), const<i32>(0)))), const<i32>(0)))), const<i32>(2)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(2)>(deref(ptr_offset<ptr<array<array<i32, 4>, 2>>, subtract=false, element=array<array<i32, 4>, 2>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 2>>, length=Some(5)>(%[[VALUE_a]]), const<i32>(2)))), const<i32>(0)))), const<i32>(2)))), const<i32>(3)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(2)>(deref(ptr_offset<ptr<array<array<i32, 4>, 2>>, subtract=false, element=array<array<i32, 4>, 2>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 2>>, length=Some(5)>(%[[VALUE_a]]), const<i32>(2)))), const<i32>(0)))), const<i32>(0))), const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(2)>(deref(ptr_offset<ptr<array<array<i32, 4>, 2>>, subtract=false, element=array<array<i32, 4>, 2>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 2>>, length=Some(5)>(%[[VALUE_a]]), const<i32>(2)))), const<i32>(0)))), const<i32>(2))), const<i32>(1));
@@ -203,27 +200,7 @@ int main (void)
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_M]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>,
-// DEFAULT-SAME: length=Some(6)>(%[[VALUE_n]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_x]]))))), const<i32>(0)),
-// DEFAULT-SAME: ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type[[TYPE_I]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_I]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_I]]>,
-// DEFAULT-SAME: length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_M]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>,
-// DEFAULT-SAME: length=Some(6)>(%[[VALUE_n]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_x]]))))), const<i32>(0))))), const<i32>(0))),
-// DEFAULT-SAME: ne<i32>(read<i32>(field2(deref(ptr_offset<ptr<@type[[TYPE_I]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_I]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_I]]>,
-// DEFAULT-SAME: length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_M]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>,
-// DEFAULT-SAME: length=Some(6)>(%[[VALUE_n]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_x]]))))), const<i32>(0))))), const<i32>(0)))
+// DEFAULT-NEXT:                     if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false, element=@type[[TYPE_M]], overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>, length=Some(6)>(%[[VALUE_n]]), read<i32>(%[[VALUE_x]]))))), const<i32>(0)), ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type[[TYPE_I]]>, subtract=false, element=@type[[TYPE_I]], overflow=ub>(array_decay<ptr<@type[[TYPE_I]]>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false, element=@type[[TYPE_M]], overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>, length=Some(6)>(%[[VALUE_n]]), read<i32>(%[[VALUE_x]]))))), const<i32>(0))))), const<i32>(0))), ne<i32>(read<i32>(field2(deref(ptr_offset<ptr<@type[[TYPE_I]]>, subtract=false, element=@type[[TYPE_I]], overflow=ub>(array_decay<ptr<@type[[TYPE_I]]>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false, element=@type[[TYPE_M]], overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>, length=Some(6)>(%[[VALUE_n]]), read<i32>(%[[VALUE_x]]))))), const<i32>(0))))), const<i32>(0)))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     for %[[VALUE16:[0-9]+]]
 // DEFAULT-NEXT:                         init:
@@ -256,75 +233,23 @@ int main (void)
 // DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_I]]>, subtract=false, element=@type[[TYPE_I]], overflow=ub>(array_decay<ptr<@type[[TYPE_I]]>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false, element=@type[[TYPE_M]], overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>, length=Some(6)>(%[[VALUE_n]]), read<i32>(%[[VALUE_x]]))))), read<i32>(%[[VALUE_y]]))))), const<i32>(1)))), const<i32>(4))
 // DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:                                 if logical_and<bool>(logical_or<bool>(lt<i32>(read<i32>(%[[VALUE_x]]), const<i32>(5)),
-// DEFAULT-SAME: lt<i32>(read<i32>(%[[VALUE_y]]), const<i32>(2))), logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32,
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_I]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_I]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_I]]>,
-// DEFAULT-SAME: length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_M]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>,
-// DEFAULT-SAME: length=Some(6)>(%[[VALUE_n]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_x]]))))),
-// DEFAULT-SAME: read<i32>(%[[VALUE_y]]))))), const<i32>(2)))), const<i32>(0)),
-// DEFAULT-SAME: ne<i32>(read<i32>(field2(deref(ptr_offset<ptr<@type[[TYPE_I]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_I]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_I]]>,
-// DEFAULT-SAME: length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_M]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>,
-// DEFAULT-SAME: length=Some(6)>(%[[VALUE_n]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_x]]))))),
-// DEFAULT-SAME: read<i32>(%[[VALUE_y]]))))), const<i32>(0))))
+// DEFAULT-NEXT:                                 if logical_and<bool>(logical_or<bool>(lt<i32>(read<i32>(%[[VALUE_x]]), const<i32>(5)), lt<i32>(read<i32>(%[[VALUE_y]]), const<i32>(2))), logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_I]]>, subtract=false, element=@type[[TYPE_I]], overflow=ub>(array_decay<ptr<@type[[TYPE_I]]>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false, element=@type[[TYPE_M]], overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>, length=Some(6)>(%[[VALUE_n]]), read<i32>(%[[VALUE_x]]))))), read<i32>(%[[VALUE_y]]))))), const<i32>(2)))), const<i32>(0)), ne<i32>(read<i32>(field2(deref(ptr_offset<ptr<@type[[TYPE_I]]>, subtract=false, element=@type[[TYPE_I]], overflow=ub>(array_decay<ptr<@type[[TYPE_I]]>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false, element=@type[[TYPE_M]], overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>, length=Some(6)>(%[[VALUE_n]]), read<i32>(%[[VALUE_x]]))))), read<i32>(%[[VALUE_y]]))))), const<i32>(0))))
 // DEFAULT-NEXT:                                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                     if logical_and<bool>(lt<i32>(read<i32>(%[[VALUE_x]]), const<i32>(5)), ne<i32>(read<i32>(field2(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false, element=@type[[TYPE_M]], overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>, length=Some(6)>(%[[VALUE_n]]), read<i32>(%[[VALUE_x]]))))), const<i32>(0)))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>,
-// DEFAULT-SAME: length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_I]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_I]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_I]]>,
-// DEFAULT-SAME: length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_M]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>,
-// DEFAULT-SAME: length=Some(6)>(%[[VALUE_n]]), const<i32>(5))))), const<i32>(2))))), const<i32>(2)))), const<i32>(5)),
-// DEFAULT-SAME: ne<i32>(read<i32>(field2(deref(ptr_offset<ptr<@type[[TYPE_I]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_I]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_I]]>,
-// DEFAULT-SAME: length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_M]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>,
-// DEFAULT-SAME: length=Some(6)>(%[[VALUE_n]]), const<i32>(5))))), const<i32>(2))))), const<i32>(6))),
-// DEFAULT-SAME: ne<i32>(read<i32>(field2(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_M]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>,
-// DEFAULT-SAME: length=Some(6)>(%[[VALUE_n]]), const<i32>(5))))), const<i32>(7)))
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_I]]>, subtract=false, element=@type[[TYPE_I]], overflow=ub>(array_decay<ptr<@type[[TYPE_I]]>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false, element=@type[[TYPE_M]], overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>, length=Some(6)>(%[[VALUE_n]]), const<i32>(5))))), const<i32>(2))))), const<i32>(2)))), const<i32>(5)), ne<i32>(read<i32>(field2(deref(ptr_offset<ptr<@type[[TYPE_I]]>, subtract=false, element=@type[[TYPE_I]], overflow=ub>(array_decay<ptr<@type[[TYPE_I]]>, length=Some(3)>(field1(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false, element=@type[[TYPE_M]], overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>, length=Some(6)>(%[[VALUE_n]]), const<i32>(5))))), const<i32>(2))))), const<i32>(6))), ne<i32>(read<i32>(field2(deref(ptr_offset<ptr<@type[[TYPE_M]]>, subtract=false, element=@type[[TYPE_M]], overflow=ub>(array_decay<ptr<@type[[TYPE_M]]>, length=Some(6)>(%[[VALUE_n]]), const<i32>(5))))), const<i32>(7)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<@type[[TYPE_M]]>, length=Some(6)>(%[[VALUE_n]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<@type[[TYPE_M]]>, length=Some(6)>(%[[VALUE_o]])), const<u64>(408)), const<i32>(0)), ne<u64>(const<u64>(408), const<u64>(408)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<@type[[TYPE_M]]>, length=Some(6)>(%[[VALUE_n]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<@type[[TYPE_M]]>, length=Some(6)>(%[[VALUE_p]])), const<u64>(408)), const<i32>(0)), ne<u64>(const<u64>(408), const<u64>(408)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>,
-// DEFAULT-SAME: length=Some(3)>(%[[VALUE_q]]), const<i32>(0)))), const<i32>(0)))), const<i32>(0)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32,
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>,
-// DEFAULT-SAME: length=Some(3)>(%[[VALUE_q]]), const<i32>(0)))), const<i32>(1)))), const<i32>(23))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32,
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>,
-// DEFAULT-SAME: length=Some(3)>(%[[VALUE_q]]), const<i32>(0)))), const<i32>(2)))), const<i32>(23)))
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%[[VALUE_q]]), const<i32>(0)))), const<i32>(0)))), const<i32>(0)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%[[VALUE_q]]), const<i32>(0)))), const<i32>(1)))), const<i32>(23))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%[[VALUE_q]]), const<i32>(0)))), const<i32>(2)))), const<i32>(23)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>,
-// DEFAULT-SAME: length=Some(3)>(%[[VALUE_q]]), const<i32>(1)))), const<i32>(0)))), const<i32>(0)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32,
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>,
-// DEFAULT-SAME: length=Some(3)>(%[[VALUE_q]]), const<i32>(1)))), const<i32>(1)))), const<i32>(23))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32,
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>,
-// DEFAULT-SAME: length=Some(3)>(%[[VALUE_q]]), const<i32>(1)))), const<i32>(2)))), const<i32>(24)))
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%[[VALUE_q]]), const<i32>(1)))), const<i32>(0)))), const<i32>(0)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%[[VALUE_q]]), const<i32>(1)))), const<i32>(1)))), const<i32>(23))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%[[VALUE_q]]), const<i32>(1)))), const<i32>(2)))), const<i32>(24)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>,
-// DEFAULT-SAME: length=Some(3)>(%[[VALUE_q]]), const<i32>(2)))), const<i32>(0)))), const<i32>(0)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32,
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>,
-// DEFAULT-SAME: length=Some(3)>(%[[VALUE_q]]), const<i32>(2)))), const<i32>(1)))), const<i32>(0))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32,
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>,
-// DEFAULT-SAME: length=Some(3)>(%[[VALUE_q]]), const<i32>(2)))), const<i32>(2)))), const<i32>(0)))
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%[[VALUE_q]]), const<i32>(2)))), const<i32>(0)))), const<i32>(0)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%[[VALUE_q]]), const<i32>(2)))), const<i32>(1)))), const<i32>(0))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(deref(ptr_offset<ptr<array<i32, 3>>, subtract=false, element=array<i32, 3>, overflow=ub>(array_decay<ptr<array<i32, 3>>, length=Some(3)>(%[[VALUE_q]]), const<i32>(2)))), const<i32>(2)))), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1)>(%[[VALUE_r]]), const<i32>(0)))), const<i32>(27))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

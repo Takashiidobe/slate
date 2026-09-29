@@ -51,14 +51,7 @@ int main(void) {
 // DEFAULT-NEXT:         return sub<i32, overflow=ub>(read<i32>(%[[VALUE_b]]), read<i32>(%[[VALUE_a]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_Select:[0-9]+]] @Select(%[[VALUE_a_2:[0-9]+]] a: u32, %[[VALUE_b_2:[0-9]+]] b: u32, %[[VALUE_c:[0-9]+]] c: u32) -> u32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %[[VALUE_pa_minus_pb:[0-9]+]] pa_minus_pb: i32 [storage=automatic] [const] = add<i32, overflow=ub>(call<i32, signature=fn(i32, i32) ->
-// DEFAULT-SAME: i32>(%[[VALUE_Sub]], reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub,
-// DEFAULT-SAME: fill=zero_extend>(read<u32>(%[[VALUE_a_2]]), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255)))), reinterpret<i32, reason=arg,
-// DEFAULT-SAME: fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_b_2]]), const<i32>(8)), reinterpret<u32, reason=usual_arith,
-// DEFAULT-SAME: fits=always>(const<i32>(255))))), call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_Sub]], reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32,
-// DEFAULT-SAME: amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_a_2]]), const<i32>(0)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255)))),
-// DEFAULT-SAME: reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_b_2]]), const<i32>(0)),
-// DEFAULT-SAME: reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))))));
+// DEFAULT-NEXT:         let %[[VALUE_pa_minus_pb:[0-9]+]] pa_minus_pb: i32 [storage=automatic] [const] = add<i32, overflow=ub>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_Sub]], reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_a_2]]), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255)))), reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_b_2]]), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))))), call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_Sub]], reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_a_2]]), const<i32>(0)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255)))), reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_b_2]]), const<i32>(0)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))))));
 // DEFAULT-NEXT:         return conditional<u32>(le<i32>(read<i32>(%[[VALUE_pa_minus_pb]]), const<i32>(0)), read<u32>(%[[VALUE_a_2]]), read<u32>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_Predictor:[0-9]+]] @Predictor(%[[VALUE_left:[0-9]+]] left: u32, %[[VALUE_top:[0-9]+]] top: ptr<const u32> [const]) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {

@@ -55,23 +55,7 @@ foo (A *x, A *y, A *z)
 // DEFAULT-NEXT:     type @type[[TYPE_A_2:[0-9]+]] A = @type[[TYPE_A]];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_A]]>) -> void [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE_A]]>, %[[VALUE_y:[0-9]+]] y: ptr<@type[[TYPE_A]]>, %[[VALUE_z:[0-9]+]] z: ptr<@type[[TYPE_A]]>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]]
-// DEFAULT-SAME: logical_and<bool>(ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: null<ptr<@type[[TYPE_A]]>>),
-// DEFAULT-SAME: eq<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(field1(deref(conditional<ptr<@type[[TYPE_A]]>>(logical_and<bool>(logical_and<bool>(ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: null<ptr<@type[[TYPE_A]]>>),
-// DEFAULT-SAME: ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]])))),
-// DEFAULT-SAME: null<ptr<@type[[TYPE_A]]>>)),
-// DEFAULT-SAME: ne<u32>(read<u32>(field2(deref(read<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]))))))), const<u32>(0))),
-// DEFAULT-SAME: read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]),
-// DEFAULT-SAME: read<ptr<@type[[TYPE_A]]>>(%[[VALUE_z]]))))),
-// DEFAULT-SAME: read<ptr<@type[[TYPE_A]]>>(field1(deref(conditional<ptr<@type[[TYPE_A]]>>(logical_and<bool>(logical_and<bool>(ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]),
-// DEFAULT-SAME: null<ptr<@type[[TYPE_A]]>>),
-// DEFAULT-SAME: ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]])))),
-// DEFAULT-SAME: null<ptr<@type[[TYPE_A]]>>)),
-// DEFAULT-SAME: ne<u32>(read<u32>(field2(deref(read<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]))))))), const<u32>(0))),
-// DEFAULT-SAME: read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]),
-// DEFAULT-SAME: read<ptr<@type[[TYPE_A]]>>(%[[VALUE_z]])))))))
+// DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] logical_and<bool>(ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]), null<ptr<@type[[TYPE_A]]>>), eq<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(field1(deref(conditional<ptr<@type[[TYPE_A]]>>(logical_and<bool>(logical_and<bool>(ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]), null<ptr<@type[[TYPE_A]]>>), ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]])))), null<ptr<@type[[TYPE_A]]>>)), ne<u32>(read<u32>(field2(deref(read<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]))))))), const<u32>(0))), read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]), read<ptr<@type[[TYPE_A]]>>(%[[VALUE_z]]))))), read<ptr<@type[[TYPE_A]]>>(field1(deref(conditional<ptr<@type[[TYPE_A]]>>(logical_and<bool>(logical_and<bool>(ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]), null<ptr<@type[[TYPE_A]]>>), ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]])))), null<ptr<@type[[TYPE_A]]>>)), ne<u32>(read<u32>(field2(deref(read<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]))))))), const<u32>(0))), read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]), read<ptr<@type[[TYPE_A]]>>(%[[VALUE_z]])))))))
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]], read<ptr<@type[[TYPE_A]]>>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]])))));
 // DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]), null<ptr<@type[[TYPE_A]]>>)
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_bar]], read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]));

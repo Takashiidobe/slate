@@ -88,16 +88,7 @@ int main(void) {
 // DEFAULT-NEXT:         write<complex<f32>>(field2(%[[VALUE_fields]]), add<complex<f32>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f32>(5.0), aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(6.0))));
 // DEFAULT-NEXT:         write<complex<f64>>(field3(%[[VALUE_fields]]), add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(7.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(8.0))));
 // DEFAULT-NEXT:         write<complex<f64>>(field0(%[[VALUE_overlay]]), read<complex<f64>>(field3(%[[VALUE_fields]])));
-// DEFAULT-NEXT:         let %[[VALUE_failed:[0-9]+]] failed: i32 [storage=automatic] = from_bool<i32,
-// DEFAULT-SAME: reason=assign>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32,
-// DEFAULT-SAME: reason=promotion>(read<i8>(real(field0(%[[VALUE_fields]])))), const<i32>(1)), ne<i32>(widen<i32,
-// DEFAULT-SAME: reason=promotion>(read<i8>(imag(field0(%[[VALUE_fields]])))), const<i32>(2))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32,
-// DEFAULT-SAME: reason=promotion>(read<u16>(real(field1(%[[VALUE_fields]]))))), const<i32>(3))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32,
-// DEFAULT-SAME: reason=promotion>(read<u16>(imag(field1(%[[VALUE_fields]]))))), const<i32>(4))), ne<f32,
-// DEFAULT-SAME: exceptions=ignore>(read<f32>(real(field2(%[[VALUE_fields]]))), const<f32>(5.0))), ne<f32,
-// DEFAULT-SAME: exceptions=ignore>(read<f32>(imag(field2(%[[VALUE_fields]]))), const<f32>(6.0))), ne<f64,
-// DEFAULT-SAME: exceptions=ignore>(read<f64>(real(field0(%[[VALUE_overlay]]))), const<f64>(7.0))), ne<f64,
-// DEFAULT-SAME: exceptions=ignore>(read<f64>(imag(field0(%[[VALUE_overlay]]))), const<f64>(8.0))));
+// DEFAULT-NEXT:         let %[[VALUE_failed:[0-9]+]] failed: i32 [storage=automatic] = from_bool<i32, reason=assign>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(real(field0(%[[VALUE_fields]])))), const<i32>(1)), ne<i32>(widen<i32, reason=promotion>(read<i8>(imag(field0(%[[VALUE_fields]])))), const<i32>(2))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(real(field1(%[[VALUE_fields]]))))), const<i32>(3))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(imag(field1(%[[VALUE_fields]]))))), const<i32>(4))), ne<f32, exceptions=ignore>(read<f32>(real(field2(%[[VALUE_fields]]))), const<f32>(5.0))), ne<f32, exceptions=ignore>(read<f32>(imag(field2(%[[VALUE_fields]]))), const<f32>(6.0))), ne<f64, exceptions=ignore>(read<f64>(real(field0(%[[VALUE_overlay]]))), const<f64>(7.0))), ne<f64, exceptions=ignore>(read<f64>(imag(field0(%[[VALUE_overlay]]))), const<f64>(8.0))));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_failed]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

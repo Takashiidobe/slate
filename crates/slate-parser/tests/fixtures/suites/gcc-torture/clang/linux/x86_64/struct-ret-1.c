@@ -130,19 +130,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: @type[[TYPE1]] [storage=automatic];
 // DEFAULT-NEXT:         write<@type[[TYPE1]]>(%[[VALUE_r]], copy<@type[[TYPE1]], reason=assign>(read<@type[[TYPE1]]>(%[[VALUE_xr]])));
 // DEFAULT-NEXT:         write<i8>(field1(%[[VALUE_r]]), read<i8>(%[[VALUE_b]]));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%[[VALUE_sprintf]], array_decay<ptr<i8>,
-// DEFAULT-SAME: length=Some(100)>(%[[VALUE_out]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
-// DEFAULT-SAME: length=Some(63)>(%[[VALUE_str]])),
-// DEFAULT-SAME: read<f64>(field0(%[[VALUE_a]])), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>,
-// DEFAULT-SAME: length=Some(3)>(field1(%[[VALUE_a]])), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>,
-// DEFAULT-SAME: length=Some(3)>(field1(%[[VALUE_a]])), const<i32>(1)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>,
-// DEFAULT-SAME: length=Some(3)>(field1(%[[VALUE_a]])), const<i32>(2)))), widen<i32,
-// DEFAULT-SAME: reason=vararg>(read<i8>(%[[VALUE_b]])),
-// DEFAULT-SAME: read<f64>(%[[VALUE_c]]),
-// DEFAULT-SAME: read<f64>(field0(%[[VALUE_d]])), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>,
-// DEFAULT-SAME: length=Some(3)>(field1(%[[VALUE_d]])), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>,
-// DEFAULT-SAME: length=Some(3)>(field1(%[[VALUE_d]])), const<i32>(1)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>,
-// DEFAULT-SAME: length=Some(3)>(field1(%[[VALUE_d]])), const<i32>(2)))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%[[VALUE_sprintf]], array_decay<ptr<i8>, length=Some(100)>(%[[VALUE_out]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(63)>(%[[VALUE_str]])), read<f64>(field0(%[[VALUE_a]])), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%[[VALUE_a]])), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%[[VALUE_a]])), const<i32>(1)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%[[VALUE_a]])), const<i32>(2)))), widen<i32, reason=vararg>(read<i8>(%[[VALUE_b]])), read<f64>(%[[VALUE_c]]), read<f64>(field0(%[[VALUE_d]])), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%[[VALUE_d]])), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%[[VALUE_d]])), const<i32>(1)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field1(%[[VALUE_d]])), const<i32>(2)))));
 // DEFAULT-NEXT:         return copy<@type[[TYPE1]], reason=return>(read<@type[[TYPE1]]>(%[[VALUE_r]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

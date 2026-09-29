@@ -67,22 +67,28 @@ Only the absolute number stops mattering: a changed cross-reference fails,
 and renumbering alone doesn't. String variables, unlike numeric ones, can be
 reused on the line that defines them.
 
-### Cost of variables, and `-SAME` splitting
+### Checking: the harness matcher, not FileCheck
 
-A single `[[...]]` or `{{...}}` turns the whole check line into a regex. That
-regex is compiled per line with LLVM's backtracking engine, and its cost grows
-with pattern length times the text scanned, and superlinearly with the number
-of capture groups. A literal line is matched with memmem instead. A 256-parameter
-signature (`cpp__embed-14.c`, 5.5s) and 20KB constants with one binding
-(`bitint-39.c`, 3.7s) were the worst cases. FileCheck has no flag that changes
-this.
+`tests/filecheck/matcher.rs` checks the output itself. FileCheck turns any
+line with a `[[...]]` or `{{...}}` into a regex that LLVM compiles per line with
+a slow regex engine. The time grows with line length times the text searched,
+and even faster with the number of captured variables. A 256-parameter
+signature (`cpp__embed-14.c`) took 5.5s to check, and 20KB constants with one
+variable each (`bitint-39.c`) took 3.7s. Rust's `regex` fixed those two, but it
+was no faster on `20001226-1.c`'s 16k ordinary lines, because building a new
+regex for every line is the cost. Splitting long lines with `-SAME` was tried
+and dropped: it churned 228 fixtures and left the rest of the suite as slow.
 
-`split_regex_checks` breaks a check line longer than 1024 characters, or one
-with more than 32 constructs, into a `-NEXT` line followed by `-SAME` pieces.
-It splits at whitespace, which no construct contains. Each piece holds at most
-one construct plus up to 160 characters of neighbouring literal text, so long
-literal runs go back to fixed-string matching. The one loosening is that a
-`-SAME` piece searches forward, so text between two pieces goes unchecked.
-Lines that are cheap on their own are not split, even when there are many of
-them: `20001226-1.c`'s 16k ~300-character lines each use `[[VALUE_x]]` and
-still take ~1.5s to check.
+The matcher accepts exactly what the generator emits:
+- **Directives:** plain `PREFIX:` and `PREFIX-NEXT:`.
+- **Variables:** `[[V:[0-9]+]]` and `[[V]]` string variables, and `[[#V:]]` and
+  `[[#V]]` numeric ones.
+- **`{{...}}` bodies:** `[0-9]+`, `.*`, `\[[0-9, ]+\]`, and the three escapes.
+
+Anything else is an explicit "not supported" error, so if the generator gains a
+construct, the matcher needs to learn it too. Each piece is a literal, a digit
+run or a variable, so no regex is involved. It is stricter than FileCheck: a
+check must match its whole output line once horizontal whitespace is collapsed.
+A plain check matches the first such line after the previous match. On a
+mismatch the harness also runs real FileCheck on the same input for its
+annotated dump.

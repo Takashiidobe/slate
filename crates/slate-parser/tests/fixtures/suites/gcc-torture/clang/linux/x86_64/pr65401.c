@@ -98,15 +98,7 @@ int main() {
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 write<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>,
-// DEFAULT-SAME: length=Some(64)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_x]])))),
-// DEFAULT-SAME: read<u32>(%[[VALUE_i]]))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(or<i32>(reinterpret<i32, reason=promotion,
-// DEFAULT-SAME: fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_s]]), mul<u32,
-// DEFAULT-SAME: overflow=wrap>(read<u32>(%[[VALUE_i]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))))))), shl<i32, overflow=ub, amount_out_of_range=ub,
-// DEFAULT-SAME: negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8,
-// DEFAULT-SAME: overflow=ub>(read<ptr<u8>>(%[[VALUE_s]]), add<u32, overflow=wrap>(mul<u32,
-// DEFAULT-SAME: overflow=wrap>(read<u32>(%[[VALUE_i]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))), reinterpret<u32, reason=usual_arith,
-// DEFAULT-SAME: fits=always>(const<i32>(1)))))))), const<i32>(8))))));
+// DEFAULT-NEXT:                 write<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(64)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_x]])))), read<u32>(%[[VALUE_i]]))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(or<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_s]]), mul<u32, overflow=wrap>(read<u32>(%[[VALUE_i]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))))))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_s]]), add<u32, overflow=wrap>(mul<u32, overflow=wrap>(read<u32>(%[[VALUE_i]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))))))), const<i32>(8))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_2:[0-9]+]] x: ptr<@type[[TYPE_S]]>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: u32 [storage=automatic];
@@ -123,16 +115,7 @@ int main() {
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 write<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>,
-// DEFAULT-SAME: length=Some(64)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_x_2]])))),
-// DEFAULT-SAME: read<u32>(%[[VALUE_i_2]]))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(or<i32>(shl<i32, overflow=ub,
-// DEFAULT-SAME: amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8,
-// DEFAULT-SAME: overflow=ub>(read<ptr<u8>>(%[[VALUE_s_2]]), mul<u32,
-// DEFAULT-SAME: overflow=wrap>(read<u32>(%[[VALUE_i_2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))))))), const<i32>(8)), reinterpret<i32,
-// DEFAULT-SAME: reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8,
-// DEFAULT-SAME: overflow=ub>(read<ptr<u8>>(%[[VALUE_s_2]]), add<u32, overflow=wrap>(mul<u32,
-// DEFAULT-SAME: overflow=wrap>(read<u32>(%[[VALUE_i_2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))), reinterpret<u32, reason=usual_arith,
-// DEFAULT-SAME: fits=always>(const<i32>(1))))))))))));
+// DEFAULT-NEXT:                 write<u16>(deref(ptr_offset<ptr<u16>, subtract=false, element=u16, overflow=ub>(array_decay<ptr<u16>, length=Some(64)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_x_2]])))), read<u32>(%[[VALUE_i_2]]))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_s_2]]), mul<u32, overflow=wrap>(read<u32>(%[[VALUE_i_2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))))))), const<i32>(8)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_s_2]]), add<u32, overflow=wrap>(mul<u32, overflow=wrap>(read<u32>(%[[VALUE_i_2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))))))))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

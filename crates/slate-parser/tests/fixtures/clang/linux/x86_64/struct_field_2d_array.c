@@ -212,15 +212,7 @@ int main(void) {
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         let %[[VALUE_c_3:[0-9]+]] c: @type[[TYPE_cube]] [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_cube]]>) -> void>(%[[VALUE_fill_cube]], addr_of<ptr<@type[[TYPE_cube]]>>(%[[VALUE_c_3]]));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>,
-// DEFAULT-SAME: length=Some(10)>(%[[VALUE_str_2]])), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>,
-// DEFAULT-SAME: length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(3)>(deref(ptr_offset<ptr<array<array<i32, 4>, 3>>, subtract=false, element=array<array<i32, 4>, 3>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 3>>,
-// DEFAULT-SAME: length=Some(2)>(field0(%[[VALUE_c_3]])), const<i32>(0)))), const<i32>(0)))), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32,
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(3)>(deref(ptr_offset<ptr<array<array<i32, 4>, 3>>, subtract=false, element=array<array<i32, 4>, 3>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 3>>,
-// DEFAULT-SAME: length=Some(2)>(field0(%[[VALUE_c_3]])), const<i32>(1)))), const<i32>(2)))), const<i32>(3)))), call<i32,
-// DEFAULT-SAME: signature=fn(ptr<@type[[TYPE_cube]]>) ->
-// DEFAULT-SAME: i32>(%[[VALUE_sum_cube_via_ptr]],
-// DEFAULT-SAME: addr_of<ptr<@type[[TYPE_cube]]>>(%[[VALUE_c_3]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_2]])), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(3)>(deref(ptr_offset<ptr<array<array<i32, 4>, 3>>, subtract=false, element=array<array<i32, 4>, 3>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 3>>, length=Some(2)>(field0(%[[VALUE_c_3]])), const<i32>(0)))), const<i32>(0)))), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(array_decay<ptr<array<i32, 4>>, length=Some(3)>(deref(ptr_offset<ptr<array<array<i32, 4>, 3>>, subtract=false, element=array<array<i32, 4>, 3>, overflow=ub>(array_decay<ptr<array<array<i32, 4>, 3>>, length=Some(2)>(field0(%[[VALUE_c_3]])), const<i32>(1)))), const<i32>(2)))), const<i32>(3)))), call<i32, signature=fn(ptr<@type[[TYPE_cube]]>) -> i32>(%[[VALUE_sum_cube_via_ptr]], addr_of<ptr<@type[[TYPE_cube]]>>(%[[VALUE_c_3]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

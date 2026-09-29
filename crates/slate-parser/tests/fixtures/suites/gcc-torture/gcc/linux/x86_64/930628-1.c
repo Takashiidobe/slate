@@ -145,27 +145,7 @@ int main(void) {
 // DEFAULT-NEXT:                                                                 yield void;
 // DEFAULT-NEXT:                                                             }
 // DEFAULT-NEXT:                                                             body:
-// DEFAULT-NEXT:                                                                 call<void, signature=fn(ptr<f64>, ptr<f64>) -> void>(%[[VALUE_f]], array_decay<ptr<f64>, length=Some(2)>(deref(ptr_offset<ptr<array<f64, 2>>, subtract=false,
-// DEFAULT-SAME: element=array<f64, 2>, overflow=ub>(array_decay<ptr<array<f64, 2>>, length=Some(1)>(field1(deref(ptr_offset<ptr<@type[[TYPE0]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE0]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE0]]>,
-// DEFAULT-SAME: length=Some(2)>(deref(ptr_offset<ptr<array<@type[[TYPE0]], 2>>, subtract=false,
-// DEFAULT-SAME: element=array<@type[[TYPE0]], 2>,
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<array<@type[[TYPE0]], 2>>,
-// DEFAULT-SAME: length=Some(4)>(%[[VALUE_tp]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_i]])))),
-// DEFAULT-SAME: read<i32>(%[[VALUE_ki]]))))),
-// DEFAULT-SAME: read<i32>(%[[VALUE_mi]])))), array_decay<ptr<f64>, length=Some(2)>(deref(ptr_offset<ptr<array<f64, 2>>, subtract=false, element=array<f64, 2>,
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<array<f64, 2>>, length=Some(1)>(field1(deref(ptr_offset<ptr<@type[[TYPE0]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE0]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE0]]>,
-// DEFAULT-SAME: length=Some(2)>(deref(ptr_offset<ptr<array<@type[[TYPE0]], 2>>, subtract=false,
-// DEFAULT-SAME: element=array<@type[[TYPE0]], 2>,
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<array<@type[[TYPE0]], 2>>,
-// DEFAULT-SAME: length=Some(4)>(%[[VALUE_tp]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_j]])))),
-// DEFAULT-SAME: read<i32>(%[[VALUE_kj]]))))),
-// DEFAULT-SAME: read<i32>(%[[VALUE_mj]])))));
+// DEFAULT-NEXT:                                                                 call<void, signature=fn(ptr<f64>, ptr<f64>) -> void>(%[[VALUE_f]], array_decay<ptr<f64>, length=Some(2)>(deref(ptr_offset<ptr<array<f64, 2>>, subtract=false, element=array<f64, 2>, overflow=ub>(array_decay<ptr<array<f64, 2>>, length=Some(1)>(field1(deref(ptr_offset<ptr<@type[[TYPE0]]>, subtract=false, element=@type[[TYPE0]], overflow=ub>(array_decay<ptr<@type[[TYPE0]]>, length=Some(2)>(deref(ptr_offset<ptr<array<@type[[TYPE0]], 2>>, subtract=false, element=array<@type[[TYPE0]], 2>, overflow=ub>(array_decay<ptr<array<@type[[TYPE0]], 2>>, length=Some(4)>(%[[VALUE_tp]]), read<i32>(%[[VALUE_i]])))), read<i32>(%[[VALUE_ki]]))))), read<i32>(%[[VALUE_mi]])))), array_decay<ptr<f64>, length=Some(2)>(deref(ptr_offset<ptr<array<f64, 2>>, subtract=false, element=array<f64, 2>, overflow=ub>(array_decay<ptr<array<f64, 2>>, length=Some(1)>(field1(deref(ptr_offset<ptr<@type[[TYPE0]]>, subtract=false, element=@type[[TYPE0]], overflow=ub>(array_decay<ptr<@type[[TYPE0]]>, length=Some(2)>(deref(ptr_offset<ptr<array<@type[[TYPE0]], 2>>, subtract=false, element=array<@type[[TYPE0]], 2>, overflow=ub>(array_decay<ptr<array<@type[[TYPE0]], 2>>, length=Some(4)>(%[[VALUE_tp]]), read<i32>(%[[VALUE_j]])))), read<i32>(%[[VALUE_kj]]))))), read<i32>(%[[VALUE_mj]])))));
 // DEFAULT-NEXT:                                                 write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(2)>(deref(ptr_offset<ptr<array<f32, 2>>, subtract=false, element=array<f32, 2>, overflow=ub>(array_decay<ptr<array<f32, 2>>, length=Some(4)>(deref(ptr_offset<ptr<array<array<f32, 2>, 4>>, subtract=false, element=array<array<f32, 2>, 4>, overflow=ub>(array_decay<ptr<array<array<f32, 2>, 4>>, length=Some(2)>(deref(ptr_offset<ptr<array<array<array<f32, 2>, 4>, 2>>, subtract=false, element=array<array<array<f32, 2>, 4>, 2>, overflow=ub>(array_decay<ptr<array<array<array<f32, 2>, 4>, 2>>, length=Some(4)>(%[[VALUE_bdm]]), read<i32>(%[[VALUE_i]])))), read<i32>(%[[VALUE_ki]])))), read<i32>(%[[VALUE_j]])))), read<i32>(%[[VALUE_kj]]))), float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(1000.0)));
 // DEFAULT-NEXT:                                             }
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

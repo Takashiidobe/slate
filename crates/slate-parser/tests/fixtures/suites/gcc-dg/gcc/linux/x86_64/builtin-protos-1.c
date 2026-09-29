@@ -120,38 +120,10 @@ test_ull (unsigned long long x)
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_parityl:[0-9]+]] @__builtin_parityl(%[[VALUE12:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_popcountl:[0-9]+]] @__builtin_popcountl(%[[VALUE13:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_test_sl:[0-9]+]] @test_sl(%[[VALUE_x_3:[0-9]+]] x: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(call<i64, signature=fn(i64) ->
-// DEFAULT-SAME: i64>(%[[VALUE___builtin_labs]],
-// DEFAULT-SAME: read<i64>(%[[VALUE_x_3]])), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_clzl]], reinterpret<u64, reason=arg,
-// DEFAULT-SAME: fits=unknown>(read<i64>(%[[VALUE_x_3]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_ctzl]], reinterpret<u64, reason=arg,
-// DEFAULT-SAME: fits=unknown>(read<i64>(%[[VALUE_x_3]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_clrsbl]],
-// DEFAULT-SAME: read<i64>(%[[VALUE_x_3]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_ffsl]],
-// DEFAULT-SAME: read<i64>(%[[VALUE_x_3]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_parityl]], reinterpret<u64, reason=arg,
-// DEFAULT-SAME: fits=unknown>(read<i64>(%[[VALUE_x_3]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_popcountl]], reinterpret<u64, reason=arg,
-// DEFAULT-SAME: fits=unknown>(read<i64>(%[[VALUE_x_3]]))))));
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(call<i64, signature=fn(i64) -> i64>(%[[VALUE___builtin_labs]], read<i64>(%[[VALUE_x_3]])), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_clzl]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_3]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_ctzl]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_3]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) -> i32>(%[[VALUE___builtin_clrsbl]], read<i64>(%[[VALUE_x_3]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) -> i32>(%[[VALUE___builtin_ffsl]], read<i64>(%[[VALUE_x_3]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_parityl]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_3]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_popcountl]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_3]]))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_ul:[0-9]+]] @test_ul(%[[VALUE_x_4:[0-9]+]] x: u64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(call<i64, signature=fn(i64) ->
-// DEFAULT-SAME: i64>(%[[VALUE___builtin_labs]], reinterpret<i64, reason=arg,
-// DEFAULT-SAME: fits=unknown>(read<u64>(%[[VALUE_x_4]]))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_clzl]],
-// DEFAULT-SAME: read<u64>(%[[VALUE_x_4]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_ctzl]],
-// DEFAULT-SAME: read<u64>(%[[VALUE_x_4]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_clrsbl]], reinterpret<i64, reason=arg,
-// DEFAULT-SAME: fits=unknown>(read<u64>(%[[VALUE_x_4]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_ffsl]], reinterpret<i64, reason=arg,
-// DEFAULT-SAME: fits=unknown>(read<u64>(%[[VALUE_x_4]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_parityl]],
-// DEFAULT-SAME: read<u64>(%[[VALUE_x_4]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_popcountl]],
-// DEFAULT-SAME: read<u64>(%[[VALUE_x_4]])))));
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(call<i64, signature=fn(i64) -> i64>(%[[VALUE___builtin_labs]], reinterpret<i64, reason=arg, fits=unknown>(read<u64>(%[[VALUE_x_4]]))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_clzl]], read<u64>(%[[VALUE_x_4]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_ctzl]], read<u64>(%[[VALUE_x_4]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) -> i32>(%[[VALUE___builtin_clrsbl]], reinterpret<i64, reason=arg, fits=unknown>(read<u64>(%[[VALUE_x_4]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) -> i32>(%[[VALUE___builtin_ffsl]], reinterpret<i64, reason=arg, fits=unknown>(read<u64>(%[[VALUE_x_4]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_parityl]], read<u64>(%[[VALUE_x_4]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_popcountl]], read<u64>(%[[VALUE_x_4]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_llabs:[0-9]+]] @__builtin_llabs(%[[VALUE14:[0-9]+]] <unnamed>: i64) -> i64 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_clzll:[0-9]+]] @__builtin_clzll(%[[VALUE15:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external] [memory=none];
@@ -161,38 +133,10 @@ test_ull (unsigned long long x)
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_parityll:[0-9]+]] @__builtin_parityll(%[[VALUE19:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_popcountll:[0-9]+]] @__builtin_popcountll(%[[VALUE20:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external] [memory=none];
 // DEFAULT-NEXT:     fn %[[VALUE_test_sll:[0-9]+]] @test_sll(%[[VALUE_x_5:[0-9]+]] x: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(call<i64, signature=fn(i64) ->
-// DEFAULT-SAME: i64>(%[[VALUE___builtin_llabs]],
-// DEFAULT-SAME: read<i64>(%[[VALUE_x_5]])), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_clzll]], reinterpret<u64, reason=arg,
-// DEFAULT-SAME: fits=unknown>(read<i64>(%[[VALUE_x_5]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_ctzll]], reinterpret<u64, reason=arg,
-// DEFAULT-SAME: fits=unknown>(read<i64>(%[[VALUE_x_5]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_clrsbll]],
-// DEFAULT-SAME: read<i64>(%[[VALUE_x_5]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_ffsll]],
-// DEFAULT-SAME: read<i64>(%[[VALUE_x_5]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_parityll]], reinterpret<u64, reason=arg,
-// DEFAULT-SAME: fits=unknown>(read<i64>(%[[VALUE_x_5]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_popcountll]], reinterpret<u64, reason=arg,
-// DEFAULT-SAME: fits=unknown>(read<i64>(%[[VALUE_x_5]]))))));
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(call<i64, signature=fn(i64) -> i64>(%[[VALUE___builtin_llabs]], read<i64>(%[[VALUE_x_5]])), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_clzll]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_5]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_ctzll]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_5]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) -> i32>(%[[VALUE___builtin_clrsbll]], read<i64>(%[[VALUE_x_5]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) -> i32>(%[[VALUE___builtin_ffsll]], read<i64>(%[[VALUE_x_5]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_parityll]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_5]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_popcountll]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_5]]))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_ull:[0-9]+]] @test_ull(%[[VALUE_x_6:[0-9]+]] x: u64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(call<i64, signature=fn(i64) ->
-// DEFAULT-SAME: i64>(%[[VALUE___builtin_llabs]], reinterpret<i64, reason=arg,
-// DEFAULT-SAME: fits=unknown>(read<u64>(%[[VALUE_x_6]]))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_clzll]],
-// DEFAULT-SAME: read<u64>(%[[VALUE_x_6]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_ctzll]],
-// DEFAULT-SAME: read<u64>(%[[VALUE_x_6]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_clrsbll]], reinterpret<i64, reason=arg,
-// DEFAULT-SAME: fits=unknown>(read<u64>(%[[VALUE_x_6]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_ffsll]], reinterpret<i64, reason=arg,
-// DEFAULT-SAME: fits=unknown>(read<u64>(%[[VALUE_x_6]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_parityll]],
-// DEFAULT-SAME: read<u64>(%[[VALUE_x_6]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) ->
-// DEFAULT-SAME: i32>(%[[VALUE___builtin_popcountll]],
-// DEFAULT-SAME: read<u64>(%[[VALUE_x_6]])))));
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(add<i64, overflow=ub>(call<i64, signature=fn(i64) -> i64>(%[[VALUE___builtin_llabs]], reinterpret<i64, reason=arg, fits=unknown>(read<u64>(%[[VALUE_x_6]]))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_clzll]], read<u64>(%[[VALUE_x_6]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_ctzll]], read<u64>(%[[VALUE_x_6]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) -> i32>(%[[VALUE___builtin_clrsbll]], reinterpret<i64, reason=arg, fits=unknown>(read<u64>(%[[VALUE_x_6]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) -> i32>(%[[VALUE___builtin_ffsll]], reinterpret<i64, reason=arg, fits=unknown>(read<u64>(%[[VALUE_x_6]]))))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_parityll]], read<u64>(%[[VALUE_x_6]])))), widen<i64, reason=usual_arith>(call<i32, signature=fn(u64) -> i32>(%[[VALUE___builtin_popcountll]], read<u64>(%[[VALUE_x_6]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

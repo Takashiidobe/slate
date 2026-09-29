@@ -362,26 +362,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                     let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] = widen<i32, reason=assign>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(60)>(%[[VALUE_reload_order]]), read<i32>(%[[VALUE_j]])))));
 // DEFAULT-NEXT:                     let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(60)>(%[[VALUE_reload_spill_index]]), read<i32>(%[[VALUE_r]]))));
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %[[VALUE_out:[0-9]+]] out:
-// DEFAULT-SAME: ptr<@type[[TYPE_rtx_def]]> [storage=automatic] =
-// DEFAULT-SAME: conditional<ptr<@type[[TYPE_rtx_def]]>>(eq<u32>(enum_to_int<u32,
-// DEFAULT-SAME: reason=promotion>(int_to_enum<@type[[TYPE_rtx_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion,
-// DEFAULT-SAME: fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_rtx_code]]>(bitfield0<unit=0, bytes=0..4,
-// DEFAULT-SAME: bits=0..16>(deref(read<ptr<@type[[TYPE_rtx_def]]>>(field1(deref(ptr_offset<ptr<@type[[TYPE_reload]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_reload]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_reload]]>,
-// DEFAULT-SAME: length=Some(60)>(%[[VALUE_rld]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_r]]))))))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))),
-// DEFAULT-SAME: read<ptr<@type[[TYPE_rtx_def]]>>(field1(deref(ptr_offset<ptr<@type[[TYPE_reload]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_reload]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_reload]]>,
-// DEFAULT-SAME: length=Some(60)>(%[[VALUE_rld]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_r]]))))),
-// DEFAULT-SAME: read<ptr<@type[[TYPE_rtx_def]]>>(field8(deref(ptr_offset<ptr<@type[[TYPE_reload]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_reload]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_reload]]>,
-// DEFAULT-SAME: length=Some(60)>(%[[VALUE_rld]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_r]]))))));
+// DEFAULT-NEXT:                         let %[[VALUE_out:[0-9]+]] out: ptr<@type[[TYPE_rtx_def]]> [storage=automatic] = conditional<ptr<@type[[TYPE_rtx_def]]>>(eq<u32>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_rtx_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_rtx_code]]>(bitfield0<unit=0, bytes=0..4, bits=0..16>(deref(read<ptr<@type[[TYPE_rtx_def]]>>(field1(deref(ptr_offset<ptr<@type[[TYPE_reload]]>, subtract=false, element=@type[[TYPE_reload]], overflow=ub>(array_decay<ptr<@type[[TYPE_reload]]>, length=Some(60)>(%[[VALUE_rld]]), read<i32>(%[[VALUE_r]]))))))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))), read<ptr<@type[[TYPE_rtx_def]]>>(field1(deref(ptr_offset<ptr<@type[[TYPE_reload]]>, subtract=false, element=@type[[TYPE_reload]], overflow=ub>(array_decay<ptr<@type[[TYPE_reload]]>, length=Some(60)>(%[[VALUE_rld]]), read<i32>(%[[VALUE_r]]))))), read<ptr<@type[[TYPE_rtx_def]]>>(field8(deref(ptr_offset<ptr<@type[[TYPE_reload]]>, subtract=false, element=@type[[TYPE_reload]], overflow=ub>(array_decay<ptr<@type[[TYPE_reload]]>, length=Some(60)>(%[[VALUE_rld]]), read<i32>(%[[VALUE_r]]))))));
 // DEFAULT-NEXT:                         let %[[VALUE_nregno:[0-9]+]] nregno: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(read<u32>(field2(deref(ptr_offset<ptr<@type[[TYPE_rtunion_def]]>, subtract=false, element=@type[[TYPE_rtunion_def]], overflow=ub>(array_decay<ptr<@type[[TYPE_rtunion_def]]>, length=Some(1)>(field10(deref(read<ptr<@type[[TYPE_rtx_def]]>>(%[[VALUE_out]])))), const<i32>(0))))));
 // DEFAULT-NEXT:                         if ge<i32>(read<i32>(%[[VALUE_nregno]]), const<i32>(77))
 // DEFAULT-NEXT:                             {
@@ -391,27 +372,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                                 if logical_and<bool>(logical_and<bool>(ne<ptr<@type[[TYPE_rtx_def]]>>(read<ptr<@type[[TYPE_rtx_def]]>>(%[[VALUE_src_reg]]), null<ptr<@type[[TYPE_rtx_def]]>>), eq<u32>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_rtx_code]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_rtx_code]]>(bitfield0<unit=0, bytes=0..4, bits=0..16>(deref(read<ptr<@type[[TYPE_rtx_def]]>>(%[[VALUE_src_reg]]))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))), lt<u32>(read<u32>(field2(deref(ptr_offset<ptr<@type[[TYPE_rtunion_def]]>, subtract=false, element=@type[[TYPE_rtunion_def]], overflow=ub>(array_decay<ptr<@type[[TYPE_rtunion_def]]>, length=Some(1)>(field10(deref(read<ptr<@type[[TYPE_rtx_def]]>>(%[[VALUE_src_reg]])))), const<i32>(0))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(77))))
 // DEFAULT-NEXT:                                     {
 // DEFAULT-NEXT:                                         let %[[VALUE_src_regno:[0-9]+]] src_regno: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(read<u32>(field2(deref(ptr_offset<ptr<@type[[TYPE_rtunion_def]]>, subtract=false, element=@type[[TYPE_rtunion_def]], overflow=ub>(array_decay<ptr<@type[[TYPE_rtunion_def]]>, length=Some(1)>(field10(deref(read<ptr<@type[[TYPE_rtx_def]]>>(%[[VALUE_src_reg]])))), const<i32>(0))))));
-// DEFAULT-NEXT:                                         let %[[VALUE_nr:[0-9]+]] nr: i32 [storage=automatic] = reinterpret<i32, reason=assign,
-// DEFAULT-SAME: fits=unknown>(conditional<u32>(logical_and<bool>(ge<i32>(read<i32>(%[[VALUE_src_regno]]), const<i32>(32)),
-// DEFAULT-SAME: le<i32>(read<i32>(%[[VALUE_src_regno]]), const<i32>(63))), div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32,
-// DEFAULT-SAME: overflow=wrap>(read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<const u32>,
-// DEFAULT-SAME: length=None>(%[[VALUE_mode_size]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32,
-// DEFAULT-SAME: reason=promotion>(read<@type[[TYPE_machine_mode]]>(field4(deref(ptr_offset<ptr<@type[[TYPE_reload]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_reload]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_reload]]>,
-// DEFAULT-SAME: length=Some(60)>(%[[VALUE_rld]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_r]])))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8))), reinterpret<u32, reason=usual_arith,
-// DEFAULT-SAME: fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8))), div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<const u32>,
-// DEFAULT-SAME: length=None>(%[[VALUE_mode_size]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32,
-// DEFAULT-SAME: reason=promotion>(read<@type[[TYPE_machine_mode]]>(field4(deref(ptr_offset<ptr<@type[[TYPE_reload]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_reload]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_reload]]>,
-// DEFAULT-SAME: length=Some(60)>(%[[VALUE_rld]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_r]])))))))))), reinterpret<u32, reason=usual_arith,
-// DEFAULT-SAME: fits=unknown>(conditional<i32>(not<bool>(ne<i32>(and<i32>(read<i32>(%[[VALUE_target_flags]]), const<i32>(32)), const<i32>(0))), const<i32>(4), const<i32>(8)))),
-// DEFAULT-SAME: reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith,
-// DEFAULT-SAME: fits=unknown>(conditional<i32>(not<bool>(ne<i32>(and<i32>(read<i32>(%[[VALUE_target_flags]]), const<i32>(32)), const<i32>(0))), const<i32>(4),
-// DEFAULT-SAME: const<i32>(8))))));
+// DEFAULT-NEXT:                                         let %[[VALUE_nr:[0-9]+]] nr: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(conditional<u32>(logical_and<bool>(ge<i32>(read<i32>(%[[VALUE_src_regno]]), const<i32>(32)), le<i32>(read<i32>(%[[VALUE_src_regno]]), const<i32>(63))), div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<const u32>, length=None>(%[[VALUE_mode_size]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_machine_mode]]>(field4(deref(ptr_offset<ptr<@type[[TYPE_reload]]>, subtract=false, element=@type[[TYPE_reload]], overflow=ub>(array_decay<ptr<@type[[TYPE_reload]]>, length=Some(60)>(%[[VALUE_rld]]), read<i32>(%[[VALUE_r]])))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8))), div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<const u32>, length=None>(%[[VALUE_mode_size]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_machine_mode]]>(field4(deref(ptr_offset<ptr<@type[[TYPE_reload]]>, subtract=false, element=@type[[TYPE_reload]], overflow=ub>(array_decay<ptr<@type[[TYPE_reload]]>, length=Some(60)>(%[[VALUE_rld]]), read<i32>(%[[VALUE_r]])))))))))), reinterpret<u32, reason=usual_arith, fits=unknown>(conditional<i32>(not<bool>(ne<i32>(and<i32>(read<i32>(%[[VALUE_target_flags]]), const<i32>(32)), const<i32>(0))), const<i32>(4), const<i32>(8)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=unknown>(conditional<i32>(not<bool>(ne<i32>(and<i32>(read<i32>(%[[VALUE_target_flags]]), const<i32>(32)), const<i32>(0))), const<i32>(4), const<i32>(8))))));
 // DEFAULT-NEXT:                                         let %[[VALUE_note:[0-9]+]] note: ptr<@type[[TYPE_rtx_def]]> [storage=automatic] = null<ptr<@type[[TYPE_rtx_def]]>>;
 // DEFAULT-NEXT:                                         while %[[VALUE3:[0-9]+]] {
 // DEFAULT-NEXT:                                             let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_nr]]);
@@ -448,31 +409,7 @@ emit_reload_insns (chain)
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                         else
 // DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 let %[[VALUE_num_regs:[0-9]+]] num_regs: i32 [storage=automatic] = reinterpret<i32, reason=assign,
-// DEFAULT-SAME: fits=unknown>(conditional<u32>(logical_and<bool>(ge<i32>(read<i32>(%[[VALUE_nregno]]), const<i32>(32)),
-// DEFAULT-SAME: le<i32>(read<i32>(%[[VALUE_nregno]]), const<i32>(63))), div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32,
-// DEFAULT-SAME: overflow=wrap>(read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<const u32>,
-// DEFAULT-SAME: length=None>(%[[VALUE_mode_size]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32,
-// DEFAULT-SAME: reason=promotion>(int_to_enum<@type[[TYPE_machine_mode]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion,
-// DEFAULT-SAME: fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_machine_mode]]>(bitfield1<unit=0, bytes=0..4,
-// DEFAULT-SAME: bits=16..24>(deref(read<ptr<@type[[TYPE_rtx_def]]>>(field1(deref(ptr_offset<ptr<@type[[TYPE_reload]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_reload]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_reload]]>,
-// DEFAULT-SAME: length=Some(60)>(%[[VALUE_rld]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_r]]))))))))))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8))), reinterpret<u32, reason=usual_arith,
-// DEFAULT-SAME: fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8))), div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<const u32>,
-// DEFAULT-SAME: length=None>(%[[VALUE_mode_size]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32,
-// DEFAULT-SAME: reason=promotion>(int_to_enum<@type[[TYPE_machine_mode]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion,
-// DEFAULT-SAME: fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_machine_mode]]>(bitfield1<unit=0, bytes=0..4,
-// DEFAULT-SAME: bits=16..24>(deref(read<ptr<@type[[TYPE_rtx_def]]>>(field1(deref(ptr_offset<ptr<@type[[TYPE_reload]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE_reload]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE_reload]]>,
-// DEFAULT-SAME: length=Some(60)>(%[[VALUE_rld]]),
-// DEFAULT-SAME: read<i32>(%[[VALUE_r]]))))))))))))))))), reinterpret<u32, reason=usual_arith,
-// DEFAULT-SAME: fits=unknown>(conditional<i32>(not<bool>(ne<i32>(and<i32>(read<i32>(%[[VALUE_target_flags]]), const<i32>(32)), const<i32>(0))), const<i32>(4), const<i32>(8)))),
-// DEFAULT-SAME: reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith,
-// DEFAULT-SAME: fits=unknown>(conditional<i32>(not<bool>(ne<i32>(and<i32>(read<i32>(%[[VALUE_target_flags]]), const<i32>(32)), const<i32>(0))), const<i32>(4),
-// DEFAULT-SAME: const<i32>(8))))));
+// DEFAULT-NEXT:                                 let %[[VALUE_num_regs:[0-9]+]] num_regs: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(conditional<u32>(logical_and<bool>(ge<i32>(read<i32>(%[[VALUE_nregno]]), const<i32>(32)), le<i32>(read<i32>(%[[VALUE_nregno]]), const<i32>(63))), div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<const u32>, length=None>(%[[VALUE_mode_size]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_machine_mode]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_machine_mode]]>(bitfield1<unit=0, bytes=0..4, bits=16..24>(deref(read<ptr<@type[[TYPE_rtx_def]]>>(field1(deref(ptr_offset<ptr<@type[[TYPE_reload]]>, subtract=false, element=@type[[TYPE_reload]], overflow=ub>(array_decay<ptr<@type[[TYPE_reload]]>, length=Some(60)>(%[[VALUE_rld]]), read<i32>(%[[VALUE_r]]))))))))))))))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8))), div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<const u32>, length=None>(%[[VALUE_mode_size]]), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE_machine_mode]], reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_machine_mode]]>(bitfield1<unit=0, bytes=0..4, bits=16..24>(deref(read<ptr<@type[[TYPE_rtx_def]]>>(field1(deref(ptr_offset<ptr<@type[[TYPE_reload]]>, subtract=false, element=@type[[TYPE_reload]], overflow=ub>(array_decay<ptr<@type[[TYPE_reload]]>, length=Some(60)>(%[[VALUE_rld]]), read<i32>(%[[VALUE_r]]))))))))))))))))), reinterpret<u32, reason=usual_arith, fits=unknown>(conditional<i32>(not<bool>(ne<i32>(and<i32>(read<i32>(%[[VALUE_target_flags]]), const<i32>(32)), const<i32>(0))), const<i32>(4), const<i32>(8)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=unknown>(conditional<i32>(not<bool>(ne<i32>(and<i32>(read<i32>(%[[VALUE_target_flags]]), const<i32>(32)), const<i32>(0))), const<i32>(4), const<i32>(8))))));
 // DEFAULT-NEXT:                                 while %[[VALUE21:[0-9]+]] {
 // DEFAULT-NEXT:                                     let %[[VALUE22:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_num_regs]]);
 // DEFAULT-NEXT:                                     let %[[VALUE23:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE22]]), const<i32>(1));

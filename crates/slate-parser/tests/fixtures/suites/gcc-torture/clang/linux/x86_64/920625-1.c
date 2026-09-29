@@ -134,48 +134,8 @@ int main(void) {
 // DEFAULT-NEXT:         va_end(%[[VALUE_args_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ...) -> i32, abi=sysv64(scalar, native_c, native_c, native_c, native_c) -> scalar>(%[[VALUE_va1]], const<i32>(4),
-// DEFAULT-SAME: copy<@type[[TYPE0]],
-// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE0]]>(deref(ptr_offset<ptr<@type[[TYPE0]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE0]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE0]]>,
-// DEFAULT-SAME: length=Some(4)>(%[[VALUE_pts]]), const<i32>(0))))),
-// DEFAULT-SAME: copy<@type[[TYPE0]],
-// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE0]]>(deref(ptr_offset<ptr<@type[[TYPE0]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE0]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE0]]>,
-// DEFAULT-SAME: length=Some(4)>(%[[VALUE_pts]]), const<i32>(1))))),
-// DEFAULT-SAME: copy<@type[[TYPE0]],
-// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE0]]>(deref(ptr_offset<ptr<@type[[TYPE0]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE0]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE0]]>,
-// DEFAULT-SAME: length=Some(4)>(%[[VALUE_pts]]), const<i32>(2))))),
-// DEFAULT-SAME: copy<@type[[TYPE0]],
-// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE0]]>(deref(ptr_offset<ptr<@type[[TYPE0]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE0]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE0]]>,
-// DEFAULT-SAME: length=Some(4)>(%[[VALUE_pts]]), const<i32>(3))))));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ...) -> i32, abi=sysv64(scalar, native_c, native_c, native_c, native_c) -> scalar>(%[[VALUE_va2]], const<i32>(4),
-// DEFAULT-SAME: copy<@type[[TYPE1]],
-// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE1]]>(deref(ptr_offset<ptr<@type[[TYPE1]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE1]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE1]]>,
-// DEFAULT-SAME: length=Some(4)>(%[[VALUE_ipts]]), const<i32>(0))))),
-// DEFAULT-SAME: copy<@type[[TYPE1]],
-// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE1]]>(deref(ptr_offset<ptr<@type[[TYPE1]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE1]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE1]]>,
-// DEFAULT-SAME: length=Some(4)>(%[[VALUE_ipts]]), const<i32>(1))))),
-// DEFAULT-SAME: copy<@type[[TYPE1]],
-// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE1]]>(deref(ptr_offset<ptr<@type[[TYPE1]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE1]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE1]]>,
-// DEFAULT-SAME: length=Some(4)>(%[[VALUE_ipts]]), const<i32>(2))))),
-// DEFAULT-SAME: copy<@type[[TYPE1]],
-// DEFAULT-SAME: reason=vararg>(read<@type[[TYPE1]]>(deref(ptr_offset<ptr<@type[[TYPE1]]>, subtract=false,
-// DEFAULT-SAME: element=@type[[TYPE1]],
-// DEFAULT-SAME: overflow=ub>(array_decay<ptr<@type[[TYPE1]]>,
-// DEFAULT-SAME: length=Some(4)>(%[[VALUE_ipts]]), const<i32>(3))))));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, ...) -> i32, abi=sysv64(scalar, native_c, native_c, native_c, native_c) -> scalar>(%[[VALUE_va1]], const<i32>(4), copy<@type[[TYPE0]], reason=vararg>(read<@type[[TYPE0]]>(deref(ptr_offset<ptr<@type[[TYPE0]]>, subtract=false, element=@type[[TYPE0]], overflow=ub>(array_decay<ptr<@type[[TYPE0]]>, length=Some(4)>(%[[VALUE_pts]]), const<i32>(0))))), copy<@type[[TYPE0]], reason=vararg>(read<@type[[TYPE0]]>(deref(ptr_offset<ptr<@type[[TYPE0]]>, subtract=false, element=@type[[TYPE0]], overflow=ub>(array_decay<ptr<@type[[TYPE0]]>, length=Some(4)>(%[[VALUE_pts]]), const<i32>(1))))), copy<@type[[TYPE0]], reason=vararg>(read<@type[[TYPE0]]>(deref(ptr_offset<ptr<@type[[TYPE0]]>, subtract=false, element=@type[[TYPE0]], overflow=ub>(array_decay<ptr<@type[[TYPE0]]>, length=Some(4)>(%[[VALUE_pts]]), const<i32>(2))))), copy<@type[[TYPE0]], reason=vararg>(read<@type[[TYPE0]]>(deref(ptr_offset<ptr<@type[[TYPE0]]>, subtract=false, element=@type[[TYPE0]], overflow=ub>(array_decay<ptr<@type[[TYPE0]]>, length=Some(4)>(%[[VALUE_pts]]), const<i32>(3))))));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, ...) -> i32, abi=sysv64(scalar, native_c, native_c, native_c, native_c) -> scalar>(%[[VALUE_va2]], const<i32>(4), copy<@type[[TYPE1]], reason=vararg>(read<@type[[TYPE1]]>(deref(ptr_offset<ptr<@type[[TYPE1]]>, subtract=false, element=@type[[TYPE1]], overflow=ub>(array_decay<ptr<@type[[TYPE1]]>, length=Some(4)>(%[[VALUE_ipts]]), const<i32>(0))))), copy<@type[[TYPE1]], reason=vararg>(read<@type[[TYPE1]]>(deref(ptr_offset<ptr<@type[[TYPE1]]>, subtract=false, element=@type[[TYPE1]], overflow=ub>(array_decay<ptr<@type[[TYPE1]]>, length=Some(4)>(%[[VALUE_ipts]]), const<i32>(1))))), copy<@type[[TYPE1]], reason=vararg>(read<@type[[TYPE1]]>(deref(ptr_offset<ptr<@type[[TYPE1]]>, subtract=false, element=@type[[TYPE1]], overflow=ub>(array_decay<ptr<@type[[TYPE1]]>, length=Some(4)>(%[[VALUE_ipts]]), const<i32>(2))))), copy<@type[[TYPE1]], reason=vararg>(read<@type[[TYPE1]]>(deref(ptr_offset<ptr<@type[[TYPE1]]>, subtract=false, element=@type[[TYPE1]], overflow=ub>(array_decay<ptr<@type[[TYPE1]]>, length=Some(4)>(%[[VALUE_ipts]]), const<i32>(3))))));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
