@@ -1211,7 +1211,7 @@ impl Checker<'_> {
 
     fn cast(&mut self, cast: &Expr, ty: &TypeName, value: &Expr) {
         let provisional = std::mem::replace(&mut self.types.provisional_extents, true);
-        let to = self.types.resolve(&ty.specifiers, &ty.declarator);
+        let to = self.types.resolve_type_name(ty);
         self.types.provisional_extents = provisional;
         let (Ok(to), Ok(from)) = (to, self.types.operand_type(value)) else {
             return;
@@ -1309,7 +1309,18 @@ impl Checker<'_> {
         self.specifier(&ty.specifiers.ty);
         self.declarator(&ty.declarator);
         self.tag(&ty.specifiers.ty);
-        let _ = self.types.resolve(&ty.specifiers, &ty.declarator);
+        let _ = self.types.resolve_type_name(ty);
+        if self.types.compiler_flavor() != CompilerFlavor::Gcc {
+            for attribute in &ty.specifiers.attributes {
+                if matches!(attribute.value, Attribute::Aligned(_)) {
+                    self.types.warn(
+                        Warning::IgnoredAttributes,
+                        "'aligned' attribute ignored when parsing type",
+                        attribute,
+                    );
+                }
+            }
+        }
     }
 }
 

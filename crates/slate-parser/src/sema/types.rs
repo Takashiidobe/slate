@@ -599,7 +599,7 @@ impl TypeResolver {
                 )
             }
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
-                let resolved = self.resolve(&ty.specifiers, &ty.declarator)?;
+                let resolved = self.resolve_type_name(ty)?;
                 let atomic = self.ctypes.quals(resolved).is_atomic;
                 let ty = self.ir_type(resolved);
                 let layout = self
@@ -622,7 +622,7 @@ impl TypeResolver {
                 )
             }
             ExprKind::OffsetOf { ty, member } => {
-                let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
+                let ty = self.resolve_type_name(ty)?;
                 let ty = self.object_type(ty, "void offsetof")?;
                 let (_, n) = self.offsetof_member(ty, member)?;
                 (
@@ -679,7 +679,7 @@ impl TypeResolver {
                 return self.constant_value_with_context(context, selected);
             }
             ExprKind::Cast { ty, value } => {
-                let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
+                let ty = self.resolve_type_name(ty)?;
                 self.object_type(ty, "void constant cast")?;
                 let value = self.constant_value_with_context(context, value)?;
                 let mut operand = self.arithmetic_conversion(
@@ -762,7 +762,7 @@ impl TypeResolver {
     ) -> Result<&'e crate::ast::Expr, ResolveError> {
         use crate::ast::GenericControl;
         let controlling = match controlling {
-            GenericControl::Type { ty } => self.resolve(&ty.specifiers, &ty.declarator)?,
+            GenericControl::Type { ty } => self.resolve_type_name(ty)?,
             GenericControl::Expr(expr) => {
                 let ty = self.expression_type(expr)?;
                 self.ctypes.lvalue_conversion(ty)
@@ -784,7 +784,7 @@ impl TypeResolver {
             match association {
                 GenericAssociation::Default(value) => fallback = Some(value),
                 GenericAssociation::Type { ty, value } => {
-                    let ty = self.resolve(&ty.specifiers, &ty.declarator)?;
+                    let ty = self.resolve_type_name(ty)?;
                     if self.ctypes.compatible(ty, controlling) {
                         if selected.is_some() {
                             return Err(ResolveError::Rejected("ambiguous generic selection"));
@@ -1312,6 +1312,27 @@ impl TypeResolver {
         })
     }
 
+    pub fn resolve_type_name(&mut self, name: &TypeName) -> Result<QualType, ResolveError> {
+        let resolved = self.resolve(&name.specifiers, &name.declarator)?;
+        if self.dialect.flavor() != CompilerFlavor::Gcc {
+            return Ok(resolved);
+        }
+        let aligned = name
+            .specifiers
+            .attributes
+            .iter()
+            .filter(|attribute| matches!(attribute.value, Attribute::Aligned(_)));
+        let Some(alignment) = requested_alignment(self, aligned)? else {
+            return Ok(resolved);
+        };
+        let spelling = self.ctypes.spelling(resolved, &self.definitions);
+        Ok(self.ctypes.qual(CTypeKind::Typedef {
+            name: spelling,
+            underlying: resolved,
+            alignment: Some(alignment),
+        }))
+    }
+
     fn base(&mut self, specifier: &TypeSpecifier) -> Result<QualType, ResolveError> {
         let kind = match specifier {
             TypeSpecifier::Void => CTypeKind::Void,
@@ -1555,7 +1576,7 @@ impl TypeResolver {
 
     fn typeof_operand(&mut self, operand: &TypeOfOperand) -> Result<QualType, ResolveError> {
         match operand {
-            TypeOfOperand::Type(ty) => self.resolve(&ty.specifiers, &ty.declarator),
+            TypeOfOperand::Type(ty) => self.resolve_type_name(ty),
             TypeOfOperand::Expression(expr) => {
                 if let Some(resolved) = self.typeof_operands.get(&expr.id) {
                     return Ok(*resolved);
@@ -2289,7 +2310,7 @@ impl TypeResolver {
     }
 
     fn compared_type(&mut self, name: &TypeName) -> Result<QualType, ResolveError> {
-        let resolved = self.resolve(&name.specifiers, &name.declarator)?;
+        let resolved = self.resolve_type_name(name)?;
         let atomic = Qualifiers {
             is_atomic: self.ctypes.quals(resolved).is_atomic,
             ..Qualifiers::NONE
@@ -3093,7 +3114,7 @@ pub(super) fn requested_alignment<'a>(
                     .map_err(|_| ResolveError::Rejected("invalid alignment"))?
             }
             Attribute::AlignAs(AlignAsOperand::Type { ty }) => {
-                let resolved = resolver.resolve(&ty.specifiers, &ty.declarator)?;
+                let resolved = resolver.resolve_type_name(ty)?;
                 u64::from(
                     resolver
                         .storage(resolver.object_type(resolved, "void alignment type")?)?

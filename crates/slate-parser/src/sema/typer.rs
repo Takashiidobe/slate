@@ -104,7 +104,7 @@ impl TypeResolver {
 
     pub(super) fn type_name(&mut self, ty: &TypeName) -> Result<QualType, ResolveError> {
         let provisional = std::mem::replace(&mut self.provisional_extents, true);
-        let resolved = self.resolve(&ty.specifiers, &ty.declarator);
+        let resolved = self.resolve_type_name(ty);
         self.provisional_extents = provisional;
         resolved
     }

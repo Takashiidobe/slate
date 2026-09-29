@@ -178,6 +178,14 @@ The shown type is concrete and target-resolved; the C type is metadata
   arrays inherit it from their element, `_Atomic` drops it, and an array
   whose element size isn't a multiple of it is rejected. Access alignment
   through pointers isn't modeled (loads and stores carry none).
+- `aligned` in a type name's specifiers (`_Alignof(__attribute__((aligned(16)))
+  char)`, casts, `sizeof`, `typeof`, `_Generic`, compound literals) is
+  flavor-dependent. gcc makes the whole type name an anonymous aligned
+  typedef (`TypeResolver::resolve_type_name`), pointer and array
+  declarators included: `_Alignof(__attribute__((aligned(16))) char *)` is
+  16, and it may lower alignment (`aligned(2) int` is 2). clang and msvc
+  ignore it with `-Wignored-attributes`, emitted once per attribute by the
+  checker. Declarator-position `aligned` in a type name is not handled.
 - x86-64 psABI large arrays (Linux, Darwin, Windows): a declared array
   object of at least 16 bytes is 16-aligned (globals, `extern`s, static and
   automatic locals, inferred lengths). A declaration-site `aligned` or

@@ -1217,16 +1217,17 @@ impl Lowerer {
                 } else {
                     StorageDuration::Static
                 };
-                let alignment = match super::types::requested_alignment(
-                    &mut self.types,
-                    &ty_name.specifiers.attributes,
-                )? {
-                    Some(requested) => {
+                let alignas = ty_name.specifiers.attributes.iter().filter(|attribute| {
+                    matches!(attribute.value, crate::ast::Attribute::AlignAs(_))
+                });
+                let requested = super::types::requested_alignment(&mut self.types, alignas)?;
+                let alignment =
+                    if requested.is_some() || self.types.ctypes.typedef_alignment(c).is_some() {
                         self.types
-                            .object_alignment_override(&ty, Some(c), Some(requested))?
-                    }
-                    None => None,
-                };
+                            .object_alignment_override(&ty, Some(c), requested)?
+                    } else {
+                        None
+                    };
                 Ok(Lvalue {
                     c,
                     place: Place {

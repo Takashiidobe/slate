@@ -189,6 +189,7 @@ Fixtures: `sema/ir_attribute_applicability.c`,
 | `Lowerer::record_function` | `gnu_inline`, `always_inline`, `noinline`, `noreturn`, `naked`, `const`, `pure`, `malloc(f[, n])` | `FunctionSemantics`; every attribute is also kept |
 | `render_c_attributes` | the kept attributes, integer constant arguments folded | `c_attributes` metadata |
 | `types::requested_alignment` | `aligned`, `_Alignas` | object request → `[align=N]` ([object properties](ir/declarations.md#object-properties)) |
+| `TypeResolver::resolve_type_name` | `aligned` in a type name's specifiers (gcc only; clang and msvc warn and ignore) | an anonymous aligned `Typedef` ([types](ir/types.md#alignment)) |
 | `types::field_request` | `packed`, `aligned` on field and its declaration | record layout |
 | record layout (`define_tag`) | `packed`, `ms_struct`, `gcc_struct`, `aligned` on the tag, plus `#pragma pack` / `ms_struct` | offsets and alignment |
 | entity request | `common`, `nocommon` | `[common]` |

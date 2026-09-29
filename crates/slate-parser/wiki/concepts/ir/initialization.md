@@ -87,8 +87,9 @@ The richer three-view design is in [open design](open-design.md#string-literal-v
   `array<i32, 2>`). Storage is static outside a function, automatic inside.
 - `alignment` comes from `_Alignas` in the type name (DR 444, accepted by
   gcc; clang rejects it, slate accepts it in every flavor). It is resolved
-  like a local's `_Alignas` and is `None` when it equals the natural
-  alignment. Like declarations, a request below the natural alignment is
+  like a local's `_Alignas` from the `_Alignas` request and the literal's
+  type, so an aligned typedef (or, under gcc, an `aligned` type name)
+  also aligns it; it is `None` when it equals the natural alignment. Like declarations, a request below the natural alignment is
   not rejected. Casts, `sizeof`, and `_Alignof` still reject a type name
   that starts with `_Alignas`, as gcc and clang do.
 - `PlaceKind::Temporary` materializes a record rvalue for member access

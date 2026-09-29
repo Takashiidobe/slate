@@ -44,7 +44,8 @@ impl Lowerer {
     }
 
     pub(super) fn resolve_type_name(&mut self, ty: &TypeName) -> Result<QualType, ResolveError> {
-        self.resolve_type(&ty.specifiers, &ty.declarator)
+        self.prepare_typeof(&ty.specifiers, &ty.declarator)?;
+        self.types.resolve_type_name(ty)
     }
 
     pub(super) fn prepare_typeof(
