@@ -44,19 +44,19 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 a: u32 [storage=static] = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 b: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %4 c: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %5 d: u32 [storage=automatic];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: u32 [storage=static] = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: u32 [storage=automatic];
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))), gt<i32>(reinterpret<i32, reason=explicit, fits=unknown>(const<u32>(3352447838)), const<i32>(0)))
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         write<u32>(%4, const<u32>(3352447838));
-// DEFAULT-NEXT:         write<u32>(%5, or<u32>(read<u32>(%1), reinterpret<u32, reason=usual_arith, fits=unknown>(neg<i32, overflow=ub>(const<i32>(2)))));
-// DEFAULT-NEXT:         write<u32>(%3, conditional<u32>(eq<u32>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))), read<u32>(%4), rem<u32, by_zero=ub>(read<u32>(%4), read<u32>(%5))));
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%3), read<u32>(%4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_c]], const<u32>(3352447838));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_d]], or<u32>(read<u32>(%[[VALUE_a]]), reinterpret<u32, reason=usual_arith, fits=unknown>(neg<i32, overflow=ub>(const<i32>(2)))));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_b]], conditional<u32>(eq<u32>(read<u32>(%[[VALUE_d]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))), read<u32>(%[[VALUE_c]]), rem<u32, by_zero=ub>(read<u32>(%[[VALUE_c]]), read<u32>(%[[VALUE_d]]))));
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_b]]), read<u32>(%[[VALUE_c]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -54,31 +54,31 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = union {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 member3: u8;
 // DEFAULT-NEXT:         field1 member4: i16;
 // DEFAULT-NEXT:         field2 member5: u32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 0]];
-// DEFAULT-NEXT:     type @type1 UNI02 = @type0;
-// DEFAULT-NEXT:     type @type2 srt_dat_t = struct {
-// DEFAULT-NEXT:         field0 un2: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_UNI02:[0-9]+]] UNI02 = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE_srt_dat_t:[0-9]+]] srt_dat_t = struct {
+// DEFAULT-NEXT:         field0 un2: @type[[TYPE0]];
 // DEFAULT-NEXT:         field1 member1: u64;
 // DEFAULT-NEXT:         field2 member2: i16;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     global %3 exsrt1: @type2 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @extern_test(%5 arg1: @type2) -> void [linkage=external] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7: u8 [synthetic] = read<u8>(field0(field0(%5)));
-// DEFAULT-NEXT:         let %8: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%7))), const<i32>(1))));
-// DEFAULT-NEXT:         write<u8>(field0(field0(%5)), read<u8>(%8));
-// DEFAULT-NEXT:         let %9: u64 [synthetic] = read<u64>(field1(%5));
-// DEFAULT-NEXT:         let %10: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%9), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u64>(field1(%5), read<u64>(%10));
-// DEFAULT-NEXT:         let %11: i16 [synthetic] = read<i16>(field2(%5));
-// DEFAULT-NEXT:         let %12: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%11)), const<i32>(1)));
-// DEFAULT-NEXT:         write<i16>(field2(%5), read<i16>(%12));
+// DEFAULT-NEXT:     global %[[VALUE_exsrt1:[0-9]+]] exsrt1: @type[[TYPE_srt_dat_t]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_extern_test:[0-9]+]] @extern_test(%[[VALUE_arg1:[0-9]+]] arg1: @type[[TYPE_srt_dat_t]]) -> void [linkage=external] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u8 [synthetic] = read<u8>(field0(field0(%[[VALUE_arg1]])));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE0]]))), const<i32>(1))));
+// DEFAULT-NEXT:         write<u8>(field0(field0(%[[VALUE_arg1]])), read<u8>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = read<u64>(field1(%[[VALUE_arg1]]));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE2]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u64>(field1(%[[VALUE_arg1]]), read<u64>(%[[VALUE3]]));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i16 [synthetic] = read<i16>(field2(%[[VALUE_arg1]]));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE4]])), const<i32>(1)));
+// DEFAULT-NEXT:         write<i16>(field2(%[[VALUE_arg1]]), read<i16>(%[[VALUE5]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(@type2) -> void, abi=sysv64(native_c) -> void>(%4, copy<@type2, reason=arg>(read<@type2>(%3)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_srt_dat_t]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_extern_test]], copy<@type[[TYPE_srt_dat_t]], reason=arg>(read<@type[[TYPE_srt_dat_t]]>(%[[VALUE_exsrt1]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

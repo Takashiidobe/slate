@@ -64,47 +64,47 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = enum : u32 {
-// DEFAULT-NEXT:         %0 memory_order_relaxed = const<i32>(0);
-// DEFAULT-NEXT:         %1 memory_order_consume = const<i32>(1);
-// DEFAULT-NEXT:         %2 memory_order_acquire = const<i32>(2);
-// DEFAULT-NEXT:         %3 memory_order_release = const<i32>(3);
-// DEFAULT-NEXT:         %4 memory_order_acq_rel = const<i32>(4);
-// DEFAULT-NEXT:         %5 memory_order_seq_cst = const<i32>(5);
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_memory_order_relaxed:[0-9]+]] memory_order_relaxed = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_consume:[0-9]+]] memory_order_consume = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_acquire:[0-9]+]] memory_order_acquire = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_release:[0-9]+]] memory_order_release = const<i32>(3);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_acq_rel:[0-9]+]] memory_order_acq_rel = const<i32>(4);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_seq_cst:[0-9]+]] memory_order_seq_cst = const<i32>(5);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 memory_order = @type0;
-// DEFAULT-NEXT:     type @type2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_memory_order:[0-9]+]] memory_order = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 __val: bool;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 atomic_flag = @type2;
-// DEFAULT-NEXT:     global %11 a: atomic @type2 [storage=static] = aggregate<@type2, zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(0), const<i32>(0))) [linkage=external];
-// DEFAULT-NEXT:     fn %10 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %12 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %13 b: i32 [storage=automatic];
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_flag:[0-9]+]] atomic_flag = @type[[TYPE1]];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: atomic @type[[TYPE1]] [storage=static] = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(0), const<i32>(0))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic];
 // DEFAULT-NEXT:         if not<bool>(const<bool>(true))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
-// DEFAULT-NEXT:         let %14: @type2 [synthetic] = update<@type2, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic @type2>>(%11)), const<@type2>(1));
-// DEFAULT-NEXT:         if ne<@type2>(read<@type2>(%14), const<@type2>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
-// DEFAULT-NEXT:         write<@type2, atomic=relaxed>(deref(addr_of<ptr<atomic @type2>>(%11)), const<@type2>(0));
-// DEFAULT-NEXT:         let %15: @type2 [synthetic] = update<@type2, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic @type2>>(%11)), const<@type2>(1));
-// DEFAULT-NEXT:         if ne<@type2>(read<@type2>(%15), const<@type2>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
-// DEFAULT-NEXT:         write<@type2, atomic=seq_cst>(deref(addr_of<ptr<atomic @type2>>(%11)), const<@type2>(0));
-// DEFAULT-NEXT:         let %16: @type2 [synthetic] = update<@type2, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic @type2>>(%11)), const<@type2>(1));
-// DEFAULT-NEXT:         write<i32>(%13, from_bool<i32, reason=assign>(ne<@type2>(read<@type2>(%16), const<@type2>(0))));
-// DEFAULT-NEXT:         let %17: @type2 [synthetic] = update<@type2, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic @type2>>(%11)), const<@type2>(1));
-// DEFAULT-NEXT:         if logical_or<bool>(not<bool>(ne<@type2>(read<@type2>(%17), const<@type2>(0))), ne<i32>(read<i32>(%13), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
-// DEFAULT-NEXT:         let %18: @type2 [synthetic] = update<@type2, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic @type2>>(%11)), const<@type2>(1));
-// DEFAULT-NEXT:         write<i32>(%13, from_bool<i32, reason=assign>(ne<@type2>(read<@type2>(%18), const<@type2>(0))));
-// DEFAULT-NEXT:         let %19: @type2 [synthetic] = update<@type2, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic @type2>>(%11)), const<@type2>(1));
-// DEFAULT-NEXT:         if logical_or<bool>(not<bool>(ne<@type2>(read<@type2>(%19), const<@type2>(0))), ne<i32>(read<i32>(%13), const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
-// DEFAULT-NEXT:         write<@type2, atomic=seq_cst>(deref(addr_of<ptr<atomic @type2>>(%11)), const<@type2>(0));
-// DEFAULT-NEXT:         let %20: @type2 [synthetic] = update<@type2, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic @type2>>(%11)), const<@type2>(1));
-// DEFAULT-NEXT:         if ne<@type2>(read<@type2>(%20), const<@type2>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: @type[[TYPE1]] [synthetic] = update<@type[[TYPE1]], result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic @type[[TYPE1]]>>(%[[VALUE_a]])), const<@type[[TYPE1]]>(1));
+// DEFAULT-NEXT:         if ne<@type[[TYPE1]]>(read<@type[[TYPE1]]>(%[[VALUE0]]), const<@type[[TYPE1]]>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<@type[[TYPE1]], atomic=relaxed>(deref(addr_of<ptr<atomic @type[[TYPE1]]>>(%[[VALUE_a]])), const<@type[[TYPE1]]>(0));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: @type[[TYPE1]] [synthetic] = update<@type[[TYPE1]], result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic @type[[TYPE1]]>>(%[[VALUE_a]])), const<@type[[TYPE1]]>(1));
+// DEFAULT-NEXT:         if ne<@type[[TYPE1]]>(read<@type[[TYPE1]]>(%[[VALUE1]]), const<@type[[TYPE1]]>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<@type[[TYPE1]], atomic=seq_cst>(deref(addr_of<ptr<atomic @type[[TYPE1]]>>(%[[VALUE_a]])), const<@type[[TYPE1]]>(0));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: @type[[TYPE1]] [synthetic] = update<@type[[TYPE1]], result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic @type[[TYPE1]]>>(%[[VALUE_a]])), const<@type[[TYPE1]]>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], from_bool<i32, reason=assign>(ne<@type[[TYPE1]]>(read<@type[[TYPE1]]>(%[[VALUE2]]), const<@type[[TYPE1]]>(0))));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: @type[[TYPE1]] [synthetic] = update<@type[[TYPE1]], result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic @type[[TYPE1]]>>(%[[VALUE_a]])), const<@type[[TYPE1]]>(1));
+// DEFAULT-NEXT:         if logical_or<bool>(not<bool>(ne<@type[[TYPE1]]>(read<@type[[TYPE1]]>(%[[VALUE3]]), const<@type[[TYPE1]]>(0))), ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: @type[[TYPE1]] [synthetic] = update<@type[[TYPE1]], result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic @type[[TYPE1]]>>(%[[VALUE_a]])), const<@type[[TYPE1]]>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], from_bool<i32, reason=assign>(ne<@type[[TYPE1]]>(read<@type[[TYPE1]]>(%[[VALUE4]]), const<@type[[TYPE1]]>(0))));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: @type[[TYPE1]] [synthetic] = update<@type[[TYPE1]], result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic @type[[TYPE1]]>>(%[[VALUE_a]])), const<@type[[TYPE1]]>(1));
+// DEFAULT-NEXT:         if logical_or<bool>(not<bool>(ne<@type[[TYPE1]]>(read<@type[[TYPE1]]>(%[[VALUE5]]), const<@type[[TYPE1]]>(0))), ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<@type[[TYPE1]], atomic=seq_cst>(deref(addr_of<ptr<atomic @type[[TYPE1]]>>(%[[VALUE_a]])), const<@type[[TYPE1]]>(0));
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: @type[[TYPE1]] [synthetic] = update<@type[[TYPE1]], result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic @type[[TYPE1]]>>(%[[VALUE_a]])), const<@type[[TYPE1]]>(1));
+// DEFAULT-NEXT:         if ne<@type[[TYPE1]]>(read<@type[[TYPE1]]>(%[[VALUE6]]), const<@type[[TYPE1]]>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

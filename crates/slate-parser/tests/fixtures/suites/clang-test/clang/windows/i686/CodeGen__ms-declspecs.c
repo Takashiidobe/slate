@@ -51,30 +51,30 @@ void noalias_caller(int *x) { noalias_callee(x); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 x: i8;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 = union {
-// DEFAULT-NEXT:         field0 s: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
+// DEFAULT-NEXT:         field0 s: @type[[TYPE_S]];
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0]];
-// DEFAULT-NEXT:     global %0 x1: i32 [storage=static] = const<i32>(1) [linkage=external] [selectany];
-// DEFAULT-NEXT:     global %1 x2: i32 [storage=static] [const] = const<i32>(2) [linkage=external] [selectany];
-// DEFAULT-NEXT:     global %2 x3: i32 [storage=static] [linkage=external] [selectany];
-// DEFAULT-NEXT:     extern %3 x4: i32 [storage=static] [linkage=external] [selectany];
-// DEFAULT-NEXT:     global %6 u: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %7 @t3() -> void [linkage=external] [naked] [fallthrough=ub] {
+// DEFAULT-NEXT:     global %[[VALUE_x1:[0-9]+]] x1: i32 [storage=static] = const<i32>(1) [linkage=external] [selectany];
+// DEFAULT-NEXT:     global %[[VALUE_x2:[0-9]+]] x2: i32 [storage=static] [const] = const<i32>(2) [linkage=external] [selectany];
+// DEFAULT-NEXT:     global %[[VALUE_x3:[0-9]+]] x3: i32 [storage=static] [linkage=external] [selectany];
+// DEFAULT-NEXT:     extern %[[VALUE_x4:[0-9]+]] x4: i32 [storage=static] [linkage=external] [selectany];
+// DEFAULT-NEXT:     global %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_t3:[0-9]+]] @t3() -> void [linkage=external] [naked] [fallthrough=ub] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @t22() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_t22:[0-9]+]] @t22() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @t2() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_t2:[0-9]+]] @t2() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @f20_t() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %11 @f20() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:     fn %[[VALUE_f20_t:[0-9]+]] @f20_t() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_f20:[0-9]+]] @f20() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_f20_t]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @noalias_callee(%16 x: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %14 @noalias_caller(%15 x: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%13, read<ptr<i32>>(%15));
+// DEFAULT-NEXT:     fn %[[VALUE_noalias_callee:[0-9]+]] @noalias_callee(%[[VALUE_x:[0-9]+]] x: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_noalias_caller:[0-9]+]] @noalias_caller(%[[VALUE_x_2:[0-9]+]] x: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_noalias_callee]], read<ptr<i32>>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

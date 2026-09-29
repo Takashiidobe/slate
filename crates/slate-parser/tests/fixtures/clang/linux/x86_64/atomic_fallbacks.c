@@ -45,34 +45,34 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 memory_order = enum : u32 {
-// DEFAULT-NEXT:         %0 memory_order_relaxed = const<i32>(0);
-// DEFAULT-NEXT:         %1 memory_order_consume = const<i32>(1);
-// DEFAULT-NEXT:         %2 memory_order_acquire = const<i32>(2);
-// DEFAULT-NEXT:         %3 memory_order_release = const<i32>(3);
-// DEFAULT-NEXT:         %4 memory_order_acq_rel = const<i32>(4);
-// DEFAULT-NEXT:         %5 memory_order_seq_cst = const<i32>(5);
+// DEFAULT-NEXT:     type @type[[TYPE_memory_order:[0-9]+]] memory_order = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_memory_order_relaxed:[0-9]+]] memory_order_relaxed = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_consume:[0-9]+]] memory_order_consume = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_acquire:[0-9]+]] memory_order_acquire = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_release:[0-9]+]] memory_order_release = const<i32>(3);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_acq_rel:[0-9]+]] memory_order_acq_rel = const<i32>(4);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_seq_cst:[0-9]+]] memory_order_seq_cst = const<i32>(5);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 memory_order = @type0;
-// DEFAULT-NEXT:     global %21 .str21: array<i8, 30> [storage=static] = code_units<array<i8, 30>>([37, 46, 50, 102, 32, 37, 46, 50, 102, 32, 37, 116, 100, 32, 37, 116, 100, 32, 37, 100, 32, 37, 116, 100, 32, 37, 116, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %9 @printf(%20 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %11 f: atomic f32 [storage=automatic] = const<f32>(1.5);
-// DEFAULT-NEXT:         let %12 old_f: f32 [storage=automatic];
-// DEFAULT-NEXT:         let %22: f32 [synthetic] = update<f32, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic f32>>(%11)), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(old<f32>, const<f32>(2.25)));
-// DEFAULT-NEXT:         write<f32>(%12, read<f32>(%22));
-// DEFAULT-NEXT:         let %13 now_f: f32 [storage=automatic] = read<f32, atomic=seq_cst>(deref(addr_of<ptr<atomic f32>>(%11)));
-// DEFAULT-NEXT:         let %14 values: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(10), index1 = const<i32>(20), index2 = const<i32>(30), index3 = const<i32>(40));
-// DEFAULT-NEXT:         let %15 p: atomic ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(4)>(%14);
-// DEFAULT-NEXT:         let %16 old_p: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         let %23: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic ptr<i32>>>(%15)), ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=wrap>(old<ptr<i32>>, const<i32>(2)));
-// DEFAULT-NEXT:         write<ptr<i32>>(%16, read<ptr<i32>>(%23));
-// DEFAULT-NEXT:         let %17 now_p: ptr<i32> [storage=automatic] = read<ptr<i32>, atomic=seq_cst>(deref(addr_of<ptr<atomic ptr<i32>>>(%15)));
-// DEFAULT-NEXT:         let %18 old_x: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         let %24: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=release>(deref(addr_of<ptr<atomic ptr<i32>>>(%15)), ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%14), const<i32>(1)));
-// DEFAULT-NEXT:         write<ptr<i32>>(%18, read<ptr<i32>>(%24));
-// DEFAULT-NEXT:         let %19 now_x: ptr<i32> [storage=automatic] = read<ptr<i32>, atomic=seq_cst>(deref(addr_of<ptr<atomic ptr<i32>>>(%15)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%9, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%21)), float_widen<f64, reason=vararg>(read<f32>(%12)), float_widen<f64, reason=vararg>(read<f32>(%13)), ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(%16), array_decay<ptr<i32>, length=Some(4)>(%14)), ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(%17), array_decay<ptr<i32>, length=Some(4)>(%14)), read<i32>(deref(read<ptr<i32>>(%17))), ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(%18), array_decay<ptr<i32>, length=Some(4)>(%14)), ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(%19), array_decay<ptr<i32>, length=Some(4)>(%14)));
+// DEFAULT-NEXT:     type @type[[TYPE_memory_order_2:[0-9]+]] memory_order = @type[[TYPE_memory_order]];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 30> [storage=static] = code_units<array<i8, 30>>([37, 46, 50, 102, 32, 37, 46, 50, 102, 32, 37, 116, 100, 32, 37, 116, 100, 32, 37, 100, 32, 37, 116, 100, 32, 37, 116, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: atomic f32 [storage=automatic] = const<f32>(1.5);
+// DEFAULT-NEXT:         let %[[VALUE_old_f:[0-9]+]] old_f: f32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: f32 [synthetic] = update<f32, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic f32>>(%[[VALUE_f]])), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(old<f32>, const<f32>(2.25)));
+// DEFAULT-NEXT:         write<f32>(%[[VALUE_old_f]], read<f32>(%[[VALUE0]]));
+// DEFAULT-NEXT:         let %[[VALUE_now_f:[0-9]+]] now_f: f32 [storage=automatic] = read<f32, atomic=seq_cst>(deref(addr_of<ptr<atomic f32>>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         let %[[VALUE_values:[0-9]+]] values: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(10), index1 = const<i32>(20), index2 = const<i32>(30), index3 = const<i32>(40));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: atomic ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values]]);
+// DEFAULT-NEXT:         let %[[VALUE_old_p:[0-9]+]] old_p: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic ptr<i32>>>(%[[VALUE_p]])), ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=wrap>(old<ptr<i32>>, const<i32>(2)));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_old_p]], read<ptr<i32>>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE_now_p:[0-9]+]] now_p: ptr<i32> [storage=automatic] = read<ptr<i32>, atomic=seq_cst>(deref(addr_of<ptr<atomic ptr<i32>>>(%[[VALUE_p]])));
+// DEFAULT-NEXT:         let %[[VALUE_old_x:[0-9]+]] old_x: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=release>(deref(addr_of<ptr<atomic ptr<i32>>>(%[[VALUE_p]])), ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values]]), const<i32>(1)));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_old_x]], read<ptr<i32>>(%[[VALUE2]]));
+// DEFAULT-NEXT:         let %[[VALUE_now_x:[0-9]+]] now_x: ptr<i32> [storage=automatic] = read<ptr<i32>, atomic=seq_cst>(deref(addr_of<ptr<atomic ptr<i32>>>(%[[VALUE_p]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%[[VALUE_str]])), float_widen<f64, reason=vararg>(read<f32>(%[[VALUE_old_f]])), float_widen<f64, reason=vararg>(read<f32>(%[[VALUE_now_f]])), ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(%[[VALUE_old_p]]), array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values]])), ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(%[[VALUE_now_p]]), array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values]])), read<i32>(deref(read<ptr<i32>>(%[[VALUE_now_p]]))), ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(%[[VALUE_old_x]]), array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values]])), ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(%[[VALUE_now_x]]), array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

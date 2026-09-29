@@ -31,15 +31,15 @@ void pointer_width_cast(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 g: i32 [storage=static] [linkage=external];
-// IR-NEXT:     fn %1 @pointer_width_cast() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:     global %[[VALUE_g:[0-9]+]] g: i32 [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_pointer_width_cast:[0-9]+]] @pointer_width_cast() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm "# %0" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0;
-// IR-NEXT:             in 0 "i" [imm | sym] -> sym width 32 sym<offset=0>(%0);
+// IR-NEXT:             in 0 "i" [imm | sym] -> sym width 32 sym<offset=0>(%[[VALUE_g]]);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0" [dialect=att] [options=nostack] [alternative=none] {
 // IR-NEXT:             template: "# " %0;
-// IR-NEXT:             in 0 "i" [imm | sym] width 16 truncate<i16, reason=explicit, fits=unknown>(ptr_to_int<i32, reason=explicit>(addr_of<ptr<i32>>(%0)));
+// IR-NEXT:             in 0 "i" [imm | sym] width 16 truncate<i16, reason=explicit, fits=unknown>(ptr_to_int<i32, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_g]])));
 // IR-NEXT:             rejected: 0 (operand 0: not-constant);
 // IR-NEXT:         }
 // IR-NEXT:     }

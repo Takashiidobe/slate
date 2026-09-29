@@ -35,22 +35,22 @@ gl_yank()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 gl_cnt: i32 [storage=static] = const<i32>(0) [linkage=internal];
-// DEFAULT-NEXT:     global %1 gl_buf: array<i8, 1024> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @gl_yank() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %4
+// DEFAULT-NEXT:     global %[[VALUE_gl_cnt:[0-9]+]] gl_cnt: i32 [storage=static] = const<i32>(0) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_gl_buf:[0-9]+]] gl_buf: array<i8, 1024> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_gl_yank:[0-9]+]] @gl_yank() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%3, read<i32>(%0));
-// DEFAULT-NEXT:             condition: ge<i32>(read<i32>(%3), const<i32>(0))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE_gl_cnt]]));
+// DEFAULT-NEXT:             condition: ge<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %5: i32 [synthetic] = read<i32>(%3);
-// DEFAULT-NEXT:                 let %6: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%5), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%3, read<i32>(%6));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1024)>(%1), add<i32, overflow=ub>(read<i32>(%3), const<i32>(10)))), read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1024)>(%1), read<i32>(%3)))));
+// DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1024)>(%[[VALUE_gl_buf]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(10)))), read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1024)>(%[[VALUE_gl_buf]]), read<i32>(%[[VALUE_i]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

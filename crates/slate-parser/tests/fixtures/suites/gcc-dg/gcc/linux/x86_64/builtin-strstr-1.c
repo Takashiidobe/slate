@@ -56,29 +56,29 @@ baz (const char *p)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([97, 98, 99, 100, 101, 102, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([100, 101, 102, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %13 .str13: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %14 .str14: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([100, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @link_error() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %12 @__builtin_strstr(%10 <unnamed>: ptr<const i8>, %11 <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 p: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(7)>(%8));
-// DEFAULT-NEXT:         let %3 q: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%9));
-// DEFAULT-NEXT:         let %15: ptr<const i8> [synthetic] = read<ptr<const i8>>(%2);
-// DEFAULT-NEXT:         let %16: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%15), const<i32>(1));
-// DEFAULT-NEXT:         write<ptr<const i8>>(%2, read<ptr<const i8>>(%16));
-// DEFAULT-NEXT:         let %17: ptr<const i8> [synthetic] = read<ptr<const i8>>(%3);
-// DEFAULT-NEXT:         let %18: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%17), const<i32>(1));
-// DEFAULT-NEXT:         write<ptr<const i8>>(%3, read<ptr<const i8>>(%18));
-// DEFAULT-NEXT:         if ne<ptr<i8>>(call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%12, read<ptr<const i8>>(%2), read<ptr<const i8>>(%3)), pointer_cast<ptr<i8>, reason=usual_arith>(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%2), const<i32>(3))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([97, 98, 99, 100, 101, 102, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([100, 101, 102, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([100, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_link_error:[0-9]+]] @link_error() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_strstr:[0-9]+]] @__builtin_strstr(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]]));
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]]));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: ptr<const i8> [synthetic] = read<ptr<const i8>>(%[[VALUE_p]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<const i8>>(%[[VALUE_p]], read<ptr<const i8>>(%[[VALUE3]]));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: ptr<const i8> [synthetic] = read<ptr<const i8>>(%[[VALUE_q]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE4]]), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<const i8>>(%[[VALUE_q]], read<ptr<const i8>>(%[[VALUE5]]));
+// DEFAULT-NEXT:         if ne<ptr<i8>>(call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%[[VALUE___builtin_strstr]], read<ptr<const i8>>(%[[VALUE_p]]), read<ptr<const i8>>(%[[VALUE_q]])), pointer_cast<ptr<i8>, reason=usual_arith>(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_p]]), const<i32>(3))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @bar(%5 p: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%12, read<ptr<const i8>>(%5), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%13)));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_p_2:[0-9]+]] p: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%[[VALUE___builtin_strstr]], read<ptr<const i8>>(%[[VALUE_p_2]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_3]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @baz(%7 p: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%12, read<ptr<const i8>>(%7), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%14)));
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_p_3:[0-9]+]] p: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%[[VALUE___builtin_strstr]], read<ptr<const i8>>(%[[VALUE_p_3]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_4]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

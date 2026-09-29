@@ -97,77 +97,77 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 inode = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_inode:[0-9]+]] inode = struct {
 // DEFAULT-NEXT:         field0 i_size: i64;
-// DEFAULT-NEXT:         field1 i_sb: ptr<@type1>;
+// DEFAULT-NEXT:         field1 i_sb: ptr<@type[[TYPE_super_block:[0-9]+]]>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type1 super_block = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_super_block]] super_block = struct {
 // DEFAULT-NEXT:         field0 s_blocksize: i32;
 // DEFAULT-NEXT:         field1 s_blocksize_bits: u8;
 // DEFAULT-NEXT:         field2 s_hs: i32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     type @type2 file = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_file:[0-9]+]] file = struct {
 // DEFAULT-NEXT:         field0 f_pos: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %16 s: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %17 i: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %18 f: @type2 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%22 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @isofs_bread(%6 block: u32) -> ptr<i8> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%6), const<u32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_super_block]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: @type[[TYPE_inode]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: @type[[TYPE_file]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_isofs_bread:[0-9]+]] @isofs_bread(%[[VALUE_block:[0-9]+]] block: u32) -> ptr<i8> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_block]]), const<u32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @do_isofs_readdir(%8 inode: ptr<@type0>, %9 filp: ptr<@type2>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 bufsize: i32 [storage=automatic] = read<i32>(field0(deref(read<ptr<@type1>>(field1(deref(read<ptr<@type0>>(%8)))))));
-// DEFAULT-NEXT:         let %11 bufbits: u8 [storage=automatic] = read<u8>(field1(deref(read<ptr<@type1>>(field1(deref(read<ptr<@type0>>(%8)))))));
-// DEFAULT-NEXT:         let %12 block: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %13 offset: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %14 bh: ptr<i8> [storage=automatic] = null<ptr<i8>>;
-// DEFAULT-NEXT:         let %15 hs: i32 [storage=automatic];
-// DEFAULT-NEXT:         if ge<i64>(read<i64>(field0(deref(read<ptr<@type2>>(%9)))), read<i64>(field0(deref(read<ptr<@type0>>(%8)))))
+// DEFAULT-NEXT:     fn %[[VALUE_do_isofs_readdir:[0-9]+]] @do_isofs_readdir(%[[VALUE_inode:[0-9]+]] inode: ptr<@type[[TYPE_inode]]>, %[[VALUE_filp:[0-9]+]] filp: ptr<@type[[TYPE_file]]>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_bufsize:[0-9]+]] bufsize: i32 [storage=automatic] = read<i32>(field0(deref(read<ptr<@type[[TYPE_super_block]]>>(field1(deref(read<ptr<@type[[TYPE_inode]]>>(%[[VALUE_inode]])))))));
+// DEFAULT-NEXT:         let %[[VALUE_bufbits:[0-9]+]] bufbits: u8 [storage=automatic] = read<u8>(field1(deref(read<ptr<@type[[TYPE_super_block]]>>(field1(deref(read<ptr<@type[[TYPE_inode]]>>(%[[VALUE_inode]])))))));
+// DEFAULT-NEXT:         let %[[VALUE_block_2:[0-9]+]] block: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_offset:[0-9]+]] offset: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_bh:[0-9]+]] bh: ptr<i8> [storage=automatic] = null<ptr<i8>>;
+// DEFAULT-NEXT:         let %[[VALUE_hs:[0-9]+]] hs: i32 [storage=automatic];
+// DEFAULT-NEXT:         if ge<i64>(read<i64>(field0(deref(read<ptr<@type[[TYPE_file]]>>(%[[VALUE_filp]])))), read<i64>(field0(deref(read<ptr<@type[[TYPE_inode]]>>(%[[VALUE_inode]])))))
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         write<u32>(%13, reinterpret<u32, reason=assign, fits=unknown>(truncate<i32, reason=assign, fits=unknown>(and<i64>(read<i64>(field0(deref(read<ptr<@type2>>(%9)))), widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(read<i32>(%10), const<i32>(1)))))));
-// DEFAULT-NEXT:         write<u32>(%12, reinterpret<u32, reason=assign, fits=unknown>(truncate<i32, reason=assign, fits=unknown>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(field0(deref(read<ptr<@type2>>(%9)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%11)))))));
-// DEFAULT-NEXT:         write<i32>(%15, read<i32>(field2(deref(read<ptr<@type1>>(field1(deref(read<ptr<@type0>>(%8))))))));
-// DEFAULT-NEXT:         while %23 lt<i64>(read<i64>(field0(deref(read<ptr<@type2>>(%9)))), read<i64>(field0(deref(read<ptr<@type0>>(%8)))))
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_offset]], reinterpret<u32, reason=assign, fits=unknown>(truncate<i32, reason=assign, fits=unknown>(and<i64>(read<i64>(field0(deref(read<ptr<@type[[TYPE_file]]>>(%[[VALUE_filp]])))), widen<i64, reason=usual_arith>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_bufsize]]), const<i32>(1)))))));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_block_2]], reinterpret<u32, reason=assign, fits=unknown>(truncate<i32, reason=assign, fits=unknown>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(field0(deref(read<ptr<@type[[TYPE_file]]>>(%[[VALUE_filp]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_bufbits]])))))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_hs]], read<i32>(field2(deref(read<ptr<@type[[TYPE_super_block]]>>(field1(deref(read<ptr<@type[[TYPE_inode]]>>(%[[VALUE_inode]]))))))));
+// DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] lt<i64>(read<i64>(field0(deref(read<ptr<@type[[TYPE_file]]>>(%[[VALUE_filp]])))), read<i64>(field0(deref(read<ptr<@type[[TYPE_inode]]>>(%[[VALUE_inode]])))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i8>>(read<ptr<i8>>(%14), null<ptr<i8>>))
-// DEFAULT-NEXT:                     write<ptr<i8>>(%14, call<ptr<i8>, signature=fn(u32) -> ptr<i8>>(%5, read<u32>(%12)));
-// DEFAULT-NEXT:                     call<ptr<i8>, signature=fn(u32) -> ptr<i8>>(%5, read<u32>(%12));
-// DEFAULT-NEXT:                 let %24: i32 [synthetic] = read<i32>(%15);
-// DEFAULT-NEXT:                 let %25: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%24)), shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%12), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%11))))));
-// DEFAULT-NEXT:                 write<i32>(%15, read<i32>(%25));
-// DEFAULT-NEXT:                 if eq<i32>(read<i32>(%15), const<i32>(0))
-// DEFAULT-NEXT:                     let %26: ptr<@type2> [synthetic] = read<ptr<@type2>>(%9);
-// DEFAULT-NEXT:                     let %27: i64 [synthetic] = read<i64>(field0(deref(read<ptr<@type2>>(%26))));
-// DEFAULT-NEXT:                     let %28: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%27), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                     write<i64>(field0(deref(read<ptr<@type2>>(%26))), read<i64>(%28));
-// DEFAULT-NEXT:                 if ge<u32>(read<u32>(%13), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%10)))
-// DEFAULT-NEXT:                     let %29: u32 [synthetic] = read<u32>(%13);
-// DEFAULT-NEXT:                     let %30: u32 [synthetic] = and<u32>(read<u32>(%29), reinterpret<u32, reason=usual_arith, fits=unknown>(sub<i32, overflow=ub>(read<i32>(%10), const<i32>(1))));
-// DEFAULT-NEXT:                     write<u32>(%13, read<u32>(%30));
-// DEFAULT-NEXT:                 if ne<i8>(read<i8>(deref(read<ptr<i8>>(%14))), const<i8>(0))
-// DEFAULT-NEXT:                     let %31: ptr<@type2> [synthetic] = read<ptr<@type2>>(%9);
-// DEFAULT-NEXT:                     let %32: i64 [synthetic] = read<i64>(field0(deref(read<ptr<@type2>>(%31))));
-// DEFAULT-NEXT:                     let %33: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%32), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                     write<i64>(field0(deref(read<ptr<@type2>>(%31))), read<i64>(%33));
-// DEFAULT-NEXT:                 let %34: ptr<@type2> [synthetic] = read<ptr<@type2>>(%9);
-// DEFAULT-NEXT:                 let %35: i64 [synthetic] = read<i64>(field0(deref(read<ptr<@type2>>(%34))));
-// DEFAULT-NEXT:                 let %36: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%35), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(deref(read<ptr<@type2>>(%34))), read<i64>(%36));
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_bh]]), null<ptr<i8>>))
+// DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_bh]], call<ptr<i8>, signature=fn(u32) -> ptr<i8>>(%[[VALUE_isofs_bread]], read<u32>(%[[VALUE_block_2]])));
+// DEFAULT-NEXT:                     call<ptr<i8>, signature=fn(u32) -> ptr<i8>>(%[[VALUE_isofs_bread]], read<u32>(%[[VALUE_block_2]]));
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_hs]]);
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE2]])), shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_block_2]]), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_bufbits]]))))));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_hs]], read<i32>(%[[VALUE3]]));
+// DEFAULT-NEXT:                 if eq<i32>(read<i32>(%[[VALUE_hs]]), const<i32>(0))
+// DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: ptr<@type[[TYPE_file]]> [synthetic] = read<ptr<@type[[TYPE_file]]>>(%[[VALUE_filp]]);
+// DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: i64 [synthetic] = read<i64>(field0(deref(read<ptr<@type[[TYPE_file]]>>(%[[VALUE4]]))));
+// DEFAULT-NEXT:                     let %[[VALUE6:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE5]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                     write<i64>(field0(deref(read<ptr<@type[[TYPE_file]]>>(%[[VALUE4]]))), read<i64>(%[[VALUE6]]));
+// DEFAULT-NEXT:                 if ge<u32>(read<u32>(%[[VALUE_offset]]), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_bufsize]])))
+// DEFAULT-NEXT:                     let %[[VALUE7:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_offset]]);
+// DEFAULT-NEXT:                     let %[[VALUE8:[0-9]+]]: u32 [synthetic] = and<u32>(read<u32>(%[[VALUE7]]), reinterpret<u32, reason=usual_arith, fits=unknown>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_bufsize]]), const<i32>(1))));
+// DEFAULT-NEXT:                     write<u32>(%[[VALUE_offset]], read<u32>(%[[VALUE8]]));
+// DEFAULT-NEXT:                 if ne<i8>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_bh]]))), const<i8>(0))
+// DEFAULT-NEXT:                     let %[[VALUE9:[0-9]+]]: ptr<@type[[TYPE_file]]> [synthetic] = read<ptr<@type[[TYPE_file]]>>(%[[VALUE_filp]]);
+// DEFAULT-NEXT:                     let %[[VALUE10:[0-9]+]]: i64 [synthetic] = read<i64>(field0(deref(read<ptr<@type[[TYPE_file]]>>(%[[VALUE9]]))));
+// DEFAULT-NEXT:                     let %[[VALUE11:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE10]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                     write<i64>(field0(deref(read<ptr<@type[[TYPE_file]]>>(%[[VALUE9]]))), read<i64>(%[[VALUE11]]));
+// DEFAULT-NEXT:                 let %[[VALUE12:[0-9]+]]: ptr<@type[[TYPE_file]]> [synthetic] = read<ptr<@type[[TYPE_file]]>>(%[[VALUE_filp]]);
+// DEFAULT-NEXT:                 let %[[VALUE13:[0-9]+]]: i64 [synthetic] = read<i64>(field0(deref(read<ptr<@type[[TYPE_file]]>>(%[[VALUE12]]))));
+// DEFAULT-NEXT:                 let %[[VALUE14:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE13]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(deref(read<ptr<@type[[TYPE_file]]>>(%[[VALUE12]]))), read<i64>(%[[VALUE14]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @main(%20 argc: i32, %21 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<i32>(field0(%16), const<i32>(512));
-// DEFAULT-NEXT:         write<u8>(field1(%16), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(9))));
-// DEFAULT-NEXT:         write<i64>(field0(%17), widen<i64, reason=assign>(const<i32>(2048)));
-// DEFAULT-NEXT:         write<ptr<@type1>>(field1(%17), addr_of<ptr<@type1>>(%16));
-// DEFAULT-NEXT:         write<i64>(field0(%18), widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type0>, ptr<@type2>) -> i32>(%7, addr_of<ptr<@type0>>(%17), addr_of<ptr<@type2>>(%18));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_s]]), const<i32>(512));
+// DEFAULT-NEXT:         write<u8>(field1(%[[VALUE_s]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(9))));
+// DEFAULT-NEXT:         write<i64>(field0(%[[VALUE_i]]), widen<i64, reason=assign>(const<i32>(2048)));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_super_block]]>>(field1(%[[VALUE_i]]), addr_of<ptr<@type[[TYPE_super_block]]>>(%[[VALUE_s]]));
+// DEFAULT-NEXT:         write<i64>(field0(%[[VALUE_f]]), widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE_inode]]>, ptr<@type[[TYPE_file]]>) -> i32>(%[[VALUE_do_isofs_readdir]], addr_of<ptr<@type[[TYPE_inode]]>>(%[[VALUE_i]]), addr_of<ptr<@type[[TYPE_file]]>>(%[[VALUE_f]]));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

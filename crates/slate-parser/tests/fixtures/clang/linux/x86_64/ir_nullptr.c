@@ -57,35 +57,35 @@ int f(nullptr_t n, int *p, char *q) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 nullptr_t = ptr<void> [c="typeof(nullptr)"] [c_canon="nullptr_t"];
-// DEFAULT-NEXT:     global %2 g: ptr<void> [storage=static] [linkage=external] [c="nullptr_t"] [typedef_chain="nullptr_t"];
-// DEFAULT-NEXT:     global %3 g2: ptr<void> [storage=static] = null<ptr<void>> [linkage=external] [c="nullptr_t"] [typedef_chain="nullptr_t"];
-// DEFAULT-NEXT:     global %4 g3: ptr<void> [storage=static] = null<ptr<void>> [linkage=external] [c="nullptr_t"] [typedef_chain="nullptr_t"];
-// DEFAULT-NEXT:     global %5 gp: ptr<i32> [storage=static] = null<ptr<i32>> [linkage=external] [c="int *"];
-// DEFAULT-NEXT:     global %6 distinct_from_void_pointer: i32 [storage=static] = const<i32>(2) [linkage=external] [c="int"];
-// DEFAULT-NEXT:     global %7 object_type: i32 [storage=static] = const<i32>(2) [linkage=external] [c="int"];
-// DEFAULT-NEXT:     global %8 same_layout: i32 [storage=static] = from_bool<i32>(logical_and<bool>(eq<u64>(const<u64>(8) [size_of="ptr<void>"], const<u64>(8) [size_of="ptr<void>"]), eq<u64>(const<u64>(8) [align_of="ptr<void>"], const<u64>(8) [align_of="ptr<void>"]))) [linkage=external] [c="int"];
-// DEFAULT-NEXT:     global %9 conditional_with_pointer: i32 [storage=static] = const<i32>(1) [linkage=external] [c="int"];
-// DEFAULT-NEXT:     global %10 conditional_with_nullptr: i32 [storage=static] = const<i32>(1) [linkage=external] [c="int"];
-// DEFAULT-NEXT:     global %11 classify: i32 [storage=static] = const<i32>(-1) [c_builtin="__builtin_classify_type"] [linkage=external] [c="int"];
-// DEFAULT-NEXT:     global %19 .str19: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 112, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%18 <unnamed>: ptr<const i8> [c="const char *"], ...) -> i32 [linkage=external] [c="int(const char *, ...)"] [c_builtin="printf"];
-// DEFAULT-NEXT:     fn %12 @f(%13 n: ptr<void> [c="nullptr_t"] [typedef_chain="nullptr_t"], %14 p: ptr<i32> [c="int *"], %15 q: ptr<i8> [c="char *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(nullptr_t, int *, char *)"] {
-// DEFAULT-NEXT:         let %16 b: bool [storage=automatic] = ne<ptr<void>>(read<ptr<void>>(%13), null<ptr<void>>) [c="_Bool"];
-// DEFAULT-NEXT:         let %17 v: ptr<void> [storage=automatic] = pointer_cast<ptr<void>>(read<ptr<void>>(%13)) [c="void *"];
-// DEFAULT-NEXT:         write<ptr<i32>>(%14, pointer_cast<ptr<i32>>(read<ptr<void>>(%13)));
-// DEFAULT-NEXT:         write<ptr<void>>(%13, null<ptr<void>>);
-// DEFAULT-NEXT:         write<ptr<void>>(%13, null<ptr<void>>);
-// DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>>(%13), null<ptr<void>>)
+// DEFAULT-NEXT:     type @type[[TYPE_nullptr_t:[0-9]+]] nullptr_t = ptr<void> [c="typeof(nullptr)"] [c_canon="nullptr_t"];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: ptr<void> [storage=static] [linkage=external] [c="nullptr_t"] [typedef_chain="nullptr_t"];
+// DEFAULT-NEXT:     global %[[VALUE_g2:[0-9]+]] g2: ptr<void> [storage=static] = null<ptr<void>> [linkage=external] [c="nullptr_t"] [typedef_chain="nullptr_t"];
+// DEFAULT-NEXT:     global %[[VALUE_g3:[0-9]+]] g3: ptr<void> [storage=static] = null<ptr<void>> [linkage=external] [c="nullptr_t"] [typedef_chain="nullptr_t"];
+// DEFAULT-NEXT:     global %[[VALUE_gp:[0-9]+]] gp: ptr<i32> [storage=static] = null<ptr<i32>> [linkage=external] [c="int *"];
+// DEFAULT-NEXT:     global %[[VALUE_distinct_from_void_pointer:[0-9]+]] distinct_from_void_pointer: i32 [storage=static] = const<i32>(2) [linkage=external] [c="int"];
+// DEFAULT-NEXT:     global %[[VALUE_object_type:[0-9]+]] object_type: i32 [storage=static] = const<i32>(2) [linkage=external] [c="int"];
+// DEFAULT-NEXT:     global %[[VALUE_same_layout:[0-9]+]] same_layout: i32 [storage=static] = from_bool<i32>(logical_and<bool>(eq<u64>(const<u64>(8) [size_of="ptr<void>"], const<u64>(8) [size_of="ptr<void>"]), eq<u64>(const<u64>(8) [align_of="ptr<void>"], const<u64>(8) [align_of="ptr<void>"]))) [linkage=external] [c="int"];
+// DEFAULT-NEXT:     global %[[VALUE_conditional_with_pointer:[0-9]+]] conditional_with_pointer: i32 [storage=static] = const<i32>(1) [linkage=external] [c="int"];
+// DEFAULT-NEXT:     global %[[VALUE_conditional_with_nullptr:[0-9]+]] conditional_with_nullptr: i32 [storage=static] = const<i32>(1) [linkage=external] [c="int"];
+// DEFAULT-NEXT:     global %[[VALUE_classify:[0-9]+]] classify: i32 [storage=static] = const<i32>(-1) [c_builtin="__builtin_classify_type"] [linkage=external] [c="int"];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 112, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8> [c="const char *"], ...) -> i32 [linkage=external] [c="int(const char *, ...)"] [c_builtin="printf"];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_n:[0-9]+]] n: ptr<void> [c="nullptr_t"] [typedef_chain="nullptr_t"], %[[VALUE_p:[0-9]+]] p: ptr<i32> [c="int *"], %[[VALUE_q:[0-9]+]] q: ptr<i8> [c="char *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(nullptr_t, int *, char *)"] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: bool [storage=automatic] = ne<ptr<void>>(read<ptr<void>>(%[[VALUE_n]]), null<ptr<void>>) [c="_Bool"];
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: ptr<void> [storage=automatic] = pointer_cast<ptr<void>>(read<ptr<void>>(%[[VALUE_n]])) [c="void *"];
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_p]], pointer_cast<ptr<i32>>(read<ptr<void>>(%[[VALUE_n]])));
+// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_n]], null<ptr<void>>);
+// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_n]], null<ptr<void>>);
+// DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>>(%[[VALUE_n]]), null<ptr<void>>)
 // DEFAULT-NEXT:             return const<i32>(1);
-// DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(logical_and<bool>(logical_and<bool>(logical_and<bool>(not<bool>(ne<ptr<void>>(read<ptr<void>>(%13), null<ptr<void>>)), eq<ptr<i32>>(read<ptr<i32>>(%14), pointer_cast<ptr<i32>>(read<ptr<void>>(%13)))), eq<ptr<i32>>(pointer_cast<ptr<i32>>(read<ptr<void>>(%13)), read<ptr<i32>>(%14))), eq<ptr<void>>(read<ptr<void>>(%13), null<ptr<void>>)), eq<ptr<void>>(read<ptr<void>>(%13), null<ptr<void>>)), eq<ptr<void>>(null<ptr<void>>, read<ptr<void>>(%13)))
+// DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(logical_and<bool>(logical_and<bool>(logical_and<bool>(not<bool>(ne<ptr<void>>(read<ptr<void>>(%[[VALUE_n]]), null<ptr<void>>)), eq<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), pointer_cast<ptr<i32>>(read<ptr<void>>(%[[VALUE_n]])))), eq<ptr<i32>>(pointer_cast<ptr<i32>>(read<ptr<void>>(%[[VALUE_n]])), read<ptr<i32>>(%[[VALUE_p]]))), eq<ptr<void>>(read<ptr<void>>(%[[VALUE_n]]), null<ptr<void>>)), eq<ptr<void>>(read<ptr<void>>(%[[VALUE_n]]), null<ptr<void>>)), eq<ptr<void>>(null<ptr<void>>, read<ptr<void>>(%[[VALUE_n]])))
 // DEFAULT-NEXT:             return const<i32>(2);
-// DEFAULT-NEXT:         call<i32>(%1, pointer_cast<ptr<const i8>>(array_decay<ptr<i8>, length=Some(3)>(%19)), read<ptr<void>>(%13));
-// DEFAULT-NEXT:         read<ptr<void>>(%17);
-// DEFAULT-NEXT:         write<ptr<i8>>(%15, pointer_cast<ptr<i8>>(read<ptr<void>>(%13)));
-// DEFAULT-NEXT:         write<bool>(%16, ne<ptr<void>>(read<ptr<void>>(%13), null<ptr<void>>));
-// DEFAULT-NEXT:         write<ptr<void>>(%13, null<ptr<void>>);
-// DEFAULT-NEXT:         return add<i32>(add<i32>(from_bool<i32>(read<bool>(%16)), from_bool<i32>(ne<ptr<i32>>(read<ptr<i32>>(%14), null<ptr<i32>>))), from_bool<i32>(ne<ptr<i8>>(pointer_cast<ptr<i8>>(read<ptr<void>>(%13)), read<ptr<i8>>(%15))));
+// DEFAULT-NEXT:         call<i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])), read<ptr<void>>(%[[VALUE_n]]));
+// DEFAULT-NEXT:         read<ptr<void>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_q]], pointer_cast<ptr<i8>>(read<ptr<void>>(%[[VALUE_n]])));
+// DEFAULT-NEXT:         write<bool>(%[[VALUE_b]], ne<ptr<void>>(read<ptr<void>>(%[[VALUE_n]]), null<ptr<void>>));
+// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_n]], null<ptr<void>>);
+// DEFAULT-NEXT:         return add<i32>(add<i32>(from_bool<i32>(read<bool>(%[[VALUE_b]])), from_bool<i32>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), null<ptr<i32>>))), from_bool<i32>(ne<ptr<i8>>(pointer_cast<ptr<i8>>(read<ptr<void>>(%[[VALUE_n]])), read<ptr<i8>>(%[[VALUE_q]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

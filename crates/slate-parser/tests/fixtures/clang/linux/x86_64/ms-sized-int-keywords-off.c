@@ -25,12 +25,12 @@ int read(void) { return __int64 + _int8; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 __int64: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     global %1 _int8: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 __int16: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 __int32: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @read() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%0), read<i32>(%1));
+// DEFAULT-NEXT:     global %[[VALUE___int64:[0-9]+]] __int64: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE__int8:[0-9]+]] _int8: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE___int16:[0-9]+]] __int16: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE___int32:[0-9]+]] __int32: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_read:[0-9]+]] @read() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE___int64]]), read<i32>(%[[VALUE__int8]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

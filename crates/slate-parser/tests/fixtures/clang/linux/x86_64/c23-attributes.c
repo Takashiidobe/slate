@@ -28,9 +28,9 @@
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 old_api: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 unused_data: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 vendor_data: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @status() -> i32 [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_old_api:[0-9]+]] old_api: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unused_data:[0-9]+]] unused_data: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_vendor_data:[0-9]+]] vendor_data: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_status:[0-9]+]] @status() -> i32 [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

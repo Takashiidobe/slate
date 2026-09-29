@@ -62,32 +62,32 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = enum : u32 {
-// DEFAULT-NEXT:         %0 hot = const<i32>(0);
-// DEFAULT-NEXT:         %1 dog = const<i32>(1);
-// DEFAULT-NEXT:         %2 poo = const<i32>(2);
-// DEFAULT-NEXT:         %3 bear = const<i32>(3);
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_hot:[0-9]+]] hot = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_dog:[0-9]+]] dog = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_poo:[0-9]+]] poo = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE_bear:[0-9]+]] bear = const<i32>(3);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 dingos = @type0;
-// DEFAULT-NEXT:     type @type2 = enum : u32 {
-// DEFAULT-NEXT:         %0 janette = const<i32>(0);
-// DEFAULT-NEXT:         %1 laura = const<i32>(1);
-// DEFAULT-NEXT:         %2 amanda = const<i32>(2);
+// DEFAULT-NEXT:     type @type[[TYPE_dingos:[0-9]+]] dingos = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_hot]] janette = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_dog]] laura = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_poo]] amanda = const<i32>(2);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type3 cranberry = @type2;
-// DEFAULT-NEXT:     type @type4 same1 = f32;
-// DEFAULT-NEXT:     type @type5 same2 = f32;
-// DEFAULT-NEXT:     global %2 i: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 d: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 rootbeer: array<f32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%19 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %18 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     type @type[[TYPE_cranberry:[0-9]+]] cranberry = @type[[TYPE1]];
+// DEFAULT-NEXT:     type @type[[TYPE_same1:[0-9]+]] same1 = f32;
+// DEFAULT-NEXT:     type @type[[TYPE_same2:[0-9]+]] same2 = f32;
+// DEFAULT-NEXT:     global %[[VALUE_poo]] i: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bear]] d: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_rootbeer:[0-9]+]] rootbeer: array<f32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_hot]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_dog]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if not<bool>(logical_and<bool>(logical_and<bool>(logical_and<bool>(logical_and<bool>(ne<i32>(const<i32>(1), const<i32>(0)), ne<i32>(const<i32>(1), const<i32>(0))), ne<i32>(const<i32>(1), const<i32>(0))), ne<i32>(const<i32>(1), const<i32>(0))), ne<i32>(const<i32>(1), const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_hot]]);
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(const<i32>(0), const<i32>(0)), ne<i32>(const<i32>(0), const<i32>(0))), ne<i32>(const<i32>(0), const<i32>(0))), ne<i32>(const<i32>(0), const<i32>(0))), ne<i32>(const<i32>(0), const<i32>(0))), ne<i32>(const<i32>(0), const<i32>(0))), ne<i32>(const<i32>(0), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_hot]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_dog]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

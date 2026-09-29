@@ -32,11 +32,11 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 values: array<array<i32, 4>, 3> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %1 handler: ptr<fn(i8, ptr<i32>) -> i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @factory() -> ptr<i32> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @callback(%6 value: i32, ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     global %[[VALUE_values:[0-9]+]] values: array<array<i32, 4>, 3> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_handler:[0-9]+]] handler: ptr<fn(i8, ptr<i32>) -> i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_factory:[0-9]+]] @factory() -> ptr<i32> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_callback:[0-9]+]] @callback(%[[VALUE_value:[0-9]+]] value: i32, ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

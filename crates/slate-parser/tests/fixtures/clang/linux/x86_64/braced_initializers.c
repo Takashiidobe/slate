@@ -61,61 +61,61 @@ int local(int n) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 P = struct {
+// IR-NEXT:     type @type[[TYPE_P:[0-9]+]] P = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:         field1 y: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type1 Q = struct {
+// IR-NEXT:     type @type[[TYPE_Q:[0-9]+]] Q = struct {
 // IR-NEXT:         field0 tag: array<i8, 4>;
-// IR-NEXT:         field1 p: @type0;
+// IR-NEXT:         field1 p: @type[[TYPE_P]];
 // IR-NEXT:         field2 tail: i32;
 // IR-NEXT:     } [size=16, align=4, offsets=[0, 4, 12]];
-// IR-NEXT:     type @type2 A = struct {
+// IR-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // IR-NEXT:         field0 a: array<i32, 2>;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=12, align=4, offsets=[0, 8]];
-// IR-NEXT:     type @type3 N = struct {
+// IR-NEXT:     type @type[[TYPE_N:[0-9]+]] N = struct {
 // IR-NEXT:         field0 k: i32;
-// IR-NEXT:         field1 <anonymous>: @type4;
+// IR-NEXT:         field1 <anonymous>: @type[[TYPE0:[0-9]+]];
 // IR-NEXT:     } [size=12, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type4 = struct {
+// IR-NEXT:     type @type[[TYPE0]] = struct {
 // IR-NEXT:         field0 u: i32;
 // IR-NEXT:         field1 v: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type5 U = union {
+// IR-NEXT:     type @type[[TYPE_U:[0-9]+]] U = union {
 // IR-NEXT:         field0 i: i32;
 // IR-NEXT:         field1 c: array<i8, 4>;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     global %6 ints: array<i32, 3> [storage=static] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3)) [linkage=external];
-// IR-NEXT:     global %7 chars: array<i8, 3> [storage=static] = aggregate<array<i8, 3>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(97)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(98)), index2 = truncate<i8, reason=assign, fits=always>(const<i32>(0))) [linkage=external];
-// IR-NEXT:     global %8 braced_string: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([97, 98, 0]) [linkage=external];
-// IR-NEXT:     global %9 origin: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)) [linkage=external];
-// IR-NEXT:     global %10 half: @type0 [storage=static] = aggregate<@type0, zero_fill=true>(field0 = const<i32>(1)) [linkage=external];
-// IR-NEXT:     global %11 empty: @type0 [storage=static] = aggregate<@type0, zero_fill=true>() [linkage=external];
-// IR-NEXT:     global %12 swapped: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)) [linkage=external];
-// IR-NEXT:     global %13 nested: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = code_units<array<i8, 4>>([97, 98, 99, 0]), field1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4)), field2 = const<i32>(5)) [linkage=external];
-// IR-NEXT:     global %14 elided: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = code_units<array<i8, 4>>([97, 98, 99, 0]), field1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4)), field2 = const<i32>(5)) [linkage=external];
-// IR-NEXT:     global %15 dotted: @type1 [storage=static] = aggregate<@type1, zero_fill=true>(field1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(8), field1 = const<i32>(9))) [linkage=external];
-// IR-NEXT:     global %16 elided_array: @type2 [storage=static] = aggregate<@type2, zero_fill=false>(field0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)), field1 = const<i32>(3)) [linkage=external];
-// IR-NEXT:     global %17 matrix: array<array<i32, 2>, 2> [storage=static] [align=16] = aggregate<array<array<i32, 2>, 2>, zero_fill=false>(index0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)), index1 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(3), index1 = const<i32>(4))) [linkage=external];
-// IR-NEXT:     global %18 rows: array<array<i32, 2>, 2> [storage=static] [align=16] = aggregate<array<array<i32, 2>, 2>, zero_fill=false>(index0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)), index1 = aggregate<array<i32, 2>, zero_fill=true>(index0 = const<i32>(3))) [linkage=external];
-// IR-NEXT:     global %19 sparse: array<i32, 6> [storage=static] [align=16] = aggregate<array<i32, 6>, zero_fill=true>(index4 = const<i32>(1), index5 = const<i32>(2)) [linkage=external];
-// IR-NEXT:     global %20 ranged: array<i32, 8> [storage=static] [align=16] = aggregate<array<i32, 8>, zero_fill=true>(index1..=3 = const<i32>(7)) [linkage=external];
-// IR-NEXT:     global %21 first_member: @type5 [storage=static] = aggregate<@type5, zero_fill=false>(field0 = const<i32>(1)) [linkage=external];
-// IR-NEXT:     global %22 chosen: @type5 [storage=static] = aggregate<@type5, zero_fill=false>(field1 = aggregate<array<i8, 4>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(1)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(2)))) [linkage=external];
-// IR-NEXT:     global %23 anonymous: @type3 [storage=static] = aggregate<@type3, zero_fill=false>(field0 = const<i32>(1), field1 = aggregate<@type4, zero_fill=false>(field0 = const<i32>(2), field1 = const<i32>(3))) [linkage=external];
-// IR-NEXT:     global %24 anonymous_designated: @type3 [storage=static] = aggregate<@type3, zero_fill=true>(field1 = aggregate<@type4, zero_fill=true>(field0 = const<i32>(4))) [linkage=external];
-// IR-NEXT:     global %25 points: array<@type0, 2> [storage=static] [align=16] = aggregate<array<@type0, 2>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)), index1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4))) [linkage=external];
-// IR-NEXT:     global %26 flat_points: array<@type0, 2> [storage=static] [align=16] = aggregate<array<@type0, 2>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)), index1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4))) [linkage=external];
-// IR-NEXT:     global %34 .str34: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
-// IR-NEXT:     global %35 .str35: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([98, 0]) [linkage=internal];
-// IR-NEXT:     global %27 names: array<ptr<const i8>, 2> [storage=static] [align=16] = aggregate<array<ptr<const i8>, 2>, zero_fill=false>(index0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(2)>(%34)), index1 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(2)>(%35))) [linkage=external];
-// IR-NEXT:     global %28 grid: array<array<i8, 3>, 2> [storage=static] = aggregate<array<array<i8, 3>, 2>, zero_fill=false>(index0 = code_units<array<i8, 3>>([97, 98, 0]), index1 = code_units<array<i8, 3>>([99, 100, 0])) [linkage=external];
-// IR-NEXT:     fn %29 @local(%30 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %31 p: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = read<i32>(%30), field1 = add<i32, overflow=ub>(read<i32>(%30), const<i32>(1)));
-// IR-NEXT:         let %32 a: array<i32, 3> [storage=automatic] = aggregate<array<i32, 3>, zero_fill=true>(index0 = read<i32>(%30));
-// IR-NEXT:         let %33 copies: array<@type0, 2> [storage=automatic] [align=16] = aggregate<array<@type0, 2>, zero_fill=false>(index0 = copy<@type0, reason=assign>(read<@type0>(%31)), index1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)));
-// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(%31)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%32), const<i32>(0))))), read<i32>(field1(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(2)>(%33), const<i32>(1))))));
+// IR-NEXT:     global %[[VALUE_ints:[0-9]+]] ints: array<i32, 3> [storage=static] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_chars:[0-9]+]] chars: array<i8, 3> [storage=static] = aggregate<array<i8, 3>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(97)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(98)), index2 = truncate<i8, reason=assign, fits=always>(const<i32>(0))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_braced_string:[0-9]+]] braced_string: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([97, 98, 0]) [linkage=external];
+// IR-NEXT:     global %[[VALUE_origin:[0-9]+]] origin: @type[[TYPE_P]] [storage=static] = aggregate<@type[[TYPE_P]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_half:[0-9]+]] half: @type[[TYPE_P]] [storage=static] = aggregate<@type[[TYPE_P]], zero_fill=true>(field0 = const<i32>(1)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_empty:[0-9]+]] empty: @type[[TYPE_P]] [storage=static] = aggregate<@type[[TYPE_P]], zero_fill=true>() [linkage=external];
+// IR-NEXT:     global %[[VALUE_swapped:[0-9]+]] swapped: @type[[TYPE_P]] [storage=static] = aggregate<@type[[TYPE_P]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_nested:[0-9]+]] nested: @type[[TYPE_Q]] [storage=static] = aggregate<@type[[TYPE_Q]], zero_fill=false>(field0 = code_units<array<i8, 4>>([97, 98, 99, 0]), field1 = aggregate<@type[[TYPE_P]], zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4)), field2 = const<i32>(5)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_elided:[0-9]+]] elided: @type[[TYPE_Q]] [storage=static] = aggregate<@type[[TYPE_Q]], zero_fill=false>(field0 = code_units<array<i8, 4>>([97, 98, 99, 0]), field1 = aggregate<@type[[TYPE_P]], zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4)), field2 = const<i32>(5)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_dotted:[0-9]+]] dotted: @type[[TYPE_Q]] [storage=static] = aggregate<@type[[TYPE_Q]], zero_fill=true>(field1 = aggregate<@type[[TYPE_P]], zero_fill=false>(field0 = const<i32>(8), field1 = const<i32>(9))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_elided_array:[0-9]+]] elided_array: @type[[TYPE_A]] [storage=static] = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)), field1 = const<i32>(3)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_matrix:[0-9]+]] matrix: array<array<i32, 2>, 2> [storage=static] [align=16] = aggregate<array<array<i32, 2>, 2>, zero_fill=false>(index0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)), index1 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(3), index1 = const<i32>(4))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_rows:[0-9]+]] rows: array<array<i32, 2>, 2> [storage=static] [align=16] = aggregate<array<array<i32, 2>, 2>, zero_fill=false>(index0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)), index1 = aggregate<array<i32, 2>, zero_fill=true>(index0 = const<i32>(3))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_sparse:[0-9]+]] sparse: array<i32, 6> [storage=static] [align=16] = aggregate<array<i32, 6>, zero_fill=true>(index4 = const<i32>(1), index5 = const<i32>(2)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_ranged:[0-9]+]] ranged: array<i32, 8> [storage=static] [align=16] = aggregate<array<i32, 8>, zero_fill=true>(index1..=3 = const<i32>(7)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_first_member:[0-9]+]] first_member: @type[[TYPE_U]] [storage=static] = aggregate<@type[[TYPE_U]], zero_fill=false>(field0 = const<i32>(1)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_chosen:[0-9]+]] chosen: @type[[TYPE_U]] [storage=static] = aggregate<@type[[TYPE_U]], zero_fill=false>(field1 = aggregate<array<i8, 4>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(1)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(2)))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_anonymous:[0-9]+]] anonymous: @type[[TYPE_N]] [storage=static] = aggregate<@type[[TYPE_N]], zero_fill=false>(field0 = const<i32>(1), field1 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(2), field1 = const<i32>(3))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_anonymous_designated:[0-9]+]] anonymous_designated: @type[[TYPE_N]] [storage=static] = aggregate<@type[[TYPE_N]], zero_fill=true>(field1 = aggregate<@type[[TYPE0]], zero_fill=true>(field0 = const<i32>(4))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_points:[0-9]+]] points: array<@type[[TYPE_P]], 2> [storage=static] [align=16] = aggregate<array<@type[[TYPE_P]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE_P]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)), index1 = aggregate<@type[[TYPE_P]], zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_flat_points:[0-9]+]] flat_points: array<@type[[TYPE_P]], 2> [storage=static] [align=16] = aggregate<array<@type[[TYPE_P]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE_P]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)), index1 = aggregate<@type[[TYPE_P]], zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([98, 0]) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_names:[0-9]+]] names: array<ptr<const i8>, 2> [storage=static] [align=16] = aggregate<array<ptr<const i8>, 2>, zero_fill=false>(index0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str]])), index1 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_2]]))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_grid:[0-9]+]] grid: array<array<i8, 3>, 2> [storage=static] = aggregate<array<array<i8, 3>, 2>, zero_fill=false>(index0 = code_units<array<i8, 3>>([97, 98, 0]), index1 = code_units<array<i8, 3>>([99, 100, 0])) [linkage=external];
+// IR-NEXT:     fn %[[VALUE_local:[0-9]+]] @local(%[[VALUE_n:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_p:[0-9]+]] p: @type[[TYPE_P]] [storage=automatic] = aggregate<@type[[TYPE_P]], zero_fill=false>(field0 = read<i32>(%[[VALUE_n]]), field1 = add<i32, overflow=ub>(read<i32>(%[[VALUE_n]]), const<i32>(1)));
+// IR-NEXT:         let %[[VALUE_a:[0-9]+]] a: array<i32, 3> [storage=automatic] = aggregate<array<i32, 3>, zero_fill=true>(index0 = read<i32>(%[[VALUE_n]]));
+// IR-NEXT:         let %[[VALUE_copies:[0-9]+]] copies: array<@type[[TYPE_P]], 2> [storage=automatic] [align=16] = aggregate<array<@type[[TYPE_P]], 2>, zero_fill=false>(index0 = copy<@type[[TYPE_P]], reason=assign>(read<@type[[TYPE_P]]>(%[[VALUE_p]])), index1 = aggregate<@type[[TYPE_P]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)));
+// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(%[[VALUE_p]])), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_a]]), const<i32>(0))))), read<i32>(field1(deref(ptr_offset<ptr<@type[[TYPE_P]]>, subtract=false, element=@type[[TYPE_P]], overflow=ub>(array_decay<ptr<@type[[TYPE_P]]>, length=Some(2)>(%[[VALUE_copies]]), const<i32>(1))))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -41,16 +41,16 @@ sub1 (long long int foobar)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 d: i8;
 // DEFAULT-NEXT:         field2 s: i16;
 // DEFAULT-NEXT:         field3 i: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 1, 2, 4]];
-// DEFAULT-NEXT:     global %1 bar: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @sub1(%3 foobar: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 tmp: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=explicit>(addr_of<ptr<i64>>(%3));
-// DEFAULT-NEXT:         return read<i32>(field3(deref(read<ptr<@type0>>(%4))));
+// DEFAULT-NEXT:     global %[[VALUE_bar:[0-9]+]] bar: @type[[TYPE_foo]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_sub1:[0-9]+]] @sub1(%[[VALUE_foobar:[0-9]+]] foobar: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_tmp:[0-9]+]] tmp: ptr<@type[[TYPE_foo]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_foo]]>, reason=explicit>(addr_of<ptr<i64>>(%[[VALUE_foobar]]));
+// DEFAULT-NEXT:         return read<i32>(field3(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_tmp]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

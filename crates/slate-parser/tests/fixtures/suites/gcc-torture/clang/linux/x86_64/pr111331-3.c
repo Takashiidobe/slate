@@ -40,19 +40,19 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 d: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%1), const<i32>(30));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%[[VALUE_b]]), const<i32>(30));
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %4 t: i32 [storage=automatic];
-// DEFAULT-NEXT:             write<i32>(%4, conditional<i32>(lt<i32>(read<i32>(%3), const<i32>(29)), const<i32>(29), conditional<i32>(gt<i32>(read<i32>(%3), const<i32>(28)), const<i32>(28), read<i32>(%3))));
-// DEFAULT-NEXT:             write<i32>(%0, read<i32>(%4));
+// DEFAULT-NEXT:             let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic];
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_t]], conditional<i32>(lt<i32>(read<i32>(%[[VALUE_d]]), const<i32>(29)), const<i32>(29), conditional<i32>(gt<i32>(read<i32>(%[[VALUE_d]]), const<i32>(28)), const<i32>(28), read<i32>(%[[VALUE_d]]))));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE_t]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %5 t: volatile i32 [storage=automatic] = read<i32>(%0);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%0), const<i32>(28))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
+// DEFAULT-NEXT:         let %[[VALUE_t_2:[0-9]+]] t: volatile i32 [storage=automatic] = read<i32>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(28))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

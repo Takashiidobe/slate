@@ -71,41 +71,41 @@ g (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 fsi: ptr<fn(i32) -> void>;
 // DEFAULT-NEXT:         field1 fd32: ptr<fn(d32) -> void>;
 // DEFAULT-NEXT:         field2 fd64: ptr<fn(d64) -> void>;
 // DEFAULT-NEXT:         field3 fd128: ptr<fn(d128) -> void>;
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 16, 24]];
-// DEFAULT-NEXT:     global %5 x: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 si: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 ui: u32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 d32: d32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 d64: d64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 d128: d128 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @fsi(%12 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @fd32(%13 <unnamed>: d32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @fd64(%14 <unnamed>: d64) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @fd128(%15 <unnamed>: d128) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %11 @g() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<d32>(%8)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(read<ptr<fn(i32) -> void>>(field0(%5)), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<d32>(%8)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<d64>(%9)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(read<ptr<fn(i32) -> void>>(field0(%5)), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<d64>(%9)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<d128>(%10)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(read<ptr<fn(i32) -> void>>(field0(%5)), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<d128>(%10)));
-// DEFAULT-NEXT:         call<void, signature=fn(d32) -> void>(%1, int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(read<i32>(%6)));
-// DEFAULT-NEXT:         call<void, signature=fn(d32) -> void>(read<ptr<fn(d32) -> void>>(field1(%5)), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(read<i32>(%6)));
-// DEFAULT-NEXT:         call<void, signature=fn(d64) -> void>(%2, int_to_float<d64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(read<u32>(%7)));
-// DEFAULT-NEXT:         call<void, signature=fn(d64) -> void>(read<ptr<fn(d64) -> void>>(field2(%5)), int_to_float<d64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(read<u32>(%7)));
-// DEFAULT-NEXT:         call<void, signature=fn(d128) -> void>(%3, int_to_float<d128, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%6)));
-// DEFAULT-NEXT:         call<void, signature=fn(d128) -> void>(read<ptr<fn(d128) -> void>>(field3(%5)), int_to_float<d128, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(read<u32>(%7)));
-// DEFAULT-NEXT:         call<void, signature=fn(d32) -> void>(%1, float_convert<d32, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)));
-// DEFAULT-NEXT:         call<void, signature=fn(d32) -> void>(read<ptr<fn(d32) -> void>>(field1(%5)), float_convert<d32, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)));
-// DEFAULT-NEXT:         call<void, signature=fn(d64) -> void>(%2, float_convert<d64, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)));
-// DEFAULT-NEXT:         call<void, signature=fn(d64) -> void>(read<ptr<fn(d64) -> void>>(field2(%5)), float_convert<d64, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)));
-// DEFAULT-NEXT:         call<void, signature=fn(d128) -> void>(%3, float_convert<d128, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)));
-// DEFAULT-NEXT:         call<void, signature=fn(d128) -> void>(read<ptr<fn(d128) -> void>>(field3(%5)), float_convert<d128, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)));
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE_s]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_si:[0-9]+]] si: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ui:[0-9]+]] ui: u32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d32:[0-9]+]] d32: d32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d64:[0-9]+]] d64: d64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d128:[0-9]+]] d128: d128 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fsi:[0-9]+]] @fsi(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fd32:[0-9]+]] @fd32(%[[VALUE1:[0-9]+]] <unnamed>: d32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fd64:[0-9]+]] @fd64(%[[VALUE2:[0-9]+]] <unnamed>: d64) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fd128:[0-9]+]] @fd128(%[[VALUE3:[0-9]+]] <unnamed>: d128) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_fsi]], float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<d32>(%[[VALUE_d32]])));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(read<ptr<fn(i32) -> void>>(field0(%[[VALUE_x]])), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<d32>(%[[VALUE_d32]])));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_fsi]], float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<d64>(%[[VALUE_d64]])));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(read<ptr<fn(i32) -> void>>(field0(%[[VALUE_x]])), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<d64>(%[[VALUE_d64]])));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_fsi]], float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<d128>(%[[VALUE_d128]])));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(read<ptr<fn(i32) -> void>>(field0(%[[VALUE_x]])), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<d128>(%[[VALUE_d128]])));
+// DEFAULT-NEXT:         call<void, signature=fn(d32) -> void>(%[[VALUE_fd32]], int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_si]])));
+// DEFAULT-NEXT:         call<void, signature=fn(d32) -> void>(read<ptr<fn(d32) -> void>>(field1(%[[VALUE_x]])), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_si]])));
+// DEFAULT-NEXT:         call<void, signature=fn(d64) -> void>(%[[VALUE_fd64]], int_to_float<d64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(read<u32>(%[[VALUE_ui]])));
+// DEFAULT-NEXT:         call<void, signature=fn(d64) -> void>(read<ptr<fn(d64) -> void>>(field2(%[[VALUE_x]])), int_to_float<d64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(read<u32>(%[[VALUE_ui]])));
+// DEFAULT-NEXT:         call<void, signature=fn(d128) -> void>(%[[VALUE_fd128]], int_to_float<d128, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_si]])));
+// DEFAULT-NEXT:         call<void, signature=fn(d128) -> void>(read<ptr<fn(d128) -> void>>(field3(%[[VALUE_x]])), int_to_float<d128, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(read<u32>(%[[VALUE_ui]])));
+// DEFAULT-NEXT:         call<void, signature=fn(d32) -> void>(%[[VALUE_fd32]], float_convert<d32, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)));
+// DEFAULT-NEXT:         call<void, signature=fn(d32) -> void>(read<ptr<fn(d32) -> void>>(field1(%[[VALUE_x]])), float_convert<d32, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)));
+// DEFAULT-NEXT:         call<void, signature=fn(d64) -> void>(%[[VALUE_fd64]], float_convert<d64, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)));
+// DEFAULT-NEXT:         call<void, signature=fn(d64) -> void>(read<ptr<fn(d64) -> void>>(field2(%[[VALUE_x]])), float_convert<d64, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)));
+// DEFAULT-NEXT:         call<void, signature=fn(d128) -> void>(%[[VALUE_fd128]], float_convert<d128, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)));
+// DEFAULT-NEXT:         call<void, signature=fn(d128) -> void>(read<ptr<fn(d128) -> void>>(field3(%[[VALUE_x]])), float_convert<d128, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

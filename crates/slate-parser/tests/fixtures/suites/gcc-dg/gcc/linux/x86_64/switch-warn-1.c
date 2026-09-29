@@ -72,36 +72,36 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @foo1(%3 i: u8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         switch %8 reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%3)))
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo1:[0-9]+]] @foo1(%[[VALUE_i:[0-9]+]] i: u8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         switch %[[VALUE1:[0-9]+]] reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_i]])))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %8 const<i32>(-1):
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(-1):
 // DEFAULT-NEXT:                     return const<i32>(1);
-// DEFAULT-NEXT:                 case %8 const<i32>(256):
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(256):
 // DEFAULT-NEXT:                     return const<i32>(2);
-// DEFAULT-NEXT:                 default %8:
+// DEFAULT-NEXT:                 default %[[VALUE1]]:
 // DEFAULT-NEXT:                     return const<i32>(3);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @foo2(%5 i: u8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         switch %9 reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%5)))
+// DEFAULT-NEXT:     fn %[[VALUE_foo2:[0-9]+]] @foo2(%[[VALUE_i_2:[0-9]+]] i: u8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         switch %[[VALUE2:[0-9]+]] reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_i_2]])))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %9 const<i32>(-1) ... const<i32>(1):
+// DEFAULT-NEXT:                 case %[[VALUE2]] const<i32>(-1) ... const<i32>(1):
 // DEFAULT-NEXT:                     return const<i32>(1);
-// DEFAULT-NEXT:                 case %9 const<i32>(254) ... const<i32>(256):
+// DEFAULT-NEXT:                 case %[[VALUE2]] const<i32>(254) ... const<i32>(256):
 // DEFAULT-NEXT:                     return const<i32>(2);
-// DEFAULT-NEXT:                 default %9:
+// DEFAULT-NEXT:                 default %[[VALUE2]]:
 // DEFAULT-NEXT:                     return const<i32>(3);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u8) -> i32>(%2, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(10)))), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u8) -> i32>(%4, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(10)))), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u8) -> i32>(%[[VALUE_foo1]], reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(10)))), const<i32>(3))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u8) -> i32>(%[[VALUE_foo2]], reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(10)))), const<i32>(3))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

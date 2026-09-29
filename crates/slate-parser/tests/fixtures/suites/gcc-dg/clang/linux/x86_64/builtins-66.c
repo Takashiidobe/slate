@@ -36,15 +36,15 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = enum : u32 {
-// DEFAULT-NEXT:         %0 E0 = const<i32>(0);
-// DEFAULT-NEXT:         %1 E1 = const<i32>(1);
-// DEFAULT-NEXT:         %2 E2 = const<i32>(2);
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_E0:[0-9]+]] E0 = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_E1:[0-9]+]] E1 = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_E2:[0-9]+]] E2 = const<i32>(2);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %4 e: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %7 @__builtin_popcount(%6 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %5 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(u32) -> i32>(%7, reinterpret<u32, reason=arg, fits=unknown>(reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type0>(%4)))));
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: @type[[TYPE0]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_popcount:[0-9]+]] @__builtin_popcount(%[[VALUE0:[0-9]+]] <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(u32) -> i32>(%[[VALUE___builtin_popcount]], reinterpret<u32, reason=arg, fits=unknown>(reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_e]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

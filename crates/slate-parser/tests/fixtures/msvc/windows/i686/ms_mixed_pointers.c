@@ -37,18 +37,18 @@ int *widen_unsigned(void) { return zero_extended; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 wide: ptr<i32, ptr64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 wide_const: ptr<i32, ptr64> [storage=static] [const] = null<ptr<i32, ptr64>> [linkage=external];
-// DEFAULT-NEXT:     global %2 plain_narrow: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 zero_extended: ptr<i32, ptr32_uptr> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @narrow() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return address_space_cast<ptr<i32>, reason=return>(read<ptr<i32, ptr64>>(%0));
+// DEFAULT-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: ptr<i32, ptr64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wide_const:[0-9]+]] wide_const: ptr<i32, ptr64> [storage=static] [const] = null<ptr<i32, ptr64>> [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_plain_narrow:[0-9]+]] plain_narrow: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_zero_extended:[0-9]+]] zero_extended: ptr<i32, ptr32_uptr> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_narrow:[0-9]+]] @narrow() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return address_space_cast<ptr<i32>, reason=return>(read<ptr<i32, ptr64>>(%[[VALUE_wide]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @widen(%6 p: ptr<i32>) -> ptr<i32, ptr64> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return address_space_cast<ptr<i32, ptr64>, reason=return>(read<ptr<i32>>(%6));
+// DEFAULT-NEXT:     fn %[[VALUE_widen:[0-9]+]] @widen(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> ptr<i32, ptr64> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return address_space_cast<ptr<i32, ptr64>, reason=return>(read<ptr<i32>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @widen_unsigned() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return address_space_cast<ptr<i32>, reason=return>(read<ptr<i32, ptr32_uptr>>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_widen_unsigned:[0-9]+]] @widen_unsigned() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return address_space_cast<ptr<i32>, reason=return>(read<ptr<i32, ptr32_uptr>>(%[[VALUE_zero_extended]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

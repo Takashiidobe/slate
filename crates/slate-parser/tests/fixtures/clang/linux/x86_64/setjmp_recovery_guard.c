@@ -64,69 +64,69 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __jmp_buf = array<i64, 8>;
-// DEFAULT-NEXT:     type @type1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___jmp_buf:[0-9]+]] __jmp_buf = array<i64, 8>;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 __val: array<u64, 16>;
 // DEFAULT-NEXT:     } [size=128, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 __sigset_t = @type1;
-// DEFAULT-NEXT:     type @type3 __jmp_buf_tag = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___sigset_t:[0-9]+]] __sigset_t = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE___jmp_buf_tag:[0-9]+]] __jmp_buf_tag = struct {
 // DEFAULT-NEXT:         field0 __jmpbuf: array<i64, 8>;
 // DEFAULT-NEXT:         field1 __mask_was_saved: i32;
-// DEFAULT-NEXT:         field2 __saved_mask: @type1;
+// DEFAULT-NEXT:         field2 __saved_mask: @type[[TYPE0]];
 // DEFAULT-NEXT:     } [size=200, align=8, offsets=[0, 64, 72]];
-// DEFAULT-NEXT:     type @type4 jmp_buf = array<@type3, 1>;
-// DEFAULT-NEXT:     global %12 env: array<@type3, 1> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     global %13 failures: i32 [storage=static] = const<i32>(0) [linkage=internal];
-// DEFAULT-NEXT:     global %27 .str27: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([70, 65, 73, 76, 58, 32, 37, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %28 .str28: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([99, 97, 115, 101, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %29 .str29: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([80, 65, 83, 83, 58, 32, 99, 97, 115, 101, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %31 .str31: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([108, 111, 111, 112, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %32 .str32: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([102, 97, 105, 108, 117, 114, 101, 115, 58, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %6 @_setjmp(%23 __env: ptr<@type3> [array=1]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @longjmp(%24 __env: ptr<@type3> [array=1], %25 __val: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %11 @printf(%26 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %14 @record_failure(%15 phase: ptr<const i8>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %33: i32 [synthetic] = read<i32>(%13);
-// DEFAULT-NEXT:         let %34: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%33), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%13, read<i32>(%34));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%11, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%27)), read<ptr<const i8>>(%15));
+// DEFAULT-NEXT:     type @type[[TYPE_jmp_buf:[0-9]+]] jmp_buf = array<@type[[TYPE___jmp_buf_tag]], 1>;
+// DEFAULT-NEXT:     global %[[VALUE_env:[0-9]+]] env: array<@type[[TYPE___jmp_buf_tag]], 1> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_failures:[0-9]+]] failures: i32 [storage=static] = const<i32>(0) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([70, 65, 73, 76, 58, 32, 37, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([99, 97, 115, 101, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 15> [storage=static] = code_units<array<i8, 15>>([80, 65, 83, 83, 58, 32, 99, 97, 115, 101, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([108, 111, 111, 112, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([102, 97, 105, 108, 117, 114, 101, 115, 58, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE__setjmp:[0-9]+]] @_setjmp(%[[VALUE___env:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_longjmp:[0-9]+]] @longjmp(%[[VALUE___env_2:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1], %[[VALUE___val:[0-9]+]] __val: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_record_failure:[0-9]+]] @record_failure(%[[VALUE_phase:[0-9]+]] phase: ptr<const i8>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_failures]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_failures]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), read<ptr<const i8>>(%[[VALUE_phase]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @inner_check(%17 ok: i32) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%17), const<i32>(0)))
+// DEFAULT-NEXT:     fn %[[VALUE_inner_check:[0-9]+]] @inner_check(%[[VALUE_ok:[0-9]+]] ok: i32) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%[[VALUE_ok]]), const<i32>(0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type3>, i32) -> void>(%9, array_decay<ptr<@type3>, length=Some(1)>(%12), const<i32>(1));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE___jmp_buf_tag]]>, i32) -> void>(%[[VALUE_longjmp]], array_decay<ptr<@type[[TYPE___jmp_buf_tag]]>, length=Some(1)>(%[[VALUE_env]]), const<i32>(1));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @run_case(%19 id: i32, %20 should_fail: i32) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type3>) -> i32>(%6, array_decay<ptr<@type3>, length=Some(1)>(%12)), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_run_case:[0-9]+]] @run_case(%[[VALUE_id:[0-9]+]] id: i32, %[[VALUE_should_fail:[0-9]+]] should_fail: i32) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE___jmp_buf_tag]]>) -> i32>(%[[VALUE__setjmp]], array_decay<ptr<@type[[TYPE___jmp_buf_tag]]>, length=Some(1)>(%[[VALUE_env]])), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<const i8>) -> void>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%28)));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<const i8>) -> void>(%[[VALUE_record_failure]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_2]])));
 // DEFAULT-NEXT:                 return;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%16, from_bool<i32, reason=arg>(not<bool>(ne<i32>(read<i32>(%20), const<i32>(0)))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%11, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%29)), read<i32>(%19));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_inner_check]], from_bool<i32, reason=arg>(not<bool>(ne<i32>(read<i32>(%[[VALUE_should_fail]]), const<i32>(0)))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(15)>(%[[VALUE_str_3]])), read<i32>(%[[VALUE_id]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         for %30
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %22 i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%22), const<i32>(4))
+// DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(4))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %35: i32 [synthetic] = read<i32>(%22);
-// DEFAULT-NEXT:                 let %36: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%35), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%22, read<i32>(%36));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE4]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<@type3>) -> i32>(%6, array_decay<ptr<@type3>, length=Some(1)>(%12)), const<i32>(0))
+// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE___jmp_buf_tag]]>) -> i32>(%[[VALUE__setjmp]], array_decay<ptr<@type[[TYPE___jmp_buf_tag]]>, length=Some(1)>(%[[VALUE_env]])), const<i32>(0))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             call<void, signature=fn(ptr<const i8>) -> void>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%31)));
-// DEFAULT-NEXT:                             continue %30;
+// DEFAULT-NEXT:                             call<void, signature=fn(ptr<const i8>) -> void>(%[[VALUE_record_failure]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_4]])));
+// DEFAULT-NEXT:                             continue %[[VALUE2]];
 // DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32) -> void>(%18, read<i32>(%22), from_bool<i32, reason=arg>(eq<i32>(read<i32>(%22), const<i32>(2))));
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32) -> void>(%[[VALUE_run_case]], read<i32>(%[[VALUE_i]]), from_bool<i32, reason=arg>(eq<i32>(read<i32>(%[[VALUE_i]]), const<i32>(2))));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%11, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%32)), read<i32>(%13));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str_5]])), read<i32>(%[[VALUE_failures]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

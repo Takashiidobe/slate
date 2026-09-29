@@ -40,10 +40,10 @@ int i;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo() -> i575b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %1 d: i576b [storage=automatic];
-// DEFAULT-NEXT:         let %2 e: i575b [storage=automatic] = truncate<i575b, reason=assign, fits=unknown>(mul<i576b, overflow=ub>(read<i576b>(%1), widen<i576b, reason=usual_arith>(const<i7b>(42))));
-// DEFAULT-NEXT:         return read<i575b>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i575b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i576b [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: i575b [storage=automatic] = truncate<i575b, reason=assign, fits=unknown>(mul<i576b, overflow=ub>(read<i576b>(%[[VALUE_d]]), widen<i576b, reason=usual_arith>(const<i7b>(42))));
+// DEFAULT-NEXT:         return read<i575b>(%[[VALUE_e]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

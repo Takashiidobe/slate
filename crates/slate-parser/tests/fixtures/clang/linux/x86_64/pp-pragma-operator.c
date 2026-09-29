@@ -37,17 +37,17 @@ int expression(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 before_pop: i32 [storage=static] = const<i32>(9) [linkage=external];
-// DEFAULT-NEXT:     global %1 after_pop: i32 [storage=static] = const<i32>(7) [linkage=external];
-// DEFAULT-NEXT:     global %2 left: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 right: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @same_line() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 x: i32 [storage=automatic] = const<i32>(4);
-// DEFAULT-NEXT:         return read<i32>(%5);
+// DEFAULT-NEXT:     global %[[VALUE_before_pop:[0-9]+]] before_pop: i32 [storage=static] = const<i32>(9) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_after_pop:[0-9]+]] after_pop: i32 [storage=static] = const<i32>(7) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_left:[0-9]+]] left: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_right:[0-9]+]] right: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_same_line:[0-9]+]] @same_line() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic] = const<i32>(4);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @expression() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 x: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%7), const<i32>(2));
+// DEFAULT-NEXT:     fn %[[VALUE_expression:[0-9]+]] @expression() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_x_2]]), const<i32>(2));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

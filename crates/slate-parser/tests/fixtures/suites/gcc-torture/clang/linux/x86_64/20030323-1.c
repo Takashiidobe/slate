@@ -40,14 +40,14 @@ banana(long citron)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @banana(%1 citron: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         switch %2 read<i64>(%1)
+// DEFAULT-NEXT:     fn %[[VALUE_banana:[0-9]+]] @banana(%[[VALUE_citron:[0-9]+]] citron: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i64>(%[[VALUE_citron]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %2 const<i64>(2147483648):
-// DEFAULT-NEXT:                     case %2 const<i64>(262144):
-// DEFAULT-NEXT:                         case %2 const<i64>(262145):
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i64>(2147483648):
+// DEFAULT-NEXT:                     case %[[VALUE0]] const<i64>(262144):
+// DEFAULT-NEXT:                         case %[[VALUE0]] const<i64>(262145):
 // DEFAULT-NEXT:                             return const<i32>(1);
-// DEFAULT-NEXT:                 break %2;
+// DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -31,6 +31,6 @@ char array[XLINE == __LINE__ ? 1 : -1];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 array: array<i8, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_array:[0-9]+]] array: array<i8, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

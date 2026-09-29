@@ -63,33 +63,33 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:         field1 a: array<i8, 1>;
 // DEFAULT-NEXT:         field2 p: ptr<fn() -> void>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     type @type1 B = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
 // DEFAULT-NEXT:         field0 a: array<i8, 12>;
 // DEFAULT-NEXT:     } [size=12, align=1, offsets=[0]];
-// DEFAULT-NEXT:     global %5 b: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %18 .str18: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([102, 111, 111, 98, 97, 114, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %13 @__builtin_strcpy(%11 <unnamed>: ptr<i8>, %12 <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @init(%3 d: ptr<i8>, %4 s: ptr<const i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%13, read<ptr<i8>>(%3), read<ptr<const i8>>(%4));
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE_B]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([102, 111, 111, 98, 97, 114, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_strcpy:[0-9]+]] @__builtin_strcpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_init:[0-9]+]] @init(%[[VALUE_d:[0-9]+]] d: ptr<i8>, %[[VALUE_s:[0-9]+]] s: ptr<const i8>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%[[VALUE___builtin_strcpy]], read<ptr<i8>>(%[[VALUE_d]]), read<ptr<const i8>>(%[[VALUE_s]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @__builtin_memcpy(%14 <unnamed>: ptr<void>, %15 <unnamed>: ptr<const void>, %16 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %20 @__builtin_strlen(%19 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %21 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @test_dynamic_type(%7 p: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 q: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%17, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(field1(deref(read<ptr<@type0>>(%7))))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type1>>(%5)), const<u64>(12)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, ptr<const i8>) -> void>(%2, read<ptr<i8>>(%8), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%18)));
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(6))), call<u64, signature=fn(ptr<const i8>) -> u64>(%20, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%8))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%21);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE2:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE3:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE4:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_strlen:[0-9]+]] @__builtin_strlen(%[[VALUE5:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_test_dynamic_type:[0-9]+]] @test_dynamic_type(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_A]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]]))))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_B]]>>(%[[VALUE_b]])), const<u64>(12)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, ptr<const i8>) -> void>(%[[VALUE_init]], read<ptr<i8>>(%[[VALUE_q]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])));
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(6))), call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_q]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @__builtin_malloc(%22 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10 p: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%23, const<u64>(16)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%6, read<ptr<@type0>>(%10));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE6:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<@type[[TYPE_A]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_A]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], const<u64>(16)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_test_dynamic_type]], read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p_2]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

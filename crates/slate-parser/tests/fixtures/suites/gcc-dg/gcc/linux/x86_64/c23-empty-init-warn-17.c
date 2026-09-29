@@ -76,60 +76,60 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 a: u8;
 // DEFAULT-NEXT:         field1 b: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type1 B = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
 // DEFAULT-NEXT:         field0 a: u8;
 // DEFAULT-NEXT:         field1 b: i64;
-// DEFAULT-NEXT:         field2 c: array<@type0, 3>;
+// DEFAULT-NEXT:         field2 c: array<@type[[TYPE_A]], 3>;
 // DEFAULT-NEXT:     } [size=64, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     type @type2 C = struct {
-// DEFAULT-NEXT:         field0 a: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_C:[0-9]+]] C = struct {
+// DEFAULT-NEXT:         field0 a: @type[[TYPE_A]];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 D = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_D:[0-9]+]] D = struct {
 // DEFAULT-NEXT:         field0 a: u8;
 // DEFAULT-NEXT:         field1 b: i64;
-// DEFAULT-NEXT:         field2 c: @type2;
+// DEFAULT-NEXT:         field2 c: @type[[TYPE_C]];
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     type @type4 E = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_E:[0-9]+]] E = struct {
 // DEFAULT-NEXT:         field0 a: i64;
 // DEFAULT-NEXT:         field1 b: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type5 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 a: u8;
 // DEFAULT-NEXT:         field1 b: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type6 V = union {
+// DEFAULT-NEXT:     type @type[[TYPE_V:[0-9]+]] V = union {
 // DEFAULT-NEXT:         field0 a: i64;
 // DEFAULT-NEXT:         field1 b: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type7 F = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_F:[0-9]+]] F = struct {
 // DEFAULT-NEXT:         field0 a: i64;
-// DEFAULT-NEXT:         field1 b: @type5;
+// DEFAULT-NEXT:         field1 b: @type[[TYPE_U]];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %9 a: @type0 [storage=static] = aggregate<@type0, zero_fill=true>() [linkage=internal];
-// DEFAULT-NEXT:     global %10 b: @type1 [storage=static] = aggregate<@type1, zero_fill=true>() [linkage=internal];
-// DEFAULT-NEXT:     global %11 c: @type1 [storage=static] = aggregate<@type1, zero_fill=true>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field1 = widen<i64, reason=assign>(const<i32>(2))) [linkage=internal];
-// DEFAULT-NEXT:     global %12 d: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))), field1 = widen<i64, reason=assign>(const<i32>(1)), field2 = aggregate<array<@type0, 3>, zero_fill=true>(index2 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))), field1 = widen<i64, reason=assign>(const<i32>(4))))) [linkage=internal];
-// DEFAULT-NEXT:     global %13 e: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field1 = widen<i64, reason=assign>(const<i32>(2)), field2 = aggregate<array<@type0, 3>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))), field1 = widen<i64, reason=assign>(const<i32>(4))), index1 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(5))), field1 = widen<i64, reason=assign>(const<i32>(6))), index2 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(7))), field1 = widen<i64, reason=assign>(const<i32>(8))))) [linkage=internal];
-// DEFAULT-NEXT:     global %14 f: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field1 = widen<i64, reason=assign>(const<i32>(2)), field2 = aggregate<array<@type0, 3>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))), field1 = widen<i64, reason=assign>(const<i32>(4))), index1 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(5))), field1 = widen<i64, reason=assign>(const<i32>(6))), index2 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(7))), field1 = widen<i64, reason=assign>(const<i32>(8))))) [linkage=internal];
-// DEFAULT-NEXT:     global %15 g: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field1 = widen<i64, reason=assign>(const<i32>(2)), field2 = aggregate<array<@type0, 3>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))), field1 = widen<i64, reason=assign>(const<i32>(4))), index1 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(5))), field1 = widen<i64, reason=assign>(const<i32>(6))), index2 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(7))), field1 = widen<i64, reason=assign>(const<i32>(8))))) [linkage=internal];
-// DEFAULT-NEXT:     global %16 h: @type5 [storage=static] = aggregate<@type5, zero_fill=false>() [linkage=internal];
-// DEFAULT-NEXT:     global %17 i: @type5 [storage=static] = aggregate<@type5, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1)))) [linkage=internal];
-// DEFAULT-NEXT:     global %18 j: @type5 [storage=static] = aggregate<@type5, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1)))) [linkage=internal];
-// DEFAULT-NEXT:     global %19 k: @type5 [storage=static] = aggregate<@type5, zero_fill=false>(field1 = widen<i64, reason=assign>(const<i32>(1))) [linkage=internal];
-// DEFAULT-NEXT:     global %20 l: @type3 [storage=static] = aggregate<@type3, zero_fill=true>() [linkage=internal];
-// DEFAULT-NEXT:     global %21 m: @type3 [storage=static] = aggregate<@type3, zero_fill=true>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field1 = widen<i64, reason=assign>(const<i32>(2))) [linkage=internal];
-// DEFAULT-NEXT:     global %22 n: @type3 [storage=static] = aggregate<@type3, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field1 = widen<i64, reason=assign>(const<i32>(2)), field2 = aggregate<@type2, zero_fill=false>(field0 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))), field1 = widen<i64, reason=assign>(const<i32>(4))))) [linkage=internal];
-// DEFAULT-NEXT:     global %23 o: @type2 [storage=static] = aggregate<@type2, zero_fill=false>(field0 = aggregate<@type0, zero_fill=true>()) [linkage=internal];
-// DEFAULT-NEXT:     global %24 p: @type2 [storage=static] = aggregate<@type2, zero_fill=false>(field0 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))), field1 = widen<i64, reason=assign>(const<i32>(4)))) [linkage=internal];
-// DEFAULT-NEXT:     global %25 q: @type4 [storage=static] = aggregate<@type4, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(1)), field1 = widen<i64, reason=assign>(const<i32>(2))) [linkage=internal];
-// DEFAULT-NEXT:     global %26 r: @type6 [storage=static] = aggregate<@type6, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(1))) [linkage=internal];
-// DEFAULT-NEXT:     global %27 s: @type7 [storage=static] = aggregate<@type7, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(1)), field1 = aggregate<@type5, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))))) [linkage=internal];
-// DEFAULT-NEXT:     global %28 t: @type7 [storage=static] = aggregate<@type7, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(1)), field1 = aggregate<@type5, zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))))) [linkage=internal];
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_A]] [storage=static] = aggregate<@type[[TYPE_A]], zero_fill=true>() [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE_B]] [storage=static] = aggregate<@type[[TYPE_B]], zero_fill=true>() [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: @type[[TYPE_B]] [storage=static] = aggregate<@type[[TYPE_B]], zero_fill=true>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field1 = widen<i64, reason=assign>(const<i32>(2))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: @type[[TYPE_B]] [storage=static] = aggregate<@type[[TYPE_B]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))), field1 = widen<i64, reason=assign>(const<i32>(1)), field2 = aggregate<array<@type[[TYPE_A]], 3>, zero_fill=true>(index2 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))), field1 = widen<i64, reason=assign>(const<i32>(4))))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: @type[[TYPE_B]] [storage=static] = aggregate<@type[[TYPE_B]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field1 = widen<i64, reason=assign>(const<i32>(2)), field2 = aggregate<array<@type[[TYPE_A]], 3>, zero_fill=false>(index0 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))), field1 = widen<i64, reason=assign>(const<i32>(4))), index1 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(5))), field1 = widen<i64, reason=assign>(const<i32>(6))), index2 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(7))), field1 = widen<i64, reason=assign>(const<i32>(8))))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: @type[[TYPE_B]] [storage=static] = aggregate<@type[[TYPE_B]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field1 = widen<i64, reason=assign>(const<i32>(2)), field2 = aggregate<array<@type[[TYPE_A]], 3>, zero_fill=false>(index0 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))), field1 = widen<i64, reason=assign>(const<i32>(4))), index1 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(5))), field1 = widen<i64, reason=assign>(const<i32>(6))), index2 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(7))), field1 = widen<i64, reason=assign>(const<i32>(8))))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: @type[[TYPE_B]] [storage=static] = aggregate<@type[[TYPE_B]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field1 = widen<i64, reason=assign>(const<i32>(2)), field2 = aggregate<array<@type[[TYPE_A]], 3>, zero_fill=false>(index0 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))), field1 = widen<i64, reason=assign>(const<i32>(4))), index1 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(5))), field1 = widen<i64, reason=assign>(const<i32>(6))), index2 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(7))), field1 = widen<i64, reason=assign>(const<i32>(8))))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_h:[0-9]+]] h: @type[[TYPE_U]] [storage=static] = aggregate<@type[[TYPE_U]], zero_fill=false>() [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: @type[[TYPE_U]] [storage=static] = aggregate<@type[[TYPE_U]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1)))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: @type[[TYPE_U]] [storage=static] = aggregate<@type[[TYPE_U]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1)))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_k:[0-9]+]] k: @type[[TYPE_U]] [storage=static] = aggregate<@type[[TYPE_U]], zero_fill=false>(field1 = widen<i64, reason=assign>(const<i32>(1))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_l:[0-9]+]] l: @type[[TYPE_D]] [storage=static] = aggregate<@type[[TYPE_D]], zero_fill=true>() [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_m:[0-9]+]] m: @type[[TYPE_D]] [storage=static] = aggregate<@type[[TYPE_D]], zero_fill=true>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field1 = widen<i64, reason=assign>(const<i32>(2))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_n:[0-9]+]] n: @type[[TYPE_D]] [storage=static] = aggregate<@type[[TYPE_D]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field1 = widen<i64, reason=assign>(const<i32>(2)), field2 = aggregate<@type[[TYPE_C]], zero_fill=false>(field0 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))), field1 = widen<i64, reason=assign>(const<i32>(4))))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_o:[0-9]+]] o: @type[[TYPE_C]] [storage=static] = aggregate<@type[[TYPE_C]], zero_fill=false>(field0 = aggregate<@type[[TYPE_A]], zero_fill=true>()) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: @type[[TYPE_C]] [storage=static] = aggregate<@type[[TYPE_C]], zero_fill=false>(field0 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))), field1 = widen<i64, reason=assign>(const<i32>(4)))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: @type[[TYPE_E]] [storage=static] = aggregate<@type[[TYPE_E]], zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(1)), field1 = widen<i64, reason=assign>(const<i32>(2))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_r:[0-9]+]] r: @type[[TYPE_V]] [storage=static] = aggregate<@type[[TYPE_V]], zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(1))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_F]] [storage=static] = aggregate<@type[[TYPE_F]], zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(1)), field1 = aggregate<@type[[TYPE_U]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_t:[0-9]+]] t: @type[[TYPE_F]] [storage=static] = aggregate<@type[[TYPE_F]], zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(1)), field1 = aggregate<@type[[TYPE_U]], zero_fill=false>(field0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))))) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

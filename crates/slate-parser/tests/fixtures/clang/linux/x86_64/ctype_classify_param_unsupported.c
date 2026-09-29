@@ -41,35 +41,35 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = enum : u32 {
-// DEFAULT-NEXT:         %0 _ISupper = const<i32>(256);
-// DEFAULT-NEXT:         %1 _ISlower = const<i32>(512);
-// DEFAULT-NEXT:         %2 _ISalpha = const<i32>(1024);
-// DEFAULT-NEXT:         %3 _ISdigit = const<i32>(2048);
-// DEFAULT-NEXT:         %4 _ISxdigit = const<i32>(4096);
-// DEFAULT-NEXT:         %5 _ISspace = const<i32>(8192);
-// DEFAULT-NEXT:         %6 _ISprint = const<i32>(16384);
-// DEFAULT-NEXT:         %7 _ISgraph = const<i32>(32768);
-// DEFAULT-NEXT:         %8 _ISblank = const<i32>(1);
-// DEFAULT-NEXT:         %9 _IScntrl = const<i32>(2);
-// DEFAULT-NEXT:         %10 _ISpunct = const<i32>(4);
-// DEFAULT-NEXT:         %11 _ISalnum = const<i32>(8);
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE__ISupper:[0-9]+]] _ISupper = const<i32>(256);
+// DEFAULT-NEXT:         %[[VALUE__ISlower:[0-9]+]] _ISlower = const<i32>(512);
+// DEFAULT-NEXT:         %[[VALUE__ISalpha:[0-9]+]] _ISalpha = const<i32>(1024);
+// DEFAULT-NEXT:         %[[VALUE__ISdigit:[0-9]+]] _ISdigit = const<i32>(2048);
+// DEFAULT-NEXT:         %[[VALUE__ISxdigit:[0-9]+]] _ISxdigit = const<i32>(4096);
+// DEFAULT-NEXT:         %[[VALUE__ISspace:[0-9]+]] _ISspace = const<i32>(8192);
+// DEFAULT-NEXT:         %[[VALUE__ISprint:[0-9]+]] _ISprint = const<i32>(16384);
+// DEFAULT-NEXT:         %[[VALUE__ISgraph:[0-9]+]] _ISgraph = const<i32>(32768);
+// DEFAULT-NEXT:         %[[VALUE__ISblank:[0-9]+]] _ISblank = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE__IScntrl:[0-9]+]] _IScntrl = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE__ISpunct:[0-9]+]] _ISpunct = const<i32>(4);
+// DEFAULT-NEXT:         %[[VALUE__ISalnum:[0-9]+]] _ISalnum = const<i32>(8);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %20 .str20: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([121, 101, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %21 .str21: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([110, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %13 @__ctype_b_loc() -> ptr<ptr<const u16>> [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %15 @printf(%19 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %16 @classify(%17 c: i8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%13))), widen<i32, reason=explicit>(read<i8>(%17))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1024))))));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([121, 101, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([110, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE___ctype_b_loc:[0-9]+]] @__ctype_b_loc() -> ptr<ptr<const u16>> [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_classify:[0-9]+]] @classify(%[[VALUE_c:[0-9]+]] c: i8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(deref(ptr_offset<ptr<const u16>, subtract=false, element=u16, overflow=ub>(read<ptr<const u16>>(deref(call<ptr<ptr<const u16>>, signature=fn() -> ptr<ptr<const u16>>>(%[[VALUE___ctype_b_loc]]))), widen<i32, reason=explicit>(read<i8>(%[[VALUE_c]]))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1024))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i8) -> i32>(%16, truncate<i8, reason=arg, fits=always>(const<i32>(65))), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i8) -> i32>(%[[VALUE_classify]], truncate<i8, reason=arg, fits=always>(const<i32>(65))), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%20)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%15, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%21)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -30,10 +30,10 @@ int use(void) { return sc(1) + fc(2); }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %1 @sc(%5 a: i32) -> i32 [linkage=external];
-// IR-NEXT:     fn %3 @fc(%6 a: i32) -> i32 [linkage=external];
-// IR-NEXT:     fn %4 @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<i32>(call<i32>(%1, const<i32>(1)), call<i32>(%3, const<i32>(2)));
+// IR-NEXT:     fn %[[VALUE_sc:[0-9]+]] @sc(%[[VALUE_a:[0-9]+]] a: i32) -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_fc:[0-9]+]] @fc(%[[VALUE_a_2:[0-9]+]] a: i32) -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_use:[0-9]+]] @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<i32>(call<i32>(%[[VALUE_sc]], const<i32>(1)), call<i32>(%[[VALUE_fc]], const<i32>(2)));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -37,12 +37,12 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @__builtin_inff() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %3 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %1 d: d32 [storage=automatic] = float_convert<d32, reason=explicit, rounding=nearest_even, exceptions=observable>(call<f32, signature=fn() -> f32>(%2));
-// DEFAULT-NEXT:         if not<bool>(float_class<bool, test=infinite>(float_convert<f64, reason=explicit, rounding=nearest_even, exceptions=observable>(read<d32>(%1))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff:[0-9]+]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: d32 [storage=automatic] = float_convert<d32, reason=explicit, rounding=nearest_even, exceptions=observable>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]));
+// DEFAULT-NEXT:         if not<bool>(float_class<bool, test=infinite>(float_convert<f64, reason=explicit, rounding=nearest_even, exceptions=observable>(read<d32>(%[[VALUE_d]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

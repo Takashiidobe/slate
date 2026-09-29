@@ -45,29 +45,29 @@ int wv14;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %8 wv1: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 wv6: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 wv9: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 wv10: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %12 wv11: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %13 wv12: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %14 wv13: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %15 wv14: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @wf1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_wv1:[0-9]+]] wv1: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wv6:[0-9]+]] wv6: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wv9:[0-9]+]] wv9: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wv10:[0-9]+]] wv10: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wv11:[0-9]+]] wv11: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wv12:[0-9]+]] wv12: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wv13:[0-9]+]] wv13: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wv14:[0-9]+]] wv14: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_wf1:[0-9]+]] @wf1() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @wf6() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_wf6:[0-9]+]] @wf6() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @wf9() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_wf9:[0-9]+]] @wf9() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @wf10() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_wf10:[0-9]+]] @wf10() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @wf11() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_wf11:[0-9]+]] @wf11() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @wf12() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_wf12:[0-9]+]] @wf12() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @wf13() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_wf13:[0-9]+]] @wf13() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @wf14() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_wf14:[0-9]+]] @wf14() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

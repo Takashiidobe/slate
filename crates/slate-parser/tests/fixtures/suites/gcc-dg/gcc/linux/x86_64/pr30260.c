@@ -59,34 +59,34 @@ enum E2 { e20 = (unsigned) INT_MAX, e21 }; /* { dg-warning "ISO C restricts enum
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = enum : i32 {
-// DEFAULT-NEXT:         %0 A1 = const<i32>(0);
-// DEFAULT-NEXT:         %1 A2 = const<i32>(-1);
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = enum : i32 {
+// DEFAULT-NEXT:         %[[VALUE_A1:[0-9]+]] A1 = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_A2:[0-9]+]] A2 = const<i32>(-1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 B = enum : i32 {
-// DEFAULT-NEXT:         %0 B1 = const<i32>(0);
-// DEFAULT-NEXT:         %1 B2 = const<i32>(-1);
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = enum : i32 {
+// DEFAULT-NEXT:         %[[VALUE_A1]] B1 = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_A2]] B2 = const<i32>(-1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type2 E1 = enum : u32 {
-// DEFAULT-NEXT:         %0 e10 = const<u32>(2147483647);
-// DEFAULT-NEXT:         %1 e11 = const<u32>(2147483648);
+// DEFAULT-NEXT:     type @type[[TYPE_E1:[0-9]+]] E1 = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_A1]] e10 = const<u32>(2147483647);
+// DEFAULT-NEXT:         %[[VALUE_A2]] e11 = const<u32>(2147483648);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type3 E2 = enum : u32 {
-// DEFAULT-NEXT:         %0 e20 = const<u32>(2147483647);
-// DEFAULT-NEXT:         %1 e21 = const<u32>(2147483648);
+// DEFAULT-NEXT:     type @type[[TYPE_E2:[0-9]+]] E2 = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_A1]] e20 = const<u32>(2147483647);
+// DEFAULT-NEXT:         %[[VALUE_A2]] e21 = const<u32>(2147483648);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     fn %0 @link_error() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 a: @type0 [storage=automatic] = int_to_enum<@type0, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:         let %9 b: @type1 [storage=automatic] = int_to_enum<@type1, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:         if not<bool>(lt<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(%8)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_A1]] @link_error() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_A]] [storage=automatic] = int_to_enum<@type[[TYPE_A]], reason=assign>(neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_B]] [storage=automatic] = int_to_enum<@type[[TYPE_B]], reason=assign>(neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:         if not<bool>(lt<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE_A]]>(%[[VALUE_a]])), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_A1]]);
 // DEFAULT-NEXT:         if not<bool>(lt<i32>(const<i32>(-1), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if not<bool>(lt<i32>(enum_to_int<i32, reason=promotion>(read<@type1>(%9)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_A1]]);
+// DEFAULT-NEXT:         if not<bool>(lt<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE_B]]>(%[[VALUE_b]])), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_A1]]);
 // DEFAULT-NEXT:         if not<bool>(lt<i32>(const<i32>(-1), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_A1]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

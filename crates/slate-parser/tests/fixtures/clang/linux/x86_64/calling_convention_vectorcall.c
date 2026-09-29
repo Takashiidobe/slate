@@ -35,12 +35,12 @@ int use(void) { return vc(1, 2.0) + vg(2) + sc(3) + pointer(4, 5.0); }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %8 pointer: ptr<fn vectorcall(i32, f64) -> i32> [storage=static] = function_decay<ptr<fn vectorcall(i32, f64) -> i32>>(%2) [linkage=external];
-// IR-NEXT:     fn %2 @vc(%10 a: i32, %11 b: f64) -> i32 [linkage=external] [abi=sysv64 vectorcall(scalar, scalar) -> scalar];
-// IR-NEXT:     fn %4 @vg(%12 a: i32) -> i32 [linkage=external] [abi=sysv64 vectorcall(scalar) -> scalar];
-// IR-NEXT:     fn %6 @sc(%13 a: i32) -> i32 [linkage=external];
-// IR-NEXT:     fn %9 @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<i32>(add<i32>(add<i32>(call<i32, abi=sysv64 vectorcall(scalar, scalar) -> scalar>(%2, const<i32>(1), const<f64>(2.0)), call<i32, abi=sysv64 vectorcall(scalar) -> scalar>(%4, const<i32>(2))), call<i32>(%6, const<i32>(3))), call<i32, abi=sysv64 vectorcall(scalar, scalar) -> scalar>(read<ptr<fn vectorcall(i32, f64) -> i32>>(%8), const<i32>(4), const<f64>(5.0)));
+// IR-NEXT:     global %[[VALUE_pointer:[0-9]+]] pointer: ptr<fn vectorcall(i32, f64) -> i32> [storage=static] = function_decay<ptr<fn vectorcall(i32, f64) -> i32>>(%[[VALUE_vc:[0-9]+]]) [linkage=external];
+// IR-NEXT:     fn %[[VALUE_vc]] @vc(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: f64) -> i32 [linkage=external] [abi=sysv64 vectorcall(scalar, scalar) -> scalar];
+// IR-NEXT:     fn %[[VALUE_vg:[0-9]+]] @vg(%[[VALUE_a_2:[0-9]+]] a: i32) -> i32 [linkage=external] [abi=sysv64 vectorcall(scalar) -> scalar];
+// IR-NEXT:     fn %[[VALUE_sc:[0-9]+]] @sc(%[[VALUE_a_3:[0-9]+]] a: i32) -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_use:[0-9]+]] @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<i32>(add<i32>(add<i32>(call<i32, abi=sysv64 vectorcall(scalar, scalar) -> scalar>(%[[VALUE_vc]], const<i32>(1), const<f64>(2.0)), call<i32, abi=sysv64 vectorcall(scalar) -> scalar>(%[[VALUE_vg]], const<i32>(2))), call<i32>(%[[VALUE_sc]], const<i32>(3))), call<i32, abi=sysv64 vectorcall(scalar, scalar) -> scalar>(read<ptr<fn vectorcall(i32, f64) -> i32>>(%[[VALUE_pointer]]), const<i32>(4), const<f64>(5.0)));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

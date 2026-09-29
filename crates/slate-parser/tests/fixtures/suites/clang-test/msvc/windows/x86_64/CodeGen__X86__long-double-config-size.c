@@ -32,11 +32,11 @@ long double func(long double param) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 global: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @func(%2 param: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 local: f64 [storage=automatic] = read<f64>(%2);
-// DEFAULT-NEXT:         write<f64>(%3, read<f64>(%2));
-// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%3), read<f64>(%2));
+// DEFAULT-NEXT:     global %[[VALUE_global:[0-9]+]] global: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_func:[0-9]+]] @func(%[[VALUE_param:[0-9]+]] param: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: f64 [storage=automatic] = read<f64>(%[[VALUE_param]]);
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_local]], read<f64>(%[[VALUE_param]]));
+// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_local]]), read<f64>(%[[VALUE_param]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -181,1441 +181,1441 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @tests192(%1 b: i192b) -> d64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<d64, reason=return, exact=false, rounding=nearest_even, exceptions=observable>(read<i192b>(%1));
+// DEFAULT-NEXT:     fn %[[VALUE_tests192:[0-9]+]] @tests192(%[[VALUE_b:[0-9]+]] b: i192b) -> d64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<d64, reason=return, exact=false, rounding=nearest_even, exceptions=observable>(read<i192b>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @testu192(%3 b: u192b) -> d64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<d64, reason=return, exact=false, rounding=nearest_even, exceptions=observable>(read<u192b>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_testu192:[0-9]+]] @testu192(%[[VALUE_b_2:[0-9]+]] b: u192b) -> d64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<d64, reason=return, exact=false, rounding=nearest_even, exceptions=observable>(read<u192b>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @tests575(%5 b: i575b) -> d64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<d64, reason=return, exact=false, rounding=nearest_even, exceptions=observable>(read<i575b>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE_tests575:[0-9]+]] @tests575(%[[VALUE_b_3:[0-9]+]] b: i575b) -> d64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<d64, reason=return, exact=false, rounding=nearest_even, exceptions=observable>(read<i575b>(%[[VALUE_b_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @testu575(%7 b: u575b) -> d64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<d64, reason=return, exact=false, rounding=nearest_even, exceptions=observable>(read<u575b>(%7));
+// DEFAULT-NEXT:     fn %[[VALUE_testu575:[0-9]+]] @testu575(%[[VALUE_b_4:[0-9]+]] b: u575b) -> d64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<d64, reason=return, exact=false, rounding=nearest_even, exceptions=observable>(read<u575b>(%[[VALUE_b_4]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @__builtin_memcmp(%11 <unnamed>: ptr<const void>, %12 <unnamed>: ptr<const void>, %13 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %15 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 a: d64 [storage=automatic];
-// DEFAULT-NEXT:         let %10 b: d64 [storage=automatic];
-// DEFAULT-NEXT:         write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i2b>(0))));
-// DEFAULT-NEXT:         call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i2b>(0)));
-// DEFAULT-NEXT:         write<d64>(%10, const<d64>(0.));
-// DEFAULT-NEXT:         let %16: bool [synthetic];
-// DEFAULT-NEXT:         if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(0.))
-// DEFAULT-NEXT:             write<bool>(%16, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%16, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:         let %17: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%16)
-// DEFAULT-NEXT:             write<bool>(%17, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i4b>(7))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i4b>(7)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(7.));
-// DEFAULT-NEXT:             let %18: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(7.))
-// DEFAULT-NEXT:                 write<bool>(%18, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%18, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%17, read<bool>(%18));
-// DEFAULT-NEXT:         let %19: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%17)
-// DEFAULT-NEXT:             write<bool>(%19, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i7b, overflow=ub>(const<i7b>(42)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i7b, overflow=ub>(const<i7b>(42))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(42.)));
-// DEFAULT-NEXT:             let %20: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(42.)))
-// DEFAULT-NEXT:                 write<bool>(%20, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%20, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%19, read<bool>(%20));
-// DEFAULT-NEXT:         let %21: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%19)
-// DEFAULT-NEXT:             write<bool>(%21, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i31b, overflow=ub>(const<i31b>(777777777)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i31b, overflow=ub>(const<i31b>(777777777))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(777777777.)));
-// DEFAULT-NEXT:             let %22: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(777777777.)))
-// DEFAULT-NEXT:                 write<bool>(%22, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%22, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%21, read<bool>(%22));
-// DEFAULT-NEXT:         let %23: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%21)
-// DEFAULT-NEXT:             write<bool>(%23, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i55b>(9999999999999000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i55b>(9999999999999000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999000.));
-// DEFAULT-NEXT:             let %24: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999000.))
-// DEFAULT-NEXT:                 write<bool>(%24, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%24, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%23, read<bool>(%24));
-// DEFAULT-NEXT:         let %25: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%23)
-// DEFAULT-NEXT:             write<bool>(%25, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i55b, overflow=ub>(const<i55b>(9999999999999999)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i55b, overflow=ub>(const<i55b>(9999999999999999))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(9999999999999999.)));
-// DEFAULT-NEXT:             let %26: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(9999999999999999.)))
-// DEFAULT-NEXT:                 write<bool>(%26, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%26, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%25, read<bool>(%26));
-// DEFAULT-NEXT:         let %27: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%25)
-// DEFAULT-NEXT:             write<bool>(%27, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i58b, overflow=ub>(const<i58b>(99999999999999994)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i58b, overflow=ub>(const<i58b>(99999999999999994))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(9999999999999999.e+1)));
-// DEFAULT-NEXT:             let %28: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(9999999999999999.e+1)))
-// DEFAULT-NEXT:                 write<bool>(%28, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%28, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%27, read<bool>(%28));
-// DEFAULT-NEXT:         let %29: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%27)
-// DEFAULT-NEXT:             write<bool>(%29, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i58b>(99999999999999995))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i58b>(99999999999999995)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(1000000000000000.e+2));
-// DEFAULT-NEXT:             let %30: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(1000000000000000.e+2))
-// DEFAULT-NEXT:                 write<bool>(%30, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%30, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%29, read<bool>(%30));
-// DEFAULT-NEXT:         let %31: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%29)
-// DEFAULT-NEXT:             write<bool>(%31, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i61b>(999999999999999900))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i61b>(999999999999999900)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+2));
-// DEFAULT-NEXT:             let %32: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+2))
-// DEFAULT-NEXT:                 write<bool>(%32, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%32, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%31, read<bool>(%32));
-// DEFAULT-NEXT:         let %33: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%31)
-// DEFAULT-NEXT:             write<bool>(%33, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i61b>(999999999999999949))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i61b>(999999999999999949)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+2));
-// DEFAULT-NEXT:             let %34: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+2))
-// DEFAULT-NEXT:                 write<bool>(%34, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%34, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%33, read<bool>(%34));
-// DEFAULT-NEXT:         let %35: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%33)
-// DEFAULT-NEXT:             write<bool>(%35, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i65b, overflow=ub>(const<i65b>(9999999999999999000)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i65b, overflow=ub>(const<i65b>(9999999999999999000))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(9999999999999999.e+3)));
-// DEFAULT-NEXT:             let %36: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(9999999999999999.e+3)))
-// DEFAULT-NEXT:                 write<bool>(%36, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%36, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%35, read<bool>(%36));
-// DEFAULT-NEXT:         let %37: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%35)
-// DEFAULT-NEXT:             write<bool>(%37, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i65b>(9999999999999999499))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i65b>(9999999999999999499)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+3));
-// DEFAULT-NEXT:             let %38: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+3))
-// DEFAULT-NEXT:                 write<bool>(%38, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%38, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%37, read<bool>(%38));
-// DEFAULT-NEXT:         let %39: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%37)
-// DEFAULT-NEXT:             write<bool>(%39, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i71b>(999999999999999900000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i71b>(999999999999999900000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+5));
-// DEFAULT-NEXT:             let %40: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+5))
-// DEFAULT-NEXT:                 write<bool>(%40, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%40, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%39, read<bool>(%40));
-// DEFAULT-NEXT:         let %41: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%39)
-// DEFAULT-NEXT:             write<bool>(%41, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i71b>(999999999999999949999))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i71b>(999999999999999949999)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+5));
-// DEFAULT-NEXT:             let %42: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+5))
-// DEFAULT-NEXT:                 write<bool>(%42, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%42, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%41, read<bool>(%42));
-// DEFAULT-NEXT:         let %43: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%41)
-// DEFAULT-NEXT:             write<bool>(%43, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i75b, overflow=ub>(const<i75b>(9999999999999999000000)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i75b, overflow=ub>(const<i75b>(9999999999999999000000))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(9999999999999999.e+6)));
-// DEFAULT-NEXT:             let %44: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(9999999999999999.e+6)))
-// DEFAULT-NEXT:                 write<bool>(%44, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%44, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%43, read<bool>(%44));
-// DEFAULT-NEXT:         let %45: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%43)
-// DEFAULT-NEXT:             write<bool>(%45, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i75b, overflow=ub>(const<i75b>(9999999999999999499999)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i75b, overflow=ub>(const<i75b>(9999999999999999499999))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(9999999999999999.e+6)));
-// DEFAULT-NEXT:             let %46: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(9999999999999999.e+6)))
-// DEFAULT-NEXT:                 write<bool>(%46, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%46, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%45, read<bool>(%46));
-// DEFAULT-NEXT:         let %47: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%45)
-// DEFAULT-NEXT:             write<bool>(%47, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i78b>(123456789012345600000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i78b>(123456789012345600000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(1234567890123456.e+8));
-// DEFAULT-NEXT:             let %48: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(1234567890123456.e+8))
-// DEFAULT-NEXT:                 write<bool>(%48, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%48, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%47, read<bool>(%48));
-// DEFAULT-NEXT:         let %49: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%47)
-// DEFAULT-NEXT:             write<bool>(%49, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i126b>(34242319854454290000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i126b>(34242319854454290000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(3424231985445429e+22));
-// DEFAULT-NEXT:             let %50: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(3424231985445429e+22))
-// DEFAULT-NEXT:                 write<bool>(%50, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%50, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%49, read<bool>(%50));
-// DEFAULT-NEXT:         let %51: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%49)
-// DEFAULT-NEXT:             write<bool>(%51, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i161b>(999999999999999900000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i161b>(999999999999999900000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+32));
-// DEFAULT-NEXT:             let %52: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+32))
-// DEFAULT-NEXT:                 write<bool>(%52, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%52, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%51, read<bool>(%52));
-// DEFAULT-NEXT:         let %53: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%51)
-// DEFAULT-NEXT:             write<bool>(%53, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i161b>(999999999999999949999999999999999999999999999999))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(const<i161b>(999999999999999949999999999999999999999999999999)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+32));
-// DEFAULT-NEXT:             let %54: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+32))
-// DEFAULT-NEXT:                 write<bool>(%54, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%54, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%53, read<bool>(%54));
-// DEFAULT-NEXT:         let %55: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%53)
-// DEFAULT-NEXT:             write<bool>(%55, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i191b, overflow=ub>(const<i191b>(999999999999999900000000000000000000000000000000000000000)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, widen<i192b, reason=arg>(neg<i191b, overflow=ub>(const<i191b>(999999999999999900000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(9999999999999999.e+41)));
-// DEFAULT-NEXT:             let %56: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(9999999999999999.e+41)))
-// DEFAULT-NEXT:                 write<bool>(%56, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%56, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%55, read<bool>(%56));
-// DEFAULT-NEXT:         let %57: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%55)
-// DEFAULT-NEXT:             write<bool>(%57, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(2138550877694459000000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(2138550877694459000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(2138550877694459e+42)));
-// DEFAULT-NEXT:             let %58: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(2138550877694459e+42)))
-// DEFAULT-NEXT:                 write<bool>(%58, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%58, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%57, read<bool>(%58));
-// DEFAULT-NEXT:         let %59: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%57)
-// DEFAULT-NEXT:             write<bool>(%59, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(2138550877694459500000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(2138550877694459500000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(2138550877694460e+42)));
-// DEFAULT-NEXT:             let %60: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(2138550877694460e+42)))
-// DEFAULT-NEXT:                 write<bool>(%60, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%60, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%59, read<bool>(%60));
-// DEFAULT-NEXT:         let %61: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%59)
-// DEFAULT-NEXT:             write<bool>(%61, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(2138550877694459499999999999999999999999999999999999999999))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(2138550877694459499999999999999999999999999999999999999999)));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(2138550877694459e+42)));
-// DEFAULT-NEXT:             let %62: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(2138550877694459e+42)))
-// DEFAULT-NEXT:                 write<bool>(%62, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%62, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%61, read<bool>(%62));
-// DEFAULT-NEXT:         let %63: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%61)
-// DEFAULT-NEXT:             write<bool>(%63, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(2138550877694459999999999999999999999999999999999999999999))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(2138550877694459999999999999999999999999999999999999999999)));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(2138550877694460e+42)));
-// DEFAULT-NEXT:             let %64: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(2138550877694460e+42)))
-// DEFAULT-NEXT:                 write<bool>(%64, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%64, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%63, read<bool>(%64));
-// DEFAULT-NEXT:         let %65: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%63)
-// DEFAULT-NEXT:             write<bool>(%65, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(2138550877694458000000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(2138550877694458000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(2138550877694458e+42)));
-// DEFAULT-NEXT:             let %66: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(2138550877694458e+42)))
-// DEFAULT-NEXT:                 write<bool>(%66, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%66, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%65, read<bool>(%66));
-// DEFAULT-NEXT:         let %67: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%65)
-// DEFAULT-NEXT:             write<bool>(%67, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(2138550877694458500000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(2138550877694458500000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(2138550877694458e+42)));
-// DEFAULT-NEXT:             let %68: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(2138550877694458e+42)))
-// DEFAULT-NEXT:                 write<bool>(%68, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%68, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%67, read<bool>(%68));
-// DEFAULT-NEXT:         let %69: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%67)
-// DEFAULT-NEXT:             write<bool>(%69, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(2138550877694458500000000000000000000000000000000000000001))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(2138550877694458500000000000000000000000000000000000000001)));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(2138550877694459e+42)));
-// DEFAULT-NEXT:             let %70: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(2138550877694459e+42)))
-// DEFAULT-NEXT:                 write<bool>(%70, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%70, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%69, read<bool>(%70));
-// DEFAULT-NEXT:         let %71: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%69)
-// DEFAULT-NEXT:             write<bool>(%71, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, const<i192b>(3138550867693340000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, const<i192b>(3138550867693340000000000000000000000000000000000000000000));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(3138550867693340e+42));
-// DEFAULT-NEXT:             let %72: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(3138550867693340e+42))
-// DEFAULT-NEXT:                 write<bool>(%72, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%72, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%71, read<bool>(%72));
-// DEFAULT-NEXT:         let %73: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%71)
-// DEFAULT-NEXT:             write<bool>(%73, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, const<i192b>(3138550867693340381917894711603833208051177722232017256447)));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, const<i192b>(3138550867693340381917894711603833208051177722232017256447));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(3138550867693340e+42));
-// DEFAULT-NEXT:             let %74: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(3138550867693340e+42))
-// DEFAULT-NEXT:                 write<bool>(%74, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%74, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%73, read<bool>(%74));
-// DEFAULT-NEXT:         let %75: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%73)
-// DEFAULT-NEXT:             write<bool>(%75, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(3138550867693340000000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, neg<i192b, overflow=ub>(const<i192b>(3138550867693340000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(3138550867693340e+42)));
-// DEFAULT-NEXT:             let %76: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(3138550867693340e+42)))
-// DEFAULT-NEXT:                 write<bool>(%76, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%76, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%75, read<bool>(%76));
-// DEFAULT-NEXT:         let %77: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%75)
-// DEFAULT-NEXT:             write<bool>(%77, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i192b) -> d64>(%0, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i2b>(1)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%0, sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i2b>(1))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(3138550867693340e+42)));
-// DEFAULT-NEXT:             let %78: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(3138550867693340e+42)))
-// DEFAULT-NEXT:                 write<bool>(%78, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%78, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%77, read<bool>(%78));
-// DEFAULT-NEXT:         if read<bool>(%77)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%15);
-// DEFAULT-NEXT:         write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u1b>(0))));
-// DEFAULT-NEXT:         call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u1b>(0)));
-// DEFAULT-NEXT:         write<d64>(%10, const<d64>(0.));
-// DEFAULT-NEXT:         let %79: bool [synthetic];
-// DEFAULT-NEXT:         if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(0.))
-// DEFAULT-NEXT:             write<bool>(%79, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%79, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:         let %80: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%79)
-// DEFAULT-NEXT:             write<bool>(%80, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u3b>(7))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u3b>(7)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(7.));
-// DEFAULT-NEXT:             let %81: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(7.))
-// DEFAULT-NEXT:                 write<bool>(%81, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%81, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%80, read<bool>(%81));
-// DEFAULT-NEXT:         let %82: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%80)
-// DEFAULT-NEXT:             write<bool>(%82, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u6b>(42))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u6b>(42)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(42.));
-// DEFAULT-NEXT:             let %83: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(42.))
-// DEFAULT-NEXT:                 write<bool>(%83, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%83, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%82, read<bool>(%83));
-// DEFAULT-NEXT:         let %84: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%82)
-// DEFAULT-NEXT:             write<bool>(%84, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u30b>(777777777))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u30b>(777777777)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(777777777.));
-// DEFAULT-NEXT:             let %85: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(777777777.))
-// DEFAULT-NEXT:                 write<bool>(%85, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%85, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%84, read<bool>(%85));
-// DEFAULT-NEXT:         let %86: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%84)
-// DEFAULT-NEXT:             write<bool>(%86, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u54b>(9999999999999000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u54b>(9999999999999000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999000.));
-// DEFAULT-NEXT:             let %87: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999000.))
-// DEFAULT-NEXT:                 write<bool>(%87, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%87, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%86, read<bool>(%87));
-// DEFAULT-NEXT:         let %88: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%86)
-// DEFAULT-NEXT:             write<bool>(%88, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u60b>(999999999999999900))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u60b>(999999999999999900)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+2));
-// DEFAULT-NEXT:             let %89: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+2))
-// DEFAULT-NEXT:                 write<bool>(%89, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%89, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%88, read<bool>(%89));
-// DEFAULT-NEXT:         let %90: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%88)
-// DEFAULT-NEXT:             write<bool>(%90, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u64b>(9999999999999999000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u64b>(9999999999999999000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+3));
-// DEFAULT-NEXT:             let %91: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+3))
-// DEFAULT-NEXT:                 write<bool>(%91, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%91, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%90, read<bool>(%91));
-// DEFAULT-NEXT:         let %92: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%90)
-// DEFAULT-NEXT:             write<bool>(%92, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u67b>(99999999999999994999))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u67b>(99999999999999994999)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+4));
-// DEFAULT-NEXT:             let %93: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+4))
-// DEFAULT-NEXT:                 write<bool>(%93, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%93, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%92, read<bool>(%93));
-// DEFAULT-NEXT:         let %94: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%92)
-// DEFAULT-NEXT:             write<bool>(%94, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u70b>(999999999999999900000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u70b>(999999999999999900000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+5));
-// DEFAULT-NEXT:             let %95: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+5))
-// DEFAULT-NEXT:                 write<bool>(%95, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%95, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%94, read<bool>(%95));
-// DEFAULT-NEXT:         let %96: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%94)
-// DEFAULT-NEXT:             write<bool>(%96, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u74b>(9999999999999999000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u74b>(9999999999999999000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+6));
-// DEFAULT-NEXT:             let %97: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+6))
-// DEFAULT-NEXT:                 write<bool>(%97, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%97, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%96, read<bool>(%97));
-// DEFAULT-NEXT:         let %98: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%96)
-// DEFAULT-NEXT:             write<bool>(%98, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u77b>(123456789012345600000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u77b>(123456789012345600000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(1234567890123456.e+8));
-// DEFAULT-NEXT:             let %99: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(1234567890123456.e+8))
-// DEFAULT-NEXT:                 write<bool>(%99, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%99, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%98, read<bool>(%99));
-// DEFAULT-NEXT:         let %100: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%98)
-// DEFAULT-NEXT:             write<bool>(%100, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u125b>(34242319854454290000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u125b>(34242319854454290000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(3424231985445429e+22));
-// DEFAULT-NEXT:             let %101: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(3424231985445429e+22))
-// DEFAULT-NEXT:                 write<bool>(%101, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%101, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%100, read<bool>(%101));
-// DEFAULT-NEXT:         let %102: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%100)
-// DEFAULT-NEXT:             write<bool>(%102, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u163b>(9999999999999999000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u163b>(9999999999999999000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+33));
-// DEFAULT-NEXT:             let %103: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+33))
-// DEFAULT-NEXT:                 write<bool>(%103, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%103, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%102, read<bool>(%103));
-// DEFAULT-NEXT:         let %104: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%102)
-// DEFAULT-NEXT:             write<bool>(%104, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u179b>(618935436546517900000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u179b>(618935436546517900000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6189354365465179e+38));
-// DEFAULT-NEXT:             let %105: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6189354365465179e+38))
-// DEFAULT-NEXT:                 write<bool>(%105, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%105, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%104, read<bool>(%105));
-// DEFAULT-NEXT:         let %106: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%104)
-// DEFAULT-NEXT:             write<bool>(%106, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u179b>(618935436546517950000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u179b>(618935436546517950000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6189354365465180e+38));
-// DEFAULT-NEXT:             let %107: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6189354365465180e+38))
-// DEFAULT-NEXT:                 write<bool>(%107, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%107, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%106, read<bool>(%107));
-// DEFAULT-NEXT:         let %108: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%106)
-// DEFAULT-NEXT:             write<bool>(%108, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u179b>(618935436546517949999999999999999999999999999999999999))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u179b>(618935436546517949999999999999999999999999999999999999)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6189354365465179e+38));
-// DEFAULT-NEXT:             let %109: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6189354365465179e+38))
-// DEFAULT-NEXT:                 write<bool>(%109, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%109, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%108, read<bool>(%109));
-// DEFAULT-NEXT:         let %110: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%108)
-// DEFAULT-NEXT:             write<bool>(%110, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u179b>(618935436546517999999999999999999999999999999999999999))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u179b>(618935436546517999999999999999999999999999999999999999)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6189354365465180e+38));
-// DEFAULT-NEXT:             let %111: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6189354365465180e+38))
-// DEFAULT-NEXT:                 write<bool>(%111, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%111, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%110, read<bool>(%111));
-// DEFAULT-NEXT:         let %112: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%110)
-// DEFAULT-NEXT:             write<bool>(%112, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u179b>(618935436546517800000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u179b>(618935436546517800000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6189354365465178e+38));
-// DEFAULT-NEXT:             let %113: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6189354365465178e+38))
-// DEFAULT-NEXT:                 write<bool>(%113, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%113, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%112, read<bool>(%113));
-// DEFAULT-NEXT:         let %114: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%112)
-// DEFAULT-NEXT:             write<bool>(%114, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u179b>(618935436546517850000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u179b>(618935436546517850000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6189354365465178e+38));
-// DEFAULT-NEXT:             let %115: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6189354365465178e+38))
-// DEFAULT-NEXT:                 write<bool>(%115, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%115, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%114, read<bool>(%115));
-// DEFAULT-NEXT:         let %116: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%114)
-// DEFAULT-NEXT:             write<bool>(%116, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u179b>(618935436546517850000000000000000000000000000000000001))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u179b>(618935436546517850000000000000000000000000000000000001)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6189354365465179e+38));
-// DEFAULT-NEXT:             let %117: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6189354365465179e+38))
-// DEFAULT-NEXT:                 write<bool>(%117, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%117, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%116, read<bool>(%117));
-// DEFAULT-NEXT:         let %118: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%116)
-// DEFAULT-NEXT:             write<bool>(%118, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u187b>(99999999999999990000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, widen<u192b, reason=arg>(const<u187b>(99999999999999990000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+40));
-// DEFAULT-NEXT:             let %119: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+40))
-// DEFAULT-NEXT:                 write<bool>(%119, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%119, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%118, read<bool>(%119));
-// DEFAULT-NEXT:         let %120: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%118)
-// DEFAULT-NEXT:             write<bool>(%120, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, const<u192b>(6277101735386680000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, const<u192b>(6277101735386680000000000000000000000000000000000000000000));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6277101735386680e+42));
-// DEFAULT-NEXT:             let %121: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6277101735386680e+42))
-// DEFAULT-NEXT:                 write<bool>(%121, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%121, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%120, read<bool>(%121));
-// DEFAULT-NEXT:         let %122: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%120)
-// DEFAULT-NEXT:             write<bool>(%122, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, const<u192b>(6277101735386680499999999999999999999999999999999999999999)));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, const<u192b>(6277101735386680499999999999999999999999999999999999999999));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6277101735386680e+42));
-// DEFAULT-NEXT:             let %123: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6277101735386680e+42))
-// DEFAULT-NEXT:                 write<bool>(%123, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%123, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%122, read<bool>(%123));
-// DEFAULT-NEXT:         let %124: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%122)
-// DEFAULT-NEXT:             write<bool>(%124, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, const<u192b>(6277101735386680500000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, const<u192b>(6277101735386680500000000000000000000000000000000000000000));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6277101735386680e+42));
-// DEFAULT-NEXT:             let %125: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6277101735386680e+42))
-// DEFAULT-NEXT:                 write<bool>(%125, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%125, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%124, read<bool>(%125));
-// DEFAULT-NEXT:         let %126: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%124)
-// DEFAULT-NEXT:             write<bool>(%126, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, const<u192b>(6277101735386680500000000000000000000000000000000000000001)));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, const<u192b>(6277101735386680500000000000000000000000000000000000000001));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6277101735386681e+42));
-// DEFAULT-NEXT:             let %127: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6277101735386681e+42))
-// DEFAULT-NEXT:                 write<bool>(%127, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%127, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%126, read<bool>(%127));
-// DEFAULT-NEXT:         let %128: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%126)
-// DEFAULT-NEXT:             write<bool>(%128, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, const<u192b>(6277101735386680500000000000000000000010000000000000000000)));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, const<u192b>(6277101735386680500000000000000000000010000000000000000000));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6277101735386681e+42));
-// DEFAULT-NEXT:             let %129: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6277101735386681e+42))
-// DEFAULT-NEXT:                 write<bool>(%129, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%129, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%128, read<bool>(%129));
-// DEFAULT-NEXT:         let %130: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%128)
-// DEFAULT-NEXT:             write<bool>(%130, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u192b) -> d64>(%2, const<u192b>(6277101735386680763835789423207666416102355444464034512895)));
-// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%2, const<u192b>(6277101735386680763835789423207666416102355444464034512895));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6277101735386681e+42));
-// DEFAULT-NEXT:             let %131: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6277101735386681e+42))
-// DEFAULT-NEXT:                 write<bool>(%131, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%131, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%130, read<bool>(%131));
-// DEFAULT-NEXT:         if read<bool>(%130)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%15);
-// DEFAULT-NEXT:         write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i2b>(0))));
-// DEFAULT-NEXT:         call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i2b>(0)));
-// DEFAULT-NEXT:         write<d64>(%10, const<d64>(0.));
-// DEFAULT-NEXT:         let %132: bool [synthetic];
-// DEFAULT-NEXT:         if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(0.))
-// DEFAULT-NEXT:             write<bool>(%132, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%132, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:         let %133: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%132)
-// DEFAULT-NEXT:             write<bool>(%133, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i4b>(7))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i4b>(7)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(7.));
-// DEFAULT-NEXT:             let %134: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(7.))
-// DEFAULT-NEXT:                 write<bool>(%134, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%134, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%133, read<bool>(%134));
-// DEFAULT-NEXT:         let %135: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%133)
-// DEFAULT-NEXT:             write<bool>(%135, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i7b, overflow=ub>(const<i7b>(42)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i7b, overflow=ub>(const<i7b>(42))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(42.)));
-// DEFAULT-NEXT:             let %136: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(42.)))
-// DEFAULT-NEXT:                 write<bool>(%136, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%136, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%135, read<bool>(%136));
-// DEFAULT-NEXT:         let %137: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%135)
-// DEFAULT-NEXT:             write<bool>(%137, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i30b, overflow=ub>(const<i30b>(444444444)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i30b, overflow=ub>(const<i30b>(444444444))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(444444444.)));
-// DEFAULT-NEXT:             let %138: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(444444444.)))
-// DEFAULT-NEXT:                 write<bool>(%138, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%138, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%137, read<bool>(%138));
-// DEFAULT-NEXT:         let %139: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%137)
-// DEFAULT-NEXT:             write<bool>(%139, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i55b>(9999999999999000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i55b>(9999999999999000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999000.));
-// DEFAULT-NEXT:             let %140: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999000.))
-// DEFAULT-NEXT:                 write<bool>(%140, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%140, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%139, read<bool>(%140));
-// DEFAULT-NEXT:         let %141: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%139)
-// DEFAULT-NEXT:             write<bool>(%141, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i55b, overflow=ub>(const<i55b>(9999999999999999)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i55b, overflow=ub>(const<i55b>(9999999999999999))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(9999999999999999.)));
-// DEFAULT-NEXT:             let %142: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(9999999999999999.)))
-// DEFAULT-NEXT:                 write<bool>(%142, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%142, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%141, read<bool>(%142));
-// DEFAULT-NEXT:         let %143: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%141)
-// DEFAULT-NEXT:             write<bool>(%143, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i61b>(999999999999999900))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i61b>(999999999999999900)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+2));
-// DEFAULT-NEXT:             let %144: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+2))
-// DEFAULT-NEXT:                 write<bool>(%144, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%144, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%143, read<bool>(%144));
-// DEFAULT-NEXT:         let %145: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%143)
-// DEFAULT-NEXT:             write<bool>(%145, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i65b, overflow=ub>(const<i65b>(9999999999999999000)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i65b, overflow=ub>(const<i65b>(9999999999999999000))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(9999999999999999.e+3)));
-// DEFAULT-NEXT:             let %146: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(9999999999999999.e+3)))
-// DEFAULT-NEXT:                 write<bool>(%146, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%146, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%145, read<bool>(%146));
-// DEFAULT-NEXT:         let %147: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%145)
-// DEFAULT-NEXT:             write<bool>(%147, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i71b>(999999999999999900000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i71b>(999999999999999900000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+5));
-// DEFAULT-NEXT:             let %148: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+5))
-// DEFAULT-NEXT:                 write<bool>(%148, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%148, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%147, read<bool>(%148));
-// DEFAULT-NEXT:         let %149: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%147)
-// DEFAULT-NEXT:             write<bool>(%149, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i78b, overflow=ub>(const<i78b>(99999999999999990000000)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i78b, overflow=ub>(const<i78b>(99999999999999990000000))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(9999999999999999.e+7)));
-// DEFAULT-NEXT:             let %150: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(9999999999999999.e+7)))
-// DEFAULT-NEXT:                 write<bool>(%150, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%150, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%149, read<bool>(%150));
-// DEFAULT-NEXT:         let %151: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%149)
-// DEFAULT-NEXT:             write<bool>(%151, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i82b>(1234567890123456000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i82b>(1234567890123456000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(1234567890123456.e+9));
-// DEFAULT-NEXT:             let %152: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(1234567890123456.e+9))
-// DEFAULT-NEXT:                 write<bool>(%152, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%152, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%151, read<bool>(%152));
-// DEFAULT-NEXT:         let %153: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%151)
-// DEFAULT-NEXT:             write<bool>(%153, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i133b>(3424231985445429000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i133b>(3424231985445429000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(3424231985445429e+24));
-// DEFAULT-NEXT:             let %154: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(3424231985445429e+24))
-// DEFAULT-NEXT:                 write<bool>(%154, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%154, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%153, read<bool>(%154));
-// DEFAULT-NEXT:         let %155: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%153)
-// DEFAULT-NEXT:             write<bool>(%155, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i188b>(99999999999999990000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(const<i188b>(99999999999999990000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+40));
-// DEFAULT-NEXT:             let %156: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+40))
-// DEFAULT-NEXT:                 write<bool>(%156, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%156, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%155, read<bool>(%156));
-// DEFAULT-NEXT:         let %157: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%155)
-// DEFAULT-NEXT:             write<bool>(%157, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i264b, overflow=ub>(const<i264b>(9999999999999999000000000000000000000000000000000000000000000000000000000000000)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i264b, overflow=ub>(const<i264b>(9999999999999999000000000000000000000000000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(9999999999999999.e+63)));
-// DEFAULT-NEXT:             let %158: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(9999999999999999.e+63)))
-// DEFAULT-NEXT:                 write<bool>(%158, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%158, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%157, read<bool>(%158));
-// DEFAULT-NEXT:         let %159: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%157)
-// DEFAULT-NEXT:             write<bool>(%159, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445900000000000000000000000000000000000000000000000000000000000000000000000000000000000000)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445900000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(2138550877694459e+86)));
-// DEFAULT-NEXT:             let %160: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(2138550877694459e+86)))
-// DEFAULT-NEXT:                 write<bool>(%160, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%160, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%159, read<bool>(%160));
-// DEFAULT-NEXT:         let %161: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%159)
-// DEFAULT-NEXT:             write<bool>(%161, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445950000000000000000000000000000000000000000000000000000000000000000000000000000000000000)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445950000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(2138550877694460e+86)));
-// DEFAULT-NEXT:             let %162: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(2138550877694460e+86)))
-// DEFAULT-NEXT:                 write<bool>(%162, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%162, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%161, read<bool>(%162));
-// DEFAULT-NEXT:         let %163: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%161)
-// DEFAULT-NEXT:             write<bool>(%163, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445949999999999999999999999999999999999999999999999999999999999999999999999999999999999999)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445949999999999999999999999999999999999999999999999999999999999999999999999999999999999999))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(2138550877694459e+86)));
-// DEFAULT-NEXT:             let %164: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(2138550877694459e+86)))
-// DEFAULT-NEXT:                 write<bool>(%164, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%164, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%163, read<bool>(%164));
-// DEFAULT-NEXT:         let %165: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%163)
-// DEFAULT-NEXT:             write<bool>(%165, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445999999999999999999999999999999999999999999999999999999999999999999999999999999999999999))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(2138550877694460e+86)));
-// DEFAULT-NEXT:             let %166: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(2138550877694460e+86)))
-// DEFAULT-NEXT:                 write<bool>(%166, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%166, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%165, read<bool>(%166));
-// DEFAULT-NEXT:         let %167: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%165)
-// DEFAULT-NEXT:             write<bool>(%167, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445800000000000000000000000000000000000000000000000000000000000000000000000000000000000000)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445800000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(2138550877694458e+86)));
-// DEFAULT-NEXT:             let %168: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(2138550877694458e+86)))
-// DEFAULT-NEXT:                 write<bool>(%168, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%168, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%167, read<bool>(%168));
-// DEFAULT-NEXT:         let %169: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%167)
-// DEFAULT-NEXT:             write<bool>(%169, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445850000000000000000000000000000000000000000000000000000000000000000000000000000000000000)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445850000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(2138550877694458e+86)));
-// DEFAULT-NEXT:             let %170: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(2138550877694458e+86)))
-// DEFAULT-NEXT:                 write<bool>(%170, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%170, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%169, read<bool>(%170));
-// DEFAULT-NEXT:         let %171: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%169)
-// DEFAULT-NEXT:             write<bool>(%171, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445850000000000000000000000000000000000000000000000000000000000000000000000000000000000001)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445850000000000000000000000000000000000000000000000000000000000000000000000000000000000001))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(2138550877694459e+86)));
-// DEFAULT-NEXT:             let %172: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(2138550877694459e+86)))
-// DEFAULT-NEXT:                 write<bool>(%172, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%172, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%171, read<bool>(%172));
-// DEFAULT-NEXT:         let %173: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%171)
-// DEFAULT-NEXT:             write<bool>(%173, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, const<i575b>(61832600368276130000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, const<i575b>(61832600368276130000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6183260036827613e+157));
-// DEFAULT-NEXT:             let %174: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6183260036827613e+157))
-// DEFAULT-NEXT:                 write<bool>(%174, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%174, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%173, read<bool>(%174));
-// DEFAULT-NEXT:         let %175: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%173)
-// DEFAULT-NEXT:             write<bool>(%175, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6183260036827613e+157));
-// DEFAULT-NEXT:             let %176: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6183260036827613e+157))
-// DEFAULT-NEXT:                 write<bool>(%176, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%176, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%175, read<bool>(%176));
-// DEFAULT-NEXT:         let %177: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%175)
-// DEFAULT-NEXT:             write<bool>(%177, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, neg<i575b, overflow=ub>(const<i575b>(61832600368276130000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, neg<i575b, overflow=ub>(const<i575b>(61832600368276130000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(6183260036827613e+157)));
-// DEFAULT-NEXT:             let %178: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(6183260036827613e+157)))
-// DEFAULT-NEXT:                 write<bool>(%178, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%178, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%177, read<bool>(%178));
-// DEFAULT-NEXT:         let %179: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%177)
-// DEFAULT-NEXT:             write<bool>(%179, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(i575b) -> d64>(%4, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i2b>(1)))));
-// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%4, sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i2b>(1))));
-// DEFAULT-NEXT:             write<d64>(%10, neg<d64>(const<d64>(6183260036827613e+157)));
-// DEFAULT-NEXT:             let %180: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), neg<d64>(const<d64>(6183260036827613e+157)))
-// DEFAULT-NEXT:                 write<bool>(%180, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%180, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%179, read<bool>(%180));
-// DEFAULT-NEXT:         if read<bool>(%179)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%15);
-// DEFAULT-NEXT:         write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u1b>(0))));
-// DEFAULT-NEXT:         call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u1b>(0)));
-// DEFAULT-NEXT:         write<d64>(%10, const<d64>(0.));
-// DEFAULT-NEXT:         let %181: bool [synthetic];
-// DEFAULT-NEXT:         if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(0.))
-// DEFAULT-NEXT:             write<bool>(%181, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%181, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:         let %182: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%181)
-// DEFAULT-NEXT:             write<bool>(%182, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u5b>(17))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u5b>(17)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(17.));
-// DEFAULT-NEXT:             let %183: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(17.))
-// DEFAULT-NEXT:                 write<bool>(%183, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%183, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%182, read<bool>(%183));
-// DEFAULT-NEXT:         let %184: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%182)
-// DEFAULT-NEXT:             write<bool>(%184, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u9b>(420))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u9b>(420)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(420.));
-// DEFAULT-NEXT:             let %185: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(420.))
-// DEFAULT-NEXT:                 write<bool>(%185, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%185, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%184, read<bool>(%185));
-// DEFAULT-NEXT:         let %186: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%184)
-// DEFAULT-NEXT:             write<bool>(%186, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u30b>(888888888))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u30b>(888888888)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(888888888.));
-// DEFAULT-NEXT:             let %187: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(888888888.))
-// DEFAULT-NEXT:                 write<bool>(%187, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%187, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%186, read<bool>(%187));
-// DEFAULT-NEXT:         let %188: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%186)
-// DEFAULT-NEXT:             write<bool>(%188, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u54b>(9999999999999000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u54b>(9999999999999000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999000.));
-// DEFAULT-NEXT:             let %189: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999000.))
-// DEFAULT-NEXT:                 write<bool>(%189, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%189, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%188, read<bool>(%189));
-// DEFAULT-NEXT:         let %190: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%188)
-// DEFAULT-NEXT:             write<bool>(%190, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u77b>(99999999999999990000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u77b>(99999999999999990000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+7));
-// DEFAULT-NEXT:             let %191: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+7))
-// DEFAULT-NEXT:                 write<bool>(%191, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%191, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%190, read<bool>(%191));
-// DEFAULT-NEXT:         let %192: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%190)
-// DEFAULT-NEXT:             write<bool>(%192, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u84b>(9999999999999999000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u84b>(9999999999999999000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+9));
-// DEFAULT-NEXT:             let %193: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+9))
-// DEFAULT-NEXT:                 write<bool>(%193, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%193, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%192, read<bool>(%193));
-// DEFAULT-NEXT:         let %194: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%192)
-// DEFAULT-NEXT:             write<bool>(%194, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u97b>(99999999999999990000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u97b>(99999999999999990000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+13));
-// DEFAULT-NEXT:             let %195: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+13))
-// DEFAULT-NEXT:                 write<bool>(%195, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%195, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%194, read<bool>(%195));
-// DEFAULT-NEXT:         let %196: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%194)
-// DEFAULT-NEXT:             write<bool>(%196, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u103b>(9999999999999999000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u103b>(9999999999999999000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+15));
-// DEFAULT-NEXT:             let %197: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+15))
-// DEFAULT-NEXT:                 write<bool>(%197, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%197, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%196, read<bool>(%197));
-// DEFAULT-NEXT:         let %198: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%196)
-// DEFAULT-NEXT:             write<bool>(%198, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u110b>(1234567890123456000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u110b>(1234567890123456000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(1234567890123456.e+18));
-// DEFAULT-NEXT:             let %199: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(1234567890123456.e+18))
-// DEFAULT-NEXT:                 write<bool>(%199, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%199, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%198, read<bool>(%199));
-// DEFAULT-NEXT:         let %200: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%198)
-// DEFAULT-NEXT:             write<bool>(%200, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u125b>(34242319854454290000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u125b>(34242319854454290000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(3424231985445429e+22));
-// DEFAULT-NEXT:             let %201: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(3424231985445429e+22))
-// DEFAULT-NEXT:                 write<bool>(%201, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%201, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%200, read<bool>(%201));
-// DEFAULT-NEXT:         let %202: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%200)
-// DEFAULT-NEXT:             write<bool>(%202, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u163b>(9999999999999999000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u163b>(9999999999999999000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+33));
-// DEFAULT-NEXT:             let %203: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+33))
-// DEFAULT-NEXT:                 write<bool>(%203, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%203, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%202, read<bool>(%203));
-// DEFAULT-NEXT:         let %204: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%202)
-// DEFAULT-NEXT:             write<bool>(%204, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u398b>(618935436546517900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u398b>(618935436546517900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6189354365465179e+104));
-// DEFAULT-NEXT:             let %205: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6189354365465179e+104))
-// DEFAULT-NEXT:                 write<bool>(%205, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%205, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%204, read<bool>(%205));
-// DEFAULT-NEXT:         let %206: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%204)
-// DEFAULT-NEXT:             write<bool>(%206, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u398b>(618935436546517950000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u398b>(618935436546517950000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6189354365465180e+104));
-// DEFAULT-NEXT:             let %207: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6189354365465180e+104))
-// DEFAULT-NEXT:                 write<bool>(%207, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%207, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%206, read<bool>(%207));
-// DEFAULT-NEXT:         let %208: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%206)
-// DEFAULT-NEXT:             write<bool>(%208, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u398b>(618935436546517949999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u398b>(618935436546517949999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6189354365465179e+104));
-// DEFAULT-NEXT:             let %209: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6189354365465179e+104))
-// DEFAULT-NEXT:                 write<bool>(%209, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%209, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%208, read<bool>(%209));
-// DEFAULT-NEXT:         let %210: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%208)
-// DEFAULT-NEXT:             write<bool>(%210, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u398b>(618935436546517999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u398b>(618935436546517999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6189354365465180e+104));
-// DEFAULT-NEXT:             let %211: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6189354365465180e+104))
-// DEFAULT-NEXT:                 write<bool>(%211, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%211, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%210, read<bool>(%211));
-// DEFAULT-NEXT:         let %212: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%210)
-// DEFAULT-NEXT:             write<bool>(%212, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u398b>(618935436546517800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u398b>(618935436546517800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6189354365465178e+104));
-// DEFAULT-NEXT:             let %213: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6189354365465178e+104))
-// DEFAULT-NEXT:                 write<bool>(%213, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%213, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%212, read<bool>(%213));
-// DEFAULT-NEXT:         let %214: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%212)
-// DEFAULT-NEXT:             write<bool>(%214, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u398b>(618935436546517850000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u398b>(618935436546517850000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6189354365465178e+104));
-// DEFAULT-NEXT:             let %215: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6189354365465178e+104))
-// DEFAULT-NEXT:                 write<bool>(%215, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%215, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%214, read<bool>(%215));
-// DEFAULT-NEXT:         let %216: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%214)
-// DEFAULT-NEXT:             write<bool>(%216, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u398b>(618935436546517850000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u398b>(618935436546517850000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(6189354365465179e+104));
-// DEFAULT-NEXT:             let %217: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(6189354365465179e+104))
-// DEFAULT-NEXT:                 write<bool>(%217, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%217, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%216, read<bool>(%217));
-// DEFAULT-NEXT:         let %218: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%216)
-// DEFAULT-NEXT:             write<bool>(%218, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u515b>(99999999999999990000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, widen<u575b, reason=arg>(const<u515b>(99999999999999990000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(9999999999999999.e+139));
-// DEFAULT-NEXT:             let %219: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(9999999999999999.e+139))
-// DEFAULT-NEXT:                 write<bool>(%219, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%219, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%218, read<bool>(%219));
-// DEFAULT-NEXT:         let %220: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%218)
-// DEFAULT-NEXT:             write<bool>(%220, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, const<u575b>(123665200736552200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, const<u575b>(123665200736552200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(1236652007365522e+158));
-// DEFAULT-NEXT:             let %221: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(1236652007365522e+158))
-// DEFAULT-NEXT:                 write<bool>(%221, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%221, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%220, read<bool>(%221));
-// DEFAULT-NEXT:         let %222: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%220)
-// DEFAULT-NEXT:             write<bool>(%222, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, const<u575b>(123665200736552249999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, const<u575b>(123665200736552249999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(1236652007365522e+158));
-// DEFAULT-NEXT:             let %223: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(1236652007365522e+158))
-// DEFAULT-NEXT:                 write<bool>(%223, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%223, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%222, read<bool>(%223));
-// DEFAULT-NEXT:         let %224: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%222)
-// DEFAULT-NEXT:             write<bool>(%224, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, const<u575b>(123665200736552250000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, const<u575b>(123665200736552250000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(1236652007365522e+158));
-// DEFAULT-NEXT:             let %225: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(1236652007365522e+158))
-// DEFAULT-NEXT:                 write<bool>(%225, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%225, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%224, read<bool>(%225));
-// DEFAULT-NEXT:         let %226: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%224)
-// DEFAULT-NEXT:             write<bool>(%226, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, const<u575b>(123665200736552250000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, const<u575b>(123665200736552250000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(1236652007365523e+158));
-// DEFAULT-NEXT:             let %227: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(1236652007365523e+158))
-// DEFAULT-NEXT:                 write<bool>(%227, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%227, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%226, read<bool>(%227));
-// DEFAULT-NEXT:         let %228: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%226)
-// DEFAULT-NEXT:             write<bool>(%228, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, const<u575b>(123665200736552250000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, const<u575b>(123665200736552250000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(1236652007365523e+158));
-// DEFAULT-NEXT:             let %229: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(1236652007365523e+158))
-// DEFAULT-NEXT:                 write<bool>(%229, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%229, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%228, read<bool>(%229));
-// DEFAULT-NEXT:         let %230: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%228)
-// DEFAULT-NEXT:             write<bool>(%230, const<bool>(true));
-// DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<d64>(%9, call<d64, signature=fn(u575b) -> d64>(%6, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)));
-// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%6, const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567));
-// DEFAULT-NEXT:             write<d64>(%10, const<d64>(1236652007365523e+158));
-// DEFAULT-NEXT:             let %231: bool [synthetic];
-// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%9), const<d64>(1236652007365523e+158))
-// DEFAULT-NEXT:                 write<bool>(%231, const<bool>(true));
-// DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%231, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%14, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%10)), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:             write<bool>(%230, read<bool>(%231));
-// DEFAULT-NEXT:         if read<bool>(%230)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%15);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcmp:[0-9]+]] @__builtin_memcmp(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: d64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b_5:[0-9]+]] b: d64 [storage=automatic];
+// DEFAULT-NEXT:         write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i2b>(0))));
+// DEFAULT-NEXT:         call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i2b>(0)));
+// DEFAULT-NEXT:         write<d64>(%[[VALUE_b_5]], const<d64>(0.));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(0.))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE3]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<bool>(%[[VALUE3]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE3]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i4b>(7))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i4b>(7)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(7.));
+// DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(7.))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE5]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE5]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], read<bool>(%[[VALUE5]]));
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE4]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i7b, overflow=ub>(const<i7b>(42)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i7b, overflow=ub>(const<i7b>(42))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(42.)));
+// DEFAULT-NEXT:             let %[[VALUE7:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(42.)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE7]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE7]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], read<bool>(%[[VALUE7]]));
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE6]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE8]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i31b, overflow=ub>(const<i31b>(777777777)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i31b, overflow=ub>(const<i31b>(777777777))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(777777777.)));
+// DEFAULT-NEXT:             let %[[VALUE9:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(777777777.)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE9]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE9]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE8]], read<bool>(%[[VALUE9]]));
+// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE8]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE10]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i55b>(9999999999999000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i55b>(9999999999999000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999000.));
+// DEFAULT-NEXT:             let %[[VALUE11:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999000.))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE11]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE11]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE10]], read<bool>(%[[VALUE11]]));
+// DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE10]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE12]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i55b, overflow=ub>(const<i55b>(9999999999999999)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i55b, overflow=ub>(const<i55b>(9999999999999999))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(9999999999999999.)));
+// DEFAULT-NEXT:             let %[[VALUE13:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE13]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE13]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE12]], read<bool>(%[[VALUE13]]));
+// DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE12]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE14]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i58b, overflow=ub>(const<i58b>(99999999999999994)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i58b, overflow=ub>(const<i58b>(99999999999999994))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(9999999999999999.e+1)));
+// DEFAULT-NEXT:             let %[[VALUE15:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.e+1)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE15]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE15]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE14]], read<bool>(%[[VALUE15]]));
+// DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE14]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE16]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i58b>(99999999999999995))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i58b>(99999999999999995)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(1000000000000000.e+2));
+// DEFAULT-NEXT:             let %[[VALUE17:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1000000000000000.e+2))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE17]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE17]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE16]], read<bool>(%[[VALUE17]]));
+// DEFAULT-NEXT:         let %[[VALUE18:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE16]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE18]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i61b>(999999999999999900))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i61b>(999999999999999900)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+2));
+// DEFAULT-NEXT:             let %[[VALUE19:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+2))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE19]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE19]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE18]], read<bool>(%[[VALUE19]]));
+// DEFAULT-NEXT:         let %[[VALUE20:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE18]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE20]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i61b>(999999999999999949))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i61b>(999999999999999949)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+2));
+// DEFAULT-NEXT:             let %[[VALUE21:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+2))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE21]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE21]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE20]], read<bool>(%[[VALUE21]]));
+// DEFAULT-NEXT:         let %[[VALUE22:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE20]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE22]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i65b, overflow=ub>(const<i65b>(9999999999999999000)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i65b, overflow=ub>(const<i65b>(9999999999999999000))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(9999999999999999.e+3)));
+// DEFAULT-NEXT:             let %[[VALUE23:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.e+3)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE23]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE23]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE22]], read<bool>(%[[VALUE23]]));
+// DEFAULT-NEXT:         let %[[VALUE24:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE22]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE24]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i65b>(9999999999999999499))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i65b>(9999999999999999499)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+3));
+// DEFAULT-NEXT:             let %[[VALUE25:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+3))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE25]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE25]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE24]], read<bool>(%[[VALUE25]]));
+// DEFAULT-NEXT:         let %[[VALUE26:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE24]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE26]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i71b>(999999999999999900000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i71b>(999999999999999900000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+5));
+// DEFAULT-NEXT:             let %[[VALUE27:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+5))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE27]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE27]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE26]], read<bool>(%[[VALUE27]]));
+// DEFAULT-NEXT:         let %[[VALUE28:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE26]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE28]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i71b>(999999999999999949999))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i71b>(999999999999999949999)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+5));
+// DEFAULT-NEXT:             let %[[VALUE29:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+5))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE29]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE29]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE28]], read<bool>(%[[VALUE29]]));
+// DEFAULT-NEXT:         let %[[VALUE30:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE28]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE30]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i75b, overflow=ub>(const<i75b>(9999999999999999000000)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i75b, overflow=ub>(const<i75b>(9999999999999999000000))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(9999999999999999.e+6)));
+// DEFAULT-NEXT:             let %[[VALUE31:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.e+6)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE31]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE31]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE30]], read<bool>(%[[VALUE31]]));
+// DEFAULT-NEXT:         let %[[VALUE32:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE30]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE32]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i75b, overflow=ub>(const<i75b>(9999999999999999499999)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i75b, overflow=ub>(const<i75b>(9999999999999999499999))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(9999999999999999.e+6)));
+// DEFAULT-NEXT:             let %[[VALUE33:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.e+6)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE33]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE33]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE32]], read<bool>(%[[VALUE33]]));
+// DEFAULT-NEXT:         let %[[VALUE34:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE32]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE34]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i78b>(123456789012345600000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i78b>(123456789012345600000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(1234567890123456.e+8));
+// DEFAULT-NEXT:             let %[[VALUE35:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1234567890123456.e+8))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE35]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE35]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE34]], read<bool>(%[[VALUE35]]));
+// DEFAULT-NEXT:         let %[[VALUE36:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE34]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE36]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i126b>(34242319854454290000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i126b>(34242319854454290000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(3424231985445429e+22));
+// DEFAULT-NEXT:             let %[[VALUE37:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(3424231985445429e+22))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE37]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE37]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE36]], read<bool>(%[[VALUE37]]));
+// DEFAULT-NEXT:         let %[[VALUE38:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE36]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE38]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i161b>(999999999999999900000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i161b>(999999999999999900000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+32));
+// DEFAULT-NEXT:             let %[[VALUE39:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+32))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE39]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE39]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE38]], read<bool>(%[[VALUE39]]));
+// DEFAULT-NEXT:         let %[[VALUE40:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE38]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE40]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i161b>(999999999999999949999999999999999999999999999999))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(const<i161b>(999999999999999949999999999999999999999999999999)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+32));
+// DEFAULT-NEXT:             let %[[VALUE41:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+32))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE41]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE41]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE40]], read<bool>(%[[VALUE41]]));
+// DEFAULT-NEXT:         let %[[VALUE42:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE40]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE42]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i191b, overflow=ub>(const<i191b>(999999999999999900000000000000000000000000000000000000000)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], widen<i192b, reason=arg>(neg<i191b, overflow=ub>(const<i191b>(999999999999999900000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(9999999999999999.e+41)));
+// DEFAULT-NEXT:             let %[[VALUE43:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.e+41)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE43]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE43]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE42]], read<bool>(%[[VALUE43]]));
+// DEFAULT-NEXT:         let %[[VALUE44:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE42]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE44]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(2138550877694459000000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(2138550877694459000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(2138550877694459e+42)));
+// DEFAULT-NEXT:             let %[[VALUE45:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694459e+42)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE45]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE45]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE44]], read<bool>(%[[VALUE45]]));
+// DEFAULT-NEXT:         let %[[VALUE46:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE44]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE46]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(2138550877694459500000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(2138550877694459500000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(2138550877694460e+42)));
+// DEFAULT-NEXT:             let %[[VALUE47:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694460e+42)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE47]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE47]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE46]], read<bool>(%[[VALUE47]]));
+// DEFAULT-NEXT:         let %[[VALUE48:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE46]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE48]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(2138550877694459499999999999999999999999999999999999999999))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(2138550877694459499999999999999999999999999999999999999999)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(2138550877694459e+42)));
+// DEFAULT-NEXT:             let %[[VALUE49:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694459e+42)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE49]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE49]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE48]], read<bool>(%[[VALUE49]]));
+// DEFAULT-NEXT:         let %[[VALUE50:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE48]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE50]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(2138550877694459999999999999999999999999999999999999999999))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(2138550877694459999999999999999999999999999999999999999999)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(2138550877694460e+42)));
+// DEFAULT-NEXT:             let %[[VALUE51:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694460e+42)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE51]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE51]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE50]], read<bool>(%[[VALUE51]]));
+// DEFAULT-NEXT:         let %[[VALUE52:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE50]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE52]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(2138550877694458000000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(2138550877694458000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(2138550877694458e+42)));
+// DEFAULT-NEXT:             let %[[VALUE53:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694458e+42)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE53]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE53]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE52]], read<bool>(%[[VALUE53]]));
+// DEFAULT-NEXT:         let %[[VALUE54:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE52]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE54]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(2138550877694458500000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(2138550877694458500000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(2138550877694458e+42)));
+// DEFAULT-NEXT:             let %[[VALUE55:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694458e+42)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE55]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE55]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE54]], read<bool>(%[[VALUE55]]));
+// DEFAULT-NEXT:         let %[[VALUE56:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE54]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE56]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(2138550877694458500000000000000000000000000000000000000001))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(2138550877694458500000000000000000000000000000000000000001)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(2138550877694459e+42)));
+// DEFAULT-NEXT:             let %[[VALUE57:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694459e+42)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE57]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE57]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE56]], read<bool>(%[[VALUE57]]));
+// DEFAULT-NEXT:         let %[[VALUE58:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE56]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE58]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], const<i192b>(3138550867693340000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], const<i192b>(3138550867693340000000000000000000000000000000000000000000));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(3138550867693340e+42));
+// DEFAULT-NEXT:             let %[[VALUE59:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(3138550867693340e+42))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE59]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE59]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE58]], read<bool>(%[[VALUE59]]));
+// DEFAULT-NEXT:         let %[[VALUE60:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE58]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE60]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], const<i192b>(3138550867693340381917894711603833208051177722232017256447)));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], const<i192b>(3138550867693340381917894711603833208051177722232017256447));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(3138550867693340e+42));
+// DEFAULT-NEXT:             let %[[VALUE61:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(3138550867693340e+42))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE61]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE61]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE60]], read<bool>(%[[VALUE61]]));
+// DEFAULT-NEXT:         let %[[VALUE62:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE60]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE62]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(3138550867693340000000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], neg<i192b, overflow=ub>(const<i192b>(3138550867693340000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(3138550867693340e+42)));
+// DEFAULT-NEXT:             let %[[VALUE63:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(3138550867693340e+42)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE63]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE63]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE62]], read<bool>(%[[VALUE63]]));
+// DEFAULT-NEXT:         let %[[VALUE64:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE62]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE64]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i2b>(1)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i192b) -> d64>(%[[VALUE_tests192]], sub<i192b, overflow=ub>(neg<i192b, overflow=ub>(const<i192b>(3138550867693340381917894711603833208051177722232017256447)), widen<i192b, reason=usual_arith>(const<i2b>(1))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(3138550867693340e+42)));
+// DEFAULT-NEXT:             let %[[VALUE65:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(3138550867693340e+42)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE65]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE65]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE64]], read<bool>(%[[VALUE65]]));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE64]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u1b>(0))));
+// DEFAULT-NEXT:         call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u1b>(0)));
+// DEFAULT-NEXT:         write<d64>(%[[VALUE_b_5]], const<d64>(0.));
+// DEFAULT-NEXT:         let %[[VALUE66:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(0.))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE66]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<bool>(%[[VALUE66]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE67:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE66]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE67]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u3b>(7))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u3b>(7)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(7.));
+// DEFAULT-NEXT:             let %[[VALUE68:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(7.))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE68]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE68]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE67]], read<bool>(%[[VALUE68]]));
+// DEFAULT-NEXT:         let %[[VALUE69:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE67]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE69]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u6b>(42))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u6b>(42)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(42.));
+// DEFAULT-NEXT:             let %[[VALUE70:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(42.))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE70]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE70]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE69]], read<bool>(%[[VALUE70]]));
+// DEFAULT-NEXT:         let %[[VALUE71:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE69]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE71]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u30b>(777777777))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u30b>(777777777)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(777777777.));
+// DEFAULT-NEXT:             let %[[VALUE72:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(777777777.))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE72]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE72]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE71]], read<bool>(%[[VALUE72]]));
+// DEFAULT-NEXT:         let %[[VALUE73:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE71]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE73]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u54b>(9999999999999000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u54b>(9999999999999000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999000.));
+// DEFAULT-NEXT:             let %[[VALUE74:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999000.))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE74]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE74]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE73]], read<bool>(%[[VALUE74]]));
+// DEFAULT-NEXT:         let %[[VALUE75:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE73]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE75]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u60b>(999999999999999900))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u60b>(999999999999999900)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+2));
+// DEFAULT-NEXT:             let %[[VALUE76:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+2))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE76]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE76]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE75]], read<bool>(%[[VALUE76]]));
+// DEFAULT-NEXT:         let %[[VALUE77:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE75]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE77]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u64b>(9999999999999999000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u64b>(9999999999999999000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+3));
+// DEFAULT-NEXT:             let %[[VALUE78:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+3))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE78]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE78]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE77]], read<bool>(%[[VALUE78]]));
+// DEFAULT-NEXT:         let %[[VALUE79:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE77]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE79]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u67b>(99999999999999994999))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u67b>(99999999999999994999)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+4));
+// DEFAULT-NEXT:             let %[[VALUE80:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+4))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE80]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE80]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE79]], read<bool>(%[[VALUE80]]));
+// DEFAULT-NEXT:         let %[[VALUE81:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE79]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE81]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u70b>(999999999999999900000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u70b>(999999999999999900000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+5));
+// DEFAULT-NEXT:             let %[[VALUE82:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+5))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE82]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE82]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE81]], read<bool>(%[[VALUE82]]));
+// DEFAULT-NEXT:         let %[[VALUE83:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE81]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE83]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u74b>(9999999999999999000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u74b>(9999999999999999000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+6));
+// DEFAULT-NEXT:             let %[[VALUE84:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+6))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE84]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE84]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE83]], read<bool>(%[[VALUE84]]));
+// DEFAULT-NEXT:         let %[[VALUE85:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE83]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE85]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u77b>(123456789012345600000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u77b>(123456789012345600000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(1234567890123456.e+8));
+// DEFAULT-NEXT:             let %[[VALUE86:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1234567890123456.e+8))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE86]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE86]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE85]], read<bool>(%[[VALUE86]]));
+// DEFAULT-NEXT:         let %[[VALUE87:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE85]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE87]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u125b>(34242319854454290000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u125b>(34242319854454290000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(3424231985445429e+22));
+// DEFAULT-NEXT:             let %[[VALUE88:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(3424231985445429e+22))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE88]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE88]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE87]], read<bool>(%[[VALUE88]]));
+// DEFAULT-NEXT:         let %[[VALUE89:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE87]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE89]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u163b>(9999999999999999000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u163b>(9999999999999999000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+33));
+// DEFAULT-NEXT:             let %[[VALUE90:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+33))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE90]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE90]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE89]], read<bool>(%[[VALUE90]]));
+// DEFAULT-NEXT:         let %[[VALUE91:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE89]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE91]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u179b>(618935436546517900000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u179b>(618935436546517900000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6189354365465179e+38));
+// DEFAULT-NEXT:             let %[[VALUE92:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465179e+38))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE92]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE92]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE91]], read<bool>(%[[VALUE92]]));
+// DEFAULT-NEXT:         let %[[VALUE93:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE91]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE93]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u179b>(618935436546517950000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u179b>(618935436546517950000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6189354365465180e+38));
+// DEFAULT-NEXT:             let %[[VALUE94:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465180e+38))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE94]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE94]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE93]], read<bool>(%[[VALUE94]]));
+// DEFAULT-NEXT:         let %[[VALUE95:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE93]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE95]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u179b>(618935436546517949999999999999999999999999999999999999))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u179b>(618935436546517949999999999999999999999999999999999999)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6189354365465179e+38));
+// DEFAULT-NEXT:             let %[[VALUE96:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465179e+38))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE96]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE96]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE95]], read<bool>(%[[VALUE96]]));
+// DEFAULT-NEXT:         let %[[VALUE97:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE95]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE97]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u179b>(618935436546517999999999999999999999999999999999999999))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u179b>(618935436546517999999999999999999999999999999999999999)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6189354365465180e+38));
+// DEFAULT-NEXT:             let %[[VALUE98:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465180e+38))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE98]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE98]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE97]], read<bool>(%[[VALUE98]]));
+// DEFAULT-NEXT:         let %[[VALUE99:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE97]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE99]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u179b>(618935436546517800000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u179b>(618935436546517800000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6189354365465178e+38));
+// DEFAULT-NEXT:             let %[[VALUE100:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465178e+38))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE100]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE100]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE99]], read<bool>(%[[VALUE100]]));
+// DEFAULT-NEXT:         let %[[VALUE101:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE99]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE101]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u179b>(618935436546517850000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u179b>(618935436546517850000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6189354365465178e+38));
+// DEFAULT-NEXT:             let %[[VALUE102:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465178e+38))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE102]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE102]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE101]], read<bool>(%[[VALUE102]]));
+// DEFAULT-NEXT:         let %[[VALUE103:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE101]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE103]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u179b>(618935436546517850000000000000000000000000000000000001))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u179b>(618935436546517850000000000000000000000000000000000001)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6189354365465179e+38));
+// DEFAULT-NEXT:             let %[[VALUE104:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465179e+38))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE104]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE104]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE103]], read<bool>(%[[VALUE104]]));
+// DEFAULT-NEXT:         let %[[VALUE105:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE103]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE105]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u187b>(99999999999999990000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], widen<u192b, reason=arg>(const<u187b>(99999999999999990000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+40));
+// DEFAULT-NEXT:             let %[[VALUE106:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+40))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE106]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE106]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE105]], read<bool>(%[[VALUE106]]));
+// DEFAULT-NEXT:         let %[[VALUE107:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE105]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE107]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], const<u192b>(6277101735386680000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], const<u192b>(6277101735386680000000000000000000000000000000000000000000));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6277101735386680e+42));
+// DEFAULT-NEXT:             let %[[VALUE108:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6277101735386680e+42))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE108]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE108]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE107]], read<bool>(%[[VALUE108]]));
+// DEFAULT-NEXT:         let %[[VALUE109:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE107]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE109]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], const<u192b>(6277101735386680499999999999999999999999999999999999999999)));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], const<u192b>(6277101735386680499999999999999999999999999999999999999999));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6277101735386680e+42));
+// DEFAULT-NEXT:             let %[[VALUE110:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6277101735386680e+42))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE110]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE110]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE109]], read<bool>(%[[VALUE110]]));
+// DEFAULT-NEXT:         let %[[VALUE111:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE109]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE111]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], const<u192b>(6277101735386680500000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], const<u192b>(6277101735386680500000000000000000000000000000000000000000));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6277101735386680e+42));
+// DEFAULT-NEXT:             let %[[VALUE112:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6277101735386680e+42))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE112]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE112]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE111]], read<bool>(%[[VALUE112]]));
+// DEFAULT-NEXT:         let %[[VALUE113:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE111]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE113]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], const<u192b>(6277101735386680500000000000000000000000000000000000000001)));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], const<u192b>(6277101735386680500000000000000000000000000000000000000001));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6277101735386681e+42));
+// DEFAULT-NEXT:             let %[[VALUE114:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6277101735386681e+42))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE114]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE114]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE113]], read<bool>(%[[VALUE114]]));
+// DEFAULT-NEXT:         let %[[VALUE115:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE113]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE115]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], const<u192b>(6277101735386680500000000000000000000010000000000000000000)));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], const<u192b>(6277101735386680500000000000000000000010000000000000000000));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6277101735386681e+42));
+// DEFAULT-NEXT:             let %[[VALUE116:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6277101735386681e+42))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE116]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE116]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE115]], read<bool>(%[[VALUE116]]));
+// DEFAULT-NEXT:         let %[[VALUE117:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE115]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE117]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], const<u192b>(6277101735386680763835789423207666416102355444464034512895)));
+// DEFAULT-NEXT:             call<d64, signature=fn(u192b) -> d64>(%[[VALUE_testu192]], const<u192b>(6277101735386680763835789423207666416102355444464034512895));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6277101735386681e+42));
+// DEFAULT-NEXT:             let %[[VALUE118:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6277101735386681e+42))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE118]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE118]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE117]], read<bool>(%[[VALUE118]]));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE117]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i2b>(0))));
+// DEFAULT-NEXT:         call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i2b>(0)));
+// DEFAULT-NEXT:         write<d64>(%[[VALUE_b_5]], const<d64>(0.));
+// DEFAULT-NEXT:         let %[[VALUE119:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(0.))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE119]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<bool>(%[[VALUE119]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE120:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE119]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE120]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i4b>(7))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i4b>(7)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(7.));
+// DEFAULT-NEXT:             let %[[VALUE121:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(7.))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE121]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE121]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE120]], read<bool>(%[[VALUE121]]));
+// DEFAULT-NEXT:         let %[[VALUE122:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE120]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE122]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i7b, overflow=ub>(const<i7b>(42)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i7b, overflow=ub>(const<i7b>(42))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(42.)));
+// DEFAULT-NEXT:             let %[[VALUE123:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(42.)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE123]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE123]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE122]], read<bool>(%[[VALUE123]]));
+// DEFAULT-NEXT:         let %[[VALUE124:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE122]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE124]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i30b, overflow=ub>(const<i30b>(444444444)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i30b, overflow=ub>(const<i30b>(444444444))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(444444444.)));
+// DEFAULT-NEXT:             let %[[VALUE125:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(444444444.)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE125]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE125]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE124]], read<bool>(%[[VALUE125]]));
+// DEFAULT-NEXT:         let %[[VALUE126:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE124]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE126]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i55b>(9999999999999000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i55b>(9999999999999000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999000.));
+// DEFAULT-NEXT:             let %[[VALUE127:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999000.))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE127]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE127]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE126]], read<bool>(%[[VALUE127]]));
+// DEFAULT-NEXT:         let %[[VALUE128:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE126]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE128]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i55b, overflow=ub>(const<i55b>(9999999999999999)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i55b, overflow=ub>(const<i55b>(9999999999999999))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(9999999999999999.)));
+// DEFAULT-NEXT:             let %[[VALUE129:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE129]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE129]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE128]], read<bool>(%[[VALUE129]]));
+// DEFAULT-NEXT:         let %[[VALUE130:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE128]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE130]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i61b>(999999999999999900))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i61b>(999999999999999900)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+2));
+// DEFAULT-NEXT:             let %[[VALUE131:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+2))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE131]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE131]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE130]], read<bool>(%[[VALUE131]]));
+// DEFAULT-NEXT:         let %[[VALUE132:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE130]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE132]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i65b, overflow=ub>(const<i65b>(9999999999999999000)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i65b, overflow=ub>(const<i65b>(9999999999999999000))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(9999999999999999.e+3)));
+// DEFAULT-NEXT:             let %[[VALUE133:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.e+3)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE133]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE133]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE132]], read<bool>(%[[VALUE133]]));
+// DEFAULT-NEXT:         let %[[VALUE134:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE132]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE134]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i71b>(999999999999999900000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i71b>(999999999999999900000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+5));
+// DEFAULT-NEXT:             let %[[VALUE135:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+5))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE135]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE135]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE134]], read<bool>(%[[VALUE135]]));
+// DEFAULT-NEXT:         let %[[VALUE136:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE134]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE136]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i78b, overflow=ub>(const<i78b>(99999999999999990000000)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i78b, overflow=ub>(const<i78b>(99999999999999990000000))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(9999999999999999.e+7)));
+// DEFAULT-NEXT:             let %[[VALUE137:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.e+7)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE137]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE137]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE136]], read<bool>(%[[VALUE137]]));
+// DEFAULT-NEXT:         let %[[VALUE138:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE136]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE138]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i82b>(1234567890123456000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i82b>(1234567890123456000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(1234567890123456.e+9));
+// DEFAULT-NEXT:             let %[[VALUE139:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1234567890123456.e+9))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE139]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE139]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE138]], read<bool>(%[[VALUE139]]));
+// DEFAULT-NEXT:         let %[[VALUE140:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE138]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE140]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i133b>(3424231985445429000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i133b>(3424231985445429000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(3424231985445429e+24));
+// DEFAULT-NEXT:             let %[[VALUE141:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(3424231985445429e+24))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE141]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE141]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE140]], read<bool>(%[[VALUE141]]));
+// DEFAULT-NEXT:         let %[[VALUE142:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE140]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE142]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i188b>(99999999999999990000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(const<i188b>(99999999999999990000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+40));
+// DEFAULT-NEXT:             let %[[VALUE143:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+40))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE143]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE143]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE142]], read<bool>(%[[VALUE143]]));
+// DEFAULT-NEXT:         let %[[VALUE144:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE142]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE144]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i264b, overflow=ub>(const<i264b>(9999999999999999000000000000000000000000000000000000000000000000000000000000000)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i264b, overflow=ub>(const<i264b>(9999999999999999000000000000000000000000000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(9999999999999999.e+63)));
+// DEFAULT-NEXT:             let %[[VALUE145:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(9999999999999999.e+63)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE145]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE145]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE144]], read<bool>(%[[VALUE145]]));
+// DEFAULT-NEXT:         let %[[VALUE146:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE144]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE146]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445900000000000000000000000000000000000000000000000000000000000000000000000000000000000000)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445900000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(2138550877694459e+86)));
+// DEFAULT-NEXT:             let %[[VALUE147:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694459e+86)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE147]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE147]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE146]], read<bool>(%[[VALUE147]]));
+// DEFAULT-NEXT:         let %[[VALUE148:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE146]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE148]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445950000000000000000000000000000000000000000000000000000000000000000000000000000000000000)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445950000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(2138550877694460e+86)));
+// DEFAULT-NEXT:             let %[[VALUE149:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694460e+86)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE149]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE149]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE148]], read<bool>(%[[VALUE149]]));
+// DEFAULT-NEXT:         let %[[VALUE150:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE148]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE150]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445949999999999999999999999999999999999999999999999999999999999999999999999999999999999999)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445949999999999999999999999999999999999999999999999999999999999999999999999999999999999999))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(2138550877694459e+86)));
+// DEFAULT-NEXT:             let %[[VALUE151:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694459e+86)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE151]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE151]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE150]], read<bool>(%[[VALUE151]]));
+// DEFAULT-NEXT:         let %[[VALUE152:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE150]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE152]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445999999999999999999999999999999999999999999999999999999999999999999999999999999999999999))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(2138550877694460e+86)));
+// DEFAULT-NEXT:             let %[[VALUE153:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694460e+86)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE153]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE153]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE152]], read<bool>(%[[VALUE153]]));
+// DEFAULT-NEXT:         let %[[VALUE154:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE152]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE154]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445800000000000000000000000000000000000000000000000000000000000000000000000000000000000000)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445800000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(2138550877694458e+86)));
+// DEFAULT-NEXT:             let %[[VALUE155:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694458e+86)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE155]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE155]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE154]], read<bool>(%[[VALUE155]]));
+// DEFAULT-NEXT:         let %[[VALUE156:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE154]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE156]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445850000000000000000000000000000000000000000000000000000000000000000000000000000000000000)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445850000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(2138550877694458e+86)));
+// DEFAULT-NEXT:             let %[[VALUE157:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694458e+86)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE157]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE157]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE156]], read<bool>(%[[VALUE157]]));
+// DEFAULT-NEXT:         let %[[VALUE158:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE156]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE158]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445850000000000000000000000000000000000000000000000000000000000000000000000000000000000001)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], widen<i575b, reason=arg>(neg<i338b, overflow=ub>(const<i338b>(213855087769445850000000000000000000000000000000000000000000000000000000000000000000000000000000000001))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(2138550877694459e+86)));
+// DEFAULT-NEXT:             let %[[VALUE159:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(2138550877694459e+86)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE159]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE159]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE158]], read<bool>(%[[VALUE159]]));
+// DEFAULT-NEXT:         let %[[VALUE160:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE158]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE160]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], const<i575b>(61832600368276130000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], const<i575b>(61832600368276130000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6183260036827613e+157));
+// DEFAULT-NEXT:             let %[[VALUE161:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6183260036827613e+157))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE161]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE161]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE160]], read<bool>(%[[VALUE161]]));
+// DEFAULT-NEXT:         let %[[VALUE162:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE160]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE162]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6183260036827613e+157));
+// DEFAULT-NEXT:             let %[[VALUE163:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6183260036827613e+157))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE163]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE163]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE162]], read<bool>(%[[VALUE163]]));
+// DEFAULT-NEXT:         let %[[VALUE164:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE162]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE164]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], neg<i575b, overflow=ub>(const<i575b>(61832600368276130000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], neg<i575b, overflow=ub>(const<i575b>(61832600368276130000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(6183260036827613e+157)));
+// DEFAULT-NEXT:             let %[[VALUE165:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(6183260036827613e+157)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE165]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE165]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE164]], read<bool>(%[[VALUE165]]));
+// DEFAULT-NEXT:         let %[[VALUE166:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE164]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE166]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i2b>(1)))));
+// DEFAULT-NEXT:             call<d64, signature=fn(i575b) -> d64>(%[[VALUE_tests575]], sub<i575b, overflow=ub>(neg<i575b, overflow=ub>(const<i575b>(61832600368276133515125630254911797508782837275302959978515764023224306276632966792579100265310761247399417856504034834837841258576687802491886538775473291979151693037174783)), widen<i575b, reason=usual_arith>(const<i2b>(1))));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], neg<d64>(const<d64>(6183260036827613e+157)));
+// DEFAULT-NEXT:             let %[[VALUE167:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), neg<d64>(const<d64>(6183260036827613e+157)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE167]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE167]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE166]], read<bool>(%[[VALUE167]]));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE166]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u1b>(0))));
+// DEFAULT-NEXT:         call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u1b>(0)));
+// DEFAULT-NEXT:         write<d64>(%[[VALUE_b_5]], const<d64>(0.));
+// DEFAULT-NEXT:         let %[[VALUE168:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(0.))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE168]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<bool>(%[[VALUE168]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE169:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE168]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE169]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u5b>(17))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u5b>(17)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(17.));
+// DEFAULT-NEXT:             let %[[VALUE170:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(17.))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE170]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE170]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE169]], read<bool>(%[[VALUE170]]));
+// DEFAULT-NEXT:         let %[[VALUE171:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE169]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE171]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u9b>(420))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u9b>(420)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(420.));
+// DEFAULT-NEXT:             let %[[VALUE172:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(420.))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE172]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE172]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE171]], read<bool>(%[[VALUE172]]));
+// DEFAULT-NEXT:         let %[[VALUE173:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE171]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE173]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u30b>(888888888))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u30b>(888888888)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(888888888.));
+// DEFAULT-NEXT:             let %[[VALUE174:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(888888888.))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE174]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE174]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE173]], read<bool>(%[[VALUE174]]));
+// DEFAULT-NEXT:         let %[[VALUE175:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE173]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE175]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u54b>(9999999999999000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u54b>(9999999999999000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999000.));
+// DEFAULT-NEXT:             let %[[VALUE176:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999000.))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE176]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE176]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE175]], read<bool>(%[[VALUE176]]));
+// DEFAULT-NEXT:         let %[[VALUE177:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE175]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE177]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u77b>(99999999999999990000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u77b>(99999999999999990000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+7));
+// DEFAULT-NEXT:             let %[[VALUE178:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+7))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE178]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE178]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE177]], read<bool>(%[[VALUE178]]));
+// DEFAULT-NEXT:         let %[[VALUE179:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE177]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE179]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u84b>(9999999999999999000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u84b>(9999999999999999000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+9));
+// DEFAULT-NEXT:             let %[[VALUE180:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+9))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE180]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE180]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE179]], read<bool>(%[[VALUE180]]));
+// DEFAULT-NEXT:         let %[[VALUE181:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE179]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE181]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u97b>(99999999999999990000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u97b>(99999999999999990000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+13));
+// DEFAULT-NEXT:             let %[[VALUE182:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+13))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE182]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE182]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE181]], read<bool>(%[[VALUE182]]));
+// DEFAULT-NEXT:         let %[[VALUE183:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE181]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE183]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u103b>(9999999999999999000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u103b>(9999999999999999000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+15));
+// DEFAULT-NEXT:             let %[[VALUE184:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+15))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE184]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE184]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE183]], read<bool>(%[[VALUE184]]));
+// DEFAULT-NEXT:         let %[[VALUE185:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE183]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE185]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u110b>(1234567890123456000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u110b>(1234567890123456000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(1234567890123456.e+18));
+// DEFAULT-NEXT:             let %[[VALUE186:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1234567890123456.e+18))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE186]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE186]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE185]], read<bool>(%[[VALUE186]]));
+// DEFAULT-NEXT:         let %[[VALUE187:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE185]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE187]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u125b>(34242319854454290000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u125b>(34242319854454290000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(3424231985445429e+22));
+// DEFAULT-NEXT:             let %[[VALUE188:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(3424231985445429e+22))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE188]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE188]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE187]], read<bool>(%[[VALUE188]]));
+// DEFAULT-NEXT:         let %[[VALUE189:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE187]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE189]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u163b>(9999999999999999000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u163b>(9999999999999999000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+33));
+// DEFAULT-NEXT:             let %[[VALUE190:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+33))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE190]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE190]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE189]], read<bool>(%[[VALUE190]]));
+// DEFAULT-NEXT:         let %[[VALUE191:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE189]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE191]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u398b>(618935436546517900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u398b>(618935436546517900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6189354365465179e+104));
+// DEFAULT-NEXT:             let %[[VALUE192:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465179e+104))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE192]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE192]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE191]], read<bool>(%[[VALUE192]]));
+// DEFAULT-NEXT:         let %[[VALUE193:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE191]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE193]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u398b>(618935436546517950000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u398b>(618935436546517950000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6189354365465180e+104));
+// DEFAULT-NEXT:             let %[[VALUE194:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465180e+104))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE194]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE194]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE193]], read<bool>(%[[VALUE194]]));
+// DEFAULT-NEXT:         let %[[VALUE195:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE193]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE195]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u398b>(618935436546517949999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u398b>(618935436546517949999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6189354365465179e+104));
+// DEFAULT-NEXT:             let %[[VALUE196:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465179e+104))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE196]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE196]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE195]], read<bool>(%[[VALUE196]]));
+// DEFAULT-NEXT:         let %[[VALUE197:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE195]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE197]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u398b>(618935436546517999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u398b>(618935436546517999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6189354365465180e+104));
+// DEFAULT-NEXT:             let %[[VALUE198:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465180e+104))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE198]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE198]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE197]], read<bool>(%[[VALUE198]]));
+// DEFAULT-NEXT:         let %[[VALUE199:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE197]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE199]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u398b>(618935436546517800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u398b>(618935436546517800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6189354365465178e+104));
+// DEFAULT-NEXT:             let %[[VALUE200:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465178e+104))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE200]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE200]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE199]], read<bool>(%[[VALUE200]]));
+// DEFAULT-NEXT:         let %[[VALUE201:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE199]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE201]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u398b>(618935436546517850000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u398b>(618935436546517850000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6189354365465178e+104));
+// DEFAULT-NEXT:             let %[[VALUE202:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465178e+104))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE202]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE202]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE201]], read<bool>(%[[VALUE202]]));
+// DEFAULT-NEXT:         let %[[VALUE203:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE201]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE203]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u398b>(618935436546517850000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u398b>(618935436546517850000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(6189354365465179e+104));
+// DEFAULT-NEXT:             let %[[VALUE204:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(6189354365465179e+104))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE204]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE204]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE203]], read<bool>(%[[VALUE204]]));
+// DEFAULT-NEXT:         let %[[VALUE205:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE203]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE205]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u515b>(99999999999999990000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000))));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], widen<u575b, reason=arg>(const<u515b>(99999999999999990000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(9999999999999999.e+139));
+// DEFAULT-NEXT:             let %[[VALUE206:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(9999999999999999.e+139))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE206]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE206]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE205]], read<bool>(%[[VALUE206]]));
+// DEFAULT-NEXT:         let %[[VALUE207:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE205]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE207]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], const<u575b>(123665200736552200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], const<u575b>(123665200736552200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(1236652007365522e+158));
+// DEFAULT-NEXT:             let %[[VALUE208:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1236652007365522e+158))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE208]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE208]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE207]], read<bool>(%[[VALUE208]]));
+// DEFAULT-NEXT:         let %[[VALUE209:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE207]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE209]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], const<u575b>(123665200736552249999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], const<u575b>(123665200736552249999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(1236652007365522e+158));
+// DEFAULT-NEXT:             let %[[VALUE210:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1236652007365522e+158))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE210]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE210]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE209]], read<bool>(%[[VALUE210]]));
+// DEFAULT-NEXT:         let %[[VALUE211:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE209]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE211]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], const<u575b>(123665200736552250000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], const<u575b>(123665200736552250000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(1236652007365522e+158));
+// DEFAULT-NEXT:             let %[[VALUE212:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1236652007365522e+158))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE212]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE212]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE211]], read<bool>(%[[VALUE212]]));
+// DEFAULT-NEXT:         let %[[VALUE213:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE211]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE213]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], const<u575b>(123665200736552250000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001)));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], const<u575b>(123665200736552250000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(1236652007365523e+158));
+// DEFAULT-NEXT:             let %[[VALUE214:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1236652007365523e+158))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE214]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE214]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE213]], read<bool>(%[[VALUE214]]));
+// DEFAULT-NEXT:         let %[[VALUE215:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE213]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE215]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], const<u575b>(123665200736552250000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000)));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], const<u575b>(123665200736552250000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(1236652007365523e+158));
+// DEFAULT-NEXT:             let %[[VALUE216:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1236652007365523e+158))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE216]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE216]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE215]], read<bool>(%[[VALUE216]]));
+// DEFAULT-NEXT:         let %[[VALUE217:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE215]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE217]], const<bool>(true));
+// DEFAULT-NEXT:         else
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_a]], call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567)));
+// DEFAULT-NEXT:             call<d64, signature=fn(u575b) -> d64>(%[[VALUE_testu575]], const<u575b>(123665200736552267030251260509823595017565674550605919957031528046448612553265933585158200530621522494798835713008069669675682517153375604983773077550946583958303386074349567));
+// DEFAULT-NEXT:             write<d64>(%[[VALUE_b_5]], const<d64>(1236652007365523e+158));
+// DEFAULT-NEXT:             let %[[VALUE218:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), const<d64>(1236652007365523e+158))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE218]], const<bool>(true));
+// DEFAULT-NEXT:             else
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE218]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d64>>(%[[VALUE_b_5]])), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE217]], read<bool>(%[[VALUE218]]));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE217]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

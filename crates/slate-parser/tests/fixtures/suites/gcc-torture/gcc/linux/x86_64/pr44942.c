@@ -87,54 +87,54 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type1 va_list = va_list;
-// DEFAULT-NEXT:     fn %59 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @test1(%3 a: i32, %4 b: i32, %5 c: i32, %6 d: i32, %7 e: i32, %8 f: i32, %9 g: i32, %10 h: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %11 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %12 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%12);
-// DEFAULT-NEXT:         write<i32>(%11, va_arg<i32>(%12));
-// DEFAULT-NEXT:         va_arg<i32>(%12);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%11), const<i32>(1234))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%59);
-// DEFAULT-NEXT:         va_end(%12);
+// DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32, %[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_d:[0-9]+]] d: i32, %[[VALUE_e:[0-9]+]] e: i32, %[[VALUE_f:[0-9]+]] f: i32, %[[VALUE_g:[0-9]+]] g: i32, %[[VALUE_h:[0-9]+]] h: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], va_arg<i32>(%[[VALUE_ap]]));
+// DEFAULT-NEXT:         va_arg<i32>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(1234))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @test2(%14 a: i32, %15 b: i32, %16 c: i32, %17 d: i32, %18 e: i32, %19 f: i32, %20 g: i32, %21 h: f80, %22 i: i32, %23 j: f80, %24 k: i32, %25 l: f80, %26 m: i32, %27 n: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %28 o: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %29 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%29);
-// DEFAULT-NEXT:         write<i32>(%28, va_arg<i32>(%29));
-// DEFAULT-NEXT:         va_arg<i32>(%29);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%28), const<i32>(1234))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%59);
-// DEFAULT-NEXT:         va_end(%29);
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b_2:[0-9]+]] b: i32, %[[VALUE_c_2:[0-9]+]] c: i32, %[[VALUE_d_2:[0-9]+]] d: i32, %[[VALUE_e_2:[0-9]+]] e: i32, %[[VALUE_f_2:[0-9]+]] f: i32, %[[VALUE_g_2:[0-9]+]] g: i32, %[[VALUE_h_2:[0-9]+]] h: f80, %[[VALUE_i_2:[0-9]+]] i: i32, %[[VALUE_j:[0-9]+]] j: f80, %[[VALUE_k:[0-9]+]] k: i32, %[[VALUE_l:[0-9]+]] l: f80, %[[VALUE_m:[0-9]+]] m: i32, %[[VALUE_n:[0-9]+]] n: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_o:[0-9]+]] o: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_o]], va_arg<i32>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:         va_arg<i32>(%[[VALUE_ap_2]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_o]]), const<i32>(1234))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @test3(%31 a: f64, %32 b: f64, %33 c: f64, %34 d: f64, %35 e: f64, %36 f: f64, %37 g: f64, %38 h: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %39 i: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %40 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%40);
-// DEFAULT-NEXT:         write<f64>(%39, va_arg<f64>(%40));
-// DEFAULT-NEXT:         va_arg<f64>(%40);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%39), const<f64>(1234.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%59);
-// DEFAULT-NEXT:         va_end(%40);
+// DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_a_3:[0-9]+]] a: f64, %[[VALUE_b_3:[0-9]+]] b: f64, %[[VALUE_c_3:[0-9]+]] c: f64, %[[VALUE_d_3:[0-9]+]] d: f64, %[[VALUE_e_3:[0-9]+]] e: f64, %[[VALUE_f_3:[0-9]+]] f: f64, %[[VALUE_g_3:[0-9]+]] g: f64, %[[VALUE_h_3:[0-9]+]] h: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i_3:[0-9]+]] i: f64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_3]]);
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_i_3]], va_arg<f64>(%[[VALUE_ap_3]]));
+// DEFAULT-NEXT:         va_arg<f64>(%[[VALUE_ap_3]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_i_3]]), const<f64>(1234.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %41 @test4(%42 a: f64, %43 b: f64, %44 c: f64, %45 d: f64, %46 e: f64, %47 f: f64, %48 g: f64, %49 h: f80, %50 i: f64, %51 j: f80, %52 k: f64, %53 l: f80, %54 m: f64, %55 n: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %56 o: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %57 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%57);
-// DEFAULT-NEXT:         write<f64>(%56, va_arg<f64>(%57));
-// DEFAULT-NEXT:         va_arg<f64>(%57);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%56), const<f64>(1234.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%59);
-// DEFAULT-NEXT:         va_end(%57);
+// DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4(%[[VALUE_a_4:[0-9]+]] a: f64, %[[VALUE_b_4:[0-9]+]] b: f64, %[[VALUE_c_4:[0-9]+]] c: f64, %[[VALUE_d_4:[0-9]+]] d: f64, %[[VALUE_e_4:[0-9]+]] e: f64, %[[VALUE_f_4:[0-9]+]] f: f64, %[[VALUE_g_4:[0-9]+]] g: f64, %[[VALUE_h_4:[0-9]+]] h: f80, %[[VALUE_i_4:[0-9]+]] i: f64, %[[VALUE_j_2:[0-9]+]] j: f80, %[[VALUE_k_2:[0-9]+]] k: f64, %[[VALUE_l_2:[0-9]+]] l: f80, %[[VALUE_m_2:[0-9]+]] m: f64, %[[VALUE_n_2:[0-9]+]] n: f80, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_o_2:[0-9]+]] o: f64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_4]]);
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_o_2]], va_arg<f64>(%[[VALUE_ap_4]]));
+// DEFAULT-NEXT:         va_arg<f64>(%[[VALUE_ap_4]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_o_2]]), const<f64>(1234.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %58 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i32, f80, ...) -> void>(%2, const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<f80>(0), const<i32>(1234));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i32, f80, i32, f80, i32, f80, i32, f80, ...) -> void>(%13, const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<f80>(0), const<i32>(0), const<f80>(0), const<i32>(0), const<f80>(0), const<i32>(0), const<f80>(0), const<i32>(1234));
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64, f64, f64, f64, f64, f64, f80, ...) -> void>(%30, const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f80>(0), const<f64>(1234.0));
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64, f64, f64, f64, f64, f64, f80, f64, f80, f64, f80, f64, f80, ...) -> void>(%41, const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f80>(0), const<f64>(0.0), const<f80>(0), const<f64>(0.0), const<f80>(0), const<f64>(0.0), const<f80>(0), const<f64>(1234.0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i32, f80, ...) -> void>(%[[VALUE_test1]], const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<f80>(0), const<i32>(1234));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i32, f80, i32, f80, i32, f80, i32, f80, ...) -> void>(%[[VALUE_test2]], const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<f80>(0), const<i32>(0), const<f80>(0), const<i32>(0), const<f80>(0), const<i32>(0), const<f80>(0), const<i32>(1234));
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64, f64, f64, f64, f64, f64, f80, ...) -> void>(%[[VALUE_test3]], const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f80>(0), const<f64>(1234.0));
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64, f64, f64, f64, f64, f64, f80, f64, f80, f64, f80, f64, f80, ...) -> void>(%[[VALUE_test4]], const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f80>(0), const<f64>(0.0), const<f80>(0), const<f64>(0.0), const<f80>(0), const<f64>(0.0), const<f80>(0), const<f64>(1234.0));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

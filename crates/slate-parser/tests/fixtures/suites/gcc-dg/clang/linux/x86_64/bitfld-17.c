@@ -37,11 +37,11 @@ int assrt[sizeof (struct t) == 2 ? 1 : -1];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 t = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_t:[0-9]+]] t = struct {
 // DEFAULT-NEXT:         field0 a: i8 : 4;
 // DEFAULT-NEXT:         field1 b: i8 : 8;
 // DEFAULT-NEXT:         field2 c: i8 : 4;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 0, 1], bit_offsets=[Some(0), Some(4), Some(12)], bit_units=[(0, 2)], field_units=[Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     global %1 assrt: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_assrt:[0-9]+]] assrt: array<i32, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

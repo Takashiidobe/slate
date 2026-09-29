@@ -34,12 +34,12 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %1 f: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %2 d: i32 [storage=automatic] = or<i32>(from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%1), const<i32>(0))), from_bool<i32, reason=promotion>(not<bool>(lt<i32>(read<i32>(%1), const<i32>(0)))));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i32 [storage=automatic] = or<i32>(from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%[[VALUE_f]]), const<i32>(0))), from_bool<i32, reason=promotion>(not<bool>(lt<i32>(read<i32>(%[[VALUE_f]]), const<i32>(0)))));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

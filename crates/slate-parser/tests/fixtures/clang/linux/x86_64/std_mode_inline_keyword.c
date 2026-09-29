@@ -37,8 +37,8 @@ __inline int always_inline_function(void) { return 1; }
 // C89-NEXT:         storage d64 [size=8, align=8];
 // C89-NEXT:         storage d128 [size=16, align=16];
 // C89-NEXT:     }
-// C89-NEXT:     global %0 inline: i32 [storage=static] [linkage=external];
-// C89-NEXT:     fn %1 @always_inline_function() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// C89-NEXT:     global %[[VALUE_inline:[0-9]+]] inline: i32 [storage=static] [linkage=external];
+// C89-NEXT:     fn %[[VALUE_always_inline_function:[0-9]+]] @always_inline_function() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // C89-NEXT:         return const<i32>(1);
 // C89-NEXT:     }
 // C89-NEXT: }
@@ -66,10 +66,10 @@ __inline int always_inline_function(void) { return 1; }
 // GNU89-NEXT:         storage d64 [size=8, align=8];
 // GNU89-NEXT:         storage d128 [size=16, align=16];
 // GNU89-NEXT:     }
-// GNU89-NEXT:     fn %0 @inline_function() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// GNU89-NEXT:     fn %[[VALUE_inline_function:[0-9]+]] @inline_function() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // GNU89-NEXT:         return const<i32>(0);
 // GNU89-NEXT:     }
-// GNU89-NEXT:     fn %1 @always_inline_function() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// GNU89-NEXT:     fn %[[VALUE_always_inline_function:[0-9]+]] @always_inline_function() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // GNU89-NEXT:         return const<i32>(1);
 // GNU89-NEXT:     }
 // GNU89-NEXT: }
@@ -97,10 +97,10 @@ __inline int always_inline_function(void) { return 1; }
 // C99-NEXT:         storage d64 [size=8, align=8];
 // C99-NEXT:         storage d128 [size=16, align=16];
 // C99-NEXT:     }
-// C99-NEXT:     fn %0 @inline_function() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// C99-NEXT:     fn %[[VALUE_inline_function:[0-9]+]] @inline_function() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
 // C99-NEXT:         return const<i32>(0);
 // C99-NEXT:     }
-// C99-NEXT:     fn %1 @always_inline_function() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// C99-NEXT:     fn %[[VALUE_always_inline_function:[0-9]+]] @always_inline_function() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
 // C99-NEXT:         return const<i32>(1);
 // C99-NEXT:     }
 // C99-NEXT: }
@@ -128,10 +128,10 @@ __inline int always_inline_function(void) { return 1; }
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     fn %0 @inline_function() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// C23-NEXT:     fn %[[VALUE_inline_function:[0-9]+]] @inline_function() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
 // C23-NEXT:         return const<i32>(0);
 // C23-NEXT:     }
-// C23-NEXT:     fn %1 @always_inline_function() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// C23-NEXT:     fn %[[VALUE_always_inline_function:[0-9]+]] @always_inline_function() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
 // C23-NEXT:         return const<i32>(1);
 // C23-NEXT:     }
 // C23-NEXT: }

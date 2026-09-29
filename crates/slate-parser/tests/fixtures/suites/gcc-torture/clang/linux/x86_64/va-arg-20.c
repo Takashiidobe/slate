@@ -47,23 +47,23 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 va_list = va_list;
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @foo(%4 v: va_list) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 x: u64 [storage=automatic] = va_arg<u64>(%4);
-// DEFAULT-NEXT:         if ne<u64>(read<u64>(%5), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(16)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_v:[0-9]+]] v: va_list) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u64 [storage=automatic] = va_arg<u64>(%[[VALUE_v]]);
+// DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_x]]), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(16)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @bar(%7 c: i8, %8 d: i8, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %9 v: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%9);
-// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%3, read<va_list>(%9));
-// DEFAULT-NEXT:         va_end(%9);
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_c:[0-9]+]] c: i8, %[[VALUE_d:[0-9]+]] d: i8, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_v_2:[0-9]+]] v: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_v_2]]);
+// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%[[VALUE_foo]], read<va_list>(%[[VALUE_v_2]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_v_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i8, i8, ...) -> void>(%6, truncate<i8, reason=arg, fits=always>(const<i32>(0)), truncate<i8, reason=arg, fits=always>(const<i32>(0)), const<i64>(16));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i8, i8, ...) -> void>(%[[VALUE_bar]], truncate<i8, reason=arg, fits=always>(const<i32>(0)), truncate<i8, reason=arg, fits=always>(const<i32>(0)), const<i64>(16));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -45,35 +45,35 @@ void dialects(int x) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @operands(%1 x: i32, %2 y: i32, %3 p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_operands:[0-9]+]] @operands(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32, %[[VALUE_p:[0-9]+]] p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm "basic %eax %0" [dialect=att] [options=nostack];
 // DEFAULT-NEXT:         asm volatile inline "mov %[in], %0 %% %= %{att%|intel%} %a1 %cc2" [dialect=att] [options=nostack,may_unwind] [alternative=0] {
 // DEFAULT-NEXT:             template: "mov " %1 ", " %0 " " %% " " %= " {att|intel} " %a1 " " %c0;
-// DEFAULT-NEXT:             inout 0 [out] "r,m" [reg, mem] width 32 place<i32>(%1) from read<i32>(deref(read<ptr<i32>>(%3)));
-// DEFAULT-NEXT:             in 1 [in] "%rm,r" [reg | mem, reg] -> reg width 32 read<i32>(%2);
+// DEFAULT-NEXT:             inout 0 [out] "r,m" [reg, mem] width 32 place<i32>(%[[VALUE_x]]) from read<i32>(deref(read<ptr<i32>>(%[[VALUE_p]])));
+// DEFAULT-NEXT:             in 1 [in] "%rm,r" [reg | mem, reg] -> reg width 32 read<i32>(%[[VALUE_y]]);
 // DEFAULT-NEXT:             clobbers: memory, cc, unwind, "%rdx" as dx, "not_a_register";
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @jumps(%7 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_jumps:[0-9]+]] @jumps(%[[VALUE_x_2:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm goto "jmp %l[done] %l1 %2" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "jmp " %l0 " " %l0 " " %l1;
-// DEFAULT-NEXT:             in 0 "r" [reg] width 32 read<i32>(%7);
-// DEFAULT-NEXT:             labels: %5, %6;
+// DEFAULT-NEXT:             in 0 "r" [reg] width 32 read<i32>(%[[VALUE_x_2]]);
+// DEFAULT-NEXT:             labels: %[[VALUE_done:[0-9]+]], %[[VALUE_other:[0-9]+]];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm goto "jmp %l0" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "jmp " %l0;
-// DEFAULT-NEXT:             labels: %5;
+// DEFAULT-NEXT:             labels: %[[VALUE_done]];
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<i32>(%7, const<i32>(1));
-// DEFAULT-NEXT:         label %5 done:
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_x_2]], const<i32>(1));
+// DEFAULT-NEXT:         label %[[VALUE_done]] done:
 // DEFAULT-NEXT:             return;
-// DEFAULT-NEXT:         label %6 other:
-// DEFAULT-NEXT:             write<i32>(%7, const<i32>(0));
+// DEFAULT-NEXT:         label %[[VALUE_other]] other:
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_2]], const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @dialects(%9 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_dialects:[0-9]+]] @dialects(%[[VALUE_x_3:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm "mov{l|} {%0, %%eax|eax, %0} {a|b" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "movl " %0 ", " %% "eax a";
-// DEFAULT-NEXT:             in 0 "r" [reg] width 32 read<i32>(%9);
+// DEFAULT-NEXT:             in 0 "r" [reg] width 32 read<i32>(%[[VALUE_x_3]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

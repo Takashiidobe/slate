@@ -33,12 +33,12 @@ int block_scope(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 static_assert_handle = ptr<void>;
-// IR-NEXT:     type @type1 static_assert_count = i32;
-// IR-NEXT:     type @type2 = enum : u32 {
-// IR-NEXT:         %0 static_assert_limit = const<i32>(4);
+// IR-NEXT:     type @type[[TYPE_static_assert_handle:[0-9]+]] static_assert_handle = ptr<void>;
+// IR-NEXT:     type @type[[TYPE_static_assert_count:[0-9]+]] static_assert_count = i32;
+// IR-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// IR-NEXT:         %[[VALUE_static_assert_limit:[0-9]+]] static_assert_limit = const<i32>(4);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     fn %4 @block_scope() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_block_scope:[0-9]+]] @block_scope() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(0);
 // IR-NEXT:     }
 // IR-NEXT: }

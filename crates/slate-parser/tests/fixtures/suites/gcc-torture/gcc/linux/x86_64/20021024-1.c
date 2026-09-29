@@ -65,38 +65,38 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 cp: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 m: u64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %13 r: array<u64, 64> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @exit(%15 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_cp:[0-9]+]] cp: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_m:[0-9]+]] m: u64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_r:[0-9]+]] r: array<u64, 64> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @bar(%7 rop: u32, %8 r: ptr<u64>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %9 rs1: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %10 rs2: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %11 rd: u32 [storage=automatic];
-// DEFAULT-NEXT:         label %6 top:
-// DEFAULT-NEXT:             write<u32>(%10, and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%7), const<i32>(23)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(511))));
-// DEFAULT-NEXT:         write<u32>(%9, and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%7), const<i32>(9)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(511))));
-// DEFAULT-NEXT:         write<u32>(%11, and<u32>(read<u32>(%7), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(511))));
-// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%2)), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u64>(%3, add<u64, overflow=wrap>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%8), read<u32>(%9)))), read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%8), read<u32>(%10))))));
-// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%2)), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(2))));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         if not<bool>(ne<u32>(read<u32>(%11), const<u32>(0)))
-// DEFAULT-NEXT:             goto %6;
-// DEFAULT-NEXT:         write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%8), read<u32>(%11))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_rop:[0-9]+]] rop: u32, %[[VALUE_r_2:[0-9]+]] r: ptr<u64>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_rs1:[0-9]+]] rs1: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_rs2:[0-9]+]] rs2: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_rd:[0-9]+]] rd: u32 [storage=automatic];
+// DEFAULT-NEXT:         label %[[VALUE_top:[0-9]+]] top:
+// DEFAULT-NEXT:             write<u32>(%[[VALUE_rs2]], and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_rop]]), const<i32>(23)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(511))));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_rs1]], and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_rop]]), const<i32>(9)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(511))));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_rd]], and<u32>(read<u32>(%[[VALUE_rop]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(511))));
+// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_cp]])), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_m]], add<u64, overflow=wrap>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%[[VALUE_r_2]]), read<u32>(%[[VALUE_rs1]])))), read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%[[VALUE_r_2]]), read<u32>(%[[VALUE_rs2]]))))));
+// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_cp]])), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(2))));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:         if not<bool>(ne<u32>(read<u32>(%[[VALUE_rd]]), const<u32>(0)))
+// DEFAULT-NEXT:             goto %[[VALUE_top]];
+// DEFAULT-NEXT:         write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%[[VALUE_r_2]]), read<u32>(%[[VALUE_rd]]))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %14 cr: u64 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<u64>>(%2, addr_of<ptr<u64>>(%14));
-// DEFAULT-NEXT:         write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(64)>(%13), const<i32>(4))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(47))));
-// DEFAULT-NEXT:         write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(64)>(%13), const<i32>(8))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(11))));
-// DEFAULT-NEXT:         call<void, signature=fn(u32, ptr<u64>) -> void>(%5, reinterpret<u32, reason=arg, fits=unknown>(or<i32>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(8), const<i32>(23)), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(4), const<i32>(9))), const<i32>(15))), array_decay<ptr<u64>, length=Some(64)>(%13));
-// DEFAULT-NEXT:         if ne<u64>(read<u64>(%3), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(47), const<i32>(11)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_cr:[0-9]+]] cr: u64 [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_cp]], addr_of<ptr<u64>>(%[[VALUE_cr]]));
+// DEFAULT-NEXT:         write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(64)>(%[[VALUE_r]]), const<i32>(4))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(47))));
+// DEFAULT-NEXT:         write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(64)>(%[[VALUE_r]]), const<i32>(8))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(11))));
+// DEFAULT-NEXT:         call<void, signature=fn(u32, ptr<u64>) -> void>(%[[VALUE_bar]], reinterpret<u32, reason=arg, fits=unknown>(or<i32>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(8), const<i32>(23)), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(4), const<i32>(9))), const<i32>(15))), array_decay<ptr<u64>, length=Some(64)>(%[[VALUE_r]]));
+// DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_m]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(47), const<i32>(11)))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

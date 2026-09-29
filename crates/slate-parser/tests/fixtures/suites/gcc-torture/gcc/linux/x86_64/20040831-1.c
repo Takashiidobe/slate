@@ -38,14 +38,14 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%5 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 d: f64 [storage=automatic] = neg<f64>(const<f64>(12.0));
-// DEFAULT-NEXT:         let %4 l: i64 [storage=automatic] = reinterpret<i64, reason=assign, fits=unknown>(conditional<u64>(gt<f64, exceptions=observable>(read<f64>(%3), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(10000))), float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=observable>(read<f64>(%3)), reinterpret<u64, reason=usual_arith, fits=unknown>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=observable>(read<f64>(%3)))));
-// DEFAULT-NEXT:         if ne<i64>(read<i64>(%4), widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(12))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: f64 [storage=automatic] = neg<f64>(const<f64>(12.0));
+// DEFAULT-NEXT:         let %[[VALUE_l:[0-9]+]] l: i64 [storage=automatic] = reinterpret<i64, reason=assign, fits=unknown>(conditional<u64>(gt<f64, exceptions=observable>(read<f64>(%[[VALUE_d]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(10000))), float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=observable>(read<f64>(%[[VALUE_d]])), reinterpret<u64, reason=usual_arith, fits=unknown>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=observable>(read<f64>(%[[VALUE_d]])))));
+// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE_l]]), widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(12))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -37,12 +37,12 @@ tdef (int n)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = vla<i32, %5>;
-// DEFAULT-NEXT:     fn %0 @tdef(%1 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%1)));
-// DEFAULT-NEXT:         let %3 a: vla<i32, %5> [storage=automatic];
-// DEFAULT-NEXT:         let %4 p: ptr<vla<i32, %5>> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<vla<i32, %5>>>(%4, addr_of<ptr<vla<i32, %5>>>(%3));
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = vla<i32, %[[VALUE0:[0-9]+]]>;
+// DEFAULT-NEXT:     fn %[[VALUE_tdef:[0-9]+]] @tdef(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n]])));
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: vla<i32, %[[VALUE0]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<vla<i32, %[[VALUE0]]>> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<vla<i32, %[[VALUE0]]>>>(%[[VALUE_p]], addr_of<ptr<vla<i32, %[[VALUE0]]>>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

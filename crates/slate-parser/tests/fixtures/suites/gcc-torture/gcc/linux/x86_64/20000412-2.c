@@ -27,10 +27,10 @@ int f(int idx) { return (__builtin_strlen(list[idx])); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 list: array<array<i8, 64>, 250> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @__builtin_strlen(%3 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f(%2 idx: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%4, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(deref(ptr_offset<ptr<array<i8, 64>>, subtract=false, element=array<i8, 64>, overflow=ub>(array_decay<ptr<array<i8, 64>>, length=Some(250)>(%0), read<i32>(%2))))))));
+// DEFAULT-NEXT:     global %[[VALUE_list:[0-9]+]] list: array<array<i8, 64>, 250> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_strlen:[0-9]+]] @__builtin_strlen(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_idx:[0-9]+]] idx: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(64)>(deref(ptr_offset<ptr<array<i8, 64>>, subtract=false, element=array<i8, 64>, overflow=ub>(array_decay<ptr<array<i8, 64>>, length=Some(250)>(%[[VALUE_list]]), read<i32>(%[[VALUE_idx]]))))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

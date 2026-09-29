@@ -52,18 +52,18 @@ char *test3(const char *ptr)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     fn %9 @__builtin_malloc(%8 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @test1(%2 n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64) -> ptr<void>>(%9, read<u64>(%2));
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_n:[0-9]+]] n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], read<u64>(%[[VALUE_n]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @__builtin_calloc(%10 <unnamed>: u64, %11 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @test2(%4 n: u64, %5 s: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%12, read<u64>(%4), read<u64>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_calloc:[0-9]+]] @__builtin_calloc(%[[VALUE1:[0-9]+]] <unnamed>: u64, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_n_2:[0-9]+]] n: u64, %[[VALUE_s:[0-9]+]] s: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE___builtin_calloc]], read<u64>(%[[VALUE_n_2]]), read<u64>(%[[VALUE_s]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @__builtin_strdup(%13 <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %6 @test3(%7 ptr: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%14, read<ptr<const i8>>(%7));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_strdup:[0-9]+]] @__builtin_strdup(%[[VALUE3:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_ptr:[0-9]+]] ptr: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE___builtin_strdup]], read<ptr<const i8>>(%[[VALUE_ptr]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

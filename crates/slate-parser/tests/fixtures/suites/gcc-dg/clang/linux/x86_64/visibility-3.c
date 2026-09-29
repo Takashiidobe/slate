@@ -33,6 +33,6 @@ xyzzy = 5;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 xyzzy: i32 [storage=static] = const<i32>(5) [linkage=external] [visibility=hidden];
+// DEFAULT-NEXT:     global %[[VALUE_xyzzy:[0-9]+]] xyzzy: i32 [storage=static] = const<i32>(5) [linkage=external] [visibility=hidden];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

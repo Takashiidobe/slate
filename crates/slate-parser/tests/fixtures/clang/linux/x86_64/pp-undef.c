@@ -38,8 +38,8 @@ int kept;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 before: array<i32, 4> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %1 WIDTH: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 kept: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_before:[0-9]+]] before: array<i32, 4> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_WIDTH:[0-9]+]] WIDTH: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_kept:[0-9]+]] kept: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

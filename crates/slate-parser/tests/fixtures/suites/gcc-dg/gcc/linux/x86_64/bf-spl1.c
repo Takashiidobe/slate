@@ -85,42 +85,42 @@ foo (long long a)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 SFtype = f32;
-// DEFAULT-NEXT:     type @type1 DFtype = f64;
-// DEFAULT-NEXT:     type @type2 HItype = i16;
-// DEFAULT-NEXT:     type @type3 SItype = i32;
-// DEFAULT-NEXT:     type @type4 DItype = i64;
-// DEFAULT-NEXT:     type @type5 UHItype = u16;
-// DEFAULT-NEXT:     type @type6 USItype = u32;
-// DEFAULT-NEXT:     type @type7 UDItype = u64;
-// DEFAULT-NEXT:     type @type8 fractype = u64;
-// DEFAULT-NEXT:     type @type9 halffractype = u32;
-// DEFAULT-NEXT:     type @type10 FLO_type = f64;
-// DEFAULT-NEXT:     type @type11 intfrac = i64;
-// DEFAULT-NEXT:     type @type12 = union {
+// DEFAULT-NEXT:     type @type[[TYPE_SFtype:[0-9]+]] SFtype = f32;
+// DEFAULT-NEXT:     type @type[[TYPE_DFtype:[0-9]+]] DFtype = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_HItype:[0-9]+]] HItype = i16;
+// DEFAULT-NEXT:     type @type[[TYPE_SItype:[0-9]+]] SItype = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_DItype:[0-9]+]] DItype = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_UHItype:[0-9]+]] UHItype = u16;
+// DEFAULT-NEXT:     type @type[[TYPE_USItype:[0-9]+]] USItype = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_UDItype:[0-9]+]] UDItype = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_fractype:[0-9]+]] fractype = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_halffractype:[0-9]+]] halffractype = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_FLO_type:[0-9]+]] FLO_type = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_intfrac:[0-9]+]] intfrac = i64;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 foo: i64;
 // DEFAULT-NEXT:         field1 value: f64;
-// DEFAULT-NEXT:         field2 bits: @type13;
+// DEFAULT-NEXT:         field2 bits: @type[[TYPE1:[0-9]+]];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0, 0]];
-// DEFAULT-NEXT:     type @type13 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE1]] = struct {
 // DEFAULT-NEXT:         field0 fraction: u64 : 52;
 // DEFAULT-NEXT:         field1 exp: u32 : 11;
 // DEFAULT-NEXT:         field2 sign: u32 : 1;
 // DEFAULT-NEXT:     } [size=8, align=1, offsets=[0, 6, 7], bit_offsets=[Some(0), Some(52), Some(63)], bit_units=[(0, 8)], field_units=[Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     type @type14 FLO_union_type = @type12;
-// DEFAULT-NEXT:     global %18 x: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %17 @foo(%22 a: i64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i64>(read<i64>(%22), const<i64>(20015998343868))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     type @type[[TYPE_FLO_union_type:[0-9]+]] FLO_union_type = @type[[TYPE0]];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: i64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE_a]]), const<i64>(20015998343868))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @pack_d(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %20 dst: @type12 [storage=automatic] = aggregate<@type12, zero_fill=false>(field0 = const<i64>(81985529216486895));
-// DEFAULT-NEXT:         write<i64>(%18, reinterpret<i64, reason=assign, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..52>(field2(%20)))));
+// DEFAULT-NEXT:     fn %[[VALUE_pack_d:[0-9]+]] @pack_d(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_dst:[0-9]+]] dst: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i64>(81985529216486895));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], reinterpret<i64, reason=assign, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..52>(field2(%[[VALUE_dst]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%19);
-// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%17, read<i64>(%18));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_pack_d]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_foo]], read<i64>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

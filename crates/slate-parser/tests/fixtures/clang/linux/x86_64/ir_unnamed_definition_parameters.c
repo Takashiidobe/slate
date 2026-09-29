@@ -31,13 +31,13 @@ int callback(int (*)(int), int x) { return x; }
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     fn %0 @first(%5 <unnamed>: i32, %1 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// C23-NEXT:         return read<i32>(%1);
+// C23-NEXT:     fn %[[VALUE_first:[0-9]+]] @first(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE_b:[0-9]+]] b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// C23-NEXT:         return read<i32>(%[[VALUE_b]]);
 // C23-NEXT:     }
-// C23-NEXT:     fn %2 @pointer(%6 <unnamed>: ptr<i8>, %7 <unnamed>: i64) -> void [linkage=external] [fallthrough=ret_void] {
+// C23-NEXT:     fn %[[VALUE_pointer:[0-9]+]] @pointer(%[[VALUE1:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE2:[0-9]+]] <unnamed>: i64) -> void [linkage=external] [fallthrough=ret_void] {
 // C23-NEXT:     }
-// C23-NEXT:     fn %3 @callback(%8 <unnamed>: ptr<fn(i32) -> i32>, %4 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// C23-NEXT:         return read<i32>(%4);
+// C23-NEXT:     fn %[[VALUE_callback:[0-9]+]] @callback(%[[VALUE3:[0-9]+]] <unnamed>: ptr<fn(i32) -> i32>, %[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// C23-NEXT:         return read<i32>(%[[VALUE_x]]);
 // C23-NEXT:     }
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23
@@ -64,13 +64,13 @@ int callback(int (*)(int), int x) { return x; }
 // GNU23-NEXT:         storage d64 [size=8, align=8];
 // GNU23-NEXT:         storage d128 [size=16, align=16];
 // GNU23-NEXT:     }
-// GNU23-NEXT:     fn %0 @first(%5 <unnamed>: i32, %1 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// GNU23-NEXT:         return read<i32>(%1);
+// GNU23-NEXT:     fn %[[VALUE_first:[0-9]+]] @first(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE_b:[0-9]+]] b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// GNU23-NEXT:         return read<i32>(%[[VALUE_b]]);
 // GNU23-NEXT:     }
-// GNU23-NEXT:     fn %2 @pointer(%6 <unnamed>: ptr<i8>, %7 <unnamed>: i64) -> void [linkage=external] [fallthrough=ret_void] {
+// GNU23-NEXT:     fn %[[VALUE_pointer:[0-9]+]] @pointer(%[[VALUE1:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE2:[0-9]+]] <unnamed>: i64) -> void [linkage=external] [fallthrough=ret_void] {
 // GNU23-NEXT:     }
-// GNU23-NEXT:     fn %3 @callback(%8 <unnamed>: ptr<fn(i32) -> i32>, %4 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// GNU23-NEXT:         return read<i32>(%4);
+// GNU23-NEXT:     fn %[[VALUE_callback:[0-9]+]] @callback(%[[VALUE3:[0-9]+]] <unnamed>: ptr<fn(i32) -> i32>, %[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// GNU23-NEXT:         return read<i32>(%[[VALUE_x]]);
 // GNU23-NEXT:     }
 // GNU23-NEXT: }
 // SLATE-FILECHECK-END GNU23

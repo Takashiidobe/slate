@@ -53,35 +53,35 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 va_list = va_list;
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @foo(%4 a: i32, ...) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 va: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %6 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %7 res: i32 [storage=automatic];
-// DEFAULT-NEXT:         va_start(%5);
-// DEFAULT-NEXT:         for %10
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: i32, ...) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_va:[0-9]+]] va: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_res:[0-9]+]] res: i32 [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_va]]);
+// DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%6, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%6), const<i32>(4))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(4))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %11: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:                 let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%6, read<i32>(%12));
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 va_arg<i32>(%5);
-// DEFAULT-NEXT:         write<i32>(%7, va_arg<i32>(%5));
-// DEFAULT-NEXT:         va_arg<i32>(%5);
-// DEFAULT-NEXT:         va_end(%5);
-// DEFAULT-NEXT:         return read<i32>(%7);
+// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_va]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_res]], va_arg<i32>(%[[VALUE_va]]));
+// DEFAULT-NEXT:         va_arg<i32>(%[[VALUE_va]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_va]]);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_res]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ...) -> i32>(%3, const<i32>(5), const<i32>(4), const<i32>(3), const<i32>(2), const<i32>(1), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ...) -> i32>(%[[VALUE_foo]], const<i32>(5), const<i32>(4), const<i32>(3), const<i32>(2), const<i32>(1), const<i32>(0)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

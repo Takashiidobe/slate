@@ -43,22 +43,22 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @direct(%1 x: i32, ...) -> f64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=true, rounding=nearest_even, exceptions=ignore>(mul<i32, overflow=ub>(read<i32>(%1), read<i32>(%1)));
+// DEFAULT-NEXT:     fn %[[VALUE_direct:[0-9]+]] @direct(%[[VALUE_x:[0-9]+]] x: i32, ...) -> f64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=true, rounding=nearest_even, exceptions=ignore>(mul<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), read<i32>(%[[VALUE_x]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @broken(%4 indirect: ptr<fn(i32, ...) -> f64>, %5 v: i32) -> f64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f64, signature=fn(i32, ...) -> f64>(read<ptr<fn(i32, ...) -> f64>>(%4), read<i32>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE_broken:[0-9]+]] @broken(%[[VALUE_indirect:[0-9]+]] indirect: ptr<fn(i32, ...) -> f64>, %[[VALUE_v:[0-9]+]] v: i32) -> f64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f64, signature=fn(i32, ...) -> f64>(read<ptr<fn(i32, ...) -> f64>>(%[[VALUE_indirect]]), read<i32>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 d1: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %8 d2: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %9 i: i32 [storage=automatic] = const<i32>(2);
-// DEFAULT-NEXT:         write<f64>(%7, call<f64, signature=fn(ptr<fn(i32, ...) -> f64>, i32) -> f64>(%2, function_decay<ptr<fn(i32, ...) -> f64>>(%0), read<i32>(%9)));
-// DEFAULT-NEXT:         call<f64, signature=fn(ptr<fn(i32, ...) -> f64>, i32) -> f64>(%2, function_decay<ptr<fn(i32, ...) -> f64>>(%0), read<i32>(%9));
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%7), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(mul<i32, overflow=ub>(read<i32>(%9), read<i32>(%9))))
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_d1:[0-9]+]] d1: f64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_d2:[0-9]+]] d2: f64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(2);
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_d1]], call<f64, signature=fn(ptr<fn(i32, ...) -> f64>, i32) -> f64>(%[[VALUE_broken]], function_decay<ptr<fn(i32, ...) -> f64>>(%[[VALUE_direct]]), read<i32>(%[[VALUE_i]])));
+// DEFAULT-NEXT:         call<f64, signature=fn(ptr<fn(i32, ...) -> f64>, i32) -> f64>(%[[VALUE_broken]], function_decay<ptr<fn(i32, ...) -> f64>>(%[[VALUE_direct]]), read<i32>(%[[VALUE_i]]));
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%[[VALUE_d1]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(mul<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_i]]))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

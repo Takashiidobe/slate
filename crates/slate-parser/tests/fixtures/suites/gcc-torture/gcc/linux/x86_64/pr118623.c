@@ -40,19 +40,19 @@ int main() { bar(63); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 x: i32, %2 y: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 a: i32 [storage=automatic] = shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), read<i32>(%1));
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(read<i32>(%2), read<i32>(%3)), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), read<i32>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(read<i32>(%[[VALUE_y]]), read<i32>(%[[VALUE_a]])), const<i32>(0))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         return const<i32>(5);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @bar(%5 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<i32>(and<i32>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(i32, i32) -> i32>(%0, sub<i32, overflow=ub>(read<i32>(%5), const<i32>(50)), read<i32>(%5)), read<i32>(%5)), read<i32>(%5)), const<i32>(1)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_2:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<i32>(and<i32>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_foo]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_x_2]]), const<i32>(50)), read<i32>(%[[VALUE_x_2]])), read<i32>(%[[VALUE_x_2]])), read<i32>(%[[VALUE_x_2]])), const<i32>(1)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(63));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], const<i32>(63));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

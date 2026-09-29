@@ -40,19 +40,19 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 MyInt = i32;
-// DEFAULT-NEXT:     global %5 counter: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @compute(%2 a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 total: i32 [storage=automatic] = read<i32>(%2);
+// DEFAULT-NEXT:     type @type[[TYPE_MyInt:[0-9]+]] MyInt = i32;
+// DEFAULT-NEXT:     global %[[VALUE_counter:[0-9]+]] counter: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_compute:[0-9]+]] @compute(%[[VALUE_a:[0-9]+]] a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_total:[0-9]+]] total: i32 [storage=automatic] = read<i32>(%[[VALUE_a]]);
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %4 scratch: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%3), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%3, read<i32>(%4));
+// DEFAULT-NEXT:             let %[[VALUE_scratch:[0-9]+]] scratch: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%[[VALUE_total]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE_scratch]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %6 doubled: i32 [storage=automatic] = mul<i32, overflow=ub>(read<i32>(%3), const<i32>(2));
-// DEFAULT-NEXT:         return read<i32>(%6);
+// DEFAULT-NEXT:         let %[[VALUE_doubled:[0-9]+]] doubled: i32 [storage=automatic] = mul<i32, overflow=ub>(read<i32>(%[[VALUE_total]]), const<i32>(2));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_doubled]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_compute]], const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

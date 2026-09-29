@@ -38,10 +38,10 @@ _Static_assert (_Alignof (T) == N * 2, "N * 2");
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 T = i32;
-// DEFAULT-NEXT:     type @type1 T = i32;
-// DEFAULT-NEXT:     type @type2 T = i32;
-// DEFAULT-NEXT:     type @type3 T = i32;
-// DEFAULT-NEXT:     type @type4 T = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T_2:[0-9]+]] T = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T_3:[0-9]+]] T = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T_4:[0-9]+]] T = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T_5:[0-9]+]] T = i32;
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

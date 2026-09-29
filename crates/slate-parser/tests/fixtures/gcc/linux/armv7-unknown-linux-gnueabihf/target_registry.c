@@ -36,17 +36,17 @@ struct pair record(struct pair value) { return value; }
 // ARMV7-LINUX-GNUEABIHF-GCC-NEXT:         storage d64 [size=8, align=8];
 // ARMV7-LINUX-GNUEABIHF-GCC-NEXT:         storage d128 [size=16, align=16];
 // ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     }
-// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     type @type0 pair = struct {
+// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     type @type[[TYPE_pair:[0-9]+]] pair = struct {
 // ARMV7-LINUX-GNUEABIHF-GCC-NEXT:         field0 a: i32;
 // ARMV7-LINUX-GNUEABIHF-GCC-NEXT:         field1 b: i32;
 // ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %0 gnuc: i32 [storage=static] = const<i32>(15) [linkage=external];
-// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %1 sizeof_long: u32 [storage=static] = const<u32>(4) [linkage=external];
-// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %2 sizeof_long_double: u32 [storage=static] = const<u32>(8) [linkage=external];
-// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %3 sizeof_va_list: u32 [storage=static] = const<u32>(4) [linkage=external];
-// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %4 alignof_long_long: u32 [storage=static] = const<u32>(8) [linkage=external];
-// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     fn %6 @record(%7 value: @type0) -> @type0 [linkage=external] [abi=aapcs32_hard_float(native_c) -> native_c] [fallthrough=ub_if_used] {
-// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:         return copy<@type0, reason=return>(read<@type0>(%7));
+// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %[[VALUE_gnuc:[0-9]+]] gnuc: i32 [storage=static] = const<i32>(15) [linkage=external];
+// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u32 [storage=static] = const<u32>(4) [linkage=external];
+// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u32 [storage=static] = const<u32>(8) [linkage=external];
+// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u32 [storage=static] = const<u32>(4) [linkage=external];
+// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u32 [storage=static] = const<u32>(8) [linkage=external];
+// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     fn %[[VALUE_record:[0-9]+]] @record(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=aapcs32_hard_float(native_c) -> native_c] [fallthrough=ub_if_used] {
+// ARMV7-LINUX-GNUEABIHF-GCC-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value]]));
 // ARMV7-LINUX-GNUEABIHF-GCC-NEXT:     }
 // ARMV7-LINUX-GNUEABIHF-GCC-NEXT: }
 // SLATE-FILECHECK-END ARMV7-LINUX-GNUEABIHF-GCC

@@ -103,363 +103,363 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %28 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %0 @main(%1 argc: i32, %2 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 f0: vector<f32, 4> [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(3.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(4.0)));
-// DEFAULT-NEXT:         let %4 f1: vector<f32, 4> [storage=automatic];
-// DEFAULT-NEXT:         let %5 f2: vector<f32, 4> [storage=automatic];
-// DEFAULT-NEXT:         let %6 d0: vector<f64, 2> [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(1.0), index1 = const<f64>(2.0));
-// DEFAULT-NEXT:         let %7 d1: vector<f64, 2> [storage=automatic];
-// DEFAULT-NEXT:         let %8 d2: vector<f64, 2> [storage=automatic];
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%4, add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f32, 4>>(%3)));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%5, add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(compound_literal %25 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)))), read<vector<f32, 4>>(%3)));
-// DEFAULT-NEXT:         do %26
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_f0:[0-9]+]] f0: vector<f32, 4> [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(1.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(3.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(4.0)));
+// DEFAULT-NEXT:         let %[[VALUE_f1:[0-9]+]] f1: vector<f32, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_f2:[0-9]+]] f2: vector<f32, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_d0:[0-9]+]] d0: vector<f64, 2> [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(1.0), index1 = const<f64>(2.0));
+// DEFAULT-NEXT:         let %[[VALUE_d1:[0-9]+]] d1: vector<f64, 2> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_d2:[0-9]+]] d2: vector<f64, 2> [storage=automatic];
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f1]], add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f32, 4>>(%[[VALUE_f0]])));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f2]], add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)))), read<vector<f32, 4>>(%[[VALUE_f0]])));
+// DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %9 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %27
+// DEFAULT-NEXT:                 let %[[VALUE___i:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%9, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%9), const<i32>(4))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i]]), const<i32>(4))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %74: i32 [synthetic] = read<i32>(%9);
-// DEFAULT-NEXT:                         let %75: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%74), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%9, read<i32>(%75));
+// DEFAULT-NEXT:                         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i]]);
+// DEFAULT-NEXT:                         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i]], read<i32>(%[[VALUE4]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%4)), read<i32>(%9)))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%5)), read<i32>(%9)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f1]])), read<i32>(%[[VALUE___i]])))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f2]])), read<i32>(%[[VALUE___i]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%4, sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f32, 4>>(%3)));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%5, sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(compound_literal %29 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)))), read<vector<f32, 4>>(%3)));
-// DEFAULT-NEXT:         do %30
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f1]], sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f32, 4>>(%[[VALUE_f0]])));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f2]], sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(compound_literal %[[VALUE5:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)))), read<vector<f32, 4>>(%[[VALUE_f0]])));
+// DEFAULT-NEXT:         do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %10 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %31
+// DEFAULT-NEXT:                 let %[[VALUE___i_2:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%10, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%10), const<i32>(4))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_2]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_2]]), const<i32>(4))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %76: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                         let %77: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%76), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%10, read<i32>(%77));
+// DEFAULT-NEXT:                         let %[[VALUE8:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_2]]);
+// DEFAULT-NEXT:                         let %[[VALUE9:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE8]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_2]], read<i32>(%[[VALUE9]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%4)), read<i32>(%10)))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%5)), read<i32>(%10)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f1]])), read<i32>(%[[VALUE___i_2]])))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f2]])), read<i32>(%[[VALUE___i_2]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%4, mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f32, 4>>(%3)));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%5, mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(compound_literal %32 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)))), read<vector<f32, 4>>(%3)));
-// DEFAULT-NEXT:         do %33
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f1]], mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f32, 4>>(%[[VALUE_f0]])));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f2]], mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(compound_literal %[[VALUE10:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)))), read<vector<f32, 4>>(%[[VALUE_f0]])));
+// DEFAULT-NEXT:         do %[[VALUE11:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %11 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %34
+// DEFAULT-NEXT:                 let %[[VALUE___i_3:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%11, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%11), const<i32>(4))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_3]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_3]]), const<i32>(4))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %78: i32 [synthetic] = read<i32>(%11);
-// DEFAULT-NEXT:                         let %79: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%78), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%11, read<i32>(%79));
+// DEFAULT-NEXT:                         let %[[VALUE13:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_3]]);
+// DEFAULT-NEXT:                         let %[[VALUE14:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE13]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_3]], read<i32>(%[[VALUE14]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%4)), read<i32>(%11)))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%5)), read<i32>(%11)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f1]])), read<i32>(%[[VALUE___i_3]])))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f2]])), read<i32>(%[[VALUE___i_3]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%4, div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f32, 4>>(%3)));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%5, div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(compound_literal %35 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)))), read<vector<f32, 4>>(%3)));
-// DEFAULT-NEXT:         do %36
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f1]], div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f32, 4>>(%[[VALUE_f0]])));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f2]], div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(compound_literal %[[VALUE15:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)))), read<vector<f32, 4>>(%[[VALUE_f0]])));
+// DEFAULT-NEXT:         do %[[VALUE16:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %12 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %37
+// DEFAULT-NEXT:                 let %[[VALUE___i_4:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE17:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%12, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%12), const<i32>(4))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_4]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_4]]), const<i32>(4))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %80: i32 [synthetic] = read<i32>(%12);
-// DEFAULT-NEXT:                         let %81: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%80), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%12, read<i32>(%81));
+// DEFAULT-NEXT:                         let %[[VALUE18:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_4]]);
+// DEFAULT-NEXT:                         let %[[VALUE19:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE18]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_4]], read<i32>(%[[VALUE19]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%4)), read<i32>(%12)))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%5)), read<i32>(%12)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f1]])), read<i32>(%[[VALUE___i_4]])))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f2]])), read<i32>(%[[VALUE___i_4]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%4, add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%3), vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%5, add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%3), read<vector<f32, 4>>(compound_literal %38 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0))))));
-// DEFAULT-NEXT:         do %39
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f1]], add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%[[VALUE_f0]]), vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f2]], add<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%[[VALUE_f0]]), read<vector<f32, 4>>(compound_literal %[[VALUE20:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0))))));
+// DEFAULT-NEXT:         do %[[VALUE21:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %13 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %40
+// DEFAULT-NEXT:                 let %[[VALUE___i_5:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE22:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%13, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%13), const<i32>(4))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_5]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_5]]), const<i32>(4))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %82: i32 [synthetic] = read<i32>(%13);
-// DEFAULT-NEXT:                         let %83: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%82), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%13, read<i32>(%83));
+// DEFAULT-NEXT:                         let %[[VALUE23:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_5]]);
+// DEFAULT-NEXT:                         let %[[VALUE24:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE23]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_5]], read<i32>(%[[VALUE24]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%4)), read<i32>(%13)))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%5)), read<i32>(%13)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f1]])), read<i32>(%[[VALUE___i_5]])))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f2]])), read<i32>(%[[VALUE___i_5]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%4, sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%3), vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%5, sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%3), read<vector<f32, 4>>(compound_literal %41 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0))))));
-// DEFAULT-NEXT:         do %42
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f1]], sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%[[VALUE_f0]]), vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f2]], sub<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%[[VALUE_f0]]), read<vector<f32, 4>>(compound_literal %[[VALUE25:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0))))));
+// DEFAULT-NEXT:         do %[[VALUE26:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %14 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %43
+// DEFAULT-NEXT:                 let %[[VALUE___i_6:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE27:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%14, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%14), const<i32>(4))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_6]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_6]]), const<i32>(4))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %84: i32 [synthetic] = read<i32>(%14);
-// DEFAULT-NEXT:                         let %85: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%84), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%14, read<i32>(%85));
+// DEFAULT-NEXT:                         let %[[VALUE28:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_6]]);
+// DEFAULT-NEXT:                         let %[[VALUE29:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE28]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_6]], read<i32>(%[[VALUE29]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%4)), read<i32>(%14)))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%5)), read<i32>(%14)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f1]])), read<i32>(%[[VALUE___i_6]])))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f2]])), read<i32>(%[[VALUE___i_6]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%4, mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%3), vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%5, mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%3), read<vector<f32, 4>>(compound_literal %44 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0))))));
-// DEFAULT-NEXT:         do %45
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f1]], mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%[[VALUE_f0]]), vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f2]], mul<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%[[VALUE_f0]]), read<vector<f32, 4>>(compound_literal %[[VALUE30:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0))))));
+// DEFAULT-NEXT:         do %[[VALUE31:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %15 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %46
+// DEFAULT-NEXT:                 let %[[VALUE___i_7:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE32:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%15, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%15), const<i32>(4))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_7]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_7]]), const<i32>(4))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %86: i32 [synthetic] = read<i32>(%15);
-// DEFAULT-NEXT:                         let %87: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%86), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%15, read<i32>(%87));
+// DEFAULT-NEXT:                         let %[[VALUE33:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_7]]);
+// DEFAULT-NEXT:                         let %[[VALUE34:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE33]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_7]], read<i32>(%[[VALUE34]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%4)), read<i32>(%15)))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%5)), read<i32>(%15)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f1]])), read<i32>(%[[VALUE___i_7]])))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f2]])), read<i32>(%[[VALUE___i_7]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%4, div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%3), vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
-// DEFAULT-NEXT:         write<vector<f32, 4>>(%5, div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%3), read<vector<f32, 4>>(compound_literal %47 [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0))))));
-// DEFAULT-NEXT:         do %48
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f1]], div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%[[VALUE_f0]]), vector_splat<vector<f32, 4>, reason=usual_arith>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
+// DEFAULT-NEXT:         write<vector<f32, 4>>(%[[VALUE_f2]], div<vector<f32, 4>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f32, 4>>(%[[VALUE_f0]]), read<vector<f32, 4>>(compound_literal %[[VALUE35:[0-9]+]] [storage=automatic] = aggregate<vector<f32, 4>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index2 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0)), index3 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(2.0))))));
+// DEFAULT-NEXT:         do %[[VALUE36:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %16 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %49
+// DEFAULT-NEXT:                 let %[[VALUE___i_8:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE37:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%16, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%16), const<i32>(4))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_8]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_8]]), const<i32>(4))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %88: i32 [synthetic] = read<i32>(%16);
-// DEFAULT-NEXT:                         let %89: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%88), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%16, read<i32>(%89));
+// DEFAULT-NEXT:                         let %[[VALUE38:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_8]]);
+// DEFAULT-NEXT:                         let %[[VALUE39:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE38]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_8]], read<i32>(%[[VALUE39]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%4)), read<i32>(%16)))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%5)), read<i32>(%16)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f32, exceptions=observable>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f1]])), read<i32>(%[[VALUE___i_8]])))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(pointer_cast<ptr<f32>, reason=explicit>(addr_of<ptr<vector<f32, 4>>>(%[[VALUE_f2]])), read<i32>(%[[VALUE___i_8]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%7, add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f64, 2>>(%6)));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%8, add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(compound_literal %50 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%6)));
-// DEFAULT-NEXT:         do %51
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d1]], add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f64, 2>>(%[[VALUE_d0]])));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d2]], add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(compound_literal %[[VALUE40:[0-9]+]] [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%[[VALUE_d0]])));
+// DEFAULT-NEXT:         do %[[VALUE41:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %17 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %52
+// DEFAULT-NEXT:                 let %[[VALUE___i_9:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE42:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%17, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%17), const<i32>(2))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_9]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_9]]), const<i32>(2))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %90: i32 [synthetic] = read<i32>(%17);
-// DEFAULT-NEXT:                         let %91: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%90), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%17, read<i32>(%91));
+// DEFAULT-NEXT:                         let %[[VALUE43:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_9]]);
+// DEFAULT-NEXT:                         let %[[VALUE44:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE43]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_9]], read<i32>(%[[VALUE44]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%7)), read<i32>(%17)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%8)), read<i32>(%17)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d1]])), read<i32>(%[[VALUE___i_9]])))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d2]])), read<i32>(%[[VALUE___i_9]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%7, sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f64, 2>>(%6)));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%8, sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(compound_literal %53 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%6)));
-// DEFAULT-NEXT:         do %54
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d1]], sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f64, 2>>(%[[VALUE_d0]])));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d2]], sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(compound_literal %[[VALUE45:[0-9]+]] [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%[[VALUE_d0]])));
+// DEFAULT-NEXT:         do %[[VALUE46:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %18 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %55
+// DEFAULT-NEXT:                 let %[[VALUE___i_10:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE47:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%18, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%18), const<i32>(2))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_10]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_10]]), const<i32>(2))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %92: i32 [synthetic] = read<i32>(%18);
-// DEFAULT-NEXT:                         let %93: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%92), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%18, read<i32>(%93));
+// DEFAULT-NEXT:                         let %[[VALUE48:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_10]]);
+// DEFAULT-NEXT:                         let %[[VALUE49:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE48]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_10]], read<i32>(%[[VALUE49]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%7)), read<i32>(%18)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%8)), read<i32>(%18)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d1]])), read<i32>(%[[VALUE___i_10]])))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d2]])), read<i32>(%[[VALUE___i_10]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%7, mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f64, 2>>(%6)));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%8, mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(compound_literal %56 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%6)));
-// DEFAULT-NEXT:         do %57
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d1]], mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f64, 2>>(%[[VALUE_d0]])));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d2]], mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(compound_literal %[[VALUE50:[0-9]+]] [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%[[VALUE_d0]])));
+// DEFAULT-NEXT:         do %[[VALUE51:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %19 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %58
+// DEFAULT-NEXT:                 let %[[VALUE___i_11:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE52:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%19, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%19), const<i32>(2))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_11]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_11]]), const<i32>(2))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %94: i32 [synthetic] = read<i32>(%19);
-// DEFAULT-NEXT:                         let %95: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%94), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%19, read<i32>(%95));
+// DEFAULT-NEXT:                         let %[[VALUE53:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_11]]);
+// DEFAULT-NEXT:                         let %[[VALUE54:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE53]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_11]], read<i32>(%[[VALUE54]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%7)), read<i32>(%19)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%8)), read<i32>(%19)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d1]])), read<i32>(%[[VALUE___i_11]])))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d2]])), read<i32>(%[[VALUE___i_11]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%7, div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f64, 2>>(%6)));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%8, div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(compound_literal %59 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%6)));
-// DEFAULT-NEXT:         do %60
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d1]], div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2))), read<vector<f64, 2>>(%[[VALUE_d0]])));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d2]], div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(compound_literal %[[VALUE55:[0-9]+]] [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0))), read<vector<f64, 2>>(%[[VALUE_d0]])));
+// DEFAULT-NEXT:         do %[[VALUE56:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %20 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %61
+// DEFAULT-NEXT:                 let %[[VALUE___i_12:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE57:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%20, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%20), const<i32>(2))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_12]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_12]]), const<i32>(2))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %96: i32 [synthetic] = read<i32>(%20);
-// DEFAULT-NEXT:                         let %97: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%96), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%20, read<i32>(%97));
+// DEFAULT-NEXT:                         let %[[VALUE58:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_12]]);
+// DEFAULT-NEXT:                         let %[[VALUE59:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE58]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_12]], read<i32>(%[[VALUE59]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%7)), read<i32>(%20)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%8)), read<i32>(%20)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d1]])), read<i32>(%[[VALUE___i_12]])))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d2]])), read<i32>(%[[VALUE___i_12]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%7, add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%6), vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%8, add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%6), read<vector<f64, 2>>(compound_literal %62 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
-// DEFAULT-NEXT:         do %63
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d1]], add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%[[VALUE_d0]]), vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d2]], add<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%[[VALUE_d0]]), read<vector<f64, 2>>(compound_literal %[[VALUE60:[0-9]+]] [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
+// DEFAULT-NEXT:         do %[[VALUE61:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %21 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %64
+// DEFAULT-NEXT:                 let %[[VALUE___i_13:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE62:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%21, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%21), const<i32>(2))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_13]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_13]]), const<i32>(2))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %98: i32 [synthetic] = read<i32>(%21);
-// DEFAULT-NEXT:                         let %99: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%98), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%21, read<i32>(%99));
+// DEFAULT-NEXT:                         let %[[VALUE63:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_13]]);
+// DEFAULT-NEXT:                         let %[[VALUE64:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE63]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_13]], read<i32>(%[[VALUE64]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%7)), read<i32>(%21)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%8)), read<i32>(%21)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d1]])), read<i32>(%[[VALUE___i_13]])))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d2]])), read<i32>(%[[VALUE___i_13]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%7, sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%6), vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%8, sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%6), read<vector<f64, 2>>(compound_literal %65 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
-// DEFAULT-NEXT:         do %66
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d1]], sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%[[VALUE_d0]]), vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d2]], sub<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%[[VALUE_d0]]), read<vector<f64, 2>>(compound_literal %[[VALUE65:[0-9]+]] [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
+// DEFAULT-NEXT:         do %[[VALUE66:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %22 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %67
+// DEFAULT-NEXT:                 let %[[VALUE___i_14:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE67:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%22, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%22), const<i32>(2))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_14]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_14]]), const<i32>(2))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %100: i32 [synthetic] = read<i32>(%22);
-// DEFAULT-NEXT:                         let %101: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%100), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%22, read<i32>(%101));
+// DEFAULT-NEXT:                         let %[[VALUE68:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_14]]);
+// DEFAULT-NEXT:                         let %[[VALUE69:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE68]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_14]], read<i32>(%[[VALUE69]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%7)), read<i32>(%22)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%8)), read<i32>(%22)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d1]])), read<i32>(%[[VALUE___i_14]])))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d2]])), read<i32>(%[[VALUE___i_14]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%7, mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%6), vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%8, mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%6), read<vector<f64, 2>>(compound_literal %68 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
-// DEFAULT-NEXT:         do %69
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d1]], mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%[[VALUE_d0]]), vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d2]], mul<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%[[VALUE_d0]]), read<vector<f64, 2>>(compound_literal %[[VALUE70:[0-9]+]] [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
+// DEFAULT-NEXT:         do %[[VALUE71:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %23 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %70
+// DEFAULT-NEXT:                 let %[[VALUE___i_15:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE72:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%23, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%23), const<i32>(2))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_15]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_15]]), const<i32>(2))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %102: i32 [synthetic] = read<i32>(%23);
-// DEFAULT-NEXT:                         let %103: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%102), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%23, read<i32>(%103));
+// DEFAULT-NEXT:                         let %[[VALUE73:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_15]]);
+// DEFAULT-NEXT:                         let %[[VALUE74:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE73]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_15]], read<i32>(%[[VALUE74]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%7)), read<i32>(%23)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%8)), read<i32>(%23)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d1]])), read<i32>(%[[VALUE___i_15]])))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d2]])), read<i32>(%[[VALUE___i_15]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%7, div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%6), vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
-// DEFAULT-NEXT:         write<vector<f64, 2>>(%8, div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%6), read<vector<f64, 2>>(compound_literal %71 [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
-// DEFAULT-NEXT:         do %72
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d1]], div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%[[VALUE_d0]]), vector_splat<vector<f64, 2>, reason=usual_arith>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)))));
+// DEFAULT-NEXT:         write<vector<f64, 2>>(%[[VALUE_d2]], div<vector<f64, 2>, elementwise=true, rounding=nearest_even, exceptions=observable, contract=fast>(read<vector<f64, 2>>(%[[VALUE_d0]]), read<vector<f64, 2>>(compound_literal %[[VALUE75:[0-9]+]] [storage=automatic] = aggregate<vector<f64, 2>, zero_fill=false>(index0 = const<f64>(2.0), index1 = const<f64>(2.0)))));
+// DEFAULT-NEXT:         do %[[VALUE76:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %24 __i: i32 [storage=automatic];
-// DEFAULT-NEXT:                 for %73
+// DEFAULT-NEXT:                 let %[[VALUE___i_16:[0-9]+]] __i: i32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE77:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<i32>(%24, const<i32>(0));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%24), const<i32>(2))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_16]], const<i32>(0));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE___i_16]]), const<i32>(2))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %104: i32 [synthetic] = read<i32>(%24);
-// DEFAULT-NEXT:                         let %105: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%104), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%24, read<i32>(%105));
+// DEFAULT-NEXT:                         let %[[VALUE78:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___i_16]]);
+// DEFAULT-NEXT:                         let %[[VALUE79:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE78]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE___i_16]], read<i32>(%[[VALUE79]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%7)), read<i32>(%24)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%8)), read<i32>(%24)))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d1]])), read<i32>(%[[VALUE___i_16]])))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(pointer_cast<ptr<f64>, reason=explicit>(addr_of<ptr<vector<f64, 2>>>(%[[VALUE_d2]])), read<i32>(%[[VALUE___i_16]])))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));

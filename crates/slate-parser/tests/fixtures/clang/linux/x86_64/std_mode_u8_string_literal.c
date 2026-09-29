@@ -37,12 +37,12 @@ const unsigned int *utf32 = U"Ω";
 // C11-NEXT:         storage d64 [size=8, align=8];
 // C11-NEXT:         storage d128 [size=16, align=16];
 // C11-NEXT:     }
-// C11-NEXT:     global %3 .str3: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([206, 169, 0]) [linkage=internal];
-// C11-NEXT:     global %0 utf8: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%3)) [linkage=external];
-// C11-NEXT:     global %4 .str4: array<u16, 2> [storage=static] = code_units<array<u16, 2>>([937, 0]) [linkage=internal];
-// C11-NEXT:     global %1 utf16: ptr<const u16> [storage=static] = pointer_cast<ptr<const u16>, reason=assign>(array_decay<ptr<u16>, length=Some(2)>(%4)) [linkage=external];
-// C11-NEXT:     global %5 .str5: array<u32, 2> [storage=static] = code_units<array<u32, 2>>([937, 0]) [linkage=internal];
-// C11-NEXT:     global %2 utf32: ptr<const u32> [storage=static] = pointer_cast<ptr<const u32>, reason=assign>(array_decay<ptr<u32>, length=Some(2)>(%5)) [linkage=external];
+// C11-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([206, 169, 0]) [linkage=internal];
+// C11-NEXT:     global %[[VALUE_utf8:[0-9]+]] utf8: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])) [linkage=external];
+// C11-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<u16, 2> [storage=static] = code_units<array<u16, 2>>([937, 0]) [linkage=internal];
+// C11-NEXT:     global %[[VALUE_utf16:[0-9]+]] utf16: ptr<const u16> [storage=static] = pointer_cast<ptr<const u16>, reason=assign>(array_decay<ptr<u16>, length=Some(2)>(%[[VALUE_str_2]])) [linkage=external];
+// C11-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<u32, 2> [storage=static] = code_units<array<u32, 2>>([937, 0]) [linkage=internal];
+// C11-NEXT:     global %[[VALUE_utf32:[0-9]+]] utf32: ptr<const u32> [storage=static] = pointer_cast<ptr<const u32>, reason=assign>(array_decay<ptr<u32>, length=Some(2)>(%[[VALUE_str_3]])) [linkage=external];
 // C11-NEXT: }
 // SLATE-FILECHECK-END C11
 // SLATE-FILECHECK-BEGIN C17
@@ -68,12 +68,12 @@ const unsigned int *utf32 = U"Ω";
 // C17-NEXT:         storage d64 [size=8, align=8];
 // C17-NEXT:         storage d128 [size=16, align=16];
 // C17-NEXT:     }
-// C17-NEXT:     global %3 .str3: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([206, 169, 0]) [linkage=internal];
-// C17-NEXT:     global %0 utf8: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%3)) [linkage=external];
-// C17-NEXT:     global %4 .str4: array<u16, 2> [storage=static] = code_units<array<u16, 2>>([937, 0]) [linkage=internal];
-// C17-NEXT:     global %1 utf16: ptr<const u16> [storage=static] = pointer_cast<ptr<const u16>, reason=assign>(array_decay<ptr<u16>, length=Some(2)>(%4)) [linkage=external];
-// C17-NEXT:     global %5 .str5: array<u32, 2> [storage=static] = code_units<array<u32, 2>>([937, 0]) [linkage=internal];
-// C17-NEXT:     global %2 utf32: ptr<const u32> [storage=static] = pointer_cast<ptr<const u32>, reason=assign>(array_decay<ptr<u32>, length=Some(2)>(%5)) [linkage=external];
+// C17-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([206, 169, 0]) [linkage=internal];
+// C17-NEXT:     global %[[VALUE_utf8:[0-9]+]] utf8: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])) [linkage=external];
+// C17-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<u16, 2> [storage=static] = code_units<array<u16, 2>>([937, 0]) [linkage=internal];
+// C17-NEXT:     global %[[VALUE_utf16:[0-9]+]] utf16: ptr<const u16> [storage=static] = pointer_cast<ptr<const u16>, reason=assign>(array_decay<ptr<u16>, length=Some(2)>(%[[VALUE_str_2]])) [linkage=external];
+// C17-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<u32, 2> [storage=static] = code_units<array<u32, 2>>([937, 0]) [linkage=internal];
+// C17-NEXT:     global %[[VALUE_utf32:[0-9]+]] utf32: ptr<const u32> [storage=static] = pointer_cast<ptr<const u32>, reason=assign>(array_decay<ptr<u32>, length=Some(2)>(%[[VALUE_str_3]])) [linkage=external];
 // C17-NEXT: }
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN C23
@@ -99,11 +99,11 @@ const unsigned int *utf32 = U"Ω";
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     global %3 .str3: array<u8, 3> [storage=static] = code_units<array<u8, 3>>([206, 169, 0]) [linkage=internal];
-// C23-NEXT:     global %0 utf8: ptr<const u8> [storage=static] = pointer_cast<ptr<const u8>, reason=assign>(array_decay<ptr<u8>, length=Some(3)>(%3)) [linkage=external];
-// C23-NEXT:     global %4 .str4: array<u16, 2> [storage=static] = code_units<array<u16, 2>>([937, 0]) [linkage=internal];
-// C23-NEXT:     global %1 utf16: ptr<const u16> [storage=static] = pointer_cast<ptr<const u16>, reason=assign>(array_decay<ptr<u16>, length=Some(2)>(%4)) [linkage=external];
-// C23-NEXT:     global %5 .str5: array<u32, 2> [storage=static] = code_units<array<u32, 2>>([937, 0]) [linkage=internal];
-// C23-NEXT:     global %2 utf32: ptr<const u32> [storage=static] = pointer_cast<ptr<const u32>, reason=assign>(array_decay<ptr<u32>, length=Some(2)>(%5)) [linkage=external];
+// C23-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<u8, 3> [storage=static] = code_units<array<u8, 3>>([206, 169, 0]) [linkage=internal];
+// C23-NEXT:     global %[[VALUE_utf8:[0-9]+]] utf8: ptr<const u8> [storage=static] = pointer_cast<ptr<const u8>, reason=assign>(array_decay<ptr<u8>, length=Some(3)>(%[[VALUE_str]])) [linkage=external];
+// C23-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<u16, 2> [storage=static] = code_units<array<u16, 2>>([937, 0]) [linkage=internal];
+// C23-NEXT:     global %[[VALUE_utf16:[0-9]+]] utf16: ptr<const u16> [storage=static] = pointer_cast<ptr<const u16>, reason=assign>(array_decay<ptr<u16>, length=Some(2)>(%[[VALUE_str_2]])) [linkage=external];
+// C23-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<u32, 2> [storage=static] = code_units<array<u32, 2>>([937, 0]) [linkage=internal];
+// C23-NEXT:     global %[[VALUE_utf32:[0-9]+]] utf32: ptr<const u32> [storage=static] = pointer_cast<ptr<const u32>, reason=assign>(array_decay<ptr<u32>, length=Some(2)>(%[[VALUE_str_3]])) [linkage=external];
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

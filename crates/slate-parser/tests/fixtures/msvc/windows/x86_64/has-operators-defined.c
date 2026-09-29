@@ -63,7 +63,7 @@ int defines__building_module;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 defines__has_include: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 defines__has_c_attribute: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines__has_include:[0-9]+]] defines__has_include: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines__has_c_attribute:[0-9]+]] defines__has_c_attribute: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

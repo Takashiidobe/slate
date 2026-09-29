@@ -47,23 +47,23 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Row = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Row:[0-9]+]] Row = struct {
 // DEFAULT-NEXT:         field0 cells: array<i32, 2>;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %11 .str11: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%10 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @set_cell(%4 row: ptr<@type0>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field0(deref(read<ptr<@type0>>(%4)))), const<i32>(1))), const<i32>(9));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_set_cell:[0-9]+]] @set_cell(%[[VALUE_row:[0-9]+]] row: ptr<@type[[TYPE_Row]]>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field0(deref(read<ptr<@type[[TYPE_Row]]>>(%[[VALUE_row]])))), const<i32>(1))), const<i32>(9));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @mutable_identity(%6 value: ptr<const i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<i32>, reason=explicit>(read<ptr<const i32>>(%6));
+// DEFAULT-NEXT:     fn %[[VALUE_mutable_identity:[0-9]+]] @mutable_identity(%[[VALUE_value:[0-9]+]] value: ptr<const i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<i32>, reason=explicit>(read<ptr<const i32>>(%[[VALUE_value]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 row: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(3), index1 = const<i32>(4)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%3, addr_of<ptr<@type0>>(%8));
-// DEFAULT-NEXT:         let %9 value: i32 [storage=automatic] = const<i32>(7);
-// DEFAULT-NEXT:         write<i32>(deref(call<ptr<i32>, signature=fn(ptr<const i32>) -> ptr<i32>>(%5, pointer_cast<ptr<const i32>, reason=arg>(addr_of<ptr<i32>>(%9)))), const<i32>(11));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%11)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field0(%8)), const<i32>(1)))), read<i32>(%9));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_row_2:[0-9]+]] row: @type[[TYPE_Row]] [storage=automatic] = aggregate<@type[[TYPE_Row]], zero_fill=false>(field0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(3), index1 = const<i32>(4)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_Row]]>) -> void>(%[[VALUE_set_cell]], addr_of<ptr<@type[[TYPE_Row]]>>(%[[VALUE_row_2]]));
+// DEFAULT-NEXT:         let %[[VALUE_value_2:[0-9]+]] value: i32 [storage=automatic] = const<i32>(7);
+// DEFAULT-NEXT:         write<i32>(deref(call<ptr<i32>, signature=fn(ptr<const i32>) -> ptr<i32>>(%[[VALUE_mutable_identity]], pointer_cast<ptr<const i32>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_value_2]])))), const<i32>(11));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field0(%[[VALUE_row_2]])), const<i32>(1)))), read<i32>(%[[VALUE_value_2]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

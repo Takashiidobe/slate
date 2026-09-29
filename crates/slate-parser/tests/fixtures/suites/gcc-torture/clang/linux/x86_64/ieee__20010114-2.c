@@ -50,35 +50,35 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 TWO23: f32 [storage=static] [const] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(8388608.0)) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @exit(%6 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @__builtin_fabs(%7 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %2 @rintf(%3 x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%8, float_widen<f64, reason=arg>(read<f32>(%3))), float_widen<f64, reason=usual_arith>(read<f32>(%4)))
+// DEFAULT-NEXT:     global %[[VALUE_TWO23:[0-9]+]] TWO23: f32 [storage=static] [const] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(8388608.0)) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_fabs:[0-9]+]] @__builtin_fabs(%[[VALUE1:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_rintf:[0-9]+]] @rintf(%[[VALUE_x:[0-9]+]] x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_fabs]], float_widen<f64, reason=arg>(read<f32>(%[[VALUE_x]]))), float_widen<f64, reason=usual_arith>(read<f32>(%[[VALUE_TWO23]])))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if gt<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%3)), const<f64>(0.0))
+// DEFAULT-NEXT:                 if gt<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%[[VALUE_x]])), const<f64>(0.0))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %9: f32 [synthetic] = read<f32>(%3);
-// DEFAULT-NEXT:                         let %10: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%9), read<f32>(%4));
-// DEFAULT-NEXT:                         write<f32>(%3, read<f32>(%10));
-// DEFAULT-NEXT:                         let %11: f32 [synthetic] = read<f32>(%3);
-// DEFAULT-NEXT:                         let %12: f32 [synthetic] = sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%11), read<f32>(%4));
-// DEFAULT-NEXT:                         write<f32>(%3, read<f32>(%12));
+// DEFAULT-NEXT:                         let %[[VALUE2:[0-9]+]]: f32 [synthetic] = read<f32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:                         let %[[VALUE3:[0-9]+]]: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%[[VALUE2]]), read<f32>(%[[VALUE_TWO23]]));
+// DEFAULT-NEXT:                         write<f32>(%[[VALUE_x]], read<f32>(%[[VALUE3]]));
+// DEFAULT-NEXT:                         let %[[VALUE4:[0-9]+]]: f32 [synthetic] = read<f32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:                         let %[[VALUE5:[0-9]+]]: f32 [synthetic] = sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%[[VALUE4]]), read<f32>(%[[VALUE_TWO23]]));
+// DEFAULT-NEXT:                         write<f32>(%[[VALUE_x]], read<f32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     if lt<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%3)), const<f64>(0.0))
+// DEFAULT-NEXT:                     if lt<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(read<f32>(%[[VALUE_x]])), const<f64>(0.0))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             write<f32>(%3, sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%4), read<f32>(%3)));
-// DEFAULT-NEXT:                             write<f32>(%3, neg<f32>(sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%3), read<f32>(%4))));
+// DEFAULT-NEXT:                             write<f32>(%[[VALUE_x]], sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%[[VALUE_TWO23]]), read<f32>(%[[VALUE_x]])));
+// DEFAULT-NEXT:                             write<f32>(%[[VALUE_x]], neg<f32>(sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%[[VALUE_x]]), read<f32>(%[[VALUE_TWO23]]))));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<f32>(%3);
+// DEFAULT-NEXT:         return read<f32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(call<f32, signature=fn(f32) -> f32>(%2, float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(1.5))))), neg<f64>(const<f64>(2.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(float_widen<f64, reason=usual_arith>(call<f32, signature=fn(f32) -> f32>(%[[VALUE_rintf]], float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(1.5))))), neg<f64>(const<f64>(2.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

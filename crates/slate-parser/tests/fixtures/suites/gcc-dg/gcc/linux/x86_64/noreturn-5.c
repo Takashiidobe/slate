@@ -33,7 +33,7 @@ __volatile extern voidfn xxx;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 voidfn = fn(i32) -> void;
-// DEFAULT-NEXT:     fn %0 @xxx(%2 <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     type @type[[TYPE_voidfn:[0-9]+]] voidfn = fn(i32) -> void;
+// DEFAULT-NEXT:     fn %[[VALUE_xxx:[0-9]+]] @xxx(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

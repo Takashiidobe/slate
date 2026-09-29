@@ -39,16 +39,16 @@ int error(enum a aa)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 a = enum : u32 {
-// DEFAULT-NEXT:         %0 a0 = const<i32>(0);
-// DEFAULT-NEXT:         %1 a1 = const<i32>(1);
-// DEFAULT-NEXT:         %2 a2 = const<i32>(2);
-// DEFAULT-NEXT:         %3 a3 = const<i32>(3);
+// DEFAULT-NEXT:     type @type[[TYPE_a:[0-9]+]] a = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_a0:[0-9]+]] a0 = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_a1:[0-9]+]] a1 = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_a2:[0-9]+]] a2 = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE_a3:[0-9]+]] a3 = const<i32>(3);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     fn %5 @error(%6 aa: @type0) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         switch %7 enum_to_int<u32, reason=promotion>(read<@type0>(%6))
+// DEFAULT-NEXT:     fn %[[VALUE_error:[0-9]+]] @error(%[[VALUE_aa:[0-9]+]] aa: @type[[TYPE_a]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] enum_to_int<u32, reason=promotion>(read<@type[[TYPE_a]]>(%[[VALUE_aa]]))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %7 const<u32>(0) ... const<u32>(3):
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<u32>(0) ... const<u32>(3):
 // DEFAULT-NEXT:                     return const<i32>(1);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);

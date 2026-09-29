@@ -51,32 +51,32 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 a: volatile i32;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:         field3 d: i32;
 // DEFAULT-NEXT:         field4 e: i32;
 // DEFAULT-NEXT:     } [size=20, align=4, offsets=[0, 4, 8, 12, 16]];
-// DEFAULT-NEXT:     global %2 f: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 g: @type0 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %4 h: @type0 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %5 i: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @foo() -> i8 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(read<i32>(%5));
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: @type[[TYPE_S]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: @type[[TYPE_S]] [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_h:[0-9]+]] h: @type[[TYPE_S]] [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i8 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @bar() -> @type0 [linkage=internal] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn() -> i8>(%6), const<i8>(0))
-// DEFAULT-NEXT:             return copy<@type0, reason=return>(read<@type0>(%2));
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> @type[[TYPE_S]] [linkage=internal] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn() -> i8>(%[[VALUE_foo]]), const<i8>(0))
+// DEFAULT-NEXT:             return copy<@type[[TYPE_S]], reason=return>(read<@type[[TYPE_S]]>(%[[VALUE_f]]));
+// DEFAULT-NEXT:         return copy<@type[[TYPE_S]], reason=return>(read<@type[[TYPE_S]]>(%[[VALUE_g]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<@type0>(%4, copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%7)));
-// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%7));
-// DEFAULT-NEXT:         write<i32>(field1(%2), const<i32>(1));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(field1(%4)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_h]], copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn() -> @type[[TYPE_S]], abi=sysv64() -> native_c>(%[[VALUE_bar]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn() -> @type[[TYPE_S]], abi=sysv64() -> native_c>(%[[VALUE_bar]]));
+// DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_f]]), const<i32>(1));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(field1(%[[VALUE_h]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

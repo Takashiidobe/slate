@@ -66,51 +66,51 @@ int baz (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 s: i32;
 // DEFAULT-NEXT:         field1 t: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 C = @type0;
-// DEFAULT-NEXT:     global %2 x: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @bar(%10 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %5 @baz() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 a: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %7 c: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %8 d: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %9 b: ptr<@type0> [storage=automatic] = addr_of<ptr<@type0>>(%2);
-// DEFAULT-NEXT:         while %11 {
-// DEFAULT-NEXT:             write<i32>(%7, call<i32, signature=fn() -> i32>(%3));
-// DEFAULT-NEXT:             yield ne<i32>(call<i32, signature=fn() -> i32>(%3), const<i32>(0));
+// DEFAULT-NEXT:     type @type[[TYPE_C:[0-9]+]] C = @type[[TYPE0]];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE0]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE0]]> [storage=automatic] = addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_x]]);
+// DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] {
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_c]], call<i32, signature=fn() -> i32>(%[[VALUE_foo]]));
+// DEFAULT-NEXT:             yield ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_foo]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             switch %12 read<i32>(%7)
+// DEFAULT-NEXT:             switch %[[VALUE2:[0-9]+]] read<i32>(%[[VALUE_c]])
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     case %12 const<i32>(23):
-// DEFAULT-NEXT:                         call<void, signature=fn(i32) -> void>(%4, const<i32>(1));
-// DEFAULT-NEXT:                     break %12;
-// DEFAULT-NEXT:                     default %12:
-// DEFAULT-NEXT:                         break %12;
+// DEFAULT-NEXT:                     case %[[VALUE2]] const<i32>(23):
+// DEFAULT-NEXT:                         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], const<i32>(1));
+// DEFAULT-NEXT:                     break %[[VALUE2]];
+// DEFAULT-NEXT:                     default %[[VALUE2]]:
+// DEFAULT-NEXT:                         break %[[VALUE2]];
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         if logical_or<bool>(eq<i32>(read<i32>(%6), const<i32>(0)), ne<i32>(and<i32>(read<i32>(%6), const<i32>(1)), const<i32>(0)))
+// DEFAULT-NEXT:         if logical_or<bool>(eq<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)), ne<i32>(and<i32>(read<i32>(%[[VALUE_a]]), const<i32>(1)), const<i32>(0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if ne<i32>(read<i32>(field0(deref(read<ptr<@type0>>(%9)))), const<i32>(0))
+// DEFAULT-NEXT:                 if ne<i32>(read<i32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_b]])))), const<i32>(0))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<i32>(read<i32>(%6), const<i32>(0))
-// DEFAULT-NEXT:                             call<void, signature=fn(i32) -> void>(%4, const<i32>(1));
+// DEFAULT-NEXT:                         if ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))
+// DEFAULT-NEXT:                             call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], const<i32>(1));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             write<i32>(%6, const<i32>(16));
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_a]], const<i32>(16));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     if ne<i32>(read<i32>(field1(deref(read<ptr<@type0>>(%9)))), const<i32>(0))
+// DEFAULT-NEXT:                     if ne<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_b]])))), const<i32>(0))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<i32>(read<i32>(%6), const<i32>(0))
-// DEFAULT-NEXT:                                 call<void, signature=fn(i32) -> void>(%4, const<i32>(1));
+// DEFAULT-NEXT:                             if ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))
+// DEFAULT-NEXT:                                 call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], const<i32>(1));
 // DEFAULT-NEXT:                             else
-// DEFAULT-NEXT:                                 write<i32>(%6, const<i32>(32));
+// DEFAULT-NEXT:                                 write<i32>(%[[VALUE_a]], const<i32>(32));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(read<i32>(%8), const<i32>(0)), ne<i32>(and<i32>(read<i32>(%6), not<i32>(const<i32>(127))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%4, const<i32>(2));
+// DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0)), ne<i32>(and<i32>(read<i32>(%[[VALUE_a]]), not<i32>(const<i32>(127))), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], const<i32>(2));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

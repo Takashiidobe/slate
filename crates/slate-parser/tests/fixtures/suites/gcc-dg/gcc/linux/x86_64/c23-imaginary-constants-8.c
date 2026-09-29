@@ -39,13 +39,13 @@ __extension__ _Complex _Float16 h = 4.JF16;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(1)) [linkage=external];
-// DEFAULT-NEXT:     global %1 b: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(2)) [linkage=external];
-// DEFAULT-NEXT:     global %2 c: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(3)) [linkage=external];
-// DEFAULT-NEXT:     global %3 d: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(4)) [linkage=external];
-// DEFAULT-NEXT:     global %4 e: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(1)) [linkage=external];
-// DEFAULT-NEXT:     global %5 f: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(2)) [linkage=external];
-// DEFAULT-NEXT:     global %6 g: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(3)) [linkage=external];
-// DEFAULT-NEXT:     global %7 h: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(4)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(2)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(3)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(4)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(2)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(3)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_h:[0-9]+]] h: complex<f16> [storage=static] = aggregate<complex<f16>, zero_fill=false>(index0 = const<f16>(0), index1 = const<f16>(4)) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

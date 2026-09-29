@@ -56,35 +56,35 @@ void bar()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = enum : u32 {
-// DEFAULT-NEXT:         %0 E = const<i32>(0);
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_E:[0-9]+]] E = const<i32>(0);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     fn %0 @foo(%8 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 b0: i4b [storage=automatic] [const] [constexpr] = truncate<i4b, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%0, null<ptr<void>>);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%0, null<ptr<void>>);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%0, null<ptr<void>>);
-// DEFAULT-NEXT:         let %5 p: ptr<void> [storage=automatic] = null<ptr<void>>;
-// DEFAULT-NEXT:         let %6 r: ptr<void> [storage=automatic] = null<ptr<void>>;
-// DEFAULT-NEXT:         let %7 t: ptr<void> [storage=automatic] = null<ptr<void>>;
-// DEFAULT-NEXT:         conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), null<ptr<void>>, read<ptr<void>>(%5));
-// DEFAULT-NEXT:         conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<void>>(%5), null<ptr<void>>);
-// DEFAULT-NEXT:         conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), null<ptr<void>>, read<ptr<void>>(%5));
-// DEFAULT-NEXT:         conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<void>>(%5), null<ptr<void>>);
-// DEFAULT-NEXT:         conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), null<ptr<void>>, read<ptr<void>>(%5));
-// DEFAULT-NEXT:         conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<void>>(%5), null<ptr<void>>);
-// DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(%5), null<ptr<void>>)
+// DEFAULT-NEXT:     fn %[[VALUE_E]] @foo(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_b0:[0-9]+]] b0: i4b [storage=automatic] [const] [constexpr] = truncate<i4b, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_E]], null<ptr<void>>);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_E]], null<ptr<void>>);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_E]], null<ptr<void>>);
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<void> [storage=automatic] = null<ptr<void>>;
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: ptr<void> [storage=automatic] = null<ptr<void>>;
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: ptr<void> [storage=automatic] = null<ptr<void>>;
+// DEFAULT-NEXT:         conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), null<ptr<void>>, read<ptr<void>>(%[[VALUE_p]]));
+// DEFAULT-NEXT:         conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<void>>(%[[VALUE_p]]), null<ptr<void>>);
+// DEFAULT-NEXT:         conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), null<ptr<void>>, read<ptr<void>>(%[[VALUE_p]]));
+// DEFAULT-NEXT:         conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<void>>(%[[VALUE_p]]), null<ptr<void>>);
+// DEFAULT-NEXT:         conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), null<ptr<void>>, read<ptr<void>>(%[[VALUE_p]]));
+// DEFAULT-NEXT:         conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<void>>(%[[VALUE_p]]), null<ptr<void>>);
+// DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(%[[VALUE_p]]), null<ptr<void>>)
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         if eq<ptr<void>>(null<ptr<void>>, read<ptr<void>>(%5))
+// DEFAULT-NEXT:         if eq<ptr<void>>(null<ptr<void>>, read<ptr<void>>(%[[VALUE_p]]))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(%5), null<ptr<void>>)
+// DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(%[[VALUE_p]]), null<ptr<void>>)
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         if eq<ptr<void>>(null<ptr<void>>, read<ptr<void>>(%5))
+// DEFAULT-NEXT:         if eq<ptr<void>>(null<ptr<void>>, read<ptr<void>>(%[[VALUE_p]]))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(%5), null<ptr<void>>)
+// DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(%[[VALUE_p]]), null<ptr<void>>)
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         if eq<ptr<void>>(null<ptr<void>>, read<ptr<void>>(%5))
+// DEFAULT-NEXT:         if eq<ptr<void>>(null<ptr<void>>, read<ptr<void>>(%[[VALUE_p]]))
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -82,40 +82,40 @@ main (int argc, char *argv[])
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 LE = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_LE:[0-9]+]] LE = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:         field1 j: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 BE = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_BE:[0-9]+]] BE = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:         field1 j: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %2 gle: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 gbe: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @fill() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(field0(%2), const<i32>(305419896));
-// DEFAULT-NEXT:         write<i32>(field1(%2), reinterpret<i32, reason=assign, fits=unknown>(const<u32>(3735928559)));
-// DEFAULT-NEXT:         write<i32>(field0(%3), const<i32>(305419896));
-// DEFAULT-NEXT:         write<i32>(field1(%3), const<i32>(287454020));
+// DEFAULT-NEXT:     global %[[VALUE_gle:[0-9]+]] gle: @type[[TYPE_LE]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_gbe:[0-9]+]] gbe: @type[[TYPE_BE]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fill:[0-9]+]] @fill() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_gle]]), const<i32>(305419896));
+// DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_gle]]), reinterpret<i32, reason=assign, fits=unknown>(const<u32>(3735928559)));
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_gbe]]), const<i32>(305419896));
+// DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_gbe]]), const<i32>(287454020));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @readLE(%6 p: @type0) -> i32 [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(field0(%6));
+// DEFAULT-NEXT:     fn %[[VALUE_readLE:[0-9]+]] @readLE(%[[VALUE_p:[0-9]+]] p: @type[[TYPE_LE]]) -> i32 [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(field0(%[[VALUE_p]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @readBE(%8 p: @type1) -> i32 [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(field0(%8));
+// DEFAULT-NEXT:     fn %[[VALUE_readBE:[0-9]+]] @readBE(%[[VALUE_p_2:[0-9]+]] p: @type[[TYPE_BE]]) -> i32 [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(field0(%[[VALUE_p_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %9 @main(%10 argc: i32, %11 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 r: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         write<i32>(%12, call<i32, signature=fn(@type0) -> i32, abi=sysv64(native_c) -> scalar>(%5, copy<@type0, reason=arg>(read<@type0>(%2))));
-// DEFAULT-NEXT:         call<i32, signature=fn(@type0) -> i32, abi=sysv64(native_c) -> scalar>(%5, copy<@type0, reason=arg>(read<@type0>(%2)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%12), const<i32>(305419896))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:         write<i32>(%12, call<i32, signature=fn(@type1) -> i32, abi=sysv64(native_c) -> scalar>(%7, copy<@type1, reason=arg>(read<@type1>(%3))));
-// DEFAULT-NEXT:         call<i32, signature=fn(@type1) -> i32, abi=sysv64(native_c) -> scalar>(%7, copy<@type1, reason=arg>(read<@type1>(%3)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%12), const<i32>(305419896))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fill]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], call<i32, signature=fn(@type[[TYPE_LE]]) -> i32, abi=sysv64(native_c) -> scalar>(%[[VALUE_readLE]], copy<@type[[TYPE_LE]], reason=arg>(read<@type[[TYPE_LE]]>(%[[VALUE_gle]]))));
+// DEFAULT-NEXT:         call<i32, signature=fn(@type[[TYPE_LE]]) -> i32, abi=sysv64(native_c) -> scalar>(%[[VALUE_readLE]], copy<@type[[TYPE_LE]], reason=arg>(read<@type[[TYPE_LE]]>(%[[VALUE_gle]])));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_r]]), const<i32>(305419896))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], call<i32, signature=fn(@type[[TYPE_BE]]) -> i32, abi=sysv64(native_c) -> scalar>(%[[VALUE_readBE]], copy<@type[[TYPE_BE]], reason=arg>(read<@type[[TYPE_BE]]>(%[[VALUE_gbe]]))));
+// DEFAULT-NEXT:         call<i32, signature=fn(@type[[TYPE_BE]]) -> i32, abi=sysv64(native_c) -> scalar>(%[[VALUE_readBE]], copy<@type[[TYPE_BE]], reason=arg>(read<@type[[TYPE_BE]]>(%[[VALUE_gbe]])));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_r]]), const<i32>(305419896))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

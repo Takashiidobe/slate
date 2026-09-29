@@ -33,45 +33,45 @@ ULONGLONG shift_left(ULONGLONG value, DWORD count) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 DWORD = u32;
-// IR-NEXT:     type @type1 LONG_PTR = i32;
-// IR-NEXT:     type @type2 PLONG_PTR = ptr<i32>;
-// IR-NEXT:     type @type3 LONG = i32;
-// IR-NEXT:     type @type4 HANDLE = ptr<void>;
-// IR-NEXT:     type @type5 LONGLONG = i64;
-// IR-NEXT:     type @type6 ULONGLONG = u64;
-// IR-NEXT:     type @type7 _LARGE_INTEGER = union {
-// IR-NEXT:         field0 <anonymous>: @type8;
-// IR-NEXT:         field1 u: @type9;
+// IR-NEXT:     type @type[[TYPE_DWORD:[0-9]+]] DWORD = u32;
+// IR-NEXT:     type @type[[TYPE_LONG_PTR:[0-9]+]] LONG_PTR = i32;
+// IR-NEXT:     type @type[[TYPE_PLONG_PTR:[0-9]+]] PLONG_PTR = ptr<i32>;
+// IR-NEXT:     type @type[[TYPE_LONG:[0-9]+]] LONG = i32;
+// IR-NEXT:     type @type[[TYPE_HANDLE:[0-9]+]] HANDLE = ptr<void>;
+// IR-NEXT:     type @type[[TYPE_LONGLONG:[0-9]+]] LONGLONG = i64;
+// IR-NEXT:     type @type[[TYPE_ULONGLONG:[0-9]+]] ULONGLONG = u64;
+// IR-NEXT:     type @type[[TYPE__LARGE_INTEGER:[0-9]+]] _LARGE_INTEGER = union {
+// IR-NEXT:         field0 <anonymous>: @type[[TYPE0:[0-9]+]];
+// IR-NEXT:         field1 u: @type[[TYPE1:[0-9]+]];
 // IR-NEXT:         field2 QuadPart: i64;
 // IR-NEXT:     } [size=8, align=8, offsets=[0, 0, 0]];
-// IR-NEXT:     type @type8 = struct {
+// IR-NEXT:     type @type[[TYPE0]] = struct {
 // IR-NEXT:         field0 LowPart: u32;
 // IR-NEXT:         field1 HighPart: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type9 = struct {
+// IR-NEXT:     type @type[[TYPE1]] = struct {
 // IR-NEXT:         field0 LowPart: u32;
 // IR-NEXT:         field1 HighPart: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type10 LARGE_INTEGER = @type7;
-// IR-NEXT:     global %16 handle_size: u32 [storage=static] = const<u32>(4) [linkage=external];
-// IR-NEXT:     global %17 long_ptr_size: u32 [storage=static] = const<u32>(4) [linkage=external];
-// IR-NEXT:     global %18 large_integer_size: u32 [storage=static] = const<u32>(8) [linkage=external];
-// IR-NEXT:     global %19 large_integer_align: u32 [storage=static] = const<u32>(8) [linkage=external];
-// IR-NEXT:     fn %13 @Int64ShllMod32(%14 Value: u64, %15 ShiftCount: u32) -> u64 [linkage=external] [inline=hint] [definition=emitted] [abi=x86_win32 stdcall(scalar, scalar) -> scalar] [fallthrough=ret(or<u64>(widen<u64, reason=return>(read<u32>(%25)), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%26)), const<u32>(32))))] {
-// IR-NEXT:         let %25: u32 [synthetic];
-// IR-NEXT:         let %26: u32 [synthetic];
+// IR-NEXT:     type @type[[TYPE_LARGE_INTEGER:[0-9]+]] LARGE_INTEGER = @type[[TYPE__LARGE_INTEGER]];
+// IR-NEXT:     global %[[VALUE_handle_size:[0-9]+]] handle_size: u32 [storage=static] = const<u32>(4) [linkage=external];
+// IR-NEXT:     global %[[VALUE_long_ptr_size:[0-9]+]] long_ptr_size: u32 [storage=static] = const<u32>(4) [linkage=external];
+// IR-NEXT:     global %[[VALUE_large_integer_size:[0-9]+]] large_integer_size: u32 [storage=static] = const<u32>(8) [linkage=external];
+// IR-NEXT:     global %[[VALUE_large_integer_align:[0-9]+]] large_integer_align: u32 [storage=static] = const<u32>(8) [linkage=external];
+// IR-NEXT:     fn %[[VALUE_Int64ShllMod32:[0-9]+]] @Int64ShllMod32(%[[VALUE_Value:[0-9]+]] Value: u64, %[[VALUE_ShiftCount:[0-9]+]] ShiftCount: u32) -> u64 [linkage=external] [inline=hint] [definition=emitted] [abi=x86_win32 stdcall(scalar, scalar) -> scalar] [fallthrough=ret(or<u64>(widen<u64, reason=return>(read<u32>(%[[VALUE0:[0-9]+]])), shl<u64, overflow=wrap, amount_out_of_range=ub>(widen<u64, reason=return>(read<u32>(%[[VALUE1:[0-9]+]])), const<u32>(32))))] {
+// IR-NEXT:         let %[[VALUE0]]: u32 [synthetic];
+// IR-NEXT:         let %[[VALUE1]]: u32 [synthetic];
 // IR-NEXT:         asm volatile "mov ecx, ShiftCount\nmov eax, dword ptr [Value]\nmov edx, dword ptr [Value + 4]\nshld edx, eax, cl\nshl eax, cl" [dialect=intel] [alternative=none] {
 // IR-NEXT:             template: "mov ecx, " addr(%2) "\nmov eax, " addr<dword>(%3) "\nmov edx, " addr<dword>(%3 + 4) "\nshld edx, eax, cl\nshl eax, cl";
-// IR-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%25);
-// IR-NEXT:             out 1 "{edx}" [{dx}] width 32 place<u32>(%26);
-// IR-NEXT:             in 2 [ShiftCount] mem<read> place<u32>(%15);
-// IR-NEXT:             in 3 [Value] mem<read> place<u64>(%14);
+// IR-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE0]]);
+// IR-NEXT:             out 1 "{edx}" [{dx}] width 32 place<u32>(%[[VALUE1]]);
+// IR-NEXT:             in 2 [ShiftCount] mem<read> place<u32>(%[[VALUE_ShiftCount]]);
+// IR-NEXT:             in 3 [Value] mem<read> place<u64>(%[[VALUE_Value]]);
 // IR-NEXT:             clobbers: "ecx" as cx;
 // IR-NEXT:         }
 // IR-NEXT:     }
-// IR-NEXT:     fn %20 @shift_left(%21 value: u64, %22 count: u32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<u64, signature=fn stdcall(u64, u32) -> u64, abi=x86_win32 stdcall(scalar, scalar) -> scalar>(%13, read<u64>(%21), read<u32>(%22));
+// IR-NEXT:     fn %[[VALUE_shift_left:[0-9]+]] @shift_left(%[[VALUE_value:[0-9]+]] value: u64, %[[VALUE_count:[0-9]+]] count: u32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return call<u64, signature=fn stdcall(u64, u32) -> u64, abi=x86_win32 stdcall(scalar, scalar) -> scalar>(%[[VALUE_Int64ShllMod32]], read<u64>(%[[VALUE_value]]), read<u32>(%[[VALUE_count]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

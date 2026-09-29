@@ -59,39 +59,39 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = enum : u32 {
-// DEFAULT-NEXT:         %0 POSITION_ASIS = const<i32>(0);
-// DEFAULT-NEXT:         %1 POSITION_UNSPECIFIED = const<i32>(1);
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_POSITION_ASIS:[0-9]+]] POSITION_ASIS = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_POSITION_UNSPECIFIED:[0-9]+]] POSITION_UNSPECIFIED = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 unit_position = @type0;
-// DEFAULT-NEXT:     type @type2 = enum : u32 {
-// DEFAULT-NEXT:         %0 STATUS_UNKNOWN = const<i32>(0);
-// DEFAULT-NEXT:         %1 STATUS_UNSPECIFIED = const<i32>(1);
+// DEFAULT-NEXT:     type @type[[TYPE_unit_position:[0-9]+]] unit_position = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_POSITION_ASIS]] STATUS_UNKNOWN = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_POSITION_UNSPECIFIED]] STATUS_UNSPECIFIED = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type3 unit_status = @type2;
-// DEFAULT-NEXT:     type @type4 = struct {
-// DEFAULT-NEXT:         field0 position: @type0;
-// DEFAULT-NEXT:         field1 status: @type2;
+// DEFAULT-NEXT:     type @type[[TYPE_unit_status:[0-9]+]] unit_status = @type[[TYPE1]];
+// DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = struct {
+// DEFAULT-NEXT:         field0 position: @type[[TYPE0]];
+// DEFAULT-NEXT:         field1 status: @type[[TYPE1]];
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type5 unit_flags = @type4;
-// DEFAULT-NEXT:     fn %10 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %11 @new_unit(%12 flags: ptr<@type4>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type2>(field1(deref(read<ptr<@type4>>(%12))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
-// DEFAULT-NEXT:             write<@type2>(field1(deref(read<ptr<@type4>>(%12))), int_to_enum<@type2, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type0>(field0(deref(read<ptr<@type4>>(%12))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
-// DEFAULT-NEXT:             write<@type0>(field0(deref(read<ptr<@type4>>(%12))), int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         switch %15 enum_to_int<u32, reason=promotion>(read<@type2>(field1(deref(read<ptr<@type4>>(%12)))))
+// DEFAULT-NEXT:     type @type[[TYPE_unit_flags:[0-9]+]] unit_flags = @type[[TYPE2]];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_new_unit:[0-9]+]] @new_unit(%[[VALUE_flags:[0-9]+]] flags: ptr<@type[[TYPE2]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE1]]>(field1(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_flags]]))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:             write<@type[[TYPE1]]>(field1(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_flags]]))), int_to_enum<@type[[TYPE1]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(field0(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_flags]]))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:             write<@type[[TYPE0]]>(field0(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_flags]]))), int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] enum_to_int<u32, reason=promotion>(read<@type[[TYPE1]]>(field1(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_flags]])))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %15 const<u32>(0):
-// DEFAULT-NEXT:                     break %15;
-// DEFAULT-NEXT:                 default %15:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<u32>(0):
+// DEFAULT-NEXT:                     break %[[VALUE0]];
+// DEFAULT-NEXT:                 default %[[VALUE0]]:
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %14 f: @type4 [storage=automatic];
-// DEFAULT-NEXT:         write<@type2>(field1(%14), int_to_enum<@type2, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type4>) -> void>(%11, addr_of<ptr<@type4>>(%14));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: @type[[TYPE2]] [storage=automatic];
+// DEFAULT-NEXT:         write<@type[[TYPE1]]>(field1(%[[VALUE_f]]), int_to_enum<@type[[TYPE1]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE2]]>) -> void>(%[[VALUE_new_unit]], addr_of<ptr<@type[[TYPE2]]>>(%[[VALUE_f]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

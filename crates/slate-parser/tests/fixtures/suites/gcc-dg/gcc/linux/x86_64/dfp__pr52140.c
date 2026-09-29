@@ -35,8 +35,8 @@ foo (_Decimal64 x, _Decimal64 y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 x: d64, %2 y: d64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_or<bool>(lt<d64, exceptions=observable>(read<d64>(%1), read<d64>(%2)), gt<d64, exceptions=observable>(read<d64>(%1), read<d64>(%2))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: d64, %[[VALUE_y:[0-9]+]] y: d64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_or<bool>(lt<d64, exceptions=observable>(read<d64>(%[[VALUE_x]]), read<d64>(%[[VALUE_y]])), gt<d64, exceptions=observable>(read<d64>(%[[VALUE_x]]), read<d64>(%[[VALUE_y]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

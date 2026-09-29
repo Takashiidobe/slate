@@ -133,17 +133,17 @@ _BitInt(42) long wide_bit_int;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 word = i32;
-// DEFAULT-NEXT:     type @type1 fields = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_word:[0-9]+]] word = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_fields:[0-9]+]] fields = struct {
 // DEFAULT-NEXT:         field0 <anonymous>: u32 : 4;
 // DEFAULT-NEXT:         field1 total: const i64;
 // DEFAULT-NEXT:         field2 small: i8;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16], bit_offsets=[Some(0), None, None], bit_units=[(0, 1)], field_units=[Some(0), None, None]];
-// DEFAULT-NEXT:     global %1 counter: volatile u64 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     global %2 hidden: i8 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %3 tagged: u64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %5 @convert(%6 value: u64, %7 small: i8) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<u64, overflow=wrap>(read<u64>(%6), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(widen<i16, reason=explicit>(read<i8>(%7))))))));
+// DEFAULT-NEXT:     global %[[VALUE_counter:[0-9]+]] counter: volatile u64 [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_hidden:[0-9]+]] hidden: i8 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_tagged:[0-9]+]] tagged: u64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_convert:[0-9]+]] @convert(%[[VALUE_value:[0-9]+]] value: u64, %[[VALUE_small:[0-9]+]] small: i8) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<u64, overflow=wrap>(read<u64>(%[[VALUE_value]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u16, reason=explicit, fits=unknown>(widen<i16, reason=explicit>(read<i8>(%[[VALUE_small]]))))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

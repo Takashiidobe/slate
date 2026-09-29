@@ -32,7 +32,7 @@ int bool = 1;
 // C17-NEXT:         storage d64 [size=8, align=8];
 // C17-NEXT:         storage d128 [size=16, align=16];
 // C17-NEXT:     }
-// C17-NEXT:     global %0 bool: i32 [storage=static] = const<i32>(1) [linkage=external];
+// C17-NEXT:     global %[[VALUE_bool:[0-9]+]] bool: i32 [storage=static] = const<i32>(1) [linkage=external];
 // C17-NEXT: }
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN C23
@@ -58,6 +58,6 @@ int bool = 1;
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     global %0 flag: bool [storage=static] = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)) [linkage=external];
+// C23-NEXT:     global %[[VALUE_flag:[0-9]+]] flag: bool [storage=static] = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)) [linkage=external];
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

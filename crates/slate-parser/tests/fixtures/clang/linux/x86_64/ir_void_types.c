@@ -42,27 +42,27 @@ here:
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 alias = void;
-// IR-NEXT:     extern %2 incomplete_object: void [storage=static] [linkage=external];
-// IR-NEXT:     fn %1 @returns_nothing() -> void [linkage=external];
-// IR-NEXT:     fn %3 @address_of_incomplete() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return addr_of<ptr<void>>(%2);
+// IR-NEXT:     type @type[[TYPE_alias:[0-9]+]] alias = void;
+// IR-NEXT:     extern %[[VALUE_incomplete_object:[0-9]+]] incomplete_object: void [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_returns_nothing:[0-9]+]] @returns_nothing() -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_address_of_incomplete:[0-9]+]] @address_of_incomplete() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return addr_of<ptr<void>>(%[[VALUE_incomplete_object]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %4 @void_size() -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_void_size:[0-9]+]] @void_size() -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(1);
 // IR-NEXT:     }
-// IR-NEXT:     fn %5 @void_align() -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_void_align:[0-9]+]] @void_align() -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(1);
 // IR-NEXT:     }
-// IR-NEXT:     fn %6 @advance(%7 p: ptr<void>, %8 n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(read<ptr<void>>(%7), read<i32>(%8));
+// IR-NEXT:     fn %[[VALUE_advance:[0-9]+]] @advance(%[[VALUE_p:[0-9]+]] p: ptr<void>, %[[VALUE_n:[0-9]+]] n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(read<ptr<void>>(%[[VALUE_p]]), read<i32>(%[[VALUE_n]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %9 @distance(%10 a: ptr<void>, %11 b: ptr<void>) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return ptr_diff<i64, element=void, same_array=required, overflow=ub>(read<ptr<void>>(%10), read<ptr<void>>(%11));
+// IR-NEXT:     fn %[[VALUE_distance:[0-9]+]] @distance(%[[VALUE_a:[0-9]+]] a: ptr<void>, %[[VALUE_b:[0-9]+]] b: ptr<void>) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return ptr_diff<i64, element=void, same_array=required, overflow=ub>(read<ptr<void>>(%[[VALUE_a]]), read<ptr<void>>(%[[VALUE_b]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %12 @label_delta() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         label %13 here:
-// IR-NEXT:             return ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%13), label_addr<ptr<void>>(%13));
+// IR-NEXT:     fn %[[VALUE_label_delta:[0-9]+]] @label_delta() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         label %[[VALUE_here:[0-9]+]] here:
+// IR-NEXT:             return ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%[[VALUE_here]]), label_addr<ptr<void>>(%[[VALUE_here]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

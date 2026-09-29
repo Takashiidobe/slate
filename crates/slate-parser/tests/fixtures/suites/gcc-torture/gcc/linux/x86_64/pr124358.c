@@ -40,41 +40,41 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 u: i32 [storage=static] = const<i32>(11) [linkage=internal];
-// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %0 @foo(%1 d: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %11: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:         let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%12));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), read<i32>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:     global %[[VALUE_u:[0-9]+]] u: i32 [storage=static] = const<i32>(11) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_d:[0-9]+]] d: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_u]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_u]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_d]]), read<i32>(%[[VALUE0]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 a: array<array<i32, 4>, 1> [storage=automatic] [align=16] = aggregate<array<array<i32, 4>, 1>, zero_fill=false>(index0 = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(11), index1 = const<i32>(12), index2 = const<i32>(13), index3 = const<i32>(14)));
-// DEFAULT-NEXT:         let %5 p: ptr<array<i32, 4>> [storage=automatic] = array_decay<ptr<array<i32, 4>>, length=Some(1)>(%4);
-// DEFAULT-NEXT:         for %9
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: array<array<i32, 4>, 1> [storage=automatic] [align=16] = aggregate<array<array<i32, 4>, 1>, zero_fill=false>(index0 = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(11), index1 = const<i32>(12), index2 = const<i32>(13), index3 = const<i32>(14)));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<array<i32, 4>> [storage=automatic] = array_decay<ptr<array<i32, 4>>, length=Some(1)>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %6 i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%6), const<i32>(1))
+// DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(1))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %13: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%6, read<i32>(%14));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE4]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 for %10
+// DEFAULT-NEXT:                 for %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         let %7 j: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%7), const<i32>(4))
+// DEFAULT-NEXT:                         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE_j]]), const<i32>(4))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %15: i32 [synthetic] = read<i32>(%7);
-// DEFAULT-NEXT:                         let %16: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%15), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%7, read<i32>(%16));
+// DEFAULT-NEXT:                         let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
+// DEFAULT-NEXT:                         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE7]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
-// DEFAULT-NEXT:                         call<void, signature=fn(i32) -> void>(%0, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(read<ptr<array<i32, 4>>>(%5), read<i32>(%6)))), read<i32>(%7)))));
+// DEFAULT-NEXT:                         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(deref(ptr_offset<ptr<array<i32, 4>>, subtract=false, element=array<i32, 4>, overflow=ub>(read<ptr<array<i32, 4>>>(%[[VALUE_p]]), read<i32>(%[[VALUE_i]])))), read<i32>(%[[VALUE_j]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

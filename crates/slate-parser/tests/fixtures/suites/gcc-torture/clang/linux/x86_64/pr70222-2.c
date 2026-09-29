@@ -41,24 +41,24 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 x: i32) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 y: u64 [storage=automatic] = shr<u64, amount_out_of_range=ub, fill=zero_extend>(neg<u64, overflow=wrap>(const<u64>(1)), read<i32>(%1));
-// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%2)), const<i32>(31));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i32) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: u64 [storage=automatic] = shr<u64, amount_out_of_range=ub, fill=zero_extend>(neg<u64, overflow=wrap>(const<u64>(1)), read<i32>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_y]])), const<i32>(31));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5: bool [synthetic];
-// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(i32) -> u32>(%0, const<i32>(15)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
-// DEFAULT-NEXT:             write<bool>(%5, const<bool>(true));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(i32) -> u32>(%[[VALUE_foo]], const<i32>(15)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%5, ne<u32>(call<u32, signature=fn(i32) -> u32>(%0, const<i32>(32)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         let %6: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%5)
-// DEFAULT-NEXT:             write<bool>(%6, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<u32>(call<u32, signature=fn(i32) -> u32>(%[[VALUE_foo]], const<i32>(32)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE0]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%6, ne<u32>(call<u32, signature=fn(i32) -> u32>(%0, const<i32>(33)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         if read<bool>(%6)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], ne<u32>(call<u32, signature=fn(i32) -> u32>(%[[VALUE_foo]], const<i32>(33)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE1]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

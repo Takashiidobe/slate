@@ -46,18 +46,18 @@ unsigned int read_r (unsigned int i)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 pixel = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_pixel:[0-9]+]] pixel = struct {
 // DEFAULT-NEXT:         field0 r: u32;
 // DEFAULT-NEXT:         field1 g: u32;
 // DEFAULT-NEXT:         field2 b: u32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     type @type1 line = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_line:[0-9]+]] line = struct {
 // DEFAULT-NEXT:         field0 length: u32;
-// DEFAULT-NEXT:         field1 data: array<@type0, 16>;
+// DEFAULT-NEXT:         field1 data: array<@type[[TYPE_pixel]], 16>;
 // DEFAULT-NEXT:     } [size=196, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %2 L: @type1 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @read_r(%4 i: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<u32>(lt<u32>(read<u32>(%4), read<u32>(field0(%2))), read<u32>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(16)>(field1(%2)), read<u32>(%4))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:     global %[[VALUE_L:[0-9]+]] L: @type[[TYPE_line]] [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_read_r:[0-9]+]] @read_r(%[[VALUE_i:[0-9]+]] i: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<u32>(lt<u32>(read<u32>(%[[VALUE_i]]), read<u32>(field0(%[[VALUE_L]]))), read<u32>(field0(deref(ptr_offset<ptr<@type[[TYPE_pixel]]>, subtract=false, element=@type[[TYPE_pixel]], overflow=ub>(array_decay<ptr<@type[[TYPE_pixel]]>, length=Some(16)>(field1(%[[VALUE_L]])), read<u32>(%[[VALUE_i]]))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

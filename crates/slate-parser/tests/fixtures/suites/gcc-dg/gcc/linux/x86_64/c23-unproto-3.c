@@ -45,10 +45,10 @@ _Static_assert (_Generic (f3,
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 T1 = fn() -> void;
-// DEFAULT-NEXT:     type @type1 T1 = fn() -> void;
-// DEFAULT-NEXT:     fn %0 @f1() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f2() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @f3() -> void [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_T1:[0-9]+]] T1 = fn() -> void;
+// DEFAULT-NEXT:     type @type[[TYPE_T1_2:[0-9]+]] T1 = fn() -> void;
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3() -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -68,33 +68,33 @@ typedef struct p3 {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 u1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_u1:[0-9]+]] u1 = struct {
 // DEFAULT-NEXT:         field0 field1: i8;
 // DEFAULT-NEXT:         field1 field2: i16;
 // DEFAULT-NEXT:         field2 field3: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 2, 4]];
-// DEFAULT-NEXT:     type @type1 p1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_p1:[0-9]+]] p1 = struct {
 // DEFAULT-NEXT:         field0 field1: i8;
 // DEFAULT-NEXT:         field1 field2: i16;
 // DEFAULT-NEXT:         field2 field3: i32;
 // DEFAULT-NEXT:     } [size=7, align=1, offsets=[0, 1, 3]];
-// DEFAULT-NEXT:     type @type2 p1_t1 = @type1;
-// DEFAULT-NEXT:     type @type3 p2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_p1_t1:[0-9]+]] p1_t1 = @type[[TYPE_p1]];
+// DEFAULT-NEXT:     type @type[[TYPE_p2:[0-9]+]] p2 = struct {
 // DEFAULT-NEXT:         field0 field1: i8;
 // DEFAULT-NEXT:         field1 field2: i16;
 // DEFAULT-NEXT:         field2 field3: i32;
 // DEFAULT-NEXT:     } [size=7, align=1, offsets=[0, 1, 3]];
-// DEFAULT-NEXT:     type @type4 p2_t1 = @type3;
-// DEFAULT-NEXT:     type @type5 u1_t1 = @type0;
-// DEFAULT-NEXT:     type @type6 u1_t2 = @type0;
-// DEFAULT-NEXT:     type @type7 p3 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_p2_t1:[0-9]+]] p2_t1 = @type[[TYPE_p2]];
+// DEFAULT-NEXT:     type @type[[TYPE_u1_t1:[0-9]+]] u1_t1 = @type[[TYPE_u1]];
+// DEFAULT-NEXT:     type @type[[TYPE_u1_t2:[0-9]+]] u1_t2 = @type[[TYPE_u1]];
+// DEFAULT-NEXT:     type @type[[TYPE_p3:[0-9]+]] p3 = struct {
 // DEFAULT-NEXT:         field0 field1: i8;
 // DEFAULT-NEXT:         field1 field2: i16;
 // DEFAULT-NEXT:         field2 field3: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 2, 4]];
-// DEFAULT-NEXT:     type @type8 p3_t1 = @type7;
-// DEFAULT-NEXT:     global %5 ary1: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 ary2: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 ary3: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_p3_t1:[0-9]+]] p3_t1 = @type[[TYPE_p3]];
+// DEFAULT-NEXT:     global %[[VALUE_ary1:[0-9]+]] ary1: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ary2:[0-9]+]] ary2: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ary3:[0-9]+]] ary3: array<i32, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

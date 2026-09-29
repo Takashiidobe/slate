@@ -33,10 +33,10 @@ static_assert(sizeof(array_pointer) == 8);
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 array_pointer: ptr<array<ptr<i32>, 4>> [storage=static] [linkage=external];
-// IR-NEXT:     global %1 nested_pointer: ptr<array<ptr<ptr<i32>>, 4>> [storage=static] [linkage=external];
-// IR-NEXT:     global %2 function_pointer: ptr<fn() -> ptr<i32>> [storage=static] [linkage=external];
-// IR-NEXT:     global %3 function_pointers: array<ptr<fn(i32) -> ptr<i8>>, 2> [storage=static] [align=16] [linkage=external];
-// IR-NEXT:     fn %4 @plain_function() -> ptr<i32> [linkage=external];
+// IR-NEXT:     global %[[VALUE_array_pointer:[0-9]+]] array_pointer: ptr<array<ptr<i32>, 4>> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_nested_pointer:[0-9]+]] nested_pointer: ptr<array<ptr<ptr<i32>>, 4>> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_function_pointer:[0-9]+]] function_pointer: ptr<fn() -> ptr<i32>> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_function_pointers:[0-9]+]] function_pointers: array<ptr<fn(i32) -> ptr<i8>>, 2> [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_plain_function:[0-9]+]] @plain_function() -> ptr<i32> [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

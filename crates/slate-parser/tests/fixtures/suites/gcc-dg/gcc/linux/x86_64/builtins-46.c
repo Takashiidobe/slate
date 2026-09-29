@@ -167,89 +167,89 @@ long double test5l(long double x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @rint(%63 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @lrint(%64 <unnamed>: f64) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @llrint(%65 <unnamed>: f64) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @floor(%66 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %4 @ceil(%67 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %5 @trunc(%68 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %6 @nearbyint(%69 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %7 @rintf(%70 <unnamed>: f32) -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %8 @lrintf(%71 <unnamed>: f32) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @llrintf(%72 <unnamed>: f32) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %10 @floorf(%73 <unnamed>: f32) -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %11 @ceilf(%74 <unnamed>: f32) -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %12 @truncf(%75 <unnamed>: f32) -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %13 @nearbyintf(%76 <unnamed>: f32) -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %14 @rintl(%77 <unnamed>: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %15 @lrintl(%78 <unnamed>: f80) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %16 @llrintl(%79 <unnamed>: f80) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %17 @floorl(%80 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %18 @ceill(%81 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %19 @truncl(%82 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %20 @nearbyintl(%83 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %21 @test1(%22 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%0, read<f64>(%22));
+// DEFAULT-NEXT:     fn %[[VALUE_rint:[0-9]+]] @rint(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_lrint:[0-9]+]] @lrint(%[[VALUE1:[0-9]+]] <unnamed>: f64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_llrint:[0-9]+]] @llrint(%[[VALUE2:[0-9]+]] <unnamed>: f64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_floor:[0-9]+]] @floor(%[[VALUE3:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_ceil:[0-9]+]] @ceil(%[[VALUE4:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_trunc:[0-9]+]] @trunc(%[[VALUE5:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_nearbyint:[0-9]+]] @nearbyint(%[[VALUE6:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_rintf:[0-9]+]] @rintf(%[[VALUE7:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_lrintf:[0-9]+]] @lrintf(%[[VALUE8:[0-9]+]] <unnamed>: f32) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_llrintf:[0-9]+]] @llrintf(%[[VALUE9:[0-9]+]] <unnamed>: f32) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_floorf:[0-9]+]] @floorf(%[[VALUE10:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_ceilf:[0-9]+]] @ceilf(%[[VALUE11:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_truncf:[0-9]+]] @truncf(%[[VALUE12:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_nearbyintf:[0-9]+]] @nearbyintf(%[[VALUE13:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_rintl:[0-9]+]] @rintl(%[[VALUE14:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_lrintl:[0-9]+]] @lrintl(%[[VALUE15:[0-9]+]] <unnamed>: f80) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_llrintl:[0-9]+]] @llrintl(%[[VALUE16:[0-9]+]] <unnamed>: f80) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_floorl:[0-9]+]] @floorl(%[[VALUE17:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_ceill:[0-9]+]] @ceill(%[[VALUE18:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_truncl:[0-9]+]] @truncl(%[[VALUE19:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_nearbyintl:[0-9]+]] @nearbyintl(%[[VALUE20:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_x:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%[[VALUE_rint]], read<f64>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @test11(%24 x: f64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i64, signature=fn(f64) -> i64>(%1, read<f64>(%24));
+// DEFAULT-NEXT:     fn %[[VALUE_test11:[0-9]+]] @test11(%[[VALUE_x_2:[0-9]+]] x: f64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i64, signature=fn(f64) -> i64>(%[[VALUE_lrint]], read<f64>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @test12(%26 x: f64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i64, signature=fn(f64) -> i64>(%2, read<f64>(%26));
+// DEFAULT-NEXT:     fn %[[VALUE_test12:[0-9]+]] @test12(%[[VALUE_x_3:[0-9]+]] x: f64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i64, signature=fn(f64) -> i64>(%[[VALUE_llrint]], read<f64>(%[[VALUE_x_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @test2(%28 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%3, read<f64>(%28));
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_x_4:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%[[VALUE_floor]], read<f64>(%[[VALUE_x_4]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @test3(%30 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%4, read<f64>(%30));
+// DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_x_5:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%[[VALUE_ceil]], read<f64>(%[[VALUE_x_5]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @test4(%32 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%5, read<f64>(%32));
+// DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4(%[[VALUE_x_6:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%[[VALUE_trunc]], read<f64>(%[[VALUE_x_6]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %33 @test5(%34 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%6, read<f64>(%34));
+// DEFAULT-NEXT:     fn %[[VALUE_test5:[0-9]+]] @test5(%[[VALUE_x_7:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%[[VALUE_nearbyint]], read<f64>(%[[VALUE_x_7]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %35 @test1f(%36 x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%7, read<f32>(%36));
+// DEFAULT-NEXT:     fn %[[VALUE_test1f:[0-9]+]] @test1f(%[[VALUE_x_8:[0-9]+]] x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%[[VALUE_rintf]], read<f32>(%[[VALUE_x_8]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %37 @test11f(%38 x: f32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i64, signature=fn(f32) -> i64>(%8, read<f32>(%38));
+// DEFAULT-NEXT:     fn %[[VALUE_test11f:[0-9]+]] @test11f(%[[VALUE_x_9:[0-9]+]] x: f32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i64, signature=fn(f32) -> i64>(%[[VALUE_lrintf]], read<f32>(%[[VALUE_x_9]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %39 @test12f(%40 x: f32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i64, signature=fn(f32) -> i64>(%9, read<f32>(%40));
+// DEFAULT-NEXT:     fn %[[VALUE_test12f:[0-9]+]] @test12f(%[[VALUE_x_10:[0-9]+]] x: f32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i64, signature=fn(f32) -> i64>(%[[VALUE_llrintf]], read<f32>(%[[VALUE_x_10]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %41 @test2f(%42 x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%10, read<f32>(%42));
+// DEFAULT-NEXT:     fn %[[VALUE_test2f:[0-9]+]] @test2f(%[[VALUE_x_11:[0-9]+]] x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%[[VALUE_floorf]], read<f32>(%[[VALUE_x_11]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %43 @test3f(%44 x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%11, read<f32>(%44));
+// DEFAULT-NEXT:     fn %[[VALUE_test3f:[0-9]+]] @test3f(%[[VALUE_x_12:[0-9]+]] x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%[[VALUE_ceilf]], read<f32>(%[[VALUE_x_12]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %45 @test4f(%46 x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%12, read<f32>(%46));
+// DEFAULT-NEXT:     fn %[[VALUE_test4f:[0-9]+]] @test4f(%[[VALUE_x_13:[0-9]+]] x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%[[VALUE_truncf]], read<f32>(%[[VALUE_x_13]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %47 @test5f(%48 x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%13, read<f32>(%48));
+// DEFAULT-NEXT:     fn %[[VALUE_test5f:[0-9]+]] @test5f(%[[VALUE_x_14:[0-9]+]] x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%[[VALUE_nearbyintf]], read<f32>(%[[VALUE_x_14]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %49 @test1l(%50 x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%14, read<f80>(%50));
+// DEFAULT-NEXT:     fn %[[VALUE_test1l:[0-9]+]] @test1l(%[[VALUE_x_15:[0-9]+]] x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%[[VALUE_rintl]], read<f80>(%[[VALUE_x_15]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %51 @test11l(%52 x: f80) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i64, signature=fn(f80) -> i64>(%15, read<f80>(%52));
+// DEFAULT-NEXT:     fn %[[VALUE_test11l:[0-9]+]] @test11l(%[[VALUE_x_16:[0-9]+]] x: f80) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i64, signature=fn(f80) -> i64>(%[[VALUE_lrintl]], read<f80>(%[[VALUE_x_16]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %53 @test12l(%54 x: f80) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i64, signature=fn(f80) -> i64>(%16, read<f80>(%54));
+// DEFAULT-NEXT:     fn %[[VALUE_test12l:[0-9]+]] @test12l(%[[VALUE_x_17:[0-9]+]] x: f80) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i64, signature=fn(f80) -> i64>(%[[VALUE_llrintl]], read<f80>(%[[VALUE_x_17]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %55 @test2l(%56 x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%17, read<f80>(%56));
+// DEFAULT-NEXT:     fn %[[VALUE_test2l:[0-9]+]] @test2l(%[[VALUE_x_18:[0-9]+]] x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%[[VALUE_floorl]], read<f80>(%[[VALUE_x_18]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %57 @test3l(%58 x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%18, read<f80>(%58));
+// DEFAULT-NEXT:     fn %[[VALUE_test3l:[0-9]+]] @test3l(%[[VALUE_x_19:[0-9]+]] x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%[[VALUE_ceill]], read<f80>(%[[VALUE_x_19]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %59 @test4l(%60 x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%19, read<f80>(%60));
+// DEFAULT-NEXT:     fn %[[VALUE_test4l:[0-9]+]] @test4l(%[[VALUE_x_20:[0-9]+]] x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%[[VALUE_truncl]], read<f80>(%[[VALUE_x_20]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %61 @test5l(%62 x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%20, read<f80>(%62));
+// DEFAULT-NEXT:     fn %[[VALUE_test5l:[0-9]+]] @test5l(%[[VALUE_x_21:[0-9]+]] x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%[[VALUE_nearbyintl]], read<f80>(%[[VALUE_x_21]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

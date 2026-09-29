@@ -173,200 +173,200 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type1 va_list = va_list;
-// DEFAULT-NEXT:     type @type2 S1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_S1:[0-9]+]] S1 = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:         field1 d: f64;
 // DEFAULT-NEXT:         field2 j: i32;
 // DEFAULT-NEXT:         field3 e: f64;
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 16, 24]];
-// DEFAULT-NEXT:     type @type3 S2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S2:[0-9]+]] S2 = struct {
 // DEFAULT-NEXT:         field0 d: f64;
 // DEFAULT-NEXT:         field1 i: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %3 foo_arg: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 bar_arg: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 x: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 d: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 gap: va_list [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 s1: @type2 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 s2: @type3 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %12 y: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %13 @bar(%14 v: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(%4, read<i32>(%14));
+// DEFAULT-NEXT:     global %[[VALUE_foo_arg:[0-9]+]] foo_arg: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bar_arg:[0-9]+]] bar_arg: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_gap:[0-9]+]] gap: va_list [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s1:[0-9]+]] s1: @type[[TYPE_S1]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s2:[0-9]+]] s2: @type[[TYPE_S2]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_v:[0-9]+]] v: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_bar_arg]], read<i32>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @f1(%16 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %17 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%17);
-// DEFAULT-NEXT:         while %48 {
-// DEFAULT-NEXT:             let %56: i32 [synthetic] = read<i32>(%16);
-// DEFAULT-NEXT:             let %57: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%56), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%16, read<i32>(%57));
-// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%56), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_i:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%[[VALUE1]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             write<i64>(%5, va_arg<i64>(%17));
-// DEFAULT-NEXT:             va_arg<i64>(%17);
-// DEFAULT-NEXT:         va_end(%17);
+// DEFAULT-NEXT:             write<i64>(%[[VALUE_x]], va_arg<i64>(%[[VALUE_ap]]));
+// DEFAULT-NEXT:             va_arg<i64>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @f2(%19 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %20 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%20);
-// DEFAULT-NEXT:         while %49 {
-// DEFAULT-NEXT:             let %58: i32 [synthetic] = read<i32>(%19);
-// DEFAULT-NEXT:             let %59: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%58), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%19, read<i32>(%59));
-// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%58), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_i_2:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
+// DEFAULT-NEXT:         while %[[VALUE3:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_2]]);
+// DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE5]]));
+// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%[[VALUE4]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             write<f64>(%6, va_arg<f64>(%20));
-// DEFAULT-NEXT:             va_arg<f64>(%20);
-// DEFAULT-NEXT:         va_end(%20);
+// DEFAULT-NEXT:             write<f64>(%[[VALUE_d]], va_arg<f64>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:             va_arg<f64>(%[[VALUE_ap_2]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @f3(%22 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %23 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %24 j: i32 [storage=automatic] = read<i32>(%22);
-// DEFAULT-NEXT:         while %50 {
-// DEFAULT-NEXT:             let %60: i32 [synthetic] = read<i32>(%24);
-// DEFAULT-NEXT:             let %61: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%60), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%24, read<i32>(%61));
-// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%60), const<i32>(0));
-// DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 va_start(%23);
-// DEFAULT-NEXT:                 write<i64>(%5, va_arg<i64>(%23));
-// DEFAULT-NEXT:                 va_arg<i64>(%23);
-// DEFAULT-NEXT:                 va_end(%23);
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%13, truncate<i32, reason=arg, fits=unknown>(read<i64>(%5)));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @f4(%26 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %27 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %28 j: i32 [storage=automatic] = read<i32>(%26);
-// DEFAULT-NEXT:         while %51 {
-// DEFAULT-NEXT:             let %62: i32 [synthetic] = read<i32>(%28);
-// DEFAULT-NEXT:             let %63: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%62), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%28, read<i32>(%63));
-// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%62), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_i_3:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic] = read<i32>(%[[VALUE_i_3]]);
+// DEFAULT-NEXT:         while %[[VALUE6:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
+// DEFAULT-NEXT:             let %[[VALUE8:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE7]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE8]]));
+// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%[[VALUE7]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 va_start(%27);
-// DEFAULT-NEXT:                 write<f64>(%6, va_arg<f64>(%27));
-// DEFAULT-NEXT:                 va_arg<f64>(%27);
-// DEFAULT-NEXT:                 va_end(%27);
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%13, float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%6), const<f64>(4.0))));
+// DEFAULT-NEXT:                 va_start(%[[VALUE_ap_3]]);
+// DEFAULT-NEXT:                 write<i64>(%[[VALUE_x]], va_arg<i64>(%[[VALUE_ap_3]]));
+// DEFAULT-NEXT:                 va_arg<i64>(%[[VALUE_ap_3]]);
+// DEFAULT-NEXT:                 va_end(%[[VALUE_ap_3]]);
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], truncate<i32, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x]])));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @f5(%30 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %31 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%31);
-// DEFAULT-NEXT:         while %52 {
-// DEFAULT-NEXT:             let %64: i32 [synthetic] = read<i32>(%30);
-// DEFAULT-NEXT:             let %65: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%64), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%30, read<i32>(%65));
-// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%64), const<i32>(0));
-// DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             write<@type2>(%9, copy<@type2, reason=assign>(va_arg<@type2>(%31)));
-// DEFAULT-NEXT:             copy<@type2, reason=assign>(va_arg<@type2>(%31));
-// DEFAULT-NEXT:         va_end(%31);
-// DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @f6(%33 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %34 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%34);
-// DEFAULT-NEXT:         while %53 {
-// DEFAULT-NEXT:             let %66: i32 [synthetic] = read<i32>(%33);
-// DEFAULT-NEXT:             let %67: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%66), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%33, read<i32>(%67));
-// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%66), const<i32>(0));
-// DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             write<@type3>(%11, copy<@type3, reason=assign>(va_arg<@type3>(%34)));
-// DEFAULT-NEXT:             copy<@type3, reason=assign>(va_arg<@type3>(%34));
-// DEFAULT-NEXT:         va_end(%34);
-// DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %35 @f7(%36 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %37 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %38 j: i32 [storage=automatic] = read<i32>(%36);
-// DEFAULT-NEXT:         while %54 {
-// DEFAULT-NEXT:             let %68: i32 [synthetic] = read<i32>(%38);
-// DEFAULT-NEXT:             let %69: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%68), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%38, read<i32>(%69));
-// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%68), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_i_4:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_j_2:[0-9]+]] j: i32 [storage=automatic] = read<i32>(%[[VALUE_i_4]]);
+// DEFAULT-NEXT:         while %[[VALUE9:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE10:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j_2]]);
+// DEFAULT-NEXT:             let %[[VALUE11:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE10]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_j_2]], read<i32>(%[[VALUE11]]));
+// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%[[VALUE10]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 va_start(%37);
-// DEFAULT-NEXT:                 write<@type2>(%9, copy<@type2, reason=assign>(va_arg<@type2>(%37)));
-// DEFAULT-NEXT:                 copy<@type2, reason=assign>(va_arg<@type2>(%37));
-// DEFAULT-NEXT:                 va_end(%37);
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%13, read<i32>(field0(%9)));
+// DEFAULT-NEXT:                 va_start(%[[VALUE_ap_4]]);
+// DEFAULT-NEXT:                 write<f64>(%[[VALUE_d]], va_arg<f64>(%[[VALUE_ap_4]]));
+// DEFAULT-NEXT:                 va_arg<f64>(%[[VALUE_ap_4]]);
+// DEFAULT-NEXT:                 va_end(%[[VALUE_ap_4]]);
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_d]]), const<f64>(4.0))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %39 @f8(%40 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %41 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %42 j: i32 [storage=automatic] = read<i32>(%40);
-// DEFAULT-NEXT:         while %55 {
-// DEFAULT-NEXT:             let %70: i32 [synthetic] = read<i32>(%42);
-// DEFAULT-NEXT:             let %71: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%70), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%42, read<i32>(%71));
-// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%70), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE_i_5:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_5:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_5]]);
+// DEFAULT-NEXT:         while %[[VALUE12:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE13:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_5]]);
+// DEFAULT-NEXT:             let %[[VALUE14:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE13]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_i_5]], read<i32>(%[[VALUE14]]));
+// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%[[VALUE13]]), const<i32>(0));
+// DEFAULT-NEXT:         }
+// DEFAULT-NEXT:             write<@type[[TYPE_S1]]>(%[[VALUE_s1]], copy<@type[[TYPE_S1]], reason=assign>(va_arg<@type[[TYPE_S1]]>(%[[VALUE_ap_5]])));
+// DEFAULT-NEXT:             copy<@type[[TYPE_S1]], reason=assign>(va_arg<@type[[TYPE_S1]]>(%[[VALUE_ap_5]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_5]]);
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(%[[VALUE_i_6:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_6:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_6]]);
+// DEFAULT-NEXT:         while %[[VALUE15:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE16:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_6]]);
+// DEFAULT-NEXT:             let %[[VALUE17:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE16]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_i_6]], read<i32>(%[[VALUE17]]));
+// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%[[VALUE16]]), const<i32>(0));
+// DEFAULT-NEXT:         }
+// DEFAULT-NEXT:             write<@type[[TYPE_S2]]>(%[[VALUE_s2]], copy<@type[[TYPE_S2]], reason=assign>(va_arg<@type[[TYPE_S2]]>(%[[VALUE_ap_6]])));
+// DEFAULT-NEXT:             copy<@type[[TYPE_S2]], reason=assign>(va_arg<@type[[TYPE_S2]]>(%[[VALUE_ap_6]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_6]]);
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_i_7:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_7:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_j_3:[0-9]+]] j: i32 [storage=automatic] = read<i32>(%[[VALUE_i_7]]);
+// DEFAULT-NEXT:         while %[[VALUE18:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE19:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j_3]]);
+// DEFAULT-NEXT:             let %[[VALUE20:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE19]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_j_3]], read<i32>(%[[VALUE20]]));
+// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%[[VALUE19]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 va_start(%41);
-// DEFAULT-NEXT:                 write<@type3>(%11, copy<@type3, reason=assign>(va_arg<@type3>(%41)));
-// DEFAULT-NEXT:                 copy<@type3, reason=assign>(va_arg<@type3>(%41));
-// DEFAULT-NEXT:                 write<i32>(%12, va_arg<i32>(%41));
-// DEFAULT-NEXT:                 va_arg<i32>(%41);
-// DEFAULT-NEXT:                 va_end(%41);
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%13, truncate<i32, reason=arg, fits=unknown>(read<i64>(field1(%11))));
+// DEFAULT-NEXT:                 va_start(%[[VALUE_ap_7]]);
+// DEFAULT-NEXT:                 write<@type[[TYPE_S1]]>(%[[VALUE_s1]], copy<@type[[TYPE_S1]], reason=assign>(va_arg<@type[[TYPE_S1]]>(%[[VALUE_ap_7]])));
+// DEFAULT-NEXT:                 copy<@type[[TYPE_S1]], reason=assign>(va_arg<@type[[TYPE_S1]]>(%[[VALUE_ap_7]]));
+// DEFAULT-NEXT:                 va_end(%[[VALUE_ap_7]]);
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], read<i32>(field0(%[[VALUE_s1]])));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %43 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %44 a1: @type2 [storage=automatic];
-// DEFAULT-NEXT:         let %45 a3: @type2 [storage=automatic];
-// DEFAULT-NEXT:         let %46 a2: @type3 [storage=automatic];
-// DEFAULT-NEXT:         let %47 a4: @type3 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%15, const<i32>(7), const<i64>(1), const<i64>(2), const<i64>(3), const<i64>(5), const<i64>(7), const<i64>(9), const<i64>(11), const<i64>(13));
-// DEFAULT-NEXT:         if ne<i64>(read<i64>(%5), const<i64>(11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%18, const<i32>(6), const<f64>(1.0), const<f64>(2.0), const<f64>(4.0), const<f64>(8.0), const<f64>(16.0), const<f64>(32.0), const<f64>(64.0));
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%6), const<f64>(32.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%21, const<i32>(2), const<i64>(1), const<i64>(3));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(widen<i64, reason=usual_arith>(read<i32>(%4)), const<i64>(1)), ne<i64>(read<i64>(%5), const<i64>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%25, const<i32>(2), const<f64>(17.0), const<f64>(19.0));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%4), const<i32>(21)), ne<f64, exceptions=observable>(read<f64>(%6), const<f64>(17.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         write<i32>(field0(%44), const<i32>(131));
-// DEFAULT-NEXT:         write<i32>(field2(%44), const<i32>(251));
-// DEFAULT-NEXT:         write<f64>(field1(%44), const<f64>(15.0));
-// DEFAULT-NEXT:         write<f64>(field3(%44), const<f64>(191.0));
-// DEFAULT-NEXT:         write<@type2>(%45, copy<@type2, reason=assign>(read<@type2>(%44)));
-// DEFAULT-NEXT:         write<i32>(field2(%45), const<i32>(254));
-// DEFAULT-NEXT:         write<f64>(field3(%45), const<f64>(178.0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c) -> void>(%29, const<i32>(2), copy<@type2, reason=vararg>(read<@type2>(%44)), copy<@type2, reason=vararg>(read<@type2>(%45)), copy<@type2, reason=vararg>(read<@type2>(%44)));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%9)), const<i32>(131)), ne<i32>(read<i32>(field2(%9)), const<i32>(254))), ne<f64, exceptions=observable>(read<f64>(field1(%9)), const<f64>(15.0))), ne<f64, exceptions=observable>(read<f64>(field3(%9)), const<f64>(178.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c) -> void>(%29, const<i32>(3), copy<@type2, reason=vararg>(read<@type2>(%44)), copy<@type2, reason=vararg>(read<@type2>(%45)), copy<@type2, reason=vararg>(read<@type2>(%44)));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%9)), const<i32>(131)), ne<i32>(read<i32>(field2(%9)), const<i32>(251))), ne<f64, exceptions=observable>(read<f64>(field1(%9)), const<f64>(15.0))), ne<f64, exceptions=observable>(read<f64>(field3(%9)), const<f64>(191.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         write<i64>(field1(%46), widen<i64, reason=assign>(const<i32>(138)));
-// DEFAULT-NEXT:         write<f64>(field0(%46), const<f64>(16.0));
-// DEFAULT-NEXT:         write<i64>(field1(%47), widen<i64, reason=assign>(const<i32>(257)));
-// DEFAULT-NEXT:         write<f64>(field0(%47), const<f64>(176.0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c) -> void>(%32, const<i32>(2), copy<@type3, reason=vararg>(read<@type3>(%46)), copy<@type3, reason=vararg>(read<@type3>(%47)), copy<@type3, reason=vararg>(read<@type3>(%46)));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field1(%11)), widen<i64, reason=usual_arith>(const<i32>(257))), ne<f64, exceptions=observable>(read<f64>(field0(%11)), const<f64>(176.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c) -> void>(%32, const<i32>(3), copy<@type3, reason=vararg>(read<@type3>(%46)), copy<@type3, reason=vararg>(read<@type3>(%47)), copy<@type3, reason=vararg>(read<@type3>(%46)));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field1(%11)), widen<i64, reason=usual_arith>(const<i32>(138))), ne<f64, exceptions=observable>(read<f64>(field0(%11)), const<f64>(16.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c) -> void>(%35, const<i32>(2), copy<@type2, reason=vararg>(read<@type2>(%45)), copy<@type2, reason=vararg>(read<@type2>(%44)), copy<@type2, reason=vararg>(read<@type2>(%44)));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%9)), const<i32>(131)), ne<i32>(read<i32>(field2(%9)), const<i32>(254))), ne<f64, exceptions=observable>(read<f64>(field1(%9)), const<f64>(15.0))), ne<f64, exceptions=observable>(read<f64>(field3(%9)), const<f64>(178.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(131))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c) -> void>(%39, const<i32>(3), copy<@type3, reason=vararg>(read<@type3>(%47)), copy<@type3, reason=vararg>(read<@type3>(%46)), copy<@type3, reason=vararg>(read<@type3>(%46)));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field1(%11)), widen<i64, reason=usual_arith>(const<i32>(257))), ne<f64, exceptions=observable>(read<f64>(field0(%11)), const<f64>(176.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_i_8:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_8:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_j_4:[0-9]+]] j: i32 [storage=automatic] = read<i32>(%[[VALUE_i_8]]);
+// DEFAULT-NEXT:         while %[[VALUE21:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE22:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j_4]]);
+// DEFAULT-NEXT:             let %[[VALUE23:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE22]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_j_4]], read<i32>(%[[VALUE23]]));
+// DEFAULT-NEXT:             yield gt<i32>(read<i32>(%[[VALUE22]]), const<i32>(0));
+// DEFAULT-NEXT:         }
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 va_start(%[[VALUE_ap_8]]);
+// DEFAULT-NEXT:                 write<@type[[TYPE_S2]]>(%[[VALUE_s2]], copy<@type[[TYPE_S2]], reason=assign>(va_arg<@type[[TYPE_S2]]>(%[[VALUE_ap_8]])));
+// DEFAULT-NEXT:                 copy<@type[[TYPE_S2]], reason=assign>(va_arg<@type[[TYPE_S2]]>(%[[VALUE_ap_8]]));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_y]], va_arg<i32>(%[[VALUE_ap_8]]));
+// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_8]]);
+// DEFAULT-NEXT:                 va_end(%[[VALUE_ap_8]]);
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], truncate<i32, reason=arg, fits=unknown>(read<i64>(field1(%[[VALUE_s2]]))));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a1:[0-9]+]] a1: @type[[TYPE_S1]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_a3:[0-9]+]] a3: @type[[TYPE_S1]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_a2:[0-9]+]] a2: @type[[TYPE_S2]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_a4:[0-9]+]] a4: @type[[TYPE_S2]] [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_f1]], const<i32>(7), const<i64>(1), const<i64>(2), const<i64>(3), const<i64>(5), const<i64>(7), const<i64>(9), const<i64>(11), const<i64>(13));
+// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE_x]]), const<i64>(11))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_f2]], const<i32>(6), const<f64>(1.0), const<f64>(2.0), const<f64>(4.0), const<f64>(8.0), const<f64>(16.0), const<f64>(32.0), const<f64>(64.0));
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_d]]), const<f64>(32.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_f3]], const<i32>(2), const<i64>(1), const<i64>(3));
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_bar_arg]])), const<i64>(1)), ne<i64>(read<i64>(%[[VALUE_x]]), const<i64>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_f4]], const<i32>(2), const<f64>(17.0), const<f64>(19.0));
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_bar_arg]]), const<i32>(21)), ne<f64, exceptions=observable>(read<f64>(%[[VALUE_d]]), const<f64>(17.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_a1]]), const<i32>(131));
+// DEFAULT-NEXT:         write<i32>(field2(%[[VALUE_a1]]), const<i32>(251));
+// DEFAULT-NEXT:         write<f64>(field1(%[[VALUE_a1]]), const<f64>(15.0));
+// DEFAULT-NEXT:         write<f64>(field3(%[[VALUE_a1]]), const<f64>(191.0));
+// DEFAULT-NEXT:         write<@type[[TYPE_S1]]>(%[[VALUE_a3]], copy<@type[[TYPE_S1]], reason=assign>(read<@type[[TYPE_S1]]>(%[[VALUE_a1]])));
+// DEFAULT-NEXT:         write<i32>(field2(%[[VALUE_a3]]), const<i32>(254));
+// DEFAULT-NEXT:         write<f64>(field3(%[[VALUE_a3]]), const<f64>(178.0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c) -> void>(%[[VALUE_f5]], const<i32>(2), copy<@type[[TYPE_S1]], reason=vararg>(read<@type[[TYPE_S1]]>(%[[VALUE_a1]])), copy<@type[[TYPE_S1]], reason=vararg>(read<@type[[TYPE_S1]]>(%[[VALUE_a3]])), copy<@type[[TYPE_S1]], reason=vararg>(read<@type[[TYPE_S1]]>(%[[VALUE_a1]])));
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%[[VALUE_s1]])), const<i32>(131)), ne<i32>(read<i32>(field2(%[[VALUE_s1]])), const<i32>(254))), ne<f64, exceptions=observable>(read<f64>(field1(%[[VALUE_s1]])), const<f64>(15.0))), ne<f64, exceptions=observable>(read<f64>(field3(%[[VALUE_s1]])), const<f64>(178.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c) -> void>(%[[VALUE_f5]], const<i32>(3), copy<@type[[TYPE_S1]], reason=vararg>(read<@type[[TYPE_S1]]>(%[[VALUE_a1]])), copy<@type[[TYPE_S1]], reason=vararg>(read<@type[[TYPE_S1]]>(%[[VALUE_a3]])), copy<@type[[TYPE_S1]], reason=vararg>(read<@type[[TYPE_S1]]>(%[[VALUE_a1]])));
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%[[VALUE_s1]])), const<i32>(131)), ne<i32>(read<i32>(field2(%[[VALUE_s1]])), const<i32>(251))), ne<f64, exceptions=observable>(read<f64>(field1(%[[VALUE_s1]])), const<f64>(15.0))), ne<f64, exceptions=observable>(read<f64>(field3(%[[VALUE_s1]])), const<f64>(191.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i64>(field1(%[[VALUE_a2]]), widen<i64, reason=assign>(const<i32>(138)));
+// DEFAULT-NEXT:         write<f64>(field0(%[[VALUE_a2]]), const<f64>(16.0));
+// DEFAULT-NEXT:         write<i64>(field1(%[[VALUE_a4]]), widen<i64, reason=assign>(const<i32>(257)));
+// DEFAULT-NEXT:         write<f64>(field0(%[[VALUE_a4]]), const<f64>(176.0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c) -> void>(%[[VALUE_f6]], const<i32>(2), copy<@type[[TYPE_S2]], reason=vararg>(read<@type[[TYPE_S2]]>(%[[VALUE_a2]])), copy<@type[[TYPE_S2]], reason=vararg>(read<@type[[TYPE_S2]]>(%[[VALUE_a4]])), copy<@type[[TYPE_S2]], reason=vararg>(read<@type[[TYPE_S2]]>(%[[VALUE_a2]])));
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field1(%[[VALUE_s2]])), widen<i64, reason=usual_arith>(const<i32>(257))), ne<f64, exceptions=observable>(read<f64>(field0(%[[VALUE_s2]])), const<f64>(176.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c) -> void>(%[[VALUE_f6]], const<i32>(3), copy<@type[[TYPE_S2]], reason=vararg>(read<@type[[TYPE_S2]]>(%[[VALUE_a2]])), copy<@type[[TYPE_S2]], reason=vararg>(read<@type[[TYPE_S2]]>(%[[VALUE_a4]])), copy<@type[[TYPE_S2]], reason=vararg>(read<@type[[TYPE_S2]]>(%[[VALUE_a2]])));
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field1(%[[VALUE_s2]])), widen<i64, reason=usual_arith>(const<i32>(138))), ne<f64, exceptions=observable>(read<f64>(field0(%[[VALUE_s2]])), const<f64>(16.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c) -> void>(%[[VALUE_f7]], const<i32>(2), copy<@type[[TYPE_S1]], reason=vararg>(read<@type[[TYPE_S1]]>(%[[VALUE_a3]])), copy<@type[[TYPE_S1]], reason=vararg>(read<@type[[TYPE_S1]]>(%[[VALUE_a1]])), copy<@type[[TYPE_S1]], reason=vararg>(read<@type[[TYPE_S1]]>(%[[VALUE_a1]])));
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%[[VALUE_s1]])), const<i32>(131)), ne<i32>(read<i32>(field2(%[[VALUE_s1]])), const<i32>(254))), ne<f64, exceptions=observable>(read<f64>(field1(%[[VALUE_s1]])), const<f64>(15.0))), ne<f64, exceptions=observable>(read<f64>(field3(%[[VALUE_s1]])), const<f64>(178.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_bar_arg]]), const<i32>(131))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c, native_c, native_c) -> void>(%[[VALUE_f8]], const<i32>(3), copy<@type[[TYPE_S2]], reason=vararg>(read<@type[[TYPE_S2]]>(%[[VALUE_a4]])), copy<@type[[TYPE_S2]], reason=vararg>(read<@type[[TYPE_S2]]>(%[[VALUE_a2]])), copy<@type[[TYPE_S2]], reason=vararg>(read<@type[[TYPE_S2]]>(%[[VALUE_a2]])));
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field1(%[[VALUE_s2]])), widen<i64, reason=usual_arith>(const<i32>(257))), ne<f64, exceptions=observable>(read<f64>(field0(%[[VALUE_s2]])), const<f64>(176.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

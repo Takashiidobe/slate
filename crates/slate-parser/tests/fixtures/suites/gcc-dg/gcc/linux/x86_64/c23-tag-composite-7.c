@@ -45,22 +45,22 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:         field0 y: ptr<array<i8, incomplete>>;
 // DEFAULT-NEXT:         field1 x: u32 : 3;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8], bit_offsets=[None, Some(64)], bit_units=[(8, 1)], field_units=[None, Some(0)]];
-// DEFAULT-NEXT:     type @type1 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo_2:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:         field0 y: ptr<array<i8, 1>>;
 // DEFAULT-NEXT:         field1 x: u32 : 3;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8], bit_offsets=[None, Some(64)], bit_units=[(8, 1)], field_units=[None, Some(0)]];
-// DEFAULT-NEXT:     global %1 x: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 y: @type1 [storage=automatic];
-// DEFAULT-NEXT:         let %5 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=8..9, bits=0..3>(%5), reinterpret<u32, reason=assign, fits=always>(const<i32>(8)));
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=8..9, bits=0..3>(%5))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE_foo]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: @type[[TYPE_foo_2]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_foo]] [storage=automatic];
+// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=8..9, bits=0..3>(%[[VALUE_a]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(8)));
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=8..9, bits=0..3>(%[[VALUE_a]]))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -68,57 +68,57 @@ struct Outer2 outer2_object;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 Fwd = struct incomplete;
-// IR-NEXT:     type @type1 Ret = struct incomplete;
-// IR-NEXT:     type @type2 Completed = struct {
+// IR-NEXT:     type @type[[TYPE_Fwd:[0-9]+]] Fwd = struct incomplete;
+// IR-NEXT:     type @type[[TYPE_Ret:[0-9]+]] Ret = struct incomplete;
+// IR-NEXT:     type @type[[TYPE_Completed:[0-9]+]] Completed = struct {
 // IR-NEXT:         field0 y: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type3 Outer = struct {
+// IR-NEXT:     type @type[[TYPE_Outer:[0-9]+]] Outer = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type4 Implicit = struct {
+// IR-NEXT:     type @type[[TYPE_Implicit:[0-9]+]] Implicit = struct {
 // IR-NEXT:         field0 z: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type5 Holder = struct {
-// IR-NEXT:         field0 m: ptr<@type6>;
+// IR-NEXT:     type @type[[TYPE_Holder:[0-9]+]] Holder = struct {
+// IR-NEXT:         field0 m: ptr<@type[[TYPE_Member:[0-9]+]]>;
 // IR-NEXT:     } [size=8, align=8, offsets=[0]];
-// IR-NEXT:     type @type6 Member = struct {
+// IR-NEXT:     type @type[[TYPE_Member]] Member = struct {
 // IR-NEXT:         field0 w: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type7 Local = struct {
+// IR-NEXT:     type @type[[TYPE_Local:[0-9]+]] Local = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type8 Local = struct {
+// IR-NEXT:     type @type[[TYPE_Local_2:[0-9]+]] Local = struct {
 // IR-NEXT:         field0 b: i64;
 // IR-NEXT:     } [size=8, align=8, offsets=[0]];
-// IR-NEXT:     type @type9 Outer = struct incomplete;
-// IR-NEXT:     type @type10 Outer2 = struct incomplete;
-// IR-NEXT:     type @type11 Outer2 = struct {
+// IR-NEXT:     type @type[[TYPE_Outer_2:[0-9]+]] Outer = struct incomplete;
+// IR-NEXT:     type @type[[TYPE_Outer2:[0-9]+]] Outer2 = struct incomplete;
+// IR-NEXT:     type @type[[TYPE_Outer2_2:[0-9]+]] Outer2 = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     global %1 forward_pointer: ptr<@type0> [storage=static] [linkage=external];
-// IR-NEXT:     global %5 completed_object: @type2 [storage=static] [linkage=external];
-// IR-NEXT:     global %8 first_use: ptr<@type4> [storage=static] [linkage=external];
-// IR-NEXT:     global %9 implicit_object: @type4 [storage=static] [linkage=external];
-// IR-NEXT:     global %25 outer2_object: @type11 [storage=static] [linkage=external];
-// IR-NEXT:     fn %3 @returns_incomplete() -> ptr<@type1> [linkage=external];
-// IR-NEXT:     fn %12 @one() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %14 l: @type7 [storage=automatic];
-// IR-NEXT:         write<i32>(field0(%14), const<i32>(4));
-// IR-NEXT:         return read<i32>(field0(%14));
+// IR-NEXT:     global %[[VALUE_forward_pointer:[0-9]+]] forward_pointer: ptr<@type[[TYPE_Fwd]]> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_completed_object:[0-9]+]] completed_object: @type[[TYPE_Completed]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_first_use:[0-9]+]] first_use: ptr<@type[[TYPE_Implicit]]> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_implicit_object:[0-9]+]] implicit_object: @type[[TYPE_Implicit]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_outer2_object:[0-9]+]] outer2_object: @type[[TYPE_Outer2_2]] [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_returns_incomplete:[0-9]+]] @returns_incomplete() -> ptr<@type[[TYPE_Ret]]> [linkage=external];
+// IR-NEXT:     fn %[[VALUE_one:[0-9]+]] @one() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_l:[0-9]+]] l: @type[[TYPE_Local]] [storage=automatic];
+// IR-NEXT:         write<i32>(field0(%[[VALUE_l]]), const<i32>(4));
+// IR-NEXT:         return read<i32>(field0(%[[VALUE_l]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %15 @two() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %17 l: @type8 [storage=automatic];
-// IR-NEXT:         write<i64>(field0(%17), widen<i64, reason=assign>(const<i32>(5)));
-// IR-NEXT:         return truncate<i32, reason=explicit, fits=unknown>(read<i64>(field0(%17)));
+// IR-NEXT:     fn %[[VALUE_two:[0-9]+]] @two() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_l_2:[0-9]+]] l: @type[[TYPE_Local_2]] [storage=automatic];
+// IR-NEXT:         write<i64>(field0(%[[VALUE_l_2]]), widen<i64, reason=assign>(const<i32>(5)));
+// IR-NEXT:         return truncate<i32, reason=explicit, fits=unknown>(read<i64>(field0(%[[VALUE_l_2]])));
 // IR-NEXT:     }
-// IR-NEXT:     fn %18 @hides() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %20 inner: ptr<@type9> [storage=automatic];
-// IR-NEXT:         read<ptr<@type9>>(%20);
+// IR-NEXT:     fn %[[VALUE_hides:[0-9]+]] @hides() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_inner:[0-9]+]] inner: ptr<@type[[TYPE_Outer_2]]> [storage=automatic];
+// IR-NEXT:         read<ptr<@type[[TYPE_Outer_2]]>>(%[[VALUE_inner]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %21 @hides_implicitly() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %23 inner: ptr<@type10> [storage=automatic];
-// IR-NEXT:         read<ptr<@type10>>(%23);
+// IR-NEXT:     fn %[[VALUE_hides_implicitly:[0-9]+]] @hides_implicitly() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_inner_2:[0-9]+]] inner: ptr<@type[[TYPE_Outer2]]> [storage=automatic];
+// IR-NEXT:         read<ptr<@type[[TYPE_Outer2]]>>(%[[VALUE_inner_2]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

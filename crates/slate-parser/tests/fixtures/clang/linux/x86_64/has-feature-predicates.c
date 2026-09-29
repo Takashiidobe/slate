@@ -36,7 +36,7 @@ int no_predicate = 4;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 without_feature: i32 [storage=static] = const<i32>(2) [linkage=external];
-// DEFAULT-NEXT:     global %1 no_predicate: i32 [storage=static] = const<i32>(4) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_without_feature:[0-9]+]] without_feature: i32 [storage=static] = const<i32>(2) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_no_predicate:[0-9]+]] no_predicate: i32 [storage=static] = const<i32>(4) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

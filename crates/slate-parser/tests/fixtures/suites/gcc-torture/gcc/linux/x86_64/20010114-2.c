@@ -30,10 +30,10 @@ struct { int x; bool y; } foo = { 0, false };
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:         field1 y: bool;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %1 foo: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<bool>(false)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_foo:[0-9]+]] foo: @type[[TYPE0]] [storage=static] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(0), field1 = const<bool>(false)) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

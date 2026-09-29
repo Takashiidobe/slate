@@ -42,23 +42,23 @@ void f (char *s)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(%1 s: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         for %3
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_s:[0-9]+]] s: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: omitted
 // DEFAULT-NEXT:             increment: omitted
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %2 t: i32 [storage=automatic] = const<i32>(6);
-// DEFAULT-NEXT:                     switch %4 read<i32>(%2)
+// DEFAULT-NEXT:                     let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic] = const<i32>(6);
+// DEFAULT-NEXT:                     switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_t]])
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             case %4 const<i32>(2):
-// DEFAULT-NEXT:                                 write<i8>(deref(read<ptr<i8>>(%1)), truncate<i8, reason=assign, fits=always>(const<i32>(50)));
-// DEFAULT-NEXT:                             case %4 const<i32>(6):
-// DEFAULT-NEXT:                                 case %4 const<i32>(4):
-// DEFAULT-NEXT:                                     case %4 const<i32>(3):
-// DEFAULT-NEXT:                                         case %4 const<i32>(1):
-// DEFAULT-NEXT:                                             break %4;
+// DEFAULT-NEXT:                             case %[[VALUE1]] const<i32>(2):
+// DEFAULT-NEXT:                                 write<i8>(deref(read<ptr<i8>>(%[[VALUE_s]])), truncate<i8, reason=assign, fits=always>(const<i32>(50)));
+// DEFAULT-NEXT:                             case %[[VALUE1]] const<i32>(6):
+// DEFAULT-NEXT:                                 case %[[VALUE1]] const<i32>(4):
+// DEFAULT-NEXT:                                     case %[[VALUE1]] const<i32>(3):
+// DEFAULT-NEXT:                                         case %[[VALUE1]] const<i32>(1):
+// DEFAULT-NEXT:                                             break %[[VALUE1]];
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }

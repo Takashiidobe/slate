@@ -56,24 +56,24 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 u32 = u32;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @bug(%4 result: ptr<u32>) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 ss: volatile u32 [storage=automatic] = const<u32>(4294967295);
-// DEFAULT-NEXT:         let %6 d: volatile u32 [storage=automatic] = const<u32>(4008636142);
-// DEFAULT-NEXT:         let %7 tt: u32 [storage=automatic] = and<u32>(read<u32, volatile>(%6), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8388608)));
-// DEFAULT-NEXT:         let %8 r: u32 [storage=automatic] = shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%7), const<i32>(8));
-// DEFAULT-NEXT:         write<u32>(%8, or<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%8), const<i32>(31)), shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%8), const<i32>(1))));
-// DEFAULT-NEXT:         let %9 u: u32 [storage=automatic] = xor<u32>(read<u32>(%8), read<u32, volatile>(%5));
-// DEFAULT-NEXT:         let %10 off: u32 [storage=automatic] = shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%9), const<i32>(1));
-// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%4)), read<u32>(%7));
-// DEFAULT-NEXT:         return read<u32>(%10);
+// DEFAULT-NEXT:     type @type[[TYPE_u32:[0-9]+]] u32 = u32;
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bug:[0-9]+]] @bug(%[[VALUE_result:[0-9]+]] result: ptr<u32>) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_ss:[0-9]+]] ss: volatile u32 [storage=automatic] = const<u32>(4294967295);
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: volatile u32 [storage=automatic] = const<u32>(4008636142);
+// DEFAULT-NEXT:         let %[[VALUE_tt:[0-9]+]] tt: u32 [storage=automatic] = and<u32>(read<u32, volatile>(%[[VALUE_d]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8388608)));
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: u32 [storage=automatic] = shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_tt]]), const<i32>(8));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_r]], or<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_r]]), const<i32>(31)), shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_r]]), const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: u32 [storage=automatic] = xor<u32>(read<u32>(%[[VALUE_r]]), read<u32, volatile>(%[[VALUE_ss]]));
+// DEFAULT-NEXT:         let %[[VALUE_off:[0-9]+]] off: u32 [storage=automatic] = shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_u]]), const<i32>(1));
+// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%[[VALUE_result]])), read<u32>(%[[VALUE_tt]]));
+// DEFAULT-NEXT:         return read<u32>(%[[VALUE_off]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 l: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %13 off: u32 [storage=automatic] = call<u32, signature=fn(ptr<u32>) -> u32>(%3, addr_of<ptr<u32>>(%12));
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%13), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_l:[0-9]+]] l: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_off_2:[0-9]+]] off: u32 [storage=automatic] = call<u32, signature=fn(ptr<u32>) -> u32>(%[[VALUE_bug]], addr_of<ptr<u32>>(%[[VALUE_l]]));
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_off_2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

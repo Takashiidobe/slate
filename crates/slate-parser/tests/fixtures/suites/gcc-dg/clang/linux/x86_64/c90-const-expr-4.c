@@ -36,12 +36,12 @@ void f(void) { q = j ? p : n; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 p: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 q: ptr<i64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 n: ptr<void> [storage=static] [const] = null<ptr<void>> [linkage=internal];
-// DEFAULT-NEXT:     global %3 j: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<i64>>(%1, pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<void>>(ne<i32>(read<i32>(%3), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%0)), read<ptr<void>>(%2))));
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: ptr<i64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_n:[0-9]+]] n: ptr<void> [storage=static] [const] = null<ptr<void>> [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<i64>>(%[[VALUE_q]], pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<void>>(ne<i32>(read<i32>(%[[VALUE_j]]), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%[[VALUE_p]])), read<ptr<void>>(%[[VALUE_n]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

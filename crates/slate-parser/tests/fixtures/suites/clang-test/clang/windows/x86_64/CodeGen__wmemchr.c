@@ -34,11 +34,11 @@ const wchar_t *wmemchr_test(const wchar_t *s, const wchar_t c, size_t n) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     type @type1 wchar_t = u16;
-// DEFAULT-NEXT:     fn %9 @__builtin_wmemchr(%6 <unnamed>: ptr<const u16>, %7 <unnamed>: u16, %8 <unnamed>: u64) -> ptr<u16> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @wmemchr_test(%3 s: ptr<const u16>, %4 c: u16 [const], %5 n: u64) -> ptr<const u16> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<const u16>, reason=return>(call<ptr<u16>, signature=fn(ptr<const u16>, u16, u64) -> ptr<u16>>(%9, read<ptr<const u16>>(%3), read<u16>(%4), read<u64>(%5)));
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = u16;
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_wmemchr:[0-9]+]] @__builtin_wmemchr(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const u16>, %[[VALUE1:[0-9]+]] <unnamed>: u16, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<u16> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_wmemchr_test:[0-9]+]] @wmemchr_test(%[[VALUE_s:[0-9]+]] s: ptr<const u16>, %[[VALUE_c:[0-9]+]] c: u16 [const], %[[VALUE_n:[0-9]+]] n: u64) -> ptr<const u16> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<const u16>, reason=return>(call<ptr<u16>, signature=fn(ptr<const u16>, u16, u64) -> ptr<u16>>(%[[VALUE___builtin_wmemchr]], read<ptr<const u16>>(%[[VALUE_s]]), read<u16>(%[[VALUE_c]]), read<u64>(%[[VALUE_n]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

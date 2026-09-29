@@ -37,19 +37,19 @@ struct Container {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Width = enum : u32 {
-// DEFAULT-NEXT:         %0 WIDTH = const<i32>(5);
+// DEFAULT-NEXT:     type @type[[TYPE_Width:[0-9]+]] Width = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_WIDTH:[0-9]+]] WIDTH = const<i32>(5);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 BitFields = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_BitFields:[0-9]+]] BitFields = struct {
 // DEFAULT-NEXT:         field0 first: u32 : 3;
 // DEFAULT-NEXT:         field1 second: u32 : 5;
 // DEFAULT-NEXT:         field2 <anonymous>: u32 : 0;
 // DEFAULT-NEXT:         field3 final: u32 : 8;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 0, 4, 4], bit_offsets=[Some(0), Some(3), Some(32), Some(32)], bit_units=[(0, 1), (4, 1)], field_units=[Some(0), Some(0), None, Some(1)]];
-// DEFAULT-NEXT:     type @type2 Container = struct {
-// DEFAULT-NEXT:         field0 bits: @type3;
+// DEFAULT-NEXT:     type @type[[TYPE_Container:[0-9]+]] Container = struct {
+// DEFAULT-NEXT:         field0 bits: @type[[TYPE0:[0-9]+]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0]] = struct {
 // DEFAULT-NEXT:         field0 nested: u32 : 7;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
 // DEFAULT-NEXT: }

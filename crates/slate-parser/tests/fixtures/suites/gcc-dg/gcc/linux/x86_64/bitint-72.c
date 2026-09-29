@@ -41,11 +41,11 @@ foo (int n)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @bar(%5 n: i905b, %6 <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo(%3 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%3)));
-// DEFAULT-NEXT:         let %4 buf: vla<i32, %7> [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(i905b, ptr<i32>) -> void>(%1, widen<i905b, reason=arg>(read<i32>(%3)), array_decay<ptr<i32>, length=None>(%4));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_n:[0-9]+]] n: i905b, %[[VALUE0:[0-9]+]] <unnamed>: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_n_2:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
+// DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: vla<i32, %[[VALUE1]]> [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(i905b, ptr<i32>) -> void>(%[[VALUE_bar]], widen<i905b, reason=arg>(read<i32>(%[[VALUE_n_2]])), array_decay<ptr<i32>, length=None>(%[[VALUE_buf]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

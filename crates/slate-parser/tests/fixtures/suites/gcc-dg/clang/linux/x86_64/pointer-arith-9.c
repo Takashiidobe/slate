@@ -32,7 +32,7 @@ void *foo(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return ptr_offset<ptr<void>, subtract=true, element=void, overflow=ub>(null<ptr<void>>, const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

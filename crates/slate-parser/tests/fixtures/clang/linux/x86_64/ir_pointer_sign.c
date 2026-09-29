@@ -33,16 +33,16 @@ void assign(unsigned *value) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %8 .str8: array<u8, 2> [storage=static] = code_units<array<u8, 2>>([97, 0]) [linkage=internal];
-// IR-NEXT:     global %0 utf8: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<u8>, length=Some(2)>(%8)) [linkage=external];
-// IR-NEXT:     global %1 buffer: array<u8, 4> [storage=static] [linkage=external];
-// IR-NEXT:     global %2 bytes: ptr<i8> [storage=static] = pointer_cast<ptr<i8>, reason=assign>(array_decay<ptr<u8>, length=Some(4)>(%1)) [linkage=external];
-// IR-NEXT:     fn %3 @to_unsigned(%4 value: ptr<i32>) -> ptr<u32> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return pointer_cast<ptr<u32>, reason=return>(read<ptr<i32>>(%4));
+// IR-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<u8, 2> [storage=static] = code_units<array<u8, 2>>([97, 0]) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_utf8:[0-9]+]] utf8: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<u8>, length=Some(2)>(%[[VALUE_str]])) [linkage=external];
+// IR-NEXT:     global %[[VALUE_buffer:[0-9]+]] buffer: array<u8, 4> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_bytes:[0-9]+]] bytes: ptr<i8> [storage=static] = pointer_cast<ptr<i8>, reason=assign>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_buffer]])) [linkage=external];
+// IR-NEXT:     fn %[[VALUE_to_unsigned:[0-9]+]] @to_unsigned(%[[VALUE_value:[0-9]+]] value: ptr<i32>) -> ptr<u32> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return pointer_cast<ptr<u32>, reason=return>(read<ptr<i32>>(%[[VALUE_value]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %5 @assign(%6 value: ptr<u32>) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %7 signed_value: ptr<i32> [storage=automatic];
-// IR-NEXT:         write<ptr<i32>>(%7, pointer_cast<ptr<i32>, reason=assign>(read<ptr<u32>>(%6)));
+// IR-NEXT:     fn %[[VALUE_assign:[0-9]+]] @assign(%[[VALUE_value_2:[0-9]+]] value: ptr<u32>) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_signed_value:[0-9]+]] signed_value: ptr<i32> [storage=automatic];
+// IR-NEXT:         write<ptr<i32>>(%[[VALUE_signed_value]], pointer_cast<ptr<i32>, reason=assign>(read<ptr<u32>>(%[[VALUE_value_2]])));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

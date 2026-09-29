@@ -54,14 +54,14 @@ int main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 x = i32;
-// DEFAULT-NEXT:     type @type1 y = i32;
-// DEFAULT-NEXT:     fn %2 @proc(%7 <unnamed>: ptr<fn(i32) -> i32>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @proc2(%8 x: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @proc3(%9 <unnamed>: ptr<fn(ptr<fn(i32) -> i32>) -> i32>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %6 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<fn(i32) -> i32>) -> i32>(%2, function_decay<ptr<fn(i32) -> i32>>(%4));
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<fn(ptr<fn(i32) -> i32>) -> i32>) -> i32>(%5, function_decay<ptr<fn(ptr<fn(i32) -> i32>) -> i32>>(%2));
+// DEFAULT-NEXT:     type @type[[TYPE_x:[0-9]+]] x = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_y:[0-9]+]] y = i32;
+// DEFAULT-NEXT:     fn %[[VALUE_proc:[0-9]+]] @proc(%[[VALUE0:[0-9]+]] <unnamed>: ptr<fn(i32) -> i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_proc2:[0-9]+]] @proc2(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_proc3:[0-9]+]] @proc3(%[[VALUE1:[0-9]+]] <unnamed>: ptr<fn(ptr<fn(i32) -> i32>) -> i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<fn(i32) -> i32>) -> i32>(%[[VALUE_proc]], function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_proc2]]));
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<fn(ptr<fn(i32) -> i32>) -> i32>) -> i32>(%[[VALUE_proc3]], function_decay<ptr<fn(ptr<fn(i32) -> i32>) -> i32>>(%[[VALUE_proc]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

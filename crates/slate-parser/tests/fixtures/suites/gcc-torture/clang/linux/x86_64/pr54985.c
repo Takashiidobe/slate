@@ -57,41 +57,41 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 st = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_st:[0-9]+]] st = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 ST = @type0;
-// DEFAULT-NEXT:     fn %2 @foo(%3 s: ptr<@type0>, %4 c: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 first: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         let %6 count: i32 [storage=automatic] = read<i32>(%4);
-// DEFAULT-NEXT:         let %7 item: ptr<@type0> [storage=automatic] = read<ptr<@type0>>(%3);
-// DEFAULT-NEXT:         let %8 a: i32 [storage=automatic] = read<i32>(field0(deref(read<ptr<@type0>>(%3))));
-// DEFAULT-NEXT:         let %9 x: i32 [storage=automatic];
-// DEFAULT-NEXT:         while %13 {
-// DEFAULT-NEXT:             let %14: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:             let %15: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%6, read<i32>(%15));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%14), const<i32>(0));
+// DEFAULT-NEXT:     type @type[[TYPE_ST:[0-9]+]] ST = @type[[TYPE_st]];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_st]]>, %[[VALUE_c:[0-9]+]] c: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_first:[0-9]+]] first: i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         let %[[VALUE_count:[0-9]+]] count: i32 [storage=automatic] = read<i32>(%[[VALUE_c]]);
+// DEFAULT-NEXT:         let %[[VALUE_item:[0-9]+]] item: ptr<@type[[TYPE_st]]> [storage=automatic] = read<ptr<@type[[TYPE_st]]>>(%[[VALUE_s]]);
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = read<i32>(field0(deref(read<ptr<@type[[TYPE_st]]>>(%[[VALUE_s]]))));
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_count]]);
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_count]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE1]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%9, read<i32>(field0(deref(read<ptr<@type0>>(%7)))));
-// DEFAULT-NEXT:                 if ne<i32>(read<i32>(%5), const<i32>(0))
-// DEFAULT-NEXT:                     write<i32>(%5, const<i32>(0));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_x]], read<i32>(field0(deref(read<ptr<@type[[TYPE_st]]>>(%[[VALUE_item]])))));
+// DEFAULT-NEXT:                 if ne<i32>(read<i32>(%[[VALUE_first]]), const<i32>(0))
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_first]], const<i32>(0));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     if ge<i32>(read<i32>(%9), read<i32>(%8))
+// DEFAULT-NEXT:                     if ge<i32>(read<i32>(%[[VALUE_x]]), read<i32>(%[[VALUE_a]]))
 // DEFAULT-NEXT:                         return const<i32>(1);
-// DEFAULT-NEXT:                 write<i32>(%8, read<i32>(%9));
-// DEFAULT-NEXT:                 let %16: ptr<@type0> [synthetic] = read<ptr<@type0>>(%7);
-// DEFAULT-NEXT:                 let %17: ptr<@type0> [synthetic] = ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(read<ptr<@type0>>(%16), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<@type0>>(%7, read<ptr<@type0>>(%17));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE_x]]));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: ptr<@type[[TYPE_st]]> [synthetic] = read<ptr<@type[[TYPE_st]]>>(%[[VALUE_item]]);
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<@type[[TYPE_st]]> [synthetic] = ptr_offset<ptr<@type[[TYPE_st]]>, subtract=false, element=@type[[TYPE_st]], overflow=ub>(read<ptr<@type[[TYPE_st]]>>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_st]]>>(%[[VALUE_item]], read<ptr<@type[[TYPE_st]]>>(%[[VALUE4]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 _1: array<@type0, 2> [storage=automatic] = aggregate<array<@type0, 2>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(2)), index1 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type0>, i32) -> i32>(%2, array_decay<ptr<@type0>, length=Some(2)>(%12), const<i32>(2)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE__1:[0-9]+]] _1: array<@type[[TYPE_st]], 2> [storage=automatic] = aggregate<array<@type[[TYPE_st]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE_st]], zero_fill=false>(field0 = const<i32>(2)), index1 = aggregate<@type[[TYPE_st]], zero_fill=false>(field0 = const<i32>(1)));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE_st]]>, i32) -> i32>(%[[VALUE_foo]], array_decay<ptr<@type[[TYPE_st]]>, length=Some(2)>(%[[VALUE__1]]), const<i32>(2)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

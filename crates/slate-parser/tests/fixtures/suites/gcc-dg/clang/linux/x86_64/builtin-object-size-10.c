@@ -51,25 +51,25 @@ foo(char *x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 sentinel: array<i8, 4>;
 // DEFAULT-NEXT:         field1 data: array<i8, 0>;
 // DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 drone_packet = @type0;
-// DEFAULT-NEXT:     type @type2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_drone_packet:[0-9]+]] drone_packet = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 type_str: array<i8, 16>;
 // DEFAULT-NEXT:         field1 channel_hop: i8;
 // DEFAULT-NEXT:     } [size=17, align=1, offsets=[0, 16]];
-// DEFAULT-NEXT:     type @type3 drone_source_packet = @type2;
-// DEFAULT-NEXT:     global %19 .str19: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %9 @__builtin_malloc(%8 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %15 @__builtin___snprintf_chk(%10 <unnamed>: ptr<i8>, %11 <unnamed>: u64, %12 <unnamed>: i32, %13 <unnamed>: u64, %14 <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %18 @__builtin_object_size(%16 <unnamed>: ptr<const void>, %17 <unnamed>: i32) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @foo(%5 x: ptr<i8>) -> ptr<@type0> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 dpkt: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%9, add<u64, overflow=wrap>(const<u64>(4), const<u64>(17))));
-// DEFAULT-NEXT:         let %7 spkt: ptr<@type2> [storage=automatic] = pointer_cast<ptr<@type2>, reason=explicit>(array_decay<ptr<i8>, length=Some(0)>(field1(deref(read<ptr<@type0>>(%6)))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, u64, i32, u64, ptr<const i8>, ...) -> i32>(%15, array_decay<ptr<i8>, length=Some(16)>(field0(deref(read<ptr<@type2>>(%7)))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16))), const<i32>(1), call<u64, signature=fn(ptr<const void>, i32) -> u64>(%18, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(field0(deref(read<ptr<@type2>>(%7))))), const<i32>(1)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%19)), read<ptr<i8>>(%5));
-// DEFAULT-NEXT:         return read<ptr<@type0>>(%6);
+// DEFAULT-NEXT:     type @type[[TYPE_drone_source_packet:[0-9]+]] drone_source_packet = @type[[TYPE1]];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin___snprintf_chk:[0-9]+]] @__builtin___snprintf_chk(%[[VALUE1:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE2:[0-9]+]] <unnamed>: u64, %[[VALUE3:[0-9]+]] <unnamed>: i32, %[[VALUE4:[0-9]+]] <unnamed>: u64, %[[VALUE5:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_object_size:[0-9]+]] @__builtin_object_size(%[[VALUE6:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE7:[0-9]+]] <unnamed>: i32) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<i8>) -> ptr<@type[[TYPE0]]> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_dpkt:[0-9]+]] dpkt: ptr<@type[[TYPE0]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE0]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], add<u64, overflow=wrap>(const<u64>(4), const<u64>(17))));
+// DEFAULT-NEXT:         let %[[VALUE_spkt:[0-9]+]] spkt: ptr<@type[[TYPE1]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE1]]>, reason=explicit>(array_decay<ptr<i8>, length=Some(0)>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_dpkt]])))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, u64, i32, u64, ptr<const i8>, ...) -> i32>(%[[VALUE___builtin___snprintf_chk]], array_decay<ptr<i8>, length=Some(16)>(field0(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_spkt]])))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16))), const<i32>(1), call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(field0(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_spkt]]))))), const<i32>(1)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])), read<ptr<i8>>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         return read<ptr<@type[[TYPE0]]>>(%[[VALUE_dpkt]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

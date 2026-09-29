@@ -27,8 +27,8 @@ void locals(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @locals() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 unknown_register: i32 [storage=automatic] [register="not_a_register"];
+// DEFAULT-NEXT:     fn %[[VALUE_locals:[0-9]+]] @locals() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_unknown_register:[0-9]+]] unknown_register: i32 [storage=automatic] [register="not_a_register"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

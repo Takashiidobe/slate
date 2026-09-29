@@ -40,13 +40,13 @@ foo (const char *p, size_t s, size_t t)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     fn %11 @__builtin___stpncpy_chk(%7 <unnamed>: ptr<i8>, %8 <unnamed>: ptr<const i8>, %9 <unnamed>: u64, %10 <unnamed>: u64) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %14 @__builtin_object_size(%12 <unnamed>: ptr<const void>, %13 <unnamed>: i32) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%2 p: ptr<const i8>, %3 s: u64, %4 t: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 buf: array<i8, 64> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %6 q: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64, u64) -> ptr<i8>>(%11, array_decay<ptr<i8>, length=Some(64)>(%5), read<ptr<const i8>>(%2), read<u64>(%3), read<u64>(%4));
-// DEFAULT-NEXT:         return call<u64, signature=fn(ptr<const void>, i32) -> u64>(%14, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%6)), const<i32>(2));
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     fn %[[VALUE___builtin___stpncpy_chk:[0-9]+]] @__builtin___stpncpy_chk(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE2:[0-9]+]] <unnamed>: u64, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_object_size:[0-9]+]] @__builtin_object_size(%[[VALUE4:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE5:[0-9]+]] <unnamed>: i32) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<const i8>, %[[VALUE_s:[0-9]+]] s: u64, %[[VALUE_t:[0-9]+]] t: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: array<i8, 64> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64, u64) -> ptr<i8>>(%[[VALUE___builtin___stpncpy_chk]], array_decay<ptr<i8>, length=Some(64)>(%[[VALUE_buf]]), read<ptr<const i8>>(%[[VALUE_p]]), read<u64>(%[[VALUE_s]]), read<u64>(%[[VALUE_t]]));
+// DEFAULT-NEXT:         return call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%[[VALUE_q]])), const<i32>(2));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

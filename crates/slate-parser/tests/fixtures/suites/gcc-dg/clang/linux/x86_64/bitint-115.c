@@ -34,8 +34,8 @@ foo (_BitInt(128) *b)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 b: ptr<i128b>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2: i128b [synthetic] = update<i128b, result=old, atomic=seq_cst>(deref(read<ptr<i128b>>(%1)), add<i128b, overflow=wrap>(old<i128b>, widen<i128b, reason=arg>(const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_b:[0-9]+]] b: ptr<i128b>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i128b [synthetic] = update<i128b, result=old, atomic=seq_cst>(deref(read<ptr<i128b>>(%[[VALUE_b]])), add<i128b, overflow=wrap>(old<i128b>, widen<i128b, reason=arg>(const<i32>(1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

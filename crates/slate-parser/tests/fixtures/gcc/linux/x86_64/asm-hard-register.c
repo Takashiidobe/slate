@@ -27,10 +27,10 @@ void f(int x, int y) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(%1 x: i32, %2 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] [alternative=0] {
-// DEFAULT-NEXT:             lateout 0 "{ax},r" [{ax}, reg] width 32 place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "{rdi},r" [{di}, reg] width 32 read<i32>(%2);
+// DEFAULT-NEXT:             lateout 0 "{ax},r" [{ax}, reg] width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "{rdi},r" [{di}, reg] width 32 read<i32>(%[[VALUE_y]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

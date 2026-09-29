@@ -39,11 +39,11 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 V2SI = vector<i32, 2>;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(truncate<i32, reason=explicit, fits=unknown>(vector_bit_cast<i64, reason=explicit>(read<vector<i32, 2>>(compound_literal %3 [storage=automatic] = aggregate<vector<i32, 2>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(2))))), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     type @type[[TYPE_V2SI:[0-9]+]] V2SI = vector<i32, 2>;
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(truncate<i32, reason=explicit, fits=unknown>(vector_bit_cast<i64, reason=explicit>(read<vector<i32, 2>>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<vector<i32, 2>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(2))))), const<i32>(2))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -36,52 +36,52 @@ void classes(int x, char c, v4f v, long l, long double f, long double g) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 v4f = vector<f32, 4>;
-// IR-NEXT:     fn %1 @classes(%2 x: i32, %3 c: i8, %4 v: vector<f32, 4>, %5 l: i64, %6 f: f80, %7 g: f80) -> void [linkage=external] [abi=sysv64(scalar, scalar, direct, scalar, scalar, scalar) -> void] [fallthrough=ret_void] {
+// IR-NEXT:     type @type[[TYPE_v4f:[0-9]+]] v4f = vector<f32, 4>;
+// IR-NEXT:     fn %[[VALUE_classes:[0-9]+]] @classes(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_c:[0-9]+]] c: i8, %[[VALUE_v:[0-9]+]] v: vector<f32, 4>, %[[VALUE_l:[0-9]+]] l: i64, %[[VALUE_f:[0-9]+]] f: f80, %[[VALUE_g:[0-9]+]] g: f80) -> void [linkage=external] [abi=sysv64(scalar, scalar, direct, scalar, scalar, scalar) -> void] [fallthrough=ret_void] {
 // IR-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] [options=pure,nomem,nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
-// IR-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%2);
-// IR-NEXT:             lateout 1 "q" [reg] width 8 place<i8>(%3);
-// IR-NEXT:             lateout 2 "x" [xmm_reg] width 128 place<vector<f32, 4>>(%4);
-// IR-NEXT:             lateout 3 "a" [{ax}] width 64 place<i64>(%5);
+// IR-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_x]]);
+// IR-NEXT:             lateout 1 "q" [reg] width 8 place<i8>(%[[VALUE_c]]);
+// IR-NEXT:             lateout 2 "x" [xmm_reg] width 128 place<vector<f32, 4>>(%[[VALUE_v]]);
+// IR-NEXT:             lateout 3 "a" [{ax}] width 64 place<i64>(%[[VALUE_l]]);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0 " " %1;
 // IR-NEXT:             in 0 "i" [imm | sym] -> imm width 32 const<i32>(42);
-// IR-NEXT:             in 1 "m" [mem] width 32 place<i32>(%2);
+// IR-NEXT:             in 1 "m" [mem] width 32 place<i32>(%[[VALUE_x]]);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] [options=pure,nomem,nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
-// IR-NEXT:             lateout 0 "Q" [reg_abcd] width 8 place<i8>(%3);
-// IR-NEXT:             lateout 1 "R" [reg_legacy] width 32 place<i32>(%2);
-// IR-NEXT:             in 2 "g" [reg | mem | imm | sym] -> reg width 32 read<i32>(%2);
-// IR-NEXT:             in 3 "Yz" [{xmm0}] width 128 read<vector<f32, 4>>(%4);
+// IR-NEXT:             lateout 0 "Q" [reg_abcd] width 8 place<i8>(%[[VALUE_c]]);
+// IR-NEXT:             lateout 1 "R" [reg_legacy] width 32 place<i32>(%[[VALUE_x]]);
+// IR-NEXT:             in 2 "g" [reg | mem | imm | sym] -> reg width 32 read<i32>(%[[VALUE_x]]);
+// IR-NEXT:             in 3 "Yz" [{xmm0}] width 128 read<vector<f32, 4>>(%[[VALUE_v]]);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1 %2 %3 %4" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3 " " %4;
-// IR-NEXT:             in 0 "b" [{bx}] width 32 read<i32>(%2);
-// IR-NEXT:             in 1 "c" [{cx}] width 32 read<i32>(%2);
-// IR-NEXT:             in 2 "d" [{dx}] width 32 read<i32>(%2);
-// IR-NEXT:             in 3 "S" [{si}] width 64 read<i64>(%5);
-// IR-NEXT:             in 4 "D" [{di}] width 64 read<i64>(%5);
+// IR-NEXT:             in 0 "b" [{bx}] width 32 read<i32>(%[[VALUE_x]]);
+// IR-NEXT:             in 1 "c" [{cx}] width 32 read<i32>(%[[VALUE_x]]);
+// IR-NEXT:             in 2 "d" [{dx}] width 32 read<i32>(%[[VALUE_x]]);
+// IR-NEXT:             in 3 "S" [{si}] width 64 read<i64>(%[[VALUE_l]]);
+// IR-NEXT:             in 4 "D" [{di}] width 64 read<i64>(%[[VALUE_l]]);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1 %2 %3" [dialect=att] [options=nostack] [alternative=none] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2 " " %3;
-// IR-NEXT:             in 0 "t" [{st}] width 128 read<f80>(%6);
-// IR-NEXT:             in 1 "u" [{st(1)}] width 128 read<f80>(%7);
-// IR-NEXT:             in 2 "v" [zmm_reg] width 128 read<vector<f32, 4>>(%4);
-// IR-NEXT:             in 3 "X" [unresolved("X")] width 32 read<i32>(%2);
+// IR-NEXT:             in 0 "t" [{st}] width 128 read<f80>(%[[VALUE_f]]);
+// IR-NEXT:             in 1 "u" [{st(1)}] width 128 read<f80>(%[[VALUE_g]]);
+// IR-NEXT:             in 2 "v" [zmm_reg] width 128 read<vector<f32, 4>>(%[[VALUE_v]]);
+// IR-NEXT:             in 3 "X" [unresolved("X")] width 32 read<i32>(%[[VALUE_x]]);
 // IR-NEXT:             rejected: 0 (operand 0: clobber-only);
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0 %1" [dialect=att] [options=nostack] [alternative=1] {
 // IR-NEXT:             template: "# " %0 " " %1;
-// IR-NEXT:             lateout 0 "r,m" [reg, mem] width 32 place<i32>(%2);
-// IR-NEXT:             in 1 "l,?rn" [unresolved("l"), reg | imm] -> reg width 64 read<i64>(%5);
+// IR-NEXT:             lateout 0 "r,m" [reg, mem] width 32 place<i32>(%[[VALUE_x]]);
+// IR-NEXT:             in 1 "l,?rn" [unresolved("l"), reg | imm] -> reg width 64 read<i64>(%[[VALUE_l]]);
 // IR-NEXT:             rejected: 0 (operand 1: unresolved("l"));
 // IR-NEXT:         }
 // IR-NEXT:         asm "# %0" [dialect=att] [options=nostack] {
 // IR-NEXT:             template: "# " %0;
-// IR-NEXT:             in 0 "r#m" [reg] width 32 read<i32>(%2);
+// IR-NEXT:             in 0 "r#m" [reg] width 32 read<i32>(%[[VALUE_x]]);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

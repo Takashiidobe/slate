@@ -27,10 +27,10 @@ void load(int *p) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @load(%1 p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_load:[0-9]+]] @load(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm volatile "ld1 {v0.16b}, [%0] {a|b}" [options=nostack,preserves_flags] {
 // IR-NEXT:             template: "ld1 {v0.16b}, [" %0 "] {a|b}";
-// IR-NEXT:             in 0 "r" [reg] width 64 read<ptr<i32>>(%1);
+// IR-NEXT:             in 0 "r" [reg] width 64 read<ptr<i32>>(%[[VALUE_p]]);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

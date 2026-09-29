@@ -100,22 +100,22 @@ int use(void) { return imported + exported + bogus + scoped_bogus; }
 // IR-WARN-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     global %0 imported: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %1 exported: i32 [storage=static] = const<i32>(1) [linkage=external];
-// IR-WARN-NEXT:     global %5 bogus: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %6 scoped_bogus: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %9 unterminated: array<i8, 4> [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %10 has_naked: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %11 has_nonstring: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %12 has_const: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     fn %2 @opaque() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-WARN-NEXT:     global %[[VALUE_imported:[0-9]+]] imported: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_exported:[0-9]+]] exported: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_bogus:[0-9]+]] bogus: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_scoped_bogus:[0-9]+]] scoped_bogus: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_unterminated:[0-9]+]] unterminated: array<i8, 4> [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_has_naked:[0-9]+]] has_naked: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_has_nonstring:[0-9]+]] has_nonstring: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_has_const:[0-9]+]] has_const: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     fn %[[VALUE_opaque:[0-9]+]] @opaque() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %3 @overloaded(%14 <unnamed>: i32) -> void [linkage=external];
-// IR-WARN-NEXT:     fn %4 @bare() -> void [linkage=external] [naked];
-// IR-WARN-NEXT:     fn %7 @clang_scoped(%15 <unnamed>: i32) -> void [linkage=external];
-// IR-WARN-NEXT:     fn %8 @msvc_scoped() -> void [linkage=external] [inline=never];
-// IR-WARN-NEXT:     fn %13 @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-WARN-NEXT:         return add<i32>(add<i32>(add<i32>(read<i32>(%0), read<i32>(%1)), read<i32>(%5)), read<i32>(%6));
+// IR-WARN-NEXT:     fn %[[VALUE_overloaded:[0-9]+]] @overloaded(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// IR-WARN-NEXT:     fn %[[VALUE_bare:[0-9]+]] @bare() -> void [linkage=external] [naked];
+// IR-WARN-NEXT:     fn %[[VALUE_clang_scoped:[0-9]+]] @clang_scoped(%[[VALUE1:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// IR-WARN-NEXT:     fn %[[VALUE_msvc_scoped:[0-9]+]] @msvc_scoped() -> void [linkage=external] [inline=never];
+// IR-WARN-NEXT:     fn %[[VALUE_use:[0-9]+]] @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-WARN-NEXT:         return add<i32>(add<i32>(add<i32>(read<i32>(%[[VALUE_imported]]), read<i32>(%[[VALUE_exported]])), read<i32>(%[[VALUE_bogus]])), read<i32>(%[[VALUE_scoped_bogus]]));
 // IR-WARN-NEXT:     }
 // IR-WARN-NEXT: }
 // SLATE-FILECHECK-END IR-WARN

@@ -148,78 +148,78 @@ int sprintf_nonstring_2 (char *d, NONSTRING const char *s)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     type @type1 va_list = va_list;
-// DEFAULT-NEXT:     extern %24 ns5: array<i8, 5> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @printf(%66 <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @puts(%67 <unnamed>: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @puts_unlocked(%68 <unnamed>: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @sprintf(%69 <unnamed>: ptr<i8>, %70 <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %6 @snprintf(%71 <unnamed>: ptr<i8>, %72 <unnamed>: u64, %73 <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @vsprintf(%74 <unnamed>: ptr<i8>, %75 <unnamed>: ptr<const i8>, %76 <unnamed>: va_list) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %8 @vsnprintf(%77 <unnamed>: ptr<i8>, %78 <unnamed>: u64, %79 <unnamed>: ptr<const i8>, %80 <unnamed>: va_list) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @strcmp(%81 <unnamed>: ptr<const i8>, %82 <unnamed>: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %10 @strncmp(%83 <unnamed>: ptr<const i8>, %84 <unnamed>: ptr<const i8>, %85 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %11 @stpcpy(%86 <unnamed>: ptr<i8>, %87 <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %12 @stpncpy(%88 <unnamed>: ptr<i8>, %89 <unnamed>: ptr<const i8>, %90 <unnamed>: u64) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %13 @strcat(%91 <unnamed>: ptr<i8>, %92 <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %14 @strncat(%93 <unnamed>: ptr<i8>, %94 <unnamed>: ptr<const i8>, %95 <unnamed>: u64) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %15 @strcpy(%96 <unnamed>: ptr<i8>, %97 <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %16 @strncpy(%98 <unnamed>: ptr<i8>, %99 <unnamed>: ptr<const i8>, %100 <unnamed>: u64) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %17 @strchr(%101 <unnamed>: ptr<const i8>, %102 <unnamed>: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %18 @strrchr(%103 <unnamed>: ptr<const i8>, %104 <unnamed>: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %19 @strstr(%105 <unnamed>: ptr<const i8>, %106 <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %20 @strdup(%107 <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %21 @strlen(%108 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %22 @strnlen(%109 <unnamed>: ptr<const i8>, %110 <unnamed>: u64) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %23 @strndup(%111 <unnamed>: ptr<const i8>, %112 <unnamed>: u64) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %25 @strcmp_nonstring_1(%26 a: ptr<const i8>, %27 b: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%9, read<ptr<const i8>>(%26), read<ptr<const i8>>(%27));
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     extern %[[VALUE_ns5:[0-9]+]] ns5: array<i8, 5> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_puts:[0-9]+]] @puts(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_puts_unlocked:[0-9]+]] @puts_unlocked(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_sprintf:[0-9]+]] @sprintf(%[[VALUE3:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE4:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_snprintf:[0-9]+]] @snprintf(%[[VALUE5:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE6:[0-9]+]] <unnamed>: u64, %[[VALUE7:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_vsprintf:[0-9]+]] @vsprintf(%[[VALUE8:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE9:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE10:[0-9]+]] <unnamed>: va_list) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_vsnprintf:[0-9]+]] @vsnprintf(%[[VALUE11:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE12:[0-9]+]] <unnamed>: u64, %[[VALUE13:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE14:[0-9]+]] <unnamed>: va_list) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strcmp:[0-9]+]] @strcmp(%[[VALUE15:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE16:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strncmp:[0-9]+]] @strncmp(%[[VALUE17:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE18:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE19:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_stpcpy:[0-9]+]] @stpcpy(%[[VALUE20:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE21:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_stpncpy:[0-9]+]] @stpncpy(%[[VALUE22:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE23:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE24:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strcat:[0-9]+]] @strcat(%[[VALUE25:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE26:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strncat:[0-9]+]] @strncat(%[[VALUE27:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE28:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE29:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strcpy:[0-9]+]] @strcpy(%[[VALUE30:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE31:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strncpy:[0-9]+]] @strncpy(%[[VALUE32:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE33:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE34:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strchr:[0-9]+]] @strchr(%[[VALUE35:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE36:[0-9]+]] <unnamed>: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strrchr:[0-9]+]] @strrchr(%[[VALUE37:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE38:[0-9]+]] <unnamed>: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strstr:[0-9]+]] @strstr(%[[VALUE39:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE40:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strdup:[0-9]+]] @strdup(%[[VALUE41:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE42:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strnlen:[0-9]+]] @strnlen(%[[VALUE43:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE44:[0-9]+]] <unnamed>: u64) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strndup:[0-9]+]] @strndup(%[[VALUE45:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE46:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strcmp_nonstring_1:[0-9]+]] @strcmp_nonstring_1(%[[VALUE_a:[0-9]+]] a: ptr<const i8>, %[[VALUE_b:[0-9]+]] b: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE_strcmp]], read<ptr<const i8>>(%[[VALUE_a]]), read<ptr<const i8>>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %28 @strcmp_nonstring_2(%29 a: ptr<const i8>, %30 b: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%9, read<ptr<const i8>>(%29), read<ptr<const i8>>(%30));
+// DEFAULT-NEXT:     fn %[[VALUE_strcmp_nonstring_2:[0-9]+]] @strcmp_nonstring_2(%[[VALUE_a_2:[0-9]+]] a: ptr<const i8>, %[[VALUE_b_2:[0-9]+]] b: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE_strcmp]], read<ptr<const i8>>(%[[VALUE_a_2]]), read<ptr<const i8>>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @strncmp_nonstring_1(%32 s: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%10, read<ptr<const i8>>(%32), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%24)), add<u64, overflow=wrap>(const<u64>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_strncmp_nonstring_1:[0-9]+]] @strncmp_nonstring_1(%[[VALUE_s:[0-9]+]] s: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%[[VALUE_strncmp]], read<ptr<const i8>>(%[[VALUE_s]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_ns5]])), add<u64, overflow=wrap>(const<u64>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %33 @strncmp_nonstring_2(%34 s: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%10, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%24)), read<ptr<const i8>>(%34), add<u64, overflow=wrap>(const<u64>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_strncmp_nonstring_2:[0-9]+]] @strncmp_nonstring_2(%[[VALUE_s_2:[0-9]+]] s: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ptr<const i8>, u64) -> i32>(%[[VALUE_strncmp]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_ns5]])), read<ptr<const i8>>(%[[VALUE_s_2]]), add<u64, overflow=wrap>(const<u64>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %35 @stpcpy_nonstring(%36 d: ptr<i8>, %37 s: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%11, read<ptr<i8>>(%36), read<ptr<const i8>>(%37));
+// DEFAULT-NEXT:     fn %[[VALUE_stpcpy_nonstring:[0-9]+]] @stpcpy_nonstring(%[[VALUE_d:[0-9]+]] d: ptr<i8>, %[[VALUE_s_3:[0-9]+]] s: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%[[VALUE_stpcpy]], read<ptr<i8>>(%[[VALUE_d]]), read<ptr<const i8>>(%[[VALUE_s_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %38 @stpncpy_nonstring(%39 d: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%12, read<ptr<i8>>(%39), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%24)), add<u64, overflow=wrap>(const<u64>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_stpncpy_nonstring:[0-9]+]] @stpncpy_nonstring(%[[VALUE_d_2:[0-9]+]] d: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE_stpncpy]], read<ptr<i8>>(%[[VALUE_d_2]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_ns5]])), add<u64, overflow=wrap>(const<u64>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %40 @strchr_nonstring(%41 s: ptr<const i8>, %42 c: i32) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%17, read<ptr<const i8>>(%41), read<i32>(%42));
+// DEFAULT-NEXT:     fn %[[VALUE_strchr_nonstring:[0-9]+]] @strchr_nonstring(%[[VALUE_s_4:[0-9]+]] s: ptr<const i8>, %[[VALUE_c:[0-9]+]] c: i32) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%[[VALUE_strchr]], read<ptr<const i8>>(%[[VALUE_s_4]]), read<i32>(%[[VALUE_c]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %43 @strrchr_nonstring(%44 s: ptr<const i8>, %45 c: i32) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%18, read<ptr<const i8>>(%44), read<i32>(%45));
+// DEFAULT-NEXT:     fn %[[VALUE_strrchr_nonstring:[0-9]+]] @strrchr_nonstring(%[[VALUE_s_5:[0-9]+]] s: ptr<const i8>, %[[VALUE_c_2:[0-9]+]] c: i32) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%[[VALUE_strrchr]], read<ptr<const i8>>(%[[VALUE_s_5]]), read<i32>(%[[VALUE_c_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %46 @strcpy_nonstring(%47 d: ptr<i8>, %48 s: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%15, read<ptr<i8>>(%47), read<ptr<const i8>>(%48));
+// DEFAULT-NEXT:     fn %[[VALUE_strcpy_nonstring:[0-9]+]] @strcpy_nonstring(%[[VALUE_d_3:[0-9]+]] d: ptr<i8>, %[[VALUE_s_6:[0-9]+]] s: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%[[VALUE_strcpy]], read<ptr<i8>>(%[[VALUE_d_3]]), read<ptr<const i8>>(%[[VALUE_s_6]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %49 @strncpy_nonstring(%50 d: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%16, read<ptr<i8>>(%50), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%24)), add<u64, overflow=wrap>(const<u64>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_strncpy_nonstring:[0-9]+]] @strncpy_nonstring(%[[VALUE_d_4:[0-9]+]] d: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE_strncpy]], read<ptr<i8>>(%[[VALUE_d_4]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_ns5]])), add<u64, overflow=wrap>(const<u64>(5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %51 @strstr_nonstring_1(%52 a: ptr<const i8>, %53 b: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%19, read<ptr<const i8>>(%52), read<ptr<const i8>>(%53));
+// DEFAULT-NEXT:     fn %[[VALUE_strstr_nonstring_1:[0-9]+]] @strstr_nonstring_1(%[[VALUE_a_3:[0-9]+]] a: ptr<const i8>, %[[VALUE_b_3:[0-9]+]] b: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%[[VALUE_strstr]], read<ptr<const i8>>(%[[VALUE_a_3]]), read<ptr<const i8>>(%[[VALUE_b_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %54 @strstr_nonstring_2(%55 a: ptr<const i8>, %56 b: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%19, read<ptr<const i8>>(%55), read<ptr<const i8>>(%56));
+// DEFAULT-NEXT:     fn %[[VALUE_strstr_nonstring_2:[0-9]+]] @strstr_nonstring_2(%[[VALUE_a_4:[0-9]+]] a: ptr<const i8>, %[[VALUE_b_4:[0-9]+]] b: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<i8>>(%[[VALUE_strstr]], read<ptr<const i8>>(%[[VALUE_a_4]]), read<ptr<const i8>>(%[[VALUE_b_4]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %57 @stdup_nonstring(%58 s: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%20, read<ptr<const i8>>(%58));
+// DEFAULT-NEXT:     fn %[[VALUE_stdup_nonstring:[0-9]+]] @stdup_nonstring(%[[VALUE_s_7:[0-9]+]] s: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_strdup]], read<ptr<const i8>>(%[[VALUE_s_7]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %59 @strlen_nonstring(%60 s: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(%21, read<ptr<const i8>>(%60));
+// DEFAULT-NEXT:     fn %[[VALUE_strlen_nonstring:[0-9]+]] @strlen_nonstring(%[[VALUE_s_8:[0-9]+]] s: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlen]], read<ptr<const i8>>(%[[VALUE_s_8]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %61 @printf_nonstring(%62 s: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, read<ptr<const i8>>(%62));
+// DEFAULT-NEXT:     fn %[[VALUE_printf_nonstring:[0-9]+]] @printf_nonstring(%[[VALUE_s_9:[0-9]+]] s: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], read<ptr<const i8>>(%[[VALUE_s_9]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %63 @sprintf_nonstring_2(%64 d: ptr<i8>, %65 s: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%5, read<ptr<i8>>(%64), read<ptr<const i8>>(%65));
+// DEFAULT-NEXT:     fn %[[VALUE_sprintf_nonstring_2:[0-9]+]] @sprintf_nonstring_2(%[[VALUE_d_5:[0-9]+]] d: ptr<i8>, %[[VALUE_s_10:[0-9]+]] s: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%[[VALUE_sprintf]], read<ptr<i8>>(%[[VALUE_d_5]]), read<ptr<const i8>>(%[[VALUE_s_10]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

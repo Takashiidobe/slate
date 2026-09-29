@@ -80,101 +80,101 @@ df(f_le, t_le) df(f_be, t_be)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 st = u64;
-// DEFAULT-NEXT:     type @type1 dt = u64;
-// DEFAULT-NEXT:     type @type2 = union {
+// DEFAULT-NEXT:     type @type[[TYPE_st:[0-9]+]] st = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_dt:[0-9]+]] dt = u64;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 d: u64;
-// DEFAULT-NEXT:         field1 s: @type3;
+// DEFAULT-NEXT:         field1 s: @type[[TYPE1:[0-9]+]];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type3 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE1]] = struct {
 // DEFAULT-NEXT:         field0 h: u64;
 // DEFAULT-NEXT:         field1 l: u64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type4 t_be = @type2;
-// DEFAULT-NEXT:     type @type5 = union {
+// DEFAULT-NEXT:     type @type[[TYPE_t_be:[0-9]+]] t_be = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 d: u64;
-// DEFAULT-NEXT:         field1 s: @type6;
+// DEFAULT-NEXT:         field1 s: @type[[TYPE3:[0-9]+]];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type6 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE3]] = struct {
 // DEFAULT-NEXT:         field0 l: u64;
 // DEFAULT-NEXT:         field1 h: u64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type7 t_le = @type5;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%34 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %10 @f_le(%11 afh: @type5, %12 bfh: @type5) -> i32 [linkage=external] [abi=sysv64(native_c, native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %13 hh: @type5 [storage=automatic];
-// DEFAULT-NEXT:         let %14 hp: @type5 [storage=automatic];
-// DEFAULT-NEXT:         let %15 lp: @type5 [storage=automatic];
-// DEFAULT-NEXT:         let %16 dp: @type5 [storage=automatic];
-// DEFAULT-NEXT:         let %17 m: @type5 [storage=automatic];
-// DEFAULT-NEXT:         let %18 ad: u64 [storage=automatic];
-// DEFAULT-NEXT:         let %19 bd: u64 [storage=automatic];
-// DEFAULT-NEXT:         let %20 s: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%20, const<i32>(0));
-// DEFAULT-NEXT:         write<u64>(%18, sub<u64, overflow=wrap>(read<u64>(field1(field1(%11))), read<u64>(field0(field1(%11)))));
-// DEFAULT-NEXT:         write<u64>(%19, sub<u64, overflow=wrap>(read<u64>(field0(field1(%12))), read<u64>(field1(field1(%12)))));
-// DEFAULT-NEXT:         if gt<u64>(read<u64>(%19), read<u64>(field0(field1(%12))))
+// DEFAULT-NEXT:     type @type[[TYPE_t_le:[0-9]+]] t_le = @type[[TYPE2]];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_f_le:[0-9]+]] @f_le(%[[VALUE_afh:[0-9]+]] afh: @type[[TYPE2]], %[[VALUE_bfh:[0-9]+]] bfh: @type[[TYPE2]]) -> i32 [linkage=external] [abi=sysv64(native_c, native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_hh:[0-9]+]] hh: @type[[TYPE2]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_hp:[0-9]+]] hp: @type[[TYPE2]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_lp:[0-9]+]] lp: @type[[TYPE2]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_dp:[0-9]+]] dp: @type[[TYPE2]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_m:[0-9]+]] m: @type[[TYPE2]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ad:[0-9]+]] ad: u64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_bd:[0-9]+]] bd: u64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_s]], const<i32>(0));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_ad]], sub<u64, overflow=wrap>(read<u64>(field1(field1(%[[VALUE_afh]]))), read<u64>(field0(field1(%[[VALUE_afh]])))));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_bd]], sub<u64, overflow=wrap>(read<u64>(field0(field1(%[[VALUE_bfh]]))), read<u64>(field1(field1(%[[VALUE_bfh]])))));
+// DEFAULT-NEXT:         if gt<u64>(read<u64>(%[[VALUE_bd]]), read<u64>(field0(field1(%[[VALUE_bfh]]))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<u64>(%19, neg<u64, overflow=wrap>(read<u64>(%19)));
-// DEFAULT-NEXT:                 write<i32>(%20, not<i32>(read<i32>(%20)));
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_bd]], neg<u64, overflow=wrap>(read<u64>(%[[VALUE_bd]])));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_s]], not<i32>(read<i32>(%[[VALUE_s]])));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<u64>(field0(%15), mul<u64, overflow=wrap>(read<u64>(field0(field1(%11))), read<u64>(field0(field1(%12)))));
-// DEFAULT-NEXT:         write<u64>(field0(%14), mul<u64, overflow=wrap>(read<u64>(field1(field1(%11))), read<u64>(field1(field1(%12)))));
-// DEFAULT-NEXT:         write<u64>(field0(%16), mul<u64, overflow=wrap>(read<u64>(%18), read<u64>(%19)));
-// DEFAULT-NEXT:         let %35: u64 [synthetic] = read<u64>(field0(%16));
-// DEFAULT-NEXT:         let %36: u64 [synthetic] = xor<u64>(read<u64>(%35), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%20))));
-// DEFAULT-NEXT:         write<u64>(field0(%16), read<u64>(%36));
-// DEFAULT-NEXT:         write<u64>(field0(%13), add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(read<u64>(field0(%14)), read<u64>(field1(field1(%14)))), read<u64>(field1(field1(%15)))), read<u64>(field1(field1(%16)))));
-// DEFAULT-NEXT:         write<u64>(field0(%17), add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(read<u64>(field1(field1(%15))), read<u64>(field0(field1(%14)))), read<u64>(field0(field1(%15)))), read<u64>(field0(field1(%16)))));
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(read<u64>(field0(field1(%13))), read<u64>(field0(field1(%17))))));
+// DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_lp]]), mul<u64, overflow=wrap>(read<u64>(field0(field1(%[[VALUE_afh]]))), read<u64>(field0(field1(%[[VALUE_bfh]])))));
+// DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_hp]]), mul<u64, overflow=wrap>(read<u64>(field1(field1(%[[VALUE_afh]]))), read<u64>(field1(field1(%[[VALUE_bfh]])))));
+// DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_dp]]), mul<u64, overflow=wrap>(read<u64>(%[[VALUE_ad]]), read<u64>(%[[VALUE_bd]])));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = read<u64>(field0(%[[VALUE_dp]]));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = xor<u64>(read<u64>(%[[VALUE1]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_s]]))));
+// DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_dp]]), read<u64>(%[[VALUE2]]));
+// DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_hh]]), add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(read<u64>(field0(%[[VALUE_hp]])), read<u64>(field1(field1(%[[VALUE_hp]])))), read<u64>(field1(field1(%[[VALUE_lp]])))), read<u64>(field1(field1(%[[VALUE_dp]])))));
+// DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_m]]), add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(read<u64>(field1(field1(%[[VALUE_lp]]))), read<u64>(field0(field1(%[[VALUE_hp]])))), read<u64>(field0(field1(%[[VALUE_lp]])))), read<u64>(field0(field1(%[[VALUE_dp]])))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(read<u64>(field0(field1(%[[VALUE_hh]]))), read<u64>(field0(field1(%[[VALUE_m]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @f_be(%22 afh: @type2, %23 bfh: @type2) -> i32 [linkage=external] [abi=sysv64(native_c, native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %24 hh: @type2 [storage=automatic];
-// DEFAULT-NEXT:         let %25 hp: @type2 [storage=automatic];
-// DEFAULT-NEXT:         let %26 lp: @type2 [storage=automatic];
-// DEFAULT-NEXT:         let %27 dp: @type2 [storage=automatic];
-// DEFAULT-NEXT:         let %28 m: @type2 [storage=automatic];
-// DEFAULT-NEXT:         let %29 ad: u64 [storage=automatic];
-// DEFAULT-NEXT:         let %30 bd: u64 [storage=automatic];
-// DEFAULT-NEXT:         let %31 s: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%31, const<i32>(0));
-// DEFAULT-NEXT:         write<u64>(%29, sub<u64, overflow=wrap>(read<u64>(field0(field1(%22))), read<u64>(field1(field1(%22)))));
-// DEFAULT-NEXT:         write<u64>(%30, sub<u64, overflow=wrap>(read<u64>(field1(field1(%23))), read<u64>(field0(field1(%23)))));
-// DEFAULT-NEXT:         if gt<u64>(read<u64>(%30), read<u64>(field1(field1(%23))))
+// DEFAULT-NEXT:     fn %[[VALUE_f_be:[0-9]+]] @f_be(%[[VALUE_afh_2:[0-9]+]] afh: @type[[TYPE0]], %[[VALUE_bfh_2:[0-9]+]] bfh: @type[[TYPE0]]) -> i32 [linkage=external] [abi=sysv64(native_c, native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_hh_2:[0-9]+]] hh: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_hp_2:[0-9]+]] hp: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_lp_2:[0-9]+]] lp: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_dp_2:[0-9]+]] dp: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_m_2:[0-9]+]] m: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ad_2:[0-9]+]] ad: u64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_bd_2:[0-9]+]] bd: u64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_s_2:[0-9]+]] s: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_s_2]], const<i32>(0));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_ad_2]], sub<u64, overflow=wrap>(read<u64>(field0(field1(%[[VALUE_afh_2]]))), read<u64>(field1(field1(%[[VALUE_afh_2]])))));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_bd_2]], sub<u64, overflow=wrap>(read<u64>(field1(field1(%[[VALUE_bfh_2]]))), read<u64>(field0(field1(%[[VALUE_bfh_2]])))));
+// DEFAULT-NEXT:         if gt<u64>(read<u64>(%[[VALUE_bd_2]]), read<u64>(field1(field1(%[[VALUE_bfh_2]]))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<u64>(%30, neg<u64, overflow=wrap>(read<u64>(%30)));
-// DEFAULT-NEXT:                 write<i32>(%31, not<i32>(read<i32>(%31)));
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_bd_2]], neg<u64, overflow=wrap>(read<u64>(%[[VALUE_bd_2]])));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_s_2]], not<i32>(read<i32>(%[[VALUE_s_2]])));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<u64>(field0(%26), mul<u64, overflow=wrap>(read<u64>(field1(field1(%22))), read<u64>(field1(field1(%23)))));
-// DEFAULT-NEXT:         write<u64>(field0(%25), mul<u64, overflow=wrap>(read<u64>(field0(field1(%22))), read<u64>(field0(field1(%23)))));
-// DEFAULT-NEXT:         write<u64>(field0(%27), mul<u64, overflow=wrap>(read<u64>(%29), read<u64>(%30)));
-// DEFAULT-NEXT:         let %37: u64 [synthetic] = read<u64>(field0(%27));
-// DEFAULT-NEXT:         let %38: u64 [synthetic] = xor<u64>(read<u64>(%37), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%31))));
-// DEFAULT-NEXT:         write<u64>(field0(%27), read<u64>(%38));
-// DEFAULT-NEXT:         write<u64>(field0(%24), add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(read<u64>(field0(%25)), read<u64>(field0(field1(%25)))), read<u64>(field0(field1(%26)))), read<u64>(field0(field1(%27)))));
-// DEFAULT-NEXT:         write<u64>(field0(%28), add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(read<u64>(field0(field1(%26))), read<u64>(field1(field1(%25)))), read<u64>(field1(field1(%26)))), read<u64>(field1(field1(%27)))));
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(read<u64>(field1(field1(%24))), read<u64>(field1(field1(%28))))));
+// DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_lp_2]]), mul<u64, overflow=wrap>(read<u64>(field1(field1(%[[VALUE_afh_2]]))), read<u64>(field1(field1(%[[VALUE_bfh_2]])))));
+// DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_hp_2]]), mul<u64, overflow=wrap>(read<u64>(field0(field1(%[[VALUE_afh_2]]))), read<u64>(field0(field1(%[[VALUE_bfh_2]])))));
+// DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_dp_2]]), mul<u64, overflow=wrap>(read<u64>(%[[VALUE_ad_2]]), read<u64>(%[[VALUE_bd_2]])));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = read<u64>(field0(%[[VALUE_dp_2]]));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u64 [synthetic] = xor<u64>(read<u64>(%[[VALUE3]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_s_2]]))));
+// DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_dp_2]]), read<u64>(%[[VALUE4]]));
+// DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_hh_2]]), add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(read<u64>(field0(%[[VALUE_hp_2]])), read<u64>(field0(field1(%[[VALUE_hp_2]])))), read<u64>(field0(field1(%[[VALUE_lp_2]])))), read<u64>(field0(field1(%[[VALUE_dp_2]])))));
+// DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_m_2]]), add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(read<u64>(field0(field1(%[[VALUE_lp_2]]))), read<u64>(field1(field1(%[[VALUE_hp_2]])))), read<u64>(field1(field1(%[[VALUE_lp_2]])))), read<u64>(field1(field1(%[[VALUE_dp_2]])))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(read<u64>(field1(field1(%[[VALUE_hh_2]]))), read<u64>(field1(field1(%[[VALUE_m_2]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %33 x: @type2 [storage=automatic];
-// DEFAULT-NEXT:         write<u64>(field0(field1(%33)), widen<u64, reason=assign>(const<u32>(268435456)));
-// DEFAULT-NEXT:         write<u64>(field1(field1(%33)), widen<u64, reason=assign>(const<u32>(3758096384)));
-// DEFAULT-NEXT:         let %39: bool [synthetic];
-// DEFAULT-NEXT:         if eq<u64>(read<u64>(field0(%33)), const<u64>(1152921508364943360))
-// DEFAULT-NEXT:             write<bool>(%39, ne<i32>(call<i32, signature=fn(@type2, @type2) -> i32, abi=sysv64(native_c, native_c) -> scalar>(%21, copy<@type2, reason=arg>(aggregate<@type2, zero_fill=false>(field0 = const<u64>(4294967296))), copy<@type2, reason=arg>(aggregate<@type2, zero_fill=false>(field0 = const<u64>(4294967296)))), neg<i32, overflow=ub>(const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         write<u64>(field0(field1(%[[VALUE_x]])), widen<u64, reason=assign>(const<u32>(268435456)));
+// DEFAULT-NEXT:         write<u64>(field1(field1(%[[VALUE_x]])), widen<u64, reason=assign>(const<u32>(3758096384)));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if eq<u64>(read<u64>(field0(%[[VALUE_x]])), const<u64>(1152921508364943360))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], ne<i32>(call<i32, signature=fn(@type[[TYPE0]], @type[[TYPE0]]) -> i32, abi=sysv64(native_c, native_c) -> scalar>(%[[VALUE_f_be]], copy<@type[[TYPE0]], reason=arg>(aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<u64>(4294967296))), copy<@type[[TYPE0]], reason=arg>(aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<u64>(4294967296)))), neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%39, const<bool>(false));
-// DEFAULT-NEXT:         if read<bool>(%39)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %40: bool [synthetic];
-// DEFAULT-NEXT:         if eq<u64>(read<u64>(field0(%33)), const<u64>(16140901064764293120))
-// DEFAULT-NEXT:             write<bool>(%40, ne<i32>(call<i32, signature=fn(@type5, @type5) -> i32, abi=sysv64(native_c, native_c) -> scalar>(%10, copy<@type5, reason=arg>(aggregate<@type5, zero_fill=false>(field0 = const<u64>(4294967296))), copy<@type5, reason=arg>(aggregate<@type5, zero_fill=false>(field0 = const<u64>(4294967296)))), neg<i32, overflow=ub>(const<i32>(1))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], const<bool>(false));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE5]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if eq<u64>(read<u64>(field0(%[[VALUE_x]])), const<u64>(16140901064764293120))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], ne<i32>(call<i32, signature=fn(@type[[TYPE2]], @type[[TYPE2]]) -> i32, abi=sysv64(native_c, native_c) -> scalar>(%[[VALUE_f_le]], copy<@type[[TYPE2]], reason=arg>(aggregate<@type[[TYPE2]], zero_fill=false>(field0 = const<u64>(4294967296))), copy<@type[[TYPE2]], reason=arg>(aggregate<@type[[TYPE2]], zero_fill=false>(field0 = const<u64>(4294967296)))), neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%40, const<bool>(false));
-// DEFAULT-NEXT:         if read<bool>(%40)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], const<bool>(false));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE6]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

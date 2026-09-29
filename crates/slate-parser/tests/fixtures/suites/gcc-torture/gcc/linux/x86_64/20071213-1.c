@@ -70,53 +70,53 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type1 va_list = va_list;
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @h(%4 x: i32, %5 ap: va_list) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         switch %17 read<i32>(%4)
+// DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_ap:[0-9]+]] ap: va_list) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_x]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %17 const<i32>(1):
-// DEFAULT-NEXT:                     let %18: bool [synthetic];
-// DEFAULT-NEXT:                     if ne<i32>(va_arg<i32>(%5), const<i32>(3))
-// DEFAULT-NEXT:                         write<bool>(%18, const<bool>(true));
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(1):
+// DEFAULT-NEXT:                     let %[[VALUE1:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:                     if ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(3))
+// DEFAULT-NEXT:                         write<bool>(%[[VALUE1]], const<bool>(true));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<bool>(%18, ne<i32>(va_arg<i32>(%5), const<i32>(4)));
-// DEFAULT-NEXT:                     if read<bool>(%18)
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:                         write<bool>(%[[VALUE1]], ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(4)));
+// DEFAULT-NEXT:                     if read<bool>(%[[VALUE1]])
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 return;
-// DEFAULT-NEXT:                 case %17 const<i32>(5):
-// DEFAULT-NEXT:                     let %19: bool [synthetic];
-// DEFAULT-NEXT:                     if ne<i32>(va_arg<i32>(%5), const<i32>(9))
-// DEFAULT-NEXT:                         write<bool>(%19, const<bool>(true));
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(5):
+// DEFAULT-NEXT:                     let %[[VALUE2:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:                     if ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(9))
+// DEFAULT-NEXT:                         write<bool>(%[[VALUE2]], const<bool>(true));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<bool>(%19, ne<i32>(va_arg<i32>(%5), const<i32>(10)));
-// DEFAULT-NEXT:                     if read<bool>(%19)
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:                         write<bool>(%[[VALUE2]], ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(10)));
+// DEFAULT-NEXT:                     if read<bool>(%[[VALUE2]])
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 return;
-// DEFAULT-NEXT:                 default %17:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:                 default %[[VALUE0]]:
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f1(%7 i: i32, %8 j: i64, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %9 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%9);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%3, read<i32>(%7), read<va_list>(%9));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%7), const<i32>(1)), ne<i64>(read<i64>(%8), widen<i64, reason=usual_arith>(const<i32>(2))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         va_end(%9);
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_i:[0-9]+]] i: i32, %[[VALUE_j:[0-9]+]] j: i64, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%[[VALUE_h]], read<i32>(%[[VALUE_i]]), read<va_list>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(1)), ne<i64>(read<i64>(%[[VALUE_j]]), widen<i64, reason=usual_arith>(const<i32>(2))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @f2(%11 i: i32, %12 j: i32, %13 k: i32, %14 l: i64, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %15 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%15);
-// DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%3, read<i32>(%11), read<va_list>(%15));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%11), const<i32>(5)), ne<i32>(read<i32>(%12), const<i32>(6))), ne<i32>(read<i32>(%13), const<i32>(7))), ne<i64>(read<i64>(%14), widen<i64, reason=usual_arith>(const<i32>(8))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         va_end(%15);
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_i_2:[0-9]+]] i: i32, %[[VALUE_j_2:[0-9]+]] j: i32, %[[VALUE_k:[0-9]+]] k: i32, %[[VALUE_l:[0-9]+]] l: i64, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_3]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%[[VALUE_h]], read<i32>(%[[VALUE_i_2]]), read<va_list>(%[[VALUE_ap_3]]));
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_i_2]]), const<i32>(5)), ne<i32>(read<i32>(%[[VALUE_j_2]]), const<i32>(6))), ne<i32>(read<i32>(%[[VALUE_k]]), const<i32>(7))), ne<i64>(read<i64>(%[[VALUE_l]]), widen<i64, reason=usual_arith>(const<i32>(8))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i64, ...) -> void>(%6, const<i32>(1), widen<i64, reason=arg>(const<i32>(2)), const<i32>(3), const<i32>(4));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i64, ...) -> void>(%10, const<i32>(5), const<i32>(6), const<i32>(7), widen<i64, reason=arg>(const<i32>(8)), const<i32>(9), const<i32>(10));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i64, ...) -> void>(%[[VALUE_f1]], const<i32>(1), widen<i64, reason=arg>(const<i32>(2)), const<i32>(3), const<i32>(4));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i64, ...) -> void>(%[[VALUE_f2]], const<i32>(5), const<i32>(6), const<i32>(7), widen<i64, reason=arg>(const<i32>(8)), const<i32>(9), const<i32>(10));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

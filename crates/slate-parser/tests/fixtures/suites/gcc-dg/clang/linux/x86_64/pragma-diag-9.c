@@ -166,71 +166,71 @@ void ignore3 (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %7 a2: array<i32, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %15 b2: array<i32, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %23 c2: array<i32, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %31 d2: array<i32, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %39 e2: array<i32, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @memset(%41 <unnamed>: ptr<void>, %42 <unnamed>: i32, %43 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @warn0(%2 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%2)), const<i32>(11), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
+// DEFAULT-NEXT:     global %[[VALUE_a2:[0-9]+]] a2: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b2:[0-9]+]] b2: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c2:[0-9]+]] c2: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d2:[0-9]+]] d2: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e2:[0-9]+]] e2: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_warn0:[0-9]+]] @warn0(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%[[VALUE_p]])), const<i32>(11), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @warn1(%4 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%1, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%4), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_warn1:[0-9]+]] @warn1(%[[VALUE_p_2:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_warn0]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p_2]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @warn2(%6 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%3, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%6), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_warn2:[0-9]+]] @warn2(%[[VALUE_p_3:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_warn1]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p_3]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @warn3() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%5, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%7), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_warn3:[0-9]+]] @warn3() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_warn2]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_a2]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @ignore0(%10 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%10)), const<i32>(38), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
+// DEFAULT-NEXT:     fn %[[VALUE_ignore0:[0-9]+]] @ignore0(%[[VALUE_p_4:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%[[VALUE_p_4]])), const<i32>(38), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @nowarn1_ignore0(%12 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%9, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%12), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn1_ignore0:[0-9]+]] @nowarn1_ignore0(%[[VALUE_p_5:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_ignore0]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p_5]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @nowarn2_ignore0(%14 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%11, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%14), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn2_ignore0:[0-9]+]] @nowarn2_ignore0(%[[VALUE_p_6:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_nowarn1_ignore0]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p_6]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @nowarn3_ignore0() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%13, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%15), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn3_ignore0:[0-9]+]] @nowarn3_ignore0() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_nowarn2_ignore0]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_b2]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @nowarn0_ignore1(%18 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%18)), const<i32>(64), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn0_ignore1:[0-9]+]] @nowarn0_ignore1(%[[VALUE_p_7:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%[[VALUE_p_7]])), const<i32>(64), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @ignore1(%20 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%17, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%20), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_ignore1:[0-9]+]] @ignore1(%[[VALUE_p_8:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_nowarn0_ignore1]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p_8]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @nowarn2_ignore1(%22 p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%19, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%22), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn2_ignore1:[0-9]+]] @nowarn2_ignore1(%[[VALUE_p_9:[0-9]+]] p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_ignore1]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p_9]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @nowarn3_ignore1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%21, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%23), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn3_ignore1:[0-9]+]] @nowarn3_ignore1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_nowarn2_ignore1]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_c2]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @nowarn0_ignore2(%26 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%26)), const<i32>(92), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn0_ignore2:[0-9]+]] @nowarn0_ignore2(%[[VALUE_p_10:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%[[VALUE_p_10]])), const<i32>(92), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @nowarn1_ignore2(%28 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%25, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%28), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn1_ignore2:[0-9]+]] @nowarn1_ignore2(%[[VALUE_p_11:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_nowarn0_ignore2]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p_11]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @ignore2(%30 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%27, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%30), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_ignore2:[0-9]+]] @ignore2(%[[VALUE_p_12:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_nowarn1_ignore2]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p_12]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @nowarn3_ignore2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%29, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%23), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn3_ignore2:[0-9]+]] @nowarn3_ignore2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_ignore2]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_c2]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %33 @nowarn0_ignore3(%34 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%34)), const<i32>(120), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn0_ignore3:[0-9]+]] @nowarn0_ignore3(%[[VALUE_p_13:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%[[VALUE_p_13]])), const<i32>(120), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %35 @nowarn1_ignore3(%36 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%33, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%36), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn1_ignore3:[0-9]+]] @nowarn1_ignore3(%[[VALUE_p_14:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_nowarn0_ignore3]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p_14]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %37 @nowarn2_ignore3(%38 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%35, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%38), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn2_ignore3:[0-9]+]] @nowarn2_ignore3(%[[VALUE_p_15:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_nowarn1_ignore3]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p_15]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %40 @ignore3() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%37, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%39), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_ignore3:[0-9]+]] @ignore3() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_nowarn2_ignore3]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_e2]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

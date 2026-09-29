@@ -55,26 +55,26 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %11 i: i32 [storage=static] = const<i32>(0) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%13 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @aim_callhandler(%7 sess: i32, %8 conn: i32, %9 family: u16, %10 type: u16) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%8), const<i32>(0)))
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] = const<i32>(0) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_aim_callhandler:[0-9]+]] @aim_callhandler(%[[VALUE_sess:[0-9]+]] sess: i32, %[[VALUE_conn:[0-9]+]] conn: i32, %[[VALUE_family:[0-9]+]] family: u16, %[[VALUE_type:[0-9]+]] type: u16) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%[[VALUE_conn]]), const<i32>(0)))
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         if eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%10))), const<i32>(65535))
+// DEFAULT-NEXT:         if eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_type]]))), const<i32>(65535))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(0);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ge<i32>(read<i32>(%11), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %18: i32 [synthetic] = read<i32>(%11);
-// DEFAULT-NEXT:         let %19: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%18), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%11, read<i32>(%19));
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32, i32, u16, u16) -> i32>(%6, read<i32>(%7), read<i32>(%8), read<u16>(%9), reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(const<i32>(65535))));
+// DEFAULT-NEXT:         if ge<i32>(read<i32>(%[[VALUE_i]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32, i32, u16, u16) -> i32>(%[[VALUE_aim_callhandler]], read<i32>(%[[VALUE_sess]]), read<i32>(%[[VALUE_conn]]), read<u16>(%[[VALUE_family]]), reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(const<i32>(65535))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, i32, u16, u16) -> i32>(%6, const<i32>(0), const<i32>(1), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0))), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, i32, u16, u16) -> i32>(%[[VALUE_aim_callhandler]], const<i32>(0), const<i32>(1), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0))), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

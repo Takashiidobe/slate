@@ -40,20 +40,20 @@ f (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: complex<f32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2: complex<f32> [synthetic] = read<complex<f32>>(%0);
-// DEFAULT-NEXT:         let %3: complex<f32> [synthetic] = add<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f32>>(%2), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<complex<f32>>(%0, read<complex<f32>>(%3));
-// DEFAULT-NEXT:         let %4: complex<f32> [synthetic] = read<complex<f32>>(%0);
-// DEFAULT-NEXT:         let %5: complex<f32> [synthetic] = add<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f32>>(%4), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<complex<f32>>(%0, read<complex<f32>>(%5));
-// DEFAULT-NEXT:         let %6: complex<f32> [synthetic] = read<complex<f32>>(%0);
-// DEFAULT-NEXT:         let %7: complex<f32> [synthetic] = sub<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f32>>(%6), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<complex<f32>>(%0, read<complex<f32>>(%7));
-// DEFAULT-NEXT:         let %8: complex<f32> [synthetic] = read<complex<f32>>(%0);
-// DEFAULT-NEXT:         let %9: complex<f32> [synthetic] = sub<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f32>>(%8), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<complex<f32>>(%0, read<complex<f32>>(%9));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: complex<f32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: complex<f32> [synthetic] = read<complex<f32>>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: complex<f32> [synthetic] = add<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f32>>(%[[VALUE0]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<complex<f32>>(%[[VALUE_a]], read<complex<f32>>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: complex<f32> [synthetic] = read<complex<f32>>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: complex<f32> [synthetic] = add<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f32>>(%[[VALUE2]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<complex<f32>>(%[[VALUE_a]], read<complex<f32>>(%[[VALUE3]]));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: complex<f32> [synthetic] = read<complex<f32>>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: complex<f32> [synthetic] = sub<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f32>>(%[[VALUE4]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<complex<f32>>(%[[VALUE_a]], read<complex<f32>>(%[[VALUE5]]));
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: complex<f32> [synthetic] = read<complex<f32>>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: complex<f32> [synthetic] = sub<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f32>>(%[[VALUE6]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<complex<f32>>(%[[VALUE_a]], read<complex<f32>>(%[[VALUE7]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

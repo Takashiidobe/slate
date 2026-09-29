@@ -154,197 +154,197 @@ int i;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f1(%1 p: ptr<i4096b>, %2 r: i32, %3 s: i115b, %4 t: i128b, %5 u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %72: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%1), const<i32>(0));
-// DEFAULT-NEXT:         let %73: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%72)));
-// DEFAULT-NEXT:         let %74: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%73), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i32>(%2))))));
-// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%72)), read<i4096b>(%74));
-// DEFAULT-NEXT:         let %75: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%1), const<i32>(1));
-// DEFAULT-NEXT:         let %76: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%75)));
-// DEFAULT-NEXT:         let %77: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%76), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i115b>(%3))))));
-// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%75)), read<i4096b>(%77));
-// DEFAULT-NEXT:         let %78: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%1), const<i32>(2));
-// DEFAULT-NEXT:         let %79: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%78)));
-// DEFAULT-NEXT:         let %80: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%79), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128b>(%4))))));
-// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%78)), read<i4096b>(%80));
-// DEFAULT-NEXT:         let %81: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%1), const<i32>(3));
-// DEFAULT-NEXT:         let %82: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%81)));
-// DEFAULT-NEXT:         let %83: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%82), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i231b>(%5))))));
-// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%81)), read<i4096b>(%83));
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_p:[0-9]+]] p: ptr<i4096b>, %[[VALUE_r:[0-9]+]] r: i32, %[[VALUE_s:[0-9]+]] s: i115b, %[[VALUE_t:[0-9]+]] t: i128b, %[[VALUE_u:[0-9]+]] u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%[[VALUE_p]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE0]])));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%[[VALUE1]]), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i32>(%[[VALUE_r]]))))));
+// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE0]])), read<i4096b>(%[[VALUE2]]));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%[[VALUE_p]]), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE3]])));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%[[VALUE4]]), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i115b>(%[[VALUE_s]]))))));
+// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE3]])), read<i4096b>(%[[VALUE5]]));
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%[[VALUE_p]]), const<i32>(2));
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE6]])));
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%[[VALUE7]]), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128b>(%[[VALUE_t]]))))));
+// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE6]])), read<i4096b>(%[[VALUE8]]));
+// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%[[VALUE_p]]), const<i32>(3));
+// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE9]])));
+// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%[[VALUE10]]), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i231b>(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE9]])), read<i4096b>(%[[VALUE11]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f2(%7 p: ptr<i4094b>, %8 r: i32, %9 s: i115b, %10 t: i128b, %11 u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %84: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%7), const<i32>(0));
-// DEFAULT-NEXT:         let %85: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%84)));
-// DEFAULT-NEXT:         let %86: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%85), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i32>(%8))))));
-// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%84)), read<i4094b>(%86));
-// DEFAULT-NEXT:         let %87: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%7), const<i32>(1));
-// DEFAULT-NEXT:         let %88: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%87)));
-// DEFAULT-NEXT:         let %89: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%88), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i115b>(%9))))));
-// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%87)), read<i4094b>(%89));
-// DEFAULT-NEXT:         let %90: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%7), const<i32>(2));
-// DEFAULT-NEXT:         let %91: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%90)));
-// DEFAULT-NEXT:         let %92: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%91), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128b>(%10))))));
-// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%90)), read<i4094b>(%92));
-// DEFAULT-NEXT:         let %93: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%7), const<i32>(3));
-// DEFAULT-NEXT:         let %94: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%93)));
-// DEFAULT-NEXT:         let %95: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%94), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i231b>(%11))))));
-// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%93)), read<i4094b>(%95));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_p_2:[0-9]+]] p: ptr<i4094b>, %[[VALUE_r_2:[0-9]+]] r: i32, %[[VALUE_s_2:[0-9]+]] s: i115b, %[[VALUE_t_2:[0-9]+]] t: i128b, %[[VALUE_u_2:[0-9]+]] u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%[[VALUE_p_2]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE12]])));
+// DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%[[VALUE13]]), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i32>(%[[VALUE_r_2]]))))));
+// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE12]])), read<i4094b>(%[[VALUE14]]));
+// DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%[[VALUE_p_2]]), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE15]])));
+// DEFAULT-NEXT:         let %[[VALUE17:[0-9]+]]: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%[[VALUE16]]), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i115b>(%[[VALUE_s_2]]))))));
+// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE15]])), read<i4094b>(%[[VALUE17]]));
+// DEFAULT-NEXT:         let %[[VALUE18:[0-9]+]]: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%[[VALUE_p_2]]), const<i32>(2));
+// DEFAULT-NEXT:         let %[[VALUE19:[0-9]+]]: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE18]])));
+// DEFAULT-NEXT:         let %[[VALUE20:[0-9]+]]: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%[[VALUE19]]), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128b>(%[[VALUE_t_2]]))))));
+// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE18]])), read<i4094b>(%[[VALUE20]]));
+// DEFAULT-NEXT:         let %[[VALUE21:[0-9]+]]: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%[[VALUE_p_2]]), const<i32>(3));
+// DEFAULT-NEXT:         let %[[VALUE22:[0-9]+]]: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE21]])));
+// DEFAULT-NEXT:         let %[[VALUE23:[0-9]+]]: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%[[VALUE22]]), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i231b>(%[[VALUE_u_2]]))))));
+// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE21]])), read<i4094b>(%[[VALUE23]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @f3(%13 p: ptr<i4096b>, %14 r: i32, %15 s: i115b, %16 t: i128b, %17 u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %96: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%13), const<i32>(0));
-// DEFAULT-NEXT:         let %97: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%96)));
-// DEFAULT-NEXT:         let %98: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%97), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i32>(%14))))));
-// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%96)), read<i4096b>(%98));
-// DEFAULT-NEXT:         let %99: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%13), const<i32>(1));
-// DEFAULT-NEXT:         let %100: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%99)));
-// DEFAULT-NEXT:         let %101: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%100), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i115b>(%15))))));
-// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%99)), read<i4096b>(%101));
-// DEFAULT-NEXT:         let %102: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%13), const<i32>(2));
-// DEFAULT-NEXT:         let %103: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%102)));
-// DEFAULT-NEXT:         let %104: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%103), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128b>(%16))))));
-// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%102)), read<i4096b>(%104));
-// DEFAULT-NEXT:         let %105: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%13), const<i32>(3));
-// DEFAULT-NEXT:         let %106: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%105)));
-// DEFAULT-NEXT:         let %107: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%106), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i231b>(%17))))));
-// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%105)), read<i4096b>(%107));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_p_3:[0-9]+]] p: ptr<i4096b>, %[[VALUE_r_3:[0-9]+]] r: i32, %[[VALUE_s_3:[0-9]+]] s: i115b, %[[VALUE_t_3:[0-9]+]] t: i128b, %[[VALUE_u_3:[0-9]+]] u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE24:[0-9]+]]: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%[[VALUE_p_3]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE25:[0-9]+]]: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE24]])));
+// DEFAULT-NEXT:         let %[[VALUE26:[0-9]+]]: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%[[VALUE25]]), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i32>(%[[VALUE_r_3]]))))));
+// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE24]])), read<i4096b>(%[[VALUE26]]));
+// DEFAULT-NEXT:         let %[[VALUE27:[0-9]+]]: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%[[VALUE_p_3]]), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE28:[0-9]+]]: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE27]])));
+// DEFAULT-NEXT:         let %[[VALUE29:[0-9]+]]: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%[[VALUE28]]), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i115b>(%[[VALUE_s_3]]))))));
+// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE27]])), read<i4096b>(%[[VALUE29]]));
+// DEFAULT-NEXT:         let %[[VALUE30:[0-9]+]]: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%[[VALUE_p_3]]), const<i32>(2));
+// DEFAULT-NEXT:         let %[[VALUE31:[0-9]+]]: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE30]])));
+// DEFAULT-NEXT:         let %[[VALUE32:[0-9]+]]: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%[[VALUE31]]), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128b>(%[[VALUE_t_3]]))))));
+// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE30]])), read<i4096b>(%[[VALUE32]]));
+// DEFAULT-NEXT:         let %[[VALUE33:[0-9]+]]: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%[[VALUE_p_3]]), const<i32>(3));
+// DEFAULT-NEXT:         let %[[VALUE34:[0-9]+]]: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE33]])));
+// DEFAULT-NEXT:         let %[[VALUE35:[0-9]+]]: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%[[VALUE34]]), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i231b>(%[[VALUE_u_3]]))))));
+// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE33]])), read<i4096b>(%[[VALUE35]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @f4(%19 p: ptr<i4094b>, %20 r: i32, %21 s: i115b, %22 t: i128b, %23 u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %108: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%19), const<i32>(0));
-// DEFAULT-NEXT:         let %109: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%108)));
-// DEFAULT-NEXT:         let %110: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%109), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i32>(%20))))));
-// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%108)), read<i4094b>(%110));
-// DEFAULT-NEXT:         let %111: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%19), const<i32>(1));
-// DEFAULT-NEXT:         let %112: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%111)));
-// DEFAULT-NEXT:         let %113: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%112), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i115b>(%21))))));
-// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%111)), read<i4094b>(%113));
-// DEFAULT-NEXT:         let %114: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%19), const<i32>(2));
-// DEFAULT-NEXT:         let %115: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%114)));
-// DEFAULT-NEXT:         let %116: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%115), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128b>(%22))))));
-// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%114)), read<i4094b>(%116));
-// DEFAULT-NEXT:         let %117: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%19), const<i32>(3));
-// DEFAULT-NEXT:         let %118: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%117)));
-// DEFAULT-NEXT:         let %119: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%118), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i231b>(%23))))));
-// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%117)), read<i4094b>(%119));
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_p_4:[0-9]+]] p: ptr<i4094b>, %[[VALUE_r_4:[0-9]+]] r: i32, %[[VALUE_s_4:[0-9]+]] s: i115b, %[[VALUE_t_4:[0-9]+]] t: i128b, %[[VALUE_u_4:[0-9]+]] u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE36:[0-9]+]]: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%[[VALUE_p_4]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE37:[0-9]+]]: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE36]])));
+// DEFAULT-NEXT:         let %[[VALUE38:[0-9]+]]: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%[[VALUE37]]), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i32>(%[[VALUE_r_4]]))))));
+// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE36]])), read<i4094b>(%[[VALUE38]]));
+// DEFAULT-NEXT:         let %[[VALUE39:[0-9]+]]: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%[[VALUE_p_4]]), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE40:[0-9]+]]: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE39]])));
+// DEFAULT-NEXT:         let %[[VALUE41:[0-9]+]]: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%[[VALUE40]]), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i115b>(%[[VALUE_s_4]]))))));
+// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE39]])), read<i4094b>(%[[VALUE41]]));
+// DEFAULT-NEXT:         let %[[VALUE42:[0-9]+]]: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%[[VALUE_p_4]]), const<i32>(2));
+// DEFAULT-NEXT:         let %[[VALUE43:[0-9]+]]: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE42]])));
+// DEFAULT-NEXT:         let %[[VALUE44:[0-9]+]]: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%[[VALUE43]]), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128b>(%[[VALUE_t_4]]))))));
+// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE42]])), read<i4094b>(%[[VALUE44]]));
+// DEFAULT-NEXT:         let %[[VALUE45:[0-9]+]]: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%[[VALUE_p_4]]), const<i32>(3));
+// DEFAULT-NEXT:         let %[[VALUE46:[0-9]+]]: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE45]])));
+// DEFAULT-NEXT:         let %[[VALUE47:[0-9]+]]: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%[[VALUE46]]), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i231b>(%[[VALUE_u_4]]))))));
+// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE45]])), read<i4094b>(%[[VALUE47]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @f5(%25 p: ptr<u4096b>, %26 r: i32, %27 s: i115b, %28 t: i128b, %29 u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %120: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%25), const<i32>(0));
-// DEFAULT-NEXT:         let %121: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%120)));
-// DEFAULT-NEXT:         let %122: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%121), widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i32>(%26)))));
-// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%120)), read<u4096b>(%122));
-// DEFAULT-NEXT:         let %123: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%25), const<i32>(1));
-// DEFAULT-NEXT:         let %124: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%123)));
-// DEFAULT-NEXT:         let %125: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%124), widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i115b>(%27)))));
-// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%123)), read<u4096b>(%125));
-// DEFAULT-NEXT:         let %126: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%25), const<i32>(2));
-// DEFAULT-NEXT:         let %127: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%126)));
-// DEFAULT-NEXT:         let %128: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%127), widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128b>(%28)))));
-// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%126)), read<u4096b>(%128));
-// DEFAULT-NEXT:         let %129: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%25), const<i32>(3));
-// DEFAULT-NEXT:         let %130: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%129)));
-// DEFAULT-NEXT:         let %131: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%130), widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i231b>(%29)))));
-// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%129)), read<u4096b>(%131));
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE_p_5:[0-9]+]] p: ptr<u4096b>, %[[VALUE_r_5:[0-9]+]] r: i32, %[[VALUE_s_5:[0-9]+]] s: i115b, %[[VALUE_t_5:[0-9]+]] t: i128b, %[[VALUE_u_5:[0-9]+]] u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE48:[0-9]+]]: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%[[VALUE_p_5]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE49:[0-9]+]]: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE48]])));
+// DEFAULT-NEXT:         let %[[VALUE50:[0-9]+]]: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%[[VALUE49]]), widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i32>(%[[VALUE_r_5]])))));
+// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE48]])), read<u4096b>(%[[VALUE50]]));
+// DEFAULT-NEXT:         let %[[VALUE51:[0-9]+]]: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%[[VALUE_p_5]]), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE52:[0-9]+]]: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE51]])));
+// DEFAULT-NEXT:         let %[[VALUE53:[0-9]+]]: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%[[VALUE52]]), widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i115b>(%[[VALUE_s_5]])))));
+// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE51]])), read<u4096b>(%[[VALUE53]]));
+// DEFAULT-NEXT:         let %[[VALUE54:[0-9]+]]: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%[[VALUE_p_5]]), const<i32>(2));
+// DEFAULT-NEXT:         let %[[VALUE55:[0-9]+]]: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE54]])));
+// DEFAULT-NEXT:         let %[[VALUE56:[0-9]+]]: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%[[VALUE55]]), widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128b>(%[[VALUE_t_5]])))));
+// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE54]])), read<u4096b>(%[[VALUE56]]));
+// DEFAULT-NEXT:         let %[[VALUE57:[0-9]+]]: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%[[VALUE_p_5]]), const<i32>(3));
+// DEFAULT-NEXT:         let %[[VALUE58:[0-9]+]]: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE57]])));
+// DEFAULT-NEXT:         let %[[VALUE59:[0-9]+]]: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%[[VALUE58]]), widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i231b>(%[[VALUE_u_5]])))));
+// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE57]])), read<u4096b>(%[[VALUE59]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @f6(%31 p: ptr<u4094b>, %32 r: i32, %33 s: i115b, %34 t: i128b, %35 u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %132: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%31), const<i32>(0));
-// DEFAULT-NEXT:         let %133: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%132)));
-// DEFAULT-NEXT:         let %134: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%133), widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i32>(%32)))));
-// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%132)), read<u4094b>(%134));
-// DEFAULT-NEXT:         let %135: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%31), const<i32>(1));
-// DEFAULT-NEXT:         let %136: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%135)));
-// DEFAULT-NEXT:         let %137: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%136), widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i115b>(%33)))));
-// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%135)), read<u4094b>(%137));
-// DEFAULT-NEXT:         let %138: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%31), const<i32>(2));
-// DEFAULT-NEXT:         let %139: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%138)));
-// DEFAULT-NEXT:         let %140: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%139), widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128b>(%34)))));
-// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%138)), read<u4094b>(%140));
-// DEFAULT-NEXT:         let %141: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%31), const<i32>(3));
-// DEFAULT-NEXT:         let %142: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%141)));
-// DEFAULT-NEXT:         let %143: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%142), widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i231b>(%35)))));
-// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%141)), read<u4094b>(%143));
+// DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(%[[VALUE_p_6:[0-9]+]] p: ptr<u4094b>, %[[VALUE_r_6:[0-9]+]] r: i32, %[[VALUE_s_6:[0-9]+]] s: i115b, %[[VALUE_t_6:[0-9]+]] t: i128b, %[[VALUE_u_6:[0-9]+]] u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE60:[0-9]+]]: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%[[VALUE_p_6]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE61:[0-9]+]]: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE60]])));
+// DEFAULT-NEXT:         let %[[VALUE62:[0-9]+]]: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%[[VALUE61]]), widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i32>(%[[VALUE_r_6]])))));
+// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE60]])), read<u4094b>(%[[VALUE62]]));
+// DEFAULT-NEXT:         let %[[VALUE63:[0-9]+]]: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%[[VALUE_p_6]]), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE64:[0-9]+]]: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE63]])));
+// DEFAULT-NEXT:         let %[[VALUE65:[0-9]+]]: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%[[VALUE64]]), widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i115b>(%[[VALUE_s_6]])))));
+// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE63]])), read<u4094b>(%[[VALUE65]]));
+// DEFAULT-NEXT:         let %[[VALUE66:[0-9]+]]: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%[[VALUE_p_6]]), const<i32>(2));
+// DEFAULT-NEXT:         let %[[VALUE67:[0-9]+]]: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE66]])));
+// DEFAULT-NEXT:         let %[[VALUE68:[0-9]+]]: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%[[VALUE67]]), widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128b>(%[[VALUE_t_6]])))));
+// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE66]])), read<u4094b>(%[[VALUE68]]));
+// DEFAULT-NEXT:         let %[[VALUE69:[0-9]+]]: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%[[VALUE_p_6]]), const<i32>(3));
+// DEFAULT-NEXT:         let %[[VALUE70:[0-9]+]]: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE69]])));
+// DEFAULT-NEXT:         let %[[VALUE71:[0-9]+]]: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%[[VALUE70]]), widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i231b>(%[[VALUE_u_6]])))));
+// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE69]])), read<u4094b>(%[[VALUE71]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %36 @f7(%37 p: ptr<u4096b>, %38 r: i32, %39 s: i115b, %40 t: i128b, %41 u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %144: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%37), const<i32>(0));
-// DEFAULT-NEXT:         let %145: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%144)));
-// DEFAULT-NEXT:         let %146: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%145), widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i32>(%38)))));
-// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%144)), read<u4096b>(%146));
-// DEFAULT-NEXT:         let %147: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%37), const<i32>(1));
-// DEFAULT-NEXT:         let %148: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%147)));
-// DEFAULT-NEXT:         let %149: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%148), widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i115b>(%39)))));
-// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%147)), read<u4096b>(%149));
-// DEFAULT-NEXT:         let %150: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%37), const<i32>(2));
-// DEFAULT-NEXT:         let %151: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%150)));
-// DEFAULT-NEXT:         let %152: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%151), widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128b>(%40)))));
-// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%150)), read<u4096b>(%152));
-// DEFAULT-NEXT:         let %153: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%37), const<i32>(3));
-// DEFAULT-NEXT:         let %154: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%153)));
-// DEFAULT-NEXT:         let %155: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%154), widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i231b>(%41)))));
-// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%153)), read<u4096b>(%155));
+// DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_p_7:[0-9]+]] p: ptr<u4096b>, %[[VALUE_r_7:[0-9]+]] r: i32, %[[VALUE_s_7:[0-9]+]] s: i115b, %[[VALUE_t_7:[0-9]+]] t: i128b, %[[VALUE_u_7:[0-9]+]] u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE72:[0-9]+]]: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%[[VALUE_p_7]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE73:[0-9]+]]: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE72]])));
+// DEFAULT-NEXT:         let %[[VALUE74:[0-9]+]]: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%[[VALUE73]]), widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i32>(%[[VALUE_r_7]])))));
+// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE72]])), read<u4096b>(%[[VALUE74]]));
+// DEFAULT-NEXT:         let %[[VALUE75:[0-9]+]]: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%[[VALUE_p_7]]), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE76:[0-9]+]]: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE75]])));
+// DEFAULT-NEXT:         let %[[VALUE77:[0-9]+]]: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%[[VALUE76]]), widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i115b>(%[[VALUE_s_7]])))));
+// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE75]])), read<u4096b>(%[[VALUE77]]));
+// DEFAULT-NEXT:         let %[[VALUE78:[0-9]+]]: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%[[VALUE_p_7]]), const<i32>(2));
+// DEFAULT-NEXT:         let %[[VALUE79:[0-9]+]]: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE78]])));
+// DEFAULT-NEXT:         let %[[VALUE80:[0-9]+]]: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%[[VALUE79]]), widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128b>(%[[VALUE_t_7]])))));
+// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE78]])), read<u4096b>(%[[VALUE80]]));
+// DEFAULT-NEXT:         let %[[VALUE81:[0-9]+]]: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%[[VALUE_p_7]]), const<i32>(3));
+// DEFAULT-NEXT:         let %[[VALUE82:[0-9]+]]: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE81]])));
+// DEFAULT-NEXT:         let %[[VALUE83:[0-9]+]]: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%[[VALUE82]]), widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i231b>(%[[VALUE_u_7]])))));
+// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE81]])), read<u4096b>(%[[VALUE83]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %42 @f8(%43 p: ptr<u4094b>, %44 r: i32, %45 s: i115b, %46 t: i128b, %47 u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %156: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%43), const<i32>(0));
-// DEFAULT-NEXT:         let %157: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%156)));
-// DEFAULT-NEXT:         let %158: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%157), widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i32>(%44)))));
-// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%156)), read<u4094b>(%158));
-// DEFAULT-NEXT:         let %159: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%43), const<i32>(1));
-// DEFAULT-NEXT:         let %160: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%159)));
-// DEFAULT-NEXT:         let %161: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%160), widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i115b>(%45)))));
-// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%159)), read<u4094b>(%161));
-// DEFAULT-NEXT:         let %162: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%43), const<i32>(2));
-// DEFAULT-NEXT:         let %163: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%162)));
-// DEFAULT-NEXT:         let %164: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%163), widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128b>(%46)))));
-// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%162)), read<u4094b>(%164));
-// DEFAULT-NEXT:         let %165: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%43), const<i32>(3));
-// DEFAULT-NEXT:         let %166: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%165)));
-// DEFAULT-NEXT:         let %167: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%166), widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i231b>(%47)))));
-// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%165)), read<u4094b>(%167));
+// DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_p_8:[0-9]+]] p: ptr<u4094b>, %[[VALUE_r_8:[0-9]+]] r: i32, %[[VALUE_s_8:[0-9]+]] s: i115b, %[[VALUE_t_8:[0-9]+]] t: i128b, %[[VALUE_u_8:[0-9]+]] u: i231b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE84:[0-9]+]]: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%[[VALUE_p_8]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE85:[0-9]+]]: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE84]])));
+// DEFAULT-NEXT:         let %[[VALUE86:[0-9]+]]: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%[[VALUE85]]), widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i32>(%[[VALUE_r_8]])))));
+// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE84]])), read<u4094b>(%[[VALUE86]]));
+// DEFAULT-NEXT:         let %[[VALUE87:[0-9]+]]: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%[[VALUE_p_8]]), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE88:[0-9]+]]: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE87]])));
+// DEFAULT-NEXT:         let %[[VALUE89:[0-9]+]]: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%[[VALUE88]]), widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i115b>(%[[VALUE_s_8]])))));
+// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE87]])), read<u4094b>(%[[VALUE89]]));
+// DEFAULT-NEXT:         let %[[VALUE90:[0-9]+]]: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%[[VALUE_p_8]]), const<i32>(2));
+// DEFAULT-NEXT:         let %[[VALUE91:[0-9]+]]: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE90]])));
+// DEFAULT-NEXT:         let %[[VALUE92:[0-9]+]]: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%[[VALUE91]]), widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128b>(%[[VALUE_t_8]])))));
+// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE90]])), read<u4094b>(%[[VALUE92]]));
+// DEFAULT-NEXT:         let %[[VALUE93:[0-9]+]]: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%[[VALUE_p_8]]), const<i32>(3));
+// DEFAULT-NEXT:         let %[[VALUE94:[0-9]+]]: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE93]])));
+// DEFAULT-NEXT:         let %[[VALUE95:[0-9]+]]: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%[[VALUE94]]), widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i231b>(%[[VALUE_u_8]])))));
+// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE93]])), read<u4094b>(%[[VALUE95]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %48 @f9(%49 p: ptr<i4096b>, %50 r: i128) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %168: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%49), const<i32>(0));
-// DEFAULT-NEXT:         let %169: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%168)));
-// DEFAULT-NEXT:         let %170: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%169), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128>(%50))))));
-// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%168)), read<i4096b>(%170));
+// DEFAULT-NEXT:     fn %[[VALUE_f9:[0-9]+]] @f9(%[[VALUE_p_9:[0-9]+]] p: ptr<i4096b>, %[[VALUE_r_9:[0-9]+]] r: i128) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE96:[0-9]+]]: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%[[VALUE_p_9]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE97:[0-9]+]]: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE96]])));
+// DEFAULT-NEXT:         let %[[VALUE98:[0-9]+]]: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%[[VALUE97]]), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128>(%[[VALUE_r_9]]))))));
+// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE96]])), read<i4096b>(%[[VALUE98]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %51 @f10(%52 p: ptr<i4094b>, %53 r: i128) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %171: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%52), const<i32>(0));
-// DEFAULT-NEXT:         let %172: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%171)));
-// DEFAULT-NEXT:         let %173: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%172), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128>(%53))))));
-// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%171)), read<i4094b>(%173));
+// DEFAULT-NEXT:     fn %[[VALUE_f10:[0-9]+]] @f10(%[[VALUE_p_10:[0-9]+]] p: ptr<i4094b>, %[[VALUE_r_10:[0-9]+]] r: i128) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE99:[0-9]+]]: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%[[VALUE_p_10]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE100:[0-9]+]]: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE99]])));
+// DEFAULT-NEXT:         let %[[VALUE101:[0-9]+]]: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%[[VALUE100]]), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128>(%[[VALUE_r_10]]))))));
+// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE99]])), read<i4094b>(%[[VALUE101]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %54 @f11(%55 p: ptr<i4096b>, %56 r: i128) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %174: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%55), const<i32>(0));
-// DEFAULT-NEXT:         let %175: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%174)));
-// DEFAULT-NEXT:         let %176: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%175), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128>(%56))))));
-// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%174)), read<i4096b>(%176));
+// DEFAULT-NEXT:     fn %[[VALUE_f11:[0-9]+]] @f11(%[[VALUE_p_11:[0-9]+]] p: ptr<i4096b>, %[[VALUE_r_11:[0-9]+]] r: i128) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE102:[0-9]+]]: ptr<i4096b> [synthetic] = ptr_offset<ptr<i4096b>, subtract=false, element=i4096b, overflow=ub>(read<ptr<i4096b>>(%[[VALUE_p_11]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE103:[0-9]+]]: i4096b [synthetic] = read<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE102]])));
+// DEFAULT-NEXT:         let %[[VALUE104:[0-9]+]]: i4096b [synthetic] = mul<i4096b, overflow=ub>(read<i4096b>(%[[VALUE103]]), reinterpret<i4096b, reason=usual_arith, fits=unknown>(widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128>(%[[VALUE_r_11]]))))));
+// DEFAULT-NEXT:         write<i4096b>(deref(read<ptr<i4096b>>(%[[VALUE102]])), read<i4096b>(%[[VALUE104]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %57 @f12(%58 p: ptr<i4094b>, %59 r: i128) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %177: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%58), const<i32>(0));
-// DEFAULT-NEXT:         let %178: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%177)));
-// DEFAULT-NEXT:         let %179: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%178), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128>(%59))))));
-// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%177)), read<i4094b>(%179));
+// DEFAULT-NEXT:     fn %[[VALUE_f12:[0-9]+]] @f12(%[[VALUE_p_12:[0-9]+]] p: ptr<i4094b>, %[[VALUE_r_12:[0-9]+]] r: i128) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE105:[0-9]+]]: ptr<i4094b> [synthetic] = ptr_offset<ptr<i4094b>, subtract=false, element=i4094b, overflow=ub>(read<ptr<i4094b>>(%[[VALUE_p_12]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE106:[0-9]+]]: i4094b [synthetic] = read<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE105]])));
+// DEFAULT-NEXT:         let %[[VALUE107:[0-9]+]]: i4094b [synthetic] = div<i4094b, by_zero=ub, min_by_neg_one=ub>(read<i4094b>(%[[VALUE106]]), reinterpret<i4094b, reason=usual_arith, fits=unknown>(widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128>(%[[VALUE_r_12]]))))));
+// DEFAULT-NEXT:         write<i4094b>(deref(read<ptr<i4094b>>(%[[VALUE105]])), read<i4094b>(%[[VALUE107]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %60 @f13(%61 p: ptr<u4096b>, %62 r: i128) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %180: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%61), const<i32>(0));
-// DEFAULT-NEXT:         let %181: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%180)));
-// DEFAULT-NEXT:         let %182: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%181), widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128>(%62)))));
-// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%180)), read<u4096b>(%182));
+// DEFAULT-NEXT:     fn %[[VALUE_f13:[0-9]+]] @f13(%[[VALUE_p_13:[0-9]+]] p: ptr<u4096b>, %[[VALUE_r_13:[0-9]+]] r: i128) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE108:[0-9]+]]: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%[[VALUE_p_13]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE109:[0-9]+]]: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE108]])));
+// DEFAULT-NEXT:         let %[[VALUE110:[0-9]+]]: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%[[VALUE109]]), widen<u4096b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128>(%[[VALUE_r_13]])))));
+// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE108]])), read<u4096b>(%[[VALUE110]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %63 @f14(%64 p: ptr<u4094b>, %65 r: i128) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %183: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%64), const<i32>(0));
-// DEFAULT-NEXT:         let %184: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%183)));
-// DEFAULT-NEXT:         let %185: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%184), widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128>(%65)))));
-// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%183)), read<u4094b>(%185));
+// DEFAULT-NEXT:     fn %[[VALUE_f14:[0-9]+]] @f14(%[[VALUE_p_14:[0-9]+]] p: ptr<u4094b>, %[[VALUE_r_14:[0-9]+]] r: i128) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE111:[0-9]+]]: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%[[VALUE_p_14]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE112:[0-9]+]]: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE111]])));
+// DEFAULT-NEXT:         let %[[VALUE113:[0-9]+]]: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%[[VALUE112]]), widen<u4094b, reason=usual_arith>(reinterpret<u2048b, reason=explicit, fits=unknown>(widen<i2048b, reason=explicit>(read<i128>(%[[VALUE_r_14]])))));
+// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE111]])), read<u4094b>(%[[VALUE113]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %66 @f15(%67 p: ptr<u4096b>, %68 r: i128) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %186: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%67), const<i32>(0));
-// DEFAULT-NEXT:         let %187: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%186)));
-// DEFAULT-NEXT:         let %188: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%187), widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128>(%68)))));
-// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%186)), read<u4096b>(%188));
+// DEFAULT-NEXT:     fn %[[VALUE_f15:[0-9]+]] @f15(%[[VALUE_p_15:[0-9]+]] p: ptr<u4096b>, %[[VALUE_r_15:[0-9]+]] r: i128) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE114:[0-9]+]]: ptr<u4096b> [synthetic] = ptr_offset<ptr<u4096b>, subtract=false, element=u4096b, overflow=ub>(read<ptr<u4096b>>(%[[VALUE_p_15]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE115:[0-9]+]]: u4096b [synthetic] = read<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE114]])));
+// DEFAULT-NEXT:         let %[[VALUE116:[0-9]+]]: u4096b [synthetic] = mul<u4096b, overflow=wrap>(read<u4096b>(%[[VALUE115]]), widen<u4096b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128>(%[[VALUE_r_15]])))));
+// DEFAULT-NEXT:         write<u4096b>(deref(read<ptr<u4096b>>(%[[VALUE114]])), read<u4096b>(%[[VALUE116]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %69 @f16(%70 p: ptr<u4094b>, %71 r: i128) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %189: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%70), const<i32>(0));
-// DEFAULT-NEXT:         let %190: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%189)));
-// DEFAULT-NEXT:         let %191: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%190), widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128>(%71)))));
-// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%189)), read<u4094b>(%191));
+// DEFAULT-NEXT:     fn %[[VALUE_f16:[0-9]+]] @f16(%[[VALUE_p_16:[0-9]+]] p: ptr<u4094b>, %[[VALUE_r_16:[0-9]+]] r: i128) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE117:[0-9]+]]: ptr<u4094b> [synthetic] = ptr_offset<ptr<u4094b>, subtract=false, element=u4094b, overflow=ub>(read<ptr<u4094b>>(%[[VALUE_p_16]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE118:[0-9]+]]: u4094b [synthetic] = read<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE117]])));
+// DEFAULT-NEXT:         let %[[VALUE119:[0-9]+]]: u4094b [synthetic] = div<u4094b, by_zero=ub>(read<u4094b>(%[[VALUE118]]), widen<u4094b, reason=usual_arith>(reinterpret<u2110b, reason=explicit, fits=unknown>(widen<i2110b, reason=explicit>(read<i128>(%[[VALUE_r_16]])))));
+// DEFAULT-NEXT:         write<u4094b>(deref(read<ptr<u4094b>>(%[[VALUE117]])), read<u4094b>(%[[VALUE119]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

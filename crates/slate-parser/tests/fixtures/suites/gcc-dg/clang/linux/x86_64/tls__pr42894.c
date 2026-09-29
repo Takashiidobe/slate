@@ -36,9 +36,9 @@ foo (int a)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 t: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%2 a: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(%0, read<i32>(%2));
+// DEFAULT-NEXT:     extern %[[VALUE_t:[0-9]+]] t: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_t]], read<i32>(%[[VALUE_a]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

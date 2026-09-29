@@ -87,46 +87,46 @@ void test_promoted_args() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 my_struct = struct incomplete;
-// DEFAULT-NEXT:     fn %0 @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     type @type[[TYPE_my_struct:[0-9]+]] my_struct = struct incomplete;
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @foo_with_proto() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo_with_proto:[0-9]+]] @foo_with_proto() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @bar(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 fp: ptr<fn(unprototyped) -> void> [storage=automatic] = function_decay<ptr<fn(unprototyped) -> void>>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(read<ptr<fn(unprototyped) -> void>>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_fp:[0-9]+]] fp: ptr<fn(unprototyped) -> void> [storage=automatic] = function_decay<ptr<fn(unprototyped) -> void>>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(read<ptr<fn(unprototyped) -> void>>(%[[VALUE_fp]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @create_my_struct(unprototyped) -> ptr<@type0> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return null<ptr<@type0>>;
+// DEFAULT-NEXT:     fn %[[VALUE_create_my_struct:[0-9]+]] @create_my_struct(unprototyped) -> ptr<@type[[TYPE_my_struct]]> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return null<ptr<@type[[TYPE_my_struct]]>>;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @create_my_struct_with_proto() -> ptr<@type0> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return null<ptr<@type0>>;
+// DEFAULT-NEXT:     fn %[[VALUE_create_my_struct_with_proto:[0-9]+]] @create_my_struct_with_proto() -> ptr<@type[[TYPE_my_struct]]> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return null<ptr<@type[[TYPE_my_struct]]>>;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @test_struct_ptr_return(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 fp: ptr<fn(unprototyped) -> ptr<@type0>> [storage=automatic] = function_decay<ptr<fn(unprototyped) -> ptr<@type0>>>(%5);
-// DEFAULT-NEXT:         call<ptr<@type0>, signature=fn(unprototyped) -> ptr<@type0>>(read<ptr<fn(unprototyped) -> ptr<@type0>>>(%8));
+// DEFAULT-NEXT:     fn %[[VALUE_test_struct_ptr_return:[0-9]+]] @test_struct_ptr_return(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_fp_2:[0-9]+]] fp: ptr<fn(unprototyped) -> ptr<@type[[TYPE_my_struct]]>> [storage=automatic] = function_decay<ptr<fn(unprototyped) -> ptr<@type[[TYPE_my_struct]]>>>(%[[VALUE_create_my_struct]]);
+// DEFAULT-NEXT:         call<ptr<@type[[TYPE_my_struct]]>, signature=fn(unprototyped) -> ptr<@type[[TYPE_my_struct]]>>(read<ptr<fn(unprototyped) -> ptr<@type[[TYPE_my_struct]]>>>(%[[VALUE_fp_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @baz(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @baz_with_proto() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_baz_with_proto:[0-9]+]] @baz_with_proto() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @test_int_return(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %12 fp: ptr<fn(unprototyped) -> i32> [storage=automatic] = function_decay<ptr<fn(unprototyped) -> i32>>(%9);
-// DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(read<ptr<fn(unprototyped) -> i32>>(%12));
+// DEFAULT-NEXT:     fn %[[VALUE_test_int_return:[0-9]+]] @test_int_return(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_fp_3:[0-9]+]] fp: ptr<fn(unprototyped) -> i32> [storage=automatic] = function_decay<ptr<fn(unprototyped) -> i32>>(%[[VALUE_baz]]);
+// DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(read<ptr<fn(unprototyped) -> i32>>(%[[VALUE_fp_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @foo_with_int_proto(%14 a: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo_with_int_proto:[0-9]+]] @foo_with_int_proto(%[[VALUE_a:[0-9]+]] a: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @test_no_proto_with_args(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %16 fp: ptr<fn(unprototyped) -> void> [storage=automatic] = function_decay<ptr<fn(unprototyped) -> void>>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(read<ptr<fn(unprototyped) -> void>>(%16), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_test_no_proto_with_args:[0-9]+]] @test_no_proto_with_args(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_fp_4:[0-9]+]] fp: ptr<fn(unprototyped) -> void> [storage=automatic] = function_decay<ptr<fn(unprototyped) -> void>>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(read<ptr<fn(unprototyped) -> void>>(%[[VALUE_fp_4]]), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @foo_with_promoted_proto(%18 a: i32, %19 b: f64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo_with_promoted_proto:[0-9]+]] @foo_with_promoted_proto(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: f64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @test_promoted_args(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %21 fp: ptr<fn(unprototyped) -> void> [storage=automatic] = function_decay<ptr<fn(unprototyped) -> void>>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(read<ptr<fn(unprototyped) -> void>>(%21), widen<i32, reason=vararg>(truncate<i16, reason=explicit, fits=always>(const<i32>(1))), float_widen<f64, reason=vararg>(float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_promoted_args:[0-9]+]] @test_promoted_args(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_fp_5:[0-9]+]] fp: ptr<fn(unprototyped) -> void> [storage=automatic] = function_decay<ptr<fn(unprototyped) -> void>>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(read<ptr<fn(unprototyped) -> void>>(%[[VALUE_fp_5]]), widen<i32, reason=vararg>(truncate<i16, reason=explicit, fits=always>(const<i32>(1))), float_widen<f64, reason=vararg>(float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f64>(2.0))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

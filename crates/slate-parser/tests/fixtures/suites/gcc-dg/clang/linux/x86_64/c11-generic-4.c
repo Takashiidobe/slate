@@ -63,21 +63,21 @@ f ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @ok1_c23(unprototyped) -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @ok2_c23(unprototyped) -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @ok3_c23(unprototyped) -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %3 @ok4_c23(unprototyped) -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %4 @ok5_c23(unprototyped) -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %5 @ok6(unprototyped) -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %6 @ok7(unprototyped) -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %7 @ok8(unprototyped) -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %8 @ok9(unprototyped) -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %9 @ok10(unprototyped) -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %10 @ok11(unprototyped) -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %11 @ok12(unprototyped) -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %12 @not_ok1(unprototyped) -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %13 @not_ok2(unprototyped) -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %14 @f(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_ok1_c23:[0-9]+]] @ok1_c23(unprototyped) -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_ok2_c23:[0-9]+]] @ok2_c23(unprototyped) -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_ok3_c23:[0-9]+]] @ok3_c23(unprototyped) -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_ok4_c23:[0-9]+]] @ok4_c23(unprototyped) -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_ok5_c23:[0-9]+]] @ok5_c23(unprototyped) -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_ok6:[0-9]+]] @ok6(unprototyped) -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_ok7:[0-9]+]] @ok7(unprototyped) -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_ok8:[0-9]+]] @ok8(unprototyped) -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_ok9:[0-9]+]] @ok9(unprototyped) -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_ok10:[0-9]+]] @ok10(unprototyped) -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_ok11:[0-9]+]] @ok11(unprototyped) -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_ok12:[0-9]+]] @ok12(unprototyped) -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_not_ok1:[0-9]+]] @not_ok1(unprototyped) -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_not_ok2:[0-9]+]] @not_ok2(unprototyped) -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         const<i32>(2);
 // DEFAULT-NEXT:         const<i32>(2);
 // DEFAULT-NEXT:         const<i32>(3);
@@ -88,8 +88,8 @@ f ()
 // DEFAULT-NEXT:         const<u64>(4);
 // DEFAULT-NEXT:         const<u64>(4);
 // DEFAULT-NEXT:         const<u64>(4);
-// DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%12);
-// DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%13);
+// DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_not_ok1]]);
+// DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_not_ok2]]);
 // DEFAULT-NEXT:         const<u64>(4);
 // DEFAULT-NEXT:         const<u64>(4);
 // DEFAULT-NEXT:     }

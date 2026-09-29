@@ -27,11 +27,11 @@ struct zero_only zero_only(struct zero_only value) { return value; }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 zero_only = struct {
+// IR-NEXT:     type @type[[TYPE_zero_only:[0-9]+]] zero_only = struct {
 // IR-NEXT:         field0 z: array<i32, 0>;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     fn %1 @zero_only(%2 value: @type0) -> @type0 [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type0, reason=return>(read<@type0>(%2));
+// IR-NEXT:     fn %[[VALUE_zero_only:[0-9]+]] @zero_only(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_zero_only]]) -> @type[[TYPE_zero_only]] [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_zero_only]], reason=return>(read<@type[[TYPE_zero_only]]>(%[[VALUE_value]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

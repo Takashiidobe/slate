@@ -50,13 +50,13 @@ bar (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 v: i607b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 w: i16321b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4: i607b [synthetic] = update<i607b, result=old, atomic=relaxed>(deref(addr_of<ptr<i607b>>(%0)), or<i607b>(old<i607b>, widen<i607b, reason=arg>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(31)))));
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: i607b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_w:[0-9]+]] w: i16321b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i607b [synthetic] = update<i607b, result=old, atomic=relaxed>(deref(addr_of<ptr<i607b>>(%[[VALUE_v]])), or<i607b>(old<i607b>, widen<i607b, reason=arg>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(31)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5: i16321b [synthetic] = update<i16321b, result=old, atomic=seq_cst>(deref(addr_of<ptr<i16321b>>(%2)), add<i16321b, overflow=wrap>(old<i16321b>, widen<i16321b, reason=arg>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(31)))));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i16321b [synthetic] = update<i16321b, result=old, atomic=seq_cst>(deref(addr_of<ptr<i16321b>>(%[[VALUE_w]])), add<i16321b, overflow=wrap>(old<i16321b>, widen<i16321b, reason=arg>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(31)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

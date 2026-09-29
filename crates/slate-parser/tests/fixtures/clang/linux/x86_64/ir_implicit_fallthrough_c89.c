@@ -28,9 +28,9 @@ int other() {}
 // C89-NEXT:         storage d64 [size=8, align=8];
 // C89-NEXT:         storage d128 [size=16, align=16];
 // C89-NEXT:     }
-// C89-NEXT:     fn %0 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int()"] {
+// C89-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int()"] {
 // C89-NEXT:     }
-// C89-NEXT:     fn %1 @other(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int()"] {
+// C89-NEXT:     fn %[[VALUE_other:[0-9]+]] @other(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int()"] {
 // C89-NEXT:     }
 // C89-NEXT: }
 // SLATE-FILECHECK-END C89

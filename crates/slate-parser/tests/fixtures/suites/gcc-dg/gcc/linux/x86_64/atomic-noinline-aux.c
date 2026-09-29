@@ -97,36 +97,36 @@ bool __atomic_is_lock_free (size_t i, void *p)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     fn %1 @__atomic_exchange_1(%2 p: ptr<i8>, %3 t: i8, %4 i: i32) -> i8 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i8>(deref(read<ptr<i8>>(%2)), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     fn %[[VALUE___atomic_exchange_1:[0-9]+]] @__atomic_exchange_1(%[[VALUE_p:[0-9]+]] p: ptr<i8>, %[[VALUE_t:[0-9]+]] t: i8, %[[VALUE_i:[0-9]+]] i: i32) -> i8 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i8>(deref(read<ptr<i8>>(%[[VALUE_p]])), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @__atomic_load_2(%6 p: ptr<i16>, %7 i: i32) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i16>(deref(read<ptr<i16>>(%6)), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE___atomic_load_2:[0-9]+]] @__atomic_load_2(%[[VALUE_p_2:[0-9]+]] p: ptr<i16>, %[[VALUE_i_2:[0-9]+]] i: i32) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i16>(deref(read<ptr<i16>>(%[[VALUE_p_2]])), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @__atomic_store_1(%9 p: ptr<i8>, %10 v: i8, %11 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i8>(deref(read<ptr<i8>>(%9)), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE___atomic_store_1:[0-9]+]] @__atomic_store_1(%[[VALUE_p_3:[0-9]+]] p: ptr<i8>, %[[VALUE_v:[0-9]+]] v: i8, %[[VALUE_i_3:[0-9]+]] i: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i8>(deref(read<ptr<i8>>(%[[VALUE_p_3]])), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @__atomic_compare_exchange_2(%13 p: ptr<i16>, %14 a: ptr<i16>, %15 b: i16, %16 y: i32, %17 z: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%16), const<i32>(5)), ne<i32>(read<i32>(%17), const<i32>(2)))
-// DEFAULT-NEXT:             write<i16>(deref(read<ptr<i16>>(%13)), truncate<i16, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:     fn %[[VALUE___atomic_compare_exchange_2:[0-9]+]] @__atomic_compare_exchange_2(%[[VALUE_p_4:[0-9]+]] p: ptr<i16>, %[[VALUE_a:[0-9]+]] a: ptr<i16>, %[[VALUE_b:[0-9]+]] b: i16, %[[VALUE_y:[0-9]+]] y: i32, %[[VALUE_z:[0-9]+]] z: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_y]]), const<i32>(5)), ne<i32>(read<i32>(%[[VALUE_z]]), const<i32>(2)))
+// DEFAULT-NEXT:             write<i16>(deref(read<ptr<i16>>(%[[VALUE_p_4]])), truncate<i16, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i16>(deref(read<ptr<i16>>(%13)), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:             write<i16>(deref(read<ptr<i16>>(%[[VALUE_p_4]])), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @__atomic_fetch_add_1(%19 p: ptr<i8>, %20 v: i8, %21 i: i32) -> i8 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i8>(deref(read<ptr<i8>>(%19)), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE___atomic_fetch_add_1:[0-9]+]] @__atomic_fetch_add_1(%[[VALUE_p_5:[0-9]+]] p: ptr<i8>, %[[VALUE_v_2:[0-9]+]] v: i8, %[[VALUE_i_4:[0-9]+]] i: i32) -> i8 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i8>(deref(read<ptr<i8>>(%[[VALUE_p_5]])), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @__atomic_fetch_add_2(%23 p: ptr<i16>, %24 v: i16, %25 i: i32) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i16>(deref(read<ptr<i16>>(%23)), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE___atomic_fetch_add_2:[0-9]+]] @__atomic_fetch_add_2(%[[VALUE_p_6:[0-9]+]] p: ptr<i16>, %[[VALUE_v_3:[0-9]+]] v: i16, %[[VALUE_i_5:[0-9]+]] i: i32) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i16>(deref(read<ptr<i16>>(%[[VALUE_p_6]])), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @__atomic_fetch_nand_1(%27 p: ptr<u8>, %28 v: u8, %29 i: i32) -> u8 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %30 ret: u8 [storage=automatic];
-// DEFAULT-NEXT:         write<u8>(%30, read<u8>(deref(read<ptr<u8>>(%27))));
-// DEFAULT-NEXT:         write<u8>(deref(read<ptr<u8>>(%27)), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(not<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(read<ptr<u8>>(%27))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%28))))))));
-// DEFAULT-NEXT:         return read<u8>(%30);
+// DEFAULT-NEXT:     fn %[[VALUE___atomic_fetch_nand_1:[0-9]+]] @__atomic_fetch_nand_1(%[[VALUE_p_7:[0-9]+]] p: ptr<u8>, %[[VALUE_v_4:[0-9]+]] v: u8, %[[VALUE_i_6:[0-9]+]] i: i32) -> u8 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_ret:[0-9]+]] ret: u8 [storage=automatic];
+// DEFAULT-NEXT:         write<u8>(%[[VALUE_ret]], read<u8>(deref(read<ptr<u8>>(%[[VALUE_p_7]]))));
+// DEFAULT-NEXT:         write<u8>(deref(read<ptr<u8>>(%[[VALUE_p_7]])), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(not<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(read<ptr<u8>>(%[[VALUE_p_7]]))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_v_4]]))))))));
+// DEFAULT-NEXT:         return read<u8>(%[[VALUE_ret]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @__atomic_is_lock_free(%32 i: u64, %33 p: ptr<void>) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i16>(deref(pointer_cast<ptr<i16>, reason=explicit>(read<ptr<void>>(%33))), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE___atomic_is_lock_free:[0-9]+]] @__atomic_is_lock_free(%[[VALUE_i_7:[0-9]+]] i: u64, %[[VALUE_p_8:[0-9]+]] p: ptr<void>) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i16>(deref(pointer_cast<ptr<i16>, reason=explicit>(read<ptr<void>>(%[[VALUE_p_8]]))), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         return const<bool>(true);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

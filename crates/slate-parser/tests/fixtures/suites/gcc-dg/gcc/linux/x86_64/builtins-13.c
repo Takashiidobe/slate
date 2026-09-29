@@ -87,39 +87,39 @@ void link_error (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     global %5 x: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @malloc(%13 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @calloc(%14 <unnamed>: u64, %15 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @link_error() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_calloc:[0-9]+]] @calloc(%[[VALUE1:[0-9]+]] <unnamed>: u64, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_link_error:[0-9]+]] @link_error() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @test1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 ptr1: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         let %8 ptr2: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<i32>>(%7, addr_of<ptr<i32>>(%5));
-// DEFAULT-NEXT:         write<ptr<i32>>(%8, pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, const<u64>(4))));
-// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, const<u64>(4)));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%7)), const<i32>(12));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%8)), const<i32>(8));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(read<ptr<i32>>(%7))), const<i32>(12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ptr1:[0-9]+]] ptr1: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ptr2:[0-9]+]] ptr2: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_ptr1]], addr_of<ptr<i32>>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_ptr2]], pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(4))));
+// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(4)));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr1]])), const<i32>(12));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr2]])), const<i32>(8));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr1]]))), const<i32>(12))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @test2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %10 ptr1: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         let %11 ptr2: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<i32>>(%10, addr_of<ptr<i32>>(%5));
-// DEFAULT-NEXT:         write<ptr<i32>>(%11, pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%3, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), const<u64>(4))));
-// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%3, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), const<u64>(4)));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%10)), const<i32>(12));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%11)), const<i32>(8));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(read<ptr<i32>>(%10))), const<i32>(12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ptr1_2:[0-9]+]] ptr1: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ptr2_2:[0-9]+]] ptr2: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_ptr1_2]], addr_of<ptr<i32>>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_ptr2_2]], pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), const<u64>(4))));
+// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), const<u64>(4)));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr1_2]])), const<i32>(12));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr2_2]])), const<i32>(8));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr1_2]]))), const<i32>(12))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%9);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test1]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test2]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

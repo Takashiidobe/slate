@@ -45,19 +45,19 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 u = union {
+// DEFAULT-NEXT:     type @type[[TYPE_u:[0-9]+]] u = union {
 // DEFAULT-NEXT:         field0 c: i32;
 // DEFAULT-NEXT:         field1 d: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     fn %2 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         read<i32>(compound_literal %3 [storage=automatic] = const<i32>(1));
-// DEFAULT-NEXT:         read<@type0>(compound_literal %4 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)));
-// DEFAULT-NEXT:         read<@type1>(compound_literal %5 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = const<i32>(1)));
-// DEFAULT-NEXT:         array_decay<ptr<i32>, length=Some(1)>(compound_literal %6 [storage=automatic] = aggregate<array<i32, 1>, zero_fill=false>(index0 = const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         read<i32>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = const<i32>(1));
+// DEFAULT-NEXT:         read<@type[[TYPE_s]]>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2)));
+// DEFAULT-NEXT:         read<@type[[TYPE_u]]>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_u]], zero_fill=false>(field0 = const<i32>(1)));
+// DEFAULT-NEXT:         array_decay<ptr<i32>, length=Some(1)>(compound_literal %[[VALUE3:[0-9]+]] [storage=automatic] = aggregate<array<i32, 1>, zero_fill=false>(index0 = const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

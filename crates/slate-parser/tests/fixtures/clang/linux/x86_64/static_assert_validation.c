@@ -246,29 +246,29 @@ void valid(int n) {
 // VALID-NEXT:         storage d64 [size=8, align=8];
 // VALID-NEXT:         storage d128 [size=16, align=16];
 // VALID-NEXT:     }
-// VALID-NEXT:     type @type0 byte = u8;
-// VALID-NEXT:     type @type1 = enum : u32 {
-// VALID-NEXT:         %0 FIRST = const<i32>(2);
-// VALID-NEXT:         %1 SECOND = const<i32>(3);
+// VALID-NEXT:     type @type[[TYPE_byte:[0-9]+]] byte = u8;
+// VALID-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// VALID-NEXT:         %[[VALUE_FIRST:[0-9]+]] FIRST = const<i32>(2);
+// VALID-NEXT:         %[[VALUE_SECOND:[0-9]+]] SECOND = const<i32>(3);
 // VALID-NEXT:     } [size=4, align=4];
-// VALID-NEXT:     type @type2 Outer = struct {
+// VALID-NEXT:     type @type[[TYPE_Outer:[0-9]+]] Outer = struct {
 // VALID-NEXT:         field0 a: i32;
 // VALID-NEXT:     } [size=4, align=4, offsets=[0]];
-// VALID-NEXT:     type @type3 byte = i16;
-// VALID-NEXT:     type @type4 Outer = struct {
+// VALID-NEXT:     type @type[[TYPE_byte_2:[0-9]+]] byte = i16;
+// VALID-NEXT:     type @type[[TYPE_Outer_2:[0-9]+]] Outer = struct {
 // VALID-NEXT:         field0 a: i64;
 // VALID-NEXT:         field1 b: i64;
 // VALID-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// VALID-NEXT:     fn %4 @opaque() -> i32 [linkage=external];
-// VALID-NEXT:     fn %5 @strlen(%12 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
-// VALID-NEXT:     fn %7 @valid(%8 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// VALID-NEXT:     fn %[[VALUE_opaque:[0-9]+]] @opaque() -> i32 [linkage=external];
+// VALID-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
+// VALID-NEXT:     fn %[[VALUE_valid:[0-9]+]] @valid(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // VALID-NEXT:         {
 // VALID-NEXT:         }
 // VALID-NEXT:         {
 // VALID-NEXT:         }
 // VALID-NEXT:         {
-// VALID-NEXT:             let %11 SECOND: i32 [storage=automatic] = const<i32>(1);
-// VALID-NEXT:             read<i32>(%11);
+// VALID-NEXT:             let %[[VALUE_SECOND_2:[0-9]+]] SECOND: i32 [storage=automatic] = const<i32>(1);
+// VALID-NEXT:             read<i32>(%[[VALUE_SECOND_2]]);
 // VALID-NEXT:         }
 // VALID-NEXT:     }
 // VALID-NEXT: }

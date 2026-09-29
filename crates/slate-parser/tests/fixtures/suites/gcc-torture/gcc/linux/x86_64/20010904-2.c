@@ -53,24 +53,24 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 x = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_x:[0-9]+]] x = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=32, align=32, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 X = @type0;
-// DEFAULT-NEXT:     type @type2 y = struct {
-// DEFAULT-NEXT:         field0 x: @type0;
-// DEFAULT-NEXT:         field1 y: array<@type0, 31>;
+// DEFAULT-NEXT:     type @type[[TYPE_X:[0-9]+]] X = @type[[TYPE_x]];
+// DEFAULT-NEXT:     type @type[[TYPE_y:[0-9]+]] y = struct {
+// DEFAULT-NEXT:         field0 x: @type[[TYPE_x]];
+// DEFAULT-NEXT:         field1 y: array<@type[[TYPE_x]], 31>;
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:     } [size=1056, align=32, offsets=[0, 32, 1024]];
-// DEFAULT-NEXT:     type @type3 Y = @type2;
-// DEFAULT-NEXT:     global %6 y: array<@type2, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i64>(and<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<@type2>>(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(2)>(%6), const<i32>(1))))), pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<@type2>>(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(2)>(%6), const<i32>(0)))))), widen<i64, reason=usual_arith>(const<i32>(31))), const<i64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     type @type[[TYPE_Y:[0-9]+]] Y = @type[[TYPE_y]];
+// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: array<@type[[TYPE_y]], 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i64>(and<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<@type[[TYPE_y]]>>(deref(ptr_offset<ptr<@type[[TYPE_y]]>, subtract=false, element=@type[[TYPE_y]], overflow=ub>(array_decay<ptr<@type[[TYPE_y]]>, length=Some(2)>(%[[VALUE_y]]), const<i32>(1))))), pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<@type[[TYPE_y]]>>(deref(ptr_offset<ptr<@type[[TYPE_y]]>, subtract=false, element=@type[[TYPE_y]], overflow=ub>(array_decay<ptr<@type[[TYPE_y]]>, length=Some(2)>(%[[VALUE_y]]), const<i32>(0)))))), widen<i64, reason=usual_arith>(const<i32>(31))), const<i64>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

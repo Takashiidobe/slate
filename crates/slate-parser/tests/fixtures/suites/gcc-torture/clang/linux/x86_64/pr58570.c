@@ -44,22 +44,22 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 f0: i32 : 15;
 // DEFAULT-NEXT:         field1 f1: i32 : 29;
 // DEFAULT-NEXT:     } [size=6, align=1, offsets=[0, 1], bit_offsets=[Some(0), Some(15)], bit_units=[(0, 6)], field_units=[Some(0), Some(0)]];
-// DEFAULT-NEXT:     global %1 e: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     global %2 i: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 d: array<@type0, 6> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(0))
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: array<@type[[TYPE_S]], 6> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_e]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(bitfield0<unit=0, bytes=0..6, bits=0..15>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(6)>(%3), read<i32>(%2)))), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(bitfield1<unit=0, bytes=0..6, bits=15..44>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(6)>(%3), read<i32>(%2)))), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(bitfield0<unit=0, bytes=0..6, bits=0..15>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_d]]), read<i32>(%[[VALUE_i]])))), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(bitfield1<unit=0, bytes=0..6, bits=15..44>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_d]]), read<i32>(%[[VALUE_i]])))), const<i32>(1));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield1<unit=0, bytes=0..6, bits=15..44>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(6)>(%3), const<i32>(0))))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield1<unit=0, bytes=0..6, bits=15..44>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(6)>(%[[VALUE_d]]), const<i32>(0))))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

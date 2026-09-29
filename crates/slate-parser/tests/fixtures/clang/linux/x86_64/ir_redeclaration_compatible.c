@@ -41,8 +41,8 @@ enum E e;
 // COMPATIBLE-NEXT:         storage d64 [size=8, align=8];
 // COMPATIBLE-NEXT:         storage d128 [size=16, align=16];
 // COMPATIBLE-NEXT:     }
-// COMPATIBLE-NEXT:     fn %0 @f(%2 <unnamed>: i32) -> i32 [linkage=external];
-// COMPATIBLE-NEXT:     fn %1 @g(%3 <unnamed>: i32) -> i32 [linkage=external];
+// COMPATIBLE-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// COMPATIBLE-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE1:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
 // COMPATIBLE-NEXT: }
 // SLATE-FILECHECK-END COMPATIBLE
 // SLATE-FILECHECK-BEGIN SAME_TAGS_C23
@@ -68,13 +68,13 @@ enum E e;
 // SAME_TAGS_C23-NEXT:         storage d64 [size=8, align=8];
 // SAME_TAGS_C23-NEXT:         storage d128 [size=16, align=16];
 // SAME_TAGS_C23-NEXT:     }
-// SAME_TAGS_C23-NEXT:     type @type0 S = struct {
+// SAME_TAGS_C23-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // SAME_TAGS_C23-NEXT:         field0 a: i32;
 // SAME_TAGS_C23-NEXT:     } [size=4, align=4, offsets=[0]];
-// SAME_TAGS_C23-NEXT:     type @type1 E = enum : u32 {
-// SAME_TAGS_C23-NEXT:         %0 A = const<i32>(0);
+// SAME_TAGS_C23-NEXT:     type @type[[TYPE_E:[0-9]+]] E = enum : u32 {
+// SAME_TAGS_C23-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(0);
 // SAME_TAGS_C23-NEXT:     } [size=4, align=4];
-// SAME_TAGS_C23-NEXT:     global %3 s: @type0 [storage=static] [linkage=external];
-// SAME_TAGS_C23-NEXT:     global %4 e: @type1 [storage=static] [linkage=external];
+// SAME_TAGS_C23-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=static] [linkage=external];
+// SAME_TAGS_C23-NEXT:     global %[[VALUE_e:[0-9]+]] e: @type[[TYPE_E]] [storage=static] [linkage=external];
 // SAME_TAGS_C23-NEXT: }
 // SLATE-FILECHECK-END SAME_TAGS_C23

@@ -53,21 +53,21 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %13 .str13: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 100, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %12 @__builtin_sprintf(%10 <unnamed>: ptr<i8>, %11 <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo(%3 c: ptr<i8>, %4 x: u32, %5 y: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 z: u32 [storage=automatic];
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%12, read<ptr<i8>>(%3), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%13)), div<u32, by_zero=ub>(read<u32>(%4), read<u32>(%5)));
-// DEFAULT-NEXT:         write<u32>(%6, add<u32, overflow=wrap>(read<u32>(%4), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         return div<u32, by_zero=ub>(read<u32>(%6), add<u32, overflow=wrap>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 100, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_sprintf:[0-9]+]] @__builtin_sprintf(%[[VALUE1:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_c:[0-9]+]] c: ptr<i8>, %[[VALUE_x:[0-9]+]] x: u32, %[[VALUE_y:[0-9]+]] y: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: u32 [storage=automatic];
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, ptr<const i8>, ...) -> i32>(%[[VALUE___builtin_sprintf]], read<ptr<i8>>(%[[VALUE_c]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])), div<u32, by_zero=ub>(read<u32>(%[[VALUE_x]]), read<u32>(%[[VALUE_y]])));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_z]], add<u32, overflow=wrap>(read<u32>(%[[VALUE_x]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         return div<u32, by_zero=ub>(read<u32>(%[[VALUE_z]]), add<u32, overflow=wrap>(read<u32>(%[[VALUE_y]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 c: array<i8, 16> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(ptr<i8>, u32, u32) -> u32>(%2, array_decay<ptr<i8>, length=Some(16)>(%8), not<u32>(const<u32>(1)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4))), div<u32, by_zero=ub>(not<u32>(const<u32>(0)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: array<i8, 16> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(ptr<i8>, u32, u32) -> u32>(%[[VALUE_foo]], array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_c_2]]), not<u32>(const<u32>(1)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4))), div<u32, by_zero=ub>(not<u32>(const<u32>(0)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -107,72 +107,72 @@ f10 (char *x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 uintptr_t = u64;
-// DEFAULT-NEXT:     fn %1 @f1(%2 x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 y: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%2), const<i32>(97));
-// DEFAULT-NEXT:         let %27: ptr<i8> [synthetic] = read<ptr<i8>>(%2);
-// DEFAULT-NEXT:         let %28: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%27), neg<u64, overflow=wrap>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%3)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
-// DEFAULT-NEXT:         write<ptr<i8>>(%2, read<ptr<i8>>(%28));
-// DEFAULT-NEXT:         return read<ptr<i8>>(%2);
+// DEFAULT-NEXT:     type @type[[TYPE_uintptr_t:[0-9]+]] uintptr_t = u64;
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_x:[0-9]+]] x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_x]]), const<i32>(97));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_x]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE0]]), neg<u64, overflow=wrap>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%[[VALUE_y]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_x]], read<ptr<i8>>(%[[VALUE1]]));
+// DEFAULT-NEXT:         return read<ptr<i8>>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @f2(%5 x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 y: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%5), const<i32>(98));
-// DEFAULT-NEXT:         let %29: ptr<i8> [synthetic] = read<ptr<i8>>(%5);
-// DEFAULT-NEXT:         let %30: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%29), neg<u64, overflow=wrap>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%6)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
-// DEFAULT-NEXT:         write<ptr<i8>>(%5, read<ptr<i8>>(%30));
-// DEFAULT-NEXT:         return read<ptr<i8>>(%5);
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_x_2:[0-9]+]] x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_x_2]]), const<i32>(98));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_x_2]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE2]]), neg<u64, overflow=wrap>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%[[VALUE_y_2]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_x_2]], read<ptr<i8>>(%[[VALUE3]]));
+// DEFAULT-NEXT:         return read<ptr<i8>>(%[[VALUE_x_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @f3(%8 x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9 y: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%8), const<i32>(100));
-// DEFAULT-NEXT:         let %31: ptr<i8> [synthetic] = read<ptr<i8>>(%8);
-// DEFAULT-NEXT:         let %32: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%31), neg<u64, overflow=wrap>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%9)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
-// DEFAULT-NEXT:         write<ptr<i8>>(%8, read<ptr<i8>>(%32));
-// DEFAULT-NEXT:         return read<ptr<i8>>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_x_3:[0-9]+]] x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_3:[0-9]+]] y: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_x_3]]), const<i32>(100));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_x_3]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE4]]), neg<u64, overflow=wrap>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%[[VALUE_y_3]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_x_3]], read<ptr<i8>>(%[[VALUE5]]));
+// DEFAULT-NEXT:         return read<ptr<i8>>(%[[VALUE_x_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @f4(%11 x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %12 y: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%11), const<i32>(104));
-// DEFAULT-NEXT:         let %33: ptr<i8> [synthetic] = read<ptr<i8>>(%11);
-// DEFAULT-NEXT:         let %34: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%33), neg<u64, overflow=wrap>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%12)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
-// DEFAULT-NEXT:         write<ptr<i8>>(%11, read<ptr<i8>>(%34));
-// DEFAULT-NEXT:         return read<ptr<i8>>(%11);
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_x_4:[0-9]+]] x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_4:[0-9]+]] y: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_x_4]]), const<i32>(104));
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_x_4]]);
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE6]]), neg<u64, overflow=wrap>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%[[VALUE_y_4]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_x_4]], read<ptr<i8>>(%[[VALUE7]]));
+// DEFAULT-NEXT:         return read<ptr<i8>>(%[[VALUE_x_4]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @f5(%14 x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %35: ptr<i8> [synthetic] = read<ptr<i8>>(%14);
-// DEFAULT-NEXT:         let %36: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%35), sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))), and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%14)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
-// DEFAULT-NEXT:         write<ptr<i8>>(%14, read<ptr<i8>>(%36));
-// DEFAULT-NEXT:         return read<ptr<i8>>(%14);
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE_x_5:[0-9]+]] x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_x_5]]);
+// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE8]]), sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))), and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%[[VALUE_x_5]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_x_5]], read<ptr<i8>>(%[[VALUE9]]));
+// DEFAULT-NEXT:         return read<ptr<i8>>(%[[VALUE_x_5]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @f6(%16 x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %37: ptr<i8> [synthetic] = read<ptr<i8>>(%16);
-// DEFAULT-NEXT:         let %38: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%37), sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))), and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%16)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
-// DEFAULT-NEXT:         write<ptr<i8>>(%16, read<ptr<i8>>(%38));
-// DEFAULT-NEXT:         return read<ptr<i8>>(%16);
+// DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(%[[VALUE_x_6:[0-9]+]] x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_x_6]]);
+// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE10]]), sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))), and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%[[VALUE_x_6]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_x_6]], read<ptr<i8>>(%[[VALUE11]]));
+// DEFAULT-NEXT:         return read<ptr<i8>>(%[[VALUE_x_6]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @f7(%18 x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %39: ptr<i8> [synthetic] = read<ptr<i8>>(%18);
-// DEFAULT-NEXT:         let %40: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%39), sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))), and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%18)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
-// DEFAULT-NEXT:         write<ptr<i8>>(%18, read<ptr<i8>>(%40));
-// DEFAULT-NEXT:         return read<ptr<i8>>(%18);
+// DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_x_7:[0-9]+]] x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_x_7]]);
+// DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE12]]), sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))), and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%[[VALUE_x_7]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_x_7]], read<ptr<i8>>(%[[VALUE13]]));
+// DEFAULT-NEXT:         return read<ptr<i8>>(%[[VALUE_x_7]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @f8(%20 x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %41: ptr<i8> [synthetic] = read<ptr<i8>>(%20);
-// DEFAULT-NEXT:         let %42: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%41), sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%20)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
-// DEFAULT-NEXT:         write<ptr<i8>>(%20, read<ptr<i8>>(%42));
-// DEFAULT-NEXT:         return read<ptr<i8>>(%20);
+// DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_x_8:[0-9]+]] x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_x_8]]);
+// DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE14]]), sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%[[VALUE_x_8]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_x_8]], read<ptr<i8>>(%[[VALUE15]]));
+// DEFAULT-NEXT:         return read<ptr<i8>>(%[[VALUE_x_8]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @f9(%22 x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %23 y: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%22), const<i32>(8));
-// DEFAULT-NEXT:         let %43: ptr<i8> [synthetic] = read<ptr<i8>>(%22);
-// DEFAULT-NEXT:         let %44: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%43), sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))), and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%23)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
-// DEFAULT-NEXT:         write<ptr<i8>>(%22, read<ptr<i8>>(%44));
-// DEFAULT-NEXT:         return read<ptr<i8>>(%22);
+// DEFAULT-NEXT:     fn %[[VALUE_f9:[0-9]+]] @f9(%[[VALUE_x_9:[0-9]+]] x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_5:[0-9]+]] y: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_x_9]]), const<i32>(8));
+// DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_x_9]]);
+// DEFAULT-NEXT:         let %[[VALUE17:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE16]]), sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))), and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%[[VALUE_y_5]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_x_9]], read<ptr<i8>>(%[[VALUE17]]));
+// DEFAULT-NEXT:         return read<ptr<i8>>(%[[VALUE_x_9]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @f10(%25 x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %26 y: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%25), const<i32>(16));
-// DEFAULT-NEXT:         let %45: ptr<i8> [synthetic] = read<ptr<i8>>(%25);
-// DEFAULT-NEXT:         let %46: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%45), sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%26)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
-// DEFAULT-NEXT:         write<ptr<i8>>(%25, read<ptr<i8>>(%46));
-// DEFAULT-NEXT:         return read<ptr<i8>>(%25);
+// DEFAULT-NEXT:     fn %[[VALUE_f10:[0-9]+]] @f10(%[[VALUE_x_10:[0-9]+]] x: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_6:[0-9]+]] y: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_x_10]]), const<i32>(16));
+// DEFAULT-NEXT:         let %[[VALUE18:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_x_10]]);
+// DEFAULT-NEXT:         let %[[VALUE19:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE18]]), sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%[[VALUE_y_6]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(15))))));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_x_10]], read<ptr<i8>>(%[[VALUE19]]));
+// DEFAULT-NEXT:         return read<ptr<i8>>(%[[VALUE_x_10]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

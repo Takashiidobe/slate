@@ -27,9 +27,9 @@ void test_builtin_set_flt_rounds() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @__builtin_set_flt_rounds(%1 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %0 @test_builtin_set_flt_rounds(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_set_flt_rounds:[0-9]+]] @__builtin_set_flt_rounds(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_builtin_set_flt_rounds:[0-9]+]] @test_builtin_set_flt_rounds(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE___builtin_set_flt_rounds]], const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

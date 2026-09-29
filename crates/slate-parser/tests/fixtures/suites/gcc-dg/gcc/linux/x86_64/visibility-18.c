@@ -33,7 +33,7 @@ int *test = &foo;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 foo: i32 [storage=static] [linkage=external] [visibility=hidden];
-// DEFAULT-NEXT:     global %1 test: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%0) [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_foo:[0-9]+]] foo: i32 [storage=static] [linkage=external] [visibility=hidden];
+// DEFAULT-NEXT:     global %[[VALUE_test:[0-9]+]] test: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_foo]]) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

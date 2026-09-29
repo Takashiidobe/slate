@@ -100,285 +100,285 @@ check_types (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __int8_t = i8;
-// DEFAULT-NEXT:     type @type1 __uint8_t = u8;
-// DEFAULT-NEXT:     type @type2 __int16_t = i16;
-// DEFAULT-NEXT:     type @type3 __uint16_t = u16;
-// DEFAULT-NEXT:     type @type4 __int32_t = i32;
-// DEFAULT-NEXT:     type @type5 __uint32_t = u32;
-// DEFAULT-NEXT:     type @type6 __int64_t = i64;
-// DEFAULT-NEXT:     type @type7 __uint64_t = u64;
-// DEFAULT-NEXT:     type @type8 __int_least8_t = i8;
-// DEFAULT-NEXT:     type @type9 __uint_least8_t = u8;
-// DEFAULT-NEXT:     type @type10 __int_least16_t = i16;
-// DEFAULT-NEXT:     type @type11 __uint_least16_t = u16;
-// DEFAULT-NEXT:     type @type12 __int_least32_t = i32;
-// DEFAULT-NEXT:     type @type13 __uint_least32_t = u32;
-// DEFAULT-NEXT:     type @type14 __int_least64_t = i64;
-// DEFAULT-NEXT:     type @type15 __uint_least64_t = u64;
-// DEFAULT-NEXT:     type @type16 __intmax_t = i64;
-// DEFAULT-NEXT:     type @type17 __uintmax_t = u64;
-// DEFAULT-NEXT:     type @type18 __sig_atomic_t = i32;
-// DEFAULT-NEXT:     type @type19 int8_t = i8;
-// DEFAULT-NEXT:     type @type20 int16_t = i16;
-// DEFAULT-NEXT:     type @type21 int32_t = i32;
-// DEFAULT-NEXT:     type @type22 int64_t = i64;
-// DEFAULT-NEXT:     type @type23 uint8_t = u8;
-// DEFAULT-NEXT:     type @type24 uint16_t = u16;
-// DEFAULT-NEXT:     type @type25 uint32_t = u32;
-// DEFAULT-NEXT:     type @type26 uint64_t = u64;
-// DEFAULT-NEXT:     type @type27 int_least8_t = i8;
-// DEFAULT-NEXT:     type @type28 int_least16_t = i16;
-// DEFAULT-NEXT:     type @type29 int_least32_t = i32;
-// DEFAULT-NEXT:     type @type30 int_least64_t = i64;
-// DEFAULT-NEXT:     type @type31 uint_least8_t = u8;
-// DEFAULT-NEXT:     type @type32 uint_least16_t = u16;
-// DEFAULT-NEXT:     type @type33 uint_least32_t = u32;
-// DEFAULT-NEXT:     type @type34 uint_least64_t = u64;
-// DEFAULT-NEXT:     type @type35 int_fast8_t = i8;
-// DEFAULT-NEXT:     type @type36 int_fast16_t = i64;
-// DEFAULT-NEXT:     type @type37 int_fast32_t = i64;
-// DEFAULT-NEXT:     type @type38 int_fast64_t = i64;
-// DEFAULT-NEXT:     type @type39 uint_fast8_t = u8;
-// DEFAULT-NEXT:     type @type40 uint_fast16_t = u64;
-// DEFAULT-NEXT:     type @type41 uint_fast32_t = u64;
-// DEFAULT-NEXT:     type @type42 uint_fast64_t = u64;
-// DEFAULT-NEXT:     type @type43 intptr_t = i64;
-// DEFAULT-NEXT:     type @type44 uintptr_t = u64;
-// DEFAULT-NEXT:     type @type45 intmax_t = i64;
-// DEFAULT-NEXT:     type @type46 uintmax_t = u64;
-// DEFAULT-NEXT:     type @type47 sig_atomic_t = i32;
-// DEFAULT-NEXT:     fn %48 @check_types() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         do %165
+// DEFAULT-NEXT:     type @type[[TYPE___int8_t:[0-9]+]] __int8_t = i8;
+// DEFAULT-NEXT:     type @type[[TYPE___uint8_t:[0-9]+]] __uint8_t = u8;
+// DEFAULT-NEXT:     type @type[[TYPE___int16_t:[0-9]+]] __int16_t = i16;
+// DEFAULT-NEXT:     type @type[[TYPE___uint16_t:[0-9]+]] __uint16_t = u16;
+// DEFAULT-NEXT:     type @type[[TYPE___int32_t:[0-9]+]] __int32_t = i32;
+// DEFAULT-NEXT:     type @type[[TYPE___uint32_t:[0-9]+]] __uint32_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE___int64_t:[0-9]+]] __int64_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE___uint64_t:[0-9]+]] __uint64_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE___int_least8_t:[0-9]+]] __int_least8_t = i8;
+// DEFAULT-NEXT:     type @type[[TYPE___uint_least8_t:[0-9]+]] __uint_least8_t = u8;
+// DEFAULT-NEXT:     type @type[[TYPE___int_least16_t:[0-9]+]] __int_least16_t = i16;
+// DEFAULT-NEXT:     type @type[[TYPE___uint_least16_t:[0-9]+]] __uint_least16_t = u16;
+// DEFAULT-NEXT:     type @type[[TYPE___int_least32_t:[0-9]+]] __int_least32_t = i32;
+// DEFAULT-NEXT:     type @type[[TYPE___uint_least32_t:[0-9]+]] __uint_least32_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE___int_least64_t:[0-9]+]] __int_least64_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE___uint_least64_t:[0-9]+]] __uint_least64_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE___intmax_t:[0-9]+]] __intmax_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE___uintmax_t:[0-9]+]] __uintmax_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE___sig_atomic_t:[0-9]+]] __sig_atomic_t = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_int8_t:[0-9]+]] int8_t = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_int16_t:[0-9]+]] int16_t = i16;
+// DEFAULT-NEXT:     type @type[[TYPE_int32_t:[0-9]+]] int32_t = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_int64_t:[0-9]+]] int64_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_uint8_t:[0-9]+]] uint8_t = u8;
+// DEFAULT-NEXT:     type @type[[TYPE_uint16_t:[0-9]+]] uint16_t = u16;
+// DEFAULT-NEXT:     type @type[[TYPE_uint32_t:[0-9]+]] uint32_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_uint64_t:[0-9]+]] uint64_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_int_least8_t:[0-9]+]] int_least8_t = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_int_least16_t:[0-9]+]] int_least16_t = i16;
+// DEFAULT-NEXT:     type @type[[TYPE_int_least32_t:[0-9]+]] int_least32_t = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_int_least64_t:[0-9]+]] int_least64_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_uint_least8_t:[0-9]+]] uint_least8_t = u8;
+// DEFAULT-NEXT:     type @type[[TYPE_uint_least16_t:[0-9]+]] uint_least16_t = u16;
+// DEFAULT-NEXT:     type @type[[TYPE_uint_least32_t:[0-9]+]] uint_least32_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_uint_least64_t:[0-9]+]] uint_least64_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_int_fast8_t:[0-9]+]] int_fast8_t = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_int_fast16_t:[0-9]+]] int_fast16_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_int_fast32_t:[0-9]+]] int_fast32_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_int_fast64_t:[0-9]+]] int_fast64_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_uint_fast8_t:[0-9]+]] uint_fast8_t = u8;
+// DEFAULT-NEXT:     type @type[[TYPE_uint_fast16_t:[0-9]+]] uint_fast16_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_uint_fast32_t:[0-9]+]] uint_fast32_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_uint_fast64_t:[0-9]+]] uint_fast64_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_intptr_t:[0-9]+]] intptr_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_uintptr_t:[0-9]+]] uintptr_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_intmax_t:[0-9]+]] intmax_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_uintmax_t:[0-9]+]] uintmax_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_sig_atomic_t:[0-9]+]] sig_atomic_t = i32;
+// DEFAULT-NEXT:     fn %[[VALUE_check_types:[0-9]+]] @check_types() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %49 a: i8 [storage=automatic];
-// DEFAULT-NEXT:                 let %50 b: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%49);
-// DEFAULT-NEXT:                 let %51 c: i8 [storage=automatic];
-// DEFAULT-NEXT:                 let %52 d: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%51);
+// DEFAULT-NEXT:                 let %[[VALUE_a:[0-9]+]] a: i8 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b:[0-9]+]] b: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%[[VALUE_a]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c:[0-9]+]] c: i8 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d:[0-9]+]] d: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%[[VALUE_c]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %166
+// DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %53 a: i16 [storage=automatic];
-// DEFAULT-NEXT:                 let %54 b: ptr<i16> [storage=automatic] = addr_of<ptr<i16>>(%53);
-// DEFAULT-NEXT:                 let %55 c: i16 [storage=automatic];
-// DEFAULT-NEXT:                 let %56 d: ptr<i16> [storage=automatic] = addr_of<ptr<i16>>(%55);
+// DEFAULT-NEXT:                 let %[[VALUE_a_2:[0-9]+]] a: i16 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_2:[0-9]+]] b: ptr<i16> [storage=automatic] = addr_of<ptr<i16>>(%[[VALUE_a_2]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_2:[0-9]+]] c: i16 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_2:[0-9]+]] d: ptr<i16> [storage=automatic] = addr_of<ptr<i16>>(%[[VALUE_c_2]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %167
+// DEFAULT-NEXT:         do %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %57 a: i32 [storage=automatic];
-// DEFAULT-NEXT:                 let %58 b: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%57);
-// DEFAULT-NEXT:                 let %59 c: i32 [storage=automatic];
-// DEFAULT-NEXT:                 let %60 d: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%59);
+// DEFAULT-NEXT:                 let %[[VALUE_a_3:[0-9]+]] a: i32 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_3:[0-9]+]] b: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_a_3]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_3:[0-9]+]] c: i32 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_3:[0-9]+]] d: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_c_3]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %168
+// DEFAULT-NEXT:         do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %61 a: i64 [storage=automatic];
-// DEFAULT-NEXT:                 let %62 b: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%61);
-// DEFAULT-NEXT:                 let %63 c: i64 [storage=automatic];
-// DEFAULT-NEXT:                 let %64 d: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%63);
+// DEFAULT-NEXT:                 let %[[VALUE_a_4:[0-9]+]] a: i64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_4:[0-9]+]] b: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%[[VALUE_a_4]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_4:[0-9]+]] c: i64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_4:[0-9]+]] d: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%[[VALUE_c_4]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %169
+// DEFAULT-NEXT:         do %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %65 a: u8 [storage=automatic];
-// DEFAULT-NEXT:                 let %66 b: ptr<u8> [storage=automatic] = addr_of<ptr<u8>>(%65);
-// DEFAULT-NEXT:                 let %67 c: u8 [storage=automatic];
-// DEFAULT-NEXT:                 let %68 d: ptr<u8> [storage=automatic] = addr_of<ptr<u8>>(%67);
+// DEFAULT-NEXT:                 let %[[VALUE_a_5:[0-9]+]] a: u8 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_5:[0-9]+]] b: ptr<u8> [storage=automatic] = addr_of<ptr<u8>>(%[[VALUE_a_5]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_5:[0-9]+]] c: u8 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_5:[0-9]+]] d: ptr<u8> [storage=automatic] = addr_of<ptr<u8>>(%[[VALUE_c_5]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %170
+// DEFAULT-NEXT:         do %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %69 a: u16 [storage=automatic];
-// DEFAULT-NEXT:                 let %70 b: ptr<u16> [storage=automatic] = addr_of<ptr<u16>>(%69);
-// DEFAULT-NEXT:                 let %71 c: u16 [storage=automatic];
-// DEFAULT-NEXT:                 let %72 d: ptr<u16> [storage=automatic] = addr_of<ptr<u16>>(%71);
+// DEFAULT-NEXT:                 let %[[VALUE_a_6:[0-9]+]] a: u16 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_6:[0-9]+]] b: ptr<u16> [storage=automatic] = addr_of<ptr<u16>>(%[[VALUE_a_6]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_6:[0-9]+]] c: u16 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_6:[0-9]+]] d: ptr<u16> [storage=automatic] = addr_of<ptr<u16>>(%[[VALUE_c_6]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %171
+// DEFAULT-NEXT:         do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %73 a: u32 [storage=automatic];
-// DEFAULT-NEXT:                 let %74 b: ptr<u32> [storage=automatic] = addr_of<ptr<u32>>(%73);
-// DEFAULT-NEXT:                 let %75 c: u32 [storage=automatic];
-// DEFAULT-NEXT:                 let %76 d: ptr<u32> [storage=automatic] = addr_of<ptr<u32>>(%75);
+// DEFAULT-NEXT:                 let %[[VALUE_a_7:[0-9]+]] a: u32 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_7:[0-9]+]] b: ptr<u32> [storage=automatic] = addr_of<ptr<u32>>(%[[VALUE_a_7]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_7:[0-9]+]] c: u32 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_7:[0-9]+]] d: ptr<u32> [storage=automatic] = addr_of<ptr<u32>>(%[[VALUE_c_7]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %172
+// DEFAULT-NEXT:         do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %77 a: u64 [storage=automatic];
-// DEFAULT-NEXT:                 let %78 b: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%77);
-// DEFAULT-NEXT:                 let %79 c: u64 [storage=automatic];
-// DEFAULT-NEXT:                 let %80 d: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%79);
+// DEFAULT-NEXT:                 let %[[VALUE_a_8:[0-9]+]] a: u64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_8:[0-9]+]] b: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_a_8]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_8:[0-9]+]] c: u64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_8:[0-9]+]] d: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_c_8]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %173
+// DEFAULT-NEXT:         do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %81 a: i8 [storage=automatic];
-// DEFAULT-NEXT:                 let %82 b: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%81);
-// DEFAULT-NEXT:                 let %83 c: i8 [storage=automatic];
-// DEFAULT-NEXT:                 let %84 d: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%83);
+// DEFAULT-NEXT:                 let %[[VALUE_a_9:[0-9]+]] a: i8 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_9:[0-9]+]] b: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%[[VALUE_a_9]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_9:[0-9]+]] c: i8 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_9:[0-9]+]] d: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%[[VALUE_c_9]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %174
+// DEFAULT-NEXT:         do %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %85 a: i16 [storage=automatic];
-// DEFAULT-NEXT:                 let %86 b: ptr<i16> [storage=automatic] = addr_of<ptr<i16>>(%85);
-// DEFAULT-NEXT:                 let %87 c: i16 [storage=automatic];
-// DEFAULT-NEXT:                 let %88 d: ptr<i16> [storage=automatic] = addr_of<ptr<i16>>(%87);
+// DEFAULT-NEXT:                 let %[[VALUE_a_10:[0-9]+]] a: i16 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_10:[0-9]+]] b: ptr<i16> [storage=automatic] = addr_of<ptr<i16>>(%[[VALUE_a_10]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_10:[0-9]+]] c: i16 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_10:[0-9]+]] d: ptr<i16> [storage=automatic] = addr_of<ptr<i16>>(%[[VALUE_c_10]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %175
+// DEFAULT-NEXT:         do %[[VALUE10:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %89 a: i32 [storage=automatic];
-// DEFAULT-NEXT:                 let %90 b: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%89);
-// DEFAULT-NEXT:                 let %91 c: i32 [storage=automatic];
-// DEFAULT-NEXT:                 let %92 d: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%91);
+// DEFAULT-NEXT:                 let %[[VALUE_a_11:[0-9]+]] a: i32 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_11:[0-9]+]] b: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_a_11]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_11:[0-9]+]] c: i32 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_11:[0-9]+]] d: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_c_11]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %176
+// DEFAULT-NEXT:         do %[[VALUE11:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %93 a: i64 [storage=automatic];
-// DEFAULT-NEXT:                 let %94 b: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%93);
-// DEFAULT-NEXT:                 let %95 c: i64 [storage=automatic];
-// DEFAULT-NEXT:                 let %96 d: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%95);
+// DEFAULT-NEXT:                 let %[[VALUE_a_12:[0-9]+]] a: i64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_12:[0-9]+]] b: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%[[VALUE_a_12]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_12:[0-9]+]] c: i64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_12:[0-9]+]] d: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%[[VALUE_c_12]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %177
+// DEFAULT-NEXT:         do %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %97 a: u8 [storage=automatic];
-// DEFAULT-NEXT:                 let %98 b: ptr<u8> [storage=automatic] = addr_of<ptr<u8>>(%97);
-// DEFAULT-NEXT:                 let %99 c: u8 [storage=automatic];
-// DEFAULT-NEXT:                 let %100 d: ptr<u8> [storage=automatic] = addr_of<ptr<u8>>(%99);
+// DEFAULT-NEXT:                 let %[[VALUE_a_13:[0-9]+]] a: u8 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_13:[0-9]+]] b: ptr<u8> [storage=automatic] = addr_of<ptr<u8>>(%[[VALUE_a_13]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_13:[0-9]+]] c: u8 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_13:[0-9]+]] d: ptr<u8> [storage=automatic] = addr_of<ptr<u8>>(%[[VALUE_c_13]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %178
+// DEFAULT-NEXT:         do %[[VALUE13:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %101 a: u16 [storage=automatic];
-// DEFAULT-NEXT:                 let %102 b: ptr<u16> [storage=automatic] = addr_of<ptr<u16>>(%101);
-// DEFAULT-NEXT:                 let %103 c: u16 [storage=automatic];
-// DEFAULT-NEXT:                 let %104 d: ptr<u16> [storage=automatic] = addr_of<ptr<u16>>(%103);
+// DEFAULT-NEXT:                 let %[[VALUE_a_14:[0-9]+]] a: u16 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_14:[0-9]+]] b: ptr<u16> [storage=automatic] = addr_of<ptr<u16>>(%[[VALUE_a_14]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_14:[0-9]+]] c: u16 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_14:[0-9]+]] d: ptr<u16> [storage=automatic] = addr_of<ptr<u16>>(%[[VALUE_c_14]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %179
+// DEFAULT-NEXT:         do %[[VALUE14:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %105 a: u32 [storage=automatic];
-// DEFAULT-NEXT:                 let %106 b: ptr<u32> [storage=automatic] = addr_of<ptr<u32>>(%105);
-// DEFAULT-NEXT:                 let %107 c: u32 [storage=automatic];
-// DEFAULT-NEXT:                 let %108 d: ptr<u32> [storage=automatic] = addr_of<ptr<u32>>(%107);
+// DEFAULT-NEXT:                 let %[[VALUE_a_15:[0-9]+]] a: u32 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_15:[0-9]+]] b: ptr<u32> [storage=automatic] = addr_of<ptr<u32>>(%[[VALUE_a_15]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_15:[0-9]+]] c: u32 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_15:[0-9]+]] d: ptr<u32> [storage=automatic] = addr_of<ptr<u32>>(%[[VALUE_c_15]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %180
+// DEFAULT-NEXT:         do %[[VALUE15:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %109 a: u64 [storage=automatic];
-// DEFAULT-NEXT:                 let %110 b: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%109);
-// DEFAULT-NEXT:                 let %111 c: u64 [storage=automatic];
-// DEFAULT-NEXT:                 let %112 d: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%111);
+// DEFAULT-NEXT:                 let %[[VALUE_a_16:[0-9]+]] a: u64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_16:[0-9]+]] b: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_a_16]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_16:[0-9]+]] c: u64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_16:[0-9]+]] d: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_c_16]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %181
+// DEFAULT-NEXT:         do %[[VALUE16:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %113 a: i8 [storage=automatic];
-// DEFAULT-NEXT:                 let %114 b: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%113);
-// DEFAULT-NEXT:                 let %115 c: i8 [storage=automatic];
-// DEFAULT-NEXT:                 let %116 d: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%115);
+// DEFAULT-NEXT:                 let %[[VALUE_a_17:[0-9]+]] a: i8 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_17:[0-9]+]] b: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%[[VALUE_a_17]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_17:[0-9]+]] c: i8 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_17:[0-9]+]] d: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%[[VALUE_c_17]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %182
+// DEFAULT-NEXT:         do %[[VALUE17:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %117 a: i64 [storage=automatic];
-// DEFAULT-NEXT:                 let %118 b: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%117);
-// DEFAULT-NEXT:                 let %119 c: i64 [storage=automatic];
-// DEFAULT-NEXT:                 let %120 d: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%119);
+// DEFAULT-NEXT:                 let %[[VALUE_a_18:[0-9]+]] a: i64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_18:[0-9]+]] b: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%[[VALUE_a_18]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_18:[0-9]+]] c: i64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_18:[0-9]+]] d: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%[[VALUE_c_18]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %183
+// DEFAULT-NEXT:         do %[[VALUE18:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %121 a: i64 [storage=automatic];
-// DEFAULT-NEXT:                 let %122 b: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%121);
-// DEFAULT-NEXT:                 let %123 c: i64 [storage=automatic];
-// DEFAULT-NEXT:                 let %124 d: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%123);
+// DEFAULT-NEXT:                 let %[[VALUE_a_19:[0-9]+]] a: i64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_19:[0-9]+]] b: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%[[VALUE_a_19]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_19:[0-9]+]] c: i64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_19:[0-9]+]] d: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%[[VALUE_c_19]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %184
+// DEFAULT-NEXT:         do %[[VALUE19:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %125 a: i64 [storage=automatic];
-// DEFAULT-NEXT:                 let %126 b: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%125);
-// DEFAULT-NEXT:                 let %127 c: i64 [storage=automatic];
-// DEFAULT-NEXT:                 let %128 d: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%127);
+// DEFAULT-NEXT:                 let %[[VALUE_a_20:[0-9]+]] a: i64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_20:[0-9]+]] b: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%[[VALUE_a_20]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_20:[0-9]+]] c: i64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_20:[0-9]+]] d: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%[[VALUE_c_20]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %185
+// DEFAULT-NEXT:         do %[[VALUE20:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %129 a: u8 [storage=automatic];
-// DEFAULT-NEXT:                 let %130 b: ptr<u8> [storage=automatic] = addr_of<ptr<u8>>(%129);
-// DEFAULT-NEXT:                 let %131 c: u8 [storage=automatic];
-// DEFAULT-NEXT:                 let %132 d: ptr<u8> [storage=automatic] = addr_of<ptr<u8>>(%131);
+// DEFAULT-NEXT:                 let %[[VALUE_a_21:[0-9]+]] a: u8 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_21:[0-9]+]] b: ptr<u8> [storage=automatic] = addr_of<ptr<u8>>(%[[VALUE_a_21]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_21:[0-9]+]] c: u8 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_21:[0-9]+]] d: ptr<u8> [storage=automatic] = addr_of<ptr<u8>>(%[[VALUE_c_21]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %186
+// DEFAULT-NEXT:         do %[[VALUE21:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %133 a: u64 [storage=automatic];
-// DEFAULT-NEXT:                 let %134 b: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%133);
-// DEFAULT-NEXT:                 let %135 c: u64 [storage=automatic];
-// DEFAULT-NEXT:                 let %136 d: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%135);
+// DEFAULT-NEXT:                 let %[[VALUE_a_22:[0-9]+]] a: u64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_22:[0-9]+]] b: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_a_22]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_22:[0-9]+]] c: u64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_22:[0-9]+]] d: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_c_22]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %187
+// DEFAULT-NEXT:         do %[[VALUE22:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %137 a: u64 [storage=automatic];
-// DEFAULT-NEXT:                 let %138 b: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%137);
-// DEFAULT-NEXT:                 let %139 c: u64 [storage=automatic];
-// DEFAULT-NEXT:                 let %140 d: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%139);
+// DEFAULT-NEXT:                 let %[[VALUE_a_23:[0-9]+]] a: u64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_23:[0-9]+]] b: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_a_23]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_23:[0-9]+]] c: u64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_23:[0-9]+]] d: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_c_23]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %188
+// DEFAULT-NEXT:         do %[[VALUE23:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %141 a: u64 [storage=automatic];
-// DEFAULT-NEXT:                 let %142 b: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%141);
-// DEFAULT-NEXT:                 let %143 c: u64 [storage=automatic];
-// DEFAULT-NEXT:                 let %144 d: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%143);
+// DEFAULT-NEXT:                 let %[[VALUE_a_24:[0-9]+]] a: u64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_24:[0-9]+]] b: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_a_24]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_24:[0-9]+]] c: u64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_24:[0-9]+]] d: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_c_24]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %189
+// DEFAULT-NEXT:         do %[[VALUE24:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %145 a: i64 [storage=automatic];
-// DEFAULT-NEXT:                 let %146 b: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%145);
-// DEFAULT-NEXT:                 let %147 c: i64 [storage=automatic];
-// DEFAULT-NEXT:                 let %148 d: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%147);
+// DEFAULT-NEXT:                 let %[[VALUE_a_25:[0-9]+]] a: i64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_25:[0-9]+]] b: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%[[VALUE_a_25]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_25:[0-9]+]] c: i64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_25:[0-9]+]] d: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%[[VALUE_c_25]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %190
+// DEFAULT-NEXT:         do %[[VALUE25:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %149 a: u64 [storage=automatic];
-// DEFAULT-NEXT:                 let %150 b: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%149);
-// DEFAULT-NEXT:                 let %151 c: u64 [storage=automatic];
-// DEFAULT-NEXT:                 let %152 d: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%151);
+// DEFAULT-NEXT:                 let %[[VALUE_a_26:[0-9]+]] a: u64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_26:[0-9]+]] b: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_a_26]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_26:[0-9]+]] c: u64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_26:[0-9]+]] d: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_c_26]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %191
+// DEFAULT-NEXT:         do %[[VALUE26:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %153 a: i64 [storage=automatic];
-// DEFAULT-NEXT:                 let %154 b: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%153);
-// DEFAULT-NEXT:                 let %155 c: i64 [storage=automatic];
-// DEFAULT-NEXT:                 let %156 d: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%155);
+// DEFAULT-NEXT:                 let %[[VALUE_a_27:[0-9]+]] a: i64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_27:[0-9]+]] b: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%[[VALUE_a_27]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_27:[0-9]+]] c: i64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_27:[0-9]+]] d: ptr<i64> [storage=automatic] = addr_of<ptr<i64>>(%[[VALUE_c_27]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %192
+// DEFAULT-NEXT:         do %[[VALUE27:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %157 a: u64 [storage=automatic];
-// DEFAULT-NEXT:                 let %158 b: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%157);
-// DEFAULT-NEXT:                 let %159 c: u64 [storage=automatic];
-// DEFAULT-NEXT:                 let %160 d: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%159);
+// DEFAULT-NEXT:                 let %[[VALUE_a_28:[0-9]+]] a: u64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_28:[0-9]+]] b: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_a_28]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_28:[0-9]+]] c: u64 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_28:[0-9]+]] d: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_c_28]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %193
+// DEFAULT-NEXT:         do %[[VALUE28:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %161 a: i32 [storage=automatic];
-// DEFAULT-NEXT:                 let %162 b: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%161);
-// DEFAULT-NEXT:                 let %163 c: i32 [storage=automatic];
-// DEFAULT-NEXT:                 let %164 d: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%163);
+// DEFAULT-NEXT:                 let %[[VALUE_a_29:[0-9]+]] a: i32 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b_29:[0-9]+]] b: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_a_29]]);
+// DEFAULT-NEXT:                 let %[[VALUE_c_29:[0-9]+]] c: i32 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_d_29:[0-9]+]] d: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_c_29]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }

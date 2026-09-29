@@ -89,33 +89,33 @@ int gnr_global_local (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @fnr1() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @fnr_local_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fnr1:[0-9]+]] @fnr1() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_fnr_local_local:[0-9]+]] @fnr_local_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fnr1]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @gnr_local_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_gnr_local_local:[0-9]+]] @gnr_local_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fnr1]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @fnr2() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @fnr_local_global() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_fnr2:[0-9]+]] @fnr2() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_fnr_local_global:[0-9]+]] @fnr_local_global() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fnr2]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @gnr_local_global() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_gnr_local_global:[0-9]+]] @gnr_local_global() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fnr2]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @fnr3() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @fnr_global_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_fnr3:[0-9]+]] @fnr3() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_fnr_global_local:[0-9]+]] @fnr_global_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fnr3]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @gnr_global_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_gnr_global_local:[0-9]+]] @gnr_global_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fnr3]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -32,12 +32,12 @@ enum : short { B }; /* { dg-warning "ISO C does not support specifying 'enum' un
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 e1 = enum : i32 incomplete [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 e2 = enum : i16 {
-// DEFAULT-NEXT:         %0 A = const<i16>(0);
+// DEFAULT-NEXT:     type @type[[TYPE_e1:[0-9]+]] e1 = enum : i32 incomplete [size=4, align=4];
+// DEFAULT-NEXT:     type @type[[TYPE_e2:[0-9]+]] e2 = enum : i16 {
+// DEFAULT-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i16>(0);
 // DEFAULT-NEXT:     } [size=2, align=2];
-// DEFAULT-NEXT:     type @type2 = enum : i16 {
-// DEFAULT-NEXT:         %0 B = const<i16>(0);
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : i16 {
+// DEFAULT-NEXT:         %[[VALUE_A]] B = const<i16>(0);
 // DEFAULT-NEXT:     } [size=2, align=2];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -42,16 +42,16 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 n: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %3 x: f80 [storage=automatic];
-// DEFAULT-NEXT:         write<f80>(%3, float_widen<f80, reason=assign>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), const<f64>(0.0))));
-// DEFAULT-NEXT:         write<i32>(%2, from_bool<i32, reason=assign>(eq<f80, exceptions=observable>(read<f80>(%3), float_widen<f80, reason=usual_arith>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), const<f64>(0.0))))));
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%2), const<i32>(1))
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: f80 [storage=automatic];
+// DEFAULT-NEXT:         write<f80>(%[[VALUE_x]], float_widen<f80, reason=assign>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), const<f64>(0.0))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_n]], from_bool<i32, reason=assign>(eq<f80, exceptions=observable>(read<f80>(%[[VALUE_x]]), float_widen<f80, reason=usual_arith>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), const<f64>(0.0))))));
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_n]]), const<i32>(1))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -56,29 +56,29 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 x: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 R = struct {
-// DEFAULT-NEXT:         field0 a: @type0;
-// DEFAULT-NEXT:         field1 b: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_R:[0-9]+]] R = struct {
+// DEFAULT-NEXT:         field0 a: @type[[TYPE_A]];
+// DEFAULT-NEXT:         field1 b: @type[[TYPE_A]];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %3 R: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = aggregate<@type0, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(100))), field1 = aggregate<@type0, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(200)))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @f(%5 r: @type1) -> void [linkage=external] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field0(field0(%5))), read<i64>(field0(field0(%3)))), ne<i64>(read<i64>(field0(field1(%5))), read<i64>(field0(field1(%3)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_R:[0-9]+]] R: @type[[TYPE_R]] [storage=static] = aggregate<@type[[TYPE_R]], zero_fill=false>(field0 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(100))), field1 = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(200)))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_r:[0-9]+]] r: @type[[TYPE_R]]) -> void [linkage=external] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field0(field0(%[[VALUE_r]]))), read<i64>(field0(field0(%[[VALUE_R]])))), ne<i64>(read<i64>(field0(field1(%[[VALUE_r]]))), read<i64>(field0(field1(%[[VALUE_R]])))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @g() -> @type1 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type1, reason=return>(read<@type1>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> @type[[TYPE_R]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return copy<@type[[TYPE_R]], reason=return>(read<@type[[TYPE_R]]>(%[[VALUE_R]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 r: @type1 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(@type1) -> void, abi=sysv64(native_c) -> void>(%4, copy<@type1, reason=arg>(read<@type1>(%3)));
-// DEFAULT-NEXT:         write<@type1>(%8, copy<@type1, reason=assign>(call<@type1, signature=fn() -> @type1, abi=sysv64() -> native_c>(%6)));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn() -> @type1, abi=sysv64() -> native_c>(%6));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field0(field0(%8))), read<i64>(field0(field0(%3)))), ne<i64>(read<i64>(field0(field1(%8))), read<i64>(field0(field1(%3)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: @type[[TYPE_R]] [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_R]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_f]], copy<@type[[TYPE_R]], reason=arg>(read<@type[[TYPE_R]]>(%[[VALUE_R]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_R]]>(%[[VALUE_r_2]], copy<@type[[TYPE_R]], reason=assign>(call<@type[[TYPE_R]], signature=fn() -> @type[[TYPE_R]], abi=sysv64() -> native_c>(%[[VALUE_g]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_R]], reason=assign>(call<@type[[TYPE_R]], signature=fn() -> @type[[TYPE_R]], abi=sysv64() -> native_c>(%[[VALUE_g]]));
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field0(field0(%[[VALUE_r_2]]))), read<i64>(field0(field0(%[[VALUE_R]])))), ne<i64>(read<i64>(field0(field1(%[[VALUE_r_2]]))), read<i64>(field0(field1(%[[VALUE_R]])))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

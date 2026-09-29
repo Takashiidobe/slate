@@ -35,9 +35,9 @@ foo (_Decimal32 x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 x: d32) -> d32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 y: d32 [storage=automatic] = div<d32, rounding=nearest_even, exceptions=observable, contract=fast>(add<d32, rounding=nearest_even, exceptions=observable, contract=fast>(read<d32>(%1), read<d32>(%1)), mul<d32, rounding=nearest_even, exceptions=observable, contract=fast>(const<d32>(9.), read<d32>(%1)));
-// DEFAULT-NEXT:         return read<d32>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: d32) -> d32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: d32 [storage=automatic] = div<d32, rounding=nearest_even, exceptions=observable, contract=fast>(add<d32, rounding=nearest_even, exceptions=observable, contract=fast>(read<d32>(%[[VALUE_x]]), read<d32>(%[[VALUE_x]])), mul<d32, rounding=nearest_even, exceptions=observable, contract=fast>(const<d32>(9.), read<d32>(%[[VALUE_x]])));
+// DEFAULT-NEXT:         return read<d32>(%[[VALUE_y]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

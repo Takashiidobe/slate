@@ -61,23 +61,23 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @link_error() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @signbit(%5 <unnamed>: f64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @signbitf(%6 <unnamed>: f32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @signbitl(%7 <unnamed>: f80) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f64) -> i32>(%1, const<f64>(1.0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f64) -> i32>(%1, neg<f64>(const<f64>(2.0))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32) -> i32>(%2, const<f32>(1.0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32) -> i32>(%2, neg<f32>(const<f32>(2.0))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f80) -> i32>(%3, const<f80>(1)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f80) -> i32>(%3, float_widen<f80, reason=arg>(neg<f32>(const<f32>(2.0)))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_link_error:[0-9]+]] @link_error() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_signbit:[0-9]+]] @signbit(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_signbitf:[0-9]+]] @signbitf(%[[VALUE1:[0-9]+]] <unnamed>: f32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_signbitl:[0-9]+]] @signbitl(%[[VALUE2:[0-9]+]] <unnamed>: f80) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f64) -> i32>(%[[VALUE_signbit]], const<f64>(1.0)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f64) -> i32>(%[[VALUE_signbit]], neg<f64>(const<f64>(2.0))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32) -> i32>(%[[VALUE_signbitf]], const<f32>(1.0)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32) -> i32>(%[[VALUE_signbitf]], neg<f32>(const<f32>(2.0))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f80) -> i32>(%[[VALUE_signbitl]], const<f80>(1)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f80) -> i32>(%[[VALUE_signbitl]], float_widen<f80, reason=arg>(neg<f32>(const<f32>(2.0)))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

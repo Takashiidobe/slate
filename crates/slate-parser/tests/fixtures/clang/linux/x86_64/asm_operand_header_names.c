@@ -33,20 +33,20 @@ long operands(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 asm_header_word = i64;
-// IR-NEXT:     type @type1 = enum : u32 {
-// IR-NEXT:         %0 asm_header_constant = const<i32>(7);
+// IR-NEXT:     type @type[[TYPE_asm_header_word:[0-9]+]] asm_header_word = i64;
+// IR-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// IR-NEXT:         %[[VALUE_asm_header_constant:[0-9]+]] asm_header_constant = const<i32>(7);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     extern %0 asm_header_global: i32 [storage=static] [linkage=external];
-// IR-NEXT:     fn %4 @operands() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %5 out: i64 [storage=automatic];
+// IR-NEXT:     extern %[[VALUE_asm_header_constant]] asm_header_global: i32 [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_operands:[0-9]+]] @operands() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_out:[0-9]+]] out: i64 [storage=automatic];
 // IR-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
-// IR-NEXT:             lateout 0 "r" [reg] width 64 place<i64>(%5);
-// IR-NEXT:             in 1 "r" [reg] width 32 read<i32>(%0);
+// IR-NEXT:             lateout 0 "r" [reg] width 64 place<i64>(%[[VALUE_out]]);
+// IR-NEXT:             in 1 "r" [reg] width 32 read<i32>(%[[VALUE_asm_header_constant]]);
 // IR-NEXT:             in 2 "i" [imm | sym] -> imm width 32 const<i32>(7);
 // IR-NEXT:             in 3 "r" [reg] width 64 reinterpret<i64, reason=explicit, fits=always>(const<u64>(8));
 // IR-NEXT:         }
-// IR-NEXT:         return read<i64>(%5);
+// IR-NEXT:         return read<i64>(%[[VALUE_out]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

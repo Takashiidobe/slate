@@ -49,31 +49,31 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 v: u16) -> u16 [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=unknown>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%1))), const<i32>(8)), shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%1))), const<i32>(8)))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_v:[0-9]+]] v: u16) -> u16 [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=unknown>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_v]]))), const<i32>(8)), shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_v]]))), const<i32>(8)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @__builtin_memcpy(%8 <unnamed>: ptr<void>, %9 <unnamed>: ptr<const void>, %10 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @bar(%3 x: ptr<u8>) -> u16 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 a: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %5 b: u16 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%11, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u32>>(%4)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<u8>>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%3), const<i32>(0))))), const<u64>(4));
-// DEFAULT-NEXT:         let %13: u32 [synthetic] = read<u32>(%4);
-// DEFAULT-NEXT:         let %14: u32 [synthetic] = xor<u32>(read<u32>(%13), const<u32>(2155905152));
-// DEFAULT-NEXT:         write<u32>(%4, read<u32>(%14));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%11, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u8>>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%3), const<i32>(0))))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<u32>>(%4)), const<u64>(4));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%11, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u16>>(%5)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<u8>>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%3), const<i32>(2))))), const<u64>(2));
-// DEFAULT-NEXT:         return call<u16, signature=fn(u16) -> u16>(%0, read<u16>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: ptr<u8>) -> u16 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u16 [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u32>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<u8>>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_x]]), const<i32>(0))))), const<u64>(4));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u32 [synthetic] = xor<u32>(read<u32>(%[[VALUE3]]), const<u32>(2155905152));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_a]], read<u32>(%[[VALUE4]]));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u8>>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_x]]), const<i32>(0))))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<u32>>(%[[VALUE_a]])), const<u64>(4));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<u16>>(%[[VALUE_b]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<u8>>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_x]]), const<i32>(2))))), const<u64>(2));
+// DEFAULT-NEXT:         return call<u16, signature=fn(u16) -> u16>(%[[VALUE_foo]], read<u16>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 x: array<u8, 8> [storage=automatic] = aggregate<array<u8, 8>, zero_fill=true>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), index1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), index2 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), index3 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         let %15: bool [synthetic];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: array<u8, 8> [storage=automatic] = aggregate<array<u8, 8>, zero_fill=true>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), index1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), index2 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), index3 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i32>(const<i32>(8), const<i32>(8)), eq<u64>(const<u64>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))))), eq<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))
-// DEFAULT-NEXT:             write<bool>(%15, ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(ptr<u8>) -> u16>(%2, array_decay<ptr<u8>, length=Some(8)>(%7))))), const<u32>(33153)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(ptr<u8>) -> u16>(%[[VALUE_bar]], array_decay<ptr<u8>, length=Some(8)>(%[[VALUE_x_2]]))))), const<u32>(33153)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%15, const<bool>(false));
-// DEFAULT-NEXT:         if read<bool>(%15)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], const<bool>(false));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE5]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

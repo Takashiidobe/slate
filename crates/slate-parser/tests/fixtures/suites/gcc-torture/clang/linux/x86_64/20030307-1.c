@@ -49,16 +49,16 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @fcntl_lock(%14 fd: i32, %15 op: i32, %16 offset: i64, %17 count: i64, %18 type: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%18);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_fcntl_lock:[0-9]+]] @fcntl_lock(%[[VALUE_fd:[0-9]+]] fd: i32, %[[VALUE_op:[0-9]+]] op: i32, %[[VALUE_offset:[0-9]+]] offset: i64, %[[VALUE_count:[0-9]+]] count: i64, %[[VALUE_type:[0-9]+]] type: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_type]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @vfswrap_lock(%8 fsp: ptr<i8>, %9 fd: i32, %10 op: i32, %11 offset: i64, %12 count: i64, %13 type: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32, i32, i64, i64, i32) -> i32>(%6, read<i32>(%9), read<i32>(%10), read<i64>(%11), read<i64>(%12), read<i32>(%13));
+// DEFAULT-NEXT:     fn %[[VALUE_vfswrap_lock:[0-9]+]] @vfswrap_lock(%[[VALUE_fsp:[0-9]+]] fsp: ptr<i8>, %[[VALUE_fd_2:[0-9]+]] fd: i32, %[[VALUE_op_2:[0-9]+]] op: i32, %[[VALUE_offset_2:[0-9]+]] offset: i64, %[[VALUE_count_2:[0-9]+]] count: i64, %[[VALUE_type_2:[0-9]+]] type: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32, i32, i64, i64, i32) -> i32>(%[[VALUE_fcntl_lock]], read<i32>(%[[VALUE_fd_2]]), read<i32>(%[[VALUE_op_2]]), read<i64>(%[[VALUE_offset_2]]), read<i64>(%[[VALUE_count_2]]), read<i32>(%[[VALUE_type_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<i8>, i32, i32, i64, i64, i32) -> i32>(%7, null<ptr<i8>>, const<i32>(1), const<i32>(2), widen<i64, reason=arg>(const<i32>(3)), widen<i64, reason=arg>(const<i32>(4)), const<i32>(5)), const<i32>(5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<i8>, i32, i32, i64, i64, i32) -> i32>(%[[VALUE_vfswrap_lock]], null<ptr<i8>>, const<i32>(1), const<i32>(2), widen<i64, reason=arg>(const<i32>(3)), widen<i64, reason=arg>(const<i32>(4)), const<i32>(5)), const<i32>(5))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

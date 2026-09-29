@@ -44,20 +44,20 @@ long long long_long_suffix_above_long_max = 2147483648LL;
 // C89-NEXT:         storage d64 [size=8, align=8];
 // C89-NEXT:         storage d128 [size=16, align=16];
 // C89-NEXT:     }
-// C89-NEXT:     global %0 int_max: i64 [storage=static] = widen<i64, reason=assign>(const<i32>(2147483647)) [linkage=external];
-// C89-NEXT:     global %1 decimal_above_int_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
-// C89-NEXT:     global %2 decimal_at_unsigned_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(4294967295))) [linkage=external];
-// C89-NEXT:     global %3 decimal_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
-// C89-NEXT:     global %4 decimal_at_long_long_max: i64 [storage=static] = const<i64>(9223372036854775807) [linkage=external];
-// C89-NEXT:     global %5 decimal_above_long_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(9223372036854775808)) [linkage=external];
-// C89-NEXT:     global %6 decimal_at_unsigned_long_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(18446744073709551615)) [linkage=external];
-// C89-NEXT:     global %7 octal_above_int_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
-// C89-NEXT:     global %8 octal_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
-// C89-NEXT:     global %9 hex_above_int_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
-// C89-NEXT:     global %10 hex_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
-// C89-NEXT:     global %11 long_suffix_above_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
-// C89-NEXT:     global %12 unsigned_suffix_above_unsigned_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=always>(const<u64>(4294967296)) [linkage=external];
-// C89-NEXT:     global %13 long_long_suffix_above_long_max: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
+// C89-NEXT:     global %[[VALUE_int_max:[0-9]+]] int_max: i64 [storage=static] = widen<i64, reason=assign>(const<i32>(2147483647)) [linkage=external];
+// C89-NEXT:     global %[[VALUE_decimal_above_int_max:[0-9]+]] decimal_above_int_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
+// C89-NEXT:     global %[[VALUE_decimal_at_unsigned_long_max:[0-9]+]] decimal_at_unsigned_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(4294967295))) [linkage=external];
+// C89-NEXT:     global %[[VALUE_decimal_above_unsigned_long_max:[0-9]+]] decimal_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
+// C89-NEXT:     global %[[VALUE_decimal_at_long_long_max:[0-9]+]] decimal_at_long_long_max: i64 [storage=static] = const<i64>(9223372036854775807) [linkage=external];
+// C89-NEXT:     global %[[VALUE_decimal_above_long_long_max:[0-9]+]] decimal_above_long_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(9223372036854775808)) [linkage=external];
+// C89-NEXT:     global %[[VALUE_decimal_at_unsigned_long_long_max:[0-9]+]] decimal_at_unsigned_long_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(18446744073709551615)) [linkage=external];
+// C89-NEXT:     global %[[VALUE_octal_above_int_max:[0-9]+]] octal_above_int_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
+// C89-NEXT:     global %[[VALUE_octal_above_unsigned_long_max:[0-9]+]] octal_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
+// C89-NEXT:     global %[[VALUE_hex_above_int_max:[0-9]+]] hex_above_int_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
+// C89-NEXT:     global %[[VALUE_hex_above_unsigned_long_max:[0-9]+]] hex_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
+// C89-NEXT:     global %[[VALUE_long_suffix_above_long_max:[0-9]+]] long_suffix_above_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
+// C89-NEXT:     global %[[VALUE_unsigned_suffix_above_unsigned_long_max:[0-9]+]] unsigned_suffix_above_unsigned_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=always>(const<u64>(4294967296)) [linkage=external];
+// C89-NEXT:     global %[[VALUE_long_long_suffix_above_long_max:[0-9]+]] long_long_suffix_above_long_max: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
 // C89-NEXT: }
 // SLATE-FILECHECK-END C89
 // SLATE-FILECHECK-BEGIN C99
@@ -83,20 +83,20 @@ long long long_long_suffix_above_long_max = 2147483648LL;
 // C99-NEXT:         storage d64 [size=8, align=8];
 // C99-NEXT:         storage d128 [size=16, align=16];
 // C99-NEXT:     }
-// C99-NEXT:     global %0 int_max: i64 [storage=static] = widen<i64, reason=assign>(const<i32>(2147483647)) [linkage=external];
-// C99-NEXT:     global %1 decimal_above_int_max: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
-// C99-NEXT:     global %2 decimal_at_unsigned_long_max: i64 [storage=static] = const<i64>(4294967295) [linkage=external];
-// C99-NEXT:     global %3 decimal_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
-// C99-NEXT:     global %4 decimal_at_long_long_max: i64 [storage=static] = const<i64>(9223372036854775807) [linkage=external];
-// C99-NEXT:     global %5 decimal_above_long_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(9223372036854775808)) [linkage=external];
-// C99-NEXT:     global %6 decimal_at_unsigned_long_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(18446744073709551615)) [linkage=external];
-// C99-NEXT:     global %7 octal_above_int_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
-// C99-NEXT:     global %8 octal_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
-// C99-NEXT:     global %9 hex_above_int_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
-// C99-NEXT:     global %10 hex_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
-// C99-NEXT:     global %11 long_suffix_above_long_max: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
-// C99-NEXT:     global %12 unsigned_suffix_above_unsigned_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=always>(const<u64>(4294967296)) [linkage=external];
-// C99-NEXT:     global %13 long_long_suffix_above_long_max: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
+// C99-NEXT:     global %[[VALUE_int_max:[0-9]+]] int_max: i64 [storage=static] = widen<i64, reason=assign>(const<i32>(2147483647)) [linkage=external];
+// C99-NEXT:     global %[[VALUE_decimal_above_int_max:[0-9]+]] decimal_above_int_max: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
+// C99-NEXT:     global %[[VALUE_decimal_at_unsigned_long_max:[0-9]+]] decimal_at_unsigned_long_max: i64 [storage=static] = const<i64>(4294967295) [linkage=external];
+// C99-NEXT:     global %[[VALUE_decimal_above_unsigned_long_max:[0-9]+]] decimal_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
+// C99-NEXT:     global %[[VALUE_decimal_at_long_long_max:[0-9]+]] decimal_at_long_long_max: i64 [storage=static] = const<i64>(9223372036854775807) [linkage=external];
+// C99-NEXT:     global %[[VALUE_decimal_above_long_long_max:[0-9]+]] decimal_above_long_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(9223372036854775808)) [linkage=external];
+// C99-NEXT:     global %[[VALUE_decimal_at_unsigned_long_long_max:[0-9]+]] decimal_at_unsigned_long_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(18446744073709551615)) [linkage=external];
+// C99-NEXT:     global %[[VALUE_octal_above_int_max:[0-9]+]] octal_above_int_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
+// C99-NEXT:     global %[[VALUE_octal_above_unsigned_long_max:[0-9]+]] octal_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
+// C99-NEXT:     global %[[VALUE_hex_above_int_max:[0-9]+]] hex_above_int_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
+// C99-NEXT:     global %[[VALUE_hex_above_unsigned_long_max:[0-9]+]] hex_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
+// C99-NEXT:     global %[[VALUE_long_suffix_above_long_max:[0-9]+]] long_suffix_above_long_max: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
+// C99-NEXT:     global %[[VALUE_unsigned_suffix_above_unsigned_long_max:[0-9]+]] unsigned_suffix_above_unsigned_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=always>(const<u64>(4294967296)) [linkage=external];
+// C99-NEXT:     global %[[VALUE_long_long_suffix_above_long_max:[0-9]+]] long_long_suffix_above_long_max: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
 // C99-NEXT: }
 // SLATE-FILECHECK-END C99
 // SLATE-FILECHECK-BEGIN C23
@@ -122,19 +122,19 @@ long long long_long_suffix_above_long_max = 2147483648LL;
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     global %0 int_max: i64 [storage=static] = widen<i64, reason=assign>(const<i32>(2147483647)) [linkage=external];
-// C23-NEXT:     global %1 decimal_above_int_max: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
-// C23-NEXT:     global %2 decimal_at_unsigned_long_max: i64 [storage=static] = const<i64>(4294967295) [linkage=external];
-// C23-NEXT:     global %3 decimal_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
-// C23-NEXT:     global %4 decimal_at_long_long_max: i64 [storage=static] = const<i64>(9223372036854775807) [linkage=external];
-// C23-NEXT:     global %5 decimal_above_long_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(9223372036854775808)) [linkage=external];
-// C23-NEXT:     global %6 decimal_at_unsigned_long_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(18446744073709551615)) [linkage=external];
-// C23-NEXT:     global %7 octal_above_int_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
-// C23-NEXT:     global %8 octal_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
-// C23-NEXT:     global %9 hex_above_int_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
-// C23-NEXT:     global %10 hex_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
-// C23-NEXT:     global %11 long_suffix_above_long_max: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
-// C23-NEXT:     global %12 unsigned_suffix_above_unsigned_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=always>(const<u64>(4294967296)) [linkage=external];
-// C23-NEXT:     global %13 long_long_suffix_above_long_max: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
+// C23-NEXT:     global %[[VALUE_int_max:[0-9]+]] int_max: i64 [storage=static] = widen<i64, reason=assign>(const<i32>(2147483647)) [linkage=external];
+// C23-NEXT:     global %[[VALUE_decimal_above_int_max:[0-9]+]] decimal_above_int_max: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
+// C23-NEXT:     global %[[VALUE_decimal_at_unsigned_long_max:[0-9]+]] decimal_at_unsigned_long_max: i64 [storage=static] = const<i64>(4294967295) [linkage=external];
+// C23-NEXT:     global %[[VALUE_decimal_above_unsigned_long_max:[0-9]+]] decimal_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
+// C23-NEXT:     global %[[VALUE_decimal_at_long_long_max:[0-9]+]] decimal_at_long_long_max: i64 [storage=static] = const<i64>(9223372036854775807) [linkage=external];
+// C23-NEXT:     global %[[VALUE_decimal_above_long_long_max:[0-9]+]] decimal_above_long_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(9223372036854775808)) [linkage=external];
+// C23-NEXT:     global %[[VALUE_decimal_at_unsigned_long_long_max:[0-9]+]] decimal_at_unsigned_long_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(18446744073709551615)) [linkage=external];
+// C23-NEXT:     global %[[VALUE_octal_above_int_max:[0-9]+]] octal_above_int_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
+// C23-NEXT:     global %[[VALUE_octal_above_unsigned_long_max:[0-9]+]] octal_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
+// C23-NEXT:     global %[[VALUE_hex_above_int_max:[0-9]+]] hex_above_int_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
+// C23-NEXT:     global %[[VALUE_hex_above_unsigned_long_max:[0-9]+]] hex_above_unsigned_long_max: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
+// C23-NEXT:     global %[[VALUE_long_suffix_above_long_max:[0-9]+]] long_suffix_above_long_max: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
+// C23-NEXT:     global %[[VALUE_unsigned_suffix_above_unsigned_long_max:[0-9]+]] unsigned_suffix_above_unsigned_long_max: i64 [storage=static] = reinterpret<i64, reason=assign, fits=always>(const<u64>(4294967296)) [linkage=external];
+// C23-NEXT:     global %[[VALUE_long_long_suffix_above_long_max:[0-9]+]] long_long_suffix_above_long_max: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

@@ -52,31 +52,31 @@ void f8(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 pf1: ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%0) [linkage=external];
-// DEFAULT-NEXT:     global %5 pf2: ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%1) [linkage=external];
-// DEFAULT-NEXT:     global %6 pf4: ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%2) [linkage=external];
-// DEFAULT-NEXT:     global %7 pf5: ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%3) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @f1() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f2() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @f4() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_pf1:[0-9]+]] pf1: ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%[[VALUE_f1:[0-9]+]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_pf2:[0-9]+]] pf2: ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%[[VALUE_f2:[0-9]+]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_pf4:[0-9]+]] pf4: ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%[[VALUE_f4:[0-9]+]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_pf5:[0-9]+]] pf5: ptr<fn() -> void> [storage=static] = function_decay<ptr<fn() -> void>>(%[[VALUE_f5:[0-9]+]]) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f1]] @f1() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f2]] @f2() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f4]] @f4() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_f1]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @f5() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_f5]] @f5() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_f2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%4));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%5));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%6));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%7));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_f4]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_f5]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%[[VALUE_pf1]]));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%[[VALUE_pf2]]));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%[[VALUE_pf4]]));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%[[VALUE_pf5]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @f7(%10 foo: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_foo:[0-9]+]] foo: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @f8() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%9, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_f7]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

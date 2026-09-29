@@ -90,41 +90,41 @@ long double test3l(long double x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @log10(%27 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @log2(%28 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @log1p(%29 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @log10f(%30 <unnamed>: f32) -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @log2f(%31 <unnamed>: f32) -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @log1pf(%32 <unnamed>: f32) -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %6 @log10l(%33 <unnamed>: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @log2l(%34 <unnamed>: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %8 @log1pl(%35 <unnamed>: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @test1(%10 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%0, read<f64>(%10));
+// DEFAULT-NEXT:     fn %[[VALUE_log10:[0-9]+]] @log10(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_log2:[0-9]+]] @log2(%[[VALUE1:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_log1p:[0-9]+]] @log1p(%[[VALUE2:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_log10f:[0-9]+]] @log10f(%[[VALUE3:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_log2f:[0-9]+]] @log2f(%[[VALUE4:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_log1pf:[0-9]+]] @log1pf(%[[VALUE5:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_log10l:[0-9]+]] @log10l(%[[VALUE6:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_log2l:[0-9]+]] @log2l(%[[VALUE7:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_log1pl:[0-9]+]] @log1pl(%[[VALUE8:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_x:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%[[VALUE_log10]], read<f64>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @test2(%12 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%12));
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_x_2:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%[[VALUE_log2]], read<f64>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @test3(%14 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%2, read<f64>(%14));
+// DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_x_3:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%[[VALUE_log1p]], read<f64>(%[[VALUE_x_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @test1f(%16 x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%3, read<f32>(%16));
+// DEFAULT-NEXT:     fn %[[VALUE_test1f:[0-9]+]] @test1f(%[[VALUE_x_4:[0-9]+]] x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%[[VALUE_log10f]], read<f32>(%[[VALUE_x_4]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @test2f(%18 x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%4, read<f32>(%18));
+// DEFAULT-NEXT:     fn %[[VALUE_test2f:[0-9]+]] @test2f(%[[VALUE_x_5:[0-9]+]] x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%[[VALUE_log2f]], read<f32>(%[[VALUE_x_5]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @test3f(%20 x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%5, read<f32>(%20));
+// DEFAULT-NEXT:     fn %[[VALUE_test3f:[0-9]+]] @test3f(%[[VALUE_x_6:[0-9]+]] x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f32, signature=fn(f32) -> f32>(%[[VALUE_log1pf]], read<f32>(%[[VALUE_x_6]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @test1l(%22 x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%6, read<f80>(%22));
+// DEFAULT-NEXT:     fn %[[VALUE_test1l:[0-9]+]] @test1l(%[[VALUE_x_7:[0-9]+]] x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%[[VALUE_log10l]], read<f80>(%[[VALUE_x_7]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @test2l(%24 x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%7, read<f80>(%24));
+// DEFAULT-NEXT:     fn %[[VALUE_test2l:[0-9]+]] @test2l(%[[VALUE_x_8:[0-9]+]] x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%[[VALUE_log2l]], read<f80>(%[[VALUE_x_8]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @test3l(%26 x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%8, read<f80>(%26));
+// DEFAULT-NEXT:     fn %[[VALUE_test3l:[0-9]+]] @test3l(%[[VALUE_x_9:[0-9]+]] x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f80, signature=fn(f80) -> f80>(%[[VALUE_log1pl]], read<f80>(%[[VALUE_x_9]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

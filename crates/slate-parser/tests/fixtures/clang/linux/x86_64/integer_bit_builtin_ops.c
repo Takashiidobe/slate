@@ -51,35 +51,35 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %41 .str41: array<i8, 34> [storage=static] = code_units<array<i8, 34>>([37, 117, 32, 37, 117, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%18 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %20 @__builtin_bitreverse32(%19 <unnamed>: u32) -> u32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %22 @__builtin_bswap32(%21 <unnamed>: u32) -> u32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %24 @__builtin_clz(%23 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %26 @__builtin_ctz(%25 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %28 @__builtin_ffs(%27 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %30 @__builtin_popcount(%29 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %32 @__builtin_parity(%31 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %34 @__builtin_clrsb(%33 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %37 @__builtin_rotateleft32(%35 <unnamed>: u32, %36 <unnamed>: u32) -> u32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %40 @__builtin_rotateright32(%38 <unnamed>: u32, %39 <unnamed>: u32) -> u32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 u: u32 [storage=automatic] = const<u32>(305419896);
-// DEFAULT-NEXT:         let %4 z: u32 [storage=automatic] = const<u32>(0);
-// DEFAULT-NEXT:         let %5 s: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(12345));
-// DEFAULT-NEXT:         let %6 sh: u32 [storage=automatic] = const<u32>(5);
-// DEFAULT-NEXT:         let %7 rev: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%20, read<u32>(%3));
-// DEFAULT-NEXT:         let %8 swapped: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%22, read<u32>(%3));
-// DEFAULT-NEXT:         let %9 leading: i32 [storage=automatic] = call<i32, signature=fn(u32) -> i32>(%24, read<u32>(%3));
-// DEFAULT-NEXT:         let %10 trailing: i32 [storage=automatic] = call<i32, signature=fn(u32) -> i32>(%26, read<u32>(%3));
-// DEFAULT-NEXT:         let %11 first_set: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%28, reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(%3)));
-// DEFAULT-NEXT:         let %12 zero_first: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%28, reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(%4)));
-// DEFAULT-NEXT:         let %13 ones: i32 [storage=automatic] = call<i32, signature=fn(u32) -> i32>(%30, read<u32>(%3));
-// DEFAULT-NEXT:         let %14 odd: i32 [storage=automatic] = call<i32, signature=fn(u32) -> i32>(%32, read<u32>(%3));
-// DEFAULT-NEXT:         let %15 redundant_sign: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%34, read<i32>(%5));
-// DEFAULT-NEXT:         let %16 left: u32 [storage=automatic] = call<u32, signature=fn(u32, u32) -> u32>(%37, read<u32>(%3), read<u32>(%6));
-// DEFAULT-NEXT:         let %17 right: u32 [storage=automatic] = call<u32, signature=fn(u32, u32) -> u32>(%40, read<u32>(%3), read<u32>(%6));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(34)>(%41)), read<u32>(%7), read<u32>(%8), read<i32>(%9), read<i32>(%10), read<i32>(%11), read<i32>(%12), read<i32>(%13), read<i32>(%14), read<i32>(%15), read<u32>(%16), read<u32>(%17));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 34> [storage=static] = code_units<array<i8, 34>>([37, 117, 32, 37, 117, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_bitreverse32:[0-9]+]] @__builtin_bitreverse32(%[[VALUE0:[0-9]+]] <unnamed>: u32) -> u32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_bswap32:[0-9]+]] @__builtin_bswap32(%[[VALUE1:[0-9]+]] <unnamed>: u32) -> u32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_clz:[0-9]+]] @__builtin_clz(%[[VALUE2:[0-9]+]] <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_ctz:[0-9]+]] @__builtin_ctz(%[[VALUE3:[0-9]+]] <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_ffs:[0-9]+]] @__builtin_ffs(%[[VALUE4:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_popcount:[0-9]+]] @__builtin_popcount(%[[VALUE5:[0-9]+]] <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_parity:[0-9]+]] @__builtin_parity(%[[VALUE6:[0-9]+]] <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_clrsb:[0-9]+]] @__builtin_clrsb(%[[VALUE7:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_rotateleft32:[0-9]+]] @__builtin_rotateleft32(%[[VALUE8:[0-9]+]] <unnamed>: u32, %[[VALUE9:[0-9]+]] <unnamed>: u32) -> u32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_rotateright32:[0-9]+]] @__builtin_rotateright32(%[[VALUE10:[0-9]+]] <unnamed>: u32, %[[VALUE11:[0-9]+]] <unnamed>: u32) -> u32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: u32 [storage=automatic] = const<u32>(305419896);
+// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: u32 [storage=automatic] = const<u32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(12345));
+// DEFAULT-NEXT:         let %[[VALUE_sh:[0-9]+]] sh: u32 [storage=automatic] = const<u32>(5);
+// DEFAULT-NEXT:         let %[[VALUE_rev:[0-9]+]] rev: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bitreverse32]], read<u32>(%[[VALUE_u]]));
+// DEFAULT-NEXT:         let %[[VALUE_swapped:[0-9]+]] swapped: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], read<u32>(%[[VALUE_u]]));
+// DEFAULT-NEXT:         let %[[VALUE_leading:[0-9]+]] leading: i32 [storage=automatic] = call<i32, signature=fn(u32) -> i32>(%[[VALUE___builtin_clz]], read<u32>(%[[VALUE_u]]));
+// DEFAULT-NEXT:         let %[[VALUE_trailing:[0-9]+]] trailing: i32 [storage=automatic] = call<i32, signature=fn(u32) -> i32>(%[[VALUE___builtin_ctz]], read<u32>(%[[VALUE_u]]));
+// DEFAULT-NEXT:         let %[[VALUE_first_set:[0-9]+]] first_set: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE___builtin_ffs]], reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(%[[VALUE_u]])));
+// DEFAULT-NEXT:         let %[[VALUE_zero_first:[0-9]+]] zero_first: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE___builtin_ffs]], reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(%[[VALUE_z]])));
+// DEFAULT-NEXT:         let %[[VALUE_ones:[0-9]+]] ones: i32 [storage=automatic] = call<i32, signature=fn(u32) -> i32>(%[[VALUE___builtin_popcount]], read<u32>(%[[VALUE_u]]));
+// DEFAULT-NEXT:         let %[[VALUE_odd:[0-9]+]] odd: i32 [storage=automatic] = call<i32, signature=fn(u32) -> i32>(%[[VALUE___builtin_parity]], read<u32>(%[[VALUE_u]]));
+// DEFAULT-NEXT:         let %[[VALUE_redundant_sign:[0-9]+]] redundant_sign: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE___builtin_clrsb]], read<i32>(%[[VALUE_s]]));
+// DEFAULT-NEXT:         let %[[VALUE_left:[0-9]+]] left: u32 [storage=automatic] = call<u32, signature=fn(u32, u32) -> u32>(%[[VALUE___builtin_rotateleft32]], read<u32>(%[[VALUE_u]]), read<u32>(%[[VALUE_sh]]));
+// DEFAULT-NEXT:         let %[[VALUE_right:[0-9]+]] right: u32 [storage=automatic] = call<u32, signature=fn(u32, u32) -> u32>(%[[VALUE___builtin_rotateright32]], read<u32>(%[[VALUE_u]]), read<u32>(%[[VALUE_sh]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(34)>(%[[VALUE_str]])), read<u32>(%[[VALUE_rev]]), read<u32>(%[[VALUE_swapped]]), read<i32>(%[[VALUE_leading]]), read<i32>(%[[VALUE_trailing]]), read<i32>(%[[VALUE_first_set]]), read<i32>(%[[VALUE_zero_first]]), read<i32>(%[[VALUE_ones]]), read<i32>(%[[VALUE_odd]]), read<i32>(%[[VALUE_redundant_sign]]), read<u32>(%[[VALUE_left]]), read<u32>(%[[VALUE_right]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

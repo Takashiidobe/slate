@@ -54,51 +54,51 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %15 .str15: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([58, 97, 98, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @begfield(%3 tab: i32, %4 ptr: ptr<i8>, %5 lim: ptr<i8>, %6 sword: i32, %7 schar: i32) -> ptr<i8> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(0))
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([58, 97, 98, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_begfield:[0-9]+]] @begfield(%[[VALUE_tab:[0-9]+]] tab: i32, %[[VALUE_ptr:[0-9]+]] ptr: ptr<i8>, %[[VALUE_lim:[0-9]+]] lim: ptr<i8>, %[[VALUE_sword:[0-9]+]] sword: i32, %[[VALUE_schar:[0-9]+]] schar: i32) -> ptr<i8> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_tab]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 while %12 {
-// DEFAULT-NEXT:                     let %16: bool [synthetic];
-// DEFAULT-NEXT:                     if lt<ptr<i8>>(read<ptr<i8>>(%4), read<ptr<i8>>(%5))
-// DEFAULT-NEXT:                         let %17: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:                         let %18: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%17), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%6, read<i32>(%18));
-// DEFAULT-NEXT:                         write<bool>(%16, ne<i32>(read<i32>(%17), const<i32>(0)));
+// DEFAULT-NEXT:                 while %[[VALUE1:[0-9]+]] {
+// DEFAULT-NEXT:                     let %[[VALUE2:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:                     if lt<ptr<i8>>(read<ptr<i8>>(%[[VALUE_ptr]]), read<ptr<i8>>(%[[VALUE_lim]]))
+// DEFAULT-NEXT:                         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_sword]]);
+// DEFAULT-NEXT:                         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_sword]], read<i32>(%[[VALUE4]]));
+// DEFAULT-NEXT:                         write<bool>(%[[VALUE2]], ne<i32>(read<i32>(%[[VALUE3]]), const<i32>(0)));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<bool>(%16, const<bool>(false));
-// DEFAULT-NEXT:                     yield read<bool>(%16);
+// DEFAULT-NEXT:                         write<bool>(%[[VALUE2]], const<bool>(false));
+// DEFAULT-NEXT:                     yield read<bool>(%[[VALUE2]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         while %13 logical_and<bool>(lt<ptr<i8>>(read<ptr<i8>>(%4), read<ptr<i8>>(%5)), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%4)))), read<i32>(%3)))
-// DEFAULT-NEXT:                             let %19: ptr<i8> [synthetic] = read<ptr<i8>>(%4);
-// DEFAULT-NEXT:                             let %20: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%19), const<i32>(1));
-// DEFAULT-NEXT:                             write<ptr<i8>>(%4, read<ptr<i8>>(%20));
-// DEFAULT-NEXT:                         if lt<ptr<i8>>(read<ptr<i8>>(%4), read<ptr<i8>>(%5))
-// DEFAULT-NEXT:                             let %21: ptr<i8> [synthetic] = read<ptr<i8>>(%4);
-// DEFAULT-NEXT:                             let %22: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%21), const<i32>(1));
-// DEFAULT-NEXT:                             write<ptr<i8>>(%4, read<ptr<i8>>(%22));
+// DEFAULT-NEXT:                         while %[[VALUE5:[0-9]+]] logical_and<bool>(lt<ptr<i8>>(read<ptr<i8>>(%[[VALUE_ptr]]), read<ptr<i8>>(%[[VALUE_lim]])), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_ptr]])))), read<i32>(%[[VALUE_tab]])))
+// DEFAULT-NEXT:                             let %[[VALUE6:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_ptr]]);
+// DEFAULT-NEXT:                             let %[[VALUE7:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE6]]), const<i32>(1));
+// DEFAULT-NEXT:                             write<ptr<i8>>(%[[VALUE_ptr]], read<ptr<i8>>(%[[VALUE7]]));
+// DEFAULT-NEXT:                         if lt<ptr<i8>>(read<ptr<i8>>(%[[VALUE_ptr]]), read<ptr<i8>>(%[[VALUE_lim]]))
+// DEFAULT-NEXT:                             let %[[VALUE8:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_ptr]]);
+// DEFAULT-NEXT:                             let %[[VALUE9:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE8]]), const<i32>(1));
+// DEFAULT-NEXT:                             write<ptr<i8>>(%[[VALUE_ptr]], read<ptr<i8>>(%[[VALUE9]]));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 while %14 ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:                 while %[[VALUE10:[0-9]+]] ne<i32>(const<i32>(1), const<i32>(0))
 // DEFAULT-NEXT:                     ;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if le<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), read<i32>(%7)), read<ptr<i8>>(%5))
-// DEFAULT-NEXT:             let %23: ptr<i8> [synthetic] = read<ptr<i8>>(%4);
-// DEFAULT-NEXT:             let %24: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%23), read<i32>(%7));
-// DEFAULT-NEXT:             write<ptr<i8>>(%4, read<ptr<i8>>(%24));
-// DEFAULT-NEXT:         return read<ptr<i8>>(%4);
+// DEFAULT-NEXT:         if le<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_ptr]]), read<i32>(%[[VALUE_schar]])), read<ptr<i8>>(%[[VALUE_lim]]))
+// DEFAULT-NEXT:             let %[[VALUE11:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_ptr]]);
+// DEFAULT-NEXT:             let %[[VALUE12:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE11]]), read<i32>(%[[VALUE_schar]]));
+// DEFAULT-NEXT:             write<ptr<i8>>(%[[VALUE_ptr]], read<ptr<i8>>(%[[VALUE12]]));
+// DEFAULT-NEXT:         return read<ptr<i8>>(%[[VALUE_ptr]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 s: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(4)>(%15);
-// DEFAULT-NEXT:         let %10 lim: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(3));
-// DEFAULT-NEXT:         if ne<ptr<i8>>(call<ptr<i8>, signature=fn(i32, ptr<i8>, ptr<i8>, i32, i32) -> ptr<i8>>(%2, const<i32>(58), read<ptr<i8>>(%9), read<ptr<i8>>(%10), const<i32>(1), const<i32>(1)), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]]);
+// DEFAULT-NEXT:         let %[[VALUE_lim_2:[0-9]+]] lim: ptr<i8> [storage=automatic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_s]]), const<i32>(3));
+// DEFAULT-NEXT:         if ne<ptr<i8>>(call<ptr<i8>, signature=fn(i32, ptr<i8>, ptr<i8>, i32, i32) -> ptr<i8>>(%[[VALUE_begfield]], const<i32>(58), read<ptr<i8>>(%[[VALUE_s]]), read<ptr<i8>>(%[[VALUE_lim_2]]), const<i32>(1), const<i32>(1)), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_s]]), const<i32>(2)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -33,7 +33,7 @@ struct trailing_array {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 trailing_array = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_trailing_array:[0-9]+]] trailing_array = struct {
 // DEFAULT-NEXT:         field0 count: i24b;
 // DEFAULT-NEXT:         field1 array: array<i32, incomplete>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 4]];

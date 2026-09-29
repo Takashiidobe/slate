@@ -47,21 +47,21 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 count: i32 : 31;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 4)], field_units=[Some(0)]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%5 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 s: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0));
-// DEFAULT-NEXT:         while %6 {
-// DEFAULT-NEXT:             let %7: i32 [synthetic] = read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..31>(%4));
-// DEFAULT-NEXT:             let %8: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%7), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..4, bits=0..31>(%4), read<i32>(%8));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%7), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(0));
+// DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(bitfield0<unit=0, bytes=0..4, bits=0..31>(%[[VALUE_s]]));
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..4, bits=0..31>(%[[VALUE_s]]), read<i32>(%[[VALUE3]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE2]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

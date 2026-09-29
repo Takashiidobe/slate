@@ -45,25 +45,25 @@ void call(void) { function_reference(); }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 above: i32 [storage=static] [align=16] [linkage=external];
-// IR-NEXT:     global %1 below: i32 [storage=static] [align=1] [linkage=external];
-// IR-NEXT:     global %2 natural: i32 [storage=static] [linkage=external];
-// IR-NEXT:     global %3 alignas_initialized: i32 [storage=static] [align=32] = const<i32>(1) [linkage=external];
-// IR-NEXT:     global %4 redeclared: i32 [storage=static] [align=64] [linkage=external];
-// IR-NEXT:     global %5 incomplete: array<i32, 1> [storage=static] [align=32] [linkage=external];
-// IR-NEXT:     global %6 common_requested: i32 [storage=static] [linkage=external] [common];
-// IR-NEXT:     global %7 nocommon_requested: i32 [storage=static] [linkage=external];
-// IR-NEXT:     global %8 common_wins: i32 [storage=static] [linkage=external] [common];
-// IR-NEXT:     global %9 common_initialized: i32 [storage=static] = const<i32>(3) [linkage=external];
-// IR-NEXT:     global %10 common_internal: i32 [storage=static] [linkage=internal];
-// IR-NEXT:     extern %11 target: i32 [storage=static] [linkage=external];
-// IR-NEXT:     extern %12 reference: i32 [storage=static] [linkage=internal] [weakref="target"];
-// IR-NEXT:     fn %13 @use() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return addr_of<ptr<i32>>(%12);
+// IR-NEXT:     global %[[VALUE_above:[0-9]+]] above: i32 [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     global %[[VALUE_below:[0-9]+]] below: i32 [storage=static] [align=1] [linkage=external];
+// IR-NEXT:     global %[[VALUE_natural:[0-9]+]] natural: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_alignas_initialized:[0-9]+]] alignas_initialized: i32 [storage=static] [align=32] = const<i32>(1) [linkage=external];
+// IR-NEXT:     global %[[VALUE_redeclared:[0-9]+]] redeclared: i32 [storage=static] [align=64] [linkage=external];
+// IR-NEXT:     global %[[VALUE_incomplete:[0-9]+]] incomplete: array<i32, 1> [storage=static] [align=32] [linkage=external];
+// IR-NEXT:     global %[[VALUE_common_requested:[0-9]+]] common_requested: i32 [storage=static] [linkage=external] [common];
+// IR-NEXT:     global %[[VALUE_nocommon_requested:[0-9]+]] nocommon_requested: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_common_wins:[0-9]+]] common_wins: i32 [storage=static] [linkage=external] [common];
+// IR-NEXT:     global %[[VALUE_common_initialized:[0-9]+]] common_initialized: i32 [storage=static] = const<i32>(3) [linkage=external];
+// IR-NEXT:     global %[[VALUE_common_internal:[0-9]+]] common_internal: i32 [storage=static] [linkage=internal];
+// IR-NEXT:     extern %[[VALUE_target:[0-9]+]] target: i32 [storage=static] [linkage=external];
+// IR-NEXT:     extern %[[VALUE_reference:[0-9]+]] reference: i32 [storage=static] [linkage=internal] [weakref="target"];
+// IR-NEXT:     fn %[[VALUE_use:[0-9]+]] @use() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_reference]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %14 @function_reference() -> void [linkage=internal] [weakref="use"];
-// IR-NEXT:     fn %15 @call() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         call<void, signature=fn() -> void>(%14);
+// IR-NEXT:     fn %[[VALUE_function_reference:[0-9]+]] @function_reference() -> void [linkage=internal] [weakref="use"];
+// IR-NEXT:     fn %[[VALUE_call:[0-9]+]] @call() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_function_reference]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

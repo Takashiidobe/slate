@@ -40,11 +40,11 @@ _Static_assert(OVERFLOW == (-2147483647 - 1), "");
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 GccConstants = enum : i32 {
-// IR-NEXT:         %0 SHIFT_HIGH = const<i32>(0);
-// IR-NEXT:         %1 ZERO_SHIFT = const<i32>(0);
-// IR-NEXT:         %2 NEGATIVE_RIGHT = const<i32>(-1);
-// IR-NEXT:         %3 OVERFLOW = const<i32>(-2147483648);
+// IR-NEXT:     type @type[[TYPE_GccConstants:[0-9]+]] GccConstants = enum : i32 {
+// IR-NEXT:         %[[VALUE_SHIFT_HIGH:[0-9]+]] SHIFT_HIGH = const<i32>(0);
+// IR-NEXT:         %[[VALUE_ZERO_SHIFT:[0-9]+]] ZERO_SHIFT = const<i32>(0);
+// IR-NEXT:         %[[VALUE_NEGATIVE_RIGHT:[0-9]+]] NEGATIVE_RIGHT = const<i32>(-1);
+// IR-NEXT:         %[[VALUE_OVERFLOW:[0-9]+]] OVERFLOW = const<i32>(-2147483648);
 // IR-NEXT:     } [size=4, align=4];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

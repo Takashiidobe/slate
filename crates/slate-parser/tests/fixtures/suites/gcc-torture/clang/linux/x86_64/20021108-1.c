@@ -33,10 +33,10 @@ l2:;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         label %1 l1:
-// DEFAULT-NEXT:             return truncate<i32, reason=return, fits=unknown>(ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%1), label_addr<ptr<void>>(%2)));
-// DEFAULT-NEXT:         label %2 l2:
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         label %[[VALUE_l1:[0-9]+]] l1:
+// DEFAULT-NEXT:             return truncate<i32, reason=return, fits=unknown>(ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%[[VALUE_l1]]), label_addr<ptr<void>>(%[[VALUE_l2:[0-9]+]])));
+// DEFAULT-NEXT:         label %[[VALUE_l2]] l2:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

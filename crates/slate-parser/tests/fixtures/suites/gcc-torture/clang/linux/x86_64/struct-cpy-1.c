@@ -61,31 +61,31 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 termios = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_termios:[0-9]+]] termios = struct {
 // DEFAULT-NEXT:         field0 a: u32;
 // DEFAULT-NEXT:         field1 b: u32;
 // DEFAULT-NEXT:         field2 c: u32;
 // DEFAULT-NEXT:         field3 d: u32;
 // DEFAULT-NEXT:         field4 pad: array<u8, 28>;
 // DEFAULT-NEXT:     } [size=44, align=4, offsets=[0, 4, 8, 12, 16]];
-// DEFAULT-NEXT:     type @type1 tty_driver = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_tty_driver:[0-9]+]] tty_driver = struct {
 // DEFAULT-NEXT:         field0 pad1: array<u8, 38>;
-// DEFAULT-NEXT:         field1 t: @type0;
+// DEFAULT-NEXT:         field1 t: @type[[TYPE_termios]];
 // DEFAULT-NEXT:     } [size=88, align=8, offsets=[0, 40]];
-// DEFAULT-NEXT:     global %2 zero_t: @type0 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %3 pty: @type1 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %4 @ini() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<@type0>(field1(%3), copy<@type0, reason=assign>(read<@type0>(%2)));
-// DEFAULT-NEXT:         write<u32>(field0(field1(%3)), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<u32>(field1(field1(%3)), reinterpret<u32, reason=assign, fits=always>(const<i32>(2)));
-// DEFAULT-NEXT:         write<u32>(field2(field1(%3)), reinterpret<u32, reason=assign, fits=always>(const<i32>(3)));
-// DEFAULT-NEXT:         write<u32>(field3(field1(%3)), reinterpret<u32, reason=assign, fits=always>(const<i32>(4)));
+// DEFAULT-NEXT:     global %[[VALUE_zero_t:[0-9]+]] zero_t: @type[[TYPE_termios]] [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_pty:[0-9]+]] pty: @type[[TYPE_tty_driver]] [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_ini:[0-9]+]] @ini() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<@type[[TYPE_termios]]>(field1(%[[VALUE_pty]]), copy<@type[[TYPE_termios]], reason=assign>(read<@type[[TYPE_termios]]>(%[[VALUE_zero_t]])));
+// DEFAULT-NEXT:         write<u32>(field0(field1(%[[VALUE_pty]])), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         write<u32>(field1(field1(%[[VALUE_pty]])), reinterpret<u32, reason=assign, fits=always>(const<i32>(2)));
+// DEFAULT-NEXT:         write<u32>(field2(field1(%[[VALUE_pty]])), reinterpret<u32, reason=assign, fits=always>(const<i32>(3)));
+// DEFAULT-NEXT:         write<u32>(field3(field1(%[[VALUE_pty]])), reinterpret<u32, reason=assign, fits=always>(const<i32>(4)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<u32>(read<u32>(field0(field1(%3))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), ne<u32>(read<u32>(field1(field1(%3))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))), ne<u32>(read<u32>(field2(field1(%3))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))), ne<u32>(read<u32>(field3(field1(%3))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_ini]]);
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<u32>(read<u32>(field0(field1(%[[VALUE_pty]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), ne<u32>(read<u32>(field1(field1(%[[VALUE_pty]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2)))), ne<u32>(read<u32>(field2(field1(%[[VALUE_pty]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))), ne<u32>(read<u32>(field3(field1(%[[VALUE_pty]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

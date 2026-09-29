@@ -41,17 +41,17 @@ void foo ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @bar() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @baz() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 x: i32 [storage=automatic];
-// DEFAULT-NEXT:         do %4
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
+// DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%3, call<i32, signature=fn() -> i32>(%0));
-// DEFAULT-NEXT:                 if eq<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(1))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_x]], call<i32, signature=fn() -> i32>(%[[VALUE_bar]]));
+// DEFAULT-NEXT:                 if eq<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_bar]]), const<i32>(1))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_baz]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while eq<i32>(read<i32>(%3), const<i32>(1));
+// DEFAULT-NEXT:         while eq<i32>(read<i32>(%[[VALUE_x]]), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

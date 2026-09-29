@@ -71,13 +71,13 @@ void assign(int **source) {
 // VALID-NEXT:         storage d64 [size=8, align=8];
 // VALID-NEXT:         storage d128 [size=16, align=16];
 // VALID-NEXT:     }
-// VALID-NEXT:     global %0 inner: ptr<const ptr<i32>> [storage=static] [linkage=external];
-// VALID-NEXT:     global %1 outer: ptr<ptr<i32>> [storage=static] [const] = null<ptr<ptr<i32>>> [linkage=external];
-// VALID-NEXT:     global %2 mixed: ptr<volatile ptr<i32>> [storage=static] [restrict] [linkage=external];
-// VALID-NEXT:     fn %3 @assign(%4 source: ptr<ptr<i32>>) -> void [linkage=external] [fallthrough=ret_void] {
-// VALID-NEXT:         write<ptr<const ptr<i32>>>(%0, pointer_cast<ptr<const ptr<i32>>, reason=assign>(read<ptr<ptr<i32>>>(%4)));
-// VALID-NEXT:         write<i32>(deref(read<ptr<i32>>(deref(read<ptr<ptr<i32>>>(%1)))), const<i32>(1));
-// VALID-NEXT:         write<ptr<i32>, volatile>(deref(read<ptr<volatile ptr<i32>>>(%2)), null<ptr<i32>>);
+// VALID-NEXT:     global %[[VALUE_inner:[0-9]+]] inner: ptr<const ptr<i32>> [storage=static] [linkage=external];
+// VALID-NEXT:     global %[[VALUE_outer:[0-9]+]] outer: ptr<ptr<i32>> [storage=static] [const] = null<ptr<ptr<i32>>> [linkage=external];
+// VALID-NEXT:     global %[[VALUE_mixed:[0-9]+]] mixed: ptr<volatile ptr<i32>> [storage=static] [restrict] [linkage=external];
+// VALID-NEXT:     fn %[[VALUE_assign:[0-9]+]] @assign(%[[VALUE_source:[0-9]+]] source: ptr<ptr<i32>>) -> void [linkage=external] [fallthrough=ret_void] {
+// VALID-NEXT:         write<ptr<const ptr<i32>>>(%[[VALUE_inner]], pointer_cast<ptr<const ptr<i32>>, reason=assign>(read<ptr<ptr<i32>>>(%[[VALUE_source]])));
+// VALID-NEXT:         write<i32>(deref(read<ptr<i32>>(deref(read<ptr<ptr<i32>>>(%[[VALUE_outer]])))), const<i32>(1));
+// VALID-NEXT:         write<ptr<i32>, volatile>(deref(read<ptr<volatile ptr<i32>>>(%[[VALUE_mixed]])), null<ptr<i32>>);
 // VALID-NEXT:     }
 // VALID-NEXT: }
 // SLATE-FILECHECK-END VALID

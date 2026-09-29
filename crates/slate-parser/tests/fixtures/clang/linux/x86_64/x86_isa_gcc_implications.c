@@ -59,11 +59,11 @@ int val__BIGGEST_ALIGNMENT__[__BIGGEST_ALIGNMENT__ + 1];
 // CLANG-NO-FMA-NEXT:         storage d64 [size=8, align=8];
 // CLANG-NO-FMA-NEXT:         storage d128 [size=16, align=16];
 // CLANG-NO-FMA-NEXT:     }
-// CLANG-NO-FMA-NEXT:     global %0 val__SSE4_2__: array<i32, 2> [storage=static] [linkage=external];
-// CLANG-NO-FMA-NEXT:     global %1 val__AVX__: array<i32, 2> [storage=static] [linkage=external];
-// CLANG-NO-FMA-NEXT:     global %2 val__AVX2__: array<i32, 2> [storage=static] [linkage=external];
-// CLANG-NO-FMA-NEXT:     global %3 val__F16C__: array<i32, 2> [storage=static] [linkage=external];
-// CLANG-NO-FMA-NEXT:     global %4 val__XSAVE__: array<i32, 2> [storage=static] [linkage=external];
-// CLANG-NO-FMA-NEXT:     global %5 val__BIGGEST_ALIGNMENT__: array<i32, 17> [storage=static] [align=16] [linkage=external];
+// CLANG-NO-FMA-NEXT:     global %[[VALUE_val__SSE4_2__:[0-9]+]] val__SSE4_2__: array<i32, 2> [storage=static] [linkage=external];
+// CLANG-NO-FMA-NEXT:     global %[[VALUE_val__AVX__:[0-9]+]] val__AVX__: array<i32, 2> [storage=static] [linkage=external];
+// CLANG-NO-FMA-NEXT:     global %[[VALUE_val__AVX2__:[0-9]+]] val__AVX2__: array<i32, 2> [storage=static] [linkage=external];
+// CLANG-NO-FMA-NEXT:     global %[[VALUE_val__F16C__:[0-9]+]] val__F16C__: array<i32, 2> [storage=static] [linkage=external];
+// CLANG-NO-FMA-NEXT:     global %[[VALUE_val__XSAVE__:[0-9]+]] val__XSAVE__: array<i32, 2> [storage=static] [linkage=external];
+// CLANG-NO-FMA-NEXT:     global %[[VALUE_val__BIGGEST_ALIGNMENT__:[0-9]+]] val__BIGGEST_ALIGNMENT__: array<i32, 17> [storage=static] [align=16] [linkage=external];
 // CLANG-NO-FMA-NEXT: }
 // SLATE-FILECHECK-END CLANG-NO-FMA

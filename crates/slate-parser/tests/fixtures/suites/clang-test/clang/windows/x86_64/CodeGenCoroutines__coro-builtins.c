@@ -52,33 +52,33 @@ void f(int n) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @myAlloc(%4 <unnamed>: i64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %9 @__builtin_coro_id(%5 <unnamed>: i32, %6 <unnamed>: ptr<void>, %7 <unnamed>: ptr<void>, %8 <unnamed>: ptr<void>) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %10 @__builtin_coro_alloc() -> bool [linkage=external];
-// DEFAULT-NEXT:     fn %11 @__builtin_coro_noop() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %13 @__builtin_coro_begin(%12 <unnamed>: ptr<void>) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %14 @__builtin_coro_size() -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %16 @__builtin_coro_resume(%15 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %17 @__builtin_coro_frame() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %19 @__builtin_coro_destroy(%18 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %21 @__builtin_coro_done(%20 <unnamed>: ptr<void>) -> bool [linkage=external];
-// DEFAULT-NEXT:     fn %25 @__builtin_coro_promise(%22 <unnamed>: ptr<void>, %23 <unnamed>: i32, %24 <unnamed>: bool) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %27 @__builtin_coro_free(%26 <unnamed>: ptr<void>) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %30 @__builtin_coro_end(%28 <unnamed>: ptr<void>, %29 <unnamed>: bool) -> bool [linkage=external];
-// DEFAULT-NEXT:     fn %32 @__builtin_coro_suspend(%31 <unnamed>: bool) -> i8 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f(%2 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 promise: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(i32, ptr<void>, ptr<void>, ptr<void>) -> ptr<void>>(%9, const<i32>(32), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%3)), null<ptr<void>>, null<ptr<void>>);
-// DEFAULT-NEXT:         call<bool, signature=fn() -> bool>(%10);
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn() -> ptr<void>>(%11);
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%13, call<ptr<void>, signature=fn(i64) -> ptr<void>>(%0, reinterpret<i64, reason=arg, fits=unknown>(call<u64, signature=fn() -> u64>(%14))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%16, call<ptr<void>, signature=fn() -> ptr<void>>(%17));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%19, call<ptr<void>, signature=fn() -> ptr<void>>(%17));
-// DEFAULT-NEXT:         call<bool, signature=fn(ptr<void>) -> bool>(%21, call<ptr<void>, signature=fn() -> ptr<void>>(%17));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, bool) -> ptr<void>>(%25, call<ptr<void>, signature=fn() -> ptr<void>>(%17), const<i32>(48), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%27, call<ptr<void>, signature=fn() -> ptr<void>>(%17));
-// DEFAULT-NEXT:         call<bool, signature=fn(ptr<void>, bool) -> bool>(%30, call<ptr<void>, signature=fn() -> ptr<void>>(%17), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));
-// DEFAULT-NEXT:         call<i8, signature=fn(bool) -> i8>(%32, ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
+// DEFAULT-NEXT:     fn %[[VALUE_myAlloc:[0-9]+]] @myAlloc(%[[VALUE0:[0-9]+]] <unnamed>: i64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_coro_id:[0-9]+]] @__builtin_coro_id(%[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE3:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE4:[0-9]+]] <unnamed>: ptr<void>) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_coro_alloc:[0-9]+]] @__builtin_coro_alloc() -> bool [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_coro_noop:[0-9]+]] @__builtin_coro_noop() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_coro_begin:[0-9]+]] @__builtin_coro_begin(%[[VALUE5:[0-9]+]] <unnamed>: ptr<void>) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_coro_size:[0-9]+]] @__builtin_coro_size() -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_coro_resume:[0-9]+]] @__builtin_coro_resume(%[[VALUE6:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_coro_frame:[0-9]+]] @__builtin_coro_frame() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_coro_destroy:[0-9]+]] @__builtin_coro_destroy(%[[VALUE7:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_coro_done:[0-9]+]] @__builtin_coro_done(%[[VALUE8:[0-9]+]] <unnamed>: ptr<void>) -> bool [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_coro_promise:[0-9]+]] @__builtin_coro_promise(%[[VALUE9:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE10:[0-9]+]] <unnamed>: i32, %[[VALUE11:[0-9]+]] <unnamed>: bool) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_coro_free:[0-9]+]] @__builtin_coro_free(%[[VALUE12:[0-9]+]] <unnamed>: ptr<void>) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_coro_end:[0-9]+]] @__builtin_coro_end(%[[VALUE13:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE14:[0-9]+]] <unnamed>: bool) -> bool [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_coro_suspend:[0-9]+]] @__builtin_coro_suspend(%[[VALUE15:[0-9]+]] <unnamed>: bool) -> i8 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_promise:[0-9]+]] promise: i32 [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(i32, ptr<void>, ptr<void>, ptr<void>) -> ptr<void>>(%[[VALUE___builtin_coro_id]], const<i32>(32), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_promise]])), null<ptr<void>>, null<ptr<void>>);
+// DEFAULT-NEXT:         call<bool, signature=fn() -> bool>(%[[VALUE___builtin_coro_alloc]]);
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE___builtin_coro_noop]]);
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%[[VALUE___builtin_coro_begin]], call<ptr<void>, signature=fn(i64) -> ptr<void>>(%[[VALUE_myAlloc]], reinterpret<i64, reason=arg, fits=unknown>(call<u64, signature=fn() -> u64>(%[[VALUE___builtin_coro_size]]))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE___builtin_coro_resume]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE___builtin_coro_frame]]));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE___builtin_coro_destroy]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE___builtin_coro_frame]]));
+// DEFAULT-NEXT:         call<bool, signature=fn(ptr<void>) -> bool>(%[[VALUE___builtin_coro_done]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE___builtin_coro_frame]]));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, bool) -> ptr<void>>(%[[VALUE___builtin_coro_promise]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE___builtin_coro_frame]]), const<i32>(48), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%[[VALUE___builtin_coro_free]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE___builtin_coro_frame]]));
+// DEFAULT-NEXT:         call<bool, signature=fn(ptr<void>, bool) -> bool>(%[[VALUE___builtin_coro_end]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE___builtin_coro_frame]]), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));
+// DEFAULT-NEXT:         call<i8, signature=fn(bool) -> i8>(%[[VALUE___builtin_coro_suspend]], ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

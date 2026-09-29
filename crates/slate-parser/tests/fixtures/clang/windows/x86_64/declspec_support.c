@@ -53,14 +53,14 @@ int packed_size = sizeof(struct Packed);
 // IR-WARN-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     type @type0 Packed = struct {
+// IR-WARN-NEXT:     type @type[[TYPE_Packed:[0-9]+]] Packed = struct {
 // IR-WARN-NEXT:         field0 c: i8;
 // IR-WARN-NEXT:         field1 i: i32;
 // IR-WARN-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-WARN-NEXT:     extern %0 imported: i32 [storage=static] [linkage=external] [dllimport];
-// IR-WARN-NEXT:     global %1 imported_address: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%0) [linkage=external];
-// IR-WARN-NEXT:     global %2 exported: i32 [storage=static] = const<i32>(1) [linkage=external] [dllexport];
-// IR-WARN-NEXT:     global %3 weak_value: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %5 packed_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
+// IR-WARN-NEXT:     extern %[[VALUE_imported:[0-9]+]] imported: i32 [storage=static] [linkage=external] [dllimport];
+// IR-WARN-NEXT:     global %[[VALUE_imported_address:[0-9]+]] imported_address: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_imported]]) [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_exported:[0-9]+]] exported: i32 [storage=static] = const<i32>(1) [linkage=external] [dllexport];
+// IR-WARN-NEXT:     global %[[VALUE_weak_value:[0-9]+]] weak_value: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_packed_size:[0-9]+]] packed_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
 // IR-WARN-NEXT: }
 // SLATE-FILECHECK-END IR-WARN

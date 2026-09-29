@@ -34,13 +34,13 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 e: array<i8, 2> [storage=automatic] = aggregate<array<i8, 2>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %3 f: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%0), const<i32>(131072))
-// DEFAULT-NEXT:             write<i8>(%3, read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(2)>(%2), read<i32>(%0)))));
-// DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(%3));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: array<i8, 2> [storage=automatic] = aggregate<array<i8, 2>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_a]]), const<i32>(131072))
+// DEFAULT-NEXT:             write<i8>(%[[VALUE_f]], read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_e]]), read<i32>(%[[VALUE_a]])))));
+// DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(%[[VALUE_f]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

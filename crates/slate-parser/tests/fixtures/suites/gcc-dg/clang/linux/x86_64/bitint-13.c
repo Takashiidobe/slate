@@ -42,13 +42,13 @@ int i;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @__builtin_unreachable() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %0 @foo(%1 a: i315b, %2 b: i315b, %3 c: ptr<u32>) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_or<bool>(lt<i315b>(read<i315b>(%1), widen<i315b, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(8)))), gt<i315b>(read<i315b>(%1), widen<i315b, reason=usual_arith>(const<i32>(7))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         if logical_or<bool>(lt<i315b>(read<i315b>(%2), widen<i315b, reason=usual_arith>(const<i32>(0))), gt<i315b>(read<i315b>(%2), widen<i315b, reason=usual_arith>(const<i32>(63))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         return overflow_add<bool>(read<i315b>(%1), read<i315b>(%2), deref(read<ptr<u32>>(%3)));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_unreachable:[0-9]+]] @__builtin_unreachable() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: i315b, %[[VALUE_b:[0-9]+]] b: i315b, %[[VALUE_c:[0-9]+]] c: ptr<u32>) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_or<bool>(lt<i315b>(read<i315b>(%[[VALUE_a]]), widen<i315b, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(8)))), gt<i315b>(read<i315b>(%[[VALUE_a]]), widen<i315b, reason=usual_arith>(const<i32>(7))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_unreachable]]);
+// DEFAULT-NEXT:         if logical_or<bool>(lt<i315b>(read<i315b>(%[[VALUE_b]]), widen<i315b, reason=usual_arith>(const<i32>(0))), gt<i315b>(read<i315b>(%[[VALUE_b]]), widen<i315b, reason=usual_arith>(const<i32>(63))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_unreachable]]);
+// DEFAULT-NEXT:         return overflow_add<bool>(read<i315b>(%[[VALUE_a]]), read<i315b>(%[[VALUE_b]]), deref(read<ptr<u32>>(%[[VALUE_c]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

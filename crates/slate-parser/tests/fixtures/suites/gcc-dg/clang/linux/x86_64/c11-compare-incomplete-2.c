@@ -77,29 +77,29 @@ g4 (int (*p)[], int (*q)[3])
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(%1 p: ptr<array<i32, incomplete>>, %2 q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<ptr<array<i32, incomplete>>>(read<ptr<array<i32, incomplete>>>(%1), pointer_cast<ptr<array<i32, incomplete>>, reason=usual_arith>(read<ptr<array<i32, 3>>>(%2))));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_p:[0-9]+]] p: ptr<array<i32, incomplete>>, %[[VALUE_q:[0-9]+]] q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<ptr<array<i32, incomplete>>>(read<ptr<array<i32, incomplete>>>(%[[VALUE_p]]), pointer_cast<ptr<array<i32, incomplete>>, reason=usual_arith>(read<ptr<array<i32, 3>>>(%[[VALUE_q]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @f2(%4 p: ptr<array<i32, incomplete>>, %5 q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(le<ptr<array<i32, incomplete>>>(read<ptr<array<i32, incomplete>>>(%4), pointer_cast<ptr<array<i32, incomplete>>, reason=usual_arith>(read<ptr<array<i32, 3>>>(%5))));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_p_2:[0-9]+]] p: ptr<array<i32, incomplete>>, %[[VALUE_q_2:[0-9]+]] q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(le<ptr<array<i32, incomplete>>>(read<ptr<array<i32, incomplete>>>(%[[VALUE_p_2]]), pointer_cast<ptr<array<i32, incomplete>>, reason=usual_arith>(read<ptr<array<i32, 3>>>(%[[VALUE_q_2]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f3(%7 p: ptr<array<i32, incomplete>>, %8 q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<ptr<array<i32, incomplete>>>(read<ptr<array<i32, incomplete>>>(%7), pointer_cast<ptr<array<i32, incomplete>>, reason=usual_arith>(read<ptr<array<i32, 3>>>(%8))));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_p_3:[0-9]+]] p: ptr<array<i32, incomplete>>, %[[VALUE_q_3:[0-9]+]] q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<ptr<array<i32, incomplete>>>(read<ptr<array<i32, incomplete>>>(%[[VALUE_p_3]]), pointer_cast<ptr<array<i32, incomplete>>, reason=usual_arith>(read<ptr<array<i32, 3>>>(%[[VALUE_q_3]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @f4(%10 p: ptr<array<i32, incomplete>>, %11 q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<ptr<array<i32, incomplete>>>(read<ptr<array<i32, incomplete>>>(%10), pointer_cast<ptr<array<i32, incomplete>>, reason=usual_arith>(read<ptr<array<i32, 3>>>(%11))));
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_p_4:[0-9]+]] p: ptr<array<i32, incomplete>>, %[[VALUE_q_4:[0-9]+]] q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<ptr<array<i32, incomplete>>>(read<ptr<array<i32, incomplete>>>(%[[VALUE_p_4]]), pointer_cast<ptr<array<i32, incomplete>>, reason=usual_arith>(read<ptr<array<i32, 3>>>(%[[VALUE_q_4]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @g(%13 p: ptr<array<i32, incomplete>>, %14 q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<ptr<array<i32, 3>>>(read<ptr<array<i32, 3>>>(%14), pointer_cast<ptr<array<i32, 3>>, reason=usual_arith>(read<ptr<array<i32, incomplete>>>(%13))));
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_p_5:[0-9]+]] p: ptr<array<i32, incomplete>>, %[[VALUE_q_5:[0-9]+]] q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<ptr<array<i32, 3>>>(read<ptr<array<i32, 3>>>(%[[VALUE_q_5]]), pointer_cast<ptr<array<i32, 3>>, reason=usual_arith>(read<ptr<array<i32, incomplete>>>(%[[VALUE_p_5]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @g2(%16 p: ptr<array<i32, incomplete>>, %17 q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(le<ptr<array<i32, 3>>>(read<ptr<array<i32, 3>>>(%17), pointer_cast<ptr<array<i32, 3>>, reason=usual_arith>(read<ptr<array<i32, incomplete>>>(%16))));
+// DEFAULT-NEXT:     fn %[[VALUE_g2:[0-9]+]] @g2(%[[VALUE_p_6:[0-9]+]] p: ptr<array<i32, incomplete>>, %[[VALUE_q_6:[0-9]+]] q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(le<ptr<array<i32, 3>>>(read<ptr<array<i32, 3>>>(%[[VALUE_q_6]]), pointer_cast<ptr<array<i32, 3>>, reason=usual_arith>(read<ptr<array<i32, incomplete>>>(%[[VALUE_p_6]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @g3(%19 p: ptr<array<i32, incomplete>>, %20 q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<ptr<array<i32, 3>>>(read<ptr<array<i32, 3>>>(%20), pointer_cast<ptr<array<i32, 3>>, reason=usual_arith>(read<ptr<array<i32, incomplete>>>(%19))));
+// DEFAULT-NEXT:     fn %[[VALUE_g3:[0-9]+]] @g3(%[[VALUE_p_7:[0-9]+]] p: ptr<array<i32, incomplete>>, %[[VALUE_q_7:[0-9]+]] q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<ptr<array<i32, 3>>>(read<ptr<array<i32, 3>>>(%[[VALUE_q_7]]), pointer_cast<ptr<array<i32, 3>>, reason=usual_arith>(read<ptr<array<i32, incomplete>>>(%[[VALUE_p_7]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @g4(%22 p: ptr<array<i32, incomplete>>, %23 q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<ptr<array<i32, 3>>>(read<ptr<array<i32, 3>>>(%23), pointer_cast<ptr<array<i32, 3>>, reason=usual_arith>(read<ptr<array<i32, incomplete>>>(%22))));
+// DEFAULT-NEXT:     fn %[[VALUE_g4:[0-9]+]] @g4(%[[VALUE_p_8:[0-9]+]] p: ptr<array<i32, incomplete>>, %[[VALUE_q_8:[0-9]+]] q: ptr<array<i32, 3>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<ptr<array<i32, 3>>>(read<ptr<array<i32, 3>>>(%[[VALUE_q_8]]), pointer_cast<ptr<array<i32, 3>>, reason=usual_arith>(read<ptr<array<i32, incomplete>>>(%[[VALUE_p_8]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

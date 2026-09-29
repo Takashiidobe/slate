@@ -33,55 +33,55 @@ int loops(int x) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @loops(%1 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(0))
-// IR-NEXT:             let %8: i32 [synthetic] = read<i32>(%1);
-// IR-NEXT:             let %9: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%8), const<i32>(1));
-// IR-NEXT:             write<i32>(%1, read<i32>(%9));
+// IR-NEXT:     fn %[[VALUE_loops:[0-9]+]] @loops(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
+// IR-NEXT:             let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// IR-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// IR-NEXT:             write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE1]]));
 // IR-NEXT:         else
 // IR-NEXT:             {
-// IR-NEXT:                 let %10: i32 [synthetic] = read<i32>(%1);
-// IR-NEXT:                 let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), const<i32>(1));
-// IR-NEXT:                 write<i32>(%1, read<i32>(%11));
+// IR-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// IR-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// IR-NEXT:                 write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE3]]));
 // IR-NEXT:             }
-// IR-NEXT:         while %4 ne<i32>(read<i32>(%1), const<i32>(0))
+// IR-NEXT:         while %[[VALUE4:[0-9]+]] ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
 // IR-NEXT:             {
-// IR-NEXT:                 if eq<i32>(read<i32>(%1), const<i32>(2))
-// IR-NEXT:                     break %4;
-// IR-NEXT:                 let %12: i32 [synthetic] = read<i32>(%1);
-// IR-NEXT:                 let %13: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
-// IR-NEXT:                 write<i32>(%1, read<i32>(%13));
-// IR-NEXT:                 continue %4;
+// IR-NEXT:                 if eq<i32>(read<i32>(%[[VALUE_x]]), const<i32>(2))
+// IR-NEXT:                     break %[[VALUE4]];
+// IR-NEXT:                 let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// IR-NEXT:                 let %[[VALUE6:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE5]]), const<i32>(1));
+// IR-NEXT:                 write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE6]]));
+// IR-NEXT:                 continue %[[VALUE4]];
 // IR-NEXT:             }
-// IR-NEXT:         do %5
-// IR-NEXT:             let %14: i32 [synthetic] = read<i32>(%1);
-// IR-NEXT:             let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
-// IR-NEXT:             write<i32>(%1, read<i32>(%15));
-// IR-NEXT:         while lt<i32>(read<i32>(%1), const<i32>(3));
-// IR-NEXT:         for %6
+// IR-NEXT:         do %[[VALUE7:[0-9]+]]
+// IR-NEXT:             let %[[VALUE8:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// IR-NEXT:             let %[[VALUE9:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE8]]), const<i32>(1));
+// IR-NEXT:             write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE9]]));
+// IR-NEXT:         while lt<i32>(read<i32>(%[[VALUE_x]]), const<i32>(3));
+// IR-NEXT:         for %[[VALUE10:[0-9]+]]
 // IR-NEXT:             init:
-// IR-NEXT:                 let %2 i: i32 [storage=automatic] = const<i32>(0);
-// IR-NEXT:                 let %3 j: i32 [storage=automatic] = const<i32>(2);
-// IR-NEXT:             condition: lt<i32>(read<i32>(%2), read<i32>(%3))
+// IR-NEXT:                 let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// IR-NEXT:                 let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic] = const<i32>(2);
+// IR-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_j]]))
 // IR-NEXT:             increment: {
-// IR-NEXT:                 let %16: i32 [synthetic] = read<i32>(%2);
-// IR-NEXT:                 let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
-// IR-NEXT:                 write<i32>(%2, read<i32>(%17));
+// IR-NEXT:                 let %[[VALUE11:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// IR-NEXT:                 let %[[VALUE12:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE11]]), const<i32>(1));
+// IR-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE12]]));
 // IR-NEXT:                 yield void;
 // IR-NEXT:             }
 // IR-NEXT:             body:
 // IR-NEXT:                 {
-// IR-NEXT:                     if ne<i32>(read<i32>(%1), const<i32>(0))
-// IR-NEXT:                         continue %6;
-// IR-NEXT:                     break %6;
+// IR-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
+// IR-NEXT:                         continue %[[VALUE10]];
+// IR-NEXT:                     break %[[VALUE10]];
 // IR-NEXT:                 }
-// IR-NEXT:         for %7
+// IR-NEXT:         for %[[VALUE13:[0-9]+]]
 // IR-NEXT:             init:
 // IR-NEXT:             condition: omitted
 // IR-NEXT:             increment: omitted
 // IR-NEXT:             body:
 // IR-NEXT:                 ;
-// IR-NEXT:         return conditional<i32>(ne<i32>(read<i32>(%1), const<i32>(0)), read<i32>(%1), const<i32>(1));
+// IR-NEXT:         return conditional<i32>(ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0)), read<i32>(%[[VALUE_x]]), const<i32>(1));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

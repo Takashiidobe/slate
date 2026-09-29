@@ -38,12 +38,12 @@ foo (_BitInt(128) *b)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 b: ptr<i128b>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2: i128b [synthetic] = update<i128b, result=new, atomic=seq_cst>(deref(read<ptr<i128b>>(%1)), add<i128b, overflow=wrap>(old<i128b>, widen<i128b, reason=arg>(const<i32>(1))));
-// DEFAULT-NEXT:         let %3: i128b [synthetic] = compare_exchange<i128b, form=old, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<i128b>>(%1)), widen<i128b, reason=arg>(const<i32>(0)), widen<i128b, reason=arg>(const<i32>(1)));
-// DEFAULT-NEXT:         let %4: bool [synthetic] = compare_exchange<i128b, form=success, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<i128b>>(%1)), widen<i128b, reason=arg>(const<i32>(0)), widen<i128b, reason=arg>(const<i32>(1)));
-// DEFAULT-NEXT:         let %5: i128b [synthetic] = update<i128b, result=old, atomic=acquire>(deref(read<ptr<i128b>>(%1)), widen<i128b, reason=arg>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i128b, atomic=release>(deref(read<ptr<i128b>>(%1)), const<i128b>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_b:[0-9]+]] b: ptr<i128b>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i128b [synthetic] = update<i128b, result=new, atomic=seq_cst>(deref(read<ptr<i128b>>(%[[VALUE_b]])), add<i128b, overflow=wrap>(old<i128b>, widen<i128b, reason=arg>(const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i128b [synthetic] = compare_exchange<i128b, form=old, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<i128b>>(%[[VALUE_b]])), widen<i128b, reason=arg>(const<i32>(0)), widen<i128b, reason=arg>(const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic] = compare_exchange<i128b, form=success, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<i128b>>(%[[VALUE_b]])), widen<i128b, reason=arg>(const<i32>(0)), widen<i128b, reason=arg>(const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i128b [synthetic] = update<i128b, result=old, atomic=acquire>(deref(read<ptr<i128b>>(%[[VALUE_b]])), widen<i128b, reason=arg>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i128b, atomic=release>(deref(read<ptr<i128b>>(%[[VALUE_b]])), const<i128b>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

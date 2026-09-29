@@ -38,17 +38,17 @@ long double lh = __builtin_huge_vall();
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 fi: f32 [storage=static] = call<f32, signature=fn() -> f32>(%6) [linkage=external];
-// DEFAULT-NEXT:     global %1 di: f64 [storage=static] = call<f64, signature=fn() -> f64>(%7) [linkage=external];
-// DEFAULT-NEXT:     global %2 li: f80 [storage=static] = call<f80, signature=fn() -> f80>(%8) [linkage=external];
-// DEFAULT-NEXT:     global %3 fh: f32 [storage=static] = call<f32, signature=fn() -> f32>(%9) [linkage=external];
-// DEFAULT-NEXT:     global %4 dh: f64 [storage=static] = call<f64, signature=fn() -> f64>(%10) [linkage=external];
-// DEFAULT-NEXT:     global %5 lh: f80 [storage=static] = call<f80, signature=fn() -> f80>(%11) [linkage=external];
-// DEFAULT-NEXT:     fn %6 @__builtin_inff() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %7 @__builtin_inf() -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %8 @__builtin_infl() -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %9 @__builtin_huge_valf() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %10 @__builtin_huge_val() -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %11 @__builtin_huge_vall() -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     global %[[VALUE_fi:[0-9]+]] fi: f32 [storage=static] = call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff:[0-9]+]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_di:[0-9]+]] di: f64 [storage=static] = call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf:[0-9]+]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_li:[0-9]+]] li: f80 [storage=static] = call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl:[0-9]+]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_fh:[0-9]+]] fh: f32 [storage=static] = call<f32, signature=fn() -> f32>(%[[VALUE___builtin_huge_valf:[0-9]+]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_dh:[0-9]+]] dh: f64 [storage=static] = call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val:[0-9]+]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_lh:[0-9]+]] lh: f80 [storage=static] = call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall:[0-9]+]]) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_inf]] @__builtin_inf() -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_infl]] @__builtin_infl() -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_valf]] @__builtin_huge_valf() -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_val]] @__builtin_huge_val() -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_vall]] @__builtin_huge_vall() -> f80 [linkage=external] [memory=none];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

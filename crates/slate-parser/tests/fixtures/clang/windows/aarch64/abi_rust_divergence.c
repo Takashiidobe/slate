@@ -34,34 +34,34 @@ struct floats fixed_floats(struct floats value) { return value; }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 floats = struct {
+// IR-NEXT:     type @type[[TYPE_floats:[0-9]+]] floats = struct {
 // IR-NEXT:         field0 a: f32;
 // IR-NEXT:         field1 b: f32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type1 doubles = struct {
+// IR-NEXT:     type @type[[TYPE_doubles:[0-9]+]] doubles = struct {
 // IR-NEXT:         field0 a: f64;
 // IR-NEXT:         field1 b: f64;
 // IR-NEXT:         field2 c: f64;
 // IR-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// IR-NEXT:     type @type2 ints = struct {
+// IR-NEXT:     type @type[[TYPE_ints:[0-9]+]] ints = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     fn %3 @sink(%14 <unnamed>: i32, ...) -> void [linkage=external];
-// IR-NEXT:     fn %4 @variadic_floats(%5 value: @type0) -> void [linkage=external] [abi=win_arm64(native_c) -> void] [fallthrough=ret_void] {
-// IR-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=win_arm64(scalar, coerce<i64>) -> void>(%3, const<i32>(1), copy<@type0, reason=vararg>(read<@type0>(%5)));
+// IR-NEXT:     fn %[[VALUE_sink:[0-9]+]] @sink(%[[VALUE0:[0-9]+]] <unnamed>: i32, ...) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_variadic_floats:[0-9]+]] @variadic_floats(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_floats]]) -> void [linkage=external] [abi=win_arm64(native_c) -> void] [fallthrough=ret_void] {
+// IR-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=win_arm64(scalar, coerce<i64>) -> void>(%[[VALUE_sink]], const<i32>(1), copy<@type[[TYPE_floats]], reason=vararg>(read<@type[[TYPE_floats]]>(%[[VALUE_value]])));
 // IR-NEXT:     }
-// IR-NEXT:     fn %6 @variadic_doubles(%7 value: @type1) -> void [linkage=external] [abi=win_arm64(native_c) -> void] [fallthrough=ret_void] {
-// IR-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=win_arm64(scalar, byref<align=8>) -> void>(%3, const<i32>(1), copy<@type1, reason=vararg>(read<@type1>(%7)));
+// IR-NEXT:     fn %[[VALUE_variadic_doubles:[0-9]+]] @variadic_doubles(%[[VALUE_value_2:[0-9]+]] value: @type[[TYPE_doubles]]) -> void [linkage=external] [abi=win_arm64(native_c) -> void] [fallthrough=ret_void] {
+// IR-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=win_arm64(scalar, byref<align=8>) -> void>(%[[VALUE_sink]], const<i32>(1), copy<@type[[TYPE_doubles]], reason=vararg>(read<@type[[TYPE_doubles]]>(%[[VALUE_value_2]])));
 // IR-NEXT:     }
-// IR-NEXT:     fn %8 @variadic_ints(%9 value: @type2) -> void [linkage=external] [abi=win_arm64(native_c) -> void] [fallthrough=ret_void] {
-// IR-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=win_arm64(scalar, native_c) -> void>(%3, const<i32>(1), copy<@type2, reason=vararg>(read<@type2>(%9)));
+// IR-NEXT:     fn %[[VALUE_variadic_ints:[0-9]+]] @variadic_ints(%[[VALUE_value_3:[0-9]+]] value: @type[[TYPE_ints]]) -> void [linkage=external] [abi=win_arm64(native_c) -> void] [fallthrough=ret_void] {
+// IR-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=win_arm64(scalar, native_c) -> void>(%[[VALUE_sink]], const<i32>(1), copy<@type[[TYPE_ints]], reason=vararg>(read<@type[[TYPE_ints]]>(%[[VALUE_value_3]])));
 // IR-NEXT:     }
-// IR-NEXT:     fn %10 @variadic_complex(%11 value: complex<f32>) -> void [linkage=external] [abi=win_arm64(native_c) -> void] [fallthrough=ret_void] {
-// IR-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=win_arm64(scalar, coerce<i64>) -> void>(%3, const<i32>(1), read<complex<f32>>(%11));
+// IR-NEXT:     fn %[[VALUE_variadic_complex:[0-9]+]] @variadic_complex(%[[VALUE_value_4:[0-9]+]] value: complex<f32>) -> void [linkage=external] [abi=win_arm64(native_c) -> void] [fallthrough=ret_void] {
+// IR-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=win_arm64(scalar, coerce<i64>) -> void>(%[[VALUE_sink]], const<i32>(1), read<complex<f32>>(%[[VALUE_value_4]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %12 @fixed_floats(%13 value: @type0) -> @type0 [linkage=external] [abi=win_arm64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type0, reason=return>(read<@type0>(%13));
+// IR-NEXT:     fn %[[VALUE_fixed_floats:[0-9]+]] @fixed_floats(%[[VALUE_value_5:[0-9]+]] value: @type[[TYPE_floats]]) -> @type[[TYPE_floats]] [linkage=external] [abi=win_arm64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_floats]], reason=return>(read<@type[[TYPE_floats]]>(%[[VALUE_value_5]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

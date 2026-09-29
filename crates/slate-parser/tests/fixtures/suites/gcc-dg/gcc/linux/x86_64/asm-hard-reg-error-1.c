@@ -112,14 +112,14 @@ test (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: array<i32, 128>;
 // DEFAULT-NEXT:     } [size=512, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %1 s: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = aggregate<array<i32, 128>, zero_fill=true>(index0 = const<i32>(0))) [linkage=external];
-// DEFAULT-NEXT:     fn %2 @test() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 x: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %4 y: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %5 gpr1: i32 [storage=automatic] [register="rax"] = const<i32>(0);
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE0]] [storage=static] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = aggregate<array<i32, 128>, zero_fill=true>(index0 = const<i32>(0))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_gpr1:[0-9]+]] gpr1: i32 [storage=automatic] [register="rax"] = const<i32>(0);
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=nomem,nostack] {
 // DEFAULT-NEXT:             in 0 "{}" [{}] width 32 const<i32>(42);
 // DEFAULT-NEXT:         }
@@ -130,15 +130,15 @@ test (void)
 // DEFAULT-NEXT:             in 0 "{rax" [unresolved("{") | reg | {ax} | xmm_reg] -> reg width 32 const<i32>(42);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=nomem,nostack] {
-// DEFAULT-NEXT:             in 0 "{rax}" [{ax}] width 4096 read<@type0>(%1);
+// DEFAULT-NEXT:             in 0 "{rax}" [{ax}] width 4096 read<@type[[TYPE0]]>(%[[VALUE_s]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=nomem,nostack] {
-// DEFAULT-NEXT:             in 0 "r" [reg] width 32 read<i32>(%5);
+// DEFAULT-NEXT:             in 0 "r" [reg] width 32 read<i32>(%[[VALUE_gpr1]]);
 // DEFAULT-NEXT:             in 1 "{rax}" [{ax}] width 32 const<i32>(42);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=nomem,nostack] {
 // DEFAULT-NEXT:             in 0 "{rax}" [{ax}] width 32 const<i32>(42);
-// DEFAULT-NEXT:             in 1 "r" [reg] width 32 read<i32>(%5);
+// DEFAULT-NEXT:             in 1 "r" [reg] width 32 read<i32>(%[[VALUE_gpr1]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=nomem,nostack] {
 // DEFAULT-NEXT:             in 0 "{rax}" [{ax}] width 32 const<i32>(42);
@@ -157,65 +157,65 @@ test (void)
 // DEFAULT-NEXT:             in 1 "{rax},{rcx}" [{ax}, {cx}] width 32 const<i32>(42);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             inlateout 0 "{rax}" [{ax}] width 32 place<i32>(%3);
-// DEFAULT-NEXT:             lateout 1 "{rax}" [{ax}] width 32 place<i32>(%4);
+// DEFAULT-NEXT:             inlateout 0 "{rax}" [{ax}] width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             lateout 1 "{rax}" [{ax}] width 32 place<i32>(%[[VALUE_y]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             inlateout 0 "{rax}" [{ax}] width 32 place<i32>(%4) from const<i32>(42);
+// DEFAULT-NEXT:             inlateout 0 "{rax}" [{ax}] width 32 place<i32>(%[[VALUE_y]]) from const<i32>(42);
 // DEFAULT-NEXT:             in 1 "{rax}" [{ax}] width 32 const<i32>(42);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             inlateout 0 "{rax}" [{ax}] width 32 place<i32>(%3);
+// DEFAULT-NEXT:             inlateout 0 "{rax}" [{ax}] width 32 place<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:             in 1 "{rax}" [{ax}] width 32 const<i32>(42);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             lateout 0 "{rax}" [{ax}] width 32 place<i32>(%5);
+// DEFAULT-NEXT:             lateout 0 "{rax}" [{ax}] width 32 place<i32>(%[[VALUE_gpr1]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             lateout 0 "{rbx}" [{bx}] width 32 place<i32>(%5);
+// DEFAULT-NEXT:             lateout 0 "{rbx}" [{bx}] width 32 place<i32>(%[[VALUE_gpr1]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=nomem,nostack] {
-// DEFAULT-NEXT:             in 0 "{rbx}" [{bx}] width 32 read<i32>(%5);
+// DEFAULT-NEXT:             in 0 "{rbx}" [{bx}] width 32 read<i32>(%[[VALUE_gpr1]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             inlateout 0 "{rax}" [{ax}] width 32 place<i32>(%3) from read<i32>(%5);
+// DEFAULT-NEXT:             inlateout 0 "{rax}" [{ax}] width 32 place<i32>(%[[VALUE_x]]) from read<i32>(%[[VALUE_gpr1]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             inlateout 0 "{rbx}" [{bx}] width 32 place<i32>(%3) from read<i32>(%5);
+// DEFAULT-NEXT:             inlateout 0 "{rbx}" [{bx}] width 32 place<i32>(%[[VALUE_x]]) from read<i32>(%[[VALUE_gpr1]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             inout 0 "{rax}" [{ax}] width 32 place<i32>(%3) from read<i32>(%5);
+// DEFAULT-NEXT:             inout 0 "{rax}" [{ax}] width 32 place<i32>(%[[VALUE_x]]) from read<i32>(%[[VALUE_gpr1]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             inout 0 "{rax}" [{ax}] width 32 place<i32>(%3) from const<i32>(42);
+// DEFAULT-NEXT:             inout 0 "{rax}" [{ax}] width 32 place<i32>(%[[VALUE_x]]) from const<i32>(42);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] [alternative=0] {
-// DEFAULT-NEXT:             out 0 "{rbx},{rax}" [{bx}, {ax}] width 32 place<i32>(%3);
+// DEFAULT-NEXT:             out 0 "{rbx},{rax}" [{bx}, {ax}] width 32 place<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:             in 1 "r,{rax}" [reg, {ax}] width 32 const<i32>(42);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] [alternative=0] {
-// DEFAULT-NEXT:             out 0 "{rbx},{rax}" [{bx}, {ax}] width 32 place<i32>(%3);
+// DEFAULT-NEXT:             out 0 "{rbx},{rax}" [{bx}, {ax}] width 32 place<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:             in 1 "r,{rax}" [reg, {ax}] width 32 const<i32>(42);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             out 0 "{rax}" [{ax}] width 32 place<i32>(%3);
+// DEFAULT-NEXT:             out 0 "{rax}" [{ax}] width 32 place<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:             in 1 "{rax}" [{ax}] width 32 const<i32>(42);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] [alternative=0] {
-// DEFAULT-NEXT:             out 0 "{rbx},{rax}" [{bx}, {ax}] width 32 place<i32>(%3);
-// DEFAULT-NEXT:             in 1 "r,r" [reg, reg] width 32 read<i32>(%5);
+// DEFAULT-NEXT:             out 0 "{rbx},{rax}" [{bx}, {ax}] width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "r,r" [reg, reg] width 32 read<i32>(%[[VALUE_gpr1]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] [alternative=0] {
-// DEFAULT-NEXT:             out 0 "{rbx},{rax}" [{bx}, {ax}] width 32 place<i32>(%3);
-// DEFAULT-NEXT:             in 1 "r,r" [reg, reg] width 32 read<i32>(%5);
+// DEFAULT-NEXT:             out 0 "{rbx},{rax}" [{bx}, {ax}] width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "r,r" [reg, reg] width 32 read<i32>(%[[VALUE_gpr1]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             out 0 "r" [reg] width 32 place<i32>(%5);
+// DEFAULT-NEXT:             out 0 "r" [reg] width 32 place<i32>(%[[VALUE_gpr1]]);
 // DEFAULT-NEXT:             in 1 "{rax}" [{ax}] width 32 const<i32>(42);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             out 0 "{rax}" [{ax}] width 32 place<i32>(%3);
-// DEFAULT-NEXT:             inlateout 1 "r" [reg] width 32 place<i32>(%4) from read<i32>(%5);
+// DEFAULT-NEXT:             out 0 "{rax}" [{ax}] width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             inlateout 1 "r" [reg] width 32 place<i32>(%[[VALUE_y]]) from read<i32>(%[[VALUE_gpr1]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

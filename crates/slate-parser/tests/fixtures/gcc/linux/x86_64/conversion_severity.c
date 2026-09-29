@@ -56,8 +56,8 @@ int *to_pointer(int value) { return value; }
 // IR-C89-NEXT:         storage d64 [size=8, align=8];
 // IR-C89-NEXT:         storage d128 [size=16, align=16];
 // IR-C89-NEXT:     }
-// IR-C89-NEXT:     fn %0 @to_pointer(%1 value: i32) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// IR-C89-NEXT:         return int_to_ptr<ptr<i32>, reason=return>(read<i32>(%1));
+// IR-C89-NEXT:     fn %[[VALUE_to_pointer:[0-9]+]] @to_pointer(%[[VALUE_value:[0-9]+]] value: i32) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// IR-C89-NEXT:         return int_to_ptr<ptr<i32>, reason=return>(read<i32>(%[[VALUE_value]]));
 // IR-C89-NEXT:     }
 // IR-C89-NEXT: }
 // SLATE-FILECHECK-END IR-C89
@@ -84,8 +84,8 @@ int *to_pointer(int value) { return value; }
 // IR-GNU89-NEXT:         storage d64 [size=8, align=8];
 // IR-GNU89-NEXT:         storage d128 [size=16, align=16];
 // IR-GNU89-NEXT:     }
-// IR-GNU89-NEXT:     fn %0 @to_pointer(%1 value: i32) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// IR-GNU89-NEXT:         return int_to_ptr<ptr<i32>, reason=return>(read<i32>(%1));
+// IR-GNU89-NEXT:     fn %[[VALUE_to_pointer:[0-9]+]] @to_pointer(%[[VALUE_value:[0-9]+]] value: i32) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// IR-GNU89-NEXT:         return int_to_ptr<ptr<i32>, reason=return>(read<i32>(%[[VALUE_value]]));
 // IR-GNU89-NEXT:     }
 // IR-GNU89-NEXT: }
 // SLATE-FILECHECK-END IR-GNU89

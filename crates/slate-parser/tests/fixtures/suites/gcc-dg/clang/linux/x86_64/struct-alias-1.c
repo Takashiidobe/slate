@@ -47,18 +47,18 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 a: array<i32, 3>;
 // DEFAULT-NEXT:         field1 x: i32;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 12]];
-// DEFAULT-NEXT:     global %2 i: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @link_error() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 s: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field1(%4), const<i32>(0));
-// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field0(%4)), read<i32>(%2))), const<i32>(1));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(field1(%4)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_link_error:[0-9]+]] @link_error() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_s]]), const<i32>(0));
+// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(field0(%[[VALUE_s]])), read<i32>(%[[VALUE_i]]))), const<i32>(1));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(field1(%[[VALUE_s]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

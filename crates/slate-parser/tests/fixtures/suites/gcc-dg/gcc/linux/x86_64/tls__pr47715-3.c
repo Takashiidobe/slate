@@ -43,14 +43,14 @@ foo ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 initial_sp = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_initial_sp:[0-9]+]] initial_sp = struct {
 // DEFAULT-NEXT:         field0 sp: ptr<void>;
 // DEFAULT-NEXT:         field1 len: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %1 __morestack_initial_sp: @type0 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @bar(%4 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%2, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i64>>(field1(%1))));
+// DEFAULT-NEXT:     global %[[VALUE___morestack_initial_sp:[0-9]+]] __morestack_initial_sp: @type[[TYPE_initial_sp]] [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_bar]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i64>>(field1(%[[VALUE___morestack_initial_sp]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

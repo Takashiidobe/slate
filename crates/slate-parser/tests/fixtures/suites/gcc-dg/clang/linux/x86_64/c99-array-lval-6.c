@@ -40,12 +40,12 @@ void bar(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 c: array<i8, 1>;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @foo() -> @type0 [linkage=external] [abi=sysv64() -> native_c];
-// DEFAULT-NEXT:     fn %2 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 ptr: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(1)>(field0(temporary %4 = call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%1)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> @type[[TYPE_s]] [linkage=external] [abi=sysv64() -> native_c];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ptr:[0-9]+]] ptr: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE0:[0-9]+]] = call<@type[[TYPE_s]], signature=fn() -> @type[[TYPE_s]], abi=sysv64() -> native_c>(%[[VALUE_foo]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -43,19 +43,19 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 f: i32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// DEFAULT-NEXT:     global %2 s: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 v: i32 [storage=static] = neg<i32, overflow=ub>(const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @foo(%5 x: u32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%5), neg<u32, overflow=wrap>(const<u32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: i32 [storage=static] = neg<i32, overflow=ub>(const<i32>(1)) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: u32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_x]]), neg<u32, overflow=wrap>(const<u32>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2), from_bool<i32, reason=assign>(gt<i32>(and<i32>(read<i32>(%3), const<i32>(1)), const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%4, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2))));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_s]]), from_bool<i32, reason=assign>(gt<i32>(and<i32>(read<i32>(%[[VALUE_v]]), const<i32>(1)), const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%[[VALUE_foo]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_s]]))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

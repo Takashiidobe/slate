@@ -46,25 +46,25 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Point = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Point:[0-9]+]] Point = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:         field1 y: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 Point = @type0;
-// DEFAULT-NEXT:     fn %2 @sum_point(%3 p: @type0) -> i32 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(field0(%3)), read<i32>(field1(%3)));
+// DEFAULT-NEXT:     type @type[[TYPE_Point_2:[0-9]+]] Point = @type[[TYPE_Point]];
+// DEFAULT-NEXT:     fn %[[VALUE_sum_point:[0-9]+]] @sum_point(%[[VALUE_p:[0-9]+]] p: @type[[TYPE_Point]]) -> i32 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(field0(%[[VALUE_p]])), read<i32>(field1(%[[VALUE_p]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @compute() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 a: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(compound_literal %9 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2))));
-// DEFAULT-NEXT:         let %6 total: i32 [storage=automatic] = call<i32, signature=fn(@type0) -> i32, abi=sysv64(native_c) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(compound_literal %10 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4)))));
-// DEFAULT-NEXT:         let %7 b: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(compound_literal %11 [storage=automatic] = aggregate<@type0, zero_fill=true>(field1 = const<i32>(5))));
-// DEFAULT-NEXT:         let %12: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:         let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), add<i32, overflow=ub>(read<i32>(field0(%5)), read<i32>(field1(%7))));
-// DEFAULT-NEXT:         write<i32>(%6, read<i32>(%13));
-// DEFAULT-NEXT:         return read<i32>(%6);
+// DEFAULT-NEXT:     fn %[[VALUE_compute:[0-9]+]] @compute() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_Point]] [storage=automatic] = copy<@type[[TYPE_Point]], reason=assign>(read<@type[[TYPE_Point]]>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_Point]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2))));
+// DEFAULT-NEXT:         let %[[VALUE_total:[0-9]+]] total: i32 [storage=automatic] = call<i32, signature=fn(@type[[TYPE_Point]]) -> i32, abi=sysv64(native_c) -> scalar>(%[[VALUE_sum_point]], copy<@type[[TYPE_Point]], reason=arg>(read<@type[[TYPE_Point]]>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_Point]], zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4)))));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_Point]] [storage=automatic] = copy<@type[[TYPE_Point]], reason=assign>(read<@type[[TYPE_Point]]>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_Point]], zero_fill=true>(field1 = const<i32>(5))));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), add<i32, overflow=ub>(read<i32>(field0(%[[VALUE_a]])), read<i32>(field1(%[[VALUE_b]]))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE4]]));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_total]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         return call<i32, signature=fn() -> i32>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         return call<i32, signature=fn() -> i32>(%[[VALUE_compute]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

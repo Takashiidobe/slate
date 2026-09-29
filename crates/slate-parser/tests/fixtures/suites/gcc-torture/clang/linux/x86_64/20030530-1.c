@@ -48,27 +48,27 @@ java_check_regular_methods (tree class_decl)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 tree_node = union {
-// DEFAULT-NEXT:         field0 common: @type2;
+// DEFAULT-NEXT:     type @type[[TYPE_tree_node:[0-9]+]] tree_node = union {
+// DEFAULT-NEXT:         field0 common: @type[[TYPE_tree_common:[0-9]+]];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 tree = ptr<@type0>;
-// DEFAULT-NEXT:     type @type2 tree_common = struct {
-// DEFAULT-NEXT:         field0 type: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_tree:[0-9]+]] tree = ptr<@type[[TYPE_tree_node]]>;
+// DEFAULT-NEXT:     type @type[[TYPE_tree_common]] tree_common = struct {
+// DEFAULT-NEXT:         field0 type: ptr<@type[[TYPE_tree_node]]>;
 // DEFAULT-NEXT:         field1 lang_flag_0: u32 : 1;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8], bit_offsets=[None, Some(64)], bit_units=[(8, 1)], field_units=[None, Some(0)]];
-// DEFAULT-NEXT:     fn %3 @bar(%8 <unnamed>: ptr<@type0>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @java_check_regular_methods(%5 class_decl: ptr<@type0>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %6 saw_constructor: i32 [storage=automatic] = reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=8..9, bits=0..1>(field0(deref(read<ptr<@type0>>(field0(field0(deref(read<ptr<@type0>>(%5))))))))));
-// DEFAULT-NEXT:         let %7 class: ptr<@type0> [storage=automatic] = read<ptr<@type0>>(field0(field0(deref(read<ptr<@type0>>(%5)))));
-// DEFAULT-NEXT:         for %9
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_tree_node]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_java_check_regular_methods:[0-9]+]] @java_check_regular_methods(%[[VALUE_class_decl:[0-9]+]] class_decl: ptr<@type[[TYPE_tree_node]]>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_saw_constructor:[0-9]+]] saw_constructor: i32 [storage=automatic] = reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=8..9, bits=0..1>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(field0(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_class_decl]]))))))))));
+// DEFAULT-NEXT:         let %[[VALUE_class:[0-9]+]] class: ptr<@type[[TYPE_tree_node]]> [storage=automatic] = read<ptr<@type[[TYPE_tree_node]]>>(field0(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_class_decl]])))));
+// DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: omitted
 // DEFAULT-NEXT:             increment: omitted
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ne<ptr<@type0>>(read<ptr<@type0>>(%7), null<ptr<@type0>>)
-// DEFAULT-NEXT:                         if ne<ptr<@type0>>(read<ptr<@type0>>(field0(field0(deref(read<ptr<@type0>>(%5))))), null<ptr<@type0>>)
-// DEFAULT-NEXT:                             call<void, signature=fn(ptr<@type0>) -> void>(%3, read<ptr<@type0>>(%7));
+// DEFAULT-NEXT:                     if ne<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_class]]), null<ptr<@type[[TYPE_tree_node]]>>)
+// DEFAULT-NEXT:                         if ne<ptr<@type[[TYPE_tree_node]]>>(read<ptr<@type[[TYPE_tree_node]]>>(field0(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_class_decl]]))))), null<ptr<@type[[TYPE_tree_node]]>>)
+// DEFAULT-NEXT:                             call<void, signature=fn(ptr<@type[[TYPE_tree_node]]>) -> void>(%[[VALUE_bar]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_class]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

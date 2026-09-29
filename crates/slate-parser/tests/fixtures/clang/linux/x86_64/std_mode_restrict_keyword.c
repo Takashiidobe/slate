@@ -37,8 +37,8 @@ char *__restrict always_restrict;
 // C89-NEXT:         storage d64 [size=8, align=8];
 // C89-NEXT:         storage d128 [size=16, align=16];
 // C89-NEXT:     }
-// C89-NEXT:     global %0 restrict: i32 [storage=static] [linkage=external];
-// C89-NEXT:     global %1 always_restrict: ptr<i8> [storage=static] [restrict] [linkage=external];
+// C89-NEXT:     global %[[VALUE_restrict:[0-9]+]] restrict: i32 [storage=static] [linkage=external];
+// C89-NEXT:     global %[[VALUE_always_restrict:[0-9]+]] always_restrict: ptr<i8> [storage=static] [restrict] [linkage=external];
 // C89-NEXT: }
 // SLATE-FILECHECK-END C89
 // SLATE-FILECHECK-BEGIN GNU89
@@ -64,8 +64,8 @@ char *__restrict always_restrict;
 // GNU89-NEXT:         storage d64 [size=8, align=8];
 // GNU89-NEXT:         storage d128 [size=16, align=16];
 // GNU89-NEXT:     }
-// GNU89-NEXT:     global %0 restrict: i32 [storage=static] [linkage=external];
-// GNU89-NEXT:     global %1 always_restrict: ptr<i8> [storage=static] [restrict] [linkage=external];
+// GNU89-NEXT:     global %[[VALUE_restrict:[0-9]+]] restrict: i32 [storage=static] [linkage=external];
+// GNU89-NEXT:     global %[[VALUE_always_restrict:[0-9]+]] always_restrict: ptr<i8> [storage=static] [restrict] [linkage=external];
 // GNU89-NEXT: }
 // SLATE-FILECHECK-END GNU89
 // SLATE-FILECHECK-BEGIN C99
@@ -91,8 +91,8 @@ char *__restrict always_restrict;
 // C99-NEXT:         storage d64 [size=8, align=8];
 // C99-NEXT:         storage d128 [size=16, align=16];
 // C99-NEXT:     }
-// C99-NEXT:     global %0 restrict_qualified: ptr<i32> [storage=static] [restrict] [linkage=external];
-// C99-NEXT:     global %1 always_restrict: ptr<i8> [storage=static] [restrict] [linkage=external];
+// C99-NEXT:     global %[[VALUE_restrict_qualified:[0-9]+]] restrict_qualified: ptr<i32> [storage=static] [restrict] [linkage=external];
+// C99-NEXT:     global %[[VALUE_always_restrict:[0-9]+]] always_restrict: ptr<i8> [storage=static] [restrict] [linkage=external];
 // C99-NEXT: }
 // SLATE-FILECHECK-END C99
 // SLATE-FILECHECK-BEGIN C23
@@ -118,7 +118,7 @@ char *__restrict always_restrict;
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     global %0 restrict_qualified: ptr<i32> [storage=static] [restrict] [linkage=external];
-// C23-NEXT:     global %1 always_restrict: ptr<i8> [storage=static] [restrict] [linkage=external];
+// C23-NEXT:     global %[[VALUE_restrict_qualified:[0-9]+]] restrict_qualified: ptr<i32> [storage=static] [restrict] [linkage=external];
+// C23-NEXT:     global %[[VALUE_always_restrict:[0-9]+]] always_restrict: ptr<i8> [storage=static] [restrict] [linkage=external];
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

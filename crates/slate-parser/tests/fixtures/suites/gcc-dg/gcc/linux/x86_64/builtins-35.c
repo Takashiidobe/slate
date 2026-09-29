@@ -31,11 +31,11 @@ int nan, nanf, nanl, nans, nansf, nansl;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 nan: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 nanf: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 nanl: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 nans: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 nansf: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 nansl: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_nan:[0-9]+]] nan: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_nanf:[0-9]+]] nanf: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_nanl:[0-9]+]] nanl: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_nans:[0-9]+]] nans: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_nansf:[0-9]+]] nansf: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_nansl:[0-9]+]] nansl: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

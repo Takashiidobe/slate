@@ -38,9 +38,9 @@ mach_error_type(int sub)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 n: i32 [storage=static] [linkage=external] [visibility=hidden];
-// DEFAULT-NEXT:     fn %1 @mach_error_type(%2 sub: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ge<i32>(read<i32>(%2), read<i32>(%0))
+// DEFAULT-NEXT:     extern %[[VALUE_n:[0-9]+]] n: i32 [storage=static] [linkage=external] [visibility=hidden];
+// DEFAULT-NEXT:     fn %[[VALUE_mach_error_type:[0-9]+]] @mach_error_type(%[[VALUE_sub:[0-9]+]] sub: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ge<i32>(read<i32>(%[[VALUE_sub]]), read<i32>(%[[VALUE_n]]))
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

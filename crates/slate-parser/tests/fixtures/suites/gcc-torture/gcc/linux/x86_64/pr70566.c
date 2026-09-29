@@ -58,33 +58,33 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 mystruct = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_mystruct:[0-9]+]] mystruct = struct {
 // DEFAULT-NEXT:         field0 f1: u32 : 1;
 // DEFAULT-NEXT:         field1 f2: u32 : 1;
 // DEFAULT-NEXT:         field2 f3: u32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 0], bit_offsets=[Some(0), Some(1), Some(2)], bit_units=[(0, 1)], field_units=[Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     fn %1 @myfunc(%2 a: i32, %3 b: ptr<void>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_myfunc:[0-9]+]] @myfunc(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: ptr<void>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @myfunc2(%5 a: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_myfunc2:[0-9]+]] @myfunc2(%[[VALUE_a_2:[0-9]+]] a: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @set_f2(%7 user: ptr<@type0>, %8 f2: i32) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(deref(read<ptr<@type0>>(%7))))), read<i32>(%8))
-// DEFAULT-NEXT:             call<void, signature=fn(i32, ptr<void>) -> void>(%1, call<i32, signature=fn(ptr<void>) -> i32>(%4, null<ptr<void>>), null<ptr<void>>);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_set_f2:[0-9]+]] @set_f2(%[[VALUE_user:[0-9]+]] user: ptr<@type[[TYPE_mystruct]]>, %[[VALUE_f2:[0-9]+]] f2: i32) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(deref(read<ptr<@type[[TYPE_mystruct]]>>(%[[VALUE_user]]))))), read<i32>(%[[VALUE_f2]]))
+// DEFAULT-NEXT:             call<void, signature=fn(i32, ptr<void>) -> void>(%[[VALUE_myfunc]], call<i32, signature=fn(ptr<void>) -> i32>(%[[VALUE_myfunc2]], null<ptr<void>>), null<ptr<void>>);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%14);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @foo(%10 data: ptr<void>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %11 user: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=assign>(read<ptr<void>>(%10));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(deref(read<ptr<@type0>>(%11))))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn(ptr<@type0>, i32) -> void>(%6, read<ptr<@type0>>(%11), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_data:[0-9]+]] data: ptr<void>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_user_2:[0-9]+]] user: ptr<@type[[TYPE_mystruct]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_mystruct]]>, reason=assign>(read<ptr<void>>(%[[VALUE_data]]));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(deref(read<ptr<@type[[TYPE_mystruct]]>>(%[[VALUE_user_2]]))))), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_mystruct]]>, i32) -> void>(%[[VALUE_set_f2]], read<ptr<@type[[TYPE_mystruct]]>>(%[[VALUE_user_2]]), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %13 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%13), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%13), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%9, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%13)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a_3:[0-9]+]] a: @type[[TYPE_mystruct]] [storage=automatic];
+// DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_a_3]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%[[VALUE_a_3]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_foo]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_mystruct]]>>(%[[VALUE_a_3]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -49,17 +49,17 @@ void init(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S1:[0-9]+]] S1 = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 S2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S2:[0-9]+]] S2 = struct {
 // DEFAULT-NEXT:         field0 ver: i32;
-// DEFAULT-NEXT:         field1 s: @type0;
+// DEFAULT-NEXT:         field1 s: @type[[TYPE_S1]];
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %6 m: @type1 [storage=thread] [linkage=internal];
-// DEFAULT-NEXT:     fn %3 @memset(%8 s: ptr<void>, %9 c: i32, %10 n: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %7 @init() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%3, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(field1(%6))), const<i32>(0), const<u64>(4));
+// DEFAULT-NEXT:     global %[[VALUE_m:[0-9]+]] m: @type[[TYPE_S2]] [storage=thread] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE_s:[0-9]+]] s: ptr<void>, %[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_n:[0-9]+]] n: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_init:[0-9]+]] @init() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_S1]]>>(field1(%[[VALUE_m]]))), const<i32>(0), const<u64>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

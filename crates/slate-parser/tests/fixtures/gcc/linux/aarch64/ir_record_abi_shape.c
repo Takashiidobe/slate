@@ -58,76 +58,76 @@ struct nested_hfa return_nested_hfa(void);
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 three = struct {
+// IR-NEXT:     type @type[[TYPE_three:[0-9]+]] three = struct {
 // IR-NEXT:         field0 a: u8;
 // IR-NEXT:         field1 b: u8;
 // IR-NEXT:         field2 c: u8;
 // IR-NEXT:     } [size=3, align=1, offsets=[0, 1, 2]];
-// IR-NEXT:     type @type1 arr3 = struct {
+// IR-NEXT:     type @type[[TYPE_arr3:[0-9]+]] arr3 = struct {
 // IR-NEXT:         field0 a: array<u8, 3>;
 // IR-NEXT:     } [size=3, align=1, offsets=[0]];
-// IR-NEXT:     type @type2 nest = struct {
-// IR-NEXT:         field0 inner: @type0;
+// IR-NEXT:     type @type[[TYPE_nest:[0-9]+]] nest = struct {
+// IR-NEXT:         field0 inner: @type[[TYPE_three]];
 // IR-NEXT:     } [size=3, align=1, offsets=[0]];
-// IR-NEXT:     type @type3 arr8 = struct {
+// IR-NEXT:     type @type[[TYPE_arr8:[0-9]+]] arr8 = struct {
 // IR-NEXT:         field0 a: array<u8, 8>;
 // IR-NEXT:     } [size=8, align=1, offsets=[0]];
-// IR-NEXT:     type @type4 arr16 = struct {
+// IR-NEXT:     type @type[[TYPE_arr16:[0-9]+]] arr16 = struct {
 // IR-NEXT:         field0 a: array<u8, 16>;
 // IR-NEXT:     } [size=16, align=1, offsets=[0]];
-// IR-NEXT:     type @type5 arr20 = struct {
+// IR-NEXT:     type @type[[TYPE_arr20:[0-9]+]] arr20 = struct {
 // IR-NEXT:         field0 a: array<u8, 20>;
 // IR-NEXT:     } [size=20, align=1, offsets=[0]];
-// IR-NEXT:     type @type6 float_pair = struct {
+// IR-NEXT:     type @type[[TYPE_float_pair:[0-9]+]] float_pair = struct {
 // IR-NEXT:         field0 a: f32;
 // IR-NEXT:         field1 b: f32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type7 nested_hfa = struct {
-// IR-NEXT:         field0 inner: @type6;
+// IR-NEXT:     type @type[[TYPE_nested_hfa:[0-9]+]] nested_hfa = struct {
+// IR-NEXT:         field0 inner: @type[[TYPE_float_pair]];
 // IR-NEXT:         field1 c: f32;
 // IR-NEXT:         field2 d: f32;
 // IR-NEXT:     } [size=16, align=4, offsets=[0, 8, 12]];
-// IR-NEXT:     type @type8 float_array = struct {
+// IR-NEXT:     type @type[[TYPE_float_array:[0-9]+]] float_array = struct {
 // IR-NEXT:         field0 a: array<f32, 4>;
 // IR-NEXT:     } [size=16, align=4, offsets=[0]];
-// IR-NEXT:     type @type9 float_five = struct {
+// IR-NEXT:     type @type[[TYPE_float_five:[0-9]+]] float_five = struct {
 // IR-NEXT:         field0 a: array<f32, 5>;
 // IR-NEXT:     } [size=20, align=4, offsets=[0]];
-// IR-NEXT:     type @type10 float_one = struct {
+// IR-NEXT:     type @type[[TYPE_float_one:[0-9]+]] float_one = struct {
 // IR-NEXT:         field0 a: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type11 float_union = union {
+// IR-NEXT:     type @type[[TYPE_float_union:[0-9]+]] float_union = union {
 // IR-NEXT:         field0 a: f32;
 // IR-NEXT:         field1 b: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     type @type12 union_hfa = struct {
-// IR-NEXT:         field0 a: @type11;
+// IR-NEXT:     type @type[[TYPE_union_hfa:[0-9]+]] union_hfa = struct {
+// IR-NEXT:         field0 a: @type[[TYPE_float_union]];
 // IR-NEXT:         field1 b: f32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type13 mixed = struct {
+// IR-NEXT:     type @type[[TYPE_mixed:[0-9]+]] mixed = struct {
 // IR-NEXT:         field0 a: f32;
 // IR-NEXT:         field1 b: f64;
 // IR-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// IR-NEXT:     type @type14 atomic_wide = struct {
+// IR-NEXT:     type @type[[TYPE_atomic_wide:[0-9]+]] atomic_wide = struct {
 // IR-NEXT:         field0 a: i64;
 // IR-NEXT:         field1 b: i64;
 // IR-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// IR-NEXT:     fn %16 @pass_arr3(%47 v: @type1) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %18 @pass_nest(%48 v: @type2) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %20 @pass_arr8(%49 v: @type3) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %22 @pass_arr16(%50 v: @type4) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %24 @pass_arr20(%51 v: @type5) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %26 @pass_nested_hfa(%52 v: @type7) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %28 @pass_float_array(%53 v: @type8) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %30 @pass_float_five(%54 v: @type9) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %32 @pass_float_one(%55 v: @type10) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %34 @pass_union_hfa(%56 v: @type12) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %36 @pass_mixed(%57 v: @type13) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %38 @pass_atomic_hfa(%58 v: atomic @type6) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %40 @pass_atomic_wide(%59 v: atomic @type14) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %42 @pass_atomic_complex_float(%60 v: atomic complex<f32>) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %44 @pass_atomic_complex_double(%61 v: atomic complex<f64>) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
-// IR-NEXT:     fn %45 @return_arr16() -> @type4 [linkage=external] [abi=aapcs64() -> native_c];
-// IR-NEXT:     fn %46 @return_nested_hfa() -> @type7 [linkage=external] [abi=aapcs64() -> native_c];
+// IR-NEXT:     fn %[[VALUE_pass_arr3:[0-9]+]] @pass_arr3(%[[VALUE_v:[0-9]+]] v: @type[[TYPE_arr3]]) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_nest:[0-9]+]] @pass_nest(%[[VALUE_v_2:[0-9]+]] v: @type[[TYPE_nest]]) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_arr8:[0-9]+]] @pass_arr8(%[[VALUE_v_3:[0-9]+]] v: @type[[TYPE_arr8]]) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_arr16:[0-9]+]] @pass_arr16(%[[VALUE_v_4:[0-9]+]] v: @type[[TYPE_arr16]]) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_arr20:[0-9]+]] @pass_arr20(%[[VALUE_v_5:[0-9]+]] v: @type[[TYPE_arr20]]) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_nested_hfa:[0-9]+]] @pass_nested_hfa(%[[VALUE_v_6:[0-9]+]] v: @type[[TYPE_nested_hfa]]) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_float_array:[0-9]+]] @pass_float_array(%[[VALUE_v_7:[0-9]+]] v: @type[[TYPE_float_array]]) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_float_five:[0-9]+]] @pass_float_five(%[[VALUE_v_8:[0-9]+]] v: @type[[TYPE_float_five]]) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_float_one:[0-9]+]] @pass_float_one(%[[VALUE_v_9:[0-9]+]] v: @type[[TYPE_float_one]]) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_union_hfa:[0-9]+]] @pass_union_hfa(%[[VALUE_v_10:[0-9]+]] v: @type[[TYPE_union_hfa]]) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_mixed:[0-9]+]] @pass_mixed(%[[VALUE_v_11:[0-9]+]] v: @type[[TYPE_mixed]]) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_atomic_hfa:[0-9]+]] @pass_atomic_hfa(%[[VALUE_v_12:[0-9]+]] v: atomic @type[[TYPE_float_pair]]) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_atomic_wide:[0-9]+]] @pass_atomic_wide(%[[VALUE_v_13:[0-9]+]] v: atomic @type[[TYPE_atomic_wide]]) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_atomic_complex_float:[0-9]+]] @pass_atomic_complex_float(%[[VALUE_v_14:[0-9]+]] v: atomic complex<f32>) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_atomic_complex_double:[0-9]+]] @pass_atomic_complex_double(%[[VALUE_v_15:[0-9]+]] v: atomic complex<f64>) -> void [linkage=external] [abi=aapcs64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_return_arr16:[0-9]+]] @return_arr16() -> @type[[TYPE_arr16]] [linkage=external] [abi=aapcs64() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_nested_hfa:[0-9]+]] @return_nested_hfa() -> @type[[TYPE_nested_hfa]] [linkage=external] [abi=aapcs64() -> native_c];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -55,32 +55,32 @@ void k()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 buf = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_buf:[0-9]+]] buf = struct {
 // DEFAULT-NEXT:         field0 x: i8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 buf = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_buf_2:[0-9]+]] buf = struct {
 // DEFAULT-NEXT:         field0 x: i8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 bar = struct {
-// DEFAULT-NEXT:         field0 y: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_bar:[0-9]+]] bar = struct {
+// DEFAULT-NEXT:         field0 y: @type[[TYPE_buf]];
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 buf = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_buf_3:[0-9]+]] buf = struct {
 // DEFAULT-NEXT:         field0 x: i8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type4 bar = struct {
-// DEFAULT-NEXT:         field0 y: @type3;
+// DEFAULT-NEXT:     type @type[[TYPE_bar_2:[0-9]+]] bar = struct {
+// DEFAULT-NEXT:         field0 y: @type[[TYPE_buf_3]];
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     global %1 s: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0))) [linkage=external];
-// DEFAULT-NEXT:     global %8 a: @type2 [storage=static] = aggregate<@type2, zero_fill=false>(field0 = aggregate<@type0, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)))) [linkage=external];
-// DEFAULT-NEXT:     fn %2 @j() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 t: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %5 u: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %6 v: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_buf]] [storage=static] = aggregate<@type[[TYPE_buf]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_bar]] [storage=static] = aggregate<@type[[TYPE_bar]], zero_fill=false>(field0 = aggregate<@type[[TYPE_buf]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_j:[0-9]+]] @j() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE_buf_2]] [storage=automatic] = aggregate<@type[[TYPE_buf_2]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE_buf]] [storage=automatic] = aggregate<@type[[TYPE_buf]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: @type[[TYPE_buf_2]] [storage=automatic] = aggregate<@type[[TYPE_buf_2]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @k() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %11 t: @type3 [storage=automatic] = aggregate<@type3, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %13 b: @type4 [storage=automatic];
-// DEFAULT-NEXT:         let %14 c: @type2 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = aggregate<@type0, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:     fn %[[VALUE_k:[0-9]+]] @k() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_t_2:[0-9]+]] t: @type[[TYPE_buf_3]] [storage=automatic] = aggregate<@type[[TYPE_buf_3]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_bar_2]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: @type[[TYPE_bar]] [storage=automatic] = aggregate<@type[[TYPE_bar]], zero_fill=false>(field0 = aggregate<@type[[TYPE_buf]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

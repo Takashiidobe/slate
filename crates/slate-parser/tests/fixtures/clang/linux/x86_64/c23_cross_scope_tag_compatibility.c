@@ -67,102 +67,102 @@ void initialize(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 S = struct {
+// IR-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type1 N = struct {
-// IR-NEXT:         field0 next: ptr<@type1>;
+// IR-NEXT:     type @type[[TYPE_N:[0-9]+]] N = struct {
+// IR-NEXT:         field0 next: ptr<@type[[TYPE_N]]>;
 // IR-NEXT:     } [size=8, align=8, offsets=[0]];
-// IR-NEXT:     type @type2 U = union {
+// IR-NEXT:     type @type[[TYPE_U:[0-9]+]] U = union {
 // IR-NEXT:         field0 i: i32;
 // IR-NEXT:         field1 f: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     type @type3 E = enum : u32 {
-// IR-NEXT:         %0 A = const<i32>(0);
-// IR-NEXT:         %1 B = const<i32>(1);
+// IR-NEXT:     type @type[[TYPE_E:[0-9]+]] E = enum : u32 {
+// IR-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(0);
+// IR-NEXT:         %[[VALUE_B:[0-9]+]] B = const<i32>(1);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     type @type4 W = struct {
+// IR-NEXT:     type @type[[TYPE_W:[0-9]+]] W = struct {
 // IR-NEXT:         field0 x: i32 : 3;
 // IR-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// IR-NEXT:     type @type5 O = struct {
-// IR-NEXT:         field0 s: @type0;
+// IR-NEXT:     type @type[[TYPE_O:[0-9]+]] O = struct {
+// IR-NEXT:         field0 s: @type[[TYPE_S]];
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type6 = struct {
+// IR-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type7 S = struct {
+// IR-NEXT:     type @type[[TYPE_S_2:[0-9]+]] S = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type8 N = struct {
-// IR-NEXT:         field0 next: ptr<@type8>;
+// IR-NEXT:     type @type[[TYPE_N_2:[0-9]+]] N = struct {
+// IR-NEXT:         field0 next: ptr<@type[[TYPE_N_2]]>;
 // IR-NEXT:     } [size=8, align=8, offsets=[0]];
-// IR-NEXT:     type @type9 U = union {
+// IR-NEXT:     type @type[[TYPE_U_2:[0-9]+]] U = union {
 // IR-NEXT:         field0 i: i32;
 // IR-NEXT:         field1 f: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     type @type10 E = enum : u32 {
-// IR-NEXT:         %0 A = const<i32>(0);
-// IR-NEXT:         %1 B = const<i32>(1);
+// IR-NEXT:     type @type[[TYPE_E_2:[0-9]+]] E = enum : u32 {
+// IR-NEXT:         %[[VALUE_A]] A = const<i32>(0);
+// IR-NEXT:         %[[VALUE_B]] B = const<i32>(1);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     type @type11 W = struct {
+// IR-NEXT:     type @type[[TYPE_W_2:[0-9]+]] W = struct {
 // IR-NEXT:         field0 x: i32 : 3;
 // IR-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// IR-NEXT:     type @type12 O = struct {
-// IR-NEXT:         field0 s: @type7;
+// IR-NEXT:     type @type[[TYPE_O_2:[0-9]+]] O = struct {
+// IR-NEXT:         field0 s: @type[[TYPE_S_2]];
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type13 = struct {
+// IR-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type14 S = struct {
+// IR-NEXT:     type @type[[TYPE_S_3:[0-9]+]] S = struct {
 // IR-NEXT:         field0 y: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type15 W = struct {
+// IR-NEXT:     type @type[[TYPE_W_3:[0-9]+]] W = struct {
 // IR-NEXT:         field0 x: i32 : 4;
 // IR-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// IR-NEXT:     type @type16 N = struct {
-// IR-NEXT:         field0 next: ptr<@type16>;
+// IR-NEXT:     type @type[[TYPE_N_3:[0-9]+]] N = struct {
+// IR-NEXT:         field0 next: ptr<@type[[TYPE_N_3]]>;
 // IR-NEXT:         field1 z: i32;
 // IR-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// IR-NEXT:     type @type17 E = enum : u32 {
-// IR-NEXT:         %0 A = const<i32>(1);
-// IR-NEXT:         %1 B = const<i32>(2);
+// IR-NEXT:     type @type[[TYPE_E_3:[0-9]+]] E = enum : u32 {
+// IR-NEXT:         %[[VALUE_A]] A = const<i32>(1);
+// IR-NEXT:         %[[VALUE_B]] B = const<i32>(2);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     type @type18 O = union {
-// IR-NEXT:         field0 s: @type14;
+// IR-NEXT:     type @type[[TYPE_O_3:[0-9]+]] O = union {
+// IR-NEXT:         field0 s: @type[[TYPE_S_3]];
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type19 S = struct {
+// IR-NEXT:     type @type[[TYPE_S_4:[0-9]+]] S = struct {
 // IR-NEXT:         field0 x: const i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type20 O = struct {
-// IR-NEXT:         field0 s: @type19;
+// IR-NEXT:     type @type[[TYPE_O_4:[0-9]+]] O = struct {
+// IR-NEXT:         field0 s: @type[[TYPE_S_4]];
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type21 S = struct {
+// IR-NEXT:     type @type[[TYPE_S_5:[0-9]+]] S = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type22 P = struct {
-// IR-NEXT:         field0 s: @type21;
+// IR-NEXT:     type @type[[TYPE_P:[0-9]+]] P = struct {
+// IR-NEXT:         field0 s: @type[[TYPE_S_5]];
 // IR-NEXT:         field1 y: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     global %1 gs: @type0 [storage=static] [linkage=external];
-// IR-NEXT:     global %3 gn: @type1 [storage=static] [linkage=external];
-// IR-NEXT:     global %5 gu: @type2 [storage=static] [linkage=external];
-// IR-NEXT:     global %9 ge: @type3 [storage=static] [linkage=external];
-// IR-NEXT:     global %11 gw: @type4 [storage=static] [linkage=external];
-// IR-NEXT:     global %13 go: @type5 [storage=static] [linkage=external];
-// IR-NEXT:     global %15 ga: @type6 [storage=static] [linkage=external];
-// IR-NEXT:     fn %16 @compatible() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %26 la: @type13 [storage=automatic];
+// IR-NEXT:     global %[[VALUE_B]] gs: @type[[TYPE_S]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_gn:[0-9]+]] gn: @type[[TYPE_N]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_gu:[0-9]+]] gu: @type[[TYPE_U]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_ge:[0-9]+]] ge: @type[[TYPE_E]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_gw:[0-9]+]] gw: @type[[TYPE_W]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_go:[0-9]+]] go: @type[[TYPE_O]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_ga:[0-9]+]] ga: @type[[TYPE0]] [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_compatible:[0-9]+]] @compatible() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_la:[0-9]+]] la: @type[[TYPE1]] [storage=automatic];
 // IR-NEXT:     }
-// IR-NEXT:     fn %27 @incompatible() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_incompatible:[0-9]+]] @incompatible() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:     }
-// IR-NEXT:     fn %35 @qualified() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_qualified:[0-9]+]] @qualified() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:     }
-// IR-NEXT:     fn %38 @initialize() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %40 whole: @type21 [storage=automatic] = copy<@type21, reason=assign>(read<@type0>(%1));
-// IR-NEXT:         let %41 pointer: ptr<@type21> [storage=automatic] = pointer_cast<ptr<@type21>, reason=assign>(addr_of<ptr<@type0>>(%1));
-// IR-NEXT:         let %42 elided: array<@type21, 2> [storage=automatic] = aggregate<array<@type21, 2>, zero_fill=false>(index0 = copy<@type21, reason=assign>(read<@type0>(%1)), index1 = copy<@type21, reason=assign>(read<@type0>(%1)));
-// IR-NEXT:         let %43 inferred: array<@type21, 3> [storage=automatic] = aggregate<array<@type21, 3>, zero_fill=false>(index0 = copy<@type21, reason=assign>(read<@type0>(%1)), index1 = copy<@type21, reason=assign>(read<@type0>(%1)), index2 = copy<@type21, reason=assign>(read<@type0>(%1)));
-// IR-NEXT:         let %45 member: @type22 [storage=automatic] = aggregate<@type22, zero_fill=false>(field0 = copy<@type21, reason=assign>(read<@type0>(%1)), field1 = const<i32>(1));
+// IR-NEXT:     fn %[[VALUE_initialize:[0-9]+]] @initialize() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_whole:[0-9]+]] whole: @type[[TYPE_S_5]] [storage=automatic] = copy<@type[[TYPE_S_5]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_B]]));
+// IR-NEXT:         let %[[VALUE_pointer:[0-9]+]] pointer: ptr<@type[[TYPE_S_5]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_S_5]]>, reason=assign>(addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_B]]));
+// IR-NEXT:         let %[[VALUE_elided:[0-9]+]] elided: array<@type[[TYPE_S_5]], 2> [storage=automatic] = aggregate<array<@type[[TYPE_S_5]], 2>, zero_fill=false>(index0 = copy<@type[[TYPE_S_5]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_B]])), index1 = copy<@type[[TYPE_S_5]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_B]])));
+// IR-NEXT:         let %[[VALUE_inferred:[0-9]+]] inferred: array<@type[[TYPE_S_5]], 3> [storage=automatic] = aggregate<array<@type[[TYPE_S_5]], 3>, zero_fill=false>(index0 = copy<@type[[TYPE_S_5]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_B]])), index1 = copy<@type[[TYPE_S_5]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_B]])), index2 = copy<@type[[TYPE_S_5]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_B]])));
+// IR-NEXT:         let %[[VALUE_member:[0-9]+]] member: @type[[TYPE_P]] [storage=automatic] = aggregate<@type[[TYPE_P]], zero_fill=false>(field0 = copy<@type[[TYPE_S_5]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_B]])), field1 = const<i32>(1));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

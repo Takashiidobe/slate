@@ -32,6 +32,6 @@ __float128 a = 123.456789q; /* { dg-warning "non-standard suffix on floating con
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: f128 [storage=static] = const<f128>(123.456789000000000000000000000000002) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: f128 [storage=static] = const<f128>(123.456789000000000000000000000000002) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

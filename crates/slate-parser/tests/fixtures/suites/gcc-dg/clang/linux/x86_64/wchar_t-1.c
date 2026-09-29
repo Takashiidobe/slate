@@ -42,11 +42,11 @@ wct (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 wchar_t = i32;
-// DEFAULT-NEXT:     global %1 __wc_t__: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 wc_t_p: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @wct() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<i32>>(%2, addr_of<ptr<i32>>(%1));
+// DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = i32;
+// DEFAULT-NEXT:     global %[[VALUE___wc_t__:[0-9]+]] __wc_t__: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wc_t_p:[0-9]+]] wc_t_p: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_wct:[0-9]+]] @wct() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_wc_t_p]], addr_of<ptr<i32>>(%[[VALUE___wc_t__]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

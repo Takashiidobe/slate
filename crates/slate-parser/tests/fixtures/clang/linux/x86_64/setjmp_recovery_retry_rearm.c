@@ -49,42 +49,42 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __jmp_buf = array<i64, 8>;
-// DEFAULT-NEXT:     type @type1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___jmp_buf:[0-9]+]] __jmp_buf = array<i64, 8>;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 __val: array<u64, 16>;
 // DEFAULT-NEXT:     } [size=128, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 __sigset_t = @type1;
-// DEFAULT-NEXT:     type @type3 __jmp_buf_tag = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___sigset_t:[0-9]+]] __sigset_t = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE___jmp_buf_tag:[0-9]+]] __jmp_buf_tag = struct {
 // DEFAULT-NEXT:         field0 __jmpbuf: array<i64, 8>;
 // DEFAULT-NEXT:         field1 __mask_was_saved: i32;
-// DEFAULT-NEXT:         field2 __saved_mask: @type1;
+// DEFAULT-NEXT:         field2 __saved_mask: @type[[TYPE0]];
 // DEFAULT-NEXT:     } [size=200, align=8, offsets=[0, 64, 72]];
-// DEFAULT-NEXT:     type @type4 jmp_buf = array<@type3, 1>;
-// DEFAULT-NEXT:     global %12 retry_buf: array<@type3, 1> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     global %22 .str22: array<i8, 12> [storage=static] = code_units<array<i8, 12>>([97, 116, 116, 101, 109, 112, 116, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %6 @_setjmp(%17 __env: ptr<@type3> [array=1]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @longjmp(%18 __env: ptr<@type3> [array=1], %19 __val: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %11 @printf(%20 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %13 @might_fail(%14 attempt: i32) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if lt<i32>(read<i32>(%14), const<i32>(3))
+// DEFAULT-NEXT:     type @type[[TYPE_jmp_buf:[0-9]+]] jmp_buf = array<@type[[TYPE___jmp_buf_tag]], 1>;
+// DEFAULT-NEXT:     global %[[VALUE_retry_buf:[0-9]+]] retry_buf: array<@type[[TYPE___jmp_buf_tag]], 1> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 12> [storage=static] = code_units<array<i8, 12>>([97, 116, 116, 101, 109, 112, 116, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE__setjmp:[0-9]+]] @_setjmp(%[[VALUE___env:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_longjmp:[0-9]+]] @longjmp(%[[VALUE___env_2:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1], %[[VALUE___val:[0-9]+]] __val: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_might_fail:[0-9]+]] @might_fail(%[[VALUE_attempt:[0-9]+]] attempt: i32) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_attempt]]), const<i32>(3))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type3>, i32) -> void>(%9, array_decay<ptr<@type3>, length=Some(1)>(%12), add<i32, overflow=ub>(read<i32>(%14), const<i32>(1)));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE___jmp_buf_tag]]>, i32) -> void>(%[[VALUE_longjmp]], array_decay<ptr<@type[[TYPE___jmp_buf_tag]]>, length=Some(1)>(%[[VALUE_retry_buf]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_attempt]]), const<i32>(1)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         for %21
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: omitted
 // DEFAULT-NEXT:             increment: omitted
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %16 attempt: i32 [storage=automatic] = call<i32, signature=fn(ptr<@type3>) -> i32>(%6, array_decay<ptr<@type3>, length=Some(1)>(%12));
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%11, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(12)>(%22)), read<i32>(%16));
-// DEFAULT-NEXT:                     if ge<i32>(read<i32>(%16), const<i32>(3))
+// DEFAULT-NEXT:                     let %[[VALUE_attempt_2:[0-9]+]] attempt: i32 [storage=automatic] = call<i32, signature=fn(ptr<@type[[TYPE___jmp_buf_tag]]>) -> i32>(%[[VALUE__setjmp]], array_decay<ptr<@type[[TYPE___jmp_buf_tag]]>, length=Some(1)>(%[[VALUE_retry_buf]]));
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(12)>(%[[VALUE_str]])), read<i32>(%[[VALUE_attempt_2]]));
+// DEFAULT-NEXT:                     if ge<i32>(read<i32>(%[[VALUE_attempt_2]]), const<i32>(3))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             break %21;
+// DEFAULT-NEXT:                             break %[[VALUE0]];
 // DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:                     call<void, signature=fn(i32) -> void>(%13, read<i32>(%16));
+// DEFAULT-NEXT:                     call<void, signature=fn(i32) -> void>(%[[VALUE_might_fail]], read<i32>(%[[VALUE_attempt_2]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

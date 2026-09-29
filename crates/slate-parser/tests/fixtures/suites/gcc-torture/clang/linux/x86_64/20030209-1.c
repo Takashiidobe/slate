@@ -40,16 +40,16 @@ int    main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 x: array<array<f64, 100>, 100> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%5 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%4, const<i32>(99));
-// DEFAULT-NEXT:         write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(100)>(deref(ptr_offset<ptr<array<f64, 100>>, subtract=false, element=array<f64, 100>, overflow=ub>(array_decay<ptr<array<f64, 100>>, length=Some(100)>(%2), read<i32>(%4)))), const<i32>(0))), int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(42)));
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(100)>(deref(ptr_offset<ptr<array<f64, 100>>, subtract=false, element=array<f64, 100>, overflow=ub>(array_decay<ptr<array<f64, 100>>, length=Some(100)>(%2), const<i32>(99)))), const<i32>(0)))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(42)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: array<array<f64, 100>, 100> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], const<i32>(99));
+// DEFAULT-NEXT:         write<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(100)>(deref(ptr_offset<ptr<array<f64, 100>>, subtract=false, element=array<f64, 100>, overflow=ub>(array_decay<ptr<array<f64, 100>>, length=Some(100)>(%[[VALUE_x]]), read<i32>(%[[VALUE_i]])))), const<i32>(0))), int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(42)));
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(100)>(deref(ptr_offset<ptr<array<f64, 100>>, subtract=false, element=array<f64, 100>, overflow=ub>(array_decay<ptr<array<f64, 100>>, length=Some(100)>(%[[VALUE_x]]), const<i32>(99)))), const<i32>(0)))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(42)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

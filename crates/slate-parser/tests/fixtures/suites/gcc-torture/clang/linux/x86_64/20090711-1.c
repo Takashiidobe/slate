@@ -41,15 +41,15 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @div(%2 val: i64) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return div<i64, by_zero=ub, min_by_neg_one=ub>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(32768)));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_div:[0-9]+]] @div(%[[VALUE_val:[0-9]+]] val: i64) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return div<i64, by_zero=ub, min_by_neg_one=ub>(read<i64>(%[[VALUE_val]]), widen<i64, reason=usual_arith>(const<i32>(32768)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 d1: i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(990000000)));
-// DEFAULT-NEXT:         let %5 d2: i64 [storage=automatic] = call<i64, signature=fn(i64) -> i64>(%1, read<i64>(%4));
-// DEFAULT-NEXT:         if ne<i64>(read<i64>(%5), widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(30212))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_d1:[0-9]+]] d1: i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(990000000)));
+// DEFAULT-NEXT:         let %[[VALUE_d2:[0-9]+]] d2: i64 [storage=automatic] = call<i64, signature=fn(i64) -> i64>(%[[VALUE_div]], read<i64>(%[[VALUE_d1]]));
+// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE_d2]]), widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(30212))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

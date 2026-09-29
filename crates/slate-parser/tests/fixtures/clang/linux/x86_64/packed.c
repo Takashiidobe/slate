@@ -33,11 +33,11 @@ union __attribute__((packed)) Pair {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Packed = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Packed:[0-9]+]] Packed = struct {
 // DEFAULT-NEXT:         field0 tag: i8;
 // DEFAULT-NEXT:         field1 value: i32;
 // DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     type @type1 Pair = union {
+// DEFAULT-NEXT:     type @type[[TYPE_Pair:[0-9]+]] Pair = union {
 // DEFAULT-NEXT:         field0 left: i32;
 // DEFAULT-NEXT:         field1 right: i8;
 // DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 0]];

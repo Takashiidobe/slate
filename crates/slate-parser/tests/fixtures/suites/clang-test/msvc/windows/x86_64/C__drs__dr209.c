@@ -83,15 +83,15 @@ void dr209(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 int_least8_t = i8;
-// DEFAULT-NEXT:     type @type1 int_least16_t = i16;
-// DEFAULT-NEXT:     type @type2 int_least32_t = i32;
-// DEFAULT-NEXT:     type @type3 int_least64_t = i64;
-// DEFAULT-NEXT:     type @type4 uint_least8_t = u8;
-// DEFAULT-NEXT:     type @type5 uint_least16_t = u16;
-// DEFAULT-NEXT:     type @type6 uint_least32_t = u32;
-// DEFAULT-NEXT:     type @type7 uint_least64_t = u64;
-// DEFAULT-NEXT:     fn %8 @dr209() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     type @type[[TYPE_int_least8_t:[0-9]+]] int_least8_t = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_int_least16_t:[0-9]+]] int_least16_t = i16;
+// DEFAULT-NEXT:     type @type[[TYPE_int_least32_t:[0-9]+]] int_least32_t = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_int_least64_t:[0-9]+]] int_least64_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_uint_least8_t:[0-9]+]] uint_least8_t = u8;
+// DEFAULT-NEXT:     type @type[[TYPE_uint_least16_t:[0-9]+]] uint_least16_t = u16;
+// DEFAULT-NEXT:     type @type[[TYPE_uint_least32_t:[0-9]+]] uint_least32_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_uint_least64_t:[0-9]+]] uint_least64_t = u64;
+// DEFAULT-NEXT:     fn %[[VALUE_dr209:[0-9]+]] @dr209() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         const<i32>(1);
 // DEFAULT-NEXT:         const<i32>(1);
 // DEFAULT-NEXT:         const<i32>(1);

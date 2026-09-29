@@ -63,44 +63,44 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 side_effect_calls: i32 [storage=static] = const<i32>(0) [linkage=internal];
-// DEFAULT-NEXT:     global %25 .str25: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%15 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @bump(%4 v: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %26: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:         let %27: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%26), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%27));
-// DEFAULT-NEXT:         return read<i32>(%4);
+// DEFAULT-NEXT:     global %[[VALUE_side_effect_calls:[0-9]+]] side_effect_calls: i32 [storage=static] = const<i32>(0) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bump:[0-9]+]] @bump(%[[VALUE_v:[0-9]+]] v: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_side_effect_calls]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_side_effect_calls]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_v]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @__builtin_expect(%16 <unnamed>: i64, %17 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %5 @use_expect(%6 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%18, widen<i64, reason=arg>(call<i32, signature=fn(i32) -> i32>(%3, read<i32>(%6))), widen<i64, reason=arg>(const<i32>(1))), const<i64>(0))
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_expect:[0-9]+]] @__builtin_expect(%[[VALUE2:[0-9]+]] <unnamed>: i64, %[[VALUE3:[0-9]+]] <unnamed>: i64) -> i64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_use_expect:[0-9]+]] @use_expect(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%[[VALUE___builtin_expect]], widen<i64, reason=arg>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_bump]], read<i32>(%[[VALUE_x]]))), widen<i64, reason=arg>(const<i32>(1))), const<i64>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(1);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @__builtin_expect_with_probability(%19 <unnamed>: i64, %20 <unnamed>: i64, %21 <unnamed>: f64) -> i64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %7 @use_expect_with_probability(%8 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64, f64) -> i64>(%22, widen<i64, reason=arg>(call<i32, signature=fn(i32) -> i32>(%3, read<i32>(%8))), widen<i64, reason=arg>(const<i32>(1)), const<f64>(0.9)), const<i64>(0))
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_expect_with_probability:[0-9]+]] @__builtin_expect_with_probability(%[[VALUE4:[0-9]+]] <unnamed>: i64, %[[VALUE5:[0-9]+]] <unnamed>: i64, %[[VALUE6:[0-9]+]] <unnamed>: f64) -> i64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_use_expect_with_probability:[0-9]+]] @use_expect_with_probability(%[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64, f64) -> i64>(%[[VALUE___builtin_expect_with_probability]], widen<i64, reason=arg>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_bump]], read<i32>(%[[VALUE_x_2]]))), widen<i64, reason=arg>(const<i32>(1)), const<f64>(0.9)), const<i64>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(1);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @__builtin_unpredictable(%23 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %9 @use_unpredictable(%10 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%24, from_bool<i64, reason=arg>(gt<i32>(call<i32, signature=fn(i32) -> i32>(%3, read<i32>(%10)), const<i32>(0)))), const<i64>(0))
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_unpredictable:[0-9]+]] @__builtin_unpredictable(%[[VALUE7:[0-9]+]] <unnamed>: i64) -> i64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_use_unpredictable:[0-9]+]] @use_unpredictable(%[[VALUE_x_3:[0-9]+]] x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%[[VALUE___builtin_unpredictable]], from_bool<i64, reason=arg>(gt<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_bump]], read<i32>(%[[VALUE_x_3]])), const<i32>(0)))), const<i64>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(1);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 a: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%5, const<i32>(1));
-// DEFAULT-NEXT:         let %13 b: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%7, const<i32>(1));
-// DEFAULT-NEXT:         let %14 c: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%9, const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%25)), read<i32>(%12), read<i32>(%13), read<i32>(%14), read<i32>(%2));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_use_expect]], const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_use_expect_with_probability]], const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_use_unpredictable]], const<i32>(1));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str]])), read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]]), read<i32>(%[[VALUE_c]]), read<i32>(%[[VALUE_side_effect_calls]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -64,34 +64,34 @@ static int q()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 mem: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @link_error() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @e() -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_mem:[0-9]+]] mem: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_link_error:[0-9]+]] @link_error() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_e:[0-9]+]] @e() -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @q() -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 t: i32 [storage=automatic] = read<i32>(%1);
-// DEFAULT-NEXT:         let %9 r: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%9, call<i32, signature=fn() -> i32>(%2));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%2);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%8), read<i32>(%1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         return read<i32>(%9);
+// DEFAULT-NEXT:     fn %[[VALUE_q:[0-9]+]] @q() -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic] = read<i32>(%[[VALUE_mem]]);
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], call<i32, signature=fn() -> i32>(%[[VALUE_e]]));
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_e]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_t]]), read<i32>(%[[VALUE_mem]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_r]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @t() -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 r: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %7 e: i32 [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn() -> i32>(%4);
-// DEFAULT-NEXT:         write<i32>(%7, read<i32>(%1));
-// DEFAULT-NEXT:         write<i32>(%6, call<i32, signature=fn() -> i32>(%3));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%3);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%7), read<i32>(%1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         return read<i32>(%6);
+// DEFAULT-NEXT:     fn %[[VALUE_t_2:[0-9]+]] @t() -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_e_2:[0-9]+]] e: i32 [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_mem]]), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn() -> i32>(%[[VALUE_t_2]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_e_2]], read<i32>(%[[VALUE_mem]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_r_2]], call<i32, signature=fn() -> i32>(%[[VALUE_q]]));
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_q]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_e_2]]), read<i32>(%[[VALUE_mem]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_r_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         return call<i32, signature=fn() -> i32>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         return call<i32, signature=fn() -> i32>(%[[VALUE_t_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

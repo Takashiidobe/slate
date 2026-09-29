@@ -77,51 +77,51 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 FlexUnion = union {
+// DEFAULT-NEXT:     type @type[[TYPE_FlexUnion:[0-9]+]] FlexUnion = union {
 // DEFAULT-NEXT:         field0 value: i32;
 // DEFAULT-NEXT:         field1 data: array<i8, incomplete>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type1 OnlyFlex = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_OnlyFlex:[0-9]+]] OnlyFlex = struct {
 // DEFAULT-NEXT:         field0 data: array<i8, incomplete>;
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 Castable = union {
+// DEFAULT-NEXT:     type @type[[TYPE_Castable:[0-9]+]] Castable = union {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:         field1 f: f32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type3 Forward = enum : u32 {
-// DEFAULT-NEXT:         %0 FORWARD_A = const<i32>(0);
-// DEFAULT-NEXT:         %1 FORWARD_B = const<i32>(1);
+// DEFAULT-NEXT:     type @type[[TYPE_Forward:[0-9]+]] Forward = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_FORWARD_A:[0-9]+]] FORWARD_A = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_FORWARD_B:[0-9]+]] FORWARD_B = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type4 Point = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Point:[0-9]+]] Point = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:         field1 y: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type5 Sized = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Sized:[0-9]+]] Sized = struct {
 // DEFAULT-NEXT:         field0 n: i32;
 // DEFAULT-NEXT:         field1 data: array<i32, incomplete>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type6 NestedOuter = struct {
-// DEFAULT-NEXT:         field0 inner: @type5;
+// DEFAULT-NEXT:     type @type[[TYPE_NestedOuter:[0-9]+]] NestedOuter = struct {
+// DEFAULT-NEXT:         field0 inner: @type[[TYPE_Sized]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %10 sized: @type5 [storage=static] = aggregate<@type5, zero_fill=false>(field0 = const<i32>(3), field1 = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(10), index1 = const<i32>(20), index2 = const<i32>(30))) [linkage=internal];
-// DEFAULT-NEXT:     global %20 .str20: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %21 .str21: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %22 .str22: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %23 .str23: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %24 .str24: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 122, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%19 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %13 range_values: array<i32, 10> [storage=automatic] [align=16] = aggregate<array<i32, 10>, zero_fill=true>(index2..=5 = const<i32>(9));
-// DEFAULT-NEXT:         let %14 old_index: array<i32, 3> [storage=automatic] = aggregate<array<i32, 3>, zero_fill=true>(index1 = const<i32>(11));
-// DEFAULT-NEXT:         let %15 p: @type4 [storage=automatic] = aggregate<@type4, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2));
-// DEFAULT-NEXT:         let %16 five: i32 [storage=automatic] = const<i32>(5);
-// DEFAULT-NEXT:         let %17 c: @type2 [storage=automatic] = copy<@type2, reason=assign>(aggregate<@type2, zero_fill=false>(field0 = read<i32>(%16)));
-// DEFAULT-NEXT:         let %18 f: @type3 [storage=automatic] = int_to_enum<@type3, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%20)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%13), const<i32>(3)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%14), const<i32>(1)))), add<i32, overflow=ub>(read<i32>(field0(%15)), read<i32>(field1(%15))), read<i32>(field0(%17)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%21)), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type3>(%18))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%22)), const<u64>(4), const<u64>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%23)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(field1(%10)), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(field1(%10)), const<i32>(1)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(field1(%10)), const<i32>(2)))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%24)), const<u64>(4));
+// DEFAULT-NEXT:     global %[[VALUE_sized:[0-9]+]] sized: @type[[TYPE_Sized]] [storage=static] = aggregate<@type[[TYPE_Sized]], zero_fill=false>(field0 = const<i32>(3), field1 = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(10), index1 = const<i32>(20), index2 = const<i32>(30))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 122, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_FORWARD_B]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_range_values:[0-9]+]] range_values: array<i32, 10> [storage=automatic] [align=16] = aggregate<array<i32, 10>, zero_fill=true>(index2..=5 = const<i32>(9));
+// DEFAULT-NEXT:         let %[[VALUE_old_index:[0-9]+]] old_index: array<i32, 3> [storage=automatic] = aggregate<array<i32, 3>, zero_fill=true>(index1 = const<i32>(11));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: @type[[TYPE_Point]] [storage=automatic] = aggregate<@type[[TYPE_Point]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2));
+// DEFAULT-NEXT:         let %[[VALUE_five:[0-9]+]] five: i32 [storage=automatic] = const<i32>(5);
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: @type[[TYPE_Castable]] [storage=automatic] = copy<@type[[TYPE_Castable]], reason=assign>(aggregate<@type[[TYPE_Castable]], zero_fill=false>(field0 = read<i32>(%[[VALUE_five]])));
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: @type[[TYPE_Forward]] [storage=automatic] = int_to_enum<@type[[TYPE_Forward]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_FORWARD_B]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str]])), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(%[[VALUE_range_values]]), const<i32>(3)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_old_index]]), const<i32>(1)))), add<i32, overflow=ub>(read<i32>(field0(%[[VALUE_p]])), read<i32>(field1(%[[VALUE_p]]))), read<i32>(field0(%[[VALUE_c]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_FORWARD_B]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_Forward]]>(%[[VALUE_f]]))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_FORWARD_B]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_3]])), const<u64>(4), const<u64>(0));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_FORWARD_B]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_4]])), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(field1(%[[VALUE_sized]])), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(field1(%[[VALUE_sized]])), const<i32>(1)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(field1(%[[VALUE_sized]])), const<i32>(2)))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_FORWARD_B]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_5]])), const<u64>(4));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

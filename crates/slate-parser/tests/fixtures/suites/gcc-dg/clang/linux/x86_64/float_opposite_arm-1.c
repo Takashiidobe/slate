@@ -42,8 +42,8 @@ int Foo(double possiblyNAN, double b, double c)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @Foo(%1 possiblyNAN: f64, %2 b: f64, %3 c: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_or<bool>(le<f64, exceptions=ignore>(read<f64>(%1), const<f64>(2.0)), logical_and<bool>(gt<f64, exceptions=ignore>(read<f64>(%1), const<f64>(2.0)), gt<f64, exceptions=ignore>(read<f64>(%2), read<f64>(%3)))));
+// DEFAULT-NEXT:     fn %[[VALUE_Foo:[0-9]+]] @Foo(%[[VALUE_possiblyNAN:[0-9]+]] possiblyNAN: f64, %[[VALUE_b:[0-9]+]] b: f64, %[[VALUE_c:[0-9]+]] c: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_or<bool>(le<f64, exceptions=ignore>(read<f64>(%[[VALUE_possiblyNAN]]), const<f64>(2.0)), logical_and<bool>(gt<f64, exceptions=ignore>(read<f64>(%[[VALUE_possiblyNAN]]), const<f64>(2.0)), gt<f64, exceptions=ignore>(read<f64>(%[[VALUE_b]]), read<f64>(%[[VALUE_c]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

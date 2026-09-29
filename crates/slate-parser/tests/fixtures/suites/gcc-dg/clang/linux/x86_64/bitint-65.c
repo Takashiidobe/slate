@@ -48,15 +48,15 @@ bar (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 x: i535b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %1 a: array<i32, incomplete> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %2 b: array<array<i8, 10>, incomplete> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%1), read<i535b>(%0))));
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i535b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_a:[0-9]+]] a: array<i32, incomplete> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_b:[0-9]+]] b: array<array<i8, 10>, incomplete> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%[[VALUE_a]]), read<i535b>(%[[VALUE_x]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @__builtin_strlen(%5 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%6, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(deref(ptr_offset<ptr<array<i8, 10>>, subtract=false, element=array<i8, 10>, overflow=ub>(array_decay<ptr<array<i8, 10>>, length=None>(%2), read<i535b>(%0))))))));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_strlen:[0-9]+]] @__builtin_strlen(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(deref(ptr_offset<ptr<array<i8, 10>>, subtract=false, element=array<i8, 10>, overflow=ub>(array_decay<ptr<array<i8, 10>>, length=None>(%[[VALUE_b]]), read<i535b>(%[[VALUE_x]]))))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

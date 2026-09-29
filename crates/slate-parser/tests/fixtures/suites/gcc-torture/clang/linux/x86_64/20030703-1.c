@@ -33,9 +33,9 @@ void MBMotionEstimation(int *act_block, int block)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @SAD_Block(%4 <unnamed>: ptr<i32>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @MBMotionEstimation(%2 act_block: ptr<i32>, %3 block: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i32>) -> i32>(%0, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%2), add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(8), from_bool<i32, reason=promotion>(logical_or<bool>(eq<i32>(read<i32>(%3), const<i32>(1)), eq<i32>(read<i32>(%3), const<i32>(3))))), mul<i32, overflow=ub>(const<i32>(8), from_bool<i32, reason=promotion>(logical_or<bool>(eq<i32>(read<i32>(%3), const<i32>(2)), eq<i32>(read<i32>(%3), const<i32>(3))))))));
+// DEFAULT-NEXT:     fn %[[VALUE_SAD_Block:[0-9]+]] @SAD_Block(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_MBMotionEstimation:[0-9]+]] @MBMotionEstimation(%[[VALUE_act_block:[0-9]+]] act_block: ptr<i32>, %[[VALUE_block:[0-9]+]] block: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i32>) -> i32>(%[[VALUE_SAD_Block]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_act_block]]), add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(8), from_bool<i32, reason=promotion>(logical_or<bool>(eq<i32>(read<i32>(%[[VALUE_block]]), const<i32>(1)), eq<i32>(read<i32>(%[[VALUE_block]]), const<i32>(3))))), mul<i32, overflow=ub>(const<i32>(8), from_bool<i32, reason=promotion>(logical_or<bool>(eq<i32>(read<i32>(%[[VALUE_block]]), const<i32>(2)), eq<i32>(read<i32>(%[[VALUE_block]]), const<i32>(3))))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

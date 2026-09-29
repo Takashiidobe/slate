@@ -35,17 +35,17 @@ void test ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 value = u64;
-// DEFAULT-NEXT:     fn %1 @foo(%2 v: ptr<u64>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     type @type[[TYPE_value:[0-9]+]] value = u64;
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_v:[0-9]+]] v: ptr<u64>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @test() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 v: u64 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<u64>) -> void>(%1, addr_of<ptr<u64>>(%4));
-// DEFAULT-NEXT:         let %5: u64 [synthetic] = read<u64>(%4);
-// DEFAULT-NEXT:         let %6: u64 [synthetic] = sub<u64, overflow=wrap>(read<u64>(%5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u64>(%4, read<u64>(%6));
-// DEFAULT-NEXT:         if gt<u64>(read<u64>(%5), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn(ptr<u64>) -> void>(%1, addr_of<ptr<u64>>(%4));
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_v_2:[0-9]+]] v: u64 [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<u64>) -> void>(%[[VALUE_foo]], addr_of<ptr<u64>>(%[[VALUE_v_2]]));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_v_2]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = sub<u64, overflow=wrap>(read<u64>(%[[VALUE0]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_v_2]], read<u64>(%[[VALUE1]]));
+// DEFAULT-NEXT:         if gt<u64>(read<u64>(%[[VALUE0]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
+// DEFAULT-NEXT:             call<void, signature=fn(ptr<u64>) -> void>(%[[VALUE_foo]], addr_of<ptr<u64>>(%[[VALUE_v_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

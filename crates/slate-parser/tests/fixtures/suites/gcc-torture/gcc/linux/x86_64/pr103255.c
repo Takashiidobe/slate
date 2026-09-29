@@ -61,41 +61,41 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 H = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_H:[0-9]+]] H = struct {
 // DEFAULT-NEXT:         field0 a: u32;
 // DEFAULT-NEXT:         field1 b: u32;
 // DEFAULT-NEXT:         field2 c: u32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 h: ptr<@type0> [storage=automatic] = null<ptr<@type0>>;
-// DEFAULT-NEXT:         let %3 o: u64 [storage=automatic];
-// DEFAULT-NEXT:         let %4 t: volatile i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         for %7
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: ptr<@type[[TYPE_H]]> [storage=automatic] = null<ptr<@type[[TYPE_H]]>>;
+// DEFAULT-NEXT:         let %[[VALUE_o:[0-9]+]] o: u64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: volatile i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<u64>(%3, reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(32))));
-// DEFAULT-NEXT:             condition: le<u64>(read<u64>(%3), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32))))
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_o]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(32))));
+// DEFAULT-NEXT:             condition: le<u64>(read<u64>(%[[VALUE_o]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32))))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %9: u64 [synthetic] = read<u64>(%3);
-// DEFAULT-NEXT:                 let %10: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%9), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4096))));
-// DEFAULT-NEXT:                 write<u64>(%3, read<u64>(%10));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_o]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE1]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4096))));
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_o]], read<u64>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %5 u: ptr<@type0> [storage=automatic];
-// DEFAULT-NEXT:                     write<ptr<@type0>>(%5, int_to_ptr<ptr<@type0>, reason=explicit>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4194304))), read<u64>(%3))));
-// DEFAULT-NEXT:                     if ne<i32>(read<i32, volatile>(%4), const<i32>(0))
+// DEFAULT-NEXT:                     let %[[VALUE_u:[0-9]+]] u: ptr<@type[[TYPE_H]]> [storage=automatic];
+// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_H]]>>(%[[VALUE_u]], int_to_ptr<ptr<@type[[TYPE_H]]>, reason=explicit>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4194304))), read<u64>(%[[VALUE_o]]))));
+// DEFAULT-NEXT:                     if ne<i32>(read<i32, volatile>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             write<ptr<@type0>>(%2, read<ptr<@type0>>(%5));
-// DEFAULT-NEXT:                             break %7;
+// DEFAULT-NEXT:                             write<ptr<@type[[TYPE_H]]>>(%[[VALUE_h]], read<ptr<@type[[TYPE_H]]>>(%[[VALUE_u]]));
+// DEFAULT-NEXT:                             break %[[VALUE0]];
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         if eq<ptr<@type0>>(read<ptr<@type0>>(%2), null<ptr<@type0>>)
+// DEFAULT-NEXT:         if eq<ptr<@type[[TYPE_H]]>>(read<ptr<@type[[TYPE_H]]>>(%[[VALUE_h]]), null<ptr<@type[[TYPE_H]]>>)
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         let %6 tt: ptr<u32> [storage=automatic] = addr_of<ptr<u32>>(field1(deref(read<ptr<@type0>>(%2))));
-// DEFAULT-NEXT:         if ne<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<u32>>(%6)), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(4194304), const<i32>(32)))), const<u64>(4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:         let %[[VALUE_tt:[0-9]+]] tt: ptr<u32> [storage=automatic] = addr_of<ptr<u32>>(field1(deref(read<ptr<@type[[TYPE_H]]>>(%[[VALUE_h]]))));
+// DEFAULT-NEXT:         if ne<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<u32>>(%[[VALUE_tt]])), add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(4194304), const<i32>(32)))), const<u64>(4)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

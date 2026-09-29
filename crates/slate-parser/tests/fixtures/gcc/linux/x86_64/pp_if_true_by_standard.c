@@ -34,8 +34,8 @@ int false_or_not_true;
 // C99-NEXT:         storage d64 [size=8, align=8];
 // C99-NEXT:         storage d128 [size=16, align=16];
 // C99-NEXT:     }
-// C99-NEXT:     global %0 true_is_zero: i32 [storage=static] [linkage=external];
-// C99-NEXT:     global %1 false_or_not_true: i32 [storage=static] [linkage=external];
+// C99-NEXT:     global %[[VALUE_true_is_zero:[0-9]+]] true_is_zero: i32 [storage=static] [linkage=external];
+// C99-NEXT:     global %[[VALUE_false_or_not_true:[0-9]+]] false_or_not_true: i32 [storage=static] [linkage=external];
 // C99-NEXT: }
 // SLATE-FILECHECK-END C99
 // SLATE-FILECHECK-BEGIN C23
@@ -61,6 +61,6 @@ int false_or_not_true;
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     global %0 true_is_one: i32 [storage=static] [linkage=external];
+// C23-NEXT:     global %[[VALUE_true_is_one:[0-9]+]] true_is_one: i32 [storage=static] [linkage=external];
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

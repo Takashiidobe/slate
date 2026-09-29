@@ -48,23 +48,23 @@ int locals(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 may_alias_short = i16;
-// IR-NEXT:     type @type1 labeled_alias = i32;
-// IR-NEXT:     type @type2 deprecated_alias = i32;
-// IR-NEXT:     global %0 deprecated_object: i32 [storage=static] [linkage=external];
-// IR-NEXT:     global %1 unused_object: i32 [storage=static] [linkage=external];
-// IR-NEXT:     global %2 vendor_object: i32 [storage=static] [linkage=external];
-// IR-NEXT:     extern %6 renamed: i32 [storage=static] [linkage=external] [asm_name="real_name"];
-// IR-NEXT:     global %7 placed: i32 [storage=static] = const<i32>(1) [linkage=internal] [section="data.custom"];
-// IR-NEXT:     global %8 exported: i32 [storage=static] = const<i32>(2) [linkage=external] [visibility=hidden] [used];
-// IR-NEXT:     global %9 aliased: i16 [storage=static] [linkage=external];
-// IR-NEXT:     global %10 reused: i32 [storage=static] [linkage=external];
-// IR-NEXT:     fn %11 @locals() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %12 aligned_local: i32 [storage=automatic] [align=16] = const<i32>(0);
-// IR-NEXT:         let %13 vector_local: vector<i32, 4> [storage=automatic] = aggregate<vector<i32, 4>, zero_fill=true>(index0 = const<i32>(0));
-// IR-NEXT:         let %14 labeled_local: i32 [storage=automatic] = const<i32>(3);
-// IR-NEXT:         let %15 annotated_local: i32 [storage=automatic] = const<i32>(4);
-// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%12), read<i32>(%14)), read<i32>(%15)), read<i32>(lane(%13, const<i32>(0))));
+// IR-NEXT:     type @type[[TYPE_may_alias_short:[0-9]+]] may_alias_short = i16;
+// IR-NEXT:     type @type[[TYPE_labeled_alias:[0-9]+]] labeled_alias = i32;
+// IR-NEXT:     type @type[[TYPE_deprecated_alias:[0-9]+]] deprecated_alias = i32;
+// IR-NEXT:     global %[[VALUE_deprecated_object:[0-9]+]] deprecated_object: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_unused_object:[0-9]+]] unused_object: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_vendor_object:[0-9]+]] vendor_object: i32 [storage=static] [linkage=external];
+// IR-NEXT:     extern %[[VALUE_renamed:[0-9]+]] renamed: i32 [storage=static] [linkage=external] [asm_name="real_name"];
+// IR-NEXT:     global %[[VALUE_placed:[0-9]+]] placed: i32 [storage=static] = const<i32>(1) [linkage=internal] [section="data.custom"];
+// IR-NEXT:     global %[[VALUE_exported:[0-9]+]] exported: i32 [storage=static] = const<i32>(2) [linkage=external] [visibility=hidden] [used];
+// IR-NEXT:     global %[[VALUE_aliased:[0-9]+]] aliased: i16 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_reused:[0-9]+]] reused: i32 [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_locals:[0-9]+]] @locals() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_aligned_local:[0-9]+]] aligned_local: i32 [storage=automatic] [align=16] = const<i32>(0);
+// IR-NEXT:         let %[[VALUE_vector_local:[0-9]+]] vector_local: vector<i32, 4> [storage=automatic] = aggregate<vector<i32, 4>, zero_fill=true>(index0 = const<i32>(0));
+// IR-NEXT:         let %[[VALUE_labeled_local:[0-9]+]] labeled_local: i32 [storage=automatic] = const<i32>(3);
+// IR-NEXT:         let %[[VALUE_annotated_local:[0-9]+]] annotated_local: i32 [storage=automatic] = const<i32>(4);
+// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_aligned_local]]), read<i32>(%[[VALUE_labeled_local]])), read<i32>(%[[VALUE_annotated_local]])), read<i32>(lane(%[[VALUE_vector_local]], const<i32>(0))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

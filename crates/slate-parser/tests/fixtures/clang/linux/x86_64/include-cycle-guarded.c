@@ -27,7 +27,7 @@ int after_guarded_include;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 guarded_value: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 after_guarded_include: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_guarded_value:[0-9]+]] guarded_value: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_after_guarded_include:[0-9]+]] after_guarded_include: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

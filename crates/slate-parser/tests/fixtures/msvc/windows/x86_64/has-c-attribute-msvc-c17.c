@@ -228,16 +228,16 @@ int packed_other;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 defines_has_c_attribute: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 deprecated_0: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 fallthrough_0: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 maybe_unused_0: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 nodiscard_0: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 noreturn_0: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 _Noreturn_0: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 unsequenced_0: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 reproducible_0: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 __nodiscard___0: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 packed_0: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines_has_c_attribute:[0-9]+]] defines_has_c_attribute: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_deprecated_0:[0-9]+]] deprecated_0: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_fallthrough_0:[0-9]+]] fallthrough_0: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_maybe_unused_0:[0-9]+]] maybe_unused_0: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_nodiscard_0:[0-9]+]] nodiscard_0: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_noreturn_0:[0-9]+]] noreturn_0: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE__Noreturn_0:[0-9]+]] _Noreturn_0: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unsequenced_0:[0-9]+]] unsequenced_0: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_reproducible_0:[0-9]+]] reproducible_0: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE___nodiscard___0:[0-9]+]] __nodiscard___0: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_packed_0:[0-9]+]] packed_0: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -60,29 +60,29 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 ieee = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_ieee:[0-9]+]] ieee = struct {
 // DEFAULT-NEXT:         field0 negative: u32 : 1;
 // DEFAULT-NEXT:         field1 exponent: u32 : 11;
 // DEFAULT-NEXT:         field2 mantissa0: u32 : 20;
 // DEFAULT-NEXT:         field3 mantissa1: u32 : 32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 0, 1, 4], bit_offsets=[Some(0), Some(1), Some(12), Some(32)], bit_units=[(0, 8)], field_units=[Some(0), Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     global %3 x: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @foo() -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 exponent: u32 [storage=automatic];
-// DEFAULT-NEXT:         write<u32>(%5, reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..8, bits=1..12>(%3)))));
-// DEFAULT-NEXT:         if eq<u32>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE_ieee]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_exponent:[0-9]+]] exponent: u32 [storage=automatic];
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_exponent]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..8, bits=1..12>(%[[VALUE_x]])))));
+// DEFAULT-NEXT:         if eq<u32>(read<u32>(%[[VALUE_exponent]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
 // DEFAULT-NEXT:             return reinterpret<u32, reason=return, fits=always>(const<i32>(1));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             if gt<u32>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:             if gt<u32>(read<u32>(%[[VALUE_exponent]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
 // DEFAULT-NEXT:                 return reinterpret<u32, reason=return, fits=always>(const<i32>(2));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..8, bits=1..12>(%3), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn() -> u32>(%4), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..8, bits=1..12>(%[[VALUE_x]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn() -> u32>(%[[VALUE_foo]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

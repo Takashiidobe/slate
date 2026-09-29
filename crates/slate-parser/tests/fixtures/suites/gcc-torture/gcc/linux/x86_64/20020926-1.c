@@ -45,20 +45,20 @@ float bar(int i1, int i2)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 gi: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo1(%8 <unnamed>: i32, %9 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo2(%10 <unnamed>: i32, %11 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo3(%12 <unnamed>: i32) -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @bar(%5 i1: i32, %6 i2: i32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 i3: i32 [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%6), const<i32>(0))
+// DEFAULT-NEXT:     extern %[[VALUE_gi:[0-9]+]] gi: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo1:[0-9]+]] @foo1(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo2:[0-9]+]] @foo2(%[[VALUE2:[0-9]+]] <unnamed>: i32, %[[VALUE3:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo3:[0-9]+]] @foo3(%[[VALUE4:[0-9]+]] <unnamed>: i32) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_i1:[0-9]+]] i1: i32, %[[VALUE_i2:[0-9]+]] i2: i32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_i3:[0-9]+]] i3: i32 [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_i2]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%7, call<i32, signature=fn(i32, i32) -> i32>(%1, read<i32>(%5), read<i32>(%0)));
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32, i32) -> i32>(%1, read<i32>(%5), read<i32>(%0));
-// DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%2, read<i32>(%5), read<i32>(%7));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i3]], call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_foo1]], read<i32>(%[[VALUE_i1]]), read<i32>(%[[VALUE_gi]])));
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_foo1]], read<i32>(%[[VALUE_i1]]), read<i32>(%[[VALUE_gi]]));
+// DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_foo2]], read<i32>(%[[VALUE_i1]]), read<i32>(%[[VALUE_i3]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             return call<f32, signature=fn(i32) -> f32>(%3, read<i32>(%6));
+// DEFAULT-NEXT:             return call<f32, signature=fn(i32) -> f32>(%[[VALUE_foo3]], read<i32>(%[[VALUE_i2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

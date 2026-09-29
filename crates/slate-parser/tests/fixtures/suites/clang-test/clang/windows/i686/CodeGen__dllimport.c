@@ -122,76 +122,76 @@ USE(redecl5)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 ExternGlobalDecl: i32 [storage=static] [linkage=external] [dllimport];
-// DEFAULT-NEXT:     global %2 GlobalDecl: i32 [storage=static] [linkage=external] [dllimport];
-// DEFAULT-NEXT:     extern %4 GlobalRedecl1: i32 [storage=static] [linkage=external] [dllimport];
-// DEFAULT-NEXT:     global %6 GlobalRedecl2: i32 [storage=static] [linkage=external] [dllimport];
-// DEFAULT-NEXT:     extern %8 GlobalRedecl3: i32 [storage=static] [linkage=external] [dllimport];
-// DEFAULT-NEXT:     global %10 GlobalRedecl4: i32 [storage=static] [linkage=external] [dllimport];
-// DEFAULT-NEXT:     extern %12 GlobalRedecl5: i32 [storage=static] [linkage=external] [dllimport];
-// DEFAULT-NEXT:     global %14 GlobalRedecl6: i32 [storage=static] [linkage=external] [dllimport];
-// DEFAULT-NEXT:     global %17 use_decl: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%16) [linkage=external];
-// DEFAULT-NEXT:     fn %1 @use15() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%0);
+// DEFAULT-NEXT:     extern %[[VALUE_ExternGlobalDecl:[0-9]+]] ExternGlobalDecl: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     global %[[VALUE_GlobalDecl:[0-9]+]] GlobalDecl: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     extern %[[VALUE_GlobalRedecl1:[0-9]+]] GlobalRedecl1: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     global %[[VALUE_GlobalRedecl2:[0-9]+]] GlobalRedecl2: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     extern %[[VALUE_GlobalRedecl3:[0-9]+]] GlobalRedecl3: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     global %[[VALUE_GlobalRedecl4:[0-9]+]] GlobalRedecl4: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     extern %[[VALUE_GlobalRedecl5:[0-9]+]] GlobalRedecl5: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     global %[[VALUE_GlobalRedecl6:[0-9]+]] GlobalRedecl6: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     global %[[VALUE_use_decl:[0-9]+]] use_decl: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_decl:[0-9]+]]) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_use15:[0-9]+]] @use15() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_ExternGlobalDecl]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @use19() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_use19:[0-9]+]] @use19() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_GlobalDecl]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @use24() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_use24:[0-9]+]] @use24() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_GlobalRedecl1]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @use28() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%6);
+// DEFAULT-NEXT:     fn %[[VALUE_use28:[0-9]+]] @use28() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_GlobalRedecl2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @use34() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_use34:[0-9]+]] @use34() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_GlobalRedecl3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @use38() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%10);
+// DEFAULT-NEXT:     fn %[[VALUE_use38:[0-9]+]] @use38() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_GlobalRedecl4]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @use43() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%12);
+// DEFAULT-NEXT:     fn %[[VALUE_use43:[0-9]+]] @use43() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_GlobalRedecl5]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @functionScope() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%14);
+// DEFAULT-NEXT:     fn %[[VALUE_functionScope:[0-9]+]] @functionScope() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_GlobalRedecl6]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @decl() -> void [linkage=external] [dllimport];
-// DEFAULT-NEXT:     fn %18 @inlineFunc() -> void [linkage=external] [dllimport] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_decl]] @decl() -> void [linkage=external] [dllimport];
+// DEFAULT-NEXT:     fn %[[VALUE_inlineFunc:[0-9]+]] @inlineFunc() -> void [linkage=external] [dllimport] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @use67() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%18);
+// DEFAULT-NEXT:     fn %[[VALUE_use67:[0-9]+]] @use67() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_inlineFunc]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @noinline() -> void [linkage=external] [dllimport] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_noinline:[0-9]+]] @noinline() -> void [linkage=external] [dllimport] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @alwaysInline() -> void [linkage=external] [dllimport] [inline=always] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_alwaysInline:[0-9]+]] @alwaysInline() -> void [linkage=external] [dllimport] [inline=always] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @use72() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%20);
+// DEFAULT-NEXT:     fn %[[VALUE_use72:[0-9]+]] @use72() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_noinline]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @use73() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%21);
+// DEFAULT-NEXT:     fn %[[VALUE_use73:[0-9]+]] @use73() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_alwaysInline]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @redecl1() -> void [linkage=external] [dllimport];
-// DEFAULT-NEXT:     fn %25 @use78() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%24);
+// DEFAULT-NEXT:     fn %[[VALUE_redecl1:[0-9]+]] @redecl1() -> void [linkage=external] [dllimport];
+// DEFAULT-NEXT:     fn %[[VALUE_use78:[0-9]+]] @use78() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_redecl1]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @redecl2() -> void [linkage=external] [dllimport];
-// DEFAULT-NEXT:     fn %27 @use84() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%26);
+// DEFAULT-NEXT:     fn %[[VALUE_redecl2:[0-9]+]] @redecl2() -> void [linkage=external] [dllimport];
+// DEFAULT-NEXT:     fn %[[VALUE_use84:[0-9]+]] @use84() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_redecl2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %28 @redecl3() -> void [linkage=external] [dllimport] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_redecl3:[0-9]+]] @redecl3() -> void [linkage=external] [dllimport] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @use88() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%28);
+// DEFAULT-NEXT:     fn %[[VALUE_use88:[0-9]+]] @use88() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_redecl3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @redecl4() -> void [linkage=external] [dllimport] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_redecl4:[0-9]+]] @redecl4() -> void [linkage=external] [dllimport] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @use92() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%30);
+// DEFAULT-NEXT:     fn %[[VALUE_use92:[0-9]+]] @use92() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_redecl4]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @redecl5() -> void [linkage=external] [dllimport];
-// DEFAULT-NEXT:     fn %33 @use97() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%32);
+// DEFAULT-NEXT:     fn %[[VALUE_redecl5:[0-9]+]] @redecl5() -> void [linkage=external] [dllimport];
+// DEFAULT-NEXT:     fn %[[VALUE_use97:[0-9]+]] @use97() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_redecl5]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

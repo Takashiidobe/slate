@@ -61,26 +61,26 @@ int foo3 (int i)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @_Fract() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE__Fract:[0-9]+]] @_Fract() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @_Accum() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE__Accum:[0-9]+]] @_Accum() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @_Sat() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE__Sat:[0-9]+]] @_Sat() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @foo1(%4 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 _Fract: i32 [storage=automatic] = mul<i32, overflow=ub>(read<i32>(%4), const<i32>(2));
-// DEFAULT-NEXT:         return read<i32>(%5);
+// DEFAULT-NEXT:     fn %[[VALUE_foo1:[0-9]+]] @foo1(%[[VALUE_i:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE__Fract_2:[0-9]+]] _Fract: i32 [storage=automatic] = mul<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(2));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE__Fract_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @foo2(%7 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 _Accum: i32 [storage=automatic] = mul<i32, overflow=ub>(read<i32>(%7), const<i32>(2));
-// DEFAULT-NEXT:         return read<i32>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_foo2:[0-9]+]] @foo2(%[[VALUE_i_2:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE__Accum_2:[0-9]+]] _Accum: i32 [storage=automatic] = mul<i32, overflow=ub>(read<i32>(%[[VALUE_i_2]]), const<i32>(2));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE__Accum_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @foo3(%10 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 _Sat: i32 [storage=automatic] = mul<i32, overflow=ub>(read<i32>(%10), const<i32>(2));
-// DEFAULT-NEXT:         return read<i32>(%11);
+// DEFAULT-NEXT:     fn %[[VALUE_foo3:[0-9]+]] @foo3(%[[VALUE_i_3:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE__Sat_2:[0-9]+]] _Sat: i32 [storage=automatic] = mul<i32, overflow=ub>(read<i32>(%[[VALUE_i_3]]), const<i32>(2));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE__Sat_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

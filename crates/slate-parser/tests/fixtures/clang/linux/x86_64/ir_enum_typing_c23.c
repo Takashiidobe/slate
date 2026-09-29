@@ -32,26 +32,26 @@ int fixed_value(enum Fixed f) { return f + F1; }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 Small = enum : u32 {
-// IR-NEXT:         %0 S0 = const<i32>(0);
-// IR-NEXT:         %1 S1 = const<i32>(1);
+// IR-NEXT:     type @type[[TYPE_Small:[0-9]+]] Small = enum : u32 {
+// IR-NEXT:         %[[VALUE_S0:[0-9]+]] S0 = const<i32>(0);
+// IR-NEXT:         %[[VALUE_S1:[0-9]+]] S1 = const<i32>(1);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     type @type1 Wide = enum : i64 {
-// IR-NEXT:         %0 W0 = const<@type1>(-1);
-// IR-NEXT:         %1 W1 = const<@type1>(2147483648);
+// IR-NEXT:     type @type[[TYPE_Wide:[0-9]+]] Wide = enum : i64 {
+// IR-NEXT:         %[[VALUE_S0]] W0 = const<@type[[TYPE_Wide]]>(-1);
+// IR-NEXT:         %[[VALUE_S1]] W1 = const<@type[[TYPE_Wide]]>(2147483648);
 // IR-NEXT:     } [size=8, align=8];
-// IR-NEXT:     type @type2 Fixed = enum : u8 {
-// IR-NEXT:         %0 F0 = const<@type2>(1);
-// IR-NEXT:         %1 F1 = const<@type2>(2);
+// IR-NEXT:     type @type[[TYPE_Fixed:[0-9]+]] Fixed = enum : u8 {
+// IR-NEXT:         %[[VALUE_S0]] F0 = const<@type[[TYPE_Fixed]]>(1);
+// IR-NEXT:         %[[VALUE_S1]] F1 = const<@type[[TYPE_Fixed]]>(2);
 // IR-NEXT:     } [size=1, align=1];
-// IR-NEXT:     fn %9 @wide_sum() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<i64, overflow=ub>(enum_to_int<i64, reason=promotion>(const<@type1>(2147483648)), widen<i64, reason=usual_arith>(const<i32>(1)));
+// IR-NEXT:     fn %[[VALUE_wide_sum:[0-9]+]] @wide_sum() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<i64, overflow=ub>(enum_to_int<i64, reason=promotion>(const<@type[[TYPE_Wide]]>(2147483648)), widen<i64, reason=usual_arith>(const<i32>(1)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %10 @small_sum() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_small_sum:[0-9]+]] @small_sum() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<i32, overflow=ub>(const<i32>(1), const<i32>(1));
 // IR-NEXT:     }
-// IR-NEXT:     fn %11 @fixed_value(%12 f: @type2) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(enum_to_int<u8, reason=promotion>(read<@type2>(%12)))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(enum_to_int<u8, reason=promotion>(const<@type2>(2)))));
+// IR-NEXT:     fn %[[VALUE_fixed_value:[0-9]+]] @fixed_value(%[[VALUE_f:[0-9]+]] f: @type[[TYPE_Fixed]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(enum_to_int<u8, reason=promotion>(read<@type[[TYPE_Fixed]]>(%[[VALUE_f]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(enum_to_int<u8, reason=promotion>(const<@type[[TYPE_Fixed]]>(2)))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

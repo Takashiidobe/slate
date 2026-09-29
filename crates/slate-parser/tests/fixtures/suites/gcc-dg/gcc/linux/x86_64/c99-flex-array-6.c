@@ -40,15 +40,15 @@ f (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 p: ptr<array<i32, incomplete>>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %0 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 a: array<i32, 3> [storage=automatic];
-// DEFAULT-NEXT:         let %2 p: ptr<array<i32, incomplete>> [storage=automatic];
-// DEFAULT-NEXT:         let %4 s: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<array<i32, incomplete>>>(%2, pointer_cast<ptr<array<i32, incomplete>>, reason=assign>(addr_of<ptr<array<i32, 3>>>(%1)));
-// DEFAULT-NEXT:         write<ptr<array<i32, incomplete>>>(field0(%4), pointer_cast<ptr<array<i32, incomplete>>, reason=assign>(addr_of<ptr<array<i32, 3>>>(%1)));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: array<i32, 3> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<array<i32, incomplete>> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<array<i32, incomplete>>>(%[[VALUE_p]], pointer_cast<ptr<array<i32, incomplete>>, reason=assign>(addr_of<ptr<array<i32, 3>>>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         write<ptr<array<i32, incomplete>>>(field0(%[[VALUE_s]]), pointer_cast<ptr<array<i32, incomplete>>, reason=assign>(addr_of<ptr<array<i32, 3>>>(%[[VALUE_a]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

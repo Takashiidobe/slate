@@ -60,31 +60,31 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo_t = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo_t:[0-9]+]] foo_t = struct {
 // DEFAULT-NEXT:         field0 blksz: u32;
 // DEFAULT-NEXT:         field1 bf_cnt: u32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 foo_t = @type0;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @foo(%4 pxp: ptr<@type0> [const], %5 offset: i64, %6 extent: u32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 blkoffset: i64 [storage=automatic] = sub<i64, overflow=ub>(read<i64>(%5), rem<i64, by_zero=ub, min_by_neg_one=ub>(read<i64>(%5), reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32>(field0(deref(read<ptr<@type0>>(%4))))))));
-// DEFAULT-NEXT:         let %8 diff: u32 [storage=automatic] = reinterpret<u32, reason=explicit, fits=unknown>(truncate<i32, reason=explicit, fits=unknown>(sub<i64, overflow=ub>(read<i64>(%5), read<i64>(%7))));
-// DEFAULT-NEXT:         let %9 blkextent: u32 [storage=automatic] = mul<u32, overflow=wrap>(div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(read<u32>(%8), read<u32>(%6)), read<u32>(field0(deref(read<ptr<@type0>>(%4))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), read<u32>(field0(deref(read<ptr<@type0>>(%4))))), read<u32>(field0(deref(read<ptr<@type0>>(%4)))));
-// DEFAULT-NEXT:         if lt<u32>(read<u32>(field0(deref(read<ptr<@type0>>(%4)))), read<u32>(%9))
+// DEFAULT-NEXT:     type @type[[TYPE_foo_t_2:[0-9]+]] foo_t = @type[[TYPE_foo_t]];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_pxp:[0-9]+]] pxp: ptr<@type[[TYPE_foo_t]]> [const], %[[VALUE_offset:[0-9]+]] offset: i64, %[[VALUE_extent:[0-9]+]] extent: u32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_blkoffset:[0-9]+]] blkoffset: i64 [storage=automatic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE_offset]]), rem<i64, by_zero=ub, min_by_neg_one=ub>(read<i64>(%[[VALUE_offset]]), reinterpret<i64, reason=explicit, fits=unknown>(widen<u64, reason=explicit>(read<u32>(field0(deref(read<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_pxp]]))))))));
+// DEFAULT-NEXT:         let %[[VALUE_diff:[0-9]+]] diff: u32 [storage=automatic] = reinterpret<u32, reason=explicit, fits=unknown>(truncate<i32, reason=explicit, fits=unknown>(sub<i64, overflow=ub>(read<i64>(%[[VALUE_offset]]), read<i64>(%[[VALUE_blkoffset]]))));
+// DEFAULT-NEXT:         let %[[VALUE_blkextent:[0-9]+]] blkextent: u32 [storage=automatic] = mul<u32, overflow=wrap>(div<u32, by_zero=ub>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_diff]]), read<u32>(%[[VALUE_extent]])), read<u32>(field0(deref(read<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_pxp]]))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), read<u32>(field0(deref(read<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_pxp]]))))), read<u32>(field0(deref(read<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_pxp]])))));
+// DEFAULT-NEXT:         if lt<u32>(read<u32>(field0(deref(read<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_pxp]])))), read<u32>(%[[VALUE_blkextent]]))
 // DEFAULT-NEXT:             return neg<i64, overflow=ub>(const<i64>(1));
-// DEFAULT-NEXT:         if gt<u32>(read<u32>(field1(deref(read<ptr<@type0>>(%4)))), read<u32>(field0(deref(read<ptr<@type0>>(%4)))))
-// DEFAULT-NEXT:             write<u32>(field1(deref(read<ptr<@type0>>(%4))), read<u32>(field0(deref(read<ptr<@type0>>(%4)))));
-// DEFAULT-NEXT:         return read<i64>(%7);
+// DEFAULT-NEXT:         if gt<u32>(read<u32>(field1(deref(read<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_pxp]])))), read<u32>(field0(deref(read<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_pxp]])))))
+// DEFAULT-NEXT:             write<u32>(field1(deref(read<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_pxp]]))), read<u32>(field0(deref(read<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_pxp]])))));
+// DEFAULT-NEXT:         return read<i64>(%[[VALUE_blkoffset]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %11 x: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %12 xx: i64 [storage=automatic];
-// DEFAULT-NEXT:         write<u32>(field0(%11), reinterpret<u32, reason=assign, fits=always>(const<i32>(8192)));
-// DEFAULT-NEXT:         write<u32>(field1(%11), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<i64>(%12, call<i64, signature=fn(ptr<@type0>, i64, u32) -> i64>(%3, addr_of<ptr<@type0>>(%11), widen<i64, reason=arg>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4096))));
-// DEFAULT-NEXT:         call<i64, signature=fn(ptr<@type0>, i64, u32) -> i64>(%3, addr_of<ptr<@type0>>(%11), widen<i64, reason=arg>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4096)));
-// DEFAULT-NEXT:         if ne<i64>(read<i64>(%12), const<i64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: @type[[TYPE_foo_t]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_xx:[0-9]+]] xx: i64 [storage=automatic];
+// DEFAULT-NEXT:         write<u32>(field0(%[[VALUE_x]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(8192)));
+// DEFAULT-NEXT:         write<u32>(field1(%[[VALUE_x]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_xx]], call<i64, signature=fn(ptr<@type[[TYPE_foo_t]]>, i64, u32) -> i64>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_x]]), widen<i64, reason=arg>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4096))));
+// DEFAULT-NEXT:         call<i64, signature=fn(ptr<@type[[TYPE_foo_t]]>, i64, u32) -> i64>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_x]]), widen<i64, reason=arg>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4096)));
+// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE_xx]]), const<i64>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

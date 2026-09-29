@@ -55,28 +55,28 @@ int blue_paint[] = { recursive, recursive };
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = enum : u32 {
-// DEFAULT-NEXT:         %0 open_paren_from_macro = const<i32>(0);
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_open_paren_from_macro:[0-9]+]] open_paren_from_macro = const<i32>(0);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 = enum : u32 {
-// DEFAULT-NEXT:         %0 name_from_macro = const<i32>(2);
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_open_paren_from_macro]] name_from_macro = const<i32>(2);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type2 = enum : u32 {
-// DEFAULT-NEXT:         %0 name_through_two_macros = const<i32>(3);
+// DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_open_paren_from_macro]] name_through_two_macros = const<i32>(3);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type3 = enum : u32 {
-// DEFAULT-NEXT:         %0 paste_then_rescan = const<i32>(0);
+// DEFAULT-NEXT:     type @type[[TYPE3:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_open_paren_from_macro]] paste_then_rescan = const<i32>(0);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type4 = enum : u32 {
-// DEFAULT-NEXT:         %0 first_of_two = const<i32>(10);
-// DEFAULT-NEXT:         %1 second_of_two = const<i32>(20);
+// DEFAULT-NEXT:     type @type[[TYPE4:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_open_paren_from_macro]] first_of_two = const<i32>(10);
+// DEFAULT-NEXT:         %[[VALUE_second_of_two:[0-9]+]] second_of_two = const<i32>(20);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type5 = enum : u32 {
-// DEFAULT-NEXT:         %0 arguments_split_across_expansion = const<i32>(3);
+// DEFAULT-NEXT:     type @type[[TYPE5:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_open_paren_from_macro]] arguments_split_across_expansion = const<i32>(3);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type6 = enum : u32 {
-// DEFAULT-NEXT:         %0 recursive = const<i32>(5);
+// DEFAULT-NEXT:     type @type[[TYPE6:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_open_paren_from_macro]] recursive = const<i32>(5);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %15 blue_paint: array<i32, 2> [storage=static] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(5), index1 = const<i32>(5)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_blue_paint:[0-9]+]] blue_paint: array<i32, 2> [storage=static] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(5), index1 = const<i32>(5)) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

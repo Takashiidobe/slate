@@ -47,15 +47,15 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @func1(%1 base: ptr<const volatile void>, %2 byteOffset: u64) -> u64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 addr: ptr<volatile u64> [storage=automatic] = int_to_ptr<ptr<volatile u64>, reason=explicit>(add<u64, overflow=wrap>(ptr_to_int<u64, reason=explicit>(read<ptr<const volatile void>>(%1)), read<u64>(%2)));
-// DEFAULT-NEXT:         return read<u64, volatile>(deref(read<ptr<volatile u64>>(%3)));
+// DEFAULT-NEXT:     fn %[[VALUE_func1:[0-9]+]] @func1(%[[VALUE_base:[0-9]+]] base: ptr<const volatile void>, %[[VALUE_byteOffset:[0-9]+]] byteOffset: u64) -> u64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_addr:[0-9]+]] addr: ptr<volatile u64> [storage=automatic] = int_to_ptr<ptr<volatile u64>, reason=explicit>(add<u64, overflow=wrap>(ptr_to_int<u64, reason=explicit>(read<ptr<const volatile void>>(%[[VALUE_base]])), read<u64>(%[[VALUE_byteOffset]])));
+// DEFAULT-NEXT:         return read<u64, volatile>(deref(read<ptr<volatile u64>>(%[[VALUE_addr]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @func2(%5 data: u64) -> u64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u64, signature=fn(ptr<const volatile void>, u64) -> u64>(%0, pointer_cast<ptr<const volatile void>, reason=arg>(addr_of<ptr<u64>>(%5)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:     fn %[[VALUE_func2:[0-9]+]] @func2(%[[VALUE_data:[0-9]+]] data: u64) -> u64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<u64, signature=fn(ptr<const volatile void>, u64) -> u64>(%[[VALUE_func1]], pointer_cast<ptr<const volatile void>, reason=arg>(addr_of<ptr<u64>>(%[[VALUE_data]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main(%7 argc: i32, %8 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 b: u64 [storage=automatic] = call<u64, signature=fn(u64) -> u64>(%4, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%7))));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u64 [storage=automatic] = call<u64, signature=fn(u64) -> u64>(%[[VALUE_func2]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_argc]]))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

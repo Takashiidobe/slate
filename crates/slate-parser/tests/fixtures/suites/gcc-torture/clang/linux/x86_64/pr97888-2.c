@@ -39,17 +39,17 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %0 @foo(%1 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ge<i32>(rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%1), const<i32>(7)), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_i:[0-9]+]] i: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ge<i32>(rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_i]]), const<i32>(7)), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if ge<i32>(read<i32>(%1), const<i32>(0))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:                 if ge<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, neg<i32, overflow=ub>(const<i32>(7)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, neg<i32, overflow=ub>(const<i32>(21)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], neg<i32, overflow=ub>(const<i32>(7)));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], neg<i32, overflow=ub>(const<i32>(21)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

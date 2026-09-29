@@ -35,9 +35,9 @@ volatile void (*vvf(int x))(int) { return y; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 y: ptr<fn(i32) -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @vvf(%2 x: i32) -> ptr<fn(i32) -> void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<ptr<fn(i32) -> void>>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: ptr<fn(i32) -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_vvf:[0-9]+]] @vvf(%[[VALUE_x:[0-9]+]] x: i32) -> ptr<fn(i32) -> void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<ptr<fn(i32) -> void>>(%[[VALUE_y]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

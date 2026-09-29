@@ -36,21 +36,21 @@ Shade through_enum_typedef = green;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Named = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Named:[0-9]+]] Named = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 Alias = @type0;
-// DEFAULT-NEXT:     type @type2 Param = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Alias:[0-9]+]] Alias = @type[[TYPE_Named]];
+// DEFAULT-NEXT:     type @type[[TYPE_Param:[0-9]+]] Param = struct {
 // DEFAULT-NEXT:         field0 b: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 Color = enum : u32 {
-// DEFAULT-NEXT:         %0 red = const<i32>(0);
-// DEFAULT-NEXT:         %1 green = const<i32>(1);
+// DEFAULT-NEXT:     type @type[[TYPE_Color:[0-9]+]] Color = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_red:[0-9]+]] red = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_green:[0-9]+]] green = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type4 Shade = @type3;
-// DEFAULT-NEXT:     global %2 through_typedef: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 through_prototype: @type2 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 through_enum_typedef: @type3 [storage=static] = int_to_enum<@type3, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))) [linkage=external];
-// DEFAULT-NEXT:     fn %5 @take(%12 p: ptr<@type2>) -> ptr<@type2> [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_Shade:[0-9]+]] Shade = @type[[TYPE_Color]];
+// DEFAULT-NEXT:     global %[[VALUE_through_typedef:[0-9]+]] through_typedef: @type[[TYPE_Named]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_through_prototype:[0-9]+]] through_prototype: @type[[TYPE_Param]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_through_enum_typedef:[0-9]+]] through_enum_typedef: @type[[TYPE_Color]] [storage=static] = int_to_enum<@type[[TYPE_Color]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_take:[0-9]+]] @take(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_Param]]>) -> ptr<@type[[TYPE_Param]]> [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

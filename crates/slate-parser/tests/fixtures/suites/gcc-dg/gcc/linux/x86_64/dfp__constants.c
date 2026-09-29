@@ -36,11 +36,11 @@ _Decimal128 f = 3000300030003e0DL;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: d32 [storage=static] = const<d32>(1.1) [linkage=external];
-// DEFAULT-NEXT:     global %1 b: d32 [storage=static] = neg<d32>(const<d32>(.003)) [linkage=external];
-// DEFAULT-NEXT:     global %2 c: d64 [storage=static] = float_narrow<d64, reason=assign, rounding=nearest_even, exceptions=ignore>(const<d128>(11e-1)) [linkage=external];
-// DEFAULT-NEXT:     global %3 d: d64 [storage=static] = float_narrow<d64, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<d128>(const<d128>(.3))) [linkage=external];
-// DEFAULT-NEXT:     global %4 e: d128 [storage=static] = const<d128>(000.3e0) [linkage=external];
-// DEFAULT-NEXT:     global %5 f: d128 [storage=static] = const<d128>(3000300030003e0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: d32 [storage=static] = const<d32>(1.1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: d32 [storage=static] = neg<d32>(const<d32>(.003)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: d64 [storage=static] = float_narrow<d64, reason=assign, rounding=nearest_even, exceptions=ignore>(const<d128>(11e-1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: d64 [storage=static] = float_narrow<d64, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<d128>(const<d128>(.3))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: d128 [storage=static] = const<d128>(000.3e0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: d128 [storage=static] = const<d128>(3000300030003e0) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -54,27 +54,27 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:         field1 j: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 B = struct {
-// DEFAULT-NEXT:         field0 a: ptr<@type0>;
-// DEFAULT-NEXT:         field1 b: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
+// DEFAULT-NEXT:         field0 a: ptr<@type[[TYPE_A]]>;
+// DEFAULT-NEXT:         field1 b: ptr<@type[[TYPE_A]]>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type2 C = struct {
-// DEFAULT-NEXT:         field0 c: ptr<@type1>;
-// DEFAULT-NEXT:         field1 d: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_C:[0-9]+]] C = struct {
+// DEFAULT-NEXT:         field0 c: ptr<@type[[TYPE_B]]>;
+// DEFAULT-NEXT:         field1 d: ptr<@type[[TYPE_A]]>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %4 e: @type2 [storage=static] = aggregate<@type2, zero_fill=false>(field0 = addr_of<ptr<@type1>>(compound_literal %8 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = addr_of<ptr<@type0>>(compound_literal %6 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2))), field1 = addr_of<ptr<@type0>>(compound_literal %7 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4))))), field1 = addr_of<ptr<@type0>>(compound_literal %9 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(5), field1 = const<i32>(6)))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(field0(%4)))))))), const<i32>(1)), ne<i32>(read<i32>(field1(deref(read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(field0(%4)))))))), const<i32>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type0>>(field1(deref(read<ptr<@type1>>(field0(%4)))))))), const<i32>(3)), ne<i32>(read<i32>(field1(deref(read<ptr<@type0>>(field1(deref(read<ptr<@type1>>(field0(%4)))))))), const<i32>(4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type0>>(field1(%4))))), const<i32>(5)), ne<i32>(read<i32>(field1(deref(read<ptr<@type0>>(field1(%4))))), const<i32>(6)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: @type[[TYPE_C]] [storage=static] = aggregate<@type[[TYPE_C]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_B]]>>(compound_literal %[[VALUE0:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_B]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_A]]>>(compound_literal %[[VALUE1:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(2))), field1 = addr_of<ptr<@type[[TYPE_A]]>>(compound_literal %[[VALUE2:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4))))), field1 = addr_of<ptr<@type[[TYPE_A]]>>(compound_literal %[[VALUE3:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_A]], zero_fill=false>(field0 = const<i32>(5), field1 = const<i32>(6)))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type[[TYPE_A]]>>(field0(deref(read<ptr<@type[[TYPE_B]]>>(field0(%[[VALUE_e]])))))))), const<i32>(1)), ne<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(field0(deref(read<ptr<@type[[TYPE_B]]>>(field0(%[[VALUE_e]])))))))), const<i32>(2)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_B]]>>(field0(%[[VALUE_e]])))))))), const<i32>(3)), ne<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_B]]>>(field0(%[[VALUE_e]])))))))), const<i32>(4)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type[[TYPE_A]]>>(field1(%[[VALUE_e]]))))), const<i32>(5)), ne<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(field1(%[[VALUE_e]]))))), const<i32>(6)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

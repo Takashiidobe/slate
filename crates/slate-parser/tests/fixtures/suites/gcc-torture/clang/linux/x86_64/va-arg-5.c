@@ -69,39 +69,39 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 va_list = va_list;
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @exit(%10 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @va_double(%4 n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 args: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%5);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%5), const<f64>(3.141592))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%5), const<f64>(2.71827))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%5), const<f64>(2.2360679))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%5), const<f64>(2.1474836))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         va_end(%5);
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_va_double:[0-9]+]] @va_double(%[[VALUE_n:[0-9]+]] n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_args:[0-9]+]] args: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_args]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_args]]), const<f64>(3.141592))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_args]]), const<f64>(2.71827))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_args]]), const<f64>(2.2360679))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(va_arg<f64>(%[[VALUE_args]]), const<f64>(2.1474836))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_args]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @va_long_double(%7 n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 args: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%8);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(va_arg<f80>(%8), const<f80>(3.14159199999999999998))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(va_arg<f80>(%8), const<f80>(2.71827000000000000004))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(va_arg<f80>(%8), const<f80>(2.2360679))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(va_arg<f80>(%8), const<f80>(2.14748360000000000007))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         va_end(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_va_long_double:[0-9]+]] @va_long_double(%[[VALUE_n_2:[0-9]+]] n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_args_2:[0-9]+]] args: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_args_2]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(va_arg<f80>(%[[VALUE_args_2]]), const<f80>(3.14159199999999999998))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(va_arg<f80>(%[[VALUE_args_2]]), const<f80>(2.71827000000000000004))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(va_arg<f80>(%[[VALUE_args_2]]), const<f80>(2.2360679))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(va_arg<f80>(%[[VALUE_args_2]]), const<f80>(2.14748360000000000007))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_args_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%3, const<i32>(4), const<f64>(3.141592), const<f64>(2.71827), const<f64>(2.2360679), const<f64>(2.1474836));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%6, const<i32>(4), const<f80>(3.14159199999999999998), const<f80>(2.71827000000000000004), const<f80>(2.2360679), const<f80>(2.14748360000000000007));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_va_double]], const<i32>(4), const<f64>(3.141592), const<f64>(2.71827), const<f64>(2.2360679), const<f64>(2.1474836));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_va_long_double]], const<i32>(4), const<f80>(3.14159199999999999998), const<f80>(2.71827000000000000004), const<f80>(2.2360679), const<f80>(2.14748360000000000007));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

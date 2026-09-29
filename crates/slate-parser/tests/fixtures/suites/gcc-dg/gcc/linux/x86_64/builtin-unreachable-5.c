@@ -47,16 +47,16 @@ foo (int a)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @__builtin_unreachable() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %0 @foo(%2 a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if le<i32>(read<i32>(%2), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_unreachable:[0-9]+]] @__builtin_unreachable() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if le<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 label %1 L1:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:                 label %[[VALUE_L1:[0-9]+]] L1:
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_unreachable]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if gt<i32>(read<i32>(%2), const<i32>(2))
-// DEFAULT-NEXT:             goto %1;
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<i32>(read<i32>(%2), const<i32>(0)));
+// DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_a]]), const<i32>(2))
+// DEFAULT-NEXT:             goto %[[VALUE_L1]];
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

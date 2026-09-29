@@ -116,105 +116,105 @@ foo (unsigned int n, int x, int y, unsigned char *z)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = union {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 r: f32;
 // DEFAULT-NEXT:         field1 i: u32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type1 = union {
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 r: f32;
 // DEFAULT-NEXT:         field1 i: u32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     fn %0 @foo(%1 n: u32, %2 x: i32, %3 y: i32, %4 z: ptr<u8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 a: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %6 b: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %7 c: array<array<f32, 4>, 2048> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         switch %16 read<i32>(%2)
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_n:[0-9]+]] n: u32, %[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32, %[[VALUE_z:[0-9]+]] z: ptr<u8>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: array<array<f32, 4>, 2048> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_x]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %16 const<i32>(6406):
-// DEFAULT-NEXT:                     write<i32>(%6, neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:                     write<i32>(%5, neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:                 break %16;
-// DEFAULT-NEXT:                 case %16 const<i32>(6410):
-// DEFAULT-NEXT:                     write<i32>(%6, neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:                     write<i32>(%5, neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:                 break %16;
-// DEFAULT-NEXT:                 case %16 const<i32>(32841):
-// DEFAULT-NEXT:                     write<i32>(%6, neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:                     write<i32>(%5, neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:                 break %16;
-// DEFAULT-NEXT:                 case %16 const<i32>(6407):
-// DEFAULT-NEXT:                     write<i32>(%5, const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%6, const<i32>(2));
-// DEFAULT-NEXT:                 break %16;
-// DEFAULT-NEXT:                 default %16:
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(6406):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_b]], neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_a]], neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(6410):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_b]], neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_a]], neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(32841):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_b]], neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_a]], neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(6407):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_a]], const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_b]], const<i32>(2));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 default %[[VALUE0]]:
 // DEFAULT-NEXT:                     return;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ge<i32>(read<i32>(%5), const<i32>(0))
+// DEFAULT-NEXT:         if ge<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %8 d: ptr<u8> [storage=automatic] = read<ptr<u8>>(%4);
-// DEFAULT-NEXT:                 let %9 i: u32 [storage=automatic];
-// DEFAULT-NEXT:                 for %17
+// DEFAULT-NEXT:                 let %[[VALUE_d:[0-9]+]] d: ptr<u8> [storage=automatic] = read<ptr<u8>>(%[[VALUE_z]]);
+// DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: u32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<u32>(%9, reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:                     condition: lt<u32>(read<u32>(%9), read<u32>(%1))
+// DEFAULT-NEXT:                         write<u32>(%[[VALUE_i]], reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:                     condition: lt<u32>(read<u32>(%[[VALUE_i]]), read<u32>(%[[VALUE_n]]))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %21: u32 [synthetic] = read<u32>(%9);
-// DEFAULT-NEXT:                         let %22: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%21), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                         write<u32>(%9, read<u32>(%22));
+// DEFAULT-NEXT:                         let %[[VALUE2:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                         let %[[VALUE3:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:                         write<u32>(%[[VALUE_i]], read<u32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             do %18
+// DEFAULT-NEXT:                             do %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     let %11 e: @type0 [storage=automatic];
-// DEFAULT-NEXT:                                     write<f32>(field0(%11), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(deref(ptr_offset<ptr<array<f32, 4>>, subtract=false, element=array<f32, 4>, overflow=ub>(array_decay<ptr<array<f32, 4>>, length=Some(2048)>(%7), read<u32>(%9)))), const<i32>(1)))));
-// DEFAULT-NEXT:                                     let %23: i32 [synthetic];
-// DEFAULT-NEXT:                                     if ge<u32>(read<u32>(field1(%11)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1065287680)))
-// DEFAULT-NEXT:                                         write<i32>(%23, conditional<i32>(lt<i32>(reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(field1(%11))), const<i32>(0)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(0))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(const<i32>(255)))))));
+// DEFAULT-NEXT:                                     let %[[VALUE_e:[0-9]+]] e: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:                                     write<f32>(field0(%[[VALUE_e]]), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(deref(ptr_offset<ptr<array<f32, 4>>, subtract=false, element=array<f32, 4>, overflow=ub>(array_decay<ptr<array<f32, 4>>, length=Some(2048)>(%[[VALUE_c]]), read<u32>(%[[VALUE_i]])))), const<i32>(1)))));
+// DEFAULT-NEXT:                                     let %[[VALUE5:[0-9]+]]: i32 [synthetic];
+// DEFAULT-NEXT:                                     if ge<u32>(read<u32>(field1(%[[VALUE_e]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1065287680)))
+// DEFAULT-NEXT:                                         write<i32>(%[[VALUE5]], conditional<i32>(lt<i32>(reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(field1(%[[VALUE_e]]))), const<i32>(0)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(0))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(const<i32>(255)))))));
 // DEFAULT-NEXT:                                     else
-// DEFAULT-NEXT:                                         write<f32>(field0(%11), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(field0(%11)), div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(const<f32>(255.0), const<f32>(256.0))), const<f32>(32768.0)));
-// DEFAULT-NEXT:                                         write<i32>(%23, reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(truncate<u8, reason=explicit, fits=unknown>(read<u32>(field1(%11))))));
-// DEFAULT-NEXT:                                     write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%8), read<i32>(%5))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(read<i32>(%23))));
+// DEFAULT-NEXT:                                         write<f32>(field0(%[[VALUE_e]]), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(field0(%[[VALUE_e]])), div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(const<f32>(255.0), const<f32>(256.0))), const<f32>(32768.0)));
+// DEFAULT-NEXT:                                         write<i32>(%[[VALUE5]], reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(truncate<u8, reason=explicit, fits=unknown>(read<u32>(field1(%[[VALUE_e]]))))));
+// DEFAULT-NEXT:                                     write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_d]]), read<i32>(%[[VALUE_a]]))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(read<i32>(%[[VALUE5]]))));
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             let %24: ptr<u8> [synthetic] = read<ptr<u8>>(%8);
-// DEFAULT-NEXT:                             let %25: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%24), read<i32>(%3));
-// DEFAULT-NEXT:                             write<ptr<u8>>(%8, read<ptr<u8>>(%25));
+// DEFAULT-NEXT:                             let %[[VALUE6:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_d]]);
+// DEFAULT-NEXT:                             let %[[VALUE7:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE6]]), read<i32>(%[[VALUE_y]]));
+// DEFAULT-NEXT:                             write<ptr<u8>>(%[[VALUE_d]], read<ptr<u8>>(%[[VALUE7]]));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ge<i32>(read<i32>(%6), const<i32>(0))
+// DEFAULT-NEXT:         if ge<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %12 d: ptr<u8> [storage=automatic] = read<ptr<u8>>(%4);
-// DEFAULT-NEXT:                 let %13 i: u32 [storage=automatic];
-// DEFAULT-NEXT:                 for %19
+// DEFAULT-NEXT:                 let %[[VALUE_d_2:[0-9]+]] d: ptr<u8> [storage=automatic] = read<ptr<u8>>(%[[VALUE_z]]);
+// DEFAULT-NEXT:                 let %[[VALUE_i_2:[0-9]+]] i: u32 [storage=automatic];
+// DEFAULT-NEXT:                 for %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         write<u32>(%13, reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:                     condition: lt<u32>(read<u32>(%13), read<u32>(%1))
+// DEFAULT-NEXT:                         write<u32>(%[[VALUE_i_2]], reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:                     condition: lt<u32>(read<u32>(%[[VALUE_i_2]]), read<u32>(%[[VALUE_n]]))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %26: u32 [synthetic] = read<u32>(%13);
-// DEFAULT-NEXT:                         let %27: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%26), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                         write<u32>(%13, read<u32>(%27));
+// DEFAULT-NEXT:                         let %[[VALUE9:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_i_2]]);
+// DEFAULT-NEXT:                         let %[[VALUE10:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE9]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:                         write<u32>(%[[VALUE_i_2]], read<u32>(%[[VALUE10]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             do %20
+// DEFAULT-NEXT:                             do %[[VALUE11:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     let %15 e: @type1 [storage=automatic];
-// DEFAULT-NEXT:                                     write<f32>(field0(%15), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(deref(ptr_offset<ptr<array<f32, 4>>, subtract=false, element=array<f32, 4>, overflow=ub>(array_decay<ptr<array<f32, 4>>, length=Some(2048)>(%7), read<u32>(%13)))), const<i32>(2)))));
-// DEFAULT-NEXT:                                     let %28: i32 [synthetic];
-// DEFAULT-NEXT:                                     if ge<u32>(read<u32>(field1(%15)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1065287680)))
-// DEFAULT-NEXT:                                         write<i32>(%28, conditional<i32>(lt<i32>(reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(field1(%15))), const<i32>(0)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(0))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(const<i32>(255)))))));
+// DEFAULT-NEXT:                                     let %[[VALUE_e_2:[0-9]+]] e: @type[[TYPE1]] [storage=automatic];
+// DEFAULT-NEXT:                                     write<f32>(field0(%[[VALUE_e_2]]), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(4)>(deref(ptr_offset<ptr<array<f32, 4>>, subtract=false, element=array<f32, 4>, overflow=ub>(array_decay<ptr<array<f32, 4>>, length=Some(2048)>(%[[VALUE_c]]), read<u32>(%[[VALUE_i_2]])))), const<i32>(2)))));
+// DEFAULT-NEXT:                                     let %[[VALUE12:[0-9]+]]: i32 [synthetic];
+// DEFAULT-NEXT:                                     if ge<u32>(read<u32>(field1(%[[VALUE_e_2]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1065287680)))
+// DEFAULT-NEXT:                                         write<i32>(%[[VALUE12]], conditional<i32>(lt<i32>(reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(field1(%[[VALUE_e_2]]))), const<i32>(0)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(0))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(const<i32>(255)))))));
 // DEFAULT-NEXT:                                     else
-// DEFAULT-NEXT:                                         write<f32>(field0(%15), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(field0(%15)), div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(const<f32>(255.0), const<f32>(256.0))), const<f32>(32768.0)));
-// DEFAULT-NEXT:                                         write<i32>(%28, reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(truncate<u8, reason=explicit, fits=unknown>(read<u32>(field1(%15))))));
-// DEFAULT-NEXT:                                     write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%12), read<i32>(%6))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(read<i32>(%28))));
+// DEFAULT-NEXT:                                         write<f32>(field0(%[[VALUE_e_2]]), add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(field0(%[[VALUE_e_2]])), div<f32, rounding=nearest_even, exceptions=ignore, contract=on>(const<f32>(255.0), const<f32>(256.0))), const<f32>(32768.0)));
+// DEFAULT-NEXT:                                         write<i32>(%[[VALUE12]], reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(truncate<u8, reason=explicit, fits=unknown>(read<u32>(field1(%[[VALUE_e_2]]))))));
+// DEFAULT-NEXT:                                     write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_d_2]]), read<i32>(%[[VALUE_b]]))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(read<i32>(%[[VALUE12]]))));
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             let %29: ptr<u8> [synthetic] = read<ptr<u8>>(%12);
-// DEFAULT-NEXT:                             let %30: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%29), read<i32>(%3));
-// DEFAULT-NEXT:                             write<ptr<u8>>(%12, read<ptr<u8>>(%30));
+// DEFAULT-NEXT:                             let %[[VALUE13:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_d_2]]);
+// DEFAULT-NEXT:                             let %[[VALUE14:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE13]]), read<i32>(%[[VALUE_y]]));
+// DEFAULT-NEXT:                             write<ptr<u8>>(%[[VALUE_d_2]], read<ptr<u8>>(%[[VALUE14]]));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }

@@ -55,28 +55,28 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @tar(%2 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(36863))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_tar:[0-9]+]] @tar(%[[VALUE_i:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(36863))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @bug(%4 q: i32, %5 bcount: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %6 j: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %7 outgo: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         while %9 ne<i32>(read<i32>(%6), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:     fn %[[VALUE_bug:[0-9]+]] @bug(%[[VALUE_q:[0-9]+]] q: i32, %[[VALUE_bcount:[0-9]+]] bcount: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_outgo:[0-9]+]] outgo: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<i32>(read<i32>(%[[VALUE_j]]), neg<i32, overflow=ub>(const<i32>(1)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %10: i32 [synthetic] = read<i32>(%7);
-// DEFAULT-NEXT:                 let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%7, read<i32>(%11));
-// DEFAULT-NEXT:                 if gt<i32>(read<i32>(%7), sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1)))
-// DEFAULT-NEXT:                     write<i32>(%7, sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1)));
-// DEFAULT-NEXT:                 write<i32>(%6, call<i32, signature=fn(i32) -> i32>(%1, mul<i32, overflow=ub>(read<i32>(%7), read<i32>(%5))));
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%1, mul<i32, overflow=ub>(read<i32>(%7), read<i32>(%5)));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_outgo]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_outgo]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:                 if gt<i32>(read<i32>(%[[VALUE_outgo]]), sub<i32, overflow=ub>(read<i32>(%[[VALUE_q]]), const<i32>(1)))
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_outgo]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_q]]), const<i32>(1)));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_j]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_tar]], mul<i32, overflow=ub>(read<i32>(%[[VALUE_outgo]]), read<i32>(%[[VALUE_bcount]]))));
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_tar]], mul<i32, overflow=ub>(read<i32>(%[[VALUE_outgo]]), read<i32>(%[[VALUE_bcount]])));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%3, const<i32>(5), const<i32>(36863));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bug]], const<i32>(5), const<i32>(36863));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

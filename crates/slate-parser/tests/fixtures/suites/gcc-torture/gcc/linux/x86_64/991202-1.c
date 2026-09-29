@@ -38,19 +38,19 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 x: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 y: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @exit(%4 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<i32>(%1, const<i32>(2));
-// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%1));
-// DEFAULT-NEXT:         do %5
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_x]], const<i32>(2));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_y]], read<i32>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%1, read<i32>(%2));
-// DEFAULT-NEXT:                 write<i32>(%2, mul<i32, overflow=ub>(const<i32>(2), read<i32>(%2)));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE_y]]));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_y]], mul<i32, overflow=ub>(const<i32>(2), read<i32>(%[[VALUE_y]])));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while not<bool>(ge<i32>(sub<i32, overflow=ub>(read<i32>(%2), read<i32>(%1)), const<i32>(20)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:         while not<bool>(ge<i32>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_y]]), read<i32>(%[[VALUE_x]])), const<i32>(20)));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -63,42 +63,42 @@ void foo()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 bpp: i8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @inb(%3 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<i32>(widen<i32, reason=promotion>(read<i8>(%0)), const<i32>(32))
+// DEFAULT-NEXT:     extern %[[VALUE_bpp:[0-9]+]] bpp: i8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_inb:[0-9]+]] @inb(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_bpp]])), const<i32>(32))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if lt<i32>(const<i32>(2), const<i32>(8))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         do %4
+// DEFAULT-NEXT:                         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 while %5 ne<i32>(and<i32>(call<i32, signature=fn(i32) -> i32>(%1, const<i32>(39656)), shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(256), add<i32, overflow=ub>(const<i32>(2), const<i32>(1)))), const<i32>(0))
+// DEFAULT-NEXT:                                 while %[[VALUE2:[0-9]+]] ne<i32>(and<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_inb]], const<i32>(39656)), shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(256), add<i32, overflow=ub>(const<i32>(2), const<i32>(1)))), const<i32>(0))
 // DEFAULT-NEXT:                                     ;
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 else
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         do %6
+// DEFAULT-NEXT:                         do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:                             {
-// DEFAULT-NEXT:                                 while %7 ne<i32>(and<i32>(call<i32, signature=fn(i32) -> i32>(%1, const<i32>(39656)), shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(256), const<i32>(2))), const<i32>(0))
+// DEFAULT-NEXT:                                 while %[[VALUE4:[0-9]+]] ne<i32>(and<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_inb]], const<i32>(39656)), shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(256), const<i32>(2))), const<i32>(0))
 // DEFAULT-NEXT:                                     ;
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             do %8
+// DEFAULT-NEXT:             do %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     while %9 ne<i32>(and<i32>(call<i32, signature=fn(i32) -> i32>(%1, const<i32>(39656)), shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(256), const<i32>(1))), const<i32>(0))
+// DEFAULT-NEXT:                     while %[[VALUE6:[0-9]+]] ne<i32>(and<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_inb]], const<i32>(39656)), shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(256), const<i32>(1))), const<i32>(0))
 // DEFAULT-NEXT:                         ;
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         if lt<i32>(const<i32>(8), const<i32>(8))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 do %10
+// DEFAULT-NEXT:                 do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         while %11 ne<i32>(and<i32>(call<i32, signature=fn(i32) -> i32>(%1, const<i32>(39656)), shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(256), add<i32, overflow=ub>(const<i32>(8), const<i32>(1)))), const<i32>(0))
+// DEFAULT-NEXT:                         while %[[VALUE8:[0-9]+]] ne<i32>(and<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_inb]], const<i32>(39656)), shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(256), add<i32, overflow=ub>(const<i32>(8), const<i32>(1)))), const<i32>(0))
 // DEFAULT-NEXT:                             ;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));

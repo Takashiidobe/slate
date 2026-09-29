@@ -30,10 +30,10 @@ char *copy(char *destination, const char *source) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %2 @strcpy(%7 _Destination: ptr<i8>, %8 _Source: ptr<const i8>) -> ptr<i8> [linkage=external];
-// IR-NEXT:     fn %3 @old_api() -> i32 [linkage=external];
-// IR-NEXT:     fn %4 @copy(%5 destination: ptr<i8>, %6 source: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%2, read<ptr<i8>>(%5), read<ptr<const i8>>(%6)), call<i32, signature=fn() -> i32>(%3));
+// IR-NEXT:     fn %[[VALUE_strcpy:[0-9]+]] @strcpy(%[[VALUE__Destination:[0-9]+]] _Destination: ptr<i8>, %[[VALUE__Source:[0-9]+]] _Source: ptr<const i8>) -> ptr<i8> [linkage=external];
+// IR-NEXT:     fn %[[VALUE_old_api:[0-9]+]] @old_api() -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_copy:[0-9]+]] @copy(%[[VALUE_destination:[0-9]+]] destination: ptr<i8>, %[[VALUE_source:[0-9]+]] source: ptr<const i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%[[VALUE_strcpy]], read<ptr<i8>>(%[[VALUE_destination]]), read<ptr<const i8>>(%[[VALUE_source]])), call<i32, signature=fn() -> i32>(%[[VALUE_old_api]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

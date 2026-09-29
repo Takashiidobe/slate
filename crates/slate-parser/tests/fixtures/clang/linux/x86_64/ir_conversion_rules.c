@@ -67,17 +67,17 @@ int *discards_const(const int *value) { return value; }
 // IR-WARN-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %0 @nested_qualifiers(%1 value: ptr<ptr<const i32>>) -> ptr<ptr<i32>> [linkage=external] [fallthrough=ub_if_used] {
-// IR-WARN-NEXT:         return pointer_cast<ptr<ptr<i32>>, reason=return>(read<ptr<ptr<const i32>>>(%1));
+// IR-WARN-NEXT:     fn %[[VALUE_nested_qualifiers:[0-9]+]] @nested_qualifiers(%[[VALUE_value:[0-9]+]] value: ptr<ptr<const i32>>) -> ptr<ptr<i32>> [linkage=external] [fallthrough=ub_if_used] {
+// IR-WARN-NEXT:         return pointer_cast<ptr<ptr<i32>>, reason=return>(read<ptr<ptr<const i32>>>(%[[VALUE_value]]));
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %2 @plain_char(%3 value: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// IR-WARN-NEXT:         return pointer_cast<ptr<i8>, reason=return>(read<ptr<i8>>(%3));
+// IR-WARN-NEXT:     fn %[[VALUE_plain_char:[0-9]+]] @plain_char(%[[VALUE_value_2:[0-9]+]] value: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// IR-WARN-NEXT:         return pointer_cast<ptr<i8>, reason=return>(read<ptr<i8>>(%[[VALUE_value_2]]));
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %4 @signed_char(%5 value: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// IR-WARN-NEXT:         return pointer_cast<ptr<i8>, reason=return>(read<ptr<i8>>(%5));
+// IR-WARN-NEXT:     fn %[[VALUE_signed_char:[0-9]+]] @signed_char(%[[VALUE_value_3:[0-9]+]] value: ptr<i8>) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// IR-WARN-NEXT:         return pointer_cast<ptr<i8>, reason=return>(read<ptr<i8>>(%[[VALUE_value_3]]));
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %6 @discards_const(%7 value: ptr<const i32>) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// IR-WARN-NEXT:         return pointer_cast<ptr<i32>, reason=return>(read<ptr<const i32>>(%7));
+// IR-WARN-NEXT:     fn %[[VALUE_discards_const:[0-9]+]] @discards_const(%[[VALUE_value_4:[0-9]+]] value: ptr<const i32>) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// IR-WARN-NEXT:         return pointer_cast<ptr<i32>, reason=return>(read<ptr<const i32>>(%[[VALUE_value_4]]));
 // IR-WARN-NEXT:     }
 // IR-WARN-NEXT: }
 // SLATE-FILECHECK-END IR-WARN

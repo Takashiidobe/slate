@@ -39,11 +39,11 @@ t v = 4.5f;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 t = f32;
-// DEFAULT-NEXT:     extern %1 t: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 v: f32 [storage=static] = const<f32>(4.5) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<f32, exceptions=observable>(read<f32>(%2), const<f32>(0.0)));
+// DEFAULT-NEXT:     type @type[[TYPE_t:[0-9]+]] t = f32;
+// DEFAULT-NEXT:     extern %[[VALUE_t:[0-9]+]] t: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: f32 [storage=static] = const<f32>(4.5) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<f32, exceptions=observable>(read<f32>(%[[VALUE_v]]), const<f32>(0.0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

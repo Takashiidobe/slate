@@ -37,11 +37,11 @@ int __fastcall func_fast(void);
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @func_std() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @func_this() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @func_fast() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_func_std:[0-9]+]] @func_std() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_func_this:[0-9]+]] @func_this() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_func_fast:[0-9]+]] @func_fast() -> i32 [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

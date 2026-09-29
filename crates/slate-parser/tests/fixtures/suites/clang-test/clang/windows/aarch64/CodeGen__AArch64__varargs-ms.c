@@ -30,9 +30,9 @@ int simple_int(va_list ap) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 va_list = ptr<i8>;
-// DEFAULT-NEXT:     fn %1 @simple_int(%2 ap: ptr<i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return va_arg<i32>(%2);
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = ptr<i8>;
+// DEFAULT-NEXT:     fn %[[VALUE_simple_int:[0-9]+]] @simple_int(%[[VALUE_ap:[0-9]+]] ap: ptr<i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return va_arg<i32>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

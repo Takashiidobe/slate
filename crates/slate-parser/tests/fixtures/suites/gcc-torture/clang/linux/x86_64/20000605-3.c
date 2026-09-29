@@ -48,32 +48,32 @@ die:
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 F = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_F:[0-9]+]] F = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:         field1 y: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 timeout: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %5 x: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         while %7 ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_timeout:[0-9]+]] timeout: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<i32>(const<i32>(1), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %6 i: @type0 [storage=automatic] [const];
-// DEFAULT-NEXT:                 let %8: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:                 let %9: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%8), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%9));
-// DEFAULT-NEXT:                 write<@type0>(%6, aggregate<@type0, zero_fill=true>(field0 = read<i32>(%8)));
-// DEFAULT-NEXT:                 if gt<i32>(read<i32>(field0(%6)), const<i32>(0))
-// DEFAULT-NEXT:                     break %7;
-// DEFAULT-NEXT:                 let %10: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:                 let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%11));
-// DEFAULT-NEXT:                 if gt<i32>(read<i32>(%11), const<i32>(5))
-// DEFAULT-NEXT:                     goto %3;
+// DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: @type[[TYPE_F]] [storage=automatic] [const];
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:                 write<@type[[TYPE_F]]>(%[[VALUE_i]], aggregate<@type[[TYPE_F]], zero_fill=true>(field0 = read<i32>(%[[VALUE1]])));
+// DEFAULT-NEXT:                 if gt<i32>(read<i32>(field0(%[[VALUE_i]])), const<i32>(0))
+// DEFAULT-NEXT:                     break %[[VALUE0]];
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_timeout]]);
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_timeout]], read<i32>(%[[VALUE4]]));
+// DEFAULT-NEXT:                 if gt<i32>(read<i32>(%[[VALUE4]]), const<i32>(5))
+// DEFAULT-NEXT:                     goto %[[VALUE_die:[0-9]+]];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
-// DEFAULT-NEXT:         label %3 die:
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         label %[[VALUE_die]] die:
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

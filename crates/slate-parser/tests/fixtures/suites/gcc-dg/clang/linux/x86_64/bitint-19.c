@@ -41,9 +41,9 @@ foo (_Complex int ci, _Complex long long cl)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 ci: complex<i32>, %2 cl: complex<i64>) -> void [linkage=external] [abi=sysv64(native_c, native_c) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 bi: i31b [storage=automatic] = widen<i31b, reason=assign>(const<i2b>(0));
-// DEFAULT-NEXT:         let %4 bl: i63b [storage=automatic] = widen<i63b, reason=assign>(const<i2b>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_ci:[0-9]+]] ci: complex<i32>, %[[VALUE_cl:[0-9]+]] cl: complex<i64>) -> void [linkage=external] [abi=sysv64(native_c, native_c) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_bi:[0-9]+]] bi: i31b [storage=automatic] = widen<i31b, reason=assign>(const<i2b>(0));
+// DEFAULT-NEXT:         let %[[VALUE_bl:[0-9]+]] bl: i63b [storage=automatic] = widen<i63b, reason=assign>(const<i2b>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

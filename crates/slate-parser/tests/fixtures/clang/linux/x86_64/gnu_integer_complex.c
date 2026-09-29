@@ -40,14 +40,14 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 global_value: complex<i32> [storage=static] = add<complex<i32>, complex=true, overflow=ub>(const<i32>(17), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(19))) [linkage=internal];
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 25> [storage=static] = code_units<array<i8, 25>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 first: complex<i32> [storage=automatic] = add<complex<i32>, complex=true, overflow=ub>(const<i32>(5), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(7)));
-// DEFAULT-NEXT:         let %5 second: complex<i32> [storage=automatic] = add<complex<i32>, complex=true, overflow=ub>(neg<i32, overflow=ub>(const<i32>(3)), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(11)));
-// DEFAULT-NEXT:         let %6 imaginary: complex<i32> [storage=automatic] = aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(13));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(25)>(%8)), read<i32>(real(%4)), read<i32>(imag(%4)), read<i32>(real(%5)), read<i32>(imag(%5)), read<i32>(real(%6)), read<i32>(imag(%6)), read<i32>(real(%2)), read<i32>(imag(%2)));
+// DEFAULT-NEXT:     global %[[VALUE_global_value:[0-9]+]] global_value: complex<i32> [storage=static] = add<complex<i32>, complex=true, overflow=ub>(const<i32>(17), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(19))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 25> [storage=static] = code_units<array<i8, 25>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_first:[0-9]+]] first: complex<i32> [storage=automatic] = add<complex<i32>, complex=true, overflow=ub>(const<i32>(5), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(7)));
+// DEFAULT-NEXT:         let %[[VALUE_second:[0-9]+]] second: complex<i32> [storage=automatic] = add<complex<i32>, complex=true, overflow=ub>(neg<i32, overflow=ub>(const<i32>(3)), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(11)));
+// DEFAULT-NEXT:         let %[[VALUE_imaginary:[0-9]+]] imaginary: complex<i32> [storage=automatic] = aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(13));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(25)>(%[[VALUE_str]])), read<i32>(real(%[[VALUE_first]])), read<i32>(imag(%[[VALUE_first]])), read<i32>(real(%[[VALUE_second]])), read<i32>(imag(%[[VALUE_second]])), read<i32>(real(%[[VALUE_imaginary]])), read<i32>(imag(%[[VALUE_imaginary]])), read<i32>(real(%[[VALUE_global_value]])), read<i32>(imag(%[[VALUE_global_value]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

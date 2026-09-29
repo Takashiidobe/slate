@@ -68,53 +68,53 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 E = enum : u32 {
-// DEFAULT-NEXT:         %0 A = const<i32>(0);
-// DEFAULT-NEXT:         %1 B = const<i32>(1);
-// DEFAULT-NEXT:         %2 C = const<i32>(2);
+// DEFAULT-NEXT:     type @type[[TYPE_E:[0-9]+]] E = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_B:[0-9]+]] B = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_C:[0-9]+]] C = const<i32>(2);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 S = struct {
-// DEFAULT-NEXT:         field0 e: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
+// DEFAULT-NEXT:         field0 e: @type[[TYPE_E]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %14 s: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2)))) [linkage=external];
-// DEFAULT-NEXT:     fn %5 @foo(%6 o: ptr<@type1>) -> @type0 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if eq<u64>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<@type1>>(%6)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
-// DEFAULT-NEXT:             return read<@type0>(field0(deref(read<ptr<@type1>>(%6))));
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=static] = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = int_to_enum<@type[[TYPE_E]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2)))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_o:[0-9]+]] o: ptr<@type[[TYPE_S]]>) -> @type[[TYPE_E]] [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if eq<u64>(and<u64>(ptr_to_int<u64, reason=explicit>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_o]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
+// DEFAULT-NEXT:             return read<@type[[TYPE_E]]>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_o]]))));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             return int_to_enum<@type0, reason=return>(reinterpret<u32, reason=return, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:             return int_to_enum<@type[[TYPE_E]], reason=return>(reinterpret<u32, reason=return, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @bar(%8 o: ptr<@type1>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %21: bool [synthetic];
-// DEFAULT-NEXT:         if eq<u32>(enum_to_int<u32, reason=promotion>(call<@type0, signature=fn(ptr<@type1>) -> @type0>(%5, read<ptr<@type1>>(%8))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
-// DEFAULT-NEXT:             write<bool>(%21, const<bool>(true));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_o_2:[0-9]+]] o: ptr<@type[[TYPE_S]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if eq<u32>(enum_to_int<u32, reason=promotion>(call<@type[[TYPE_E]], signature=fn(ptr<@type[[TYPE_S]]>) -> @type[[TYPE_E]]>(%[[VALUE_foo]], read<ptr<@type[[TYPE_S]]>>(%[[VALUE_o_2]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%21, eq<u32>(enum_to_int<u32, reason=promotion>(call<@type0, signature=fn(ptr<@type1>) -> @type0>(%5, read<ptr<@type1>>(%8))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(read<bool>(%21));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], eq<u32>(enum_to_int<u32, reason=promotion>(call<@type[[TYPE_E]], signature=fn(ptr<@type[[TYPE_S]]>) -> @type[[TYPE_E]]>(%[[VALUE_foo]], read<ptr<@type[[TYPE_S]]>>(%[[VALUE_o_2]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(read<bool>(%[[VALUE0]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @__builtin_expect(%16 <unnamed>: i64, %17 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %19 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %9 @baz(%10 o: ptr<@type1>, %11 d: i32) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%18, from_bool<i64, reason=arg>(not<bool>(ne<i32>(call<i32, signature=fn(ptr<@type1>) -> i32>(%7, read<ptr<@type1>>(%10)), const<i32>(0)))), widen<i64, reason=arg>(const<i32>(0))), const<i64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%19);
-// DEFAULT-NEXT:         if gt<i32>(read<i32>(%11), const<i32>(2))
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_expect:[0-9]+]] @__builtin_expect(%[[VALUE1:[0-9]+]] <unnamed>: i64, %[[VALUE2:[0-9]+]] <unnamed>: i64) -> i64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_o_3:[0-9]+]] o: ptr<@type[[TYPE_S]]>, %[[VALUE_d:[0-9]+]] d: i32) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%[[VALUE___builtin_expect]], from_bool<i64, reason=arg>(not<bool>(ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE_S]]>) -> i32>(%[[VALUE_bar]], read<ptr<@type[[TYPE_S]]>>(%[[VALUE_o_3]])), const<i32>(0)))), widen<i64, reason=arg>(const<i32>(0))), const<i64>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_d]]), const<i32>(2))
 // DEFAULT-NEXT:             return;
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>, i32) -> void>(%9, read<ptr<@type1>>(%10), add<i32, overflow=ub>(read<i32>(%11), const<i32>(1)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_S]]>, i32) -> void>(%[[VALUE_baz]], read<ptr<@type[[TYPE_S]]>>(%[[VALUE_o_3]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_d]]), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @qux(%13 o: ptr<@type1>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         switch %20 enum_to_int<u32, reason=promotion>(read<@type0>(field0(deref(read<ptr<@type1>>(%13)))))
+// DEFAULT-NEXT:     fn %[[VALUE_qux:[0-9]+]] @qux(%[[VALUE_o_4:[0-9]+]] o: ptr<@type[[TYPE_S]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         switch %[[VALUE3:[0-9]+]] enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_o_4]])))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %20 const<u32>(0):
+// DEFAULT-NEXT:                 case %[[VALUE3]] const<u32>(0):
 // DEFAULT-NEXT:                     return;
-// DEFAULT-NEXT:                 case %20 const<u32>(1):
-// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type1>, i32) -> void>(%9, read<ptr<@type1>>(%13), const<i32>(0));
-// DEFAULT-NEXT:                 break %20;
-// DEFAULT-NEXT:                 case %20 const<u32>(2):
-// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type1>, i32) -> void>(%9, read<ptr<@type1>>(%13), const<i32>(0));
-// DEFAULT-NEXT:                 break %20;
+// DEFAULT-NEXT:                 case %[[VALUE3]] const<u32>(1):
+// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type[[TYPE_S]]>, i32) -> void>(%[[VALUE_baz]], read<ptr<@type[[TYPE_S]]>>(%[[VALUE_o_4]]), const<i32>(0));
+// DEFAULT-NEXT:                 break %[[VALUE3]];
+// DEFAULT-NEXT:                 case %[[VALUE3]] const<u32>(2):
+// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type[[TYPE_S]]>, i32) -> void>(%[[VALUE_baz]], read<ptr<@type[[TYPE_S]]>>(%[[VALUE_o_4]]), const<i32>(0));
+// DEFAULT-NEXT:                 break %[[VALUE3]];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>) -> void>(%12, addr_of<ptr<@type1>>(%14));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_S]]>) -> void>(%[[VALUE_qux]], addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

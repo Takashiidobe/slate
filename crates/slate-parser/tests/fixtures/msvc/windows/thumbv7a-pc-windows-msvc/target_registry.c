@@ -38,17 +38,17 @@ struct pair record(struct pair value) { return value; }
 // CHECK-NEXT:         storage d64 [size=8, align=8];
 // CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     type @type0 pair = struct {
+// CHECK-NEXT:     type @type[[TYPE_pair:[0-9]+]] pair = struct {
 // CHECK-NEXT:         field0 a: i32;
 // CHECK-NEXT:         field1 b: i32;
 // CHECK-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// CHECK-NEXT:     global %0 msc_ver: i32 [storage=static] = const<i32>(1944) [linkage=external];
-// CHECK-NEXT:     global %1 sizeof_long: u32 [storage=static] = const<u32>(4) [linkage=external];
-// CHECK-NEXT:     global %2 sizeof_long_double: u32 [storage=static] = const<u32>(8) [linkage=external];
-// CHECK-NEXT:     global %3 sizeof_va_list: u32 [storage=static] = const<u32>(4) [linkage=external];
-// CHECK-NEXT:     global %4 alignof_long_long: u32 [storage=static] = const<u32>(8) [linkage=external];
-// CHECK-NEXT:     fn %6 @record(%7 value: @type0) -> @type0 [linkage=external] [abi=aapcs32_hard_float(native_c) -> native_c] [fallthrough=ub_if_used] {
-// CHECK-NEXT:         return copy<@type0, reason=return>(read<@type0>(%7));
+// CHECK-NEXT:     global %[[VALUE_msc_ver:[0-9]+]] msc_ver: i32 [storage=static] = const<i32>(1944) [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u32 [storage=static] = const<u32>(4) [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u32 [storage=static] = const<u32>(8) [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u32 [storage=static] = const<u32>(4) [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u32 [storage=static] = const<u32>(8) [linkage=external];
+// CHECK-NEXT:     fn %[[VALUE_record:[0-9]+]] @record(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=aapcs32_hard_float(native_c) -> native_c] [fallthrough=ub_if_used] {
+// CHECK-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value]]));
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // SLATE-FILECHECK-END CHECK

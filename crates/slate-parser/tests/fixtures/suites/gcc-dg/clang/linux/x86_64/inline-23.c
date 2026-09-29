@@ -46,16 +46,16 @@ void do_initcalls(void **call)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 my_intptr_t = i64;
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([58, 32, 37, 115, 40, 41, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @__check_printsym_format(%2 fmt: ptr<const i8>, ...) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     type @type[[TYPE_my_intptr_t:[0-9]+]] my_intptr_t = i64;
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([58, 32, 37, 115, 40, 41, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE___check_printsym_format:[0-9]+]] @__check_printsym_format(%[[VALUE_fmt:[0-9]+]] fmt: ptr<const i8>, ...) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @print_symbol(%4 fmt: ptr<const i8>, %5 addr: i64) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(%1, read<ptr<const i8>>(%4), array_decay<ptr<i8>, length=Some(1)>(%8));
+// DEFAULT-NEXT:     fn %[[VALUE_print_symbol:[0-9]+]] @print_symbol(%[[VALUE_fmt_2:[0-9]+]] fmt: ptr<const i8>, %[[VALUE_addr:[0-9]+]] addr: i64) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(%[[VALUE___check_printsym_format]], read<ptr<const i8>>(%[[VALUE_fmt_2]]), array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @do_initcalls(%7 call: ptr<ptr<void>>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, i64) -> void>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%9)), ptr_to_int<i64, reason=explicit>(read<ptr<void>>(deref(read<ptr<ptr<void>>>(%7)))));
+// DEFAULT-NEXT:     fn %[[VALUE_do_initcalls:[0-9]+]] @do_initcalls(%[[VALUE_call:[0-9]+]] call: ptr<ptr<void>>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, i64) -> void>(%[[VALUE_print_symbol]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_2]])), ptr_to_int<i64, reason=explicit>(read<ptr<void>>(deref(read<ptr<ptr<void>>>(%[[VALUE_call]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

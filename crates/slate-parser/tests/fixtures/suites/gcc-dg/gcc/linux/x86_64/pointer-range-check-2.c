@@ -56,17 +56,17 @@ f4 (char *a, char *b)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f1(%1 a: ptr<i8>, %2 b: ptr<i8>) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return logical_or<bool>(le<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%1), const<i32>(16)), read<ptr<i8>>(%2)), le<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%2), const<i32>(16)), read<ptr<i8>>(%1)));
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_a:[0-9]+]] a: ptr<i8>, %[[VALUE_b:[0-9]+]] b: ptr<i8>) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return logical_or<bool>(le<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_a]]), const<i32>(16)), read<ptr<i8>>(%[[VALUE_b]])), le<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_b]]), const<i32>(16)), read<ptr<i8>>(%[[VALUE_a]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @f2(%4 a: ptr<i8>, %5 b: ptr<i8>) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return logical_or<bool>(lt<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(15)), read<ptr<i8>>(%5)), lt<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%5), const<i32>(15)), read<ptr<i8>>(%4)));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_a_2:[0-9]+]] a: ptr<i8>, %[[VALUE_b_2:[0-9]+]] b: ptr<i8>) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return logical_or<bool>(lt<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_a_2]]), const<i32>(15)), read<ptr<i8>>(%[[VALUE_b_2]])), lt<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_b_2]]), const<i32>(15)), read<ptr<i8>>(%[[VALUE_a_2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f3(%7 a: ptr<i8>, %8 b: ptr<i8>) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return ne<i32, reason=return>(or<i32>(from_bool<i32, reason=promotion>(le<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%7), const<i32>(16)), read<ptr<i8>>(%8))), from_bool<i32, reason=promotion>(le<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%8), const<i32>(16)), read<ptr<i8>>(%7)))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_a_3:[0-9]+]] a: ptr<i8>, %[[VALUE_b_3:[0-9]+]] b: ptr<i8>) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return ne<i32, reason=return>(or<i32>(from_bool<i32, reason=promotion>(le<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_a_3]]), const<i32>(16)), read<ptr<i8>>(%[[VALUE_b_3]]))), from_bool<i32, reason=promotion>(le<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_b_3]]), const<i32>(16)), read<ptr<i8>>(%[[VALUE_a_3]])))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @f4(%10 a: ptr<i8>, %11 b: ptr<i8>) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return ne<i32, reason=return>(or<i32>(from_bool<i32, reason=promotion>(lt<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%10), const<i32>(15)), read<ptr<i8>>(%11))), from_bool<i32, reason=promotion>(lt<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%11), const<i32>(15)), read<ptr<i8>>(%10)))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_a_4:[0-9]+]] a: ptr<i8>, %[[VALUE_b_4:[0-9]+]] b: ptr<i8>) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return ne<i32, reason=return>(or<i32>(from_bool<i32, reason=promotion>(lt<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_a_4]]), const<i32>(15)), read<ptr<i8>>(%[[VALUE_b_4]]))), from_bool<i32, reason=promotion>(lt<ptr<i8>>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_b_4]]), const<i32>(15)), read<ptr<i8>>(%[[VALUE_a_4]])))), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

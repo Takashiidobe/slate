@@ -42,21 +42,21 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 windowLog: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 Params = @type0;
-// DEFAULT-NEXT:     fn %2 @use_params(%3 params: ptr<const @type0>, %4 out: ptr<u32>, %5 lo: ptr<const i8>, %6 hi: ptr<const i8>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 diff: i64 [storage=automatic] = ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<const i8>>(%6), read<ptr<const i8>>(%5));
-// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%4)), reinterpret<u32, reason=explicit, fits=unknown>(add<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<const @type0>>(%3)))), truncate<i32, reason=explicit, fits=unknown>(read<i64>(%7)))));
+// DEFAULT-NEXT:     type @type[[TYPE_Params:[0-9]+]] Params = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_use_params:[0-9]+]] @use_params(%[[VALUE_params:[0-9]+]] params: ptr<const @type[[TYPE0]]>, %[[VALUE_out:[0-9]+]] out: ptr<u32>, %[[VALUE_lo:[0-9]+]] lo: ptr<const i8>, %[[VALUE_hi:[0-9]+]] hi: ptr<const i8>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_diff:[0-9]+]] diff: i64 [storage=automatic] = ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<const i8>>(%[[VALUE_hi]]), read<ptr<const i8>>(%[[VALUE_lo]]));
+// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%[[VALUE_out]])), reinterpret<u32, reason=explicit, fits=unknown>(add<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<const @type[[TYPE0]]>>(%[[VALUE_params]])))), truncate<i32, reason=explicit, fits=unknown>(read<i64>(%[[VALUE_diff]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 p: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field0(%9), const<i32>(5));
-// DEFAULT-NEXT:         let %10 buf: array<i8, 8> [storage=automatic];
-// DEFAULT-NEXT:         let %11 out: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const @type0>, ptr<u32>, ptr<const i8>, ptr<const i8>) -> void>(%2, pointer_cast<ptr<const @type0>, reason=arg>(addr_of<ptr<@type0>>(%9)), addr_of<ptr<u32>>(%11), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%10)), pointer_cast<ptr<const i8>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(8)>(%10), const<i32>(4))));
-// DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(%11));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_p]]), const<i32>(5));
+// DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: array<i8, 8> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_out_2:[0-9]+]] out: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const @type[[TYPE0]]>, ptr<u32>, ptr<const i8>, ptr<const i8>) -> void>(%[[VALUE_use_params]], pointer_cast<ptr<const @type[[TYPE0]]>, reason=arg>(addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_p]])), addr_of<ptr<u32>>(%[[VALUE_out_2]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_buf]])), pointer_cast<ptr<const i8>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_buf]]), const<i32>(4))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(%[[VALUE_out_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

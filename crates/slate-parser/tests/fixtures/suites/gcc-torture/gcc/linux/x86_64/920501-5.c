@@ -46,32 +46,32 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @x(%6 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 j: array<ptr<void>, 3> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 3>, zero_fill=false>(index0 = label_addr<ptr<void>>(%3), index1 = label_addr<ptr<void>>(%4), index2 = label_addr<ptr<void>>(%5));
-// DEFAULT-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(3)>(%7), read<i32>(%6))));
-// DEFAULT-NEXT:         label %3 x:
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_x:[0-9]+]] @x(%[[VALUE_i:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: array<ptr<void>, 3> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 3>, zero_fill=false>(index0 = label_addr<ptr<void>>(%[[VALUE_x_2:[0-9]+]]), index1 = label_addr<ptr<void>>(%[[VALUE_y:[0-9]+]]), index2 = label_addr<ptr<void>>(%[[VALUE_z:[0-9]+]]));
+// DEFAULT-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(3)>(%[[VALUE_j]]), read<i32>(%[[VALUE_i]]))));
+// DEFAULT-NEXT:         label %[[VALUE_x_2]] x:
 // DEFAULT-NEXT:             return const<i32>(2);
-// DEFAULT-NEXT:         label %4 y:
+// DEFAULT-NEXT:         label %[[VALUE_y]] y:
 // DEFAULT-NEXT:             return const<i32>(3);
-// DEFAULT-NEXT:         label %5 z:
+// DEFAULT-NEXT:         label %[[VALUE_z]] z:
 // DEFAULT-NEXT:             return const<i32>(5);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%2, const<i32>(0)), const<i32>(2))
-// DEFAULT-NEXT:             write<bool>(%10, const<bool>(true));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_x]], const<i32>(0)), const<i32>(2))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%10, ne<i32>(call<i32, signature=fn(i32) -> i32>(%2, const<i32>(1)), const<i32>(3)));
-// DEFAULT-NEXT:         let %11: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%10)
-// DEFAULT-NEXT:             write<bool>(%11, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_x]], const<i32>(1)), const<i32>(3)));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE1]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%11, ne<i32>(call<i32, signature=fn(i32) -> i32>(%2, const<i32>(2)), const<i32>(5)));
-// DEFAULT-NEXT:         if read<bool>(%11)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_x]], const<i32>(2)), const<i32>(5)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE2]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -118,119 +118,119 @@ foo (struct B *x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 a1: i64;
 // DEFAULT-NEXT:         field1 a2: ptr<f64>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type1 B = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
 // DEFAULT-NEXT:         field0 b1: ptr<void>;
 // DEFAULT-NEXT:         field1 b2: f64;
 // DEFAULT-NEXT:         field2 b3: f64;
-// DEFAULT-NEXT:         field3 b4: @type2;
+// DEFAULT-NEXT:         field3 b4: @type[[TYPE0:[0-9]+]];
 // DEFAULT-NEXT:     } [size=40, align=8, offsets=[0, 8, 16, 24]];
-// DEFAULT-NEXT:     type @type2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0]] = struct {
 // DEFAULT-NEXT:         field0 d1: i32;
 // DEFAULT-NEXT:         field1 d2: f64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type3 C = struct {
-// DEFAULT-NEXT:         field0 c1: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_C:[0-9]+]] C = struct {
+// DEFAULT-NEXT:         field0 c1: ptr<@type[[TYPE_A]]>;
 // DEFAULT-NEXT:         field1 c2: ptr<void>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %34 .str34: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([115, 111, 109, 101, 116, 104, 105, 110, 103, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %4 @fn1(%25 <unnamed>: ptr<@type0>, %26 <unnamed>: f64) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @fn2(%27 <unnamed>: ptr<void>, %28 <unnamed>: ptr<const i8>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %6 @fn3(%29 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @fn4(%30 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %8 @fn5(%31 <unnamed>: ptr<void>, %32 <unnamed>: f64, %33 <unnamed>: f64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @foo(%10 x: ptr<@type1>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 e: ptr<@type3> [storage=automatic] = pointer_cast<ptr<@type3>, reason=assign>(read<ptr<void>>(field0(deref(read<ptr<@type1>>(%10)))));
-// DEFAULT-NEXT:         let %12 f: ptr<@type0> [storage=automatic] = read<ptr<@type0>>(field0(deref(read<ptr<@type3>>(%11))));
-// DEFAULT-NEXT:         let %13 g: i64 [storage=automatic];
-// DEFAULT-NEXT:         let %14 h: i64 [storage=automatic];
-// DEFAULT-NEXT:         let %15 i: i64 [storage=automatic];
-// DEFAULT-NEXT:         let %16 j: ptr<f64> [storage=automatic];
-// DEFAULT-NEXT:         let %17 k: f64 [storage=automatic];
-// DEFAULT-NEXT:         write<i64>(%13, call<i64, signature=fn(ptr<@type0>, f64) -> i64>(%4, read<ptr<@type0>>(%12), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(0.5), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(field1(deref(read<ptr<@type1>>(%10)))), read<f64>(field2(deref(read<ptr<@type1>>(%10))))))));
-// DEFAULT-NEXT:         call<i64, signature=fn(ptr<@type0>, f64) -> i64>(%4, read<ptr<@type0>>(%12), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(0.5), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(field1(deref(read<ptr<@type1>>(%10)))), read<f64>(field2(deref(read<ptr<@type1>>(%10)))))));
-// DEFAULT-NEXT:         write<i64>(%14, add<i64, overflow=ub>(read<i64>(%13), widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         write<i64>(%15, read<i64>(field0(deref(read<ptr<@type0>>(%12)))));
-// DEFAULT-NEXT:         write<ptr<f64>>(%16, read<ptr<f64>>(field1(deref(read<ptr<@type0>>(%12)))));
-// DEFAULT-NEXT:         write<f64>(%17, read<f64>(field1(field3(deref(read<ptr<@type1>>(%10))))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ptr<const i8>) -> void>(%5, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type1>>(%10)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%34)));
-// DEFAULT-NEXT:         if le<i64>(read<i64>(%13), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([115, 111, 109, 101, 116, 104, 105, 110, 103, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_A]]>, %[[VALUE1:[0-9]+]] <unnamed>: f64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fn2:[0-9]+]] @fn2(%[[VALUE2:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE3:[0-9]+]] <unnamed>: ptr<const i8>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fn3:[0-9]+]] @fn3(%[[VALUE4:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fn4:[0-9]+]] @fn4(%[[VALUE5:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fn5:[0-9]+]] @fn5(%[[VALUE6:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE7:[0-9]+]] <unnamed>: f64, %[[VALUE8:[0-9]+]] <unnamed>: f64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE_B]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: ptr<@type[[TYPE_C]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_C]]>, reason=assign>(read<ptr<void>>(field0(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x]])))));
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: ptr<@type[[TYPE_A]]> [storage=automatic] = read<ptr<@type[[TYPE_A]]>>(field0(deref(read<ptr<@type[[TYPE_C]]>>(%[[VALUE_e]]))));
+// DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: i64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: i64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: ptr<f64> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: f64 [storage=automatic];
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_g]], call<i64, signature=fn(ptr<@type[[TYPE_A]]>, f64) -> i64>(%[[VALUE_fn1]], read<ptr<@type[[TYPE_A]]>>(%[[VALUE_f]]), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(0.5), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(field1(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x]])))), read<f64>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x]]))))))));
+// DEFAULT-NEXT:         call<i64, signature=fn(ptr<@type[[TYPE_A]]>, f64) -> i64>(%[[VALUE_fn1]], read<ptr<@type[[TYPE_A]]>>(%[[VALUE_f]]), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(0.5), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(field1(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x]])))), read<f64>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x]])))))));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_h]], add<i64, overflow=ub>(read<i64>(%[[VALUE_g]]), widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_i]], read<i64>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_f]])))));
+// DEFAULT-NEXT:         write<ptr<f64>>(%[[VALUE_j]], read<ptr<f64>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_f]])))));
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_k]], read<f64>(field1(field3(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x]]))))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ptr<const i8>) -> void>(%[[VALUE_fn2]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])));
+// DEFAULT-NEXT:         if le<i64>(read<i64>(%[[VALUE_g]]), widen<i64, reason=usual_arith>(const<i32>(0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %18 l: f64 [storage=automatic] = sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%16), const<i32>(2)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%16), const<i32>(1)))));
-// DEFAULT-NEXT:                 if logical_and<bool>(gt<f64, exceptions=observable>(read<f64>(%18), const<f64>(0.0)), le<f64, exceptions=observable>(read<f64>(%18), const<f64>(0.02)))
-// DEFAULT-NEXT:                     let %35: f64 [synthetic];
-// DEFAULT-NEXT:                     if eq<i32>(read<i32>(field0(field3(deref(read<ptr<@type1>>(%10))))), const<i32>(1))
-// DEFAULT-NEXT:                         write<f64>(%35, conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(1.0), read<f64>(%18)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(1.0), read<f64>(%18))));
+// DEFAULT-NEXT:                 let %[[VALUE_l:[0-9]+]] l: f64 [storage=automatic] = sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_j]]), const<i32>(2)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_j]]), const<i32>(1)))));
+// DEFAULT-NEXT:                 if logical_and<bool>(gt<f64, exceptions=observable>(read<f64>(%[[VALUE_l]]), const<f64>(0.0)), le<f64, exceptions=observable>(read<f64>(%[[VALUE_l]]), const<f64>(0.02)))
+// DEFAULT-NEXT:                     let %[[VALUE9:[0-9]+]]: f64 [synthetic];
+// DEFAULT-NEXT:                     if eq<i32>(read<i32>(field0(field3(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x]]))))), const<i32>(1))
+// DEFAULT-NEXT:                         write<f64>(%[[VALUE9]], conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(1.0), read<f64>(%[[VALUE_l]])), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(1.0), read<f64>(%[[VALUE_l]]))));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<f64>(%35, call<f64, signature=fn(f64) -> f64>(%6, conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(1.0), read<f64>(%18)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(1.0), read<f64>(%18)))));
-// DEFAULT-NEXT:                     write<f64>(%17, read<f64>(%35));
+// DEFAULT-NEXT:                         write<f64>(%[[VALUE9]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_fn3]], conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(1.0), read<f64>(%[[VALUE_l]])), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(1.0), read<f64>(%[[VALUE_l]])))));
+// DEFAULT-NEXT:                     write<f64>(%[[VALUE_k]], read<f64>(%[[VALUE9]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %19 m: f64 [storage=automatic] = sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%16), read<i64>(%14)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%16), read<i64>(%13)))));
-// DEFAULT-NEXT:                 let %20 n: f64 [storage=automatic] = const<f64>(0.0);
-// DEFAULT-NEXT:                 let %21 l: f64 [storage=automatic] = const<f64>(0.0);
-// DEFAULT-NEXT:                 if gt<i64>(read<i64>(%13), widen<i64, reason=usual_arith>(const<i32>(1)))
-// DEFAULT-NEXT:                     write<f64>(%20, sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%16), read<i64>(%13)))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%16), sub<i64, overflow=ub>(read<i64>(%13), widen<i64, reason=usual_arith>(const<i32>(1))))))));
-// DEFAULT-NEXT:                 if lt<i64>(read<i64>(%14), read<i64>(%15))
-// DEFAULT-NEXT:                     write<f64>(%21, sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%16), add<i64, overflow=ub>(read<i64>(%14), widen<i64, reason=usual_arith>(const<i32>(1)))))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%16), read<i64>(%14))))));
-// DEFAULT-NEXT:                 if gt<f64, exceptions=observable>(read<f64>(%20), const<f64>(0.02))
-// DEFAULT-NEXT:                     write<f64>(%20, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(0)));
-// DEFAULT-NEXT:                 if gt<f64, exceptions=observable>(read<f64>(%19), const<f64>(0.02))
-// DEFAULT-NEXT:                     write<f64>(%19, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(0)));
-// DEFAULT-NEXT:                 if gt<f64, exceptions=observable>(read<f64>(%21), const<f64>(0.02))
-// DEFAULT-NEXT:                     write<f64>(%21, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(0)));
-// DEFAULT-NEXT:                 if lt<f64, exceptions=observable>(read<f64>(%19), read<f64>(%20))
+// DEFAULT-NEXT:                 let %[[VALUE_m:[0-9]+]] m: f64 [storage=automatic] = sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_j]]), read<i64>(%[[VALUE_h]])))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_j]]), read<i64>(%[[VALUE_g]])))));
+// DEFAULT-NEXT:                 let %[[VALUE_n:[0-9]+]] n: f64 [storage=automatic] = const<f64>(0.0);
+// DEFAULT-NEXT:                 let %[[VALUE_l_2:[0-9]+]] l: f64 [storage=automatic] = const<f64>(0.0);
+// DEFAULT-NEXT:                 if gt<i64>(read<i64>(%[[VALUE_g]]), widen<i64, reason=usual_arith>(const<i32>(1)))
+// DEFAULT-NEXT:                     write<f64>(%[[VALUE_n]], sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_j]]), read<i64>(%[[VALUE_g]])))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_j]]), sub<i64, overflow=ub>(read<i64>(%[[VALUE_g]]), widen<i64, reason=usual_arith>(const<i32>(1))))))));
+// DEFAULT-NEXT:                 if lt<i64>(read<i64>(%[[VALUE_h]]), read<i64>(%[[VALUE_i]]))
+// DEFAULT-NEXT:                     write<f64>(%[[VALUE_l_2]], sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_j]]), add<i64, overflow=ub>(read<i64>(%[[VALUE_h]]), widen<i64, reason=usual_arith>(const<i32>(1)))))), read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_j]]), read<i64>(%[[VALUE_h]]))))));
+// DEFAULT-NEXT:                 if gt<f64, exceptions=observable>(read<f64>(%[[VALUE_n]]), const<f64>(0.02))
+// DEFAULT-NEXT:                     write<f64>(%[[VALUE_n]], int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(0)));
+// DEFAULT-NEXT:                 if gt<f64, exceptions=observable>(read<f64>(%[[VALUE_m]]), const<f64>(0.02))
+// DEFAULT-NEXT:                     write<f64>(%[[VALUE_m]], int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(0)));
+// DEFAULT-NEXT:                 if gt<f64, exceptions=observable>(read<f64>(%[[VALUE_l_2]]), const<f64>(0.02))
+// DEFAULT-NEXT:                     write<f64>(%[[VALUE_l_2]], int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(0)));
+// DEFAULT-NEXT:                 if lt<f64, exceptions=observable>(read<f64>(%[[VALUE_m]]), read<f64>(%[[VALUE_n]]))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %22 o: f64 [storage=automatic] = read<f64>(%19);
-// DEFAULT-NEXT:                         write<f64>(%19, read<f64>(%20));
-// DEFAULT-NEXT:                         write<f64>(%20, read<f64>(%22));
+// DEFAULT-NEXT:                         let %[[VALUE_o:[0-9]+]] o: f64 [storage=automatic] = read<f64>(%[[VALUE_m]]);
+// DEFAULT-NEXT:                         write<f64>(%[[VALUE_m]], read<f64>(%[[VALUE_n]]));
+// DEFAULT-NEXT:                         write<f64>(%[[VALUE_n]], read<f64>(%[[VALUE_o]]));
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                 if lt<f64, exceptions=observable>(read<f64>(%21), read<f64>(%20))
+// DEFAULT-NEXT:                 if lt<f64, exceptions=observable>(read<f64>(%[[VALUE_l_2]]), read<f64>(%[[VALUE_n]]))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %23 o: f64 [storage=automatic] = read<f64>(%21);
-// DEFAULT-NEXT:                         write<f64>(%21, read<f64>(%20));
-// DEFAULT-NEXT:                         write<f64>(%20, read<f64>(%23));
+// DEFAULT-NEXT:                         let %[[VALUE_o_2:[0-9]+]] o: f64 [storage=automatic] = read<f64>(%[[VALUE_l_2]]);
+// DEFAULT-NEXT:                         write<f64>(%[[VALUE_l_2]], read<f64>(%[[VALUE_n]]));
+// DEFAULT-NEXT:                         write<f64>(%[[VALUE_n]], read<f64>(%[[VALUE_o_2]]));
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                 if lt<f64, exceptions=observable>(read<f64>(%21), read<f64>(%19))
+// DEFAULT-NEXT:                 if lt<f64, exceptions=observable>(read<f64>(%[[VALUE_l_2]]), read<f64>(%[[VALUE_m]]))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %24 o: f64 [storage=automatic] = read<f64>(%21);
-// DEFAULT-NEXT:                         write<f64>(%21, read<f64>(%19));
-// DEFAULT-NEXT:                         write<f64>(%19, read<f64>(%24));
+// DEFAULT-NEXT:                         let %[[VALUE_o_3:[0-9]+]] o: f64 [storage=automatic] = read<f64>(%[[VALUE_l_2]]);
+// DEFAULT-NEXT:                         write<f64>(%[[VALUE_l_2]], read<f64>(%[[VALUE_m]]));
+// DEFAULT-NEXT:                         write<f64>(%[[VALUE_m]], read<f64>(%[[VALUE_o_3]]));
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                 if ne<f64, exceptions=observable>(read<f64>(%20), const<f64>(0.0))
-// DEFAULT-NEXT:                     let %36: f64 [synthetic];
-// DEFAULT-NEXT:                     if eq<i32>(read<i32>(field0(field3(deref(read<ptr<@type1>>(%10))))), const<i32>(1))
-// DEFAULT-NEXT:                         write<f64>(%36, conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%19)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%19))));
+// DEFAULT-NEXT:                 if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_n]]), const<f64>(0.0))
+// DEFAULT-NEXT:                     let %[[VALUE10:[0-9]+]]: f64 [synthetic];
+// DEFAULT-NEXT:                     if eq<i32>(read<i32>(field0(field3(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x]]))))), const<i32>(1))
+// DEFAULT-NEXT:                         write<f64>(%[[VALUE10]], conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%[[VALUE_m]])), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%[[VALUE_m]]))));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<f64>(%36, call<f64, signature=fn(f64) -> f64>(%6, conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%19)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%19)))));
-// DEFAULT-NEXT:                     write<f64>(%17, read<f64>(%36));
+// DEFAULT-NEXT:                         write<f64>(%[[VALUE10]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_fn3]], conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%[[VALUE_m]])), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%[[VALUE_m]])))));
+// DEFAULT-NEXT:                     write<f64>(%[[VALUE_k]], read<f64>(%[[VALUE10]]));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     if ne<f64, exceptions=observable>(read<f64>(%19), const<f64>(0.0))
-// DEFAULT-NEXT:                         let %37: f64 [synthetic];
-// DEFAULT-NEXT:                         if eq<i32>(read<i32>(field0(field3(deref(read<ptr<@type1>>(%10))))), const<i32>(1))
-// DEFAULT-NEXT:                             write<f64>(%37, conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%19), read<f64>(%21))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%19), read<f64>(%21)))));
+// DEFAULT-NEXT:                     if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_m]]), const<f64>(0.0))
+// DEFAULT-NEXT:                         let %[[VALUE11:[0-9]+]]: f64 [synthetic];
+// DEFAULT-NEXT:                         if eq<i32>(read<i32>(field0(field3(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x]]))))), const<i32>(1))
+// DEFAULT-NEXT:                             write<f64>(%[[VALUE11]], conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_m]]), read<f64>(%[[VALUE_l_2]]))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_m]]), read<f64>(%[[VALUE_l_2]])))));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             write<f64>(%37, call<f64, signature=fn(f64) -> f64>(%6, conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%19), read<f64>(%21))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%19), read<f64>(%21))))));
-// DEFAULT-NEXT:                         write<f64>(%17, read<f64>(%37));
+// DEFAULT-NEXT:                             write<f64>(%[[VALUE11]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_fn3]], conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_m]]), read<f64>(%[[VALUE_l_2]]))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_m]]), read<f64>(%[[VALUE_l_2]]))))));
+// DEFAULT-NEXT:                         write<f64>(%[[VALUE_k]], read<f64>(%[[VALUE11]]));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         if ne<f64, exceptions=observable>(read<f64>(%21), const<f64>(0.0))
-// DEFAULT-NEXT:                             let %38: f64 [synthetic];
-// DEFAULT-NEXT:                             if eq<i32>(read<i32>(field0(field3(deref(read<ptr<@type1>>(%10))))), const<i32>(1))
-// DEFAULT-NEXT:                                 write<f64>(%38, conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%21)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%21))));
+// DEFAULT-NEXT:                         if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_l_2]]), const<f64>(0.0))
+// DEFAULT-NEXT:                             let %[[VALUE12:[0-9]+]]: f64 [synthetic];
+// DEFAULT-NEXT:                             if eq<i32>(read<i32>(field0(field3(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x]]))))), const<i32>(1))
+// DEFAULT-NEXT:                                 write<f64>(%[[VALUE12]], conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%[[VALUE_l_2]])), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%[[VALUE_l_2]]))));
 // DEFAULT-NEXT:                             else
-// DEFAULT-NEXT:                                 write<f64>(%38, call<f64, signature=fn(f64) -> f64>(%6, conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%21)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%21)))));
-// DEFAULT-NEXT:                             write<f64>(%17, read<f64>(%38));
+// DEFAULT-NEXT:                                 write<f64>(%[[VALUE12]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_fn3]], conditional<f64>(lt<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%[[VALUE_l_2]])), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(25)), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), read<f64>(%[[VALUE_l_2]])))));
+// DEFAULT-NEXT:                             write<f64>(%[[VALUE_k]], read<f64>(%[[VALUE12]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         let %39: f64 [synthetic];
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(field0(field3(deref(read<ptr<@type1>>(%10))))), const<i32>(1))
-// DEFAULT-NEXT:             write<f64>(%39, read<f64>(%17));
+// DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: f64 [synthetic];
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(field0(field3(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x]]))))), const<i32>(1))
+// DEFAULT-NEXT:             write<f64>(%[[VALUE13]], read<f64>(%[[VALUE_k]]));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<f64>(%39, call<f64, signature=fn(f64) -> f64>(%7, read<f64>(%17)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<void>, f64, f64) -> i32>(%8, read<ptr<void>>(field1(deref(read<ptr<@type3>>(%11)))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(0.5), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(field1(deref(read<ptr<@type1>>(%10)))), read<f64>(field2(deref(read<ptr<@type1>>(%10)))))), read<f64>(%39));
+// DEFAULT-NEXT:             write<f64>(%[[VALUE13]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_fn4]], read<f64>(%[[VALUE_k]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<void>, f64, f64) -> i32>(%[[VALUE_fn5]], read<ptr<void>>(field1(deref(read<ptr<@type[[TYPE_C]]>>(%[[VALUE_e]])))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(0.5), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(field1(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x]])))), read<f64>(field2(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x]])))))), read<f64>(%[[VALUE13]]));
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

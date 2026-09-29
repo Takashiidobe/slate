@@ -41,30 +41,30 @@ int        main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %3 a: array<i32, 40> [storage=static] [align=16] = aggregate<array<i32, 40>, zero_fill=true>(index0 = const<i32>(7), index1 = const<i32>(5), index2 = const<i32>(3), index3 = const<i32>(3), index4 = const<i32>(0), index5 = const<i32>(0), index6 = const<i32>(3)) [linkage=internal];
-// DEFAULT-NEXT:     global %4 b: i16 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 c: i32 [storage=static] = const<i32>(5) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @exit(%7 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<i16>(%4, truncate<i16, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         for %8
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: array<i32, 40> [storage=static] [align=16] = aggregate<array<i32, 40>, zero_fill=true>(index0 = const<i32>(7), index1 = const<i32>(5), index2 = const<i32>(3), index3 = const<i32>(3), index4 = const<i32>(0), index5 = const<i32>(0), index6 = const<i32>(3)) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i16 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] = const<i32>(5) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<i16>(%[[VALUE_b]], truncate<i16, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:             condition: le<i32>(widen<i32, reason=promotion>(read<i16>(%4)), const<i32>(3))
+// DEFAULT-NEXT:             condition: le<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_b]])), const<i32>(3))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %9: i16 [synthetic] = read<i16>(%4);
-// DEFAULT-NEXT:                 let %10: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%9)), const<i32>(1)));
-// DEFAULT-NEXT:                 write<i16>(%4, read<i16>(%10));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_b]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE1]])), const<i32>(1)));
+// DEFAULT-NEXT:                 write<i16>(%[[VALUE_b]], read<i16>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 if ne<i32>(xor<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(40)>(%3), add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%4)), const<i32>(6))))), from_bool<i32, reason=promotion>(logical_or<bool>(ne<i32>(const<i32>(0), const<i32>(0)), ne<i32>(read<i32>(%5), const<i32>(0))))), const<i32>(0))
+// DEFAULT-NEXT:                 if ne<i32>(xor<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(40)>(%[[VALUE_a]]), add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_b]])), const<i32>(6))))), from_bool<i32, reason=promotion>(logical_or<bool>(ne<i32>(const<i32>(0), const<i32>(0)), ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0))))), const<i32>(0))
 // DEFAULT-NEXT:                     ;
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     break %8;
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%4)), const<i32>(4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:                     break %[[VALUE0]];
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_b]])), const<i32>(4))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

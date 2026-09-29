@@ -36,15 +36,15 @@ void __cdecl bar(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @foo_default(%13 lpString1: ptr<const i8>, %14 lpString2: ptr<const i8>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %5 @foo_std(%15 lpString1: ptr<const i8>, %16 lpString2: ptr<const i8>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %8 @foo_fast(%17 lpString1: ptr<const i8>, %18 lpString2: ptr<const i8>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %11 @foo_vector(%19 lpString1: ptr<const i8>, %20 lpString2: ptr<const i8>) -> void [linkage=external] [abi=win64 vectorcall(scalar, scalar) -> void];
-// DEFAULT-NEXT:     fn %12 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<const i8>) -> void>(%2, null<ptr<const i8>>, null<ptr<const i8>>);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<const i8>) -> void>(%5, null<ptr<const i8>>, null<ptr<const i8>>);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<const i8>) -> void>(%8, null<ptr<const i8>>, null<ptr<const i8>>);
-// DEFAULT-NEXT:         call<void, signature=fn vectorcall(ptr<const i8>, ptr<const i8>) -> void, abi=win64 vectorcall(scalar, scalar) -> void>(%11, null<ptr<const i8>>, null<ptr<const i8>>);
+// DEFAULT-NEXT:     fn %[[VALUE_foo_default:[0-9]+]] @foo_default(%[[VALUE_lpString1:[0-9]+]] lpString1: ptr<const i8>, %[[VALUE_lpString2:[0-9]+]] lpString2: ptr<const i8>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo_std:[0-9]+]] @foo_std(%[[VALUE_lpString1_2:[0-9]+]] lpString1: ptr<const i8>, %[[VALUE_lpString2_2:[0-9]+]] lpString2: ptr<const i8>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo_fast:[0-9]+]] @foo_fast(%[[VALUE_lpString1_3:[0-9]+]] lpString1: ptr<const i8>, %[[VALUE_lpString2_3:[0-9]+]] lpString2: ptr<const i8>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo_vector:[0-9]+]] @foo_vector(%[[VALUE_lpString1_4:[0-9]+]] lpString1: ptr<const i8>, %[[VALUE_lpString2_4:[0-9]+]] lpString2: ptr<const i8>) -> void [linkage=external] [abi=win64 vectorcall(scalar, scalar) -> void];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<const i8>) -> void>(%[[VALUE_foo_default]], null<ptr<const i8>>, null<ptr<const i8>>);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<const i8>) -> void>(%[[VALUE_foo_std]], null<ptr<const i8>>, null<ptr<const i8>>);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<const i8>) -> void>(%[[VALUE_foo_fast]], null<ptr<const i8>>, null<ptr<const i8>>);
+// DEFAULT-NEXT:         call<void, signature=fn vectorcall(ptr<const i8>, ptr<const i8>) -> void, abi=win64 vectorcall(scalar, scalar) -> void>(%[[VALUE_foo_vector]], null<ptr<const i8>>, null<ptr<const i8>>);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

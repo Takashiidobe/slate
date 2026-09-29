@@ -46,17 +46,17 @@ bar (_BitInt(3924) p)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 b: i64b;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 T = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = struct {
 // DEFAULT-NEXT:         field0 b: i3924b;
 // DEFAULT-NEXT:     } [size=496, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @foo(%2 p: i64b) -> @type0 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(compound_literal %6 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = read<i64b>(%2))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: i64b) -> @type[[TYPE_S]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return copy<@type[[TYPE_S]], reason=return>(read<@type[[TYPE_S]]>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = read<i64b>(%[[VALUE_p]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @bar(%5 p: i3924b) -> @type1 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type1, reason=return>(read<@type1>(compound_literal %7 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = read<i3924b>(%5))));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_p_2:[0-9]+]] p: i3924b) -> @type[[TYPE_T]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return copy<@type[[TYPE_T]], reason=return>(read<@type[[TYPE_T]]>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_T]], zero_fill=false>(field0 = read<i3924b>(%[[VALUE_p_2]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

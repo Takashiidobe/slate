@@ -33,6 +33,6 @@ unsigned long long l = 9223372036854775808LL; /* { dg-error "integer constant is
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 l: u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(truncate<i64, reason=assign, fits=unknown>(const<i128>(9223372036854775808))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_l:[0-9]+]] l: u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(truncate<i64, reason=assign, fits=unknown>(const<i128>(9223372036854775808))) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

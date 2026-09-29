@@ -101,23 +101,23 @@ int outer(int x) {
 // VALID-NEXT:         storage d64 [size=8, align=8];
 // VALID-NEXT:         storage d128 [size=16, align=16];
 // VALID-NEXT:     }
-// VALID-NEXT:     fn %0 @g(%4 <unnamed>: i32) -> i32 [linkage=external];
-// VALID-NEXT:     fn %1 @attributed(%3 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// VALID-NEXT:         switch %5 read<i32>(%3)
+// VALID-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// VALID-NEXT:     fn %[[VALUE_attributed:[0-9]+]] @attributed(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// VALID-NEXT:         switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_x]])
 // VALID-NEXT:             {
-// VALID-NEXT:                 case %5 const<i32>(1):
-// VALID-NEXT:                     let %6: i32 [synthetic] = read<i32>(%3);
-// VALID-NEXT:                     let %7: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%6), const<i32>(1));
-// VALID-NEXT:                     write<i32>(%3, read<i32>(%7));
+// VALID-NEXT:                 case %[[VALUE1]] const<i32>(1):
+// VALID-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// VALID-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// VALID-NEXT:                     write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE3]]));
 // VALID-NEXT:                 ;
-// VALID-NEXT:                 default %5:
-// VALID-NEXT:                     break %5;
+// VALID-NEXT:                 default %[[VALUE1]]:
+// VALID-NEXT:                     break %[[VALUE1]];
 // VALID-NEXT:             }
-// VALID-NEXT:         label %2 done:
+// VALID-NEXT:         label %[[VALUE_done:[0-9]+]] done:
 // VALID-NEXT:             ;
-// VALID-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(0))
-// VALID-NEXT:             goto %2;
-// VALID-NEXT:         return read<i32>(%3);
+// VALID-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
+// VALID-NEXT:             goto %[[VALUE_done]];
+// VALID-NEXT:         return read<i32>(%[[VALUE_x]]);
 // VALID-NEXT:     }
 // VALID-NEXT: }
 // SLATE-FILECHECK-END VALID
@@ -144,28 +144,28 @@ int outer(int x) {
 // RETURN-NEXT:         storage d64 [size=8, align=8];
 // RETURN-NEXT:         storage d128 [size=16, align=16];
 // RETURN-NEXT:     }
-// RETURN-NEXT:     fn %0 @g(%6 <unnamed>: i32) -> i32 [linkage=external];
-// RETURN-NEXT:     fn %1 @attributed(%3 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// RETURN-NEXT:         switch %7 read<i32>(%3)
+// RETURN-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// RETURN-NEXT:     fn %[[VALUE_attributed:[0-9]+]] @attributed(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// RETURN-NEXT:         switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_x]])
 // RETURN-NEXT:             {
-// RETURN-NEXT:                 case %7 const<i32>(1):
-// RETURN-NEXT:                     let %8: i32 [synthetic] = read<i32>(%3);
-// RETURN-NEXT:                     let %9: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%8), const<i32>(1));
-// RETURN-NEXT:                     write<i32>(%3, read<i32>(%9));
+// RETURN-NEXT:                 case %[[VALUE1]] const<i32>(1):
+// RETURN-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// RETURN-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// RETURN-NEXT:                     write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE3]]));
 // RETURN-NEXT:                 ;
-// RETURN-NEXT:                 default %7:
-// RETURN-NEXT:                     break %7;
+// RETURN-NEXT:                 default %[[VALUE1]]:
+// RETURN-NEXT:                     break %[[VALUE1]];
 // RETURN-NEXT:             }
-// RETURN-NEXT:         label %2 done:
+// RETURN-NEXT:         label %[[VALUE_done:[0-9]+]] done:
 // RETURN-NEXT:             ;
-// RETURN-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(0))
-// RETURN-NEXT:             goto %2;
-// RETURN-NEXT:         return read<i32>(%3);
+// RETURN-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
+// RETURN-NEXT:             goto %[[VALUE_done]];
+// RETURN-NEXT:         return read<i32>(%[[VALUE_x]]);
 // RETURN-NEXT:     }
-// RETURN-NEXT:     fn %4 @valueless(%5 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// RETURN-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(0))
+// RETURN-NEXT:     fn %[[VALUE_valueless:[0-9]+]] @valueless(%[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// RETURN-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x_2]]), const<i32>(0))
 // RETURN-NEXT:             return;
-// RETURN-NEXT:         return call<i32, signature=fn(i32) -> i32>(%0, read<i32>(%5));
+// RETURN-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_g]], read<i32>(%[[VALUE_x_2]]));
 // RETURN-NEXT:     }
 // RETURN-NEXT: }
 // SLATE-FILECHECK-END RETURN
@@ -192,35 +192,35 @@ int outer(int x) {
 // FALLTHROUGH-NEXT:         storage d64 [size=8, align=8];
 // FALLTHROUGH-NEXT:         storage d128 [size=16, align=16];
 // FALLTHROUGH-NEXT:     }
-// FALLTHROUGH-NEXT:     fn %0 @g(%6 <unnamed>: i32) -> i32 [linkage=external];
-// FALLTHROUGH-NEXT:     fn %1 @attributed(%3 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// FALLTHROUGH-NEXT:         switch %7 read<i32>(%3)
+// FALLTHROUGH-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// FALLTHROUGH-NEXT:     fn %[[VALUE_attributed:[0-9]+]] @attributed(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// FALLTHROUGH-NEXT:         switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_x]])
 // FALLTHROUGH-NEXT:             {
-// FALLTHROUGH-NEXT:                 case %7 const<i32>(1):
-// FALLTHROUGH-NEXT:                     let %9: i32 [synthetic] = read<i32>(%3);
-// FALLTHROUGH-NEXT:                     let %10: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%9), const<i32>(1));
-// FALLTHROUGH-NEXT:                     write<i32>(%3, read<i32>(%10));
+// FALLTHROUGH-NEXT:                 case %[[VALUE1]] const<i32>(1):
+// FALLTHROUGH-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// FALLTHROUGH-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// FALLTHROUGH-NEXT:                     write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE3]]));
 // FALLTHROUGH-NEXT:                 ;
-// FALLTHROUGH-NEXT:                 default %7:
-// FALLTHROUGH-NEXT:                     break %7;
+// FALLTHROUGH-NEXT:                 default %[[VALUE1]]:
+// FALLTHROUGH-NEXT:                     break %[[VALUE1]];
 // FALLTHROUGH-NEXT:             }
-// FALLTHROUGH-NEXT:         label %2 done:
+// FALLTHROUGH-NEXT:         label %[[VALUE_done:[0-9]+]] done:
 // FALLTHROUGH-NEXT:             ;
-// FALLTHROUGH-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(0))
-// FALLTHROUGH-NEXT:             goto %2;
-// FALLTHROUGH-NEXT:         return read<i32>(%3);
+// FALLTHROUGH-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
+// FALLTHROUGH-NEXT:             goto %[[VALUE_done]];
+// FALLTHROUGH-NEXT:         return read<i32>(%[[VALUE_x]]);
 // FALLTHROUGH-NEXT:     }
-// FALLTHROUGH-NEXT:     fn %4 @misplaced(%5 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// FALLTHROUGH-NEXT:         switch %8 read<i32>(%5)
+// FALLTHROUGH-NEXT:     fn %[[VALUE_misplaced:[0-9]+]] @misplaced(%[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// FALLTHROUGH-NEXT:         switch %[[VALUE4:[0-9]+]] read<i32>(%[[VALUE_x_2]])
 // FALLTHROUGH-NEXT:             {
-// FALLTHROUGH-NEXT:                 case %8 const<i32>(1):
-// FALLTHROUGH-NEXT:                     let %11: i32 [synthetic] = read<i32>(%5);
-// FALLTHROUGH-NEXT:                     let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
-// FALLTHROUGH-NEXT:                     write<i32>(%5, read<i32>(%12));
-// FALLTHROUGH-NEXT:                 default %8:
-// FALLTHROUGH-NEXT:                     break %8;
+// FALLTHROUGH-NEXT:                 case %[[VALUE4]] const<i32>(1):
+// FALLTHROUGH-NEXT:                     let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_2]]);
+// FALLTHROUGH-NEXT:                     let %[[VALUE6:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE5]]), const<i32>(1));
+// FALLTHROUGH-NEXT:                     write<i32>(%[[VALUE_x_2]], read<i32>(%[[VALUE6]]));
+// FALLTHROUGH-NEXT:                 default %[[VALUE4]]:
+// FALLTHROUGH-NEXT:                     break %[[VALUE4]];
 // FALLTHROUGH-NEXT:             }
-// FALLTHROUGH-NEXT:         return read<i32>(%5);
+// FALLTHROUGH-NEXT:         return read<i32>(%[[VALUE_x_2]]);
 // FALLTHROUGH-NEXT:     }
 // FALLTHROUGH-NEXT: }
 // SLATE-FILECHECK-END FALLTHROUGH

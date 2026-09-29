@@ -44,21 +44,21 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @ll_to_ld(%3 n: i64) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f80, reason=return, exact=true, rounding=nearest_even, exceptions=ignore>(read<i64>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_ll_to_ld:[0-9]+]] @ll_to_ld(%[[VALUE_n:[0-9]+]] n: i64) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f80, reason=return, exact=true, rounding=nearest_even, exceptions=ignore>(read<i64>(%[[VALUE_n]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @ld_to_ll(%5 n: f80) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return float_to_int<i64, reason=return, out_of_range=ub, exceptions=ignore>(read<f80>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE_ld_to_ll:[0-9]+]] @ld_to_ll(%[[VALUE_n_2:[0-9]+]] n: f80) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return float_to_int<i64, reason=return, out_of_range=ub, exceptions=ignore>(read<f80>(%[[VALUE_n_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 n: i64 [storage=automatic];
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(i64) -> f80>(%2, const<i64>(10)), float_widen<f80, reason=usual_arith>(const<f64>(10.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(f80) -> i64>(%4, float_widen<f80, reason=arg>(const<f64>(10.0))), widen<i64, reason=usual_arith>(const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_n_3:[0-9]+]] n: i64 [storage=automatic];
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(i64) -> f80>(%[[VALUE_ll_to_ld]], const<i64>(10)), float_widen<f80, reason=usual_arith>(const<f64>(10.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(f80) -> i64>(%[[VALUE_ld_to_ll]], float_widen<f80, reason=arg>(const<f64>(10.0))), widen<i64, reason=usual_arith>(const<i32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

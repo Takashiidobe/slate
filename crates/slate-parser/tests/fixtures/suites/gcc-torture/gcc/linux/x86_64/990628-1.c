@@ -69,57 +69,57 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     type @type1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 sqlcode: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 data_record = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_data_record:[0-9]+]] data_record = struct {
 // DEFAULT-NEXT:         field0 dummy: i32;
 // DEFAULT-NEXT:         field1 a: array<i32, 100>;
 // DEFAULT-NEXT:     } [size=404, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %7 sqlca: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 data_ptr: ptr<@type2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 data_tmp: @type2 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %13 fetch_count: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @malloc(%18 __size: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @exit(%19 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %11 @num_records() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_sqlca:[0-9]+]] sqlca: @type[[TYPE0]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_data_ptr:[0-9]+]] data_ptr: ptr<@type[[TYPE_data_record]]> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_data_tmp:[0-9]+]] data_tmp: @type[[TYPE_data_record]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_fetch_count:[0-9]+]] fetch_count: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_num_records:[0-9]+]] @num_records() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @__builtin_memset(%20 <unnamed>: ptr<void>, %21 <unnamed>: i32, %22 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %12 @fetch() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%23, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type2>>(%10)), const<i32>(85), const<u64>(404));
-// DEFAULT-NEXT:         let %25: i32 [synthetic] = read<i32>(%13);
-// DEFAULT-NEXT:         let %26: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%25), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%13, read<i32>(%26));
-// DEFAULT-NEXT:         write<i64>(field0(%7), widen<i64, reason=assign>(conditional<i32>(gt<i32>(read<i32>(%26), const<i32>(1)), const<i32>(100), const<i32>(0))));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memset:[0-9]+]] @__builtin_memset(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fetch:[0-9]+]] @fetch() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_data_tmp]])), const<i32>(85), const<u64>(404));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_fetch_count]]);
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_fetch_count]], read<i32>(%[[VALUE4]]));
+// DEFAULT-NEXT:         write<i64>(field0(%[[VALUE_sqlca]]), widen<i64, reason=assign>(conditional<i32>(gt<i32>(read<i32>(%[[VALUE4]]), const<i32>(1)), const<i32>(100), const<i32>(0))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @load_data() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %15 p: ptr<@type2> [storage=automatic];
-// DEFAULT-NEXT:         let %16 num: i32 [storage=automatic] = call<i32, signature=fn() -> i32>(%11);
-// DEFAULT-NEXT:         write<ptr<@type2>>(%9, pointer_cast<ptr<@type2>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%16))), const<u64>(404)))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type2>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%16))), const<u64>(404))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%23, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type2>>(%9)), const<i32>(170), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%16))), const<u64>(404)));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%12);
-// DEFAULT-NEXT:         write<ptr<@type2>>(%15, read<ptr<@type2>>(%9));
-// DEFAULT-NEXT:         while %24 eq<i64>(read<i64>(field0(%7)), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:     fn %[[VALUE_load_data:[0-9]+]] @load_data() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_data_record]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_num:[0-9]+]] num: i32 [storage=automatic] = call<i32, signature=fn() -> i32>(%[[VALUE_num_records]]);
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_data_ptr]], pointer_cast<ptr<@type[[TYPE_data_record]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_num]]))), const<u64>(404)))));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_data_record]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_num]]))), const<u64>(404))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_data_ptr]])), const<i32>(170), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_num]]))), const<u64>(404)));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fetch]]);
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_p]], read<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_data_ptr]]));
+// DEFAULT-NEXT:         while %[[VALUE5:[0-9]+]] eq<i64>(read<i64>(field0(%[[VALUE_sqlca]])), widen<i64, reason=usual_arith>(const<i32>(0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %27: ptr<@type2> [synthetic] = read<ptr<@type2>>(%15);
-// DEFAULT-NEXT:                 let %28: ptr<@type2> [synthetic] = ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(read<ptr<@type2>>(%27), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<@type2>>(%15, read<ptr<@type2>>(%28));
-// DEFAULT-NEXT:                 write<@type2>(deref(read<ptr<@type2>>(%27)), copy<@type2, reason=assign>(read<@type2>(%10)));
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%12);
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: ptr<@type[[TYPE_data_record]]> [synthetic] = read<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_p]]);
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: ptr<@type[[TYPE_data_record]]> [synthetic] = ptr_offset<ptr<@type[[TYPE_data_record]]>, subtract=false, element=@type[[TYPE_data_record]], overflow=ub>(read<ptr<@type[[TYPE_data_record]]>>(%[[VALUE6]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_p]], read<ptr<@type[[TYPE_data_record]]>>(%[[VALUE7]]));
+// DEFAULT-NEXT:                 write<@type[[TYPE_data_record]]>(deref(read<ptr<@type[[TYPE_data_record]]>>(%[[VALUE6]])), copy<@type[[TYPE_data_record]], reason=assign>(read<@type[[TYPE_data_record]]>(%[[VALUE_data_tmp]])));
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_fetch]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%14);
-// DEFAULT-NEXT:         if logical_and<bool>(eq<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(read<ptr<@type2>>(%9), const<i32>(0))))), const<i32>(21845)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_load_data]]);
+// DEFAULT-NEXT:         if logical_and<bool>(eq<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type[[TYPE_data_record]]>, subtract=false, element=@type[[TYPE_data_record]], overflow=ub>(read<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_data_ptr]]), const<i32>(0))))), const<i32>(21845)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             if logical_and<bool>(gt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(read<ptr<@type2>>(%9), const<i32>(0))))), const<i32>(1431655765)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%3);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%5, const<i32>(0));
+// DEFAULT-NEXT:             if logical_and<bool>(gt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type[[TYPE_data_record]]>, subtract=false, element=@type[[TYPE_data_record]], overflow=ub>(read<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_data_ptr]]), const<i32>(0))))), const<i32>(1431655765)))
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -42,12 +42,12 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i128b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i128b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %7 @__builtin_memmove(%4 <unnamed>: ptr<void>, %5 <unnamed>: ptr<const void>, %6 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 u: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(read<i128b>(%1));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%7, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i128b>>(%0)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i128b>>(%1)), const<u64>(16));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i128b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i128b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memmove:[0-9]+]] @__builtin_memmove(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(read<i128b>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memmove]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i128b>>(%[[VALUE_a]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i128b>>(%[[VALUE_b]])), const<u64>(16));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

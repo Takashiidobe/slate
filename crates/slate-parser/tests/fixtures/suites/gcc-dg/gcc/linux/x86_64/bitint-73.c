@@ -43,11 +43,11 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i129b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %5 @__builtin_memset(%2 <unnamed>: ptr<void>, %3 <unnamed>: i32, %4 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo() -> i129b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%5, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i129b>>(%0)), const<i32>(6), const<u64>(24));
-// DEFAULT-NEXT:         return read<i129b>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i129b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memset:[0-9]+]] @__builtin_memset(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i129b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i129b>>(%[[VALUE_a]])), const<i32>(6), const<u64>(24));
+// DEFAULT-NEXT:         return read<i129b>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

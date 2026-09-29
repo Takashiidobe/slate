@@ -80,62 +80,62 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %5 l1: volatile u64 [storage=static] = widen<u64, reason=assign>(reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4)))) [linkage=external];
-// DEFAULT-NEXT:     global %10 l2: volatile u64 [storage=static] = widen<u64, reason=assign>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))) [linkage=external];
-// DEFAULT-NEXT:     global %15 l3: volatile u64 [storage=static] = widen<u64, reason=assign>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))) [linkage=external];
-// DEFAULT-NEXT:     global %20 l4: volatile u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(4)))) [linkage=external];
-// DEFAULT-NEXT:     global %25 l5: volatile u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(truncate<i16, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))) [linkage=external];
-// DEFAULT-NEXT:     global %30 l6: volatile u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @foo1(%2 x: i32) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%2);
+// DEFAULT-NEXT:     global %[[VALUE_l1:[0-9]+]] l1: volatile u64 [storage=static] = widen<u64, reason=assign>(reinterpret<u32, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4)))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_l2:[0-9]+]] l2: volatile u64 [storage=static] = widen<u64, reason=assign>(reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_l3:[0-9]+]] l3: volatile u64 [storage=static] = widen<u64, reason=assign>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_l4:[0-9]+]] l4: volatile u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(4)))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_l5:[0-9]+]] l5: volatile u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(truncate<i16, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_l6:[0-9]+]] l6: volatile u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo1:[0-9]+]] @foo1(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @bar1(%4 x: i32) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(call<i32, signature=fn(i32) -> i32>(%1, add<i32, overflow=ub>(read<i32>(%4), const<i32>(6))));
+// DEFAULT-NEXT:     fn %[[VALUE_bar1:[0-9]+]] @bar1(%[[VALUE_x_2:[0-9]+]] x: i32) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo1]], add<i32, overflow=ub>(read<i32>(%[[VALUE_x_2]]), const<i32>(6))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @foo2(%7 x: i32) -> i16 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(read<i32>(%7));
+// DEFAULT-NEXT:     fn %[[VALUE_foo2:[0-9]+]] @foo2(%[[VALUE_x_3:[0-9]+]] x: i32) -> i16 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(read<i32>(%[[VALUE_x_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @bar2(%9 x: i32) -> u16 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(call<i16, signature=fn(i32) -> i16>(%6, add<i32, overflow=ub>(read<i32>(%9), const<i32>(6))));
+// DEFAULT-NEXT:     fn %[[VALUE_bar2:[0-9]+]] @bar2(%[[VALUE_x_4:[0-9]+]] x: i32) -> u16 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(call<i16, signature=fn(i32) -> i16>(%[[VALUE_foo2]], add<i32, overflow=ub>(read<i32>(%[[VALUE_x_4]]), const<i32>(6))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @foo3(%12 x: i32) -> i8 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(read<i32>(%12));
+// DEFAULT-NEXT:     fn %[[VALUE_foo3:[0-9]+]] @foo3(%[[VALUE_x_5:[0-9]+]] x: i32) -> i8 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(read<i32>(%[[VALUE_x_5]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @bar3(%14 x: i32) -> u8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u8, reason=return, fits=unknown>(call<i8, signature=fn(i32) -> i8>(%11, add<i32, overflow=ub>(read<i32>(%14), const<i32>(6))));
+// DEFAULT-NEXT:     fn %[[VALUE_bar3:[0-9]+]] @bar3(%[[VALUE_x_6:[0-9]+]] x: i32) -> u8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u8, reason=return, fits=unknown>(call<i8, signature=fn(i32) -> i8>(%[[VALUE_foo3]], add<i32, overflow=ub>(read<i32>(%[[VALUE_x_6]]), const<i32>(6))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @foo4(%17 x: i32) -> u32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(read<i32>(%17));
+// DEFAULT-NEXT:     fn %[[VALUE_foo4:[0-9]+]] @foo4(%[[VALUE_x_7:[0-9]+]] x: i32) -> u32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(read<i32>(%[[VALUE_x_7]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @bar4(%19 x: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(call<u32, signature=fn(i32) -> u32>(%16, add<i32, overflow=ub>(read<i32>(%19), const<i32>(6))));
+// DEFAULT-NEXT:     fn %[[VALUE_bar4:[0-9]+]] @bar4(%[[VALUE_x_8:[0-9]+]] x: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(call<u32, signature=fn(i32) -> u32>(%[[VALUE_foo4]], add<i32, overflow=ub>(read<i32>(%[[VALUE_x_8]]), const<i32>(6))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @foo5(%22 x: i32) -> u16 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=unknown>(read<i32>(%22)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo5:[0-9]+]] @foo5(%[[VALUE_x_9:[0-9]+]] x: i32) -> u16 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=unknown>(read<i32>(%[[VALUE_x_9]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @bar5(%24 x: i32) -> i16 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i16, reason=return, fits=unknown>(call<u16, signature=fn(i32) -> u16>(%21, add<i32, overflow=ub>(read<i32>(%24), const<i32>(6))));
+// DEFAULT-NEXT:     fn %[[VALUE_bar5:[0-9]+]] @bar5(%[[VALUE_x_10:[0-9]+]] x: i32) -> i16 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i16, reason=return, fits=unknown>(call<u16, signature=fn(i32) -> u16>(%[[VALUE_foo5]], add<i32, overflow=ub>(read<i32>(%[[VALUE_x_10]]), const<i32>(6))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @foo6(%27 x: i32) -> u8 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u8, reason=return, fits=unknown>(truncate<i8, reason=return, fits=unknown>(read<i32>(%27)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo6:[0-9]+]] @foo6(%[[VALUE_x_11:[0-9]+]] x: i32) -> u8 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u8, reason=return, fits=unknown>(truncate<i8, reason=return, fits=unknown>(read<i32>(%[[VALUE_x_11]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %28 @bar6(%29 x: i32) -> i8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i8, reason=return, fits=unknown>(call<u8, signature=fn(i32) -> u8>(%26, add<i32, overflow=ub>(read<i32>(%29), const<i32>(6))));
+// DEFAULT-NEXT:     fn %[[VALUE_bar6:[0-9]+]] @bar6(%[[VALUE_x_12:[0-9]+]] x: i32) -> i8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i8, reason=return, fits=unknown>(call<u8, signature=fn(i32) -> u8>(%[[VALUE_foo6]], add<i32, overflow=ub>(read<i32>(%[[VALUE_x_12]]), const<i32>(6))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(i32) -> u32>(%3, neg<i32, overflow=ub>(const<i32>(10)))), read<u64, volatile>(%5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(i32) -> u16>(%8, neg<i32, overflow=ub>(const<i32>(10))))))), read<u64, volatile>(%10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u8, signature=fn(i32) -> u8>(%13, neg<i32, overflow=ub>(const<i32>(10))))))), read<u64, volatile>(%15))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i32) -> i32>(%18, neg<i32, overflow=ub>(const<i32>(10))))), read<u64, volatile>(%20))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(call<i16, signature=fn(i32) -> i16>(%23, neg<i32, overflow=ub>(const<i32>(10)))))), read<u64, volatile>(%25))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(call<i8, signature=fn(i32) -> i8>(%28, neg<i32, overflow=ub>(const<i32>(10)))))), read<u64, volatile>(%30))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(i32) -> u32>(%[[VALUE_bar1]], neg<i32, overflow=ub>(const<i32>(10)))), read<u64, volatile>(%[[VALUE_l1]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(i32) -> u16>(%[[VALUE_bar2]], neg<i32, overflow=ub>(const<i32>(10))))))), read<u64, volatile>(%[[VALUE_l2]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u8, signature=fn(i32) -> u8>(%[[VALUE_bar3]], neg<i32, overflow=ub>(const<i32>(10))))))), read<u64, volatile>(%[[VALUE_l3]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_bar4]], neg<i32, overflow=ub>(const<i32>(10))))), read<u64, volatile>(%[[VALUE_l4]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(call<i16, signature=fn(i32) -> i16>(%[[VALUE_bar5]], neg<i32, overflow=ub>(const<i32>(10)))))), read<u64, volatile>(%[[VALUE_l5]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(call<i8, signature=fn(i32) -> i8>(%[[VALUE_bar6]], neg<i32, overflow=ub>(const<i32>(10)))))), read<u64, volatile>(%[[VALUE_l6]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

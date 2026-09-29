@@ -39,17 +39,17 @@ void h(int l) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 buf: array<i8, 512> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @f() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @g(%6 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @h(%4 l: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         while %7 ne<i32>(read<i32>(%4), const<i32>(0))
+// DEFAULT-NEXT:     global %[[VALUE_buf:[0-9]+]] buf: array<i8, 512> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(%[[VALUE_l:[0-9]+]] l: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] ne<i32>(read<i32>(%[[VALUE_l]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %5 op: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(512)>(%2);
-// DEFAULT-NEXT:                 if eq<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
-// DEFAULT-NEXT:                     break %7;
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(i32) -> i32>(%1, truncate<i32, reason=arg, fits=unknown>(add<i64, overflow=ub>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%5), array_decay<ptr<i8>, length=Some(512)>(%2)), widen<i64, reason=usual_arith>(const<i32>(1))))), const<i32>(0))
-// DEFAULT-NEXT:                     break %7;
+// DEFAULT-NEXT:                 let %[[VALUE_op:[0-9]+]] op: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(512)>(%[[VALUE_buf]]);
+// DEFAULT-NEXT:                 if eq<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_f]]), const<i32>(0))
+// DEFAULT-NEXT:                     break %[[VALUE1]];
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_g]], truncate<i32, reason=arg, fits=unknown>(add<i64, overflow=ub>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%[[VALUE_op]]), array_decay<ptr<i8>, length=Some(512)>(%[[VALUE_buf]])), widen<i64, reason=usual_arith>(const<i32>(1))))), const<i32>(0))
+// DEFAULT-NEXT:                     break %[[VALUE1]];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

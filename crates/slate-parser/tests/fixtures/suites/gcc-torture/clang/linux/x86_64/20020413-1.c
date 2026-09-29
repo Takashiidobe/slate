@@ -60,47 +60,47 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @test(%3 val: f80, %4 eval: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 tmp: f80 [storage=automatic] = const<f80>(1);
-// DEFAULT-NEXT:         let %6 i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         if lt<f80, exceptions=ignore>(read<f80>(%3), const<f80>(0))
-// DEFAULT-NEXT:             write<f80>(%3, neg<f80>(read<f80>(%3)));
-// DEFAULT-NEXT:         if ge<f80, exceptions=ignore>(read<f80>(%3), read<f80>(%5))
-// DEFAULT-NEXT:             while %10 lt<f80, exceptions=ignore>(read<f80>(%5), read<f80>(%3))
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_val:[0-9]+]] val: f80, %[[VALUE_eval:[0-9]+]] eval: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_tmp:[0-9]+]] tmp: f80 [storage=automatic] = const<f80>(1);
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         if lt<f80, exceptions=ignore>(read<f80>(%[[VALUE_val]]), const<f80>(0))
+// DEFAULT-NEXT:             write<f80>(%[[VALUE_val]], neg<f80>(read<f80>(%[[VALUE_val]])));
+// DEFAULT-NEXT:         if ge<f80, exceptions=ignore>(read<f80>(%[[VALUE_val]]), read<f80>(%[[VALUE_tmp]]))
+// DEFAULT-NEXT:             while %[[VALUE1:[0-9]+]] lt<f80, exceptions=ignore>(read<f80>(%[[VALUE_tmp]]), read<f80>(%[[VALUE_val]]))
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %12: f80 [synthetic] = read<f80>(%5);
-// DEFAULT-NEXT:                     let %13: f80 [synthetic] = mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%12), const<f80>(2));
-// DEFAULT-NEXT:                     write<f80>(%5, read<f80>(%13));
-// DEFAULT-NEXT:                     let %14: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:                     let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
-// DEFAULT-NEXT:                     write<i32>(%6, read<i32>(%15));
-// DEFAULT-NEXT:                     if ge<i32>(read<i32>(%14), const<i32>(10))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     let %[[VALUE2:[0-9]+]]: f80 [synthetic] = read<f80>(%[[VALUE_tmp]]);
+// DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: f80 [synthetic] = mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%[[VALUE2]]), const<f80>(2));
+// DEFAULT-NEXT:                     write<f80>(%[[VALUE_tmp]], read<f80>(%[[VALUE3]]));
+// DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE5]]));
+// DEFAULT-NEXT:                     if ge<i32>(read<i32>(%[[VALUE4]]), const<i32>(10))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             if ne<f80, exceptions=ignore>(read<f80>(%3), const<f80>(0))
-// DEFAULT-NEXT:                 while %11 lt<f80, exceptions=ignore>(read<f80>(%3), read<f80>(%5))
+// DEFAULT-NEXT:             if ne<f80, exceptions=ignore>(read<f80>(%[[VALUE_val]]), const<f80>(0))
+// DEFAULT-NEXT:                 while %[[VALUE6:[0-9]+]] lt<f80, exceptions=ignore>(read<f80>(%[[VALUE_val]]), read<f80>(%[[VALUE_tmp]]))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %16: f80 [synthetic] = read<f80>(%5);
-// DEFAULT-NEXT:                         let %17: f80 [synthetic] = div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%16), const<f80>(2));
-// DEFAULT-NEXT:                         write<f80>(%5, read<f80>(%17));
-// DEFAULT-NEXT:                         let %18: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:                         let %19: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%18), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%6, read<i32>(%19));
-// DEFAULT-NEXT:                         if ge<i32>(read<i32>(%18), const<i32>(10))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         let %[[VALUE7:[0-9]+]]: f80 [synthetic] = read<f80>(%[[VALUE_tmp]]);
+// DEFAULT-NEXT:                         let %[[VALUE8:[0-9]+]]: f80 [synthetic] = div<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%[[VALUE7]]), const<f80>(2));
+// DEFAULT-NEXT:                         write<f80>(%[[VALUE_tmp]], read<f80>(%[[VALUE8]]));
+// DEFAULT-NEXT:                         let %[[VALUE9:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE9]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE10]]));
+// DEFAULT-NEXT:                         if ge<i32>(read<i32>(%[[VALUE9]]), const<i32>(10))
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%4)), read<i32>(%6));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_eval]])), read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 eval: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(f80, ptr<i32>) -> void>(%2, float_widen<f80, reason=arg>(const<f64>(3.0)), addr_of<ptr<i32>>(%8));
-// DEFAULT-NEXT:         call<void, signature=fn(f80, ptr<i32>) -> void>(%2, float_widen<f80, reason=arg>(const<f64>(3.5)), addr_of<ptr<i32>>(%8));
-// DEFAULT-NEXT:         call<void, signature=fn(f80, ptr<i32>) -> void>(%2, float_widen<f80, reason=arg>(const<f64>(4.0)), addr_of<ptr<i32>>(%8));
-// DEFAULT-NEXT:         call<void, signature=fn(f80, ptr<i32>) -> void>(%2, float_widen<f80, reason=arg>(const<f64>(5.0)), addr_of<ptr<i32>>(%8));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_eval_2:[0-9]+]] eval: i32 [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(f80, ptr<i32>) -> void>(%[[VALUE_test]], float_widen<f80, reason=arg>(const<f64>(3.0)), addr_of<ptr<i32>>(%[[VALUE_eval_2]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f80, ptr<i32>) -> void>(%[[VALUE_test]], float_widen<f80, reason=arg>(const<f64>(3.5)), addr_of<ptr<i32>>(%[[VALUE_eval_2]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f80, ptr<i32>) -> void>(%[[VALUE_test]], float_widen<f80, reason=arg>(const<f64>(4.0)), addr_of<ptr<i32>>(%[[VALUE_eval_2]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f80, ptr<i32>) -> void>(%[[VALUE_test]], float_widen<f80, reason=arg>(const<f64>(5.0)), addr_of<ptr<i32>>(%[[VALUE_eval_2]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

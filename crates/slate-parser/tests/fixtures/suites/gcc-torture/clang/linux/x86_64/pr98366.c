@@ -38,20 +38,20 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:         field2 c: i32 : 7;
 // DEFAULT-NEXT:         field3 d: i32 : 8;
 // DEFAULT-NEXT:         field4 e: i32 : 17;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8, 8, 9], bit_offsets=[None, None, Some(64), Some(71), Some(79)], bit_units=[(8, 4)], field_units=[None, None, Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     type @type1 S = @type0;
-// DEFAULT-NEXT:     global %2 f: array<@type0, 1> [storage=static] [const] = aggregate<array<@type0, 1>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(3), field2 = const<i32>(4), field3 = const<i32>(2), field4 = const<i32>(0))) [linkage=external];
-// DEFAULT-NEXT:     fn %7 @__builtin_memcmp(%4 <unnamed>: ptr<const void>, %5 <unnamed>: ptr<const void>, %6 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%7, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const @type0>, length=Some(1)>(%2)), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<@type0>, length=Some(1)>(compound_literal %8 [storage=automatic] = aggregate<array<@type0, 1>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=true>(field1 = const<i32>(3), field2 = const<i32>(4), field3 = const<i32>(2), field4 = const<i32>(0))))), const<u64>(12)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
+// DEFAULT-NEXT:     type @type[[TYPE_S_2:[0-9]+]] S = @type[[TYPE_S]];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: array<@type[[TYPE_S]], 1> [storage=static] [const] = aggregate<array<@type[[TYPE_S]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(3), field2 = const<i32>(4), field3 = const<i32>(2), field4 = const<i32>(0))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcmp:[0-9]+]] @__builtin_memcmp(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<const @type[[TYPE_S]]>, length=Some(1)>(%[[VALUE_f]])), pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(1)>(compound_literal %[[VALUE3:[0-9]+]] [storage=automatic] = aggregate<array<@type[[TYPE_S]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE_S]], zero_fill=true>(field1 = const<i32>(3), field2 = const<i32>(4), field3 = const<i32>(2), field4 = const<i32>(0))))), const<u64>(12)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

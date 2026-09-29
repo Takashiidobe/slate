@@ -42,27 +42,27 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %35 .str35: array<i8, 44> [storage=static] = code_units<array<i8, 44>>([37, 46, 54, 102, 32, 37, 46, 54, 102, 32, 37, 46, 54, 102, 32, 37, 46, 54, 102, 32, 37, 46, 54, 102, 32, 37, 46, 54, 102, 32, 37, 46, 54, 102, 32, 37, 46, 54, 102, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%12 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %16 @__builtin_fma(%13 <unnamed>: f64, %14 <unnamed>: f64, %15 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %19 @__builtin_hypot(%17 <unnamed>: f64, %18 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %22 @__builtin_fdim(%20 <unnamed>: f64, %21 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %24 @__builtin_cbrt(%23 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %27 @__builtin_ldexp(%25 <unnamed>: f64, %26 <unnamed>: i32) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %30 @__builtin_scalbn(%28 <unnamed>: f64, %29 <unnamed>: i32) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %32 @__builtin_logb(%31 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %34 @__builtin_ilogb(%33 <unnamed>: f64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 fma_v: f64 [storage=automatic] = call<f64, signature=fn(f64, f64, f64) -> f64>(%16, const<f64>(2.0), const<f64>(3.0), const<f64>(1.0));
-// DEFAULT-NEXT:         let %4 hypot_v: f64 [storage=automatic] = call<f64, signature=fn(f64, f64) -> f64>(%19, const<f64>(3.0), const<f64>(4.0));
-// DEFAULT-NEXT:         let %5 fdim_v: f64 [storage=automatic] = call<f64, signature=fn(f64, f64) -> f64>(%22, const<f64>(5.0), const<f64>(2.0));
-// DEFAULT-NEXT:         let %6 fdim_neg: f64 [storage=automatic] = call<f64, signature=fn(f64, f64) -> f64>(%22, const<f64>(2.0), const<f64>(5.0));
-// DEFAULT-NEXT:         let %7 cbrt_v: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(%24, const<f64>(27.0));
-// DEFAULT-NEXT:         let %8 ldexp_v: f64 [storage=automatic] = call<f64, signature=fn(f64, i32) -> f64>(%27, const<f64>(1.0), const<i32>(4));
-// DEFAULT-NEXT:         let %9 scalbn_v: f64 [storage=automatic] = call<f64, signature=fn(f64, i32) -> f64>(%30, const<f64>(10.0), const<i32>(3));
-// DEFAULT-NEXT:         let %10 logb_v: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(%32, const<f64>(10.0));
-// DEFAULT-NEXT:         let %11 ilogb_v: i32 [storage=automatic] = call<i32, signature=fn(f64) -> i32>(%34, const<f64>(10.0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(44)>(%35)), read<f64>(%3), read<f64>(%4), read<f64>(%5), read<f64>(%6), read<f64>(%7), read<f64>(%8), read<f64>(%9), read<f64>(%10), read<i32>(%11));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 44> [storage=static] = code_units<array<i8, 44>>([37, 46, 54, 102, 32, 37, 46, 54, 102, 32, 37, 46, 54, 102, 32, 37, 46, 54, 102, 32, 37, 46, 54, 102, 32, 37, 46, 54, 102, 32, 37, 46, 54, 102, 32, 37, 46, 54, 102, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_fma:[0-9]+]] @__builtin_fma(%[[VALUE0:[0-9]+]] <unnamed>: f64, %[[VALUE1:[0-9]+]] <unnamed>: f64, %[[VALUE2:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_hypot:[0-9]+]] @__builtin_hypot(%[[VALUE3:[0-9]+]] <unnamed>: f64, %[[VALUE4:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_fdim:[0-9]+]] @__builtin_fdim(%[[VALUE5:[0-9]+]] <unnamed>: f64, %[[VALUE6:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_cbrt:[0-9]+]] @__builtin_cbrt(%[[VALUE7:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_ldexp:[0-9]+]] @__builtin_ldexp(%[[VALUE8:[0-9]+]] <unnamed>: f64, %[[VALUE9:[0-9]+]] <unnamed>: i32) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_scalbn:[0-9]+]] @__builtin_scalbn(%[[VALUE10:[0-9]+]] <unnamed>: f64, %[[VALUE11:[0-9]+]] <unnamed>: i32) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_logb:[0-9]+]] @__builtin_logb(%[[VALUE12:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_ilogb:[0-9]+]] @__builtin_ilogb(%[[VALUE13:[0-9]+]] <unnamed>: f64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_fma_v:[0-9]+]] fma_v: f64 [storage=automatic] = call<f64, signature=fn(f64, f64, f64) -> f64>(%[[VALUE___builtin_fma]], const<f64>(2.0), const<f64>(3.0), const<f64>(1.0));
+// DEFAULT-NEXT:         let %[[VALUE_hypot_v:[0-9]+]] hypot_v: f64 [storage=automatic] = call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE___builtin_hypot]], const<f64>(3.0), const<f64>(4.0));
+// DEFAULT-NEXT:         let %[[VALUE_fdim_v:[0-9]+]] fdim_v: f64 [storage=automatic] = call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE___builtin_fdim]], const<f64>(5.0), const<f64>(2.0));
+// DEFAULT-NEXT:         let %[[VALUE_fdim_neg:[0-9]+]] fdim_neg: f64 [storage=automatic] = call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE___builtin_fdim]], const<f64>(2.0), const<f64>(5.0));
+// DEFAULT-NEXT:         let %[[VALUE_cbrt_v:[0-9]+]] cbrt_v: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_cbrt]], const<f64>(27.0));
+// DEFAULT-NEXT:         let %[[VALUE_ldexp_v:[0-9]+]] ldexp_v: f64 [storage=automatic] = call<f64, signature=fn(f64, i32) -> f64>(%[[VALUE___builtin_ldexp]], const<f64>(1.0), const<i32>(4));
+// DEFAULT-NEXT:         let %[[VALUE_scalbn_v:[0-9]+]] scalbn_v: f64 [storage=automatic] = call<f64, signature=fn(f64, i32) -> f64>(%[[VALUE___builtin_scalbn]], const<f64>(10.0), const<i32>(3));
+// DEFAULT-NEXT:         let %[[VALUE_logb_v:[0-9]+]] logb_v: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_logb]], const<f64>(10.0));
+// DEFAULT-NEXT:         let %[[VALUE_ilogb_v:[0-9]+]] ilogb_v: i32 [storage=automatic] = call<i32, signature=fn(f64) -> i32>(%[[VALUE___builtin_ilogb]], const<f64>(10.0));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(44)>(%[[VALUE_str]])), read<f64>(%[[VALUE_fma_v]]), read<f64>(%[[VALUE_hypot_v]]), read<f64>(%[[VALUE_fdim_v]]), read<f64>(%[[VALUE_fdim_neg]]), read<f64>(%[[VALUE_cbrt_v]]), read<f64>(%[[VALUE_ldexp_v]]), read<f64>(%[[VALUE_scalbn_v]]), read<f64>(%[[VALUE_logb_v]]), read<i32>(%[[VALUE_ilogb_v]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

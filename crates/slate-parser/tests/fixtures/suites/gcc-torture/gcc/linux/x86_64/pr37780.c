@@ -59,55 +59,55 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @__builtin_ctz(%13 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %0 @fooctz(%1 i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(conditional<u64>(eq<i32>(read<i32>(%1), const<i32>(0)), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(u32) -> i32>(%14, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%1))))))));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_ctz:[0-9]+]] @__builtin_ctz(%[[VALUE0:[0-9]+]] <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_fooctz:[0-9]+]] @fooctz(%[[VALUE_i:[0-9]+]] i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(conditional<u64>(eq<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(u32) -> i32>(%[[VALUE___builtin_ctz]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_i]]))))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @fooctz2(%3 i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(conditional<u64>(ne<i32>(read<i32>(%3), const<i32>(0)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(u32) -> i32>(%14, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%3))))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4)))));
+// DEFAULT-NEXT:     fn %[[VALUE_fooctz2:[0-9]+]] @fooctz2(%[[VALUE_i_2:[0-9]+]] i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(conditional<u64>(ne<i32>(read<i32>(%[[VALUE_i_2]]), const<i32>(0)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(u32) -> i32>(%[[VALUE___builtin_ctz]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_i_2]]))))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @fooctz3(%5 i: u32) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<u32, reason=return, fits=unknown>(conditional<u64>(gt<u32>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(u32) -> i32>(%14, read<u32>(%5)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4))));
+// DEFAULT-NEXT:     fn %[[VALUE_fooctz3:[0-9]+]] @fooctz3(%[[VALUE_i_3:[0-9]+]] i: u32) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<u32, reason=return, fits=unknown>(conditional<u64>(gt<u32>(read<u32>(%[[VALUE_i_3]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(u32) -> i32>(%[[VALUE___builtin_ctz]], read<u32>(%[[VALUE_i_3]])))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @__builtin_clz(%15 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %6 @fooclz(%7 i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(conditional<u64>(eq<i32>(read<i32>(%7), const<i32>(0)), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(u32) -> i32>(%16, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%7))))))));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_clz:[0-9]+]] @__builtin_clz(%[[VALUE1:[0-9]+]] <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_fooclz:[0-9]+]] @fooclz(%[[VALUE_i_4:[0-9]+]] i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(conditional<u64>(eq<i32>(read<i32>(%[[VALUE_i_4]]), const<i32>(0)), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(u32) -> i32>(%[[VALUE___builtin_clz]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_i_4]]))))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @fooclz2(%9 i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(conditional<u64>(ne<i32>(read<i32>(%9), const<i32>(0)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(u32) -> i32>(%16, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%9))))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4)))));
+// DEFAULT-NEXT:     fn %[[VALUE_fooclz2:[0-9]+]] @fooclz2(%[[VALUE_i_5:[0-9]+]] i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(conditional<u64>(ne<i32>(read<i32>(%[[VALUE_i_5]]), const<i32>(0)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(u32) -> i32>(%[[VALUE___builtin_clz]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_i_5]]))))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @fooclz3(%11 i: u32) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<u32, reason=return, fits=unknown>(conditional<u64>(gt<u32>(read<u32>(%11), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(u32) -> i32>(%16, read<u32>(%11)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4))));
+// DEFAULT-NEXT:     fn %[[VALUE_fooclz3:[0-9]+]] @fooclz3(%[[VALUE_i_6:[0-9]+]] i: u32) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<u32, reason=return, fits=unknown>(conditional<u64>(gt<u32>(read<u32>(%[[VALUE_i_6]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(u32) -> i32>(%[[VALUE___builtin_clz]], read<u32>(%[[VALUE_i_6]])))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %18: bool [synthetic];
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i32) -> i32>(%0, const<i32>(0)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4)))
-// DEFAULT-NEXT:             write<bool>(%18, const<bool>(true));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_fooctz]], const<i32>(0)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%18, ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i32) -> i32>(%2, const<i32>(0)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4))));
-// DEFAULT-NEXT:         let %19: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%18)
-// DEFAULT-NEXT:             write<bool>(%19, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_fooctz2]], const<i32>(0)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4))));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE2]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE3]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%19, ne<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%4, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4))));
-// DEFAULT-NEXT:         let %20: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%19)
-// DEFAULT-NEXT:             write<bool>(%20, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE3]], ne<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_fooctz3]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4))));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE3]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%20, ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i32) -> i32>(%6, const<i32>(0)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4))));
-// DEFAULT-NEXT:         let %21: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%20)
-// DEFAULT-NEXT:             write<bool>(%21, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_fooclz]], const<i32>(0)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4))));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE4]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%21, ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i32) -> i32>(%8, const<i32>(0)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4))));
-// DEFAULT-NEXT:         let %22: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%21)
-// DEFAULT-NEXT:             write<bool>(%22, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_fooclz2]], const<i32>(0)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4))));
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE5]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%22, ne<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%10, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4))));
-// DEFAULT-NEXT:         if read<bool>(%22)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%17);
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], ne<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_fooclz3]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))), const<u64>(4))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE6]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

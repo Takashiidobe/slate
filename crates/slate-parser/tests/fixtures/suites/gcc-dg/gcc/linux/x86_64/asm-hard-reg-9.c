@@ -40,14 +40,14 @@ test ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @test() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %1 x: i64 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i64 [storage=automatic];
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             inlateout 0 "r" [reg] width 64 place<i64>(%1) from const<i32>(1000);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] width 64 place<i64>(%[[VALUE_x]]) from const<i32>(1000);
 // DEFAULT-NEXT:             in 1 "r" [reg] width 64 const<i64>(0);
 // DEFAULT-NEXT:             in 2 "{r8}" [{r8}] width 64 const<i64>(0);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<i64>(%1);
+// DEFAULT-NEXT:         return read<i64>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

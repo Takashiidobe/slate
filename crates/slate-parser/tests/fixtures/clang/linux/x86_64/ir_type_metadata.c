@@ -38,20 +38,20 @@ size_t count(void) { return 1; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64 [c="unsigned long"];
-// DEFAULT-NEXT:     type @type1 uint32_t = u32 [c="unsigned int"];
-// DEFAULT-NEXT:     type @type2 word = u32 [c="uint32_t"] [c_canon="unsigned int"] [typedef_chain="uint32_t"];
-// DEFAULT-NEXT:     type @type3 cstring = ptr<const i8> [c="const char *"];
-// DEFAULT-NEXT:     type @type4 vector = array<i32, 4> [c="int[4]"];
-// DEFAULT-NEXT:     type @type5 callback = fn(i32) -> i32 [c="int(int)"];
-// DEFAULT-NEXT:     type @type6 fnptr = ptr<fn(i32) -> i32> [c="int (*)(int)"];
-// DEFAULT-NEXT:     type @type7 plain_char = i8 [c="char"];
-// DEFAULT-NEXT:     type @type8 signed_char = i8 [c="signed char"];
-// DEFAULT-NEXT:     type @type9 unsigned_char = u8 [c="unsigned char"];
-// DEFAULT-NEXT:     fn %12 @value() -> u32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="word"] [c="word(void)"] [c_canon="unsigned int(void)"] [typedef_chain="word -> uint32_t"] {
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64 [c="unsigned long"];
+// DEFAULT-NEXT:     type @type[[TYPE_uint32_t:[0-9]+]] uint32_t = u32 [c="unsigned int"];
+// DEFAULT-NEXT:     type @type[[TYPE_word:[0-9]+]] word = u32 [c="uint32_t"] [c_canon="unsigned int"] [typedef_chain="uint32_t"];
+// DEFAULT-NEXT:     type @type[[TYPE_cstring:[0-9]+]] cstring = ptr<const i8> [c="const char *"];
+// DEFAULT-NEXT:     type @type[[TYPE_vector:[0-9]+]] vector = array<i32, 4> [c="int[4]"];
+// DEFAULT-NEXT:     type @type[[TYPE_callback:[0-9]+]] callback = fn(i32) -> i32 [c="int(int)"];
+// DEFAULT-NEXT:     type @type[[TYPE_fnptr:[0-9]+]] fnptr = ptr<fn(i32) -> i32> [c="int (*)(int)"];
+// DEFAULT-NEXT:     type @type[[TYPE_plain_char:[0-9]+]] plain_char = i8 [c="char"];
+// DEFAULT-NEXT:     type @type[[TYPE_signed_char:[0-9]+]] signed_char = i8 [c="signed char"];
+// DEFAULT-NEXT:     type @type[[TYPE_unsigned_char:[0-9]+]] unsigned_char = u8 [c="unsigned char"];
+// DEFAULT-NEXT:     fn %[[VALUE_value:[0-9]+]] @value() -> u32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="word"] [c="word(void)"] [c_canon="unsigned int(void)"] [typedef_chain="word -> uint32_t"] {
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=always>(const<i32>(7));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @count() -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="size_t"] [c="size_t(void)"] [c_canon="unsigned long(void)"] [typedef_chain="size_t"] {
+// DEFAULT-NEXT:     fn %[[VALUE_count:[0-9]+]] @count() -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="size_t"] [c="size_t(void)"] [c_canon="unsigned long(void)"] [typedef_chain="size_t"] {
 // DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

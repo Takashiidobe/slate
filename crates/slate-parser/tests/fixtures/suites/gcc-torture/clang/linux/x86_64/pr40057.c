@@ -56,30 +56,30 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @foo(%2 x: u64) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 y: u64 [storage=automatic] = and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%2), const<u64>(31)), const<u64>(1));
-// DEFAULT-NEXT:         if eq<u64>(read<u64>(%3), const<u64>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: u64) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: u64 [storage=automatic] = and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x]]), const<u64>(31)), const<u64>(1));
+// DEFAULT-NEXT:         if eq<u64>(read<u64>(%[[VALUE_y]]), const<u64>(0))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         return neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @bar(%5 x: i64) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 y: i64 [storage=automatic] = and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%5), const<i64>(31)), const<i64>(1));
-// DEFAULT-NEXT:         if eq<i64>(read<i64>(%6), const<i64>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_2:[0-9]+]] x: i64) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: i64 [storage=automatic] = and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%[[VALUE_x_2]]), const<i64>(31)), const<i64>(1));
+// DEFAULT-NEXT:         if eq<i64>(read<i64>(%[[VALUE_y_2]]), const<i64>(0))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         return neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(%1, const<u64>(6042589866)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(u64) -> i32>(%1, const<u64>(6579460778)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(%4, const<i64>(6042589866)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(i64) -> i32>(%4, const<i64>(6579460778)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(%[[VALUE_foo]], const<u64>(6042589866)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(u64) -> i32>(%[[VALUE_foo]], const<u64>(6579460778)), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64) -> i32>(%[[VALUE_bar]], const<i64>(6042589866)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(i64) -> i32>(%[[VALUE_bar]], const<i64>(6579460778)), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

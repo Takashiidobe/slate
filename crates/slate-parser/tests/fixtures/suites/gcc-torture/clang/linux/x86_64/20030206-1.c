@@ -38,10 +38,10 @@ float baz(float d)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @foo(%6 d: f32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @bar(%7 d: f32) -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @baz(%5 d: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(f32) -> void>(%1, call<f32, signature=fn(f32) -> f32>(%3, read<f32>(%5)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_d:[0-9]+]] d: f32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_d_2:[0-9]+]] d: f32) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_d_3:[0-9]+]] d: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn(f32) -> void>(%[[VALUE_foo]], call<f32, signature=fn(f32) -> f32>(%[[VALUE_bar]], read<f32>(%[[VALUE_d_3]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -56,36 +56,36 @@ int locals(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 raised = i32;
-// IR-NEXT:     type @type1 lowered = i32;
-// IR-NEXT:     type @type2 chained = i32;
-// IR-NEXT:     type @type3 overridden = i32;
-// IR-NEXT:     type @type4 packed_long = i64;
-// IR-NEXT:     type @type5 holds_raised = struct {
+// IR-NEXT:     type @type[[TYPE_raised:[0-9]+]] raised = i32;
+// IR-NEXT:     type @type[[TYPE_lowered:[0-9]+]] lowered = i32;
+// IR-NEXT:     type @type[[TYPE_chained:[0-9]+]] chained = i32;
+// IR-NEXT:     type @type[[TYPE_overridden:[0-9]+]] overridden = i32;
+// IR-NEXT:     type @type[[TYPE_packed_long:[0-9]+]] packed_long = i64;
+// IR-NEXT:     type @type[[TYPE_holds_raised:[0-9]+]] holds_raised = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 value: i32;
 // IR-NEXT:     } [size=32, align=16, offsets=[0, 16]];
-// IR-NEXT:     type @type6 holds_lowered = struct {
+// IR-NEXT:     type @type[[TYPE_holds_lowered:[0-9]+]] holds_lowered = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 value: i32;
 // IR-NEXT:     } [size=5, align=1, offsets=[0, 1]];
-// IR-NEXT:     type @type7 holds_chain = struct {
+// IR-NEXT:     type @type[[TYPE_holds_chain:[0-9]+]] holds_chain = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 first: i32;
 // IR-NEXT:         field2 second: i32;
 // IR-NEXT:     } [size=32, align=16, offsets=[0, 16, 20]];
-// IR-NEXT:     type @type8 holds_array = struct {
+// IR-NEXT:     type @type[[TYPE_holds_array:[0-9]+]] holds_array = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 values: array<i64, 2>;
 // IR-NEXT:     } [size=18, align=2, offsets=[0, 2]];
-// IR-NEXT:     global %9 global_raised: i32 [storage=static] [align=16] [linkage=external];
-// IR-NEXT:     global %10 global_lowered: i32 [storage=static] [align=1] [linkage=external];
-// IR-NEXT:     global %11 global_requested: i64 [storage=static] [align=4] [linkage=external];
-// IR-NEXT:     global %12 alignments: array<u64, 11> [storage=static] [align=16] = aggregate<array<u64, 11>, zero_fill=false>(index0 = const<u64>(16), index1 = const<u64>(1), index2 = const<u64>(16), index3 = const<u64>(2), index4 = const<u64>(16), index5 = const<u64>(1), index6 = const<u64>(16), index7 = const<u64>(4), index8 = const<u64>(2), index9 = const<u64>(4), index10 = const<u64>(1)) [linkage=external];
-// IR-NEXT:     fn %13 @locals() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %14 r: i32 [storage=automatic] [align=16] = const<i32>(1);
-// IR-NEXT:         let %15 l: i32 [storage=automatic] [align=1] = const<i32>(2);
-// IR-NEXT:         return add<i32>(read<i32>(%14), read<i32>(%15));
+// IR-NEXT:     global %[[VALUE_global_raised:[0-9]+]] global_raised: i32 [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     global %[[VALUE_global_lowered:[0-9]+]] global_lowered: i32 [storage=static] [align=1] [linkage=external];
+// IR-NEXT:     global %[[VALUE_global_requested:[0-9]+]] global_requested: i64 [storage=static] [align=4] [linkage=external];
+// IR-NEXT:     global %[[VALUE_alignments:[0-9]+]] alignments: array<u64, 11> [storage=static] [align=16] = aggregate<array<u64, 11>, zero_fill=false>(index0 = const<u64>(16), index1 = const<u64>(1), index2 = const<u64>(16), index3 = const<u64>(2), index4 = const<u64>(16), index5 = const<u64>(1), index6 = const<u64>(16), index7 = const<u64>(4), index8 = const<u64>(2), index9 = const<u64>(4), index10 = const<u64>(1)) [linkage=external];
+// IR-NEXT:     fn %[[VALUE_locals:[0-9]+]] @locals() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] [align=16] = const<i32>(1);
+// IR-NEXT:         let %[[VALUE_l:[0-9]+]] l: i32 [storage=automatic] [align=1] = const<i32>(2);
+// IR-NEXT:         return add<i32>(read<i32>(%[[VALUE_r]]), read<i32>(%[[VALUE_l]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

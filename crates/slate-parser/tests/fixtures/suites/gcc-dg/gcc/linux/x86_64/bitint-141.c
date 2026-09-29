@@ -44,14 +44,14 @@ bar (U a)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 U = u1b;
-// DEFAULT-NEXT:     fn %1 @foo(%2 a: u1b) -> u1b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 t: u1b [storage=automatic] = from_bool<u1b, reason=assign>(ge<u1b>(read<u1b>(%2), const<u1b>(1)));
-// DEFAULT-NEXT:         return read<u1b>(%3);
+// DEFAULT-NEXT:     type @type[[TYPE_U:[0-9]+]] U = u1b;
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: u1b) -> u1b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: u1b [storage=automatic] = from_bool<u1b, reason=assign>(ge<u1b>(read<u1b>(%[[VALUE_a]]), const<u1b>(1)));
+// DEFAULT-NEXT:         return read<u1b>(%[[VALUE_t]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @bar(%5 a: u1b) -> u1b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 t: u1b [storage=automatic] = from_bool<u1b, reason=assign>(eq<u1b>(read<u1b>(%5), const<u1b>(1)));
-// DEFAULT-NEXT:         return read<u1b>(%6);
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_a_2:[0-9]+]] a: u1b) -> u1b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_t_2:[0-9]+]] t: u1b [storage=automatic] = from_bool<u1b, reason=assign>(eq<u1b>(read<u1b>(%[[VALUE_a_2]]), const<u1b>(1)));
+// DEFAULT-NEXT:         return read<u1b>(%[[VALUE_t_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

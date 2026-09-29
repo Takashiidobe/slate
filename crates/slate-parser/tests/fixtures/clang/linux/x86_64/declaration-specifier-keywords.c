@@ -32,12 +32,12 @@ _Atomic(unsigned long) atomic_unsigned_long_value;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 thread_local_value: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     global %1 gnu_thread_value: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     global %2 restricted_value: ptr<i32> [storage=static] [restrict] [linkage=external];
-// DEFAULT-NEXT:     global %3 restricted_alias_value: ptr<i32> [storage=static] [restrict] [linkage=external];
-// DEFAULT-NEXT:     global %5 atomic_value: atomic i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 atomic_unsigned_long_value: atomic u64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @noreturn_function() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     global %[[VALUE_thread_local_value:[0-9]+]] thread_local_value: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_gnu_thread_value:[0-9]+]] gnu_thread_value: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_restricted_value:[0-9]+]] restricted_value: ptr<i32> [storage=static] [restrict] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_restricted_alias_value:[0-9]+]] restricted_alias_value: ptr<i32> [storage=static] [restrict] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_atomic_value:[0-9]+]] atomic_value: atomic i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_atomic_unsigned_long_value:[0-9]+]] atomic_unsigned_long_value: atomic u64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_noreturn_function:[0-9]+]] @noreturn_function() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

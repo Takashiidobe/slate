@@ -40,7 +40,7 @@ int has__SSE2_MATH__;
 // GCC-NEXT:         storage d64 [size=8, align=8];
 // GCC-NEXT:         storage d128 [size=16, align=16];
 // GCC-NEXT:     }
-// GCC-NEXT:     global %0 has__k8__: i32 [storage=static] [linkage=external];
-// GCC-NEXT:     global %1 has__SSE2__: i32 [storage=static] [linkage=external];
+// GCC-NEXT:     global %[[VALUE_has__k8__:[0-9]+]] has__k8__: i32 [storage=static] [linkage=external];
+// GCC-NEXT:     global %[[VALUE_has__SSE2__:[0-9]+]] has__SSE2__: i32 [storage=static] [linkage=external];
 // GCC-NEXT: }
 // SLATE-FILECHECK-END GCC

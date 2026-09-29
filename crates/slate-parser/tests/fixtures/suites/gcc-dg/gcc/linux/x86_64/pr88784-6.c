@@ -56,17 +56,17 @@ _Bool and4(signed x, signed y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @and1(%1 x: u32, %2 y: u32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return logical_and<bool>(le<u32>(read<u32>(%1), read<u32>(%2)), eq<u32>(read<u32>(%1), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:     fn %[[VALUE_and1:[0-9]+]] @and1(%[[VALUE_x:[0-9]+]] x: u32, %[[VALUE_y:[0-9]+]] y: u32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return logical_and<bool>(le<u32>(read<u32>(%[[VALUE_x]]), read<u32>(%[[VALUE_y]])), eq<u32>(read<u32>(%[[VALUE_x]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @and2(%4 x: u32, %5 y: u32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return logical_and<bool>(ge<u32>(read<u32>(%4), read<u32>(%5)), eq<u32>(read<u32>(%4), add<u32, overflow=wrap>(mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)), const<u32>(2)), const<u32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_and2:[0-9]+]] @and2(%[[VALUE_x_2:[0-9]+]] x: u32, %[[VALUE_y_2:[0-9]+]] y: u32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return logical_and<bool>(ge<u32>(read<u32>(%[[VALUE_x_2]]), read<u32>(%[[VALUE_y_2]])), eq<u32>(read<u32>(%[[VALUE_x_2]]), add<u32, overflow=wrap>(mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)), const<u32>(2)), const<u32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @and3(%7 x: i32, %8 y: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return logical_and<bool>(le<i32>(read<i32>(%7), read<i32>(%8)), eq<i32>(read<i32>(%7), sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_and3:[0-9]+]] @and3(%[[VALUE_x_3:[0-9]+]] x: i32, %[[VALUE_y_3:[0-9]+]] y: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return logical_and<bool>(le<i32>(read<i32>(%[[VALUE_x_3]]), read<i32>(%[[VALUE_y_3]])), eq<i32>(read<i32>(%[[VALUE_x_3]]), sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @and4(%10 x: i32, %11 y: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return logical_and<bool>(ge<i32>(read<i32>(%10), read<i32>(%11)), eq<i32>(read<i32>(%10), const<i32>(2147483647)));
+// DEFAULT-NEXT:     fn %[[VALUE_and4:[0-9]+]] @and4(%[[VALUE_x_4:[0-9]+]] x: i32, %[[VALUE_y_4:[0-9]+]] y: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return logical_and<bool>(ge<i32>(read<i32>(%[[VALUE_x_4]]), read<i32>(%[[VALUE_y_4]])), eq<i32>(read<i32>(%[[VALUE_x_4]]), const<i32>(2147483647)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

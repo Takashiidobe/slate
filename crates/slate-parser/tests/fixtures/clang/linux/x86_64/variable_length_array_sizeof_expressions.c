@@ -40,28 +40,28 @@ unsigned long alignment(int n, int *p) { return _Alignof(*(int (*)[n])p); }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @next() -> i32 [linkage=external];
-// IR-NEXT:     fn %1 @cast(%2 n: i32, %3 p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %17: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%2)));
-// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%17), const<u64>(4));
+// IR-NEXT:     fn %[[VALUE_next:[0-9]+]] @next() -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_cast:[0-9]+]] @cast(%[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_p:[0-9]+]] p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n]])));
+// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%[[VALUE0]]), const<u64>(4));
 // IR-NEXT:     }
-// IR-NEXT:     fn %4 @once(%5 p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %18: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(call<i32, signature=fn() -> i32>(%0)));
-// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%18), const<u64>(4));
+// IR-NEXT:     fn %[[VALUE_once:[0-9]+]] @once(%[[VALUE_p_2:[0-9]+]] p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(call<i32, signature=fn() -> i32>(%[[VALUE_next]])));
+// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%[[VALUE1]]), const<u64>(4));
 // IR-NEXT:     }
-// IR-NEXT:     fn %6 @literal(%7 n: i32, %8 p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %19: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%7)));
-// IR-NEXT:         let %20: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%7)));
-// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%19), const<u64>(4));
+// IR-NEXT:     fn %[[VALUE_literal:[0-9]+]] @literal(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_p_3:[0-9]+]] p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
+// IR-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
+// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%[[VALUE2]]), const<u64>(4));
 // IR-NEXT:     }
-// IR-NEXT:     fn %9 @declared(%10 n: i32, %11 q: ptr<vla<i32, %22>>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %22: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%10)));
-// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%22), const<u64>(4));
+// IR-NEXT:     fn %[[VALUE_declared:[0-9]+]] @declared(%[[VALUE_n_3:[0-9]+]] n: i32, %[[VALUE_q:[0-9]+]] q: ptr<vla<i32, %[[VALUE4:[0-9]+]]>>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE4]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_3]])));
+// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%[[VALUE4]]), const<u64>(4));
 // IR-NEXT:     }
-// IR-NEXT:     fn %12 @pointer(%13 p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_pointer:[0-9]+]] @pointer(%[[VALUE_p_4:[0-9]+]] p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(8);
 // IR-NEXT:     }
-// IR-NEXT:     fn %14 @alignment(%15 n: i32, %16 p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_alignment:[0-9]+]] @alignment(%[[VALUE_n_4:[0-9]+]] n: i32, %[[VALUE_p_5:[0-9]+]] p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(4);
 // IR-NEXT:     }
 // IR-NEXT: }

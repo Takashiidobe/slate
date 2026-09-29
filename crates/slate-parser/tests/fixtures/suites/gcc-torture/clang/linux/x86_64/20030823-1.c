@@ -42,15 +42,15 @@ int foo (struct A *a)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %3 c: i32 [storage=static] = const<i32>(30) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @foo(%2 a: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 x: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type0>>(%2))), read<i32>(%3));
-// DEFAULT-NEXT:         write<i32>(%4, read<i32>(field0(deref(read<ptr<@type0>>(%2)))));
-// DEFAULT-NEXT:         return read<i32>(%4);
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] = const<i32>(30) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: ptr<@type[[TYPE_A]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]]))), read<i32>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_x]], read<i32>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]])))));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

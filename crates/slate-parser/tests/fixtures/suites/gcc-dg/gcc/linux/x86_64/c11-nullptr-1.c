@@ -35,8 +35,8 @@ f (int nullptr)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 nullptr: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f(%2 nullptr: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_nullptr:[0-9]+]] nullptr: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_nullptr_2:[0-9]+]] nullptr: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

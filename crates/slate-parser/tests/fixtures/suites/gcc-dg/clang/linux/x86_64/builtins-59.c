@@ -39,12 +39,12 @@ double test (double x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @__builtin_sincos(%4 <unnamed>: f64, %5 <unnamed>: ptr<f64>, %6 <unnamed>: ptr<f64>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %0 @test(%1 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 s: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %3 c: f64 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(f64, ptr<f64>, ptr<f64>) -> void>(%7, read<f64>(%1), addr_of<ptr<f64>>(%2), addr_of<ptr<f64>>(%3));
-// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%2), read<f64>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_sincos:[0-9]+]] @__builtin_sincos(%[[VALUE0:[0-9]+]] <unnamed>: f64, %[[VALUE1:[0-9]+]] <unnamed>: ptr<f64>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<f64>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_x:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: f64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: f64 [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(f64, ptr<f64>, ptr<f64>) -> void>(%[[VALUE___builtin_sincos]], read<f64>(%[[VALUE_x]]), addr_of<ptr<f64>>(%[[VALUE_s]]), addr_of<ptr<f64>>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_s]]), read<f64>(%[[VALUE_c]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

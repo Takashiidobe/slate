@@ -40,20 +40,20 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __uint32_t = u32;
-// DEFAULT-NEXT:     type @type1 __uint64_t = u64;
-// DEFAULT-NEXT:     type @type2 uint32_t = u32;
-// DEFAULT-NEXT:     type @type3 uint64_t = u64;
-// DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @f0a(%7 arg: u64) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return not<u32>(from_bool<u32, reason=explicit>(gt<u64>(read<u64>(%7), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(3)))))));
+// DEFAULT-NEXT:     type @type[[TYPE___uint32_t:[0-9]+]] __uint32_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE___uint64_t:[0-9]+]] __uint64_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_uint32_t:[0-9]+]] uint32_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_uint64_t:[0-9]+]] uint64_t = u64;
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_f0a:[0-9]+]] @f0a(%[[VALUE_arg:[0-9]+]] arg: u64) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return not<u32>(from_bool<u32, reason=explicit>(gt<u64>(read<u64>(%[[VALUE_arg]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(3)))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 r1: u32 [storage=automatic];
-// DEFAULT-NEXT:         write<u32>(%9, call<u32, signature=fn(u64) -> u32>(%6, const<u64>(12094370573988097329)));
-// DEFAULT-NEXT:         call<u32, signature=fn(u64) -> u32>(%6, const<u64>(12094370573988097329));
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%9), not<u32>(const<u32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_r1:[0-9]+]] r1: u32 [storage=automatic];
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_r1]], call<u32, signature=fn(u64) -> u32>(%[[VALUE_f0a]], const<u64>(12094370573988097329)));
+// DEFAULT-NEXT:         call<u32, signature=fn(u64) -> u32>(%[[VALUE_f0a]], const<u64>(12094370573988097329));
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_r1]]), not<u32>(const<u32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

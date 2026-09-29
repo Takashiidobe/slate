@@ -60,49 +60,49 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 input_ty = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_input_ty:[0-9]+]] input_ty = struct {
 // DEFAULT-NEXT:         field0 buffer_position: ptr<u8>;
 // DEFAULT-NEXT:         field1 buffer_end: ptr<u8>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %7 s: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 b: array<u8, 6> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @input_getc_complicated(%3 x: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_input_ty]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: array<u8, 6> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_input_getc_complicated:[0-9]+]] @input_getc_complicated(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE_input_ty]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @check_header(%5 deeper: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 len: u32 [storage=automatic];
-// DEFAULT-NEXT:         for %10
+// DEFAULT-NEXT:     fn %[[VALUE_check_header:[0-9]+]] @check_header(%[[VALUE_deeper:[0-9]+]] deeper: ptr<@type[[TYPE_input_ty]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_len:[0-9]+]] len: u32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<u32>(%6, reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:             condition: lt<u32>(read<u32>(%6), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(6)))
+// DEFAULT-NEXT:                 write<u32>(%[[VALUE_len]], reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:             condition: lt<u32>(read<u32>(%[[VALUE_len]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(6)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %11: u32 [synthetic] = read<u32>(%6);
-// DEFAULT-NEXT:                 let %12: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%11), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<u32>(%6, read<u32>(%12));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_len]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE1]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<u32>(%[[VALUE_len]], read<u32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 let %13: i32 [synthetic];
-// DEFAULT-NEXT:                 if lt<ptr<u8>>(read<ptr<u8>>(field0(deref(read<ptr<@type0>>(%5)))), read<ptr<u8>>(field1(deref(read<ptr<@type0>>(%5)))))
-// DEFAULT-NEXT:                     let %14: ptr<@type0> [synthetic] = read<ptr<@type0>>(%5);
-// DEFAULT-NEXT:                     let %15: ptr<u8> [synthetic] = read<ptr<u8>>(field0(deref(read<ptr<@type0>>(%14))));
-// DEFAULT-NEXT:                     let %16: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%15), const<i32>(1));
-// DEFAULT-NEXT:                     write<ptr<u8>>(field0(deref(read<ptr<@type0>>(%14))), read<ptr<u8>>(%16));
-// DEFAULT-NEXT:                     write<i32>(%13, reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(read<ptr<u8>>(%15))))));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic];
+// DEFAULT-NEXT:                 if lt<ptr<u8>>(read<ptr<u8>>(field0(deref(read<ptr<@type[[TYPE_input_ty]]>>(%[[VALUE_deeper]])))), read<ptr<u8>>(field1(deref(read<ptr<@type[[TYPE_input_ty]]>>(%[[VALUE_deeper]])))))
+// DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: ptr<@type[[TYPE_input_ty]]> [synthetic] = read<ptr<@type[[TYPE_input_ty]]>>(%[[VALUE_deeper]]);
+// DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(field0(deref(read<ptr<@type[[TYPE_input_ty]]>>(%[[VALUE4]]))));
+// DEFAULT-NEXT:                     let %[[VALUE6:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE5]]), const<i32>(1));
+// DEFAULT-NEXT:                     write<ptr<u8>>(field0(deref(read<ptr<@type[[TYPE_input_ty]]>>(%[[VALUE4]]))), read<ptr<u8>>(%[[VALUE6]]));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE3]], reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(read<ptr<u8>>(%[[VALUE5]]))))));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<i32>(%13, call<i32, signature=fn(ptr<@type0>) -> i32>(%2, read<ptr<@type0>>(%5)));
-// DEFAULT-NEXT:                 if lt<i32>(read<i32>(%13), const<i32>(0))
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE3]], call<i32, signature=fn(ptr<@type[[TYPE_input_ty]]>) -> i32>(%[[VALUE_input_getc_complicated]], read<ptr<@type[[TYPE_input_ty]]>>(%[[VALUE_deeper]])));
+// DEFAULT-NEXT:                 if lt<i32>(read<i32>(%[[VALUE3]]), const<i32>(0))
 // DEFAULT-NEXT:                     return const<i32>(0);
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<ptr<u8>>(field0(%7), array_decay<ptr<u8>, length=Some(6)>(%8));
-// DEFAULT-NEXT:         write<ptr<u8>>(field1(%7), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(6)>(%8), const<u64>(6)));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<@type0>) -> i32>(%4, addr_of<ptr<@type0>>(%7)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<ptr<u8>>(read<ptr<u8>>(field0(%7)), read<ptr<u8>>(field1(%7)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<ptr<u8>>(field0(%[[VALUE_s]]), array_decay<ptr<u8>, length=Some(6)>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         write<ptr<u8>>(field1(%[[VALUE_s]]), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(6)>(%[[VALUE_b]]), const<u64>(6)));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE_input_ty]]>) -> i32>(%[[VALUE_check_header]], addr_of<ptr<@type[[TYPE_input_ty]]>>(%[[VALUE_s]])), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<ptr<u8>>(read<ptr<u8>>(field0(%[[VALUE_s]])), read<ptr<u8>>(field1(%[[VALUE_s]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

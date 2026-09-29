@@ -44,27 +44,27 @@ register STR **strp;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 string = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_string:[0-9]+]] string = struct {
 // DEFAULT-NEXT:         field0 str_pok: u8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 STR = @type0;
-// DEFAULT-NEXT:     type @type2 atbl = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_STR:[0-9]+]] STR = @type[[TYPE_string]];
+// DEFAULT-NEXT:     type @type[[TYPE_atbl:[0-9]+]] atbl = struct {
 // DEFAULT-NEXT:         field0 ary_fill: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 ARRAY = @type2;
-// DEFAULT-NEXT:     fn %4 @blah(%5 size: i32, %6 strp: ptr<ptr<@type0>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 ar: ptr<@type2> [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type2>>(%7))), sub<i32, overflow=ub>(read<i32>(%5), const<i32>(1)));
-// DEFAULT-NEXT:         while %8 {
-// DEFAULT-NEXT:             let %9: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:             let %10: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%9), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%5, read<i32>(%10));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%9), const<i32>(0));
+// DEFAULT-NEXT:     type @type[[TYPE_ARRAY:[0-9]+]] ARRAY = @type[[TYPE_atbl]];
+// DEFAULT-NEXT:     fn %[[VALUE_blah:[0-9]+]] @blah(%[[VALUE_size:[0-9]+]] size: i32, %[[VALUE_strp:[0-9]+]] strp: ptr<ptr<@type[[TYPE_string]]>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_ar:[0-9]+]] ar: ptr<@type[[TYPE_atbl]]> [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_atbl]]>>(%[[VALUE_ar]]))), sub<i32, overflow=ub>(read<i32>(%[[VALUE_size]]), const<i32>(1)));
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_size]]);
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_size]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE1]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             let %11: ptr<@type0> [synthetic] = read<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%6)));
-// DEFAULT-NEXT:             let %12: u8 [synthetic] = read<u8>(field0(deref(read<ptr<@type0>>(%11))));
-// DEFAULT-NEXT:             let %13: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%12))), not<i32>(const<i32>(128)))));
-// DEFAULT-NEXT:             write<u8>(field0(deref(read<ptr<@type0>>(%11))), read<u8>(%13));
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: ptr<@type[[TYPE_string]]> [synthetic] = read<ptr<@type[[TYPE_string]]>>(deref(read<ptr<ptr<@type[[TYPE_string]]>>>(%[[VALUE_strp]])));
+// DEFAULT-NEXT:             let %[[VALUE4:[0-9]+]]: u8 [synthetic] = read<u8>(field0(deref(read<ptr<@type[[TYPE_string]]>>(%[[VALUE3]]))));
+// DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE4]]))), not<i32>(const<i32>(128)))));
+// DEFAULT-NEXT:             write<u8>(field0(deref(read<ptr<@type[[TYPE_string]]>>(%[[VALUE3]]))), read<u8>(%[[VALUE5]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

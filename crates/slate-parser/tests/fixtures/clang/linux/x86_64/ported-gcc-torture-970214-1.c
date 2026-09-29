@@ -28,9 +28,9 @@ int main(void) { exit(L'1' != L'1'); }
 // GCC-NEXT:         storage d64 [size=8, align=8];
 // GCC-NEXT:         storage d128 [size=16, align=16];
 // GCC-NEXT:     }
-// GCC-NEXT:     fn %0 @exit(%2 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// GCC-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// GCC-NEXT:         call<void, signature=fn(i32) -> void>(%0, from_bool<i32, reason=arg>(ne<i32>(const<i32>(49), const<i32>(49))));
+// GCC-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// GCC-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// GCC-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], from_bool<i32, reason=arg>(ne<i32>(const<i32>(49), const<i32>(49))));
 // GCC-NEXT:     }
 // GCC-NEXT: }
 // SLATE-FILECHECK-END GCC

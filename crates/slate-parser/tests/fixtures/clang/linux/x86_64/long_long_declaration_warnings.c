@@ -93,16 +93,16 @@ ll_t typedef_use_does_not_warn;
 // IR-C89-NEXT:         storage d64 [size=8, align=8];
 // IR-C89-NEXT:         storage d128 [size=16, align=16];
 // IR-C89-NEXT:     }
-// IR-C89-NEXT:     type @type0 ll_t = i64;
-// IR-C89-NEXT:     type @type1 S = struct {
+// IR-C89-NEXT:     type @type[[TYPE_ll_t:[0-9]+]] ll_t = i64;
+// IR-C89-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // IR-C89-NEXT:         field0 field: i64;
 // IR-C89-NEXT:     } [size=8, align=8, offsets=[0]];
-// IR-C89-NEXT:     global %0 file_scope: i64 [storage=static] [linkage=external];
-// IR-C89-NEXT:     global %1 unsigned_file_scope: u64 [storage=static] [linkage=external];
-// IR-C89-NEXT:     global %8 typedef_use_does_not_warn: i64 [storage=static] [linkage=external];
-// IR-C89-NEXT:     fn %5 @returns_long_long(%9 parameter: i64) -> i64 [linkage=external];
-// IR-C89-NEXT:     fn %6 @body() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-C89-NEXT:         let %7 local: i64 [storage=automatic];
+// IR-C89-NEXT:     global %[[VALUE_file_scope:[0-9]+]] file_scope: i64 [storage=static] [linkage=external];
+// IR-C89-NEXT:     global %[[VALUE_unsigned_file_scope:[0-9]+]] unsigned_file_scope: u64 [storage=static] [linkage=external];
+// IR-C89-NEXT:     global %[[VALUE_typedef_use_does_not_warn:[0-9]+]] typedef_use_does_not_warn: i64 [storage=static] [linkage=external];
+// IR-C89-NEXT:     fn %[[VALUE_returns_long_long:[0-9]+]] @returns_long_long(%[[VALUE_parameter:[0-9]+]] parameter: i64) -> i64 [linkage=external];
+// IR-C89-NEXT:     fn %[[VALUE_body:[0-9]+]] @body() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-C89-NEXT:         let %[[VALUE_local:[0-9]+]] local: i64 [storage=automatic];
 // IR-C89-NEXT:     }
 // IR-C89-NEXT: }
 // SLATE-FILECHECK-END IR-C89

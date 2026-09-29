@@ -48,31 +48,31 @@
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 count: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @func(%2 valp: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 val: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %4 locked: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         while %5 {
-// DEFAULT-NEXT:             write<i32>(%3, read<i32>(deref(read<ptr<i32>>(%2))));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(deref(read<ptr<i32>>(%2))), const<i32>(0));
+// DEFAULT-NEXT:     global %[[VALUE_count:[0-9]+]] count: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_func:[0-9]+]] @func(%[[VALUE_valp:[0-9]+]] valp: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_val:[0-9]+]] val: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_locked:[0-9]+]] locked: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] {
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_val]], read<i32>(deref(read<ptr<i32>>(%[[VALUE_valp]]))));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_valp]]))), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if ne<i32>(read<i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:                 if ne<i32>(read<i32>(%[[VALUE_count]]), const<i32>(0))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<i32>(read<i32>(%0), const<i32>(0))
-// DEFAULT-NEXT:                             write<i32>(%4, const<i32>(1));
+// DEFAULT-NEXT:                         if ne<i32>(read<i32>(%[[VALUE_count]]), const<i32>(0))
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_locked]], const<i32>(1));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             write<i32>(%4, const<i32>(1));
-// DEFAULT-NEXT:                         if not<bool>(ne<i32>(read<i32>(%4), const<i32>(0)))
-// DEFAULT-NEXT:                             continue %5;
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_locked]], const<i32>(1));
+// DEFAULT-NEXT:                         if not<bool>(ne<i32>(read<i32>(%[[VALUE_locked]]), const<i32>(0)))
+// DEFAULT-NEXT:                             continue %[[VALUE0]];
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32>(%0), const<i32>(0)))
-// DEFAULT-NEXT:                     let %6: i32 [synthetic] = read<i32>(%0);
-// DEFAULT-NEXT:                     let %7: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%6), const<i32>(1));
-// DEFAULT-NEXT:                     write<i32>(%0, read<i32>(%7));
-// DEFAULT-NEXT:                 break %5;
+// DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32>(%[[VALUE_count]]), const<i32>(0)))
+// DEFAULT-NEXT:                     let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_count]]);
+// DEFAULT-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_count]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<i32>(%3);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_val]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

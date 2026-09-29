@@ -134,44 +134,44 @@ static_assert (e5g == 1);
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 e1 = enum : i64 {
-// DEFAULT-NEXT:         %0 e1a = const<@type0>(-9223372036854775808);
-// DEFAULT-NEXT:         %1 e1a_type_check = const<@type0>(8);
-// DEFAULT-NEXT:         %2 e1b = const<@type0>(0);
-// DEFAULT-NEXT:         %3 e1b_type_check = const<@type0>(8);
-// DEFAULT-NEXT:         %4 e1c = const<@type0>(9223372036854775807);
-// DEFAULT-NEXT:         %5 e1c_type_check = const<@type0>(8);
-// DEFAULT-NEXT:         %6 e1d = const<@type0>(1);
-// DEFAULT-NEXT:         %7 e1d_type_check = const<@type0>(8);
+// DEFAULT-NEXT:     type @type[[TYPE_e1:[0-9]+]] e1 = enum : i64 {
+// DEFAULT-NEXT:         %[[VALUE_e1a:[0-9]+]] e1a = const<@type[[TYPE_e1]]>(-9223372036854775808);
+// DEFAULT-NEXT:         %[[VALUE_e1a_type_check:[0-9]+]] e1a_type_check = const<@type[[TYPE_e1]]>(8);
+// DEFAULT-NEXT:         %[[VALUE_e1b:[0-9]+]] e1b = const<@type[[TYPE_e1]]>(0);
+// DEFAULT-NEXT:         %[[VALUE_e1b_type_check:[0-9]+]] e1b_type_check = const<@type[[TYPE_e1]]>(8);
+// DEFAULT-NEXT:         %[[VALUE_e1c:[0-9]+]] e1c = const<@type[[TYPE_e1]]>(9223372036854775807);
+// DEFAULT-NEXT:         %[[VALUE_e1c_type_check:[0-9]+]] e1c_type_check = const<@type[[TYPE_e1]]>(8);
+// DEFAULT-NEXT:         %[[VALUE_e1d:[0-9]+]] e1d = const<@type[[TYPE_e1]]>(1);
+// DEFAULT-NEXT:         %[[VALUE_e1d_type_check:[0-9]+]] e1d_type_check = const<@type[[TYPE_e1]]>(8);
 // DEFAULT-NEXT:     } [size=8, align=8];
-// DEFAULT-NEXT:     type @type1 e2 = enum : i32 {
-// DEFAULT-NEXT:         %0 e2a = const<i32>(-2147483648);
-// DEFAULT-NEXT:         %1 e2a_type_check = const<i32>(8);
-// DEFAULT-NEXT:         %2 e2b = const<i32>(2147483647);
-// DEFAULT-NEXT:         %3 e2b_type_check = const<i32>(8);
-// DEFAULT-NEXT:         %4 e2c = const<i32>(2);
-// DEFAULT-NEXT:         %5 e2c_type_check = const<i32>(8);
+// DEFAULT-NEXT:     type @type[[TYPE_e2:[0-9]+]] e2 = enum : i32 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] e2a = const<i32>(-2147483648);
+// DEFAULT-NEXT:         %[[VALUE_e1a_type_check]] e2a_type_check = const<i32>(8);
+// DEFAULT-NEXT:         %[[VALUE_e1b]] e2b = const<i32>(2147483647);
+// DEFAULT-NEXT:         %[[VALUE_e1b_type_check]] e2b_type_check = const<i32>(8);
+// DEFAULT-NEXT:         %[[VALUE_e1c]] e2c = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE_e1c_type_check]] e2c_type_check = const<i32>(8);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type2 e3 = enum : u32 {
-// DEFAULT-NEXT:         %0 e3a = const<@type2>(0);
-// DEFAULT-NEXT:         %1 e3a_type_check = const<@type2>(8);
-// DEFAULT-NEXT:         %2 e3b = const<@type2>(4294967295);
-// DEFAULT-NEXT:         %3 e3b_type_check = const<@type2>(8);
+// DEFAULT-NEXT:     type @type[[TYPE_e3:[0-9]+]] e3 = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] e3a = const<@type[[TYPE_e3]]>(0);
+// DEFAULT-NEXT:         %[[VALUE_e1a_type_check]] e3a_type_check = const<@type[[TYPE_e3]]>(8);
+// DEFAULT-NEXT:         %[[VALUE_e1b]] e3b = const<@type[[TYPE_e3]]>(4294967295);
+// DEFAULT-NEXT:         %[[VALUE_e1b_type_check]] e3b_type_check = const<@type[[TYPE_e3]]>(8);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type3 e4 = enum : u64 {
-// DEFAULT-NEXT:         %0 e4a = const<@type3>(2147483647);
-// DEFAULT-NEXT:         %1 e4b = const<@type3>(2147483648);
-// DEFAULT-NEXT:         %2 e4c = const<@type3>(2147483649);
-// DEFAULT-NEXT:         %3 e4d = const<@type3>(1);
-// DEFAULT-NEXT:         %4 e4e = const<@type3>(4294967295);
-// DEFAULT-NEXT:         %5 e4f = const<@type3>(4294967296);
-// DEFAULT-NEXT:         %6 e4g = const<@type3>(1);
-// DEFAULT-NEXT:         %7 e4a_type_check = const<@type3>(8);
-// DEFAULT-NEXT:         %8 e4e_type_check = const<@type3>(8);
+// DEFAULT-NEXT:     type @type[[TYPE_e4:[0-9]+]] e4 = enum : u64 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] e4a = const<@type[[TYPE_e4]]>(2147483647);
+// DEFAULT-NEXT:         %[[VALUE_e1a_type_check]] e4b = const<@type[[TYPE_e4]]>(2147483648);
+// DEFAULT-NEXT:         %[[VALUE_e1b]] e4c = const<@type[[TYPE_e4]]>(2147483649);
+// DEFAULT-NEXT:         %[[VALUE_e1b_type_check]] e4d = const<@type[[TYPE_e4]]>(1);
+// DEFAULT-NEXT:         %[[VALUE_e1c]] e4e = const<@type[[TYPE_e4]]>(4294967295);
+// DEFAULT-NEXT:         %[[VALUE_e1c_type_check]] e4f = const<@type[[TYPE_e4]]>(4294967296);
+// DEFAULT-NEXT:         %[[VALUE_e1d]] e4g = const<@type[[TYPE_e4]]>(1);
+// DEFAULT-NEXT:         %[[VALUE_e1d_type_check]] e4a_type_check = const<@type[[TYPE_e4]]>(8);
+// DEFAULT-NEXT:         %[[VALUE_e4e_type_check:[0-9]+]] e4e_type_check = const<@type[[TYPE_e4]]>(8);
 // DEFAULT-NEXT:     } [size=8, align=8];
-// DEFAULT-NEXT:     extern %9 e1v: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %17 e2v: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %23 e3v: @type2 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %34 e4v: @type3 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_e1v:[0-9]+]] e1v: @type[[TYPE_e1]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_e2v:[0-9]+]] e2v: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_e3v:[0-9]+]] e3v: @type[[TYPE_e3]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_e4v:[0-9]+]] e4v: @type[[TYPE_e4]] [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

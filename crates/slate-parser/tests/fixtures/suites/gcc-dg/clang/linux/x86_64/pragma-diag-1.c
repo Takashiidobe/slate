@@ -49,16 +49,16 @@ main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%6 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 a: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %3 b: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %4 c: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %5 d: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, read<i32>(%2));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, read<i32>(%3));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, read<i32>(%4));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, read<i32>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i32 [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_d]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

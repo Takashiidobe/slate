@@ -56,37 +56,37 @@ void locals(int n) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 lowered = i32;
-// IR-NEXT:     type @type1 aligned_buffer = array<i8, 32>;
-// IR-NEXT:     type @type2 twenty = struct {
+// IR-NEXT:     type @type[[TYPE_lowered:[0-9]+]] lowered = i32;
+// IR-NEXT:     type @type[[TYPE_aligned_buffer:[0-9]+]] aligned_buffer = array<i8, 32>;
+// IR-NEXT:     type @type[[TYPE_twenty:[0-9]+]] twenty = struct {
 // IR-NEXT:         field0 c: array<i8, 20>;
 // IR-NEXT:     } [size=20, align=1, offsets=[0]];
-// IR-NEXT:     global %3 sixteen: array<i64, 2> [storage=static] [align=16] [linkage=external];
-// IR-NEXT:     global %4 fifteen: array<i8, 15> [storage=static] [linkage=external];
-// IR-NEXT:     global %5 lowered_elements: array<i32, 4> [storage=static] [align=16] [linkage=external];
-// IR-NEXT:     global %6 requested: array<i64, 2> [storage=static] [align=4] [linkage=external];
-// IR-NEXT:     global %7 alignas_requested: array<i8, 32> [storage=static] [align=4] [linkage=external];
-// IR-NEXT:     global %8 typedef_buffer: array<i8, 32> [storage=static] [align=16] [linkage=external];
-// IR-NEXT:     global %9 record: @type2 [storage=static] [linkage=external];
-// IR-NEXT:     global %10 records: array<@type2, 1> [storage=static] [align=16] [linkage=external];
-// IR-NEXT:     global %11 completed: array<i8, 20> [storage=static] [align=16] = code_units<array<i8, 20>>([48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 88, 89, 90, 0]) [linkage=external];
-// IR-NEXT:     extern %12 declared: array<i8, 32> [storage=static] [align=16] [linkage=external];
-// IR-NEXT:     extern %13 incomplete: array<i8, incomplete> [storage=static] [linkage=external];
-// IR-NEXT:     global %19 local_static: array<i8, 32> [storage=static] [align=16] [linkage=internal];
-// IR-NEXT:     global %23 .str23: array<i8, 21> [storage=static] = code_units<array<i8, 21>>([48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 0]) [linkage=internal];
-// IR-NEXT:     fn %14 @sink(%21 <unnamed>: ptr<void>) -> void [linkage=external];
-// IR-NEXT:     fn %15 @locals(%16 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %17 local_sixteen: array<i64, 2> [storage=automatic] [align=16];
-// IR-NEXT:         let %18 local_fifteen: array<i8, 15> [storage=automatic];
-// IR-NEXT:         let %22: u64 [synthetic] = reinterpret<u64>(widen<i64>(read<i32>(%16)));
-// IR-NEXT:         let %20 vla: vla<i8, %22> [storage=automatic];
-// IR-NEXT:         call<void>(%14, pointer_cast<ptr<void>>(array_decay<ptr<i64>, length=Some(2)>(%17)));
-// IR-NEXT:         call<void>(%14, pointer_cast<ptr<void>>(array_decay<ptr<i8>, length=Some(15)>(%18)));
-// IR-NEXT:         call<void>(%14, pointer_cast<ptr<void>>(array_decay<ptr<i8>, length=Some(32)>(%19)));
-// IR-NEXT:         call<void>(%14, pointer_cast<ptr<void>>(array_decay<ptr<i8>, length=None>(%20)));
-// IR-NEXT:         call<void>(%14, pointer_cast<ptr<void>>(array_decay<ptr<i8>, length=Some(32)>(%12)));
-// IR-NEXT:         call<void>(%14, pointer_cast<ptr<void>>(array_decay<ptr<i8>, length=None>(%13)));
-// IR-NEXT:         call<void>(%14, pointer_cast<ptr<void>>(array_decay<ptr<i8>, length=Some(21)>(%23)));
+// IR-NEXT:     global %[[VALUE_sixteen:[0-9]+]] sixteen: array<i64, 2> [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     global %[[VALUE_fifteen:[0-9]+]] fifteen: array<i8, 15> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_lowered_elements:[0-9]+]] lowered_elements: array<i32, 4> [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     global %[[VALUE_requested:[0-9]+]] requested: array<i64, 2> [storage=static] [align=4] [linkage=external];
+// IR-NEXT:     global %[[VALUE_alignas_requested:[0-9]+]] alignas_requested: array<i8, 32> [storage=static] [align=4] [linkage=external];
+// IR-NEXT:     global %[[VALUE_typedef_buffer:[0-9]+]] typedef_buffer: array<i8, 32> [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     global %[[VALUE_record:[0-9]+]] record: @type[[TYPE_twenty]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_records:[0-9]+]] records: array<@type[[TYPE_twenty]], 1> [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     global %[[VALUE_completed:[0-9]+]] completed: array<i8, 20> [storage=static] [align=16] = code_units<array<i8, 20>>([48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 88, 89, 90, 0]) [linkage=external];
+// IR-NEXT:     extern %[[VALUE_declared:[0-9]+]] declared: array<i8, 32> [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     extern %[[VALUE_incomplete:[0-9]+]] incomplete: array<i8, incomplete> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_local_static:[0-9]+]] local_static: array<i8, 32> [storage=static] [align=16] [linkage=internal];
+// IR-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 21> [storage=static] = code_units<array<i8, 21>>([48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 0]) [linkage=internal];
+// IR-NEXT:     fn %[[VALUE_sink:[0-9]+]] @sink(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_locals:[0-9]+]] @locals(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_local_sixteen:[0-9]+]] local_sixteen: array<i64, 2> [storage=automatic] [align=16];
+// IR-NEXT:         let %[[VALUE_local_fifteen:[0-9]+]] local_fifteen: array<i8, 15> [storage=automatic];
+// IR-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64>(widen<i64>(read<i32>(%[[VALUE_n]])));
+// IR-NEXT:         let %[[VALUE_vla:[0-9]+]] vla: vla<i8, %[[VALUE1]]> [storage=automatic];
+// IR-NEXT:         call<void>(%[[VALUE_sink]], pointer_cast<ptr<void>>(array_decay<ptr<i64>, length=Some(2)>(%[[VALUE_local_sixteen]])));
+// IR-NEXT:         call<void>(%[[VALUE_sink]], pointer_cast<ptr<void>>(array_decay<ptr<i8>, length=Some(15)>(%[[VALUE_local_fifteen]])));
+// IR-NEXT:         call<void>(%[[VALUE_sink]], pointer_cast<ptr<void>>(array_decay<ptr<i8>, length=Some(32)>(%[[VALUE_local_static]])));
+// IR-NEXT:         call<void>(%[[VALUE_sink]], pointer_cast<ptr<void>>(array_decay<ptr<i8>, length=None>(%[[VALUE_vla]])));
+// IR-NEXT:         call<void>(%[[VALUE_sink]], pointer_cast<ptr<void>>(array_decay<ptr<i8>, length=Some(32)>(%[[VALUE_declared]])));
+// IR-NEXT:         call<void>(%[[VALUE_sink]], pointer_cast<ptr<void>>(array_decay<ptr<i8>, length=None>(%[[VALUE_incomplete]])));
+// IR-NEXT:         call<void>(%[[VALUE_sink]], pointer_cast<ptr<void>>(array_decay<ptr<i8>, length=Some(21)>(%[[VALUE_str]])));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

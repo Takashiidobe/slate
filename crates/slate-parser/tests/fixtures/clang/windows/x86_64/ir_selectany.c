@@ -27,8 +27,8 @@ int tentative;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 chosen: i32 [storage=static] = const<i32>(1) [linkage=external] [selectany];
-// IR-NEXT:     global %1 aligned_tentative: i32 [storage=static] [align=8] [linkage=external];
-// IR-NEXT:     global %2 tentative: i32 [storage=static] [linkage=external] [common];
+// IR-NEXT:     global %[[VALUE_chosen:[0-9]+]] chosen: i32 [storage=static] = const<i32>(1) [linkage=external] [selectany];
+// IR-NEXT:     global %[[VALUE_aligned_tentative:[0-9]+]] aligned_tentative: i32 [storage=static] [align=8] [linkage=external];
+// IR-NEXT:     global %[[VALUE_tentative:[0-9]+]] tentative: i32 [storage=static] [linkage=external] [common];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

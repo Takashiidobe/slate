@@ -50,30 +50,30 @@ void foo(struct S* H)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 key: i32;
 // DEFAULT-NEXT:         field1 rnext: i32;
 // DEFAULT-NEXT:         field2 rprev: i32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     fn %1 @foo(%2 H: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %4 k: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %6
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_H:[0-9]+]] H: ptr<@type[[TYPE_S]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%3, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%3), const<i32>(2))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(2))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %7: i32 [synthetic] = read<i32>(%3);
-// DEFAULT-NEXT:                 let %8: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%7), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%3, read<i32>(%8));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %5 cell: ptr<@type0> [storage=automatic] = ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(read<ptr<@type0>>(%2), read<i32>(%4));
-// DEFAULT-NEXT:                     write<i32>(field0(deref(read<ptr<@type0>>(%5))), reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%3))), div<u64, by_zero=ub>(const<u64>(4294967295), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))))))));
-// DEFAULT-NEXT:                     write<i32>(field1(deref(read<ptr<@type0>>(%5))), add<i32, overflow=ub>(read<i32>(%4), sub<i32, overflow=ub>(const<i32>(1), read<i32>(%3))));
-// DEFAULT-NEXT:                     write<i32>(field2(deref(read<ptr<@type0>>(%5))), add<i32, overflow=ub>(read<i32>(%4), sub<i32, overflow=ub>(const<i32>(1), read<i32>(%3))));
+// DEFAULT-NEXT:                     let %[[VALUE_cell:[0-9]+]] cell: ptr<@type[[TYPE_S]]> [storage=automatic] = ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_H]]), read<i32>(%[[VALUE_k]]));
+// DEFAULT-NEXT:                     write<i32>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_cell]]))), reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i]]))), div<u64, by_zero=ub>(const<u64>(4294967295), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))))))));
+// DEFAULT-NEXT:                     write<i32>(field1(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_cell]]))), add<i32, overflow=ub>(read<i32>(%[[VALUE_k]]), sub<i32, overflow=ub>(const<i32>(1), read<i32>(%[[VALUE_i]]))));
+// DEFAULT-NEXT:                     write<i32>(field2(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_cell]]))), add<i32, overflow=ub>(read<i32>(%[[VALUE_k]]), sub<i32, overflow=ub>(const<i32>(1), read<i32>(%[[VALUE_i]]))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

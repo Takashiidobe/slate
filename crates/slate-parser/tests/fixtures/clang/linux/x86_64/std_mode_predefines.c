@@ -59,8 +59,8 @@ const char *uint64_binary_format = __UINT64_FMTb__;
 // C89-NEXT:         storage d64 [size=8, align=8];
 // C89-NEXT:         storage d128 [size=16, align=16];
 // C89-NEXT:     }
-// C89-NEXT:     global %0 strict_ansi: i32 [storage=static] [linkage=external];
-// C89-NEXT:     global %1 gnu_inline_semantics: i32 [storage=static] [linkage=external];
+// C89-NEXT:     global %[[VALUE_strict_ansi:[0-9]+]] strict_ansi: i32 [storage=static] [linkage=external];
+// C89-NEXT:     global %[[VALUE_gnu_inline_semantics:[0-9]+]] gnu_inline_semantics: i32 [storage=static] [linkage=external];
 // C89-NEXT: }
 // SLATE-FILECHECK-END C89
 // SLATE-FILECHECK-BEGIN GNU89
@@ -86,9 +86,9 @@ const char *uint64_binary_format = __UINT64_FMTb__;
 // GNU89-NEXT:         storage d64 [size=8, align=8];
 // GNU89-NEXT:         storage d128 [size=16, align=16];
 // GNU89-NEXT:     }
-// GNU89-NEXT:     global %0 gnu_namespace_linux: i32 [storage=static] [linkage=external];
-// GNU89-NEXT:     global %1 gnu_namespace_unix: i32 [storage=static] [linkage=external];
-// GNU89-NEXT:     global %2 gnu_inline_semantics: i32 [storage=static] [linkage=external];
+// GNU89-NEXT:     global %[[VALUE_gnu_namespace_linux:[0-9]+]] gnu_namespace_linux: i32 [storage=static] [linkage=external];
+// GNU89-NEXT:     global %[[VALUE_gnu_namespace_unix:[0-9]+]] gnu_namespace_unix: i32 [storage=static] [linkage=external];
+// GNU89-NEXT:     global %[[VALUE_gnu_inline_semantics:[0-9]+]] gnu_inline_semantics: i32 [storage=static] [linkage=external];
 // GNU89-NEXT: }
 // SLATE-FILECHECK-END GNU89
 // SLATE-FILECHECK-BEGIN C99
@@ -114,8 +114,8 @@ const char *uint64_binary_format = __UINT64_FMTb__;
 // C99-NEXT:         storage d64 [size=8, align=8];
 // C99-NEXT:         storage d128 [size=16, align=16];
 // C99-NEXT:     }
-// C99-NEXT:     global %0 strict_ansi: i32 [storage=static] [linkage=external];
-// C99-NEXT:     global %1 stdc_inline_semantics: i32 [storage=static] [linkage=external];
+// C99-NEXT:     global %[[VALUE_strict_ansi:[0-9]+]] strict_ansi: i32 [storage=static] [linkage=external];
+// C99-NEXT:     global %[[VALUE_stdc_inline_semantics:[0-9]+]] stdc_inline_semantics: i32 [storage=static] [linkage=external];
 // C99-NEXT: }
 // SLATE-FILECHECK-END C99
 // SLATE-FILECHECK-BEGIN C17
@@ -141,8 +141,8 @@ const char *uint64_binary_format = __UINT64_FMTb__;
 // C17-NEXT:         storage d64 [size=8, align=8];
 // C17-NEXT:         storage d128 [size=16, align=16];
 // C17-NEXT:     }
-// C17-NEXT:     global %0 strict_ansi: i32 [storage=static] [linkage=external];
-// C17-NEXT:     global %1 stdc_inline_semantics: i32 [storage=static] [linkage=external];
+// C17-NEXT:     global %[[VALUE_strict_ansi:[0-9]+]] strict_ansi: i32 [storage=static] [linkage=external];
+// C17-NEXT:     global %[[VALUE_stdc_inline_semantics:[0-9]+]] stdc_inline_semantics: i32 [storage=static] [linkage=external];
 // C17-NEXT: }
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN GNU17
@@ -168,9 +168,9 @@ const char *uint64_binary_format = __UINT64_FMTb__;
 // GNU17-NEXT:         storage d64 [size=8, align=8];
 // GNU17-NEXT:         storage d128 [size=16, align=16];
 // GNU17-NEXT:     }
-// GNU17-NEXT:     global %0 gnu_namespace_linux: i32 [storage=static] [linkage=external];
-// GNU17-NEXT:     global %1 gnu_namespace_unix: i32 [storage=static] [linkage=external];
-// GNU17-NEXT:     global %2 stdc_inline_semantics: i32 [storage=static] [linkage=external];
+// GNU17-NEXT:     global %[[VALUE_gnu_namespace_linux:[0-9]+]] gnu_namespace_linux: i32 [storage=static] [linkage=external];
+// GNU17-NEXT:     global %[[VALUE_gnu_namespace_unix:[0-9]+]] gnu_namespace_unix: i32 [storage=static] [linkage=external];
+// GNU17-NEXT:     global %[[VALUE_stdc_inline_semantics:[0-9]+]] stdc_inline_semantics: i32 [storage=static] [linkage=external];
 // GNU17-NEXT: }
 // SLATE-FILECHECK-END GNU17
 // SLATE-FILECHECK-BEGIN C23
@@ -196,11 +196,11 @@ const char *uint64_binary_format = __UINT64_FMTb__;
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     global %0 strict_ansi: i32 [storage=static] [linkage=external];
-// C23-NEXT:     global %1 stdc_inline_semantics: i32 [storage=static] [linkage=external];
-// C23-NEXT:     global %2 char8_unit: u8 [storage=static] [linkage=external];
-// C23-NEXT:     global %3 char8_lock_free: i32 [storage=static] [linkage=external];
-// C23-NEXT:     global %5 .str5: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([108, 98, 0]) [linkage=internal];
-// C23-NEXT:     global %4 uint64_binary_format: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%5)) [linkage=external];
+// C23-NEXT:     global %[[VALUE_strict_ansi:[0-9]+]] strict_ansi: i32 [storage=static] [linkage=external];
+// C23-NEXT:     global %[[VALUE_stdc_inline_semantics:[0-9]+]] stdc_inline_semantics: i32 [storage=static] [linkage=external];
+// C23-NEXT:     global %[[VALUE_char8_unit:[0-9]+]] char8_unit: u8 [storage=static] [linkage=external];
+// C23-NEXT:     global %[[VALUE_char8_lock_free:[0-9]+]] char8_lock_free: i32 [storage=static] [linkage=external];
+// C23-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([108, 98, 0]) [linkage=internal];
+// C23-NEXT:     global %[[VALUE_uint64_binary_format:[0-9]+]] uint64_binary_format: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])) [linkage=external];
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

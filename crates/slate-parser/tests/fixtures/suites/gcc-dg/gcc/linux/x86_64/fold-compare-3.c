@@ -182,104 +182,104 @@ void bla4ge (int var)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @this_comparison_is_false() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @this_comparison_is_true() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @this_comparison_is_not_decidable() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @bla1eq(%4 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<i32>(add<i32, overflow=ub>(read<i32>(%4), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(9)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_this_comparison_is_false:[0-9]+]] @this_comparison_is_false() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_this_comparison_is_true:[0-9]+]] @this_comparison_is_true() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_this_comparison_is_not_decidable:[0-9]+]] @this_comparison_is_not_decidable() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bla1eq:[0-9]+]] @bla1eq(%[[VALUE_var:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<i32>(add<i32, overflow=ub>(read<i32>(%[[VALUE_var]]), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(9)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_false]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @bla2eq(%6 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<i32>(add<i32, overflow=ub>(read<i32>(%6), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_bla2eq:[0-9]+]] @bla2eq(%[[VALUE_var_2:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<i32>(add<i32, overflow=ub>(read<i32>(%[[VALUE_var_2]]), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_not_decidable]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @bla3eq(%8 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<i32>(sub<i32, overflow=ub>(read<i32>(%8), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(9)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_bla3eq:[0-9]+]] @bla3eq(%[[VALUE_var_3:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<i32>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_var_3]]), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(9)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_false]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @bla4eq(%10 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<i32>(sub<i32, overflow=ub>(read<i32>(%10), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_bla4eq:[0-9]+]] @bla4eq(%[[VALUE_var_4:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<i32>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_var_4]]), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_not_decidable]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @bla1ne(%12 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(read<i32>(%12), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(9)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_bla1ne:[0-9]+]] @bla1ne(%[[VALUE_var_5:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(read<i32>(%[[VALUE_var_5]]), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(9)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_true]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @bla2ne(%14 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(read<i32>(%14), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_bla2ne:[0-9]+]] @bla2ne(%[[VALUE_var_6:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(read<i32>(%[[VALUE_var_6]]), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_not_decidable]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @bla3ne(%16 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(sub<i32, overflow=ub>(read<i32>(%16), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(9)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_bla3ne:[0-9]+]] @bla3ne(%[[VALUE_var_7:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_var_7]]), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(9)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_true]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @bla4ne(%18 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(sub<i32, overflow=ub>(read<i32>(%18), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_bla4ne:[0-9]+]] @bla4ne(%[[VALUE_var_8:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_var_8]]), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_not_decidable]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @bla1lt(%20 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if lt<i32>(add<i32, overflow=ub>(read<i32>(%20), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_bla1lt:[0-9]+]] @bla1lt(%[[VALUE_var_9:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if lt<i32>(add<i32, overflow=ub>(read<i32>(%[[VALUE_var_9]]), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_false]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @bla2lt(%22 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if lt<i32>(add<i32, overflow=ub>(read<i32>(%22), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_bla2lt:[0-9]+]] @bla2lt(%[[VALUE_var_10:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if lt<i32>(add<i32, overflow=ub>(read<i32>(%[[VALUE_var_10]]), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(11)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_not_decidable]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @bla3lt(%24 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if lt<i32>(sub<i32, overflow=ub>(read<i32>(%24), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(9)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_bla3lt:[0-9]+]] @bla3lt(%[[VALUE_var_11:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if lt<i32>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_var_11]]), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(9)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_true]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @bla4lt(%26 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if lt<i32>(sub<i32, overflow=ub>(read<i32>(%26), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_bla4lt:[0-9]+]] @bla4lt(%[[VALUE_var_12:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if lt<i32>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_var_12]]), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_not_decidable]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @bla1le(%28 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if le<i32>(add<i32, overflow=ub>(read<i32>(%28), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(9)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_bla1le:[0-9]+]] @bla1le(%[[VALUE_var_13:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if le<i32>(add<i32, overflow=ub>(read<i32>(%[[VALUE_var_13]]), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(9)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_false]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @bla2le(%30 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if le<i32>(add<i32, overflow=ub>(read<i32>(%30), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_bla2le:[0-9]+]] @bla2le(%[[VALUE_var_14:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if le<i32>(add<i32, overflow=ub>(read<i32>(%[[VALUE_var_14]]), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_not_decidable]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @bla3le(%32 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if le<i32>(sub<i32, overflow=ub>(read<i32>(%32), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_bla3le:[0-9]+]] @bla3le(%[[VALUE_var_15:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if le<i32>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_var_15]]), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_true]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %33 @bla4le(%34 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if le<i32>(sub<i32, overflow=ub>(read<i32>(%34), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_bla4le:[0-9]+]] @bla4le(%[[VALUE_var_16:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if le<i32>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_var_16]]), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(11)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_not_decidable]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %35 @bla1gt(%36 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if gt<i32>(add<i32, overflow=ub>(read<i32>(%36), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(9)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_bla1gt:[0-9]+]] @bla1gt(%[[VALUE_var_17:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if gt<i32>(add<i32, overflow=ub>(read<i32>(%[[VALUE_var_17]]), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(9)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_true]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %37 @bla2gt(%38 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if gt<i32>(add<i32, overflow=ub>(read<i32>(%38), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_bla2gt:[0-9]+]] @bla2gt(%[[VALUE_var_18:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if gt<i32>(add<i32, overflow=ub>(read<i32>(%[[VALUE_var_18]]), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_not_decidable]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %39 @bla3gt(%40 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if gt<i32>(sub<i32, overflow=ub>(read<i32>(%40), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_bla3gt:[0-9]+]] @bla3gt(%[[VALUE_var_19:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if gt<i32>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_var_19]]), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_false]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %41 @bla4gt(%42 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if gt<i32>(sub<i32, overflow=ub>(read<i32>(%42), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_bla4gt:[0-9]+]] @bla4gt(%[[VALUE_var_20:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if gt<i32>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_var_20]]), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(11)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_not_decidable]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %43 @bla1ge(%44 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ge<i32>(add<i32, overflow=ub>(read<i32>(%44), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_bla1ge:[0-9]+]] @bla1ge(%[[VALUE_var_21:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ge<i32>(add<i32, overflow=ub>(read<i32>(%[[VALUE_var_21]]), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_true]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %45 @bla2ge(%46 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ge<i32>(add<i32, overflow=ub>(read<i32>(%46), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_bla2ge:[0-9]+]] @bla2ge(%[[VALUE_var_22:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ge<i32>(add<i32, overflow=ub>(read<i32>(%[[VALUE_var_22]]), const<i32>(10)), add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(11)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_not_decidable]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %47 @bla3ge(%48 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ge<i32>(sub<i32, overflow=ub>(read<i32>(%48), const<i32>(11)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_bla3ge:[0-9]+]] @bla3ge(%[[VALUE_var_23:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ge<i32>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_var_23]]), const<i32>(11)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_false]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %49 @bla4ge(%50 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ge<i32>(sub<i32, overflow=ub>(read<i32>(%50), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_bla4ge:[0-9]+]] @bla4ge(%[[VALUE_var_24:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ge<i32>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_var_24]]), const<i32>(10)), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_this_comparison_is_not_decidable]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

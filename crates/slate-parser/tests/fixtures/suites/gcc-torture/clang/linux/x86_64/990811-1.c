@@ -66,53 +66,53 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 a: i64;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @foo(%4 x: i32, %5 y: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         switch %12 read<i32>(%4)
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_x]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %12 const<i32>(0):
-// DEFAULT-NEXT:                     return truncate<i32, reason=return, fits=unknown>(read<i64>(field0(deref(pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<void>>(%5))))));
-// DEFAULT-NEXT:                 case %12 const<i32>(1):
-// DEFAULT-NEXT:                     return widen<i32, reason=return>(read<i8>(deref(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<void>>(%5)))));
-// DEFAULT-NEXT:                 case %12 const<i32>(2):
-// DEFAULT-NEXT:                     return widen<i32, reason=return>(read<i16>(deref(pointer_cast<ptr<i16>, reason=explicit>(read<ptr<void>>(%5)))));
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(0):
+// DEFAULT-NEXT:                     return truncate<i32, reason=return, fits=unknown>(read<i64>(field0(deref(pointer_cast<ptr<@type[[TYPE_s]]>, reason=explicit>(read<ptr<void>>(%[[VALUE_y]]))))));
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(1):
+// DEFAULT-NEXT:                     return widen<i32, reason=return>(read<i8>(deref(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<void>>(%[[VALUE_y]])))));
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(2):
+// DEFAULT-NEXT:                     return widen<i32, reason=return>(read<i16>(deref(pointer_cast<ptr<i16>, reason=explicit>(read<ptr<void>>(%[[VALUE_y]])))));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 s: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %8 sh: array<i16, 10> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %9 c: array<i8, 10> [storage=automatic];
-// DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i64>(field0(%7), widen<i64, reason=assign>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i32>(field1(%7), const<i32>(2));
-// DEFAULT-NEXT:         for %13
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_s]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_sh:[0-9]+]] sh: array<i16, 10> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: array<i8, 10> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i64>(field0(%[[VALUE_s]]), widen<i64, reason=assign>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_s]]), const<i32>(2));
+// DEFAULT-NEXT:         for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%10, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(10))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(10))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                 let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%15));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE4]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(10)>(%8), read<i32>(%10))), truncate<i16, reason=assign, fits=unknown>(read<i32>(%10)));
-// DEFAULT-NEXT:                     write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(10)>(%9), read<i32>(%10))), truncate<i8, reason=assign, fits=unknown>(read<i32>(%10)));
+// DEFAULT-NEXT:                     write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(10)>(%[[VALUE_sh]]), read<i32>(%[[VALUE_i]]))), truncate<i16, reason=assign, fits=unknown>(read<i32>(%[[VALUE_i]])));
+// DEFAULT-NEXT:                     write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_c]]), read<i32>(%[[VALUE_i]]))), truncate<i8, reason=assign, fits=unknown>(read<i32>(%[[VALUE_i]])));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<void>) -> i32>(%3, const<i32>(0), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%7))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<void>) -> i32>(%3, const<i32>(1), pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(10)>(%9), const<i32>(3)))), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<void>) -> i32>(%3, const<i32>(2), pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(10)>(%8), const<i32>(3)))), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<void>) -> i32>(%[[VALUE_foo]], const<i32>(0), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_s]]>>(%[[VALUE_s]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<void>) -> i32>(%[[VALUE_foo]], const<i32>(1), pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_c]]), const<i32>(3)))), const<i32>(3))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<void>) -> i32>(%[[VALUE_foo]], const<i32>(2), pointer_cast<ptr<void>, reason=arg>(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(10)>(%[[VALUE_sh]]), const<i32>(3)))), const<i32>(3))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

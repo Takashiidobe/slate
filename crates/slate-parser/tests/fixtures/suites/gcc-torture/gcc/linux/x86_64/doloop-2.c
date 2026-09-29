@@ -43,24 +43,24 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 i: volatile u32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @exit(%5 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 z: u16 [storage=automatic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         do %6
-// DEFAULT-NEXT:             let %7: u32 [synthetic] = read<u32, volatile>(%2);
-// DEFAULT-NEXT:             let %8: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%7), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:             write<u32, volatile>(%2, read<u32>(%8));
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: volatile u32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: u16 [storage=automatic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: u32 [synthetic] = read<u32, volatile>(%[[VALUE_i]]);
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:             write<u32, volatile>(%[[VALUE_i]], read<u32>(%[[VALUE3]]));
 // DEFAULT-NEXT:         while {
-// DEFAULT-NEXT:             let %9: u16 [synthetic] = read<u16>(%4);
-// DEFAULT-NEXT:             let %10: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%9))), const<i32>(1))));
-// DEFAULT-NEXT:             write<u16>(%4, read<u16>(%10));
-// DEFAULT-NEXT:             yield gt<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%10))), const<i32>(0));
+// DEFAULT-NEXT:             let %[[VALUE4:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_z]]);
+// DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE4]]))), const<i32>(1))));
+// DEFAULT-NEXT:             write<u16>(%[[VALUE_z]], read<u16>(%[[VALUE5]]));
+// DEFAULT-NEXT:             yield gt<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE5]]))), const<i32>(0));
 // DEFAULT-NEXT:         };
-// DEFAULT-NEXT:         if ne<u32>(read<u32, volatile>(%2), add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(32767), const<i32>(2)), const<i32>(1))), const<u32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:         if ne<u32>(read<u32, volatile>(%[[VALUE_i]]), add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(32767), const<i32>(2)), const<i32>(1))), const<u32>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -42,11 +42,11 @@ int read(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 defined: i32 [storage=static] [linkage=external];
-// IR-NEXT:     global %1 typed: i32 [storage=static] [linkage=external];
-// IR-NEXT:     fn %2 @read() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %3 copy: i32 [storage=automatic] = read<i32>(%0);
-// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%0), read<i32>(%3));
+// IR-NEXT:     global %[[VALUE_defined:[0-9]+]] defined: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_typed:[0-9]+]] typed: i32 [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_read:[0-9]+]] @read() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_copy:[0-9]+]] copy: i32 [storage=automatic] = read<i32>(%[[VALUE_defined]]);
+// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_defined]]), read<i32>(%[[VALUE_copy]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

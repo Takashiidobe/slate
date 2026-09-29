@@ -43,57 +43,57 @@ struct __attribute__((packed)) PackedZeroWidth { char first; int :0; char last; 
 // TARGET-NEXT:         storage d64 [size=8, align=8];
 // TARGET-NEXT:         storage d128 [size=16, align=16];
 // TARGET-NEXT:     }
-// TARGET-NEXT:     type @type0 Scalars = struct {
+// TARGET-NEXT:     type @type[[TYPE_Scalars:[0-9]+]] Scalars = struct {
 // TARGET-NEXT:         field0 first: i8;
 // TARGET-NEXT:         field1 second: i32;
 // TARGET-NEXT:         field2 real: f80;
 // TARGET-NEXT:         field3 last: i8;
 // TARGET-NEXT:     } [size=24, align=4, offsets=[0, 4, 8, 20]];
-// TARGET-NEXT:     type @type1 Integers = struct {
+// TARGET-NEXT:     type @type[[TYPE_Integers:[0-9]+]] Integers = struct {
 // TARGET-NEXT:         field0 first: i8;
 // TARGET-NEXT:         field1 wide: i64;
 // TARGET-NEXT:         field2 small: i16;
 // TARGET-NEXT:     } [size=16, align=4, offsets=[0, 4, 12]];
-// TARGET-NEXT:     type @type2 Pointers = struct {
+// TARGET-NEXT:     type @type[[TYPE_Pointers:[0-9]+]] Pointers = struct {
 // TARGET-NEXT:         field0 first: i8;
 // TARGET-NEXT:         field1 pointer: ptr<i32>;
 // TARGET-NEXT:         field2 last: i8;
 // TARGET-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// TARGET-NEXT:     type @type3 Arrays = struct {
+// TARGET-NEXT:     type @type[[TYPE_Arrays:[0-9]+]] Arrays = struct {
 // TARGET-NEXT:         field0 first: i8;
 // TARGET-NEXT:         field1 values: array<f64, 2>;
 // TARGET-NEXT:         field2 last: i8;
 // TARGET-NEXT:     } [size=24, align=4, offsets=[0, 4, 20]];
-// TARGET-NEXT:     type @type4 Choice = union {
+// TARGET-NEXT:     type @type[[TYPE_Choice:[0-9]+]] Choice = union {
 // TARGET-NEXT:         field0 real: f80;
 // TARGET-NEXT:         field1 bytes: array<i8, 3>;
 // TARGET-NEXT:     } [size=12, align=4, offsets=[0, 0]];
-// TARGET-NEXT:     type @type5 Bits = struct {
+// TARGET-NEXT:     type @type[[TYPE_Bits:[0-9]+]] Bits = struct {
 // TARGET-NEXT:         field0 first: u32 : 3;
 // TARGET-NEXT:         field1 second: u32 : 5;
 // TARGET-NEXT:         field2 <anonymous>: u32 : 0;
 // TARGET-NEXT:         field3 third: u32 : 1;
 // TARGET-NEXT:         field4 last: i8;
 // TARGET-NEXT:     } [size=8, align=4, offsets=[0, 0, 4, 4, 5], bit_offsets=[Some(0), Some(3), Some(32), Some(32), None], bit_units=[(0, 1), (4, 1)], field_units=[Some(0), Some(0), None, Some(1), None]];
-// TARGET-NEXT:     type @type6 MixedBits = struct {
+// TARGET-NEXT:     type @type[[TYPE_MixedBits:[0-9]+]] MixedBits = struct {
 // TARGET-NEXT:         field0 first: u8 : 3;
 // TARGET-NEXT:         field1 second: u32 : 3;
 // TARGET-NEXT:         field2 third: u16 : 3;
 // TARGET-NEXT:     } [size=4, align=4, offsets=[0, 0, 0], bit_offsets=[Some(0), Some(3), Some(6)], bit_units=[(0, 2)], field_units=[Some(0), Some(0), Some(0)]];
-// TARGET-NEXT:     type @type7 ZeroWidth = struct {
+// TARGET-NEXT:     type @type[[TYPE_ZeroWidth:[0-9]+]] ZeroWidth = struct {
 // TARGET-NEXT:         field0 first: i8;
 // TARGET-NEXT:         field1 <anonymous>: i32 : 0;
 // TARGET-NEXT:         field2 last: i8;
 // TARGET-NEXT:     } [size=5, align=1, offsets=[0, 4, 4], bit_offsets=[None, Some(32), None]];
-// TARGET-NEXT:     type @type8 ZeroWidthUnion = union {
+// TARGET-NEXT:     type @type[[TYPE_ZeroWidthUnion:[0-9]+]] ZeroWidthUnion = union {
 // TARGET-NEXT:         field0 first: i8;
 // TARGET-NEXT:         field1 <anonymous>: i32 : 0;
 // TARGET-NEXT:     } [size=1, align=1, offsets=[0, 0], bit_offsets=[None, Some(0)]];
-// TARGET-NEXT:     type @type9 Packed = struct {
+// TARGET-NEXT:     type @type[[TYPE_Packed:[0-9]+]] Packed = struct {
 // TARGET-NEXT:         field0 first: i8;
 // TARGET-NEXT:         field1 second: i32;
 // TARGET-NEXT:     } [size=5, align=1, offsets=[0, 1]];
-// TARGET-NEXT:     type @type10 PackedZeroWidth = struct {
+// TARGET-NEXT:     type @type[[TYPE_PackedZeroWidth:[0-9]+]] PackedZeroWidth = struct {
 // TARGET-NEXT:         field0 first: i8;
 // TARGET-NEXT:         field1 <anonymous>: i32 : 0;
 // TARGET-NEXT:         field2 last: i8;

@@ -26,11 +26,11 @@ int read_all(void) { return __forceinline + __unaligned + __ptr64; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 __forceinline: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 __unaligned: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 __ptr64: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @read_all() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%0), read<i32>(%1)), read<i32>(%2));
+// DEFAULT-NEXT:     global %[[VALUE___forceinline:[0-9]+]] __forceinline: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE___unaligned:[0-9]+]] __unaligned: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE___ptr64:[0-9]+]] __ptr64: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_read_all:[0-9]+]] @read_all() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE___forceinline]]), read<i32>(%[[VALUE___unaligned]])), read<i32>(%[[VALUE___ptr64]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

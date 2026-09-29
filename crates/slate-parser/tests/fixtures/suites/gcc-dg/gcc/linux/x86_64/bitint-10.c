@@ -40,9 +40,9 @@ foo (_BitInt(129) *x, _Decimal64 *y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 x: ptr<i129b>, %2 y: ptr<d64>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i129b>(deref(ptr_offset<ptr<i129b>, subtract=false, element=i129b, overflow=ub>(read<ptr<i129b>>(%1), const<i32>(0))), float_to_int<i129b, reason=assign, out_of_range=ub, exceptions=observable>(read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(read<ptr<d64>>(%2), const<i32>(0))))));
-// DEFAULT-NEXT:         write<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(read<ptr<d64>>(%2), const<i32>(1))), int_to_float<d64, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(read<i129b>(deref(ptr_offset<ptr<i129b>, subtract=false, element=i129b, overflow=ub>(read<ptr<i129b>>(%1), const<i32>(1))))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<i129b>, %[[VALUE_y:[0-9]+]] y: ptr<d64>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i129b>(deref(ptr_offset<ptr<i129b>, subtract=false, element=i129b, overflow=ub>(read<ptr<i129b>>(%[[VALUE_x]]), const<i32>(0))), float_to_int<i129b, reason=assign, out_of_range=ub, exceptions=observable>(read<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(read<ptr<d64>>(%[[VALUE_y]]), const<i32>(0))))));
+// DEFAULT-NEXT:         write<d64>(deref(ptr_offset<ptr<d64>, subtract=false, element=d64, overflow=ub>(read<ptr<d64>>(%[[VALUE_y]]), const<i32>(1))), int_to_float<d64, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(read<i129b>(deref(ptr_offset<ptr<i129b>, subtract=false, element=i129b, overflow=ub>(read<ptr<i129b>>(%[[VALUE_x]]), const<i32>(1))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

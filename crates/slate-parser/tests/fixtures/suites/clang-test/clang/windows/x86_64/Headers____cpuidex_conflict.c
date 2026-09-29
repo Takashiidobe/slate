@@ -43,19 +43,19 @@ void test_cpuidex(unsigned level, unsigned count) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     global %5 cpuid_info: array<i32, 4> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @__cpuidex(%2 __cpu_info: ptr<i32> [array=4], %3 __leaf: i32, %4 __subleaf: i32) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     global %[[VALUE_cpuid_info:[0-9]+]] cpuid_info: array<i32, 4> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___cpuidex:[0-9]+]] @__cpuidex(%[[VALUE___cpu_info:[0-9]+]] __cpu_info: ptr<i32> [array=4], %[[VALUE___leaf:[0-9]+]] __leaf: i32, %[[VALUE___subleaf:[0-9]+]] __subleaf: i32) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm "  xchg{q|}  {%%|}rbx,%q1\\n  cpuid\\n  xchg{q|}  {%%|}rbx,%q1" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:             template: "  xchgq  " %% "rbx," %q1(64) "\\n  cpuid\\n  xchgq  " %% "rbx," %q1(64);
-// DEFAULT-NEXT:             inlateout 0 "a" [{ax}] width 32 place<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%2), const<i32>(0)))) from read<i32>(%3);
-// DEFAULT-NEXT:             lateout 1 "r" [reg] width 32 place<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%2), const<i32>(1))));
-// DEFAULT-NEXT:             inlateout 2 "c" [{cx}] width 32 place<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%2), const<i32>(2)))) from read<i32>(%4);
-// DEFAULT-NEXT:             lateout 3 "d" [{dx}] width 32 place<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%2), const<i32>(3))));
+// DEFAULT-NEXT:             inlateout 0 "a" [{ax}] width 32 place<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE___cpu_info]]), const<i32>(0)))) from read<i32>(%[[VALUE___leaf]]);
+// DEFAULT-NEXT:             lateout 1 "r" [reg] width 32 place<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE___cpu_info]]), const<i32>(1))));
+// DEFAULT-NEXT:             inlateout 2 "c" [{cx}] width 32 place<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE___cpu_info]]), const<i32>(2)))) from read<i32>(%[[VALUE___subleaf]]);
+// DEFAULT-NEXT:             lateout 3 "d" [{dx}] width 32 place<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE___cpu_info]]), const<i32>(3))));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @test_cpuidex(%7 level: u32, %8 count: u32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, i32, i32) -> void>(%1, array_decay<ptr<i32>, length=Some(4)>(%5), reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%7)), reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%8)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_cpuidex:[0-9]+]] @test_cpuidex(%[[VALUE_level:[0-9]+]] level: u32, %[[VALUE_count:[0-9]+]] count: u32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, i32, i32) -> void>(%[[VALUE___cpuidex]], array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_cpuid_info]]), reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%[[VALUE_level]])), reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%[[VALUE_count]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

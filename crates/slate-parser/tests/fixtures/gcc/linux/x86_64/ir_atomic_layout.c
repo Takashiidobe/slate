@@ -48,27 +48,27 @@ struct elements { _Atomic struct odd3 values[3]; };
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 odd3 = struct {
+// IR-NEXT:     type @type[[TYPE_odd3:[0-9]+]] odd3 = struct {
 // IR-NEXT:         field0 a: array<i8, 3>;
 // IR-NEXT:     } [size=3, align=1, offsets=[0]];
-// IR-NEXT:     type @type1 odd5 = struct {
+// IR-NEXT:     type @type[[TYPE_odd5:[0-9]+]] odd5 = struct {
 // IR-NEXT:         field0 a: array<i8, 5>;
 // IR-NEXT:     } [size=5, align=1, offsets=[0]];
-// IR-NEXT:     type @type2 odd9 = struct {
+// IR-NEXT:     type @type[[TYPE_odd9:[0-9]+]] odd9 = struct {
 // IR-NEXT:         field0 a: array<i8, 9>;
 // IR-NEXT:     } [size=9, align=1, offsets=[0]];
-// IR-NEXT:     type @type3 wide17 = struct {
+// IR-NEXT:     type @type[[TYPE_wide17:[0-9]+]] wide17 = struct {
 // IR-NEXT:         field0 a: array<i8, 17>;
 // IR-NEXT:     } [size=17, align=1, offsets=[0]];
-// IR-NEXT:     type @type4 member = struct {
+// IR-NEXT:     type @type[[TYPE_member:[0-9]+]] member = struct {
 // IR-NEXT:         field0 head: i8;
-// IR-NEXT:         field1 value: atomic @type0;
+// IR-NEXT:         field1 value: atomic @type[[TYPE_odd3]];
 // IR-NEXT:         field2 tail: i8;
 // IR-NEXT:     } [size=5, align=1, offsets=[0, 1, 4]];
-// IR-NEXT:     type @type5 elements = struct {
-// IR-NEXT:         field0 values: atomic array<@type0, 3>;
+// IR-NEXT:     type @type[[TYPE_elements:[0-9]+]] elements = struct {
+// IR-NEXT:         field0 values: atomic array<@type[[TYPE_odd3]], 3>;
 // IR-NEXT:     } [size=9, align=1, offsets=[0]];
-// IR-NEXT:     global %4 records: array<u64, 8> [storage=static] [align=16] = aggregate<array<u64, 8>, zero_fill=false>(index0 = const<u64>(3), index1 = const<u64>(1), index2 = const<u64>(5), index3 = const<u64>(1), index4 = const<u64>(9), index5 = const<u64>(1), index6 = const<u64>(17), index7 = const<u64>(1)) [linkage=external];
-// IR-NEXT:     global %5 scalars: array<u64, 12> [storage=static] [align=16] = aggregate<array<u64, 12>, zero_fill=false>(index0 = const<u64>(1), index1 = const<u64>(1), index2 = const<u64>(2), index3 = const<u64>(2), index4 = const<u64>(4), index5 = const<u64>(4), index6 = const<u64>(8), index7 = const<u64>(8), index8 = const<u64>(8), index9 = const<u64>(8), index10 = const<u64>(8), index11 = const<u64>(8)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_records:[0-9]+]] records: array<u64, 8> [storage=static] [align=16] = aggregate<array<u64, 8>, zero_fill=false>(index0 = const<u64>(3), index1 = const<u64>(1), index2 = const<u64>(5), index3 = const<u64>(1), index4 = const<u64>(9), index5 = const<u64>(1), index6 = const<u64>(17), index7 = const<u64>(1)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_scalars:[0-9]+]] scalars: array<u64, 12> [storage=static] [align=16] = aggregate<array<u64, 12>, zero_fill=false>(index0 = const<u64>(1), index1 = const<u64>(1), index2 = const<u64>(2), index3 = const<u64>(2), index4 = const<u64>(4), index5 = const<u64>(4), index6 = const<u64>(8), index7 = const<u64>(8), index8 = const<u64>(8), index9 = const<u64>(8), index10 = const<u64>(8), index11 = const<u64>(8)) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

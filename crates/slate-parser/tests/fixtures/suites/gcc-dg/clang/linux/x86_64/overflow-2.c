@@ -38,7 +38,7 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<i32, reason=explicit>(add<i32, overflow=ub>(const<i32>(2147483647), const<i32>(1)), const<i32>(0))
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         else

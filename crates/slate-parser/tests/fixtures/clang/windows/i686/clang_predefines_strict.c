@@ -29,7 +29,7 @@ struct Value { int value; };
 // CHECK-NEXT:         storage d64 [size=8, align=8];
 // CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     type @type0 Value = struct {
+// CHECK-NEXT:     type @type[[TYPE_Value:[0-9]+]] Value = struct {
 // CHECK-NEXT:         field0 value: i32;
 // CHECK-NEXT:     } [size=4, align=4, offsets=[0]];
 // CHECK-NEXT: }

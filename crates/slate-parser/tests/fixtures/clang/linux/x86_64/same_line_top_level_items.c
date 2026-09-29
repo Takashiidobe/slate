@@ -29,22 +29,22 @@ typedef int my_int; typedef int my_int2;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 t = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_t:[0-9]+]] t = struct {
 // DEFAULT-NEXT:         field0 b: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 my_int = i32;
-// DEFAULT-NEXT:     type @type3 my_int2 = i32;
-// DEFAULT-NEXT:     global %3 x: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 p: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 q: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     type @type[[TYPE_my_int:[0-9]+]] my_int = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_my_int2:[0-9]+]] my_int2 = i32;
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @g() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @h() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

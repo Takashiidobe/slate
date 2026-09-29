@@ -65,69 +65,69 @@ unsigned long evaluated_row(int n, int i) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %1 a: array<i32, 1> [storage=static] [linkage=external];
-// IR-NEXT:     fn %0 @next() -> i32 [linkage=external];
-// IR-NEXT:     fn %2 @typeof_declaration() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %3 i: i32 [storage=automatic] = const<i32>(0);
-// IR-NEXT:         let %38: i32 [synthetic] = read<i32>(%3);
-// IR-NEXT:         let %39: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%38), const<i32>(1));
-// IR-NEXT:         write<i32>(%3, read<i32>(%39));
-// IR-NEXT:         let %26: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%3)));
-// IR-NEXT:         let %27: ptr<vla<i32, %26>> [synthetic] = pointer_cast<ptr<vla<i32, %26>>, reason=explicit>(array_decay<ptr<i32>, length=Some(1)>(%1));
-// IR-NEXT:         let %4 q: ptr<vla<i32, %26>> [storage=automatic] = null<ptr<vla<i32, %26>>>;
-// IR-NEXT:         return add<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%26), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%3))));
+// IR-NEXT:     global %[[VALUE_a:[0-9]+]] a: array<i32, 1> [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_next:[0-9]+]] @next() -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_typeof_declaration:[0-9]+]] @typeof_declaration() -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// IR-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// IR-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// IR-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE1]]));
+// IR-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_i]])));
+// IR-NEXT:         let %[[VALUE3:[0-9]+]]: ptr<vla<i32, %[[VALUE2]]>> [synthetic] = pointer_cast<ptr<vla<i32, %[[VALUE2]]>>, reason=explicit>(array_decay<ptr<i32>, length=Some(1)>(%[[VALUE_a]]));
+// IR-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<vla<i32, %[[VALUE2]]>> [storage=automatic] = null<ptr<vla<i32, %[[VALUE2]]>>>;
+// IR-NEXT:         return add<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%[[VALUE2]]), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i]]))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %5 @typeof_type_name(%6 n: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %40: i32 [synthetic] = read<i32>(%6);
-// IR-NEXT:         let %41: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%40), const<i32>(1));
-// IR-NEXT:         write<i32>(%6, read<i32>(%41));
-// IR-NEXT:         let %28: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%40)));
-// IR-NEXT:         let %7 x: vla<i32, %28> [storage=automatic];
-// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%28), const<u64>(4));
+// IR-NEXT:     fn %[[VALUE_typeof_type_name:[0-9]+]] @typeof_type_name(%[[VALUE_n:[0-9]+]] n: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n]]);
+// IR-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
+// IR-NEXT:         write<i32>(%[[VALUE_n]], read<i32>(%[[VALUE5]]));
+// IR-NEXT:         let %[[VALUE6:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE4]])));
+// IR-NEXT:         let %[[VALUE_x:[0-9]+]] x: vla<i32, %[[VALUE6]]> [storage=automatic];
+// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%[[VALUE6]]), const<u64>(4));
 // IR-NEXT:     }
-// IR-NEXT:     fn %8 @typeof_without_effects(%9 n: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %29: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%9)));
-// IR-NEXT:         let %10 original: vla<i32, %29> [storage=automatic];
-// IR-NEXT:         let %30: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%9)));
-// IR-NEXT:         let %11 p: ptr<vla<i32, %30>> [storage=automatic] = null<ptr<vla<i32, %30>>>;
-// IR-NEXT:         let %12 copy: vla<i32, %29> [storage=automatic];
-// IR-NEXT:         return add<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%29), const<u64>(4)), mul<u64, overflow=wrap>(read<u64>(%30), const<u64>(4)));
+// IR-NEXT:     fn %[[VALUE_typeof_without_effects:[0-9]+]] @typeof_without_effects(%[[VALUE_n_2:[0-9]+]] n: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE7:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
+// IR-NEXT:         let %[[VALUE_original:[0-9]+]] original: vla<i32, %[[VALUE7]]> [storage=automatic];
+// IR-NEXT:         let %[[VALUE8:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
+// IR-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<vla<i32, %[[VALUE8]]>> [storage=automatic] = null<ptr<vla<i32, %[[VALUE8]]>>>;
+// IR-NEXT:         let %[[VALUE_copy:[0-9]+]] copy: vla<i32, %[[VALUE7]]> [storage=automatic];
+// IR-NEXT:         return add<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%[[VALUE7]]), const<u64>(4)), mul<u64, overflow=wrap>(read<u64>(%[[VALUE8]]), const<u64>(4)));
 // IR-NEXT:     }
-// IR-NEXT:     fn %13 @sizeof_typeof() -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %14 i: i32 [storage=automatic] = const<i32>(0);
-// IR-NEXT:         let %42: i32 [synthetic] = read<i32>(%14);
-// IR-NEXT:         let %43: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%42), const<i32>(1));
-// IR-NEXT:         write<i32>(%14, read<i32>(%43));
-// IR-NEXT:         let %31: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%14)));
-// IR-NEXT:         let %32: ptr<i8> [synthetic] = array_decay<ptr<i8>, length=None>(deref(pointer_cast<ptr<vla<i8, %31>>, reason=explicit>(array_decay<ptr<i32>, length=Some(1)>(%1))));
-// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%31), const<u64>(1));
+// IR-NEXT:     fn %[[VALUE_sizeof_typeof:[0-9]+]] @sizeof_typeof() -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// IR-NEXT:         let %[[VALUE9:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_2]]);
+// IR-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE9]]), const<i32>(1));
+// IR-NEXT:         write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE10]]));
+// IR-NEXT:         let %[[VALUE11:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_i_2]])));
+// IR-NEXT:         let %[[VALUE12:[0-9]+]]: ptr<i8> [synthetic] = array_decay<ptr<i8>, length=None>(deref(pointer_cast<ptr<vla<i8, %[[VALUE11]]>>, reason=explicit>(array_decay<ptr<i32>, length=Some(1)>(%[[VALUE_a]]))));
+// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%[[VALUE11]]), const<u64>(1));
 // IR-NEXT:     }
-// IR-NEXT:     fn %15 @auto_type(%16 p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %17 q: ptr<vla<i32, %33>> [storage=automatic];
-// IR-NEXT:         let %33: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(call<i32, signature=fn() -> i32>(%0)));
-// IR-NEXT:         write<ptr<vla<i32, %33>>>(%17, pointer_cast<ptr<vla<i32, %33>>, reason=explicit>(read<ptr<i32>>(%16)));
-// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%33), const<u64>(4));
+// IR-NEXT:     fn %[[VALUE_auto_type:[0-9]+]] @auto_type(%[[VALUE_p_2:[0-9]+]] p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_q_2:[0-9]+]] q: ptr<vla<i32, %[[VALUE13:[0-9]+]]>> [storage=automatic];
+// IR-NEXT:         let %[[VALUE13]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(call<i32, signature=fn() -> i32>(%[[VALUE_next]])));
+// IR-NEXT:         write<ptr<vla<i32, %[[VALUE13]]>>>(%[[VALUE_q_2]], pointer_cast<ptr<vla<i32, %[[VALUE13]]>>, reason=explicit>(read<ptr<i32>>(%[[VALUE_p_2]])));
+// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%[[VALUE13]]), const<u64>(4));
 // IR-NEXT:     }
-// IR-NEXT:     fn %18 @statement_expression(%19 n: i32, %20 p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %44: ptr<vla<i32, %34>> [synthetic];
+// IR-NEXT:     fn %[[VALUE_statement_expression:[0-9]+]] @statement_expression(%[[VALUE_n_3:[0-9]+]] n: i32, %[[VALUE_p_3:[0-9]+]] p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE14:[0-9]+]]: ptr<vla<i32, %[[VALUE15:[0-9]+]]>> [synthetic];
 // IR-NEXT:         {
-// IR-NEXT:             write<i32>(%19, const<i32>(20));
-// IR-NEXT:             let %34: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%19)));
-// IR-NEXT:             let %21 r: ptr<vla<i32, %34>> [storage=automatic];
-// IR-NEXT:             let %35: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%19)));
-// IR-NEXT:             write<ptr<vla<i32, %34>>>(%21, pointer_cast<ptr<vla<i32, %34>>, reason=assign>(pointer_cast<ptr<vla<i32, %35>>, reason=explicit>(read<ptr<i32>>(%20))));
-// IR-NEXT:             write<ptr<vla<i32, %34>>>(%44, read<ptr<vla<i32, %34>>>(%21));
+// IR-NEXT:             write<i32>(%[[VALUE_n_3]], const<i32>(20));
+// IR-NEXT:             let %[[VALUE15]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_3]])));
+// IR-NEXT:             let %[[VALUE_r:[0-9]+]] r: ptr<vla<i32, %[[VALUE15]]>> [storage=automatic];
+// IR-NEXT:             let %[[VALUE16:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_3]])));
+// IR-NEXT:             write<ptr<vla<i32, %[[VALUE15]]>>>(%[[VALUE_r]], pointer_cast<ptr<vla<i32, %[[VALUE15]]>>, reason=assign>(pointer_cast<ptr<vla<i32, %[[VALUE16]]>>, reason=explicit>(read<ptr<i32>>(%[[VALUE_p_3]]))));
+// IR-NEXT:             write<ptr<vla<i32, %[[VALUE15]]>>>(%[[VALUE14]], read<ptr<vla<i32, %[[VALUE15]]>>>(%[[VALUE_r]]));
 // IR-NEXT:         }
-// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%34), const<u64>(4));
+// IR-NEXT:         return mul<u64, overflow=wrap>(read<u64>(%[[VALUE15]]), const<u64>(4));
 // IR-NEXT:     }
-// IR-NEXT:     fn %22 @evaluated_row(%23 n: i32, %24 i: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %36: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%23)));
-// IR-NEXT:         let %37: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%23)));
-// IR-NEXT:         let %25 m: vla<vla<i32, %37>, %36> [storage=automatic];
-// IR-NEXT:         let %45: i32 [synthetic, unsequenced] = read<i32>(%24);
-// IR-NEXT:         let %46: i32 [synthetic, unsequenced] = add<i32, overflow=ub>(read<i32>(%45), const<i32>(1));
-// IR-NEXT:         write<i32, unsequenced>(%24, read<i32>(%46));
-// IR-NEXT:         return add<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%37), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%24))));
+// IR-NEXT:     fn %[[VALUE_evaluated_row:[0-9]+]] @evaluated_row(%[[VALUE_n_4:[0-9]+]] n: i32, %[[VALUE_i_3:[0-9]+]] i: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE17:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_4]])));
+// IR-NEXT:         let %[[VALUE18:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_4]])));
+// IR-NEXT:         let %[[VALUE_m:[0-9]+]] m: vla<vla<i32, %[[VALUE18]]>, %[[VALUE17]]> [storage=automatic];
+// IR-NEXT:         let %[[VALUE19:[0-9]+]]: i32 [synthetic, unsequenced] = read<i32>(%[[VALUE_i_3]]);
+// IR-NEXT:         let %[[VALUE20:[0-9]+]]: i32 [synthetic, unsequenced] = add<i32, overflow=ub>(read<i32>(%[[VALUE19]]), const<i32>(1));
+// IR-NEXT:         write<i32, unsequenced>(%[[VALUE_i_3]], read<i32>(%[[VALUE20]]));
+// IR-NEXT:         return add<u64, overflow=wrap>(mul<u64, overflow=wrap>(read<u64>(%[[VALUE18]]), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_3]]))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -475,556 +475,556 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = enum : u32 {
-// DEFAULT-NEXT:         %0 memory_order_relaxed = const<i32>(0);
-// DEFAULT-NEXT:         %1 memory_order_consume = const<i32>(1);
-// DEFAULT-NEXT:         %2 memory_order_acquire = const<i32>(2);
-// DEFAULT-NEXT:         %3 memory_order_release = const<i32>(3);
-// DEFAULT-NEXT:         %4 memory_order_acq_rel = const<i32>(4);
-// DEFAULT-NEXT:         %5 memory_order_seq_cst = const<i32>(5);
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_memory_order_relaxed:[0-9]+]] memory_order_relaxed = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_consume:[0-9]+]] memory_order_consume = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_acquire:[0-9]+]] memory_order_acquire = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_release:[0-9]+]] memory_order_release = const<i32>(3);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_acq_rel:[0-9]+]] memory_order_acq_rel = const<i32>(4);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_seq_cst:[0-9]+]] memory_order_seq_cst = const<i32>(5);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 memory_order = @type0;
-// DEFAULT-NEXT:     global %9 v: atomic i575b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 count: i575b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 res: i575b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %12 init: i575b [storage=static] [const] = not<i575b>(widen<i575b, reason=explicit>(const<i2b>(0))) [linkage=external];
-// DEFAULT-NEXT:     fn %8 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %13 @test_fetch_add() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     type @type[[TYPE_memory_order:[0-9]+]] memory_order = @type[[TYPE0]];
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: atomic i575b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_count:[0-9]+]] count: i575b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_res:[0-9]+]] res: i575b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_init:[0-9]+]] init: i575b [storage=static] [const] = not<i575b>(widen<i575b, reason=explicit>(const<i2b>(0))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_test_fetch_add:[0-9]+]] @test_fetch_add() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %14 __atomic_store_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %15 __atomic_store_tmp: i575b [storage=automatic] = const<i575b>(59465222573183779324781274162178653782927579944977967117312772499849358939735575735090252965265846823956223131844773977101864574011188590603103408821590130462520809924774161);
-// DEFAULT-NEXT:             write<i575b, atomic=relaxed>(deref(read<ptr<atomic i575b>>(%14)), read<i575b>(deref(addr_of<ptr<i575b>>(%15))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr:[0-9]+]] __atomic_store_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp:[0-9]+]] __atomic_store_tmp: i575b [storage=automatic] = const<i575b>(59465222573183779324781274162178653782927579944977967117312772499849358939735575735090252965265846823956223131844773977101864574011188590603103408821590130462520809924774161);
+// DEFAULT-NEXT:             write<i575b, atomic=relaxed>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_store_ptr]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_store_tmp]]))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<i575b>(%10, widen<i575b, reason=assign>(const<i574b>(21849324526703540909725517290562575722142104889154621021004438836543599493803029317660194646869455042293514095831327249339063542203879269024249546998746919066599380031180974)));
-// DEFAULT-NEXT:         let %77: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i575b>>(%9)), add<i575b, overflow=wrap>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%77), const<i575b>(59465222573183779324781274162178653782927579944977967117312772499849358939735575735090252965265846823956223131844773977101864574011188590603103408821590130462520809924774161))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %78: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%9)), add<i575b, overflow=wrap>(old<i575b>, neg<i575b, overflow=ub>(const<i575b>(48324598397571087754171506195219221853271763472221035086980364394554212400270766919963305485900701475788840363160834710492683133292253640988518950921616217692973141455340373))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%78), neg<i575b, overflow=ub>(const<i575b>(42350653636664946795744469057082365512495989716473331818714316710055654119727328532407752918486220628549098485331968443234754400938307745356420121730609534429183196118394433)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %79: i575b [synthetic] = update<i575b, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i575b>>(%9)), add<i575b, overflow=wrap>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%79), const<i575b>(32989948702316232480335285257522007651797921361911553051336846941838746033267838132787142126234600390460896864515266515948244982922814218638834004898720831836147048500614762))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %80: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%9)), add<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i572b>(6958312589905983216078981134518695082538588883298046610645489916662738759809700053844918067866491080683973037493524864531300139437943661326918145212620326291059845453630984))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%80), const<i575b>(54839273229019773390060802548084583373940026251066174072341285778382345527070867450447336773104055432754410960346593765287308525126693487663083551897467750902746428531795736))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %81: i575b [synthetic] = update<i575b, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i575b>>(%9)), add<i575b, overflow=wrap>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%81), const<i575b>(61797585818925756606139783682603278456478615134364220682986775695045084286880567504292254840970546513438383997840118629818608664564637148990001697110088077193806273985426720))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %82: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), add<i575b, overflow=wrap>(old<i575b>, neg<i575b, overflow=ub>(const<i575b>(40070085597220253007443375012839311464160438432662764715171645999337062215395237625623334979615599652975898123428005079853660189572782012739700306191422569739682093304494995))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%82), neg<i575b, overflow=ub>(const<i575b>(40018290390922969514385959536657740838944954527087078253040313514859928772582336763205751042781520939066937619336623790518010310384859186969521833442111587697897732057741874)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %83: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), add<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i572b>(7196090098608011755205055682070541953902689411792805630101863619558545582022760829169235622333653743217332966939875542415224317593660770300818700993340012969018217868600175))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%83), const<i575b>(43576824748409044508421925960326542714460281590856076988819568532251621565288359196329114508224401902755999970243440799304012017195734405274550937917412426520723560712112699))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %84: i575b [synthetic];
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], widen<i575b, reason=assign>(const<i574b>(21849324526703540909725517290562575722142104889154621021004438836543599493803029317660194646869455042293514095831327249339063542203879269024249546998746919066599380031180974)));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), add<i575b, overflow=wrap>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE0]]), const<i575b>(59465222573183779324781274162178653782927579944977967117312772499849358939735575735090252965265846823956223131844773977101864574011188590603103408821590130462520809924774161))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), add<i575b, overflow=wrap>(old<i575b>, neg<i575b, overflow=ub>(const<i575b>(48324598397571087754171506195219221853271763472221035086980364394554212400270766919963305485900701475788840363160834710492683133292253640988518950921616217692973141455340373))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE1]]), neg<i575b, overflow=ub>(const<i575b>(42350653636664946795744469057082365512495989716473331818714316710055654119727328532407752918486220628549098485331968443234754400938307745356420121730609534429183196118394433)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), add<i575b, overflow=wrap>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE2]]), const<i575b>(32989948702316232480335285257522007651797921361911553051336846941838746033267838132787142126234600390460896864515266515948244982922814218638834004898720831836147048500614762))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), add<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i572b>(6958312589905983216078981134518695082538588883298046610645489916662738759809700053844918067866491080683973037493524864531300139437943661326918145212620326291059845453630984))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE3]]), const<i575b>(54839273229019773390060802548084583373940026251066174072341285778382345527070867450447336773104055432754410960346593765287308525126693487663083551897467750902746428531795736))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), add<i575b, overflow=wrap>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE4]]), const<i575b>(61797585818925756606139783682603278456478615134364220682986775695045084286880567504292254840970546513438383997840118629818608664564637148990001697110088077193806273985426720))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), add<i575b, overflow=wrap>(old<i575b>, neg<i575b, overflow=ub>(const<i575b>(40070085597220253007443375012839311464160438432662764715171645999337062215395237625623334979615599652975898123428005079853660189572782012739700306191422569739682093304494995))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE5]]), neg<i575b, overflow=ub>(const<i575b>(40018290390922969514385959536657740838944954527087078253040313514859928772582336763205751042781520939066937619336623790518010310384859186969521833442111587697897732057741874)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), add<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i572b>(7196090098608011755205055682070541953902689411792805630101863619558545582022760829169235622333653743217332966939875542415224317593660770300818700993340012969018217868600175))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE6]]), const<i575b>(43576824748409044508421925960326542714460281590856076988819568532251621565288359196329114508224401902755999970243440799304012017195734405274550937917412426520723560712112699))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %16 __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %17 __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%17)), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%16))));
-// DEFAULT-NEXT:             write<i575b>(%84, read<i575b>(%17));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr]]))));
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE7]], read<i575b>(%[[VALUE___atomic_load_tmp]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%84), const<i575b>(50772914847017056263626981642397084668362971002648882618921432151810167147311120025498350130558055645973332937183316341719236334789395175575369638910752439489741778580712874))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE7]]), const<i575b>(50772914847017056263626981642397084668362971002648882618921432151810167147311120025498350130558055645973332937183316341719236334789395175575369638910752439489741778580712874))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @test_fetch_sub() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_fetch_sub:[0-9]+]] @test_fetch_sub() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %19 __atomic_store_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %20 __atomic_store_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i574b, overflow=ub>(const<i574b>(24875491091433158113922205635657739252057730543056417031972993454853665637813018617125143194799847437263037065304695383952916979113678037118532311779822859742705294727822376)));
-// DEFAULT-NEXT:             write<i575b, atomic=release>(deref(read<ptr<atomic i575b>>(%19)), read<i575b>(deref(addr_of<ptr<i575b>>(%20))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_2:[0-9]+]] __atomic_store_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_2:[0-9]+]] __atomic_store_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i574b, overflow=ub>(const<i574b>(24875491091433158113922205635657739252057730543056417031972993454853665637813018617125143194799847437263037065304695383952916979113678037118532311779822859742705294727822376)));
+// DEFAULT-NEXT:             write<i575b, atomic=release>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_store_ptr_2]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_store_tmp_2]]))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<i575b>(%10, widen<i575b, reason=assign>(const<i572b>(6813702694653136917886567607003795360731391695538381923575500076220746287948057449348609672603971831069550813465757196210073636056135824219022209113495061317682354090030599)));
-// DEFAULT-NEXT:         let %85: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i575b>>(%9)), sub<i575b, overflow=wrap>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%85), widen<i575b, reason=usual_arith>(neg<i574b, overflow=ub>(const<i574b>(24875491091433158113922205635657739252057730543056417031972993454853665637813018617125143194799847437263037065304695383952916979113678037118532311779822859742705294727822376))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %86: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%9)), sub<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i573b>(8502925336737158389204618905966437550402192530184998378452912098895816391400915282714213521081597588768568861040471642522181200007537708168290327879425612502090295717806034))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%86), neg<i575b, overflow=ub>(const<i575b>(31689193786086295031808773242661534612789122238594798955548493531074411925761076066473752867403819268332587878770452580162990615169813861337554520893317921060387648817852975)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %87: i575b [synthetic] = update<i575b, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i575b>>(%9)), sub<i575b, overflow=wrap>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%87), neg<i575b, overflow=ub>(const<i575b>(40192119122823453421013392148627972163191314768779797334001405629970228317161991349187966388485416857101156739810924222685171815177351569505844848772743533562477944535659009)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %88: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%9)), sub<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(neg<i573b, overflow=ub>(const<i573b>(14654459030451169455889477114198307761108411115104251375487725308584250511764953921137486025925617622862411621191578047606524662379041353882420330350079004108508600686109553)))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%88), neg<i575b, overflow=ub>(const<i575b>(47005821817476590338899959755631767523922706464318179257576905706190974605110048798536576061089388688170707553276681418895245451233487393724867057886238594880160298625689608)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %89: i575b [synthetic] = update<i575b, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i575b>>(%9)), sub<i575b, overflow=wrap>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%89), neg<i575b, overflow=ub>(const<i575b>(32351362787025420883010482641433459762814295349213927882089180397606724093345094877399090035163771065308295932085103371288720788854446039842446727536159590771651697939580055)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %90: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), sub<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i574b>(22886836433700729148520267039236396292049781709943309196356241086882444816631218673962641435859436811686812355905147988710440709035301495069683757516099446883747069843672565))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%90), neg<i575b, overflow=ub>(const<i575b>(39165065481678557800897050248437255123545687044752309805664680473827470381293152326747699707767742896377846745550860567498794424910581864061468936649654652089334052029610654)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %91: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), sub<i575b, overflow=wrap>(old<i575b>, const<i575b>(49406467535448986167225179068150076098092817730200780462287871488076089290458383699602612866098591282427581289588523598202726797161439183859560135056424525356253246480887928)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%91), const<i575b>(61613298821172980080833943222149943601970205795910300955010606485738697355341562584447859386994342786734176611552061113466447383207492245852620383385192484985222264201066349))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %92: i575b [synthetic];
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], widen<i575b, reason=assign>(const<i572b>(6813702694653136917886567607003795360731391695538381923575500076220746287948057449348609672603971831069550813465757196210073636056135824219022209113495061317682354090030599)));
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), sub<i575b, overflow=wrap>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE8]]), widen<i575b, reason=usual_arith>(neg<i574b, overflow=ub>(const<i574b>(24875491091433158113922205635657739252057730543056417031972993454853665637813018617125143194799847437263037065304695383952916979113678037118532311779822859742705294727822376))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), sub<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i573b>(8502925336737158389204618905966437550402192530184998378452912098895816391400915282714213521081597588768568861040471642522181200007537708168290327879425612502090295717806034))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE9]]), neg<i575b, overflow=ub>(const<i575b>(31689193786086295031808773242661534612789122238594798955548493531074411925761076066473752867403819268332587878770452580162990615169813861337554520893317921060387648817852975)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), sub<i575b, overflow=wrap>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE10]]), neg<i575b, overflow=ub>(const<i575b>(40192119122823453421013392148627972163191314768779797334001405629970228317161991349187966388485416857101156739810924222685171815177351569505844848772743533562477944535659009)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), sub<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(neg<i573b, overflow=ub>(const<i573b>(14654459030451169455889477114198307761108411115104251375487725308584250511764953921137486025925617622862411621191578047606524662379041353882420330350079004108508600686109553)))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE11]]), neg<i575b, overflow=ub>(const<i575b>(47005821817476590338899959755631767523922706464318179257576905706190974605110048798536576061089388688170707553276681418895245451233487393724867057886238594880160298625689608)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), sub<i575b, overflow=wrap>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE12]]), neg<i575b, overflow=ub>(const<i575b>(32351362787025420883010482641433459762814295349213927882089180397606724093345094877399090035163771065308295932085103371288720788854446039842446727536159590771651697939580055)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), sub<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i574b>(22886836433700729148520267039236396292049781709943309196356241086882444816631218673962641435859436811686812355905147988710440709035301495069683757516099446883747069843672565))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE13]]), neg<i575b, overflow=ub>(const<i575b>(39165065481678557800897050248437255123545687044752309805664680473827470381293152326747699707767742896377846745550860567498794424910581864061468936649654652089334052029610654)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), sub<i575b, overflow=wrap>(old<i575b>, const<i575b>(49406467535448986167225179068150076098092817730200780462287871488076089290458383699602612866098591282427581289588523598202726797161439183859560135056424525356253246480887928)));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE14]]), const<i575b>(61613298821172980080833943222149943601970205795910300955010606485738697355341562584447859386994342786734176611552061113466447383207492245852620383385192484985222264201066349))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %21 __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %22 __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%22)), read<i575b, atomic=acquire>(deref(read<ptr<atomic i575b>>(%21))));
-// DEFAULT-NEXT:             write<i575b>(%92, read<i575b>(%22));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_2:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_2:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_2]])), read<i575b, atomic=acquire>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_2]]))));
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE15]], read<i575b>(%[[VALUE___atomic_load_tmp_2]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%92), widen<i575b, reason=usual_arith>(const<i573b>(12206831285723993913608764153999867503877388065709520492722734997662608064883178884845246520895751504306595321963537515263720586046053061993060248328767959628969017720178421)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE15]]), widen<i575b, reason=usual_arith>(const<i573b>(12206831285723993913608764153999867503877388065709520492722734997662608064883178884845246520895751504306595321963537515263720586046053061993060248328767959628969017720178421)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @test_fetch_and() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_fetch_and:[0-9]+]] @test_fetch_and() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %24 __atomic_store_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %25 __atomic_store_tmp: i575b [storage=automatic] = read<i575b>(%12);
-// DEFAULT-NEXT:             write<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%24)), read<i575b>(deref(addr_of<ptr<i575b>>(%25))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_3:[0-9]+]] __atomic_store_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_3:[0-9]+]] __atomic_store_tmp: i575b [storage=automatic] = read<i575b>(%[[VALUE_init]]);
+// DEFAULT-NEXT:             write<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_store_ptr_3]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_store_tmp_3]]))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %93: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i575b>>(%9)), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%93), read<i575b>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %94: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%9)), and<i575b>(old<i575b>, read<i575b>(%12)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%94), widen<i575b, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %95: i575b [synthetic] = update<i575b, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i575b>>(%9)), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%95), widen<i575b, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%9, not<i575b>(read<i575b, atomic=seq_cst>(%9)));
-// DEFAULT-NEXT:         let %96: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%9)), and<i575b>(old<i575b>, read<i575b>(%12)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%96), read<i575b>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %97: i575b [synthetic] = update<i575b, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i575b>>(%9)), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%97), read<i575b>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %98: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%98), widen<i575b, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %99: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%99), widen<i575b, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE16]]), read<i575b>(%[[VALUE_init]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE17:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), and<i575b>(old<i575b>, read<i575b>(%[[VALUE_init]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE17]]), widen<i575b, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE18:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE18]]), widen<i575b, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%[[VALUE_v]], not<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]])));
+// DEFAULT-NEXT:         let %[[VALUE19:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), and<i575b>(old<i575b>, read<i575b>(%[[VALUE_init]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE19]]), read<i575b>(%[[VALUE_init]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE20:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE20]]), read<i575b>(%[[VALUE_init]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE21:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE21]]), widen<i575b, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE22:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE22]]), widen<i575b, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @test_fetch_xor() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%9, read<i575b>(%12));
-// DEFAULT-NEXT:         write<i575b>(%10, widen<i575b, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         let %100: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i575b>>(%9)), xor<i575b>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%100), read<i575b>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %101: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%9)), xor<i575b>(old<i575b>, not<i575b>(read<i575b>(%10))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%101), read<i575b>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %102: i575b [synthetic] = update<i575b, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i575b>>(%9)), xor<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%102), widen<i575b, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %103: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%9)), xor<i575b>(old<i575b>, not<i575b>(read<i575b>(%10))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%103), widen<i575b, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %104: i575b [synthetic] = update<i575b, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i575b>>(%9)), xor<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%104), read<i575b>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %105: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), xor<i575b>(old<i575b>, not<i575b>(read<i575b>(%10))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%105), read<i575b>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %106: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), xor<i575b>(old<i575b>, not<i575b>(read<i575b>(%10))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%106), widen<i575b, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_test_fetch_xor:[0-9]+]] @test_fetch_xor() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%[[VALUE_v]], read<i575b>(%[[VALUE_init]]));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], widen<i575b, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE23:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), xor<i575b>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE23]]), read<i575b>(%[[VALUE_init]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE24:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), xor<i575b>(old<i575b>, not<i575b>(read<i575b>(%[[VALUE_count]]))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE24]]), read<i575b>(%[[VALUE_init]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE25:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), xor<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE25]]), widen<i575b, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE26:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), xor<i575b>(old<i575b>, not<i575b>(read<i575b>(%[[VALUE_count]]))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE26]]), widen<i575b, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE27:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), xor<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE27]]), read<i575b>(%[[VALUE_init]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE28:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), xor<i575b>(old<i575b>, not<i575b>(read<i575b>(%[[VALUE_count]]))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE28]]), read<i575b>(%[[VALUE_init]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE29:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), xor<i575b>(old<i575b>, not<i575b>(read<i575b>(%[[VALUE_count]]))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE29]]), widen<i575b, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @test_fetch_or() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%9, widen<i575b, reason=assign>(const<i2b>(0)));
-// DEFAULT-NEXT:         write<i575b>(%10, widen<i575b, reason=assign>(const<i246b>(28269553036454149273332760011886696253239742350009903329945699220681916416)));
-// DEFAULT-NEXT:         let %107: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i575b>>(%9)), or<i575b>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%107), widen<i575b, reason=usual_arith>(const<i2b>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %108: i575b [synthetic] = read<i575b>(%10);
-// DEFAULT-NEXT:         let %109: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%108), widen<i575b, reason=usual_arith>(const<i32>(2)));
-// DEFAULT-NEXT:         write<i575b>(%10, read<i575b>(%109));
-// DEFAULT-NEXT:         let %110: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%9)), or<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i247b>(56539106072908298546665520023773392506479484700019806659891398441363832832))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%110), widen<i575b, reason=usual_arith>(const<i246b>(28269553036454149273332760011886696253239742350009903329945699220681916416)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %111: i575b [synthetic] = read<i575b>(%10);
-// DEFAULT-NEXT:         let %112: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%111), widen<i575b, reason=usual_arith>(const<i32>(2)));
-// DEFAULT-NEXT:         write<i575b>(%10, read<i575b>(%112));
-// DEFAULT-NEXT:         let %113: i575b [synthetic] = update<i575b, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i575b>>(%9)), or<i575b>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%113), widen<i575b, reason=usual_arith>(const<i247b>(84808659109362447819998280035660088759719227050029709989837097662045749248)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %114: i575b [synthetic] = read<i575b>(%10);
-// DEFAULT-NEXT:         let %115: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%114), widen<i575b, reason=usual_arith>(const<i32>(2)));
-// DEFAULT-NEXT:         write<i575b>(%10, read<i575b>(%115));
-// DEFAULT-NEXT:         let %116: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%9)), or<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i249b>(226156424291633194186662080095093570025917938800079226639565593765455331328))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%116), widen<i575b, reason=usual_arith>(const<i248b>(197886871255179044913329320083206873772678196450069323309619894544773414912)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %117: i575b [synthetic] = read<i575b>(%10);
-// DEFAULT-NEXT:         let %118: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%117), widen<i575b, reason=usual_arith>(const<i32>(2)));
-// DEFAULT-NEXT:         write<i575b>(%10, read<i575b>(%118));
-// DEFAULT-NEXT:         let %119: i575b [synthetic] = update<i575b, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i575b>>(%9)), or<i575b>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%119), widen<i575b, reason=usual_arith>(const<i249b>(424043295546812239099991400178300443798596135250148549949185488310228746240)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %120: i575b [synthetic] = read<i575b>(%10);
-// DEFAULT-NEXT:         let %121: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%120), widen<i575b, reason=usual_arith>(const<i32>(2)));
-// DEFAULT-NEXT:         write<i575b>(%10, read<i575b>(%121));
-// DEFAULT-NEXT:         let %122: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), or<i575b>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%122), widen<i575b, reason=usual_arith>(const<i250b>(876356144130078627473315560368487583850432012850307003228316675841139408896)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %123: i575b [synthetic] = read<i575b>(%10);
-// DEFAULT-NEXT:         let %124: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%123), widen<i575b, reason=usual_arith>(const<i32>(2)));
-// DEFAULT-NEXT:         write<i575b>(%10, read<i575b>(%124));
-// DEFAULT-NEXT:         let %125: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), or<i575b>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%125), widen<i575b, reason=usual_arith>(const<i251b>(1780981841296611404219963880748861863954103768050623909786579050902960734208)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_test_fetch_or:[0-9]+]] @test_fetch_or() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%[[VALUE_v]], widen<i575b, reason=assign>(const<i2b>(0)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], widen<i575b, reason=assign>(const<i246b>(28269553036454149273332760011886696253239742350009903329945699220681916416)));
+// DEFAULT-NEXT:         let %[[VALUE30:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), or<i575b>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE30]]), widen<i575b, reason=usual_arith>(const<i2b>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE31:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE32:[0-9]+]]: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%[[VALUE31]]), widen<i575b, reason=usual_arith>(const<i32>(2)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE32]]));
+// DEFAULT-NEXT:         let %[[VALUE33:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), or<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i247b>(56539106072908298546665520023773392506479484700019806659891398441363832832))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE33]]), widen<i575b, reason=usual_arith>(const<i246b>(28269553036454149273332760011886696253239742350009903329945699220681916416)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE34:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE35:[0-9]+]]: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%[[VALUE34]]), widen<i575b, reason=usual_arith>(const<i32>(2)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE35]]));
+// DEFAULT-NEXT:         let %[[VALUE36:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=acquire>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), or<i575b>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE36]]), widen<i575b, reason=usual_arith>(const<i247b>(84808659109362447819998280035660088759719227050029709989837097662045749248)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE37:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE38:[0-9]+]]: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%[[VALUE37]]), widen<i575b, reason=usual_arith>(const<i32>(2)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE38]]));
+// DEFAULT-NEXT:         let %[[VALUE39:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), or<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i249b>(226156424291633194186662080095093570025917938800079226639565593765455331328))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE39]]), widen<i575b, reason=usual_arith>(const<i248b>(197886871255179044913329320083206873772678196450069323309619894544773414912)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE40:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE41:[0-9]+]]: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%[[VALUE40]]), widen<i575b, reason=usual_arith>(const<i32>(2)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE41]]));
+// DEFAULT-NEXT:         let %[[VALUE42:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), or<i575b>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE42]]), widen<i575b, reason=usual_arith>(const<i249b>(424043295546812239099991400178300443798596135250148549949185488310228746240)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE43:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE44:[0-9]+]]: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%[[VALUE43]]), widen<i575b, reason=usual_arith>(const<i32>(2)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE44]]));
+// DEFAULT-NEXT:         let %[[VALUE45:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), or<i575b>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE45]]), widen<i575b, reason=usual_arith>(const<i250b>(876356144130078627473315560368487583850432012850307003228316675841139408896)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE46:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE47:[0-9]+]]: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%[[VALUE46]]), widen<i575b, reason=usual_arith>(const<i32>(2)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE47]]));
+// DEFAULT-NEXT:         let %[[VALUE48:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), or<i575b>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE48]]), widen<i575b, reason=usual_arith>(const<i251b>(1780981841296611404219963880748861863954103768050623909786579050902960734208)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %28 @test_add() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%9, widen<i575b, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         write<i575b>(%10, widen<i575b, reason=assign>(const<i550b>(1486842905609751694333995980623369134886360644481888406879896752089037065255179570086557965294767349553406889549100250674362935254187127254353474822610854717612397677)));
-// DEFAULT-NEXT:         let %126: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), add<i575b, overflow=wrap>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i550b>(1486842905609751694333995980623369134886360644481888406879896752089037065255179570086557965294767349553406889549100250674362935254187127254353474822610854717612397677)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %127: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%9)), add<i575b, overflow=wrap>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i551b>(2973685811219503388667991961246738269772721288963776813759793504178074130510359140173115930589534699106813779098200501348725870508374254508706949645221709435224795354)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %128: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), add<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i550b>(1486842905609751694333995980623369134886360644481888406879896752089037065255179570086557965294767349553406889549100250674362935254187127254353474822610854717612397677))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i552b>(4460528716829255083001987941870107404659081933445665220639690256267111195765538710259673895884302048660220668647300752023088805762561381763060424467832564152837193031)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %129: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%9)), add<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i550b>(1486842905609751694333995980623369134886360644481888406879896752089037065255179570086557965294767349553406889549100250674362935254187127254353474822610854717612397677))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i552b>(5947371622439006777335983922493476539545442577927553627519587008356148261020718280346231861179069398213627558196401002697451741016748509017413899290443418870449590708)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %130: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), add<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i550b>(1486842905609751694333995980623369134886360644481888406879896752089037065255179570086557965294767349553406889549100250674362935254187127254353474822610854717612397677))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i553b>(7434214528048758471669979903116845674431803222409442034399483760445185326275897850432789826473836747767034447745501253371814676270935636271767374113054273588061988385)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %131: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), add<i575b, overflow=wrap>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i553b>(8921057433658510166003975883740214809318163866891330441279380512534222391531077420519347791768604097320441337294601504046177611525122763526120848935665128305674386062)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_test_add:[0-9]+]] @test_add() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%[[VALUE_v]], widen<i575b, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], widen<i575b, reason=assign>(const<i550b>(1486842905609751694333995980623369134886360644481888406879896752089037065255179570086557965294767349553406889549100250674362935254187127254353474822610854717612397677)));
+// DEFAULT-NEXT:         let %[[VALUE49:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), add<i575b, overflow=wrap>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i550b>(1486842905609751694333995980623369134886360644481888406879896752089037065255179570086557965294767349553406889549100250674362935254187127254353474822610854717612397677)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE50:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), add<i575b, overflow=wrap>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i551b>(2973685811219503388667991961246738269772721288963776813759793504178074130510359140173115930589534699106813779098200501348725870508374254508706949645221709435224795354)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE51:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), add<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i550b>(1486842905609751694333995980623369134886360644481888406879896752089037065255179570086557965294767349553406889549100250674362935254187127254353474822610854717612397677))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i552b>(4460528716829255083001987941870107404659081933445665220639690256267111195765538710259673895884302048660220668647300752023088805762561381763060424467832564152837193031)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE52:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), add<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i550b>(1486842905609751694333995980623369134886360644481888406879896752089037065255179570086557965294767349553406889549100250674362935254187127254353474822610854717612397677))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i552b>(5947371622439006777335983922493476539545442577927553627519587008356148261020718280346231861179069398213627558196401002697451741016748509017413899290443418870449590708)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE53:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), add<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i550b>(1486842905609751694333995980623369134886360644481888406879896752089037065255179570086557965294767349553406889549100250674362935254187127254353474822610854717612397677))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i553b>(7434214528048758471669979903116845674431803222409442034399483760445185326275897850432789826473836747767034447745501253371814676270935636271767374113054273588061988385)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE54:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), add<i575b, overflow=wrap>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i553b>(8921057433658510166003975883740214809318163866891330441279380512534222391531077420519347791768604097320441337294601504046177611525122763526120848935665128305674386062)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @test_sub() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i575b>(%11, const<i575b>(55339930658115792138308584702507715233391812567721958037499562620485942364609138719919541704955047331226014242859673113345829202990143617633801993282898070230404539826267403));
-// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%9, const<i575b>(55339930658115792138308584702507715233391812567721958037499562620485942364609138719919541704955047331226014242859673113345829202990143617633801993282898070230404539826267403));
-// DEFAULT-NEXT:         write<i575b>(%10, widen<i575b, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         let %132: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), sub<i575b, overflow=wrap>(old<i575b>, add<i575b, overflow=ub>(read<i575b>(%10), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)))));
-// DEFAULT-NEXT:         let %133: i575b [synthetic] = read<i575b>(%11);
-// DEFAULT-NEXT:         let %134: i575b [synthetic] = sub<i575b, overflow=ub>(read<i575b>(%133), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)));
-// DEFAULT-NEXT:         write<i575b>(%11, read<i575b>(%134));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), read<i575b>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %135: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%9)), sub<i575b, overflow=wrap>(old<i575b>, add<i575b, overflow=ub>(read<i575b>(%10), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)))));
-// DEFAULT-NEXT:         let %136: i575b [synthetic] = read<i575b>(%11);
-// DEFAULT-NEXT:         let %137: i575b [synthetic] = sub<i575b, overflow=ub>(read<i575b>(%136), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)));
-// DEFAULT-NEXT:         write<i575b>(%11, read<i575b>(%137));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), read<i575b>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %138: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), sub<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057))));
-// DEFAULT-NEXT:         let %139: i575b [synthetic] = read<i575b>(%11);
-// DEFAULT-NEXT:         let %140: i575b [synthetic] = sub<i575b, overflow=ub>(read<i575b>(%139), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)));
-// DEFAULT-NEXT:         write<i575b>(%11, read<i575b>(%140));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), read<i575b>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %141: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%9)), sub<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057))));
-// DEFAULT-NEXT:         let %142: i575b [synthetic] = read<i575b>(%11);
-// DEFAULT-NEXT:         let %143: i575b [synthetic] = sub<i575b, overflow=ub>(read<i575b>(%142), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)));
-// DEFAULT-NEXT:         write<i575b>(%11, read<i575b>(%143));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), read<i575b>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %144: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), sub<i575b, overflow=wrap>(old<i575b>, add<i575b, overflow=ub>(read<i575b>(%10), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)))));
-// DEFAULT-NEXT:         let %145: i575b [synthetic] = read<i575b>(%11);
-// DEFAULT-NEXT:         let %146: i575b [synthetic] = sub<i575b, overflow=ub>(read<i575b>(%145), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)));
-// DEFAULT-NEXT:         write<i575b>(%11, read<i575b>(%146));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), read<i575b>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %147: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), sub<i575b, overflow=wrap>(old<i575b>, add<i575b, overflow=ub>(read<i575b>(%10), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)))));
-// DEFAULT-NEXT:         let %148: i575b [synthetic] = read<i575b>(%11);
-// DEFAULT-NEXT:         let %149: i575b [synthetic] = sub<i575b, overflow=ub>(read<i575b>(%148), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)));
-// DEFAULT-NEXT:         write<i575b>(%11, read<i575b>(%149));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), read<i575b>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_test_sub:[0-9]+]] @test_sub() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_res]], const<i575b>(55339930658115792138308584702507715233391812567721958037499562620485942364609138719919541704955047331226014242859673113345829202990143617633801993282898070230404539826267403));
+// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%[[VALUE_v]], const<i575b>(55339930658115792138308584702507715233391812567721958037499562620485942364609138719919541704955047331226014242859673113345829202990143617633801993282898070230404539826267403));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], widen<i575b, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE55:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), sub<i575b, overflow=wrap>(old<i575b>, add<i575b, overflow=ub>(read<i575b>(%[[VALUE_count]]), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)))));
+// DEFAULT-NEXT:         let %[[VALUE56:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_res]]);
+// DEFAULT-NEXT:         let %[[VALUE57:[0-9]+]]: i575b [synthetic] = sub<i575b, overflow=ub>(read<i575b>(%[[VALUE56]]), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_res]], read<i575b>(%[[VALUE57]]));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), read<i575b>(%[[VALUE_res]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE58:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), sub<i575b, overflow=wrap>(old<i575b>, add<i575b, overflow=ub>(read<i575b>(%[[VALUE_count]]), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)))));
+// DEFAULT-NEXT:         let %[[VALUE59:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_res]]);
+// DEFAULT-NEXT:         let %[[VALUE60:[0-9]+]]: i575b [synthetic] = sub<i575b, overflow=ub>(read<i575b>(%[[VALUE59]]), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_res]], read<i575b>(%[[VALUE60]]));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), read<i575b>(%[[VALUE_res]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE61:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), sub<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057))));
+// DEFAULT-NEXT:         let %[[VALUE62:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_res]]);
+// DEFAULT-NEXT:         let %[[VALUE63:[0-9]+]]: i575b [synthetic] = sub<i575b, overflow=ub>(read<i575b>(%[[VALUE62]]), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_res]], read<i575b>(%[[VALUE63]]));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), read<i575b>(%[[VALUE_res]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE64:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), sub<i575b, overflow=wrap>(old<i575b>, widen<i575b, reason=arg>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057))));
+// DEFAULT-NEXT:         let %[[VALUE65:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_res]]);
+// DEFAULT-NEXT:         let %[[VALUE66:[0-9]+]]: i575b [synthetic] = sub<i575b, overflow=ub>(read<i575b>(%[[VALUE65]]), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_res]], read<i575b>(%[[VALUE66]]));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), read<i575b>(%[[VALUE_res]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE67:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), sub<i575b, overflow=wrap>(old<i575b>, add<i575b, overflow=ub>(read<i575b>(%[[VALUE_count]]), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)))));
+// DEFAULT-NEXT:         let %[[VALUE68:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_res]]);
+// DEFAULT-NEXT:         let %[[VALUE69:[0-9]+]]: i575b [synthetic] = sub<i575b, overflow=ub>(read<i575b>(%[[VALUE68]]), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_res]], read<i575b>(%[[VALUE69]]));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), read<i575b>(%[[VALUE_res]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE70:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), sub<i575b, overflow=wrap>(old<i575b>, add<i575b, overflow=ub>(read<i575b>(%[[VALUE_count]]), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)))));
+// DEFAULT-NEXT:         let %[[VALUE71:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_res]]);
+// DEFAULT-NEXT:         let %[[VALUE72:[0-9]+]]: i575b [synthetic] = sub<i575b, overflow=ub>(read<i575b>(%[[VALUE71]]), widen<i575b, reason=usual_arith>(const<i521b>(2266681016524228072657464685355732111725088152428495977635446886262656759828446929716740827028716649170693025791717921736186782036315322643449879013364541057)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_res]], read<i575b>(%[[VALUE72]]));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), read<i575b>(%[[VALUE_res]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @test_and() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%9, read<i575b>(%12));
-// DEFAULT-NEXT:         let %150: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%9, read<i575b>(%12));
-// DEFAULT-NEXT:         let %151: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%9)), and<i575b>(old<i575b>, read<i575b>(%12)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), read<i575b>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %152: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%9, not<i575b>(read<i575b, atomic=seq_cst>(%9)));
-// DEFAULT-NEXT:         let %153: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%9)), and<i575b>(old<i575b>, read<i575b>(%12)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), read<i575b>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %154: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%9, not<i575b>(read<i575b, atomic=seq_cst>(%9)));
-// DEFAULT-NEXT:         let %155: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_test_and:[0-9]+]] @test_and() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%[[VALUE_v]], read<i575b>(%[[VALUE_init]]));
+// DEFAULT-NEXT:         let %[[VALUE73:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%[[VALUE_v]], read<i575b>(%[[VALUE_init]]));
+// DEFAULT-NEXT:         let %[[VALUE74:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), and<i575b>(old<i575b>, read<i575b>(%[[VALUE_init]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), read<i575b>(%[[VALUE_init]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE75:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%[[VALUE_v]], not<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]])));
+// DEFAULT-NEXT:         let %[[VALUE76:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), and<i575b>(old<i575b>, read<i575b>(%[[VALUE_init]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), read<i575b>(%[[VALUE_init]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE77:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%[[VALUE_v]], not<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]])));
+// DEFAULT-NEXT:         let %[[VALUE78:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), and<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @test_xor() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%9, read<i575b>(%12));
-// DEFAULT-NEXT:         write<i575b>(%10, widen<i575b, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         let %156: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), xor<i575b>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), read<i575b>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %157: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%9)), xor<i575b>(old<i575b>, not<i575b>(read<i575b>(%10))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %158: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), xor<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %159: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%9)), xor<i575b>(old<i575b>, not<i575b>(read<i575b>(%10))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), read<i575b>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %160: i575b [synthetic] = update<i575b, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i575b>>(%9)), xor<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), read<i575b>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %161: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), xor<i575b>(old<i575b>, not<i575b>(read<i575b>(%10))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_test_xor:[0-9]+]] @test_xor() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%[[VALUE_v]], read<i575b>(%[[VALUE_init]]));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], widen<i575b, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE79:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), xor<i575b>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), read<i575b>(%[[VALUE_init]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE80:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), xor<i575b>(old<i575b>, not<i575b>(read<i575b>(%[[VALUE_count]]))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE81:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), xor<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE82:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), xor<i575b>(old<i575b>, not<i575b>(read<i575b>(%[[VALUE_count]]))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), read<i575b>(%[[VALUE_init]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE83:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), xor<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), read<i575b>(%[[VALUE_init]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE84:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), xor<i575b>(old<i575b>, not<i575b>(read<i575b>(%[[VALUE_count]]))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @test_or() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%9, widen<i575b, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         write<i575b>(%10, widen<i575b, reason=assign>(const<i86b>(19342813113834066795298816)));
-// DEFAULT-NEXT:         let %162: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), or<i575b>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i86b>(19342813113834066795298816)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %163: i575b [synthetic] = read<i575b>(%10);
-// DEFAULT-NEXT:         let %164: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%163), widen<i575b, reason=usual_arith>(const<i32>(2)));
-// DEFAULT-NEXT:         write<i575b>(%10, read<i575b>(%164));
-// DEFAULT-NEXT:         let %165: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%9)), or<i575b>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i87b>(58028439341502200385896448)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %166: i575b [synthetic] = read<i575b>(%10);
-// DEFAULT-NEXT:         let %167: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%166), widen<i575b, reason=usual_arith>(const<i32>(2)));
-// DEFAULT-NEXT:         write<i575b>(%10, read<i575b>(%167));
-// DEFAULT-NEXT:         let %168: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), or<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i88b>(77371252455336267181195264))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i88b>(135399691796838467567091712)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %169: i575b [synthetic] = read<i575b>(%10);
-// DEFAULT-NEXT:         let %170: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%169), widen<i575b, reason=usual_arith>(const<i32>(2)));
-// DEFAULT-NEXT:         write<i575b>(%10, read<i575b>(%170));
-// DEFAULT-NEXT:         let %171: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%9)), or<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i89b>(154742504910672534362390528))));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i89b>(290142196707511001929482240)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %172: i575b [synthetic] = read<i575b>(%10);
-// DEFAULT-NEXT:         let %173: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%172), widen<i575b, reason=usual_arith>(const<i32>(2)));
-// DEFAULT-NEXT:         write<i575b>(%10, read<i575b>(%173));
-// DEFAULT-NEXT:         let %174: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), or<i575b>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i90b>(599627206528856070654263296)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %175: i575b [synthetic] = read<i575b>(%10);
-// DEFAULT-NEXT:         let %176: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%175), widen<i575b, reason=usual_arith>(const<i32>(2)));
-// DEFAULT-NEXT:         write<i575b>(%10, read<i575b>(%176));
-// DEFAULT-NEXT:         let %177: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%9)), or<i575b>(old<i575b>, read<i575b>(%10)));
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%9), widen<i575b, reason=usual_arith>(const<i91b>(1218597226171546208103825408)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_test_or:[0-9]+]] @test_or() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i575b, atomic=seq_cst>(%[[VALUE_v]], widen<i575b, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], widen<i575b, reason=assign>(const<i86b>(19342813113834066795298816)));
+// DEFAULT-NEXT:         let %[[VALUE85:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), or<i575b>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i86b>(19342813113834066795298816)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE86:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE87:[0-9]+]]: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%[[VALUE86]]), widen<i575b, reason=usual_arith>(const<i32>(2)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE87]]));
+// DEFAULT-NEXT:         let %[[VALUE88:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=consume>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), or<i575b>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i87b>(58028439341502200385896448)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE89:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE90:[0-9]+]]: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%[[VALUE89]]), widen<i575b, reason=usual_arith>(const<i32>(2)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE90]]));
+// DEFAULT-NEXT:         let %[[VALUE91:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), or<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i88b>(77371252455336267181195264))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i88b>(135399691796838467567091712)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE92:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE93:[0-9]+]]: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%[[VALUE92]]), widen<i575b, reason=usual_arith>(const<i32>(2)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE93]]));
+// DEFAULT-NEXT:         let %[[VALUE94:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=release>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), or<i575b>(old<i575b>, widen<i575b, reason=arg>(const<i89b>(154742504910672534362390528))));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i89b>(290142196707511001929482240)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE95:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE96:[0-9]+]]: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%[[VALUE95]]), widen<i575b, reason=usual_arith>(const<i32>(2)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE96]]));
+// DEFAULT-NEXT:         let %[[VALUE97:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), or<i575b>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i90b>(599627206528856070654263296)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE98:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE99:[0-9]+]]: i575b [synthetic] = mul<i575b, overflow=ub>(read<i575b>(%[[VALUE98]]), widen<i575b, reason=usual_arith>(const<i32>(2)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE99]]));
+// DEFAULT-NEXT:         let %[[VALUE100:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i575b>>(%[[VALUE_v]])), or<i575b>(old<i575b>, read<i575b>(%[[VALUE_count]])));
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b, atomic=seq_cst>(%[[VALUE_v]]), widen<i575b, reason=usual_arith>(const<i91b>(1218597226171546208103825408)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %33 @test_exchange() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_exchange:[0-9]+]] @test_exchange() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %34 __atomic_store_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %35 __atomic_store_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i568b, overflow=ub>(const<i568b>(285679222948993342888321238830899996788334328454283006589115162661816862491992700267590986826514460282130796141107636816730207482542791159837024986802592659048696136633096)));
-// DEFAULT-NEXT:             write<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%34)), read<i575b>(deref(addr_of<ptr<i575b>>(%35))));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_ptr_4:[0-9]+]] __atomic_store_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_store_tmp_4:[0-9]+]] __atomic_store_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i568b, overflow=ub>(const<i568b>(285679222948993342888321238830899996788334328454283006589115162661816862491992700267590986826514460282130796141107636816730207482542791159837024986802592659048696136633096)));
+// DEFAULT-NEXT:             write<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_store_ptr_4]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_store_tmp_4]]))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %178: i575b [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE101:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %36 __atomic_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %37 __atomic_exchange_val: i575b [storage=automatic] = widen<i575b, reason=assign>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601));
-// DEFAULT-NEXT:             let %38 __atomic_exchange_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             let %179: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%36)), read<i575b>(deref(addr_of<ptr<i575b>>(%37))));
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%38)), read<i575b>(%179));
-// DEFAULT-NEXT:             write<i575b>(%178, read<i575b>(%38));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_ptr:[0-9]+]] __atomic_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_val:[0-9]+]] __atomic_exchange_val: i575b [storage=automatic] = widen<i575b, reason=assign>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_tmp:[0-9]+]] __atomic_exchange_tmp: i575b [storage=automatic];
+// DEFAULT-NEXT:             let %[[VALUE102:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_exchange_ptr]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_exchange_val]]))));
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_exchange_tmp]])), read<i575b>(%[[VALUE102]]));
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE101]], read<i575b>(%[[VALUE___atomic_exchange_tmp]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %180: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%178), widen<i575b, reason=usual_arith>(neg<i568b, overflow=ub>(const<i568b>(285679222948993342888321238830899996788334328454283006589115162661816862491992700267590986826514460282130796141107636816730207482542791159837024986802592659048696136633096))))
-// DEFAULT-NEXT:             write<bool>(%180, const<bool>(true));
+// DEFAULT-NEXT:         let %[[VALUE103:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE101]]), widen<i575b, reason=usual_arith>(neg<i568b, overflow=ub>(const<i568b>(285679222948993342888321238830899996788334328454283006589115162661816862491992700267590986826514460282130796141107636816730207482542791159837024986802592659048696136633096))))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE103]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %181: i575b [synthetic];
+// DEFAULT-NEXT:             let %[[VALUE104:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %39 __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:                 let %40 __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%40)), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%39))));
-// DEFAULT-NEXT:                 write<i575b>(%181, read<i575b>(%40));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_3:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_3:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
+// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_3]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_3]]))));
+// DEFAULT-NEXT:                 write<i575b>(%[[VALUE104]], read<i575b>(%[[VALUE___atomic_load_tmp_3]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%180, ne<i575b>(read<i575b>(%181), widen<i575b, reason=usual_arith>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601))));
-// DEFAULT-NEXT:         if read<bool>(%180)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %182: i575b [synthetic];
+// DEFAULT-NEXT:             write<bool>(%[[VALUE103]], ne<i575b>(read<i575b>(%[[VALUE104]]), widen<i575b, reason=usual_arith>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE103]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE105:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %41 __atomic_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %42 __atomic_exchange_val: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649)));
-// DEFAULT-NEXT:             let %43 __atomic_exchange_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             let %183: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(read<ptr<atomic i575b>>(%41)), read<i575b>(deref(addr_of<ptr<i575b>>(%42))));
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%43)), read<i575b>(%183));
-// DEFAULT-NEXT:             write<i575b>(%182, read<i575b>(%43));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_ptr_2:[0-9]+]] __atomic_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_val_2:[0-9]+]] __atomic_exchange_val: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649)));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_exchange_tmp_2:[0-9]+]] __atomic_exchange_tmp: i575b [storage=automatic];
+// DEFAULT-NEXT:             let %[[VALUE106:[0-9]+]]: i575b [synthetic] = update<i575b, result=old, atomic=relaxed>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_exchange_ptr_2]])), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_exchange_val_2]]))));
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_exchange_tmp_2]])), read<i575b>(%[[VALUE106]]));
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE105]], read<i575b>(%[[VALUE___atomic_exchange_tmp_2]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %184: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%182), widen<i575b, reason=usual_arith>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601)))
-// DEFAULT-NEXT:             write<bool>(%184, const<bool>(true));
+// DEFAULT-NEXT:         let %[[VALUE107:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE105]]), widen<i575b, reason=usual_arith>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE107]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %185: i575b [synthetic];
+// DEFAULT-NEXT:             let %[[VALUE108:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %44 __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:                 let %45 __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%45)), read<i575b, atomic=acquire>(deref(read<ptr<atomic i575b>>(%44))));
-// DEFAULT-NEXT:                 write<i575b>(%185, read<i575b>(%45));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_4:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_4:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
+// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_4]])), read<i575b, atomic=acquire>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_4]]))));
+// DEFAULT-NEXT:                 write<i575b>(%[[VALUE108]], read<i575b>(%[[VALUE___atomic_load_tmp_4]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%184, ne<i575b>(read<i575b>(%185), widen<i575b, reason=usual_arith>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649)))));
-// DEFAULT-NEXT:         if read<bool>(%184)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         write<i575b>(%10, widen<i575b, reason=assign>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601)));
-// DEFAULT-NEXT:         let %186: bool [synthetic];
+// DEFAULT-NEXT:             write<bool>(%[[VALUE107]], ne<i575b>(read<i575b>(%[[VALUE108]]), widen<i575b, reason=usual_arith>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649)))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE107]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], widen<i575b, reason=assign>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601)));
+// DEFAULT-NEXT:         let %[[VALUE109:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %46 __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %47 __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707));
-// DEFAULT-NEXT:             let %187: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%46)), addr_of<ptr<i575b>>(%10), read<i575b>(deref(addr_of<ptr<i575b>>(%47))));
-// DEFAULT-NEXT:             write<bool>(%186, read<bool>(%187));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707));
+// DEFAULT-NEXT:             let %[[VALUE110:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp]]))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE109]], read<bool>(%[[VALUE110]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if read<bool>(%186)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %188: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%10), widen<i575b, reason=usual_arith>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649))))
-// DEFAULT-NEXT:             write<bool>(%188, const<bool>(true));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE109]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE111:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE_count]]), widen<i575b, reason=usual_arith>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649))))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE111]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %189: i575b [synthetic];
+// DEFAULT-NEXT:             let %[[VALUE112:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %48 __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:                 let %49 __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%49)), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%48))));
-// DEFAULT-NEXT:                 write<i575b>(%189, read<i575b>(%49));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_5:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_5:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
+// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_5]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_5]]))));
+// DEFAULT-NEXT:                 write<i575b>(%[[VALUE112]], read<i575b>(%[[VALUE___atomic_load_tmp_5]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%188, ne<i575b>(read<i575b>(%189), widen<i575b, reason=usual_arith>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649)))));
-// DEFAULT-NEXT:         if read<bool>(%188)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %190: bool [synthetic];
+// DEFAULT-NEXT:             write<bool>(%[[VALUE111]], ne<i575b>(read<i575b>(%[[VALUE112]]), widen<i575b, reason=usual_arith>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649)))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE111]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE113:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %50 __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %51 __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707));
-// DEFAULT-NEXT:             let %191: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%50)), addr_of<ptr<i575b>>(%10), read<i575b>(deref(addr_of<ptr<i575b>>(%51))));
-// DEFAULT-NEXT:             write<bool>(%190, read<bool>(%191));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr_2:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_2:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707));
+// DEFAULT-NEXT:             let %[[VALUE114:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_2]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_2]]))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE113]], read<bool>(%[[VALUE114]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if not<bool>(read<bool>(%190))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %192: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%10), widen<i575b, reason=usual_arith>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649))))
-// DEFAULT-NEXT:             write<bool>(%192, const<bool>(true));
+// DEFAULT-NEXT:         if not<bool>(read<bool>(%[[VALUE113]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE115:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE_count]]), widen<i575b, reason=usual_arith>(neg<i572b, overflow=ub>(const<i572b>(4427613371507571222951705350055906255006016685171218855857415580222001757304647519678682295710994407542058879878792272713121656498918585491540313864044915269100507689612649))))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE115]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %193: i575b [synthetic];
+// DEFAULT-NEXT:             let %[[VALUE116:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %52 __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:                 let %53 __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%53)), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%52))));
-// DEFAULT-NEXT:                 write<i575b>(%193, read<i575b>(%53));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_6:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_6:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
+// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_6]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_6]]))));
+// DEFAULT-NEXT:                 write<i575b>(%[[VALUE116]], read<i575b>(%[[VALUE___atomic_load_tmp_6]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%192, ne<i575b>(read<i575b>(%193), widen<i575b, reason=usual_arith>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707))));
-// DEFAULT-NEXT:         if read<bool>(%192)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         write<i575b>(%10, widen<i575b, reason=assign>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601)));
-// DEFAULT-NEXT:         let %194: bool [synthetic];
+// DEFAULT-NEXT:             write<bool>(%[[VALUE115]], ne<i575b>(read<i575b>(%[[VALUE116]]), widen<i575b, reason=usual_arith>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE115]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], widen<i575b, reason=assign>(const<i572b>(5310030317361876753340683501073244375280341322936688061997080395958520351093955920782059690068348979597317732862920837580508090330213951646930178946470395395144632931547601)));
+// DEFAULT-NEXT:         let %[[VALUE117:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %54 __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %55 __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i574b, overflow=ub>(const<i574b>(20263258027145541347005514871938569231358927704236809883668741851321168433670480594273940614283839738125120292424689828120954658857299483460682957837178666219043928324493674)));
-// DEFAULT-NEXT:             let %195: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=relaxed>(deref(read<ptr<atomic i575b>>(%54)), addr_of<ptr<i575b>>(%10), read<i575b>(deref(addr_of<ptr<i575b>>(%55))));
-// DEFAULT-NEXT:             write<bool>(%194, read<bool>(%195));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr_3:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_3:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i574b, overflow=ub>(const<i574b>(20263258027145541347005514871938569231358927704236809883668741851321168433670480594273940614283839738125120292424689828120954658857299483460682957837178666219043928324493674)));
+// DEFAULT-NEXT:             let %[[VALUE118:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=relaxed>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_3]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_3]]))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE117]], read<bool>(%[[VALUE118]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if read<bool>(%194)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %196: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%10), widen<i575b, reason=usual_arith>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707)))
-// DEFAULT-NEXT:             write<bool>(%196, const<bool>(true));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE117]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE119:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE_count]]), widen<i575b, reason=usual_arith>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE119]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %197: i575b [synthetic];
+// DEFAULT-NEXT:             let %[[VALUE120:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %56 __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:                 let %57 __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%57)), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%56))));
-// DEFAULT-NEXT:                 write<i575b>(%197, read<i575b>(%57));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_7:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_7:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
+// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_7]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_7]]))));
+// DEFAULT-NEXT:                 write<i575b>(%[[VALUE120]], read<i575b>(%[[VALUE___atomic_load_tmp_7]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%196, ne<i575b>(read<i575b>(%197), widen<i575b, reason=usual_arith>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707))));
-// DEFAULT-NEXT:         if read<bool>(%196)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %198: bool [synthetic];
+// DEFAULT-NEXT:             write<bool>(%[[VALUE119]], ne<i575b>(read<i575b>(%[[VALUE120]]), widen<i575b, reason=usual_arith>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE119]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE121:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %58 __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %59 __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i574b, overflow=ub>(const<i574b>(20263258027145541347005514871938569231358927704236809883668741851321168433670480594273940614283839738125120292424689828120954658857299483460682957837178666219043928324493674)));
-// DEFAULT-NEXT:             let %199: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%58)), addr_of<ptr<i575b>>(%10), read<i575b>(deref(addr_of<ptr<i575b>>(%59))));
-// DEFAULT-NEXT:             write<bool>(%198, read<bool>(%199));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_ptr_4:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_compare_exchange_tmp_4:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = widen<i575b, reason=assign>(neg<i574b, overflow=ub>(const<i574b>(20263258027145541347005514871938569231358927704236809883668741851321168433670480594273940614283839738125120292424689828120954658857299483460682957837178666219043928324493674)));
+// DEFAULT-NEXT:             let %[[VALUE122:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=false, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_4]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_4]]))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE121]], read<bool>(%[[VALUE122]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if not<bool>(read<bool>(%198))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %200: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%10), widen<i575b, reason=usual_arith>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707)))
-// DEFAULT-NEXT:             write<bool>(%200, const<bool>(true));
+// DEFAULT-NEXT:         if not<bool>(read<bool>(%[[VALUE121]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE123:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE_count]]), widen<i575b, reason=usual_arith>(const<i573b>(8894166061872682036448354332319628975793195843703235778626260413018342611721096976767565811189387129127069300488196032026080940074010266394902215699511191435840967345778707)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE123]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %201: i575b [synthetic];
+// DEFAULT-NEXT:             let %[[VALUE124:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %60 __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:                 let %61 __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%61)), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%60))));
-// DEFAULT-NEXT:                 write<i575b>(%201, read<i575b>(%61));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_ptr_8:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_load_tmp_8:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
+// DEFAULT-NEXT:                 write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_8]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_8]]))));
+// DEFAULT-NEXT:                 write<i575b>(%[[VALUE124]], read<i575b>(%[[VALUE___atomic_load_tmp_8]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<bool>(%200, ne<i575b>(read<i575b>(%201), widen<i575b, reason=usual_arith>(neg<i574b, overflow=ub>(const<i574b>(20263258027145541347005514871938569231358927704236809883668741851321168433670480594273940614283839738125120292424689828120954658857299483460682957837178666219043928324493674)))));
-// DEFAULT-NEXT:         if read<bool>(%200)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %202: i575b [synthetic];
+// DEFAULT-NEXT:             write<bool>(%[[VALUE123]], ne<i575b>(read<i575b>(%[[VALUE124]]), widen<i575b, reason=usual_arith>(neg<i574b, overflow=ub>(const<i574b>(20263258027145541347005514871938569231358927704236809883668741851321168433670480594273940614283839738125120292424689828120954658857299483460682957837178666219043928324493674)))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE123]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE125:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %62 __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %63 __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%63)), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%62))));
-// DEFAULT-NEXT:             write<i575b>(%202, read<i575b>(%63));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_9:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_9:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_9]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_9]]))));
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE125]], read<i575b>(%[[VALUE___atomic_load_tmp_9]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<i575b>(%10, read<i575b>(%202));
-// DEFAULT-NEXT:         do %75
-// DEFAULT-NEXT:             write<i575b>(%11, add<i575b, overflow=ub>(read<i575b>(%10), widen<i575b, reason=usual_arith>(const<i571b>(3438682542819842029328613486899299339199839206022263296398180581126218550036955367421469273900216774711772362599086182416923053671263751262393559525082445581168420546542404))));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE125]]));
+// DEFAULT-NEXT:         do %[[VALUE126:[0-9]+]]
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE_res]], add<i575b, overflow=ub>(read<i575b>(%[[VALUE_count]]), widen<i575b, reason=usual_arith>(const<i571b>(3438682542819842029328613486899299339199839206022263296398180581126218550036955367421469273900216774711772362599086182416923053671263751262393559525082445581168420546542404))));
 // DEFAULT-NEXT:         while {
-// DEFAULT-NEXT:             let %203: bool [synthetic];
+// DEFAULT-NEXT:             let %[[VALUE127:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %64 __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:                 let %65 __atomic_compare_exchange_tmp: i575b [storage=automatic] = read<i575b>(%11);
-// DEFAULT-NEXT:                 let %204: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=true, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%64)), addr_of<ptr<i575b>>(%10), read<i575b>(deref(addr_of<ptr<i575b>>(%65))));
-// DEFAULT-NEXT:                 write<bool>(%203, read<bool>(%204));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_ptr_5:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_tmp_5:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = read<i575b>(%[[VALUE_res]]);
+// DEFAULT-NEXT:                 let %[[VALUE128:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=true, success=seq_cst, failure=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_5]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_5]]))));
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE127]], read<bool>(%[[VALUE128]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             yield not<bool>(read<bool>(%203));
+// DEFAULT-NEXT:             yield not<bool>(read<bool>(%[[VALUE127]]));
 // DEFAULT-NEXT:         };
-// DEFAULT-NEXT:         let %205: i575b [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE129:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %66 __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %67 __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%67)), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%66))));
-// DEFAULT-NEXT:             write<i575b>(%205, read<i575b>(%67));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_10:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_10:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_10]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_10]]))));
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE129]], read<i575b>(%[[VALUE___atomic_load_tmp_10]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%205), widen<i575b, reason=usual_arith>(neg<i574b, overflow=ub>(const<i574b>(16824575484325699317676901385039269892159088498214546587270561270194949883633525226852471340383622963413347929825603645704031605186035732198289398312096220637875507777951270))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         let %206: i575b [synthetic];
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE129]]), widen<i575b, reason=usual_arith>(neg<i574b, overflow=ub>(const<i574b>(16824575484325699317676901385039269892159088498214546587270561270194949883633525226852471340383622963413347929825603645704031605186035732198289398312096220637875507777951270))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE130:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %68 __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %69 __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%69)), read<i575b, atomic=acquire>(deref(read<ptr<atomic i575b>>(%68))));
-// DEFAULT-NEXT:             write<i575b>(%206, read<i575b>(%69));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_11:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_11:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_11]])), read<i575b, atomic=acquire>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_11]]))));
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE130]], read<i575b>(%[[VALUE___atomic_load_tmp_11]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<i575b>(%10, read<i575b>(%206));
-// DEFAULT-NEXT:         do %76
-// DEFAULT-NEXT:             write<i575b>(%11, add<i575b, overflow=ub>(read<i575b>(%10), const<i575b>(55351299008567209999272942257960316150846002020561006740901388462123844029522178721330031429855007927083338249659817829635668878607777961512926342979905691183772323299904096)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_count]], read<i575b>(%[[VALUE130]]));
+// DEFAULT-NEXT:         do %[[VALUE131:[0-9]+]]
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE_res]], add<i575b, overflow=ub>(read<i575b>(%[[VALUE_count]]), const<i575b>(55351299008567209999272942257960316150846002020561006740901388462123844029522178721330031429855007927083338249659817829635668878607777961512926342979905691183772323299904096)));
 // DEFAULT-NEXT:         while {
-// DEFAULT-NEXT:             let %207: bool [synthetic];
+// DEFAULT-NEXT:             let %[[VALUE132:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %70 __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:                 let %71 __atomic_compare_exchange_tmp: i575b [storage=automatic] = read<i575b>(%11);
-// DEFAULT-NEXT:                 let %208: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=true, success=relaxed, failure=relaxed>(deref(read<ptr<atomic i575b>>(%70)), addr_of<ptr<i575b>>(%10), read<i575b>(deref(addr_of<ptr<i575b>>(%71))));
-// DEFAULT-NEXT:                 write<bool>(%207, read<bool>(%208));
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_ptr_6:[0-9]+]] __atomic_compare_exchange_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:                 let %[[VALUE___atomic_compare_exchange_tmp_6:[0-9]+]] __atomic_compare_exchange_tmp: i575b [storage=automatic] = read<i575b>(%[[VALUE_res]]);
+// DEFAULT-NEXT:                 let %[[VALUE133:[0-9]+]]: bool [synthetic] = compare_exchange<i575b, form=write_back, weak=true, success=relaxed, failure=relaxed>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_compare_exchange_ptr_6]])), addr_of<ptr<i575b>>(%[[VALUE_count]]), read<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_compare_exchange_tmp_6]]))));
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE132]], read<bool>(%[[VALUE133]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             yield not<bool>(read<bool>(%207));
+// DEFAULT-NEXT:             yield not<bool>(read<bool>(%[[VALUE132]]));
 // DEFAULT-NEXT:         };
-// DEFAULT-NEXT:         let %209: i575b [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE134:[0-9]+]]: i575b [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %72 __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%9);
-// DEFAULT-NEXT:             let %73 __atomic_load_tmp: i575b [storage=automatic];
-// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%73)), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%72))));
-// DEFAULT-NEXT:             write<i575b>(%209, read<i575b>(%73));
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_ptr_12:[0-9]+]] __atomic_load_ptr: ptr<atomic i575b> [storage=automatic] = addr_of<ptr<atomic i575b>>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE___atomic_load_tmp_12:[0-9]+]] __atomic_load_tmp: i575b [storage=automatic];
+// DEFAULT-NEXT:             write<i575b>(deref(addr_of<ptr<i575b>>(%[[VALUE___atomic_load_tmp_12]])), read<i575b, atomic=seq_cst>(deref(read<ptr<atomic i575b>>(%[[VALUE___atomic_load_ptr_12]]))));
+// DEFAULT-NEXT:             write<i575b>(%[[VALUE134]], read<i575b>(%[[VALUE___atomic_load_tmp_12]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%209), const<i575b>(38526723524241510681596040872921046258686913522346460153630827191928894145888653494477560089471384963669990319834214183931637273421742229314636944667809470545896815521952826))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:         if ne<i575b>(read<i575b>(%[[VALUE134]]), const<i575b>(38526723524241510681596040872921046258686913522346460153630827191928894145888653494477560089471384963669990319834214183931637273421742229314636944667809470545896815521952826))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %74 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%18);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%23);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%26);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%27);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%28);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%29);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%30);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%31);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%32);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%33);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_fetch_add]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_fetch_sub]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_fetch_and]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_fetch_xor]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_fetch_or]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_add]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_sub]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_and]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_xor]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_or]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_exchange]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

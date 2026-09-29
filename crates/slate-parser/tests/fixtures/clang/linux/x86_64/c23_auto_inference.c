@@ -112,6 +112,14 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // SELF: ·        ─────────────────
 // SELF: 55 │ #endif
 // SELF: ╰────
+// SELF: Error:
+// SELF: × 'auto' type inference is not allowed here
+// SELF: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:54:3]
+// SELF: 53 │ #ifdef SELF
+// SELF: 54 │   auto z = 1 + sizeof(z);
+// SELF: ·   ───────────────────────
+// SELF: 55 │ #endif
+// SELF: ╰────
 // SLATE-FILECHECK-END SELF
 // SLATE-FILECHECK-BEGIN NO_INIT
 // NO_INIT: Error:   × semantic analysis failed
@@ -121,6 +129,14 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // NO_INIT: 56 │ #ifdef NO_INIT
 // NO_INIT: 57 │   auto w = 1, v;
 // NO_INIT: ·               ─
+// NO_INIT: 58 │ #endif
+// NO_INIT: ╰────
+// NO_INIT: Error:
+// NO_INIT: × 'auto' type inference is not allowed here
+// NO_INIT: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:57:3]
+// NO_INIT: 56 │ #ifdef NO_INIT
+// NO_INIT: 57 │   auto w = 1, v;
+// NO_INIT: ·   ──────────────
 // NO_INIT: 58 │ #endif
 // NO_INIT: ╰────
 // SLATE-FILECHECK-END NO_INIT
@@ -134,6 +150,14 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // LIST: ·        ───────
 // LIST: 61 │ #endif
 // LIST: ╰────
+// LIST: Error:
+// LIST: × 'auto' type inference is not allowed here
+// LIST: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:60:3]
+// LIST: 59 │ #ifdef LIST
+// LIST: 60 │   auto l = {1};
+// LIST: ·   ─────────────
+// LIST: 61 │ #endif
+// LIST: ╰────
 // SLATE-FILECHECK-END LIST
 // SLATE-FILECHECK-BEGIN PARAMS
 // PARAMS: Error:   × semantic analysis failed
@@ -143,6 +167,14 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // PARAMS: 62 │ #ifdef PARAMS
 // PARAMS: 63 │   auto (*f)(int) = h;
 // PARAMS: ·        ─────────────
+// PARAMS: 64 │ #endif
+// PARAMS: ╰────
+// PARAMS: Error: -Wincompatible-pointer-types
+// PARAMS: × incompatible pointer types
+// PARAMS: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:63:20]
+// PARAMS: 62 │ #ifdef PARAMS
+// PARAMS: 63 │   auto (*f)(int) = h;
+// PARAMS: ·                    ─
 // PARAMS: 64 │ #endif
 // PARAMS: ╰────
 // SLATE-FILECHECK-END PARAMS
@@ -156,6 +188,14 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // EXTENT: ·        ──────────────
 // EXTENT: 67 │ #endif
 // EXTENT: ╰────
+// EXTENT: Error: -Wincompatible-pointer-types
+// EXTENT: × incompatible pointer types
+// EXTENT: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:66:18]
+// EXTENT: 65 │ #ifdef EXTENT
+// EXTENT: 66 │   auto (*e)[4] = &arr;
+// EXTENT: ·                  ────
+// EXTENT: 67 │ #endif
+// EXTENT: ╰────
 // SLATE-FILECHECK-END EXTENT
 // SLATE-FILECHECK-BEGIN TOP_ARRAY
 // TOP_ARRAY: Error:   × semantic analysis failed
@@ -165,6 +205,14 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // TOP_ARRAY: 68 │ #ifdef TOP_ARRAY
 // TOP_ARRAY: 69 │   auto t[3] = arr;
 // TOP_ARRAY: ·        ──────────
+// TOP_ARRAY: 70 │ #endif
+// TOP_ARRAY: ╰────
+// TOP_ARRAY: Error:
+// TOP_ARRAY: × 'auto' type inference is not allowed here
+// TOP_ARRAY: ╭─[tests/fixtures/clang/linux/x86_64/c23_auto_inference.c:69:3]
+// TOP_ARRAY: 68 │ #ifdef TOP_ARRAY
+// TOP_ARRAY: 69 │   auto t[3] = arr;
+// TOP_ARRAY: ·   ────────────────
 // TOP_ARRAY: 70 │ #endif
 // TOP_ARRAY: ╰────
 // SLATE-FILECHECK-END TOP_ARRAY
@@ -202,60 +250,60 @@ void deduce(int n, int *ip, const int *cip, struct S s) {
 // VALID-NEXT:         storage d64 [size=8, align=8];
 // VALID-NEXT:         storage d128 [size=16, align=16];
 // VALID-NEXT:     }
-// VALID-NEXT:     type @type0 S = struct {
+// VALID-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // VALID-NEXT:         field0 b: u32 : 3;
 // VALID-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// VALID-NEXT:     global %1 ai: atomic i32 [storage=static] [linkage=external];
-// VALID-NEXT:     global %2 ci: i32 [storage=static] [const] = const<i32>(1) [linkage=external];
-// VALID-NEXT:     global %3 arr: array<i32, 3> [storage=static] [linkage=external];
-// VALID-NEXT:     global %4 carr: array<i32, 2> [storage=static] [const] [linkage=external];
-// VALID-NEXT:     global %7 file_scope: f64 [storage=static] = const<f64>(1.5) [linkage=external];
-// VALID-NEXT:     global %8 internal: ptr<f64> [storage=static] = addr_of<ptr<f64>>(%7) [linkage=internal];
-// VALID-NEXT:     global %38 .str38: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([116, 101, 120, 116, 0]) [linkage=internal];
-// VALID-NEXT:     global %24 a10: i32 [storage=static] = const<i32>(2) [linkage=internal];
-// VALID-NEXT:     fn %5 @g(%35 <unnamed>: i32) -> i32 [linkage=external];
-// VALID-NEXT:     fn %6 @h(%36 <unnamed>: i64) -> i64 [linkage=external];
-// VALID-NEXT:     fn %9 @deduce(%10 n: i32, %11 ip: ptr<i32>, %12 cip: ptr<const i32>, %13 s: @type0) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, native_c) -> void] [fallthrough=ret_void] {
-// VALID-NEXT:         let %37: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%10)));
-// VALID-NEXT:         let %14 vla: vla<i32, %37> [storage=automatic];
-// VALID-NEXT:         let %15 a1: i32 [storage=automatic] = read<i32>(%2);
-// VALID-NEXT:         let %16 a2: atomic i32 [storage=automatic] = read<i32, atomic=seq_cst>(%1);
-// VALID-NEXT:         let %17 a3: ptr<const i32> [storage=automatic] = array_decay<ptr<const i32>, length=Some(2)>(%4);
-// VALID-NEXT:         let %18 a4: ptr<fn(i32) -> i32> [storage=automatic] = function_decay<ptr<fn(i32) -> i32>>(%5);
-// VALID-NEXT:         let %19 a5: i32 [storage=automatic] = reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%13)));
-// VALID-NEXT:         let %20 a6: i32 [storage=automatic] [const] = const<i32>(1);
-// VALID-NEXT:         let %21 a7: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=None>(%14);
-// VALID-NEXT:         let %22 a8: ptr<vla<i32, %37>> [storage=automatic] = addr_of<ptr<vla<i32, %37>>>(%14);
-// VALID-NEXT:         let %23 a9: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(5)>(%38);
-// VALID-NEXT:         let %25 p1: ptr<const i32> [storage=automatic] = pointer_cast<ptr<const i32>, reason=assign>(read<ptr<i32>>(%11));
-// VALID-NEXT:         let %26 p2: ptr<const i32> [storage=automatic] = read<ptr<const i32>>(%12);
-// VALID-NEXT:         let %27 p3: ptr<i32> [storage=automatic] [const] = read<ptr<i32>>(%11);
-// VALID-NEXT:         let %28 p4: ptr<ptr<i32>> [storage=automatic] = addr_of<ptr<ptr<i32>>>(%11);
-// VALID-NEXT:         let %29 p5: ptr<fn(i32) -> i32> [storage=automatic] = function_decay<ptr<fn(i32) -> i32>>(%5);
-// VALID-NEXT:         let %30 p6: ptr<array<i32, 3>> [storage=automatic] = addr_of<ptr<array<i32, 3>>>(%3);
-// VALID-NEXT:         let %31 m1: i32 [storage=automatic] = const<i32>(1);
-// VALID-NEXT:         let %32 m2: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%31);
-// VALID-NEXT:         let %33 q1: ptr<const i32> [storage=automatic] = pointer_cast<ptr<const i32>, reason=assign>(read<ptr<i32>>(%11));
-// VALID-NEXT:         let %34 q2: ptr<const i32> [storage=automatic] = read<ptr<const i32>>(%12);
-// VALID-NEXT:         read<i32>(%15);
-// VALID-NEXT:         read<i32, atomic=seq_cst>(%16);
-// VALID-NEXT:         read<ptr<const i32>>(%17);
-// VALID-NEXT:         read<ptr<fn(i32) -> i32>>(%18);
-// VALID-NEXT:         read<i32>(%19);
-// VALID-NEXT:         read<i32>(%20);
-// VALID-NEXT:         read<ptr<i32>>(%21);
-// VALID-NEXT:         read<ptr<vla<i32, %37>>>(%22);
-// VALID-NEXT:         read<ptr<i8>>(%23);
-// VALID-NEXT:         read<i32>(%24);
-// VALID-NEXT:         read<ptr<const i32>>(%25);
-// VALID-NEXT:         read<ptr<const i32>>(%26);
-// VALID-NEXT:         read<ptr<i32>>(%27);
-// VALID-NEXT:         read<ptr<ptr<i32>>>(%28);
-// VALID-NEXT:         read<ptr<fn(i32) -> i32>>(%29);
-// VALID-NEXT:         read<ptr<array<i32, 3>>>(%30);
-// VALID-NEXT:         read<ptr<i32>>(%32);
-// VALID-NEXT:         read<ptr<const i32>>(%33);
-// VALID-NEXT:         read<ptr<const i32>>(%34);
+// VALID-NEXT:     global %[[VALUE_ai:[0-9]+]] ai: atomic i32 [storage=static] [linkage=external];
+// VALID-NEXT:     global %[[VALUE_ci:[0-9]+]] ci: i32 [storage=static] [const] = const<i32>(1) [linkage=external];
+// VALID-NEXT:     global %[[VALUE_arr:[0-9]+]] arr: array<i32, 3> [storage=static] [linkage=external];
+// VALID-NEXT:     global %[[VALUE_carr:[0-9]+]] carr: array<i32, 2> [storage=static] [const] [linkage=external];
+// VALID-NEXT:     global %[[VALUE_file_scope:[0-9]+]] file_scope: f64 [storage=static] = const<f64>(1.5) [linkage=external];
+// VALID-NEXT:     global %[[VALUE_internal:[0-9]+]] internal: ptr<f64> [storage=static] = addr_of<ptr<f64>>(%[[VALUE_file_scope]]) [linkage=internal];
+// VALID-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([116, 101, 120, 116, 0]) [linkage=internal];
+// VALID-NEXT:     global %[[VALUE_a10:[0-9]+]] a10: i32 [storage=static] = const<i32>(2) [linkage=internal];
+// VALID-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// VALID-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(%[[VALUE1:[0-9]+]] <unnamed>: i64) -> i64 [linkage=external];
+// VALID-NEXT:     fn %[[VALUE_deduce:[0-9]+]] @deduce(%[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_ip:[0-9]+]] ip: ptr<i32>, %[[VALUE_cip:[0-9]+]] cip: ptr<const i32>, %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]]) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, native_c) -> void] [fallthrough=ret_void] {
+// VALID-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n]])));
+// VALID-NEXT:         let %[[VALUE_vla:[0-9]+]] vla: vla<i32, %[[VALUE2]]> [storage=automatic];
+// VALID-NEXT:         let %[[VALUE_a1:[0-9]+]] a1: i32 [storage=automatic] = read<i32>(%[[VALUE_ci]]);
+// VALID-NEXT:         let %[[VALUE_a2:[0-9]+]] a2: atomic i32 [storage=automatic] = read<i32, atomic=seq_cst>(%[[VALUE_ai]]);
+// VALID-NEXT:         let %[[VALUE_a3:[0-9]+]] a3: ptr<const i32> [storage=automatic] = array_decay<ptr<const i32>, length=Some(2)>(%[[VALUE_carr]]);
+// VALID-NEXT:         let %[[VALUE_a4:[0-9]+]] a4: ptr<fn(i32) -> i32> [storage=automatic] = function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_g]]);
+// VALID-NEXT:         let %[[VALUE_a5:[0-9]+]] a5: i32 [storage=automatic] = reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%[[VALUE_s]])));
+// VALID-NEXT:         let %[[VALUE_a6:[0-9]+]] a6: i32 [storage=automatic] [const] = const<i32>(1);
+// VALID-NEXT:         let %[[VALUE_a7:[0-9]+]] a7: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=None>(%[[VALUE_vla]]);
+// VALID-NEXT:         let %[[VALUE_a8:[0-9]+]] a8: ptr<vla<i32, %[[VALUE2]]>> [storage=automatic] = addr_of<ptr<vla<i32, %[[VALUE2]]>>>(%[[VALUE_vla]]);
+// VALID-NEXT:         let %[[VALUE_a9:[0-9]+]] a9: ptr<i8> [storage=automatic] = array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str]]);
+// VALID-NEXT:         let %[[VALUE_p1:[0-9]+]] p1: ptr<const i32> [storage=automatic] = pointer_cast<ptr<const i32>, reason=assign>(read<ptr<i32>>(%[[VALUE_ip]]));
+// VALID-NEXT:         let %[[VALUE_p2:[0-9]+]] p2: ptr<const i32> [storage=automatic] = read<ptr<const i32>>(%[[VALUE_cip]]);
+// VALID-NEXT:         let %[[VALUE_p3:[0-9]+]] p3: ptr<i32> [storage=automatic] [const] = read<ptr<i32>>(%[[VALUE_ip]]);
+// VALID-NEXT:         let %[[VALUE_p4:[0-9]+]] p4: ptr<ptr<i32>> [storage=automatic] = addr_of<ptr<ptr<i32>>>(%[[VALUE_ip]]);
+// VALID-NEXT:         let %[[VALUE_p5:[0-9]+]] p5: ptr<fn(i32) -> i32> [storage=automatic] = function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_g]]);
+// VALID-NEXT:         let %[[VALUE_p6:[0-9]+]] p6: ptr<array<i32, 3>> [storage=automatic] = addr_of<ptr<array<i32, 3>>>(%[[VALUE_arr]]);
+// VALID-NEXT:         let %[[VALUE_m1:[0-9]+]] m1: i32 [storage=automatic] = const<i32>(1);
+// VALID-NEXT:         let %[[VALUE_m2:[0-9]+]] m2: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_m1]]);
+// VALID-NEXT:         let %[[VALUE_q1:[0-9]+]] q1: ptr<const i32> [storage=automatic] = pointer_cast<ptr<const i32>, reason=assign>(read<ptr<i32>>(%[[VALUE_ip]]));
+// VALID-NEXT:         let %[[VALUE_q2:[0-9]+]] q2: ptr<const i32> [storage=automatic] = read<ptr<const i32>>(%[[VALUE_cip]]);
+// VALID-NEXT:         read<i32>(%[[VALUE_a1]]);
+// VALID-NEXT:         read<i32, atomic=seq_cst>(%[[VALUE_a2]]);
+// VALID-NEXT:         read<ptr<const i32>>(%[[VALUE_a3]]);
+// VALID-NEXT:         read<ptr<fn(i32) -> i32>>(%[[VALUE_a4]]);
+// VALID-NEXT:         read<i32>(%[[VALUE_a5]]);
+// VALID-NEXT:         read<i32>(%[[VALUE_a6]]);
+// VALID-NEXT:         read<ptr<i32>>(%[[VALUE_a7]]);
+// VALID-NEXT:         read<ptr<vla<i32, %[[VALUE2]]>>>(%[[VALUE_a8]]);
+// VALID-NEXT:         read<ptr<i8>>(%[[VALUE_a9]]);
+// VALID-NEXT:         read<i32>(%[[VALUE_a10]]);
+// VALID-NEXT:         read<ptr<const i32>>(%[[VALUE_p1]]);
+// VALID-NEXT:         read<ptr<const i32>>(%[[VALUE_p2]]);
+// VALID-NEXT:         read<ptr<i32>>(%[[VALUE_p3]]);
+// VALID-NEXT:         read<ptr<ptr<i32>>>(%[[VALUE_p4]]);
+// VALID-NEXT:         read<ptr<fn(i32) -> i32>>(%[[VALUE_p5]]);
+// VALID-NEXT:         read<ptr<array<i32, 3>>>(%[[VALUE_p6]]);
+// VALID-NEXT:         read<ptr<i32>>(%[[VALUE_m2]]);
+// VALID-NEXT:         read<ptr<const i32>>(%[[VALUE_q1]]);
+// VALID-NEXT:         read<ptr<const i32>>(%[[VALUE_q2]]);
 // VALID-NEXT:     }
 // VALID-NEXT: }
 // SLATE-FILECHECK-END VALID

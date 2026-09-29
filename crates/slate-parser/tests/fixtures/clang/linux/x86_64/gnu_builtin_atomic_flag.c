@@ -38,18 +38,18 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %7 .str7: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 flag: bool [storage=automatic] = const<bool>(false);
-// DEFAULT-NEXT:         let %4 first: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %8: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<bool>>(%3)), const<bool>(true));
-// DEFAULT-NEXT:         write<i32>(%4, from_bool<i32, reason=assign>(read<bool>(%8)));
-// DEFAULT-NEXT:         let %5 second: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %9: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<bool>>(%3)), const<bool>(true));
-// DEFAULT-NEXT:         write<i32>(%5, from_bool<i32, reason=assign>(read<bool>(%9)));
-// DEFAULT-NEXT:         write<bool, atomic=seq_cst>(deref(addr_of<ptr<bool>>(%3)), const<bool>(false));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%7)), read<i32>(%4), read<i32>(%5), from_bool<i32, reason=vararg>(not<bool>(read<bool>(%3))));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_flag:[0-9]+]] flag: bool [storage=automatic] = const<bool>(false);
+// DEFAULT-NEXT:         let %[[VALUE_first:[0-9]+]] first: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<bool>>(%[[VALUE_flag]])), const<bool>(true));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_first]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE0]])));
+// DEFAULT-NEXT:         let %[[VALUE_second:[0-9]+]] second: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<bool>>(%[[VALUE_flag]])), const<bool>(true));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_second]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE1]])));
+// DEFAULT-NEXT:         write<bool, atomic=seq_cst>(deref(addr_of<ptr<bool>>(%[[VALUE_flag]])), const<bool>(false));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), read<i32>(%[[VALUE_first]]), read<i32>(%[[VALUE_second]]), from_bool<i32, reason=vararg>(not<bool>(read<bool>(%[[VALUE_flag]]))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

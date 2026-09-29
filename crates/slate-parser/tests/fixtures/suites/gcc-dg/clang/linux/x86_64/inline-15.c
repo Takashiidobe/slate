@@ -32,7 +32,7 @@ inline int func2 (void); /* { dg-warning "never defined" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @func1() -> i32 [linkage=external] [inline=hint];
-// DEFAULT-NEXT:     fn %1 @func2() -> i32 [linkage=external] [inline=hint];
+// DEFAULT-NEXT:     fn %[[VALUE_func1:[0-9]+]] @func1() -> i32 [linkage=external] [inline=hint];
+// DEFAULT-NEXT:     fn %[[VALUE_func2:[0-9]+]] @func2() -> i32 [linkage=external] [inline=hint];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -57,22 +57,22 @@ __attribute__((format(printf, 1, 2))) void static i (const char *, ...); /* { dg
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 x4 = i32;
-// DEFAULT-NEXT:     type @type1 x5 = i32;
-// DEFAULT-NEXT:     global %0 x0: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %1 x1: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     extern %2 x2: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %3 x3: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %12 x10: i32 [storage=static] [const] [linkage=internal];
-// DEFAULT-NEXT:     fn %6 @g(%15 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 x6: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %9 x7: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %10 x8: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %11 x9: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%6, add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%8), read<i32>(%9)), read<i32>(%10)), read<i32>(%11)));
+// DEFAULT-NEXT:     type @type[[TYPE_x4:[0-9]+]] x4 = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_x5:[0-9]+]] x5 = i32;
+// DEFAULT-NEXT:     global %[[VALUE_x0:[0-9]+]] x0: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_x1:[0-9]+]] x1: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     extern %[[VALUE_x2:[0-9]+]] x2: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_x3:[0-9]+]] x3: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x10:[0-9]+]] x10: i32 [storage=static] [const] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_x6:[0-9]+]] x6: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_x7:[0-9]+]] x7: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_x8:[0-9]+]] x8: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_x9:[0-9]+]] x9: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_g]], add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_x6]]), read<i32>(%[[VALUE_x7]])), read<i32>(%[[VALUE_x8]])), read<i32>(%[[VALUE_x9]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @h(%16 <unnamed>: ptr<const i8>, ...) -> void [linkage=internal];
-// DEFAULT-NEXT:     fn %14 @i(%17 <unnamed>: ptr<const i8>, ...) -> void [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> void [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_i:[0-9]+]] @i(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> void [linkage=internal];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

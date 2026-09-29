@@ -43,16 +43,16 @@ void foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: array<i64, 10>;
 // DEFAULT-NEXT:     } [size=80, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 A = @type0;
-// DEFAULT-NEXT:     type @type2 B = ptr<fn(i32) -> i32>;
-// DEFAULT-NEXT:     global %5 a: @type0 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @bar(%6 <unnamed>: ptr<@type0>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%2, addr_of<ptr<@type0>>(%5));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(pointer_cast<ptr<fn(i32) -> i32>, reason=explicit>(addr_of<ptr<@type0>>(%5)), const<i32>(1));
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = ptr<fn(i32) -> i32>;
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE0]] [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE0]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE0]]>) -> void>(%[[VALUE_bar]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(pointer_cast<ptr<fn(i32) -> i32>, reason=explicit>(addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_a]])), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -35,9 +35,9 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 cf: f32 [storage=automatic] = const<f32>(3.0);
-// DEFAULT-NEXT:         let %2 d64: d64 [storage=automatic] = float_convert<d64, reason=assign, rounding=nearest_even, exceptions=observable>(read<f32>(%1));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_cf:[0-9]+]] cf: f32 [storage=automatic] = const<f32>(3.0);
+// DEFAULT-NEXT:         let %[[VALUE_d64:[0-9]+]] d64: d64 [storage=automatic] = float_convert<d64, reason=assign, rounding=nearest_even, exceptions=observable>(read<f32>(%[[VALUE_cf]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

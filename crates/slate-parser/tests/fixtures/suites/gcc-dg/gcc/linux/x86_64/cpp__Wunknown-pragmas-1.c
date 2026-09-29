@@ -58,12 +58,12 @@ FOO(int bar7; _Pragma("unknown4")) /* { dg-warning "-:unknown4" "unknown4" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 bar1: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 bar2: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 bar3: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 bar4: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 bar5: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 bar6: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 bar7: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bar1:[0-9]+]] bar1: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bar2:[0-9]+]] bar2: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bar3:[0-9]+]] bar3: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bar4:[0-9]+]] bar4: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bar5:[0-9]+]] bar5: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bar6:[0-9]+]] bar6: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bar7:[0-9]+]] bar7: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

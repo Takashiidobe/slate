@@ -198,15 +198,15 @@ int val__thumb__[__thumb__];
 // CHECK-NEXT:         storage d64 [size=8, align=8];
 // CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     global %0 val__ARM_ARCH: array<i32, 8> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %1 val__ARM_FEATURE_DIRECTED_ROUNDING: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %2 val__ARM_FEATURE_FMA: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %3 val__ARM_FEATURE_IDIV: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %4 val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %5 val__ARM_FEATURE_UNALIGNED: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %6 val__ARM_FP: array<i32, 14> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %7 val__ARM_NEON: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %8 val__ARM_NEON_FP: array<i32, 14> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %9 val__ARM_NEON_SVE_BRIDGE: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_ARCH:[0-9]+]] val__ARM_ARCH: array<i32, 8> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FEATURE_DIRECTED_ROUNDING:[0-9]+]] val__ARM_FEATURE_DIRECTED_ROUNDING: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FEATURE_FMA:[0-9]+]] val__ARM_FEATURE_FMA: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FEATURE_IDIV:[0-9]+]] val__ARM_FEATURE_IDIV: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FEATURE_NUMERIC_MAXMIN:[0-9]+]] val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FEATURE_UNALIGNED:[0-9]+]] val__ARM_FEATURE_UNALIGNED: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FP:[0-9]+]] val__ARM_FP: array<i32, 14> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_NEON:[0-9]+]] val__ARM_NEON: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_NEON_FP:[0-9]+]] val__ARM_NEON_FP: array<i32, 14> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_NEON_SVE_BRIDGE:[0-9]+]] val__ARM_NEON_SVE_BRIDGE: array<i32, 1> [storage=static] [linkage=external];
 // CHECK-NEXT: }
 // SLATE-FILECHECK-END CHECK

@@ -74,20 +74,20 @@ void deduce(int *ip) {
 // VALID-NEXT:         storage d64 [size=8, align=8];
 // VALID-NEXT:         storage d128 [size=16, align=16];
 // VALID-NEXT:     }
-// VALID-NEXT:     global %0 ci: i32 [storage=static] [const] = const<i32>(1) [linkage=external];
-// VALID-NEXT:     global %1 arr: array<i32, 3> [storage=static] [linkage=external];
-// VALID-NEXT:     global %2 ai: atomic i32 [storage=static] [linkage=external];
-// VALID-NEXT:     global %8 a4: i32 [storage=static] = const<i32>(4) [linkage=internal];
-// VALID-NEXT:     fn %3 @deduce(%4 ip: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// VALID-NEXT:         let %5 a1: i32 [storage=automatic] = read<i32>(%0);
-// VALID-NEXT:         let %6 a2: ptr<i32> [storage=automatic] [const] = array_decay<ptr<i32>, length=Some(3)>(%1);
-// VALID-NEXT:         let %7 a3: ptr<i32> [storage=automatic] = read<ptr<i32>>(%4);
-// VALID-NEXT:         let %9 a5: i32 [storage=automatic] = read<i32, atomic=seq_cst>(%2);
-// VALID-NEXT:         read<i32>(%5);
-// VALID-NEXT:         read<ptr<i32>>(%6);
-// VALID-NEXT:         read<ptr<i32>>(%7);
-// VALID-NEXT:         read<i32>(%8);
-// VALID-NEXT:         read<i32>(%9);
+// VALID-NEXT:     global %[[VALUE_ci:[0-9]+]] ci: i32 [storage=static] [const] = const<i32>(1) [linkage=external];
+// VALID-NEXT:     global %[[VALUE_arr:[0-9]+]] arr: array<i32, 3> [storage=static] [linkage=external];
+// VALID-NEXT:     global %[[VALUE_ai:[0-9]+]] ai: atomic i32 [storage=static] [linkage=external];
+// VALID-NEXT:     global %[[VALUE_a4:[0-9]+]] a4: i32 [storage=static] = const<i32>(4) [linkage=internal];
+// VALID-NEXT:     fn %[[VALUE_deduce:[0-9]+]] @deduce(%[[VALUE_ip:[0-9]+]] ip: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// VALID-NEXT:         let %[[VALUE_a1:[0-9]+]] a1: i32 [storage=automatic] = read<i32>(%[[VALUE_ci]]);
+// VALID-NEXT:         let %[[VALUE_a2:[0-9]+]] a2: ptr<i32> [storage=automatic] [const] = array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_arr]]);
+// VALID-NEXT:         let %[[VALUE_a3:[0-9]+]] a3: ptr<i32> [storage=automatic] = read<ptr<i32>>(%[[VALUE_ip]]);
+// VALID-NEXT:         let %[[VALUE_a5:[0-9]+]] a5: i32 [storage=automatic] = read<i32, atomic=seq_cst>(%[[VALUE_ai]]);
+// VALID-NEXT:         read<i32>(%[[VALUE_a1]]);
+// VALID-NEXT:         read<ptr<i32>>(%[[VALUE_a2]]);
+// VALID-NEXT:         read<ptr<i32>>(%[[VALUE_a3]]);
+// VALID-NEXT:         read<i32>(%[[VALUE_a4]]);
+// VALID-NEXT:         read<i32>(%[[VALUE_a5]]);
 // VALID-NEXT:     }
 // VALID-NEXT: }
 // SLATE-FILECHECK-END VALID

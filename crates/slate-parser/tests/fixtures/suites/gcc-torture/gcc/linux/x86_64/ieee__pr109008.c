@@ -40,16 +40,16 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 eps: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 d: f64 [storage=automatic] = add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(1.0), read<f64>(%1));
-// DEFAULT-NEXT:         if eq<f64, exceptions=observable>(read<f64>(%2), const<f64>(1.0))
-// DEFAULT-NEXT:             return read<f64>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_eps:[0-9]+]] eps: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: f64 [storage=automatic] = add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(1.0), read<f64>(%[[VALUE_eps]]));
+// DEFAULT-NEXT:         if eq<f64, exceptions=observable>(read<f64>(%[[VALUE_d]]), const<f64>(1.0))
+// DEFAULT-NEXT:             return read<f64>(%[[VALUE_eps]]);
 // DEFAULT-NEXT:         return const<f64>(0.0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if eq<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%0, div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f80>(2.22044604925031308085E-16)), const<f64>(8.0))), const<f64>(0.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if eq<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_foo]], div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=observable>(const<f80>(2.22044604925031308085E-16)), const<f64>(8.0))), const<f64>(0.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

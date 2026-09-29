@@ -68,38 +68,38 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%22 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @t1(%3 f: ptr<f32>, %4 i: i32, %5 f1: ptr<fn(f64) -> void>, %6 f2: ptr<fn(f32, f32) -> void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(f64) -> void>(read<ptr<fn(f64) -> void>>(%5), const<f64>(3.0));
-// DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%3), read<i32>(%4))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%3), add<i32, overflow=ub>(read<i32>(%4), const<i32>(1))))));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(read<ptr<fn(f32, f32) -> void>>(%6), const<f32>(2.5), const<f32>(3.5));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_t1:[0-9]+]] @t1(%[[VALUE_f:[0-9]+]] f: ptr<f32>, %[[VALUE_i:[0-9]+]] i: i32, %[[VALUE_f1:[0-9]+]] f1: ptr<fn(f64) -> void>, %[[VALUE_f2:[0-9]+]] f2: ptr<fn(f32, f32) -> void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn(f64) -> void>(read<ptr<fn(f64) -> void>>(%[[VALUE_f1]]), const<f64>(3.0));
+// DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%[[VALUE_f]]), read<i32>(%[[VALUE_i]]))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%[[VALUE_f]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(1))))));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(read<ptr<fn(f32, f32) -> void>>(%[[VALUE_f2]]), const<f32>(2.5), const<f32>(3.5));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @t2(%8 f: ptr<f32>, %9 i: i32, %10 f1: ptr<fn(f64) -> void>, %11 f2: ptr<fn(f32, f32) -> void>, %12 f3: ptr<fn(f32) -> void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(f32) -> void>(read<ptr<fn(f32) -> void>>(%12), const<f32>(6.0));
-// DEFAULT-NEXT:         call<void, signature=fn(f64) -> void>(read<ptr<fn(f64) -> void>>(%10), const<f64>(3.0));
-// DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%8), read<i32>(%9))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%8), add<i32, overflow=ub>(read<i32>(%9), const<i32>(1))))));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(read<ptr<fn(f32, f32) -> void>>(%11), const<f32>(2.5), const<f32>(3.5));
+// DEFAULT-NEXT:     fn %[[VALUE_t2:[0-9]+]] @t2(%[[VALUE_f_2:[0-9]+]] f: ptr<f32>, %[[VALUE_i_2:[0-9]+]] i: i32, %[[VALUE_f1_2:[0-9]+]] f1: ptr<fn(f64) -> void>, %[[VALUE_f2_2:[0-9]+]] f2: ptr<fn(f32, f32) -> void>, %[[VALUE_f3:[0-9]+]] f3: ptr<fn(f32) -> void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn(f32) -> void>(read<ptr<fn(f32) -> void>>(%[[VALUE_f3]]), const<f32>(6.0));
+// DEFAULT-NEXT:         call<void, signature=fn(f64) -> void>(read<ptr<fn(f64) -> void>>(%[[VALUE_f1_2]]), const<f64>(3.0));
+// DEFAULT-NEXT:         write<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%[[VALUE_f_2]]), read<i32>(%[[VALUE_i_2]]))), read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(read<ptr<f32>>(%[[VALUE_f_2]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_i_2]]), const<i32>(1))))));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(read<ptr<fn(f32, f32) -> void>>(%[[VALUE_f2_2]]), const<f32>(2.5), const<f32>(3.5));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @f1(%14 d: f64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%14), const<f64>(3.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_f1_3:[0-9]+]] @f1(%[[VALUE_d:[0-9]+]] d: f64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%[[VALUE_d]]), const<f64>(3.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @f2(%16 f1: f32, %17 f2: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(ne<f32, exceptions=ignore>(read<f32>(%16), const<f32>(2.5)), ne<f32, exceptions=ignore>(read<f32>(%17), const<f32>(3.5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_f2_3:[0-9]+]] @f2(%[[VALUE_f1_4:[0-9]+]] f1: f32, %[[VALUE_f2_4:[0-9]+]] f2: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(ne<f32, exceptions=ignore>(read<f32>(%[[VALUE_f1_4]]), const<f32>(2.5)), ne<f32, exceptions=ignore>(read<f32>(%[[VALUE_f2_4]]), const<f32>(3.5)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @f3(%19 f: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(read<f32>(%19), const<f32>(6.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_f3_2:[0-9]+]] @f3(%[[VALUE_f_3:[0-9]+]] f: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(read<f32>(%[[VALUE_f_3]]), const<f32>(6.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %21 f: array<f32, 3> [storage=automatic] = aggregate<array<f32, 3>, zero_fill=false>(index0 = const<f32>(2.0), index1 = const<f32>(3.0), index2 = const<f32>(4.0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<f32>, i32, ptr<fn(f64) -> void>, ptr<fn(f32, f32) -> void>) -> i32>(%2, array_decay<ptr<f32>, length=Some(3)>(%21), const<i32>(0), function_decay<ptr<fn(f64) -> void>>(%13), function_decay<ptr<fn(f32, f32) -> void>>(%15));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<f32>, i32, ptr<fn(f64) -> void>, ptr<fn(f32, f32) -> void>, ptr<fn(f32) -> void>) -> i32>(%7, array_decay<ptr<f32>, length=Some(3)>(%21), const<i32>(1), function_decay<ptr<fn(f64) -> void>>(%13), function_decay<ptr<fn(f32, f32) -> void>>(%15), function_decay<ptr<fn(f32) -> void>>(%18));
-// DEFAULT-NEXT:         if logical_and<bool>(ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(3)>(%21), const<i32>(0)))), const<f32>(3.0)), ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(3)>(%21), const<i32>(1)))), const<f32>(4.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_f_4:[0-9]+]] f: array<f32, 3> [storage=automatic] = aggregate<array<f32, 3>, zero_fill=false>(index0 = const<f32>(2.0), index1 = const<f32>(3.0), index2 = const<f32>(4.0));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<f32>, i32, ptr<fn(f64) -> void>, ptr<fn(f32, f32) -> void>) -> i32>(%[[VALUE_t1]], array_decay<ptr<f32>, length=Some(3)>(%[[VALUE_f_4]]), const<i32>(0), function_decay<ptr<fn(f64) -> void>>(%[[VALUE_f1_3]]), function_decay<ptr<fn(f32, f32) -> void>>(%[[VALUE_f2_3]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<f32>, i32, ptr<fn(f64) -> void>, ptr<fn(f32, f32) -> void>, ptr<fn(f32) -> void>) -> i32>(%[[VALUE_t2]], array_decay<ptr<f32>, length=Some(3)>(%[[VALUE_f_4]]), const<i32>(1), function_decay<ptr<fn(f64) -> void>>(%[[VALUE_f1_3]]), function_decay<ptr<fn(f32, f32) -> void>>(%[[VALUE_f2_3]]), function_decay<ptr<fn(f32) -> void>>(%[[VALUE_f3_2]]));
+// DEFAULT-NEXT:         if logical_and<bool>(ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(3)>(%[[VALUE_f_4]]), const<i32>(0)))), const<f32>(3.0)), ne<f32, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(3)>(%[[VALUE_f_4]]), const<i32>(1)))), const<f32>(4.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

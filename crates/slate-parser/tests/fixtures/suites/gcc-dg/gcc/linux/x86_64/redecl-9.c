@@ -55,15 +55,15 @@ h (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 x: array<i32, 10> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: array<i32, 10> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @g() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 x: i32 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: i32 [storage=automatic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @h() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         const<u64>(40);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

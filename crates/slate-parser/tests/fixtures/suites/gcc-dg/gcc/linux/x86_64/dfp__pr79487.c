@@ -41,16 +41,16 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %1 a: d32 [storage=automatic] = int_to_float<d32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), const<i64>(1)));
-// DEFAULT-NEXT:         let %2 b: d32 [storage=automatic] = neg<d32>(const<d32>(9.223372e+18));
-// DEFAULT-NEXT:         if ne<d32, exceptions=observable>(sub<d32, rounding=nearest_even, exceptions=observable, contract=fast>(read<d32>(%2), read<d32>(%1)), const<d32>(0.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         let %3 c: d64 [storage=automatic] = int_to_float<d64, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), const<i64>(1)));
-// DEFAULT-NEXT:         let %4 d: d64 [storage=automatic] = neg<d64>(const<d64>(9.223372036854776e+18));
-// DEFAULT-NEXT:         if ne<d64, exceptions=observable>(sub<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(%4), read<d64>(%3)), const<d64>(0.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: d32 [storage=automatic] = int_to_float<d32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), const<i64>(1)));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: d32 [storage=automatic] = neg<d32>(const<d32>(9.223372e+18));
+// DEFAULT-NEXT:         if ne<d32, exceptions=observable>(sub<d32, rounding=nearest_even, exceptions=observable, contract=fast>(read<d32>(%[[VALUE_b]]), read<d32>(%[[VALUE_a]])), const<d32>(0.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: d64 [storage=automatic] = int_to_float<d64, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), const<i64>(1)));
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: d64 [storage=automatic] = neg<d64>(const<d64>(9.223372036854776e+18));
+// DEFAULT-NEXT:         if ne<d64, exceptions=observable>(sub<d64, rounding=nearest_even, exceptions=observable, contract=fast>(read<d64>(%[[VALUE_d]]), read<d64>(%[[VALUE_c]])), const<d64>(0.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

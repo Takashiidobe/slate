@@ -37,15 +37,15 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 a: i32 [storage=static] = const<i32>(274686410) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @foo(%2 si1: i8, %3 si2: i8) -> i8 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(mul<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%2)), widen<i32, reason=promotion>(read<i8>(%3))));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] = const<i32>(274686410) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_si1:[0-9]+]] si1: i8, %[[VALUE_si2:[0-9]+]] si2: i8) -> i8 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(mul<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_si1]])), widen<i32, reason=promotion>(read<i8>(%[[VALUE_si2]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 b: i32 [storage=automatic] = const<i32>(53671368);
-// DEFAULT-NEXT:         if gt<i32>(widen<i32, reason=promotion>(call<i8, signature=fn(i8, i8) -> i8>(%1, truncate<i8, reason=arg, fits=unknown>(read<i32>(%6)), truncate<i8, reason=arg, fits=unknown>(read<i32>(%4)))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = const<i32>(53671368);
+// DEFAULT-NEXT:         if gt<i32>(widen<i32, reason=promotion>(call<i8, signature=fn(i8, i8) -> i8>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=unknown>(read<i32>(%[[VALUE_b]])), truncate<i8, reason=arg, fits=unknown>(read<i32>(%[[VALUE_a]])))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

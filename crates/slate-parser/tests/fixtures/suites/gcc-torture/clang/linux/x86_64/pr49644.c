@@ -39,34 +39,34 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 a: array<complex<f64>, 12> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %3 c: ptr<complex<f64>> [storage=automatic] = array_decay<ptr<complex<f64>>, length=Some(12)>(%2);
-// DEFAULT-NEXT:         let %4 s: complex<f64> [storage=automatic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(3.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0)));
-// DEFAULT-NEXT:         let %5 b: array<f64, 12> [storage=automatic] [align=16] = aggregate<array<f64, 12>, zero_fill=false>(index0 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)), index1 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(2)), index2 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(3)), index3 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(4)), index4 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(5)), index5 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(6)), index6 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(7)), index7 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(8)), index8 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(9)), index9 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(10)), index10 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(11)), index11 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(12)));
-// DEFAULT-NEXT:         let %6 d: ptr<f64> [storage=automatic] = array_decay<ptr<f64>, length=Some(12)>(%5);
-// DEFAULT-NEXT:         let %7 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %8
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: array<complex<f64>, 12> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: ptr<complex<f64>> [storage=automatic] = array_decay<ptr<complex<f64>>, length=Some(12)>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: complex<f64> [storage=automatic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(3.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0)));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: array<f64, 12> [storage=automatic] [align=16] = aggregate<array<f64, 12>, zero_fill=false>(index0 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)), index1 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(2)), index2 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(3)), index3 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(4)), index4 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(5)), index5 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(6)), index6 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(7)), index7 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(8)), index8 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(9)), index9 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(10)), index10 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(11)), index11 = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(12)));
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: ptr<f64> [storage=automatic] = array_decay<ptr<f64>, length=Some(12)>(%[[VALUE_b]]);
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%7, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%7), const<i32>(6))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(6))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %9: i32 [synthetic] = read<i32>(%7);
-// DEFAULT-NEXT:                 let %10: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%9), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%7, read<i32>(%10));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 let %11: ptr<f64> [synthetic] = read<ptr<f64>>(%6);
-// DEFAULT-NEXT:                 let %12: ptr<f64> [synthetic] = ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%11), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<f64>>(%6, read<ptr<f64>>(%12));
-// DEFAULT-NEXT:                 let %13: ptr<complex<f64>> [synthetic] = read<ptr<complex<f64>>>(%3);
-// DEFAULT-NEXT:                 let %14: ptr<complex<f64>> [synthetic] = ptr_offset<ptr<complex<f64>>, subtract=false, element=complex<f64>, overflow=ub>(read<ptr<complex<f64>>>(%13), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<complex<f64>>>(%3, read<ptr<complex<f64>>>(%14));
-// DEFAULT-NEXT:                 write<complex<f64>>(deref(read<ptr<complex<f64>>>(%13)), mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<f64>(deref(read<ptr<f64>>(%11))), read<complex<f64>>(%4)));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<ptr<complex<f64>>>(read<ptr<complex<f64>>>(%3), ptr_offset<ptr<complex<f64>>, subtract=false, element=complex<f64>, overflow=ub>(array_decay<ptr<complex<f64>>, length=Some(12)>(%2), const<i32>(6))), ne<ptr<f64>>(read<ptr<f64>>(%6), ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(12)>(%5), const<i32>(6))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: ptr<f64> [synthetic] = read<ptr<f64>>(%[[VALUE_d]]);
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<f64> [synthetic] = ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<f64>>(%[[VALUE_d]], read<ptr<f64>>(%[[VALUE4]]));
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: ptr<complex<f64>> [synthetic] = read<ptr<complex<f64>>>(%[[VALUE_c]]);
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: ptr<complex<f64>> [synthetic] = ptr_offset<ptr<complex<f64>>, subtract=false, element=complex<f64>, overflow=ub>(read<ptr<complex<f64>>>(%[[VALUE5]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<complex<f64>>>(%[[VALUE_c]], read<ptr<complex<f64>>>(%[[VALUE6]]));
+// DEFAULT-NEXT:                 write<complex<f64>>(deref(read<ptr<complex<f64>>>(%[[VALUE5]])), mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<f64>(deref(read<ptr<f64>>(%[[VALUE3]]))), read<complex<f64>>(%[[VALUE_s]])));
+// DEFAULT-NEXT:         if logical_or<bool>(ne<ptr<complex<f64>>>(read<ptr<complex<f64>>>(%[[VALUE_c]]), ptr_offset<ptr<complex<f64>>, subtract=false, element=complex<f64>, overflow=ub>(array_decay<ptr<complex<f64>>, length=Some(12)>(%[[VALUE_a]]), const<i32>(6))), ne<ptr<f64>>(read<ptr<f64>>(%[[VALUE_d]]), ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(12)>(%[[VALUE_b]]), const<i32>(6))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

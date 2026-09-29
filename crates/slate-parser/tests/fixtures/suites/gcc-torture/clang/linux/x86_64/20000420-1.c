@@ -44,25 +44,25 @@ splice_viable (cands)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 z_candidate = struct {
-// DEFAULT-NEXT:         field0 next: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_z_candidate:[0-9]+]] z_candidate = struct {
+// DEFAULT-NEXT:         field0 next: ptr<@type[[TYPE_z_candidate]]>;
 // DEFAULT-NEXT:         field1 viable: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %1 pedantic: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @splice_viable(%3 cands: ptr<@type0>) -> ptr<@type0> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 p: ptr<ptr<@type0>> [storage=automatic] = addr_of<ptr<ptr<@type0>>>(%3);
-// DEFAULT-NEXT:         for %5
+// DEFAULT-NEXT:     global %[[VALUE_pedantic:[0-9]+]] pedantic: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_splice_viable:[0-9]+]] @splice_viable(%[[VALUE_cands:[0-9]+]] cands: ptr<@type[[TYPE_z_candidate]]>) -> ptr<@type[[TYPE_z_candidate]]> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<ptr<@type[[TYPE_z_candidate]]>> [storage=automatic] = addr_of<ptr<ptr<@type[[TYPE_z_candidate]]>>>(%[[VALUE_cands]]);
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:             condition: ne<ptr<@type0>>(read<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4))), null<ptr<@type0>>)
+// DEFAULT-NEXT:             condition: ne<ptr<@type[[TYPE_z_candidate]]>>(read<ptr<@type[[TYPE_z_candidate]]>>(deref(read<ptr<ptr<@type[[TYPE_z_candidate]]>>>(%[[VALUE_p]]))), null<ptr<@type[[TYPE_z_candidate]]>>)
 // DEFAULT-NEXT:             increment: omitted
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ne<i32>(conditional<i32>(ne<i32>(read<i32>(%1), const<i32>(0)), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(field1(deref(read<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4)))))), const<i32>(1))), read<i32>(field1(deref(read<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4))))))), const<i32>(0))
-// DEFAULT-NEXT:                         write<ptr<ptr<@type0>>>(%4, addr_of<ptr<ptr<@type0>>>(field0(deref(read<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4)))))));
+// DEFAULT-NEXT:                     if ne<i32>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_pedantic]]), const<i32>(0)), from_bool<i32, reason=promotion>(eq<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_z_candidate]]>>(deref(read<ptr<ptr<@type[[TYPE_z_candidate]]>>>(%[[VALUE_p]])))))), const<i32>(1))), read<i32>(field1(deref(read<ptr<@type[[TYPE_z_candidate]]>>(deref(read<ptr<ptr<@type[[TYPE_z_candidate]]>>>(%[[VALUE_p]]))))))), const<i32>(0))
+// DEFAULT-NEXT:                         write<ptr<ptr<@type[[TYPE_z_candidate]]>>>(%[[VALUE_p]], addr_of<ptr<ptr<@type[[TYPE_z_candidate]]>>>(field0(deref(read<ptr<@type[[TYPE_z_candidate]]>>(deref(read<ptr<ptr<@type[[TYPE_z_candidate]]>>>(%[[VALUE_p]])))))));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4)), read<ptr<@type0>>(field0(deref(read<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4)))))));
+// DEFAULT-NEXT:                         write<ptr<@type[[TYPE_z_candidate]]>>(deref(read<ptr<ptr<@type[[TYPE_z_candidate]]>>>(%[[VALUE_p]])), read<ptr<@type[[TYPE_z_candidate]]>>(field0(deref(read<ptr<@type[[TYPE_z_candidate]]>>(deref(read<ptr<ptr<@type[[TYPE_z_candidate]]>>>(%[[VALUE_p]])))))));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         return read<ptr<@type0>>(%3);
+// DEFAULT-NEXT:         return read<ptr<@type[[TYPE_z_candidate]]>>(%[[VALUE_cands]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

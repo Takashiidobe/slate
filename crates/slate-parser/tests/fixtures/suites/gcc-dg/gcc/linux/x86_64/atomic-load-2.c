@@ -94,76 +94,76 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 v: i16 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 count: i16 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i16>(%1, truncate<i16, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<i16>(%2, truncate<i16, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %4: i16 [synthetic] = read<i16>(%2);
-// DEFAULT-NEXT:         let %5: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%4)), const<i32>(1)));
-// DEFAULT-NEXT:         write<i16>(%2, read<i16>(%5));
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16, atomic=relaxed>(deref(addr_of<ptr<i16>>(%1)))), widen<i32, reason=promotion>(read<i16>(%4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: i16 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_count:[0-9]+]] count: i16 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i16>(%[[VALUE_v]], truncate<i16, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         write<i16>(%[[VALUE_count]], truncate<i16, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE0]])), const<i32>(1)));
+// DEFAULT-NEXT:         write<i16>(%[[VALUE_count]], read<i16>(%[[VALUE1]]));
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16, atomic=relaxed>(deref(addr_of<ptr<i16>>(%[[VALUE_v]])))), widen<i32, reason=promotion>(read<i16>(%[[VALUE0]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %6: i16 [synthetic] = read<i16>(%1);
-// DEFAULT-NEXT:             let %7: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%6)), const<i32>(1)));
-// DEFAULT-NEXT:             write<i16>(%1, read<i16>(%7));
-// DEFAULT-NEXT:         let %8: i16 [synthetic] = read<i16>(%2);
-// DEFAULT-NEXT:         let %9: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%8)), const<i32>(1)));
-// DEFAULT-NEXT:         write<i16>(%2, read<i16>(%9));
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16, atomic=acquire>(deref(addr_of<ptr<i16>>(%1)))), widen<i32, reason=promotion>(read<i16>(%8)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE2]])), const<i32>(1)));
+// DEFAULT-NEXT:             write<i16>(%[[VALUE_v]], read<i16>(%[[VALUE3]]));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE4]])), const<i32>(1)));
+// DEFAULT-NEXT:         write<i16>(%[[VALUE_count]], read<i16>(%[[VALUE5]]));
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16, atomic=acquire>(deref(addr_of<ptr<i16>>(%[[VALUE_v]])))), widen<i32, reason=promotion>(read<i16>(%[[VALUE4]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %10: i16 [synthetic] = read<i16>(%1);
-// DEFAULT-NEXT:             let %11: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%10)), const<i32>(1)));
-// DEFAULT-NEXT:             write<i16>(%1, read<i16>(%11));
-// DEFAULT-NEXT:         let %12: i16 [synthetic] = read<i16>(%2);
-// DEFAULT-NEXT:         let %13: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%12)), const<i32>(1)));
-// DEFAULT-NEXT:         write<i16>(%2, read<i16>(%13));
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16, atomic=consume>(deref(addr_of<ptr<i16>>(%1)))), widen<i32, reason=promotion>(read<i16>(%12)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             let %[[VALUE6:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE7:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE6]])), const<i32>(1)));
+// DEFAULT-NEXT:             write<i16>(%[[VALUE_v]], read<i16>(%[[VALUE7]]));
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE8]])), const<i32>(1)));
+// DEFAULT-NEXT:         write<i16>(%[[VALUE_count]], read<i16>(%[[VALUE9]]));
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16, atomic=consume>(deref(addr_of<ptr<i16>>(%[[VALUE_v]])))), widen<i32, reason=promotion>(read<i16>(%[[VALUE8]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %14: i16 [synthetic] = read<i16>(%1);
-// DEFAULT-NEXT:             let %15: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%14)), const<i32>(1)));
-// DEFAULT-NEXT:             write<i16>(%1, read<i16>(%15));
-// DEFAULT-NEXT:         let %16: i16 [synthetic] = read<i16>(%2);
-// DEFAULT-NEXT:         let %17: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%16)), const<i32>(1)));
-// DEFAULT-NEXT:         write<i16>(%2, read<i16>(%17));
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16, atomic=seq_cst>(deref(addr_of<ptr<i16>>(%1)))), widen<i32, reason=promotion>(read<i16>(%16)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             let %[[VALUE10:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE11:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE10]])), const<i32>(1)));
+// DEFAULT-NEXT:             write<i16>(%[[VALUE_v]], read<i16>(%[[VALUE11]]));
+// DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE12]])), const<i32>(1)));
+// DEFAULT-NEXT:         write<i16>(%[[VALUE_count]], read<i16>(%[[VALUE13]]));
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16, atomic=seq_cst>(deref(addr_of<ptr<i16>>(%[[VALUE_v]])))), widen<i32, reason=promotion>(read<i16>(%[[VALUE12]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %18: i16 [synthetic] = read<i16>(%1);
-// DEFAULT-NEXT:             let %19: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%18)), const<i32>(1)));
-// DEFAULT-NEXT:             write<i16>(%1, read<i16>(%19));
-// DEFAULT-NEXT:         write<i16>(deref(addr_of<ptr<i16>>(%2)), read<i16, atomic=relaxed>(deref(addr_of<ptr<i16>>(%1))));
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%2)), widen<i32, reason=promotion>(read<i16>(%1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             let %[[VALUE14:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE15:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE14]])), const<i32>(1)));
+// DEFAULT-NEXT:             write<i16>(%[[VALUE_v]], read<i16>(%[[VALUE15]]));
+// DEFAULT-NEXT:         write<i16>(deref(addr_of<ptr<i16>>(%[[VALUE_count]])), read<i16, atomic=relaxed>(deref(addr_of<ptr<i16>>(%[[VALUE_v]]))));
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_count]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_v]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %20: i16 [synthetic] = read<i16>(%1);
-// DEFAULT-NEXT:             let %21: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%20)), const<i32>(1)));
-// DEFAULT-NEXT:             write<i16>(%1, read<i16>(%21));
-// DEFAULT-NEXT:         write<i16>(deref(addr_of<ptr<i16>>(%2)), read<i16, atomic=acquire>(deref(addr_of<ptr<i16>>(%1))));
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%2)), widen<i32, reason=promotion>(read<i16>(%1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             let %[[VALUE16:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE17:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE16]])), const<i32>(1)));
+// DEFAULT-NEXT:             write<i16>(%[[VALUE_v]], read<i16>(%[[VALUE17]]));
+// DEFAULT-NEXT:         write<i16>(deref(addr_of<ptr<i16>>(%[[VALUE_count]])), read<i16, atomic=acquire>(deref(addr_of<ptr<i16>>(%[[VALUE_v]]))));
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_count]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_v]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %22: i16 [synthetic] = read<i16>(%1);
-// DEFAULT-NEXT:             let %23: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%22)), const<i32>(1)));
-// DEFAULT-NEXT:             write<i16>(%1, read<i16>(%23));
-// DEFAULT-NEXT:         write<i16>(deref(addr_of<ptr<i16>>(%2)), read<i16, atomic=consume>(deref(addr_of<ptr<i16>>(%1))));
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%2)), widen<i32, reason=promotion>(read<i16>(%1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             let %[[VALUE18:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE19:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE18]])), const<i32>(1)));
+// DEFAULT-NEXT:             write<i16>(%[[VALUE_v]], read<i16>(%[[VALUE19]]));
+// DEFAULT-NEXT:         write<i16>(deref(addr_of<ptr<i16>>(%[[VALUE_count]])), read<i16, atomic=consume>(deref(addr_of<ptr<i16>>(%[[VALUE_v]]))));
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_count]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_v]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %24: i16 [synthetic] = read<i16>(%1);
-// DEFAULT-NEXT:             let %25: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%24)), const<i32>(1)));
-// DEFAULT-NEXT:             write<i16>(%1, read<i16>(%25));
-// DEFAULT-NEXT:         write<i16>(deref(addr_of<ptr<i16>>(%2)), read<i16, atomic=seq_cst>(deref(addr_of<ptr<i16>>(%1))));
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%2)), widen<i32, reason=promotion>(read<i16>(%1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             let %[[VALUE20:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE21:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE20]])), const<i32>(1)));
+// DEFAULT-NEXT:             write<i16>(%[[VALUE_v]], read<i16>(%[[VALUE21]]));
+// DEFAULT-NEXT:         write<i16>(deref(addr_of<ptr<i16>>(%[[VALUE_count]])), read<i16, atomic=seq_cst>(deref(addr_of<ptr<i16>>(%[[VALUE_v]]))));
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_count]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_v]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %26: i16 [synthetic] = read<i16>(%1);
-// DEFAULT-NEXT:             let %27: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%26)), const<i32>(1)));
-// DEFAULT-NEXT:             write<i16>(%1, read<i16>(%27));
+// DEFAULT-NEXT:             let %[[VALUE22:[0-9]+]]: i16 [synthetic] = read<i16>(%[[VALUE_v]]);
+// DEFAULT-NEXT:             let %[[VALUE23:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE22]])), const<i32>(1)));
+// DEFAULT-NEXT:             write<i16>(%[[VALUE_v]], read<i16>(%[[VALUE23]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

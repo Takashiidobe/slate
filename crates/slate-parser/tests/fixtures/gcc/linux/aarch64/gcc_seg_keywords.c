@@ -32,7 +32,7 @@ int __seg_fs, __seg_gs;
 // AARCH64-NEXT:         storage d64 [size=8, align=8];
 // AARCH64-NEXT:         storage d128 [size=16, align=16];
 // AARCH64-NEXT:     }
-// AARCH64-NEXT:     global %0 __seg_fs: i32 [storage=static] [linkage=external];
-// AARCH64-NEXT:     global %1 __seg_gs: i32 [storage=static] [linkage=external];
+// AARCH64-NEXT:     global %[[VALUE___seg_fs:[0-9]+]] __seg_fs: i32 [storage=static] [linkage=external];
+// AARCH64-NEXT:     global %[[VALUE___seg_gs:[0-9]+]] __seg_gs: i32 [storage=static] [linkage=external];
 // AARCH64-NEXT: }
 // SLATE-FILECHECK-END AARCH64

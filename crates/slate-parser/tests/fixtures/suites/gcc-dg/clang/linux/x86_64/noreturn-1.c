@@ -84,28 +84,28 @@ foo8(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @foo1() -> void [linkage=external] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo1:[0-9]+]] @foo1() -> void [linkage=external] [noreturn] [fallthrough=ub] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @foo2() -> void [linkage=external] [noreturn] [fallthrough=ub] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_foo2:[0-9]+]] @foo2() -> void [linkage=external] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @foo3() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo3:[0-9]+]] @foo3() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @foo4() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_foo4:[0-9]+]] @foo4() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @foo5() -> void [linkage=external] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo5:[0-9]+]] @foo5() -> void [linkage=external] [noreturn] [fallthrough=ub] {
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @foo6() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo6:[0-9]+]] @foo6() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @foo7() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
+// DEFAULT-NEXT:     fn %[[VALUE_foo7:[0-9]+]] @foo7() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo6]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @foo8() -> void [linkage=external] [noreturn] [fallthrough=ub] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:     fn %[[VALUE_foo8:[0-9]+]] @foo8() -> void [linkage=external] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo7]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

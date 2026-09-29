@@ -36,10 +36,10 @@ int foo(int argc)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @set(%4 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%2 argc: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 val: volatile f64 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%0, pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<volatile f64>>(%3)));
+// DEFAULT-NEXT:     fn %[[VALUE_set:[0-9]+]] @set(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_argc:[0-9]+]] argc: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_val:[0-9]+]] val: volatile f64 [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_set]], pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<volatile f64>>(%[[VALUE_val]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

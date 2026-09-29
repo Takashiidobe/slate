@@ -42,15 +42,15 @@ void bar(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: array<ptr<void>, 2> [storage=static] [restrict] [const] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %1 p2: ptr<const array<ptr<void>, 2>> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 b: volatile array<ptr<void>, 2> [storage=static] [restrict] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %4 q2: ptr<volatile array<ptr<void>, 2>> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<const array<ptr<void>, 2>>>(%1, addr_of<ptr<const array<ptr<void>, 2>>>(%0));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: array<ptr<void>, 2> [storage=static] [restrict] [const] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p2:[0-9]+]] p2: ptr<const array<ptr<void>, 2>> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: volatile array<ptr<void>, 2> [storage=static] [restrict] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_q2:[0-9]+]] q2: ptr<volatile array<ptr<void>, 2>> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<const array<ptr<void>, 2>>>(%[[VALUE_p2]], addr_of<ptr<const array<ptr<void>, 2>>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<volatile array<ptr<void>, 2>>>(%4, addr_of<ptr<volatile array<ptr<void>, 2>>>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<volatile array<ptr<void>, 2>>>(%[[VALUE_q2]], addr_of<ptr<volatile array<ptr<void>, 2>>>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

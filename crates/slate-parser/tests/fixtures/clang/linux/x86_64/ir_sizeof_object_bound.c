@@ -41,20 +41,20 @@ int f(int p) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 s3 = struct {
+// IR-NEXT:     type @type[[TYPE_s3:[0-9]+]] s3 = struct {
 // IR-NEXT:         field0 a: array<i8, 3>;
 // IR-NEXT:     } [size=3, align=1, offsets=[0]];
-// IR-NEXT:     type @type1 = enum : u32 {
-// IR-NEXT:         %0 K = const<i32>(1);
+// IR-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// IR-NEXT:         %[[VALUE_K:[0-9]+]] K = const<i32>(1);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     global %1 g: @type0 [storage=static] [linkage=external];
-// IR-NEXT:     global %2 d: f64 [storage=static] [linkage=external];
-// IR-NEXT:     global %5 by_size: array<i32, 3> [storage=static] [linkage=external];
-// IR-NEXT:     global %6 by_align: array<i32, 8> [storage=static] [align=16] [linkage=external];
-// IR-NEXT:     fn %7 @f(%8 p: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %9 K: array<i8, 5> [storage=automatic];
-// IR-NEXT:         let %10 by_param: array<i64, 4> [storage=automatic] [align=16];
-// IR-NEXT:         let %11 shadowed: array<i32, 5> [storage=automatic] [align=16];
+// IR-NEXT:     global %[[VALUE_g:[0-9]+]] g: @type[[TYPE_s3]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_d:[0-9]+]] d: f64 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_by_size:[0-9]+]] by_size: array<i32, 3> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_by_align:[0-9]+]] by_align: array<i32, 8> [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_p:[0-9]+]] p: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_K_2:[0-9]+]] K: array<i8, 5> [storage=automatic];
+// IR-NEXT:         let %[[VALUE_by_param:[0-9]+]] by_param: array<i64, 4> [storage=automatic] [align=16];
+// IR-NEXT:         let %[[VALUE_shadowed:[0-9]+]] shadowed: array<i32, 5> [storage=automatic] [align=16];
 // IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(const<u64>(32), const<u64>(20))));
 // IR-NEXT:     }
 // IR-NEXT: }

@@ -49,26 +49,26 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @classify(%3 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 out: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         switch %7 read<i32>(%3)
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_classify:[0-9]+]] @classify(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_out:[0-9]+]] out: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_x]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %7 const<i32>(1):
-// DEFAULT-NEXT:                     write<i32>(%4, const<i32>(11));
-// DEFAULT-NEXT:                 break %7;
-// DEFAULT-NEXT:                 case %7 const<i32>(2):
-// DEFAULT-NEXT:                     write<i32>(%4, const<i32>(22));
-// DEFAULT-NEXT:                 break %7;
-// DEFAULT-NEXT:                 default %7:
-// DEFAULT-NEXT:                     write<i32>(%4, const<i32>(99));
-// DEFAULT-NEXT:                 break %7;
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(1):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_out]], const<i32>(11));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(2):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_out]], const<i32>(22));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 default %[[VALUE0]]:
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_out]], const<i32>(99));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<i32>(%4);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_out]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%8)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(1)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(2)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(7)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(1)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(2)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(7)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

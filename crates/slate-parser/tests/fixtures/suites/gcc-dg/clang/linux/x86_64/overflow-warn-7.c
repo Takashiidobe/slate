@@ -32,8 +32,8 @@ int f(char *device)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(%1 device: ptr<i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i8>>(read<ptr<i8>>(%1), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(null<ptr<i8>>, not<u64>(const<u64>(0)))));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_device:[0-9]+]] device: ptr<i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_device]]), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(null<ptr<i8>>, not<u64>(const<u64>(0)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

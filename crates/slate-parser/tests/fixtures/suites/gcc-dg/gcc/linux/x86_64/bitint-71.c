@@ -43,15 +43,15 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 b: i713b;
 // DEFAULT-NEXT:     } [size=96, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %1 g: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 f: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 j: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(%1));
-// DEFAULT-NEXT:         if ne<i713b>(read<i713b>(field0(%4)), const<i713b>(0))
-// DEFAULT-NEXT:             write<i32>(%2, const<i32>(0));
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: @type[[TYPE_A]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: @type[[TYPE_A]] [storage=automatic] = copy<@type[[TYPE_A]], reason=assign>(read<@type[[TYPE_A]]>(%[[VALUE_g]]));
+// DEFAULT-NEXT:         if ne<i713b>(read<i713b>(field0(%[[VALUE_j]])), const<i713b>(0))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_f]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

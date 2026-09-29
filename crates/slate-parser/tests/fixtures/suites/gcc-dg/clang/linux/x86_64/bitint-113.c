@@ -65,25 +65,25 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 y: u8;
 // DEFAULT-NEXT:         field1 x: i256b;
 // DEFAULT-NEXT:     } [size=40, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %1 s: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 .str11: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([98, 97, 122, 98, 97, 122, 98, 97, 122, 98, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @foo(%8 <unnamed>: ptr<const i8>, %9 <unnamed>: i256b) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([98, 97, 122, 98, 97, 122, 98, 97, 122, 98, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE1:[0-9]+]] <unnamed>: i256b) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @bar(%10 <unnamed>: i256b) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE2:[0-9]+]] <unnamed>: i256b) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @__builtin_memcpy(%12 <unnamed>: ptr<void>, %13 <unnamed>: ptr<const void>, %14 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @baz(%5 p: ptr<void>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, i256b) -> void>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%11)), read<i256b>(field1(%1)));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%15, read<ptr<void>>(%5), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i256b>>(field1(%1))), const<u64>(32));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE3:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE4:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE5:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_p:[0-9]+]] p: ptr<void>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, i256b) -> void>(%[[VALUE_foo]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str]])), read<i256b>(field1(%[[VALUE_s]])));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], read<ptr<void>>(%[[VALUE_p]]), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i256b>>(field1(%[[VALUE_s]]))), const<u64>(32));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 ptr: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(addr_of<ptr<i256b>>(field1(%1)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%4, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i256b>>(field1(%1))));
-// DEFAULT-NEXT:         call<void, signature=fn(i256b) -> void>(%3, read<i256b>(deref(pointer_cast<ptr<i256b>, reason=explicit>(read<ptr<void>>(%7)))));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_ptr:[0-9]+]] ptr: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(addr_of<ptr<i256b>>(field1(%[[VALUE_s]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_baz]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i256b>>(field1(%[[VALUE_s]]))));
+// DEFAULT-NEXT:         call<void, signature=fn(i256b) -> void>(%[[VALUE_bar]], read<i256b>(deref(pointer_cast<ptr<i256b>, reason=explicit>(read<ptr<void>>(%[[VALUE_ptr]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

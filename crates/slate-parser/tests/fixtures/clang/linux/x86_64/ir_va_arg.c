@@ -31,19 +31,19 @@ double sequenced(va_list ap) { return __builtin_va_arg(ap, double) + __builtin_v
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 va_list = va_list;
-// IR-NEXT:     type @type1 Pair = struct {
+// IR-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// IR-NEXT:     type @type[[TYPE_Pair:[0-9]+]] Pair = struct {
 // IR-NEXT:         field0 a: i64;
 // IR-NEXT:         field1 b: f64;
 // IR-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// IR-NEXT:     fn %2 @fixed_type(%3 ap: va_list) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return va_arg<i32>(%3);
+// IR-NEXT:     fn %[[VALUE_fixed_type:[0-9]+]] @fixed_type(%[[VALUE_ap:[0-9]+]] ap: va_list) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return va_arg<i32>(%[[VALUE_ap]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %4 @struct_type(%5 ap: va_list) -> @type1 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type1, reason=return>(va_arg<@type1>(%5));
+// IR-NEXT:     fn %[[VALUE_struct_type:[0-9]+]] @struct_type(%[[VALUE_ap_2:[0-9]+]] ap: va_list) -> @type[[TYPE_Pair]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_Pair]], reason=return>(va_arg<@type[[TYPE_Pair]]>(%[[VALUE_ap_2]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %6 @sequenced(%7 ap: va_list) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(va_arg<f64>(%7), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(va_arg<i32>(%7)));
+// IR-NEXT:     fn %[[VALUE_sequenced:[0-9]+]] @sequenced(%[[VALUE_ap_3:[0-9]+]] ap: va_list) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(va_arg<f64>(%[[VALUE_ap_3]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(va_arg<i32>(%[[VALUE_ap_3]])));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

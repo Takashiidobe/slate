@@ -50,25 +50,25 @@ void bar (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 B: i32;
 // DEFAULT-NEXT:         field1 C: array<i16, 2>;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %1 a: array<i32, 10> [storage=static] [align=16] = aggregate<array<i32, 10>, zero_fill=true>(index0 = const<i32>(10), index4 = const<i32>(15)) [linkage=external];
-// DEFAULT-NEXT:     global %2 b: @type0 [storage=static] = aggregate<@type0, zero_fill=true>(field0 = const<i32>(2)) [linkage=external];
-// DEFAULT-NEXT:     global %3 c: array<@type0, 4> [storage=static] [align=16] = aggregate<array<@type0, 4>, zero_fill=true>(index3 = aggregate<@type0, zero_fill=true>(field1 = aggregate<array<i16, 2>, zero_fill=true>(index1 = truncate<i16, reason=assign, fits=always>(const<i32>(1))))) [linkage=external];
-// DEFAULT-NEXT:     global %4 d: array<@type0, 7> [storage=static] [align=16] = aggregate<array<@type0, 7>, zero_fill=true>(index4..=5 = aggregate<@type0, zero_fill=true>(field1 = aggregate<array<i16, 2>, zero_fill=false>(index0..=1 = truncate<i16, reason=assign, fits=always>(const<i32>(2)))), index6 = aggregate<@type0, zero_fill=true>(field1 = aggregate<array<i16, 2>, zero_fill=false>(index0..=1 = truncate<i16, reason=assign, fits=always>(const<i32>(2))))) [linkage=external];
-// DEFAULT-NEXT:     global %5 e: array<i32, 3> [storage=static] = aggregate<array<i32, 3>, zero_fill=true>(index2 = const<i32>(2)) [linkage=external];
-// DEFAULT-NEXT:     global %6 f: @type0 [storage=static] = aggregate<@type0, zero_fill=true>(field1 = aggregate<array<i16, 2>, zero_fill=false>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(0)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(1)))) [linkage=external];
-// DEFAULT-NEXT:     global %7 g: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %8 @foo(%11 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %9 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %10 x: array<i32, 2> [storage=automatic];
-// DEFAULT-NEXT:         let %12: i32 [synthetic] = read<i32>(%7);
-// DEFAULT-NEXT:         let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%7, read<i32>(%13));
-// DEFAULT-NEXT:         write<array<i32, 2>>(%10, aggregate<array<i32, 2>, zero_fill=false>(index0 = read<i32>(%12), index1 = const<i32>(2)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%8, array_decay<ptr<i32>, length=Some(2)>(%10));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: array<i32, 10> [storage=static] [align=16] = aggregate<array<i32, 10>, zero_fill=true>(index0 = const<i32>(10), index4 = const<i32>(15)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE_A]] [storage=static] = aggregate<@type[[TYPE_A]], zero_fill=true>(field0 = const<i32>(2)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: array<@type[[TYPE_A]], 4> [storage=static] [align=16] = aggregate<array<@type[[TYPE_A]], 4>, zero_fill=true>(index3 = aggregate<@type[[TYPE_A]], zero_fill=true>(field1 = aggregate<array<i16, 2>, zero_fill=true>(index1 = truncate<i16, reason=assign, fits=always>(const<i32>(1))))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: array<@type[[TYPE_A]], 7> [storage=static] [align=16] = aggregate<array<@type[[TYPE_A]], 7>, zero_fill=true>(index4..=5 = aggregate<@type[[TYPE_A]], zero_fill=true>(field1 = aggregate<array<i16, 2>, zero_fill=false>(index0..=1 = truncate<i16, reason=assign, fits=always>(const<i32>(2)))), index6 = aggregate<@type[[TYPE_A]], zero_fill=true>(field1 = aggregate<array<i16, 2>, zero_fill=false>(index0..=1 = truncate<i16, reason=assign, fits=always>(const<i32>(2))))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: array<i32, 3> [storage=static] = aggregate<array<i32, 3>, zero_fill=true>(index2 = const<i32>(2)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: @type[[TYPE_A]] [storage=static] = aggregate<@type[[TYPE_A]], zero_fill=true>(field1 = aggregate<array<i16, 2>, zero_fill=false>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(0)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(1)))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: array<i32, 2> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_g]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_g]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:         write<array<i32, 2>>(%[[VALUE_x]], aggregate<array<i32, 2>, zero_fill=false>(index0 = read<i32>(%[[VALUE1]]), index1 = const<i32>(2)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_foo]], array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

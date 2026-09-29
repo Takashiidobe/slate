@@ -64,36 +64,36 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type1 va_list = va_list;
-// DEFAULT-NEXT:     type @type2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 stream: ptr<void>;
 // DEFAULT-NEXT:         field1 ap: va_list;
 // DEFAULT-NEXT:         field2 nChar: i32;
 // DEFAULT-NEXT:     } [size=40, align=8, offsets=[0, 8, 32]];
-// DEFAULT-NEXT:     type @type3 ScanfState = @type2;
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @exit(%13 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @dummy(%7 vap: va_list) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%7), const<i32>(1234))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     type @type[[TYPE_ScanfState:[0-9]+]] ScanfState = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_dummy:[0-9]+]] @dummy(%[[VALUE_vap:[0-9]+]] vap: va_list) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%[[VALUE_vap]]), const<i32>(1234))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @test(%9 fmt: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %10 state: @type2 [storage=automatic];
-// DEFAULT-NEXT:         let %11 statep: ptr<@type2> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type2>>(%11, addr_of<ptr<@type2>>(%10));
-// DEFAULT-NEXT:         va_start(field1(deref(read<ptr<@type2>>(%11))));
-// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%6, read<va_list>(field1(deref(read<ptr<@type2>>(%11)))));
-// DEFAULT-NEXT:         va_end(field1(deref(read<ptr<@type2>>(%11))));
-// DEFAULT-NEXT:         va_start(field1(%10));
-// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%6, read<va_list>(field1(%10)));
-// DEFAULT-NEXT:         va_end(field1(%10));
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_fmt:[0-9]+]] fmt: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_state:[0-9]+]] state: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_statep:[0-9]+]] statep: ptr<@type[[TYPE0]]> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_statep]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_state]]));
+// DEFAULT-NEXT:         va_start(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_statep]]))));
+// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%[[VALUE_dummy]], read<va_list>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_statep]])))));
+// DEFAULT-NEXT:         va_end(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_statep]]))));
+// DEFAULT-NEXT:         va_start(field1(%[[VALUE_state]]));
+// DEFAULT-NEXT:         call<void, signature=fn(va_list) -> void>(%[[VALUE_dummy]], read<va_list>(field1(%[[VALUE_state]])));
+// DEFAULT-NEXT:         va_end(field1(%[[VALUE_state]]));
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%8, const<i32>(456), const<i32>(1234));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_test]], const<i32>(456), const<i32>(1234));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

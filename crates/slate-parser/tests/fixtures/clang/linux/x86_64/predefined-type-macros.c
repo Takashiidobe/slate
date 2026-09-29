@@ -33,10 +33,10 @@ static __inline __UINTPTR_TYPE__ as_uintptr(const void *p) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 global_size: u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [linkage=external];
-// DEFAULT-NEXT:     fn %1 @as_uintptr(%2 p: ptr<const void>) -> u64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 v: u64 [storage=automatic] = ptr_to_int<u64, reason=explicit>(read<ptr<const void>>(%2));
-// DEFAULT-NEXT:         return read<u64>(%3);
+// DEFAULT-NEXT:     global %[[VALUE_global_size:[0-9]+]] global_size: u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_as_uintptr:[0-9]+]] @as_uintptr(%[[VALUE_p:[0-9]+]] p: ptr<const void>) -> u64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: u64 [storage=automatic] = ptr_to_int<u64, reason=explicit>(read<ptr<const void>>(%[[VALUE_p]]));
+// DEFAULT-NEXT:         return read<u64>(%[[VALUE_v]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

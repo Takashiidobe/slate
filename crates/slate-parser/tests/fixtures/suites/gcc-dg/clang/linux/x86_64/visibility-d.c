@@ -230,125 +230,125 @@ D(5)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo00(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo00:[0-9]+]] @foo00(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @foo01(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo01:[0-9]+]] @foo01(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @foo02(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo02:[0-9]+]] @foo02(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @foo03(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo03:[0-9]+]] @foo03(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @foo04(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo04:[0-9]+]] @foo04(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @foo05(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo05:[0-9]+]] @foo05(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @foo06(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo06:[0-9]+]] @foo06(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @foo07(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo07:[0-9]+]] @foo07(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @foo08(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo08:[0-9]+]] @foo08(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @foo09(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo09:[0-9]+]] @foo09(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @foo10(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo10:[0-9]+]] @foo10(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @foo11(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo11:[0-9]+]] @foo11(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @foo12(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo12:[0-9]+]] @foo12(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @foo13(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo13:[0-9]+]] @foo13(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @foo14(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo14:[0-9]+]] @foo14(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @foo15(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo15:[0-9]+]] @foo15(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @foo16(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo16:[0-9]+]] @foo16(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @foo17(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo17:[0-9]+]] @foo17(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @foo18(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo18:[0-9]+]] @foo18(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @foo19(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo19:[0-9]+]] @foo19(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @foo20(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo20:[0-9]+]] @foo20(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @foo21(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo21:[0-9]+]] @foo21(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @foo22(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo22:[0-9]+]] @foo22(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @foo23(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo23:[0-9]+]] @foo23(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @foo24(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo24:[0-9]+]] @foo24(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @foo25(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo25:[0-9]+]] @foo25(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @foo26(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo26:[0-9]+]] @foo26(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @foo27(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo27:[0-9]+]] @foo27(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %28 @foo28(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo28:[0-9]+]] @foo28(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @foo29(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo29:[0-9]+]] @foo29(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @foo30(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo30:[0-9]+]] @foo30(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @foo31(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo31:[0-9]+]] @foo31(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @foo32(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo32:[0-9]+]] @foo32(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %33 @foo33(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo33:[0-9]+]] @foo33(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %34 @foo34(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo34:[0-9]+]] @foo34(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %35 @foo35(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo35:[0-9]+]] @foo35(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %36 @foo36(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo36:[0-9]+]] @foo36(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %37 @foo37(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo37:[0-9]+]] @foo37(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %38 @foo38(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo38:[0-9]+]] @foo38(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %39 @foo39(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo39:[0-9]+]] @foo39(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %40 @foo40(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo40:[0-9]+]] @foo40(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %41 @foo41(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo41:[0-9]+]] @foo41(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %42 @foo42(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo42:[0-9]+]] @foo42(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %43 @foo43(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo43:[0-9]+]] @foo43(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %44 @foo44(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo44:[0-9]+]] @foo44(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %45 @foo45(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo45:[0-9]+]] @foo45(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %46 @foo46(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo46:[0-9]+]] @foo46(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %47 @foo47(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo47:[0-9]+]] @foo47(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %48 @foo48(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo48:[0-9]+]] @foo48(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %49 @foo49(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo49:[0-9]+]] @foo49(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %50 @foo50(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo50:[0-9]+]] @foo50(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %51 @foo51(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo51:[0-9]+]] @foo51(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %52 @foo52(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo52:[0-9]+]] @foo52(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %53 @foo53(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo53:[0-9]+]] @foo53(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %54 @foo54(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo54:[0-9]+]] @foo54(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %55 @foo55(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo55:[0-9]+]] @foo55(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %56 @foo56(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo56:[0-9]+]] @foo56(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %57 @foo57(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo57:[0-9]+]] @foo57(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %58 @foo58(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo58:[0-9]+]] @foo58(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %59 @foo59(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo59:[0-9]+]] @foo59(unprototyped) -> void [linkage=external] [visibility=hidden] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

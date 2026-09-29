@@ -46,15 +46,15 @@ int f(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 T = i32 [c="int"];
-// IR-NEXT:     type @type1 CT = i32 [c="const int"] [c_const="true"];
-// IR-NEXT:     type @type2 E = enum : u32 {
-// IR-NEXT:         %0 A = const<i32>(0);
+// IR-NEXT:     type @type[[TYPE_T:[0-9]+]] T = i32 [c="int"];
+// IR-NEXT:     type @type[[TYPE_CT:[0-9]+]] CT = i32 [c="const int"] [c_const="true"];
+// IR-NEXT:     type @type[[TYPE_E:[0-9]+]] E = enum : u32 {
+// IR-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(0);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     type @type3 S = struct {
+// IR-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     fn %5 @f() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
+// IR-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(1) [types_compatible="int, int"], const<i32>(1) [types_compatible="int, int"]), const<i32>(1) [types_compatible="int, int"]), const<i32>(1) [types_compatible="int *, int *"]), const<i32>(0) [types_compatible="const int *, int *"]), const<i32>(0) [types_compatible="long, long long"]), const<i32>(0) [types_compatible="char, signed char"]), const<i32>(1) [types_compatible="enum E, unsigned int"]), const<i32>(1) [types_compatible="struct S, struct S"]), const<i32>(1) [types_compatible="int (*)(int *), int (*)(int *)"]), const<i32>(1) [types_compatible="int[3], int[3]"]);
 // IR-NEXT:     }
 // IR-NEXT: }

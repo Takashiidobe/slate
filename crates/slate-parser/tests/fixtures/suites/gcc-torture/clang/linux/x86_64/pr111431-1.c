@@ -52,64 +52,64 @@ funcs(funcdefs)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 b: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32>(%1), const<i32>(0)));
-// DEFAULT-NEXT:         return and<i32>(read<i32>(%1), read<i32>(%2));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)));
+// DEFAULT-NEXT:         return and<i32>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @func_0_(%4 a: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 b: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32>(%4), const<i32>(0)));
-// DEFAULT-NEXT:         return ne<i32, reason=return>(and<i32>(read<i32>(%4), read<i32>(%5)), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_func_0_:[0-9]+]] @func_0_(%[[VALUE_a_2:[0-9]+]] a: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32>(%[[VALUE_a_2]]), const<i32>(0)));
+// DEFAULT-NEXT:         return ne<i32, reason=return>(and<i32>(read<i32>(%[[VALUE_a_2]]), read<i32>(%[[VALUE_b_2]])), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @func_0_volatile(%7 a: volatile i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 b: volatile i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32, volatile>(%7), const<i32>(0)));
-// DEFAULT-NEXT:         return ne<i32, reason=return>(and<i32>(read<i32, volatile>(%7), read<i32, volatile>(%8)), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_func_0_volatile:[0-9]+]] @func_0_volatile(%[[VALUE_a_3:[0-9]+]] a: volatile i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_b_3:[0-9]+]] b: volatile i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32, volatile>(%[[VALUE_a_3]]), const<i32>(0)));
+// DEFAULT-NEXT:         return ne<i32, reason=return>(and<i32>(read<i32, volatile>(%[[VALUE_a_3]]), read<i32, volatile>(%[[VALUE_b_3]])), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @func_1_(%10 a: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 b: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32>(%10), const<i32>(1)));
-// DEFAULT-NEXT:         return ne<i32, reason=return>(and<i32>(read<i32>(%10), read<i32>(%11)), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_func_1_:[0-9]+]] @func_1_(%[[VALUE_a_4:[0-9]+]] a: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_b_4:[0-9]+]] b: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32>(%[[VALUE_a_4]]), const<i32>(1)));
+// DEFAULT-NEXT:         return ne<i32, reason=return>(and<i32>(read<i32>(%[[VALUE_a_4]]), read<i32>(%[[VALUE_b_4]])), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @func_1_volatile(%13 a: volatile i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %14 b: volatile i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32, volatile>(%13), const<i32>(1)));
-// DEFAULT-NEXT:         return ne<i32, reason=return>(and<i32>(read<i32, volatile>(%13), read<i32, volatile>(%14)), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_func_1_volatile:[0-9]+]] @func_1_volatile(%[[VALUE_a_5:[0-9]+]] a: volatile i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_b_5:[0-9]+]] b: volatile i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32, volatile>(%[[VALUE_a_5]]), const<i32>(1)));
+// DEFAULT-NEXT:         return ne<i32, reason=return>(and<i32>(read<i32, volatile>(%[[VALUE_a_5]]), read<i32, volatile>(%[[VALUE_b_5]])), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @func_5_(%16 a: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %17 b: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32>(%16), const<i32>(5)));
-// DEFAULT-NEXT:         return ne<i32, reason=return>(and<i32>(read<i32>(%16), read<i32>(%17)), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_func_5_:[0-9]+]] @func_5_(%[[VALUE_a_6:[0-9]+]] a: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_b_6:[0-9]+]] b: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32>(%[[VALUE_a_6]]), const<i32>(5)));
+// DEFAULT-NEXT:         return ne<i32, reason=return>(and<i32>(read<i32>(%[[VALUE_a_6]]), read<i32>(%[[VALUE_b_6]])), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @func_5_volatile(%19 a: volatile i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %20 b: volatile i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32, volatile>(%19), const<i32>(5)));
-// DEFAULT-NEXT:         return ne<i32, reason=return>(and<i32>(read<i32, volatile>(%19), read<i32, volatile>(%20)), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_func_5_volatile:[0-9]+]] @func_5_volatile(%[[VALUE_a_7:[0-9]+]] a: volatile i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_b_7:[0-9]+]] b: volatile i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<i32>(read<i32, volatile>(%[[VALUE_a_7]]), const<i32>(5)));
+// DEFAULT-NEXT:         return ne<i32, reason=return>(and<i32>(read<i32, volatile>(%[[VALUE_a_7]]), read<i32, volatile>(%[[VALUE_b_7]])), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %21 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         for %23
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %22 a: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(10));
-// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%22), const<i32>(10))
+// DEFAULT-NEXT:                 let %[[VALUE_a_8:[0-9]+]] a: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(10));
+// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%[[VALUE_a_8]]), const<i32>(10))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %28: i32 [synthetic] = read<i32>(%22);
-// DEFAULT-NEXT:                 let %29: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%28), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%22, read<i32>(%29));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a_8]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_a_8]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     do %24
+// DEFAULT-NEXT:                     do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%3, read<i32>(%22))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%6, read<i32>(%22))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%25);
+// DEFAULT-NEXT:                             if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%[[VALUE_func_0_]], read<i32>(%[[VALUE_a_8]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%[[VALUE_func_0_volatile]], read<i32>(%[[VALUE_a_8]]))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                     do %26
+// DEFAULT-NEXT:                     do %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%9, read<i32>(%22))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%12, read<i32>(%22))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%25);
+// DEFAULT-NEXT:                             if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%[[VALUE_func_1_]], read<i32>(%[[VALUE_a_8]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%[[VALUE_func_1_volatile]], read<i32>(%[[VALUE_a_8]]))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                     do %27
+// DEFAULT-NEXT:                     do %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%15, read<i32>(%22))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%18, read<i32>(%22))))
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%25);
+// DEFAULT-NEXT:                             if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%[[VALUE_func_5_]], read<i32>(%[[VALUE_a_8]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32) -> bool>(%[[VALUE_func_5_volatile]], read<i32>(%[[VALUE_a_8]]))))
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                 }

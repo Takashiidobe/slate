@@ -46,38 +46,38 @@ foo (int f, int x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 a: array<i32, 1>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 T = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = struct {
 // DEFAULT-NEXT:         field0 c: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %2 e: @type1 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     global %3 f: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @bar(%11 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %5 @foo(%6 f: i32, %7 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 h: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=explicit>(addr_of<ptr<i32>>(field0(%2)));
-// DEFAULT-NEXT:         for %12
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: @type[[TYPE_T]] [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_f_2:[0-9]+]] f: i32, %[[VALUE_x:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: ptr<@type[[TYPE_S]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_S]]>, reason=explicit>(addr_of<ptr<i32>>(field0(%[[VALUE_e]])));
+// DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: omitted
 // DEFAULT-NEXT:             increment: omitted
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %9 a: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(1)>(field0(deref(read<ptr<@type0>>(%8))));
-// DEFAULT-NEXT:                     let %10 i: i32 [storage=automatic];
-// DEFAULT-NEXT:                     for %13
+// DEFAULT-NEXT:                     let %[[VALUE_a:[0-9]+]] a: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(1)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_h]]))));
+// DEFAULT-NEXT:                     let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:                     for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:                         init:
-// DEFAULT-NEXT:                             write<i32>(%10, read<i32>(%7));
-// DEFAULT-NEXT:                         condition: ne<i32>(read<i32>(%10), const<i32>(0))
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE_x]]));
+// DEFAULT-NEXT:                         condition: ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0))
 // DEFAULT-NEXT:                         increment: {
-// DEFAULT-NEXT:                             let %14: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                             let %15: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
-// DEFAULT-NEXT:                             write<i32>(%10, read<i32>(%15));
+// DEFAULT-NEXT:                             let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                             let %[[VALUE4:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE4]]));
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
-// DEFAULT-NEXT:                             call<void, signature=fn(i32) -> void>(%4, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%9), read<i32>(%6)))));
-// DEFAULT-NEXT:                     call<void, signature=fn(i32) -> void>(%4, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%9), read<i32>(%6)))));
+// DEFAULT-NEXT:                             call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_a]]), read<i32>(%[[VALUE_f_2]])))));
+// DEFAULT-NEXT:                     call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_a]]), read<i32>(%[[VALUE_f_2]])))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

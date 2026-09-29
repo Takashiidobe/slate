@@ -89,50 +89,50 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%63 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @test1(%3 a: i32, %4 value: i64, %5 after: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%3), const<i32>(1)), ne<i64>(read<i64>(%4), const<i64>(81985529216486895))), ne<i32>(read<i32>(%5), const<i32>(85)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_value:[0-9]+]] value: i64, %[[VALUE_after:[0-9]+]] after: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(1)), ne<i64>(read<i64>(%[[VALUE_value]]), const<i64>(81985529216486895))), ne<i32>(read<i32>(%[[VALUE_after]]), const<i32>(85)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @test2(%7 a: i32, %8 b: i32, %9 value: i64, %10 after: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%7), const<i32>(1)), ne<i32>(read<i32>(%8), const<i32>(2))), ne<i64>(read<i64>(%9), const<i64>(81985529216486895))), ne<i32>(read<i32>(%10), const<i32>(85)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32, %[[VALUE_value_2:[0-9]+]] value: i64, %[[VALUE_after_2:[0-9]+]] after: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_a_2]]), const<i32>(1)), ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(2))), ne<i64>(read<i64>(%[[VALUE_value_2]]), const<i64>(81985529216486895))), ne<i32>(read<i32>(%[[VALUE_after_2]]), const<i32>(85)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @test3(%12 a: i32, %13 b: i32, %14 c: i32, %15 value: i64, %16 after: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%12), const<i32>(1)), ne<i32>(read<i32>(%13), const<i32>(2))), ne<i32>(read<i32>(%14), const<i32>(3))), ne<i64>(read<i64>(%15), const<i64>(81985529216486895))), ne<i32>(read<i32>(%16), const<i32>(85)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_a_3:[0-9]+]] a: i32, %[[VALUE_b_2:[0-9]+]] b: i32, %[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_value_3:[0-9]+]] value: i64, %[[VALUE_after_3:[0-9]+]] after: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_a_3]]), const<i32>(1)), ne<i32>(read<i32>(%[[VALUE_b_2]]), const<i32>(2))), ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(3))), ne<i64>(read<i64>(%[[VALUE_value_3]]), const<i64>(81985529216486895))), ne<i32>(read<i32>(%[[VALUE_after_3]]), const<i32>(85)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @test4(%18 a: i32, %19 b: i32, %20 c: i32, %21 d: i32, %22 value: i64, %23 after: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%18), const<i32>(1)), ne<i32>(read<i32>(%19), const<i32>(2))), ne<i32>(read<i32>(%20), const<i32>(3))), ne<i32>(read<i32>(%21), const<i32>(4))), ne<i64>(read<i64>(%22), const<i64>(81985529216486895))), ne<i32>(read<i32>(%23), const<i32>(85)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4(%[[VALUE_a_4:[0-9]+]] a: i32, %[[VALUE_b_3:[0-9]+]] b: i32, %[[VALUE_c_2:[0-9]+]] c: i32, %[[VALUE_d:[0-9]+]] d: i32, %[[VALUE_value_4:[0-9]+]] value: i64, %[[VALUE_after_4:[0-9]+]] after: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_a_4]]), const<i32>(1)), ne<i32>(read<i32>(%[[VALUE_b_3]]), const<i32>(2))), ne<i32>(read<i32>(%[[VALUE_c_2]]), const<i32>(3))), ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(4))), ne<i64>(read<i64>(%[[VALUE_value_4]]), const<i64>(81985529216486895))), ne<i32>(read<i32>(%[[VALUE_after_4]]), const<i32>(85)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @test5(%25 a: i32, %26 b: i32, %27 c: i32, %28 d: i32, %29 e: i32, %30 value: i64, %31 after: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%25), const<i32>(1)), ne<i32>(read<i32>(%26), const<i32>(2))), ne<i32>(read<i32>(%27), const<i32>(3))), ne<i32>(read<i32>(%28), const<i32>(4))), ne<i32>(read<i32>(%29), const<i32>(5))), ne<i64>(read<i64>(%30), const<i64>(81985529216486895))), ne<i32>(read<i32>(%31), const<i32>(85)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_test5:[0-9]+]] @test5(%[[VALUE_a_5:[0-9]+]] a: i32, %[[VALUE_b_4:[0-9]+]] b: i32, %[[VALUE_c_3:[0-9]+]] c: i32, %[[VALUE_d_2:[0-9]+]] d: i32, %[[VALUE_e:[0-9]+]] e: i32, %[[VALUE_value_5:[0-9]+]] value: i64, %[[VALUE_after_5:[0-9]+]] after: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_a_5]]), const<i32>(1)), ne<i32>(read<i32>(%[[VALUE_b_4]]), const<i32>(2))), ne<i32>(read<i32>(%[[VALUE_c_3]]), const<i32>(3))), ne<i32>(read<i32>(%[[VALUE_d_2]]), const<i32>(4))), ne<i32>(read<i32>(%[[VALUE_e]]), const<i32>(5))), ne<i64>(read<i64>(%[[VALUE_value_5]]), const<i64>(81985529216486895))), ne<i32>(read<i32>(%[[VALUE_after_5]]), const<i32>(85)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @test6(%33 a: i32, %34 b: i32, %35 c: i32, %36 d: i32, %37 e: i32, %38 f: i32, %39 value: i64, %40 after: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%33), const<i32>(1)), ne<i32>(read<i32>(%34), const<i32>(2))), ne<i32>(read<i32>(%35), const<i32>(3))), ne<i32>(read<i32>(%36), const<i32>(4))), ne<i32>(read<i32>(%37), const<i32>(5))), ne<i32>(read<i32>(%38), const<i32>(6))), ne<i64>(read<i64>(%39), const<i64>(81985529216486895))), ne<i32>(read<i32>(%40), const<i32>(85)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_test6:[0-9]+]] @test6(%[[VALUE_a_6:[0-9]+]] a: i32, %[[VALUE_b_5:[0-9]+]] b: i32, %[[VALUE_c_4:[0-9]+]] c: i32, %[[VALUE_d_3:[0-9]+]] d: i32, %[[VALUE_e_2:[0-9]+]] e: i32, %[[VALUE_f:[0-9]+]] f: i32, %[[VALUE_value_6:[0-9]+]] value: i64, %[[VALUE_after_6:[0-9]+]] after: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_a_6]]), const<i32>(1)), ne<i32>(read<i32>(%[[VALUE_b_5]]), const<i32>(2))), ne<i32>(read<i32>(%[[VALUE_c_4]]), const<i32>(3))), ne<i32>(read<i32>(%[[VALUE_d_3]]), const<i32>(4))), ne<i32>(read<i32>(%[[VALUE_e_2]]), const<i32>(5))), ne<i32>(read<i32>(%[[VALUE_f]]), const<i32>(6))), ne<i64>(read<i64>(%[[VALUE_value_6]]), const<i64>(81985529216486895))), ne<i32>(read<i32>(%[[VALUE_after_6]]), const<i32>(85)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %41 @test7(%42 a: i32, %43 b: i32, %44 c: i32, %45 d: i32, %46 e: i32, %47 f: i32, %48 g: i32, %49 value: i64, %50 after: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%42), const<i32>(1)), ne<i32>(read<i32>(%43), const<i32>(2))), ne<i32>(read<i32>(%44), const<i32>(3))), ne<i32>(read<i32>(%45), const<i32>(4))), ne<i32>(read<i32>(%46), const<i32>(5))), ne<i32>(read<i32>(%47), const<i32>(6))), ne<i32>(read<i32>(%48), const<i32>(7))), ne<i64>(read<i64>(%49), const<i64>(81985529216486895))), ne<i32>(read<i32>(%50), const<i32>(85)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_test7:[0-9]+]] @test7(%[[VALUE_a_7:[0-9]+]] a: i32, %[[VALUE_b_6:[0-9]+]] b: i32, %[[VALUE_c_5:[0-9]+]] c: i32, %[[VALUE_d_4:[0-9]+]] d: i32, %[[VALUE_e_3:[0-9]+]] e: i32, %[[VALUE_f_2:[0-9]+]] f: i32, %[[VALUE_g:[0-9]+]] g: i32, %[[VALUE_value_7:[0-9]+]] value: i64, %[[VALUE_after_7:[0-9]+]] after: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_a_7]]), const<i32>(1)), ne<i32>(read<i32>(%[[VALUE_b_6]]), const<i32>(2))), ne<i32>(read<i32>(%[[VALUE_c_5]]), const<i32>(3))), ne<i32>(read<i32>(%[[VALUE_d_4]]), const<i32>(4))), ne<i32>(read<i32>(%[[VALUE_e_3]]), const<i32>(5))), ne<i32>(read<i32>(%[[VALUE_f_2]]), const<i32>(6))), ne<i32>(read<i32>(%[[VALUE_g]]), const<i32>(7))), ne<i64>(read<i64>(%[[VALUE_value_7]]), const<i64>(81985529216486895))), ne<i32>(read<i32>(%[[VALUE_after_7]]), const<i32>(85)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %51 @test8(%52 a: i32, %53 b: i32, %54 c: i32, %55 d: i32, %56 e: i32, %57 f: i32, %58 g: i32, %59 h: i32, %60 value: i64, %61 after: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%52), const<i32>(1)), ne<i32>(read<i32>(%53), const<i32>(2))), ne<i32>(read<i32>(%54), const<i32>(3))), ne<i32>(read<i32>(%55), const<i32>(4))), ne<i32>(read<i32>(%56), const<i32>(5))), ne<i32>(read<i32>(%57), const<i32>(6))), ne<i32>(read<i32>(%58), const<i32>(7))), ne<i32>(read<i32>(%59), const<i32>(8))), ne<i64>(read<i64>(%60), const<i64>(81985529216486895))), ne<i32>(read<i32>(%61), const<i32>(85)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_test8:[0-9]+]] @test8(%[[VALUE_a_8:[0-9]+]] a: i32, %[[VALUE_b_7:[0-9]+]] b: i32, %[[VALUE_c_6:[0-9]+]] c: i32, %[[VALUE_d_5:[0-9]+]] d: i32, %[[VALUE_e_4:[0-9]+]] e: i32, %[[VALUE_f_3:[0-9]+]] f: i32, %[[VALUE_g_2:[0-9]+]] g: i32, %[[VALUE_h:[0-9]+]] h: i32, %[[VALUE_value_8:[0-9]+]] value: i64, %[[VALUE_after_8:[0-9]+]] after: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_a_8]]), const<i32>(1)), ne<i32>(read<i32>(%[[VALUE_b_7]]), const<i32>(2))), ne<i32>(read<i32>(%[[VALUE_c_6]]), const<i32>(3))), ne<i32>(read<i32>(%[[VALUE_d_5]]), const<i32>(4))), ne<i32>(read<i32>(%[[VALUE_e_4]]), const<i32>(5))), ne<i32>(read<i32>(%[[VALUE_f_3]]), const<i32>(6))), ne<i32>(read<i32>(%[[VALUE_g_2]]), const<i32>(7))), ne<i32>(read<i32>(%[[VALUE_h]]), const<i32>(8))), ne<i64>(read<i64>(%[[VALUE_value_8]]), const<i64>(81985529216486895))), ne<i32>(read<i32>(%[[VALUE_after_8]]), const<i32>(85)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %62 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i64, i32) -> void>(%2, const<i32>(1), const<i64>(81985529216486895), const<i32>(85));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i64, i32) -> void>(%6, const<i32>(1), const<i32>(2), const<i64>(81985529216486895), const<i32>(85));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i64, i32) -> void>(%11, const<i32>(1), const<i32>(2), const<i32>(3), const<i64>(81985529216486895), const<i32>(85));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i64, i32) -> void>(%17, const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(4), const<i64>(81985529216486895), const<i32>(85));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i64, i32) -> void>(%24, const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(4), const<i32>(5), const<i64>(81985529216486895), const<i32>(85));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i64, i32) -> void>(%32, const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(4), const<i32>(5), const<i32>(6), const<i64>(81985529216486895), const<i32>(85));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i32, i64, i32) -> void>(%41, const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(4), const<i32>(5), const<i32>(6), const<i32>(7), const<i64>(81985529216486895), const<i32>(85));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i32, i32, i64, i32) -> void>(%51, const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(4), const<i32>(5), const<i32>(6), const<i32>(7), const<i32>(8), const<i64>(81985529216486895), const<i32>(85));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i64, i32) -> void>(%[[VALUE_test1]], const<i32>(1), const<i64>(81985529216486895), const<i32>(85));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i64, i32) -> void>(%[[VALUE_test2]], const<i32>(1), const<i32>(2), const<i64>(81985529216486895), const<i32>(85));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i64, i32) -> void>(%[[VALUE_test3]], const<i32>(1), const<i32>(2), const<i32>(3), const<i64>(81985529216486895), const<i32>(85));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i64, i32) -> void>(%[[VALUE_test4]], const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(4), const<i64>(81985529216486895), const<i32>(85));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i64, i32) -> void>(%[[VALUE_test5]], const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(4), const<i32>(5), const<i64>(81985529216486895), const<i32>(85));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i64, i32) -> void>(%[[VALUE_test6]], const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(4), const<i32>(5), const<i32>(6), const<i64>(81985529216486895), const<i32>(85));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i32, i64, i32) -> void>(%[[VALUE_test7]], const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(4), const<i32>(5), const<i32>(6), const<i32>(7), const<i64>(81985529216486895), const<i32>(85));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i32, i32, i64, i32) -> void>(%[[VALUE_test8]], const<i32>(1), const<i32>(2), const<i32>(3), const<i32>(4), const<i32>(5), const<i32>(6), const<i32>(7), const<i32>(8), const<i64>(81985529216486895), const<i32>(85));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

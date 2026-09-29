@@ -29,11 +29,11 @@ foo (long double x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 t: f80;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0]];
-// DEFAULT-NEXT:     fn %0 @foo(%1 x: f80) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 y: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = read<f80>(%1));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: f80) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = read<f80>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -55,25 +55,25 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type1 va_list = va_list;
-// DEFAULT-NEXT:     global %4 ap: va_list [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 f: f32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @exit(%10 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @foo() -> ptr<va_list> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
-// DEFAULT-NEXT:         return addr_of<ptr<va_list>>(%4);
+// DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     global %[[VALUE_ap:[0-9]+]] ap: va_list [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: f32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> ptr<va_list> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
+// DEFAULT-NEXT:         return addr_of<ptr<va_list>>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @bar(%8 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         va_start(%4);
-// DEFAULT-NEXT:         write<f32>(%5, va_arg<f32>(deref(call<ptr<va_list>, signature=fn() -> ptr<va_list>>(%6))));
-// DEFAULT-NEXT:         va_arg<f32>(deref(call<ptr<va_list>, signature=fn() -> ptr<va_list>>(%6)));
-// DEFAULT-NEXT:         va_end(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_i:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         write<f32>(%[[VALUE_f]], va_arg<f32>(deref(call<ptr<va_list>, signature=fn() -> ptr<va_list>>(%[[VALUE_foo]]))));
+// DEFAULT-NEXT:         va_arg<f32>(deref(call<ptr<va_list>, signature=fn() -> ptr<va_list>>(%[[VALUE_foo]])));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%7, const<i32>(1), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_bar]], const<i32>(1), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

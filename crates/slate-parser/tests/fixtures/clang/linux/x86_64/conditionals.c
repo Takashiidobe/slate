@@ -40,9 +40,9 @@ typedef int Socket;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 HANDLE = i32;
-// DEFAULT-NEXT:     type @type1 Socket = i32;
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     type @type[[TYPE_HANDLE:[0-9]+]] HANDLE = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_Socket:[0-9]+]] Socket = i32;
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(3);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
@@ -70,9 +70,9 @@ typedef int Socket;
 // WIN32-NEXT:         storage d64 [size=8, align=8];
 // WIN32-NEXT:         storage d128 [size=16, align=16];
 // WIN32-NEXT:     }
-// WIN32-NEXT:     type @type0 HANDLE = i32;
-// WIN32-NEXT:     type @type1 Socket = i32;
-// WIN32-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// WIN32-NEXT:     type @type[[TYPE_HANDLE:[0-9]+]] HANDLE = i32;
+// WIN32-NEXT:     type @type[[TYPE_Socket:[0-9]+]] Socket = i32;
+// WIN32-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // WIN32-NEXT:         return const<i32>(2);
 // WIN32-NEXT:     }
 // WIN32-NEXT: }

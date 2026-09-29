@@ -44,25 +44,25 @@ L2:
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 d: i32 [storage=static] = const<i32>(2) [linkage=external];
-// DEFAULT-NEXT:     global %3 e: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 c: i64 [storage=static] = widen<i64, reason=assign>(const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 g: i32 [storage=automatic] = const<i32>(6);
-// DEFAULT-NEXT:         label %6 L1:
-// DEFAULT-NEXT:             write<i32>(%3, read<i32>(%2));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%0), const<i32>(0))
-// DEFAULT-NEXT:             goto %6;
-// DEFAULT-NEXT:         let %10: i32 [synthetic] = read<i32>(%8);
-// DEFAULT-NEXT:         let %11: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%10), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%8, read<i32>(%11));
-// DEFAULT-NEXT:         let %9 i: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%4), not<i32>(or<i32>(not<i32>(read<i32>(%3)), not<i32>(read<i32>(%8))))));
-// DEFAULT-NEXT:         label %7 L2:
-// DEFAULT-NEXT:             write<i64>(%4, mul<i64, overflow=ub>(rem<i64, by_zero=ub, min_by_neg_one=ub>(widen<i64, reason=usual_arith>(read<i32>(%1)), read<i64>(%4)), widen<i64, reason=usual_arith>(read<i32>(%9))));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%3), const<i32>(0)))
-// DEFAULT-NEXT:             goto %7;
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] = const<i32>(2) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i64 [storage=static] = widen<i64, reason=assign>(const<i32>(1)) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: i32 [storage=automatic] = const<i32>(6);
+// DEFAULT-NEXT:         label %[[VALUE_L1:[0-9]+]] L1:
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_e]], read<i32>(%[[VALUE_d]]));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))
+// DEFAULT-NEXT:             goto %[[VALUE_L1]];
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_g]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_g]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%[[VALUE_c]]), not<i32>(or<i32>(not<i32>(read<i32>(%[[VALUE_e]])), not<i32>(read<i32>(%[[VALUE_g]]))))));
+// DEFAULT-NEXT:         label %[[VALUE_L2:[0-9]+]] L2:
+// DEFAULT-NEXT:             write<i64>(%[[VALUE_c]], mul<i64, overflow=ub>(rem<i64, by_zero=ub, min_by_neg_one=ub>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_b]])), read<i64>(%[[VALUE_c]])), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i]]))));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%[[VALUE_e]]), const<i32>(0)))
+// DEFAULT-NEXT:             goto %[[VALUE_L2]];
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

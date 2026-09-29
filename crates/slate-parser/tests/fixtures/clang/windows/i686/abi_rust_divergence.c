@@ -43,64 +43,64 @@ struct empty_members empty_members(struct empty_members value) { return value; }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 pair = struct {
+// IR-NEXT:     type @type[[TYPE_pair:[0-9]+]] pair = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type1 odd_array = struct {
+// IR-NEXT:     type @type[[TYPE_odd_array:[0-9]+]] odd_array = struct {
 // IR-NEXT:         field0 a: array<i8, 3>;
 // IR-NEXT:         field1 b: i8;
 // IR-NEXT:     } [size=4, align=1, offsets=[0, 3]];
-// IR-NEXT:     type @type2 bit_precise = struct {
+// IR-NEXT:     type @type[[TYPE_bit_precise:[0-9]+]] bit_precise = struct {
 // IR-NEXT:         field0 a: i24b;
 // IR-NEXT:         field1 f: f32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type3 flexible = struct {
+// IR-NEXT:     type @type[[TYPE_flexible:[0-9]+]] flexible = struct {
 // IR-NEXT:         field0 n: i32;
 // IR-NEXT:         field1 tail: array<i32, incomplete>;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type4 zero_tail = struct {
+// IR-NEXT:     type @type[[TYPE_zero_tail:[0-9]+]] zero_tail = struct {
 // IR-NEXT:         field0 f: f32;
 // IR-NEXT:         field1 tail: array<i32, 0>;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type5 aligned = struct {
+// IR-NEXT:     type @type[[TYPE_aligned:[0-9]+]] aligned = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:     } [size=16, align=16, offsets=[0]];
-// IR-NEXT:     type @type6 empty = struct {
+// IR-NEXT:     type @type[[TYPE_empty:[0-9]+]] empty = struct {
 // IR-NEXT:     } [size=4, align=1, offsets=[]];
-// IR-NEXT:     type @type7 zero_only = struct {
+// IR-NEXT:     type @type[[TYPE_zero_only:[0-9]+]] zero_only = struct {
 // IR-NEXT:         field0 z: array<i32, 0>;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type8 empty_members = struct {
-// IR-NEXT:         field0 e: array<@type6, 3>;
+// IR-NEXT:     type @type[[TYPE_empty_members:[0-9]+]] empty_members = struct {
+// IR-NEXT:         field0 e: array<@type[[TYPE_empty]], 3>;
 // IR-NEXT:         field1 <anonymous>: i32 : 3;
 // IR-NEXT:     } [size=16, align=4, offsets=[0, 12], bit_offsets=[None, Some(96)], bit_units=[(12, 4)], field_units=[None, Some(0)]];
-// IR-NEXT:     fn %9 @pair(%10 value: @type0) -> @type0 [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type0, reason=return>(read<@type0>(%10));
+// IR-NEXT:     fn %[[VALUE_pair:[0-9]+]] @pair(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %11 @odd_array(%12 value: @type1) -> @type1 [linkage=external] [abi=x86_win32(native_c) -> sret<align=1>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type1, reason=return>(read<@type1>(%12));
+// IR-NEXT:     fn %[[VALUE_odd_array:[0-9]+]] @odd_array(%[[VALUE_value_2:[0-9]+]] value: @type[[TYPE_odd_array]]) -> @type[[TYPE_odd_array]] [linkage=external] [abi=x86_win32(native_c) -> sret<align=1>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_odd_array]], reason=return>(read<@type[[TYPE_odd_array]]>(%[[VALUE_value_2]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %13 @bit_precise(%14 value: @type2) -> @type2 [linkage=external] [abi=x86_win32(native_c) -> sret<align=4>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type2, reason=return>(read<@type2>(%14));
+// IR-NEXT:     fn %[[VALUE_bit_precise:[0-9]+]] @bit_precise(%[[VALUE_value_3:[0-9]+]] value: @type[[TYPE_bit_precise]]) -> @type[[TYPE_bit_precise]] [linkage=external] [abi=x86_win32(native_c) -> sret<align=4>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_bit_precise]], reason=return>(read<@type[[TYPE_bit_precise]]>(%[[VALUE_value_3]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %15 @flexible(%16 value: @type3) -> @type3 [linkage=external] [abi=x86_win32(native_c) -> sret<align=4>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type3, reason=return>(read<@type3>(%16));
+// IR-NEXT:     fn %[[VALUE_flexible:[0-9]+]] @flexible(%[[VALUE_value_4:[0-9]+]] value: @type[[TYPE_flexible]]) -> @type[[TYPE_flexible]] [linkage=external] [abi=x86_win32(native_c) -> sret<align=4>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_flexible]], reason=return>(read<@type[[TYPE_flexible]]>(%[[VALUE_value_4]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %17 @zero_tail(%18 value: @type4) -> @type4 [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type4, reason=return>(read<@type4>(%18));
+// IR-NEXT:     fn %[[VALUE_zero_tail:[0-9]+]] @zero_tail(%[[VALUE_value_5:[0-9]+]] value: @type[[TYPE_zero_tail]]) -> @type[[TYPE_zero_tail]] [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_zero_tail]], reason=return>(read<@type[[TYPE_zero_tail]]>(%[[VALUE_value_5]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %19 @aligned(%20 value: @type5) -> @type5 [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type5, reason=return>(read<@type5>(%20));
+// IR-NEXT:     fn %[[VALUE_aligned:[0-9]+]] @aligned(%[[VALUE_value_6:[0-9]+]] value: @type[[TYPE_aligned]]) -> @type[[TYPE_aligned]] [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_aligned]], reason=return>(read<@type[[TYPE_aligned]]>(%[[VALUE_value_6]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %21 @empty(%22 value: @type6) -> @type6 [linkage=external] [abi=x86_win32(native_c) -> void] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type6, reason=return>(read<@type6>(%22));
+// IR-NEXT:     fn %[[VALUE_empty:[0-9]+]] @empty(%[[VALUE_value_7:[0-9]+]] value: @type[[TYPE_empty]]) -> @type[[TYPE_empty]] [linkage=external] [abi=x86_win32(native_c) -> void] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_empty]], reason=return>(read<@type[[TYPE_empty]]>(%[[VALUE_value_7]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %23 @zero_only(%24 value: @type7) -> @type7 [linkage=external] [abi=x86_win32(native_c) -> void] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type7, reason=return>(read<@type7>(%24));
+// IR-NEXT:     fn %[[VALUE_zero_only:[0-9]+]] @zero_only(%[[VALUE_value_8:[0-9]+]] value: @type[[TYPE_zero_only]]) -> @type[[TYPE_zero_only]] [linkage=external] [abi=x86_win32(native_c) -> void] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_zero_only]], reason=return>(read<@type[[TYPE_zero_only]]>(%[[VALUE_value_8]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %25 @empty_members(%26 value: @type8) -> @type8 [linkage=external] [abi=x86_win32(native_c) -> void] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type8, reason=return>(read<@type8>(%26));
+// IR-NEXT:     fn %[[VALUE_empty_members:[0-9]+]] @empty_members(%[[VALUE_value_9:[0-9]+]] value: @type[[TYPE_empty_members]]) -> @type[[TYPE_empty_members]] [linkage=external] [abi=x86_win32(native_c) -> void] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_empty_members]], reason=return>(read<@type[[TYPE_empty_members]]>(%[[VALUE_value_9]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -40,16 +40,16 @@ void f(S *s, float *f)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 S = @type0;
-// DEFAULT-NEXT:     fn %2 @dont_delete() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @f(%4 s: ptr<@type0>, %5 f: ptr<f32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type0>>(%4))), const<i32>(1));
-// DEFAULT-NEXT:         write<f32>(deref(read<ptr<f32>>(%5)), int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(deref(read<ptr<@type0>>(%4)))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_dont_delete:[0-9]+]] @dont_delete() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE0]]>, %[[VALUE_f_2:[0-9]+]] f: ptr<f32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_s]]))), const<i32>(1));
+// DEFAULT-NEXT:         write<f32>(deref(read<ptr<f32>>(%[[VALUE_f_2]])), int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_s]])))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_dont_delete]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

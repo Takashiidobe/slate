@@ -42,22 +42,22 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %13 .str13: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%12 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @cold_path(%3 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<i32, overflow=ub>(read<i32>(%3), const<i32>(2));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_cold_path:[0-9]+]] @cold_path(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return mul<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), const<i32>(2));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @always_inlined(%5 x: i32) -> i32 [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%5), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_always_inlined:[0-9]+]] @always_inlined(%[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_x_2]]), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @never_inlined(%7 x: i32) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return sub<i32, overflow=ub>(read<i32>(%7), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_never_inlined:[0-9]+]] @never_inlined(%[[VALUE_x_3:[0-9]+]] x: i32) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return sub<i32, overflow=ub>(read<i32>(%[[VALUE_x_3]]), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 a: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%2, const<i32>(3));
-// DEFAULT-NEXT:         let %10 b: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%4, read<i32>(%9));
-// DEFAULT-NEXT:         let %11 c: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%6, read<i32>(%10));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%13)), read<i32>(%9), read<i32>(%10), read<i32>(%11));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_cold_path]], const<i32>(3));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_always_inlined]], read<i32>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_never_inlined]], read<i32>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]]), read<i32>(%[[VALUE_c]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

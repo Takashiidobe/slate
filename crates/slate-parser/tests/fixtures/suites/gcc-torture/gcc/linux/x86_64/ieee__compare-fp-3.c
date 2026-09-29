@@ -98,63 +98,63 @@ void link_error1() {}
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @link_error0() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_link_error0:[0-9]+]] @link_error0() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @link_error1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_link_error1:[0-9]+]] @link_error1() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @test1(%3 x: f32, %4 y: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_and<bool>(eq<f32, exceptions=observable>(read<f32>(%3), read<f32>(%4)), ne<f32, exceptions=observable>(read<f32>(%3), read<f32>(%4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_x:[0-9]+]] x: f32, %[[VALUE_y:[0-9]+]] y: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_and<bool>(eq<f32, exceptions=observable>(read<f32>(%[[VALUE_x]]), read<f32>(%[[VALUE_y]])), ne<f32, exceptions=observable>(read<f32>(%[[VALUE_x]]), read<f32>(%[[VALUE_y]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error0]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @test2(%6 x: f32, %7 y: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_and<bool>(lt<f32, exceptions=observable>(read<f32>(%6), read<f32>(%7)), gt<f32, exceptions=observable>(read<f32>(%6), read<f32>(%7)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_x_2:[0-9]+]] x: f32, %[[VALUE_y_2:[0-9]+]] y: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_and<bool>(lt<f32, exceptions=observable>(read<f32>(%[[VALUE_x_2]]), read<f32>(%[[VALUE_y_2]])), gt<f32, exceptions=observable>(read<f32>(%[[VALUE_x_2]]), read<f32>(%[[VALUE_y_2]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error0]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @test3(%9 x: f32, %10 y: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_and<bool>(lt<f32, exceptions=observable>(read<f32>(%9), read<f32>(%10)), lt<f32, exceptions=observable>(read<f32>(%10), read<f32>(%9)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_x_3:[0-9]+]] x: f32, %[[VALUE_y_3:[0-9]+]] y: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_and<bool>(lt<f32, exceptions=observable>(read<f32>(%[[VALUE_x_3]]), read<f32>(%[[VALUE_y_3]])), lt<f32, exceptions=observable>(read<f32>(%[[VALUE_y_3]]), read<f32>(%[[VALUE_x_3]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error0]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @test4(%12 x: f32, %13 y: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(eq<f32, exceptions=observable>(read<f32>(%12), read<f32>(%13)), ne<f32, exceptions=observable>(read<f32>(%12), read<f32>(%13)))
+// DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4(%[[VALUE_x_4:[0-9]+]] x: f32, %[[VALUE_y_4:[0-9]+]] y: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(eq<f32, exceptions=observable>(read<f32>(%[[VALUE_x_4]]), read<f32>(%[[VALUE_y_4]])), ne<f32, exceptions=observable>(read<f32>(%[[VALUE_x_4]]), read<f32>(%[[VALUE_y_4]])))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error1]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @test5(%15 x: f32, %16 y: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(or<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%15))), from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%16)))), const<i32>(0)), ge<f32, exceptions=observable>(read<f32>(%15), read<f32>(%16))), lt<f32, exceptions=observable>(read<f32>(%15), read<f32>(%16)))
+// DEFAULT-NEXT:     fn %[[VALUE_test5:[0-9]+]] @test5(%[[VALUE_x_5:[0-9]+]] x: f32, %[[VALUE_y_5:[0-9]+]] y: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(or<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%[[VALUE_x_5]]))), from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%[[VALUE_y_5]])))), const<i32>(0)), ge<f32, exceptions=observable>(read<f32>(%[[VALUE_x_5]]), read<f32>(%[[VALUE_y_5]]))), lt<f32, exceptions=observable>(read<f32>(%[[VALUE_x_5]]), read<f32>(%[[VALUE_y_5]])))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error1]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @test6(%18 x: f32, %19 y: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(or<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%19))), from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%18)))), const<i32>(0)), le<f32, exceptions=observable>(read<f32>(%18), read<f32>(%19))), lt<f32, exceptions=observable>(read<f32>(%19), read<f32>(%18)))
+// DEFAULT-NEXT:     fn %[[VALUE_test6:[0-9]+]] @test6(%[[VALUE_x_6:[0-9]+]] x: f32, %[[VALUE_y_6:[0-9]+]] y: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(or<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%[[VALUE_y_6]]))), from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%[[VALUE_x_6]])))), const<i32>(0)), le<f32, exceptions=observable>(read<f32>(%[[VALUE_x_6]]), read<f32>(%[[VALUE_y_6]]))), lt<f32, exceptions=observable>(read<f32>(%[[VALUE_y_6]]), read<f32>(%[[VALUE_x_6]])))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error1]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @test7(%21 x: f32, %22 y: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(or<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%21))), from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%22)))), const<i32>(0)), not<bool>(ne<i32>(or<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%21))), from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%22)))), const<i32>(0))))
+// DEFAULT-NEXT:     fn %[[VALUE_test7:[0-9]+]] @test7(%[[VALUE_x_7:[0-9]+]] x: f32, %[[VALUE_y_7:[0-9]+]] y: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(or<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%[[VALUE_x_7]]))), from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%[[VALUE_y_7]])))), const<i32>(0)), not<bool>(ne<i32>(or<i32>(from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%[[VALUE_x_7]]))), from_bool<i32, reason=promotion>(float_class<bool, test=nan>(read<f32>(%[[VALUE_y_7]])))), const<i32>(0))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error1]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @all_tests(%24 x: f32, %25 y: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%2, read<f32>(%24), read<f32>(%25));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%5, read<f32>(%24), read<f32>(%25));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%8, read<f32>(%24), read<f32>(%25));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%11, read<f32>(%24), read<f32>(%25));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%14, read<f32>(%24), read<f32>(%25));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%17, read<f32>(%24), read<f32>(%25));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%20, read<f32>(%24), read<f32>(%25));
+// DEFAULT-NEXT:     fn %[[VALUE_all_tests:[0-9]+]] @all_tests(%[[VALUE_x_8:[0-9]+]] x: f32, %[[VALUE_y_8:[0-9]+]] y: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_test1]], read<f32>(%[[VALUE_x_8]]), read<f32>(%[[VALUE_y_8]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_test2]], read<f32>(%[[VALUE_x_8]]), read<f32>(%[[VALUE_y_8]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_test3]], read<f32>(%[[VALUE_x_8]]), read<f32>(%[[VALUE_y_8]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_test4]], read<f32>(%[[VALUE_x_8]]), read<f32>(%[[VALUE_y_8]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_test5]], read<f32>(%[[VALUE_x_8]]), read<f32>(%[[VALUE_y_8]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_test6]], read<f32>(%[[VALUE_x_8]]), read<f32>(%[[VALUE_y_8]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_test7]], read<f32>(%[[VALUE_x_8]]), read<f32>(%[[VALUE_y_8]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%23, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%23, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%23, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(4)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(3)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_all_tests]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_all_tests]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_all_tests]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(4)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(3)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

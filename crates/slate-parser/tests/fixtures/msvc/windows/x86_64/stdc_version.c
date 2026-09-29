@@ -34,7 +34,7 @@ int no_stdc_version;
 // NONE-NEXT:         storage d64 [size=8, align=8];
 // NONE-NEXT:         storage d128 [size=16, align=16];
 // NONE-NEXT:     }
-// NONE-NEXT:     global %0 no_stdc_version: i32 [storage=static] [linkage=external];
+// NONE-NEXT:     global %[[VALUE_no_stdc_version:[0-9]+]] no_stdc_version: i32 [storage=static] [linkage=external];
 // NONE-NEXT: }
 // SLATE-FILECHECK-END NONE
 // SLATE-FILECHECK-BEGIN C11
@@ -59,7 +59,7 @@ int no_stdc_version;
 // C11-NEXT:         storage d64 [size=8, align=8];
 // C11-NEXT:         storage d128 [size=16, align=16];
 // C11-NEXT:     }
-// C11-NEXT:     global %0 stdc_version: i32 [storage=static] = const<i32>(201112) [linkage=external];
+// C11-NEXT:     global %[[VALUE_stdc_version:[0-9]+]] stdc_version: i32 [storage=static] = const<i32>(201112) [linkage=external];
 // C11-NEXT: }
 // SLATE-FILECHECK-END C11
 // SLATE-FILECHECK-BEGIN C17
@@ -84,7 +84,7 @@ int no_stdc_version;
 // C17-NEXT:         storage d64 [size=8, align=8];
 // C17-NEXT:         storage d128 [size=16, align=16];
 // C17-NEXT:     }
-// C17-NEXT:     global %0 stdc_version: i32 [storage=static] = const<i32>(201710) [linkage=external];
+// C17-NEXT:     global %[[VALUE_stdc_version:[0-9]+]] stdc_version: i32 [storage=static] = const<i32>(201710) [linkage=external];
 // C17-NEXT: }
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN C23
@@ -109,6 +109,6 @@ int no_stdc_version;
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     global %0 stdc_version: i32 [storage=static] = const<i32>(202312) [linkage=external];
+// C23-NEXT:     global %[[VALUE_stdc_version:[0-9]+]] stdc_version: i32 [storage=static] = const<i32>(202312) [linkage=external];
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

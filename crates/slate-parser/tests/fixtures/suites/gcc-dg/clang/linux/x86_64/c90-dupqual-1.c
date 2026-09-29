@@ -37,13 +37,13 @@ volatile VI *v3;		/* { dg-error "duplicate" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 CI = i32;
-// DEFAULT-NEXT:     type @type1 VI = i32;
-// DEFAULT-NEXT:     global %1 c1: i32 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     global %2 c2: i32 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     global %3 c3: ptr<const i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 v1: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 v2: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 v3: ptr<volatile i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_CI:[0-9]+]] CI = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_VI:[0-9]+]] VI = i32;
+// DEFAULT-NEXT:     global %[[VALUE_c1:[0-9]+]] c1: i32 [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c2:[0-9]+]] c2: i32 [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c3:[0-9]+]] c3: ptr<const i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_v1:[0-9]+]] v1: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_v2:[0-9]+]] v2: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_v3:[0-9]+]] v3: ptr<volatile i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

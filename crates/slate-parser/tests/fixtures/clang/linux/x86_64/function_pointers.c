@@ -44,23 +44,23 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %15 .str15: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %16 .str16: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%14 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @add_pair(%3 lhs: i32, %4 rhs: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%3), read<i32>(%4));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_add_pair:[0-9]+]] @add_pair(%[[VALUE_lhs:[0-9]+]] lhs: i32, %[[VALUE_rhs:[0-9]+]] rhs: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_lhs]]), read<i32>(%[[VALUE_rhs]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @mul_pair(%6 lhs: i32, %7 rhs: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<i32, overflow=ub>(read<i32>(%6), read<i32>(%7));
+// DEFAULT-NEXT:     fn %[[VALUE_mul_pair:[0-9]+]] @mul_pair(%[[VALUE_lhs_2:[0-9]+]] lhs: i32, %[[VALUE_rhs_2:[0-9]+]] rhs: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return mul<i32, overflow=ub>(read<i32>(%[[VALUE_lhs_2]]), read<i32>(%[[VALUE_rhs_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @apply_binary(%9 op: ptr<fn(i32, i32) -> i32>, %10 lhs: i32, %11 rhs: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32, i32) -> i32>(read<ptr<fn(i32, i32) -> i32>>(%9), read<i32>(%10), read<i32>(%11));
+// DEFAULT-NEXT:     fn %[[VALUE_apply_binary:[0-9]+]] @apply_binary(%[[VALUE_op:[0-9]+]] op: ptr<fn(i32, i32) -> i32>, %[[VALUE_lhs_3:[0-9]+]] lhs: i32, %[[VALUE_rhs_3:[0-9]+]] rhs: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32, i32) -> i32>(read<ptr<fn(i32, i32) -> i32>>(%[[VALUE_op]]), read<i32>(%[[VALUE_lhs_3]]), read<i32>(%[[VALUE_rhs_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %13 chosen: ptr<fn(i32, i32) -> i32> [storage=automatic] = function_decay<ptr<fn(i32, i32) -> i32>>(%2);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%15)), call<i32, signature=fn(ptr<fn(i32, i32) -> i32>, i32, i32) -> i32>(%8, read<ptr<fn(i32, i32) -> i32>>(%13), const<i32>(4), const<i32>(5)));
-// DEFAULT-NEXT:         write<ptr<fn(i32, i32) -> i32>>(%13, function_decay<ptr<fn(i32, i32) -> i32>>(%5));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%16)), call<i32, signature=fn(i32, i32) -> i32>(read<ptr<fn(i32, i32) -> i32>>(%13), const<i32>(3), const<i32>(6)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_chosen:[0-9]+]] chosen: ptr<fn(i32, i32) -> i32> [storage=automatic] = function_decay<ptr<fn(i32, i32) -> i32>>(%[[VALUE_add_pair]]);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), call<i32, signature=fn(ptr<fn(i32, i32) -> i32>, i32, i32) -> i32>(%[[VALUE_apply_binary]], read<ptr<fn(i32, i32) -> i32>>(%[[VALUE_chosen]]), const<i32>(4), const<i32>(5)));
+// DEFAULT-NEXT:         write<ptr<fn(i32, i32) -> i32>>(%[[VALUE_chosen]], function_decay<ptr<fn(i32, i32) -> i32>>(%[[VALUE_mul_pair]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), call<i32, signature=fn(i32, i32) -> i32>(read<ptr<fn(i32, i32) -> i32>>(%[[VALUE_chosen]]), const<i32>(3), const<i32>(6)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

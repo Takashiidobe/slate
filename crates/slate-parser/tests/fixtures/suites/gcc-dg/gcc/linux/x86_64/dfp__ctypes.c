@@ -77,34 +77,34 @@ void f()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 sd1: d32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 dd2: d64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 td3: d128 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 d32: array<d32, 7> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     global %4 d64: array<d64, 7> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     global %5 d128: array<d128, 7> [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     extern %6 ext_d32: array<d32, 7> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     extern %7 ext_d64: array<d64, 7> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     extern %8 ext_d128: array<d128, 7> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 ssize: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 dsize: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 tsize: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %12 salign: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4))) [linkage=external];
-// DEFAULT-NEXT:     global %13 dalign: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(8))) [linkage=external];
-// DEFAULT-NEXT:     global %14 talign: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(16))) [linkage=external];
-// DEFAULT-NEXT:     global %15 d32_array_size: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %16 d64_array_size: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %17 d128_array_size: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %18 ext_d32_array_size: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %19 ext_d64_array_size: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %20 ext_d128_array_size: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %21 @f(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %22 d32: array<d32, 7> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %23 d64: array<d64, 7> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %24 d128: array<d128, 7> [storage=automatic];
-// DEFAULT-NEXT:         let %25 d32_array_size: array<i32, 1> [storage=automatic];
-// DEFAULT-NEXT:         let %26 d64_array_size: array<i32, 1> [storage=automatic];
-// DEFAULT-NEXT:         let %27 d128_array_size: array<i32, 1> [storage=automatic];
+// DEFAULT-NEXT:     global %[[VALUE_sd1:[0-9]+]] sd1: d32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_dd2:[0-9]+]] dd2: d64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_td3:[0-9]+]] td3: d128 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d32:[0-9]+]] d32: array<d32, 7> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d64:[0-9]+]] d64: array<d64, 7> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d128:[0-9]+]] d128: array<d128, 7> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     extern %[[VALUE_ext_d32:[0-9]+]] ext_d32: array<d32, 7> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_ext_d64:[0-9]+]] ext_d64: array<d64, 7> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_ext_d128:[0-9]+]] ext_d128: array<d128, 7> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ssize:[0-9]+]] ssize: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_dsize:[0-9]+]] dsize: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_tsize:[0-9]+]] tsize: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_salign:[0-9]+]] salign: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(4))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_dalign:[0-9]+]] dalign: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(8))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_talign:[0-9]+]] talign: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(16))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d32_array_size:[0-9]+]] d32_array_size: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d64_array_size:[0-9]+]] d64_array_size: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d128_array_size:[0-9]+]] d128_array_size: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ext_d32_array_size:[0-9]+]] ext_d32_array_size: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ext_d64_array_size:[0-9]+]] ext_d64_array_size: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ext_d128_array_size:[0-9]+]] ext_d128_array_size: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_d32_2:[0-9]+]] d32: array<d32, 7> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_d64_2:[0-9]+]] d64: array<d64, 7> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_d128_2:[0-9]+]] d128: array<d128, 7> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_d32_array_size_2:[0-9]+]] d32_array_size: array<i32, 1> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_d64_array_size_2:[0-9]+]] d64_array_size: array<i32, 1> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_d128_array_size_2:[0-9]+]] d128_array_size: array<i32, 1> [storage=automatic];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

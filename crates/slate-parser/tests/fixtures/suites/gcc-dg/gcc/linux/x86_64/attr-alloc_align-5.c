@@ -48,8 +48,8 @@ A (3) char* f3_1 (int, int, int);       // { dg-warning "ignoring attribute 'all
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f2_1(%3 <unnamed>: i32, %4 <unnamed>: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f2_2(%9 <unnamed>: i32, %10 <unnamed>: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @f3_1(%15 <unnamed>: i32, %16 <unnamed>: i32, %17 <unnamed>: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f2_1:[0-9]+]] @f2_1(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f2_2:[0-9]+]] @f2_2(%[[VALUE2:[0-9]+]] <unnamed>: i32, %[[VALUE3:[0-9]+]] <unnamed>: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f3_1:[0-9]+]] @f3_1(%[[VALUE4:[0-9]+]] <unnamed>: i32, %[[VALUE5:[0-9]+]] <unnamed>: i32, %[[VALUE6:[0-9]+]] <unnamed>: i32) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

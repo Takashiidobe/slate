@@ -128,16 +128,16 @@ int biggest[__BIGGEST_ALIGNMENT__];
 // CHECK-NEXT:         storage d64 [size=8, align=8];
 // CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     global %0 has__MMX__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %1 has__SSE__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %2 has__SSE2__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %3 has__FXSR__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %4 has__LAHF_SAHF__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %5 has__SSE_MATH__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %6 has__SSE2_MATH__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %7 has__pentium4: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %8 has__pentium4__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %9 has__tune_pentium4__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %10 biggest: array<i32, 16> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__MMX__:[0-9]+]] has__MMX__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__SSE__:[0-9]+]] has__SSE__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__SSE2__:[0-9]+]] has__SSE2__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__FXSR__:[0-9]+]] has__FXSR__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__LAHF_SAHF__:[0-9]+]] has__LAHF_SAHF__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__SSE_MATH__:[0-9]+]] has__SSE_MATH__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__SSE2_MATH__:[0-9]+]] has__SSE2_MATH__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__pentium4:[0-9]+]] has__pentium4: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__pentium4__:[0-9]+]] has__pentium4__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__tune_pentium4__:[0-9]+]] has__tune_pentium4__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_biggest:[0-9]+]] biggest: array<i32, 16> [storage=static] [linkage=external];
 // CHECK-NEXT: }
 // SLATE-FILECHECK-END CHECK

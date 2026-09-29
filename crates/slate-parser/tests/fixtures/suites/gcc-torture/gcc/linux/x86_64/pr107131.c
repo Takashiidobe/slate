@@ -39,16 +39,16 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 o: u8) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 t1: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(neg<i64, overflow=ub>(from_bool<i64, reason=explicit>(eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%1))), const<i32>(0)))));
-// DEFAULT-NEXT:         let %3 t2: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(neg<i64, overflow=ub>(from_bool<i64, reason=explicit>(gt<u64>(read<u64>(%2), const<u64>(10439075533421201520)))));
-// DEFAULT-NEXT:         let %4 t3: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(neg<i64, overflow=ub>(from_bool<i64, reason=explicit>(le<u64>(read<u64>(%2), read<u64>(%3)))));
-// DEFAULT-NEXT:         return read<u64>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_o:[0-9]+]] o: u8) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_t1:[0-9]+]] t1: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(neg<i64, overflow=ub>(from_bool<i64, reason=explicit>(eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_o]]))), const<i32>(0)))));
+// DEFAULT-NEXT:         let %[[VALUE_t2:[0-9]+]] t2: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(neg<i64, overflow=ub>(from_bool<i64, reason=explicit>(gt<u64>(read<u64>(%[[VALUE_t1]]), const<u64>(10439075533421201520)))));
+// DEFAULT-NEXT:         let %[[VALUE_t3:[0-9]+]] t3: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(neg<i64, overflow=ub>(from_bool<i64, reason=explicit>(le<u64>(read<u64>(%[[VALUE_t1]]), read<u64>(%[[VALUE_t2]])))));
+// DEFAULT-NEXT:         return read<u64>(%[[VALUE_t3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u8) -> u64>(%0, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0)))), neg<u64, overflow=wrap>(const<u64>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u8) -> u64>(%[[VALUE_foo]], reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0)))), neg<u64, overflow=wrap>(const<u64>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

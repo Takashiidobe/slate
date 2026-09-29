@@ -77,38 +77,38 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 u32 = u32;
-// DEFAULT-NEXT:     global %1 deadfish: u32 [storage=static] [const] = const<u32>(3735941461) [linkage=internal];
-// DEFAULT-NEXT:     global %2 cfb_tab8_be: array<u32, 16> [storage=static] [const] [align=16] = aggregate<array<u32, 16>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(255)), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(65280)), index3 = reinterpret<u32, reason=assign, fits=always>(const<i32>(65535)), index4 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16711680)), index5 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16711935)), index6 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16776960)), index7 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16777215)), index8 = const<u32>(4278190080), index9 = const<u32>(4278190335), index10 = const<u32>(4278255360), index11 = const<u32>(4278255615), index12 = const<u32>(4294901760), index13 = const<u32>(4294902015), index14 = const<u32>(4294967040), index15 = const<u32>(4294967295)) [linkage=internal];
-// DEFAULT-NEXT:     global %3 cfb_tab8_le: array<u32, 16> [storage=static] [const] [align=16] = aggregate<array<u32, 16>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index1 = const<u32>(4278190080), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16711680)), index3 = const<u32>(4294901760), index4 = reinterpret<u32, reason=assign, fits=always>(const<i32>(65280)), index5 = const<u32>(4278255360), index6 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16776960)), index7 = const<u32>(4294967040), index8 = reinterpret<u32, reason=assign, fits=always>(const<i32>(255)), index9 = const<u32>(4278190335), index10 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16711935)), index11 = const<u32>(4294902015), index12 = reinterpret<u32, reason=assign, fits=always>(const<i32>(65535)), index13 = const<u32>(4278255615), index14 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16777215)), index15 = const<u32>(4294967295)) [linkage=internal];
-// DEFAULT-NEXT:     global %4 cfb_tab16_be: array<u32, 4> [storage=static] [const] [align=16] = aggregate<array<u32, 4>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(65535)), index2 = const<u32>(4294901760), index3 = const<u32>(4294967295)) [linkage=internal];
-// DEFAULT-NEXT:     global %5 cfb_tab16_le: array<u32, 4> [storage=static] [const] [align=16] = aggregate<array<u32, 4>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index1 = const<u32>(4294901760), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(65535)), index3 = const<u32>(4294967295)) [linkage=internal];
-// DEFAULT-NEXT:     global %6 cfb_tab32: array<u32, 2> [storage=static] [const] = aggregate<array<u32, 2>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index1 = const<u32>(4294967295)) [linkage=internal];
-// DEFAULT-NEXT:     fn %7 @xxx(%8 bpp: i32) -> ptr<const u32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9 tab: ptr<const u32> [storage=automatic];
+// DEFAULT-NEXT:     type @type[[TYPE_u32:[0-9]+]] u32 = u32;
+// DEFAULT-NEXT:     global %[[VALUE_deadfish:[0-9]+]] deadfish: u32 [storage=static] [const] = const<u32>(3735941461) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_cfb_tab8_be:[0-9]+]] cfb_tab8_be: array<u32, 16> [storage=static] [const] [align=16] = aggregate<array<u32, 16>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(255)), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(65280)), index3 = reinterpret<u32, reason=assign, fits=always>(const<i32>(65535)), index4 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16711680)), index5 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16711935)), index6 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16776960)), index7 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16777215)), index8 = const<u32>(4278190080), index9 = const<u32>(4278190335), index10 = const<u32>(4278255360), index11 = const<u32>(4278255615), index12 = const<u32>(4294901760), index13 = const<u32>(4294902015), index14 = const<u32>(4294967040), index15 = const<u32>(4294967295)) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_cfb_tab8_le:[0-9]+]] cfb_tab8_le: array<u32, 16> [storage=static] [const] [align=16] = aggregate<array<u32, 16>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index1 = const<u32>(4278190080), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16711680)), index3 = const<u32>(4294901760), index4 = reinterpret<u32, reason=assign, fits=always>(const<i32>(65280)), index5 = const<u32>(4278255360), index6 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16776960)), index7 = const<u32>(4294967040), index8 = reinterpret<u32, reason=assign, fits=always>(const<i32>(255)), index9 = const<u32>(4278190335), index10 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16711935)), index11 = const<u32>(4294902015), index12 = reinterpret<u32, reason=assign, fits=always>(const<i32>(65535)), index13 = const<u32>(4278255615), index14 = reinterpret<u32, reason=assign, fits=always>(const<i32>(16777215)), index15 = const<u32>(4294967295)) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_cfb_tab16_be:[0-9]+]] cfb_tab16_be: array<u32, 4> [storage=static] [const] [align=16] = aggregate<array<u32, 4>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(65535)), index2 = const<u32>(4294901760), index3 = const<u32>(4294967295)) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_cfb_tab16_le:[0-9]+]] cfb_tab16_le: array<u32, 4> [storage=static] [const] [align=16] = aggregate<array<u32, 4>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index1 = const<u32>(4294901760), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(65535)), index3 = const<u32>(4294967295)) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_cfb_tab32:[0-9]+]] cfb_tab32: array<u32, 2> [storage=static] [const] = aggregate<array<u32, 2>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), index1 = const<u32>(4294967295)) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_xxx:[0-9]+]] @xxx(%[[VALUE_bpp:[0-9]+]] bpp: i32) -> ptr<const u32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_tab:[0-9]+]] tab: ptr<const u32> [storage=automatic];
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0))
-// DEFAULT-NEXT:             return addr_of<ptr<const u32>>(%1);
-// DEFAULT-NEXT:         switch %13 read<i32>(%8)
+// DEFAULT-NEXT:             return addr_of<ptr<const u32>>(%[[VALUE_deadfish]]);
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_bpp]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %13 const<i32>(8):
-// DEFAULT-NEXT:                     write<ptr<const u32>>(%9, array_decay<ptr<const u32>, length=Some(16)>(%2));
-// DEFAULT-NEXT:                 break %13;
-// DEFAULT-NEXT:                 case %13 const<i32>(16):
-// DEFAULT-NEXT:                     write<ptr<const u32>>(%9, array_decay<ptr<const u32>, length=Some(4)>(%4));
-// DEFAULT-NEXT:                 break %13;
-// DEFAULT-NEXT:                 case %13 const<i32>(32):
-// DEFAULT-NEXT:                     default %13:
-// DEFAULT-NEXT:                         write<ptr<const u32>>(%9, array_decay<ptr<const u32>, length=Some(2)>(%6));
-// DEFAULT-NEXT:                 break %13;
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(8):
+// DEFAULT-NEXT:                     write<ptr<const u32>>(%[[VALUE_tab]], array_decay<ptr<const u32>, length=Some(16)>(%[[VALUE_cfb_tab8_be]]));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(16):
+// DEFAULT-NEXT:                     write<ptr<const u32>>(%[[VALUE_tab]], array_decay<ptr<const u32>, length=Some(4)>(%[[VALUE_cfb_tab16_be]]));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(32):
+// DEFAULT-NEXT:                     default %[[VALUE0]]:
+// DEFAULT-NEXT:                         write<ptr<const u32>>(%[[VALUE_tab]], array_decay<ptr<const u32>, length=Some(2)>(%[[VALUE_cfb_tab32]]));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<ptr<const u32>>(%9);
+// DEFAULT-NEXT:         return read<ptr<const u32>>(%[[VALUE_tab]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %11 a: ptr<const u32> [storage=automatic] = call<ptr<const u32>, signature=fn(i32) -> ptr<const u32>>(%7, const<i32>(8));
-// DEFAULT-NEXT:         let %12 b: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(read<ptr<const u32>>(%11), const<i32>(0)))));
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%12)), read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<const u32>, length=Some(16)>(%2), const<i32>(0)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%14);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: ptr<const u32> [storage=automatic] = call<ptr<const u32>, signature=fn(i32) -> ptr<const u32>>(%[[VALUE_xxx]], const<i32>(8));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(read<ptr<const u32>>(%[[VALUE_a]]), const<i32>(0)))));
+// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_b]])), read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<const u32>, length=Some(16)>(%[[VALUE_cfb_tab8_be]]), const<i32>(0)))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

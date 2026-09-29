@@ -162,53 +162,53 @@ int size_keyword(void) { __asm mov eax, SIZE int }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 pair = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_pair:[0-9]+]] pair = struct {
 // DEFAULT-NEXT:         field0 first: i32;
 // DEFAULT-NEXT:         field1 second: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 other = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_other:[0-9]+]] other = struct {
 // DEFAULT-NEXT:         field0 zero: i32;
 // DEFAULT-NEXT:         field1 second: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type2 wide = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_wide:[0-9]+]] wide = struct {
 // DEFAULT-NEXT:         field0 w0: i32;
 // DEFAULT-NEXT:         field1 half: i16;
 // DEFAULT-NEXT:         field2 tail: i8;
 // DEFAULT-NEXT:         field3 last: i32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 6, 8]];
-// DEFAULT-NEXT:     type @type3 nest = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_nest:[0-9]+]] nest = struct {
 // DEFAULT-NEXT:         field0 n0: i32;
-// DEFAULT-NEXT:         field1 <anonymous>: @type4;
+// DEFAULT-NEXT:         field1 <anonymous>: @type[[TYPE0:[0-9]+]];
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type4 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0]] = struct {
 // DEFAULT-NEXT:         field0 n1: i32;
 // DEFAULT-NEXT:         field1 deep: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type5 scoped = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_scoped:[0-9]+]] scoped = struct {
 // DEFAULT-NEXT:         field0 s0: i32;
 // DEFAULT-NEXT:         field1 s1: i32;
 // DEFAULT-NEXT:         field2 s2: i32;
 // DEFAULT-NEXT:         field3 inner: i32;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 4, 8, 12]];
-// DEFAULT-NEXT:     global %5 global: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 pointer: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %7 @members() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%11)))] {
-// DEFAULT-NEXT:         let %11: u32 [synthetic];
-// DEFAULT-NEXT:         let %8 local: i32 [storage=automatic];
+// DEFAULT-NEXT:     global %[[VALUE_global:[0-9]+]] global: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_pointer:[0-9]+]] pointer: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_members:[0-9]+]] @members() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE0:[0-9]+]])))] {
+// DEFAULT-NEXT:         let %[[VALUE0]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm volatile "mov eax, [ebx].last\nmov eax, [ebx + 4].last\nmovzx eax, [ebx].tail\nmovzx eax, [ebx].half\nmov [ebx].last, 1\nmov eax, global.last\nmov eax, pointer.last\nmovzx eax, local.tail\nmov eax, [ebx].inner\nmov eax, [ebx].w0.last" [dialect=intel] [alternative=none] {
 // DEFAULT-NEXT:             template: "mov eax, [ebx + 8]\nmov eax, [ebx + 12]\nmovzx eax, byte ptr [ebx + 6]\nmovzx eax, word ptr [ebx + 4]\nmov dword ptr [ebx + 8], 1\nmov eax, " addr(%1 + 8) "\nmov eax, " addr(%2 + 8) "\nmovzx eax, " addr<byte>(%3 + 6) "\nmov eax, [ebx + 12]\nmov eax, [ebx + 8]";
-// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%11);
-// DEFAULT-NEXT:             in 1 [global] mem<read> place<i32>(%5);
-// DEFAULT-NEXT:             in 2 [pointer] mem<read> place<ptr<i32>>(%6);
-// DEFAULT-NEXT:             in 3 [local] mem<read> place<i32>(%8);
+// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE0]]);
+// DEFAULT-NEXT:             in 1 [global] mem<read> place<i32>(%[[VALUE_global]]);
+// DEFAULT-NEXT:             in 2 [pointer] mem<read> place<ptr<i32>>(%[[VALUE_pointer]]);
+// DEFAULT-NEXT:             in 3 [local] mem<read> place<i32>(%[[VALUE_local]]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<i32>(%8);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_local]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @keywords() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%12)))] {
-// DEFAULT-NEXT:         let %12: u32 [synthetic];
+// DEFAULT-NEXT:     fn %[[VALUE_keywords:[0-9]+]] @keywords() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE1:[0-9]+]])))] {
+// DEFAULT-NEXT:         let %[[VALUE1]]: u32 [synthetic];
 // DEFAULT-NEXT:         asm volatile "mov eax, type char\nmov eax, type short\nmov eax, type int\nmov eax, type long\nmov eax, type __int64\nmov eax, type float\nmov eax, type double\nmov eax, type signed\nmov eax, type unsigned" [dialect=intel] [alternative=none] {
 // DEFAULT-NEXT:             template: "mov eax, 1\nmov eax, 2\nmov eax, 4\nmov eax, 4\nmov eax, 8\nmov eax, 4\nmov eax, 8\nmov eax, 1\nmov eax, 1";
-// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%12);
+// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE1]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

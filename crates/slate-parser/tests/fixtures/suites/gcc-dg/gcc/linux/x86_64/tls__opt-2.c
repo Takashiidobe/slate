@@ -80,44 +80,44 @@ int main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 a: u32;
 // DEFAULT-NEXT:         field1 b: u32;
 // DEFAULT-NEXT:         field2 c: u32;
 // DEFAULT-NEXT:         field3 d: u32;
 // DEFAULT-NEXT:         field4 e: u32;
 // DEFAULT-NEXT:     } [size=20, align=4, offsets=[0, 4, 8, 12, 16]];
-// DEFAULT-NEXT:     global %0 thr: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @bar(%3 x: i32, %4 y: u64, %5 z: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_thr:[0-9]+]] thr: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: u64, %[[VALUE_z:[0-9]+]] z: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @foo(%7 x: i32, %8 y: i32, %9 z: ptr<const @type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 b: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %11 d: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<@type0>(%10, copy<@type0, reason=assign>(read<@type0>(deref(read<ptr<const @type0>>(%9)))));
-// DEFAULT-NEXT:         write<i32>(%11, call<i32, signature=fn(i32, u64, ptr<void>) -> i32>(%2, read<i32>(%7), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%8))), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%10))));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, u64, ptr<void>) -> i32>(%2, read<i32>(%7), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%8))), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%10)));
-// DEFAULT-NEXT:         if logical_and<bool>(eq<i32>(read<i32>(%11), const<i32>(0)), eq<i32>(read<i32>(%8), const<i32>(21506)))
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x_2:[0-9]+]] x: i32, %[[VALUE_y_2:[0-9]+]] y: i32, %[[VALUE_z_2:[0-9]+]] z: ptr<const @type[[TYPE_A]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_A]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<@type[[TYPE_A]]>(%[[VALUE_b]], copy<@type[[TYPE_A]], reason=assign>(read<@type[[TYPE_A]]>(deref(read<ptr<const @type[[TYPE_A]]>>(%[[VALUE_z_2]])))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_d]], call<i32, signature=fn(i32, u64, ptr<void>) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE_x_2]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_y_2]]))), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_b]]))));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, u64, ptr<void>) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE_x_2]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_y_2]]))), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_b]])));
+// DEFAULT-NEXT:         if logical_and<bool>(eq<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0)), eq<i32>(read<i32>(%[[VALUE_y_2]]), const<i32>(21506)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %12 e: i32 [storage=automatic] = read<i32>(%0);
-// DEFAULT-NEXT:                 write<i32>(%11, call<i32, signature=fn(i32, u64, ptr<void>) -> i32>(%2, read<i32>(%7), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(21505))), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%10))));
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32, u64, ptr<void>) -> i32>(%2, read<i32>(%7), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(21505))), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%10)));
-// DEFAULT-NEXT:                 if ne<i32>(read<i32>(%11), const<i32>(0))
+// DEFAULT-NEXT:                 let %[[VALUE_e:[0-9]+]] e: i32 [storage=automatic] = read<i32>(%[[VALUE_thr]]);
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_d]], call<i32, signature=fn(i32, u64, ptr<void>) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE_x_2]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(21505))), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_b]]))));
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32, u64, ptr<void>) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE_x_2]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(21505))), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_b]])));
+// DEFAULT-NEXT:                 if ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         write<i32>(%0, read<i32>(%12));
-// DEFAULT-NEXT:                         write<i32>(%11, const<i32>(0));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_thr]], read<i32>(%[[VALUE_e]]));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_d]], const<i32>(0));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     if logical_or<bool>(ne<u32>(and<u32>(read<u32>(field2(deref(read<ptr<const @type0>>(%9)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(384))), and<u32>(read<u32>(field2(%10)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(384)))), logical_and<bool>(ne<u32>(and<u32>(read<u32>(field2(deref(read<ptr<const @type0>>(%9)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(48))), const<u32>(0)), ne<u32>(and<u32>(read<u32>(field2(deref(read<ptr<const @type0>>(%9)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(48))), and<u32>(read<u32>(field2(%10)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(48))))))
+// DEFAULT-NEXT:                     if logical_or<bool>(ne<u32>(and<u32>(read<u32>(field2(deref(read<ptr<const @type[[TYPE_A]]>>(%[[VALUE_z_2]])))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(384))), and<u32>(read<u32>(field2(%[[VALUE_b]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(384)))), logical_and<bool>(ne<u32>(and<u32>(read<u32>(field2(deref(read<ptr<const @type[[TYPE_A]]>>(%[[VALUE_z_2]])))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(48))), const<u32>(0)), ne<u32>(and<u32>(read<u32>(field2(deref(read<ptr<const @type[[TYPE_A]]>>(%[[VALUE_z_2]])))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(48))), and<u32>(read<u32>(field2(%[[VALUE_b]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(48))))))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             write<i32>(%0, const<i32>(22));
-// DEFAULT-NEXT:                             write<i32>(%11, neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_thr]], const<i32>(22));
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_d]], neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<i32>(%11);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_d]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, i32, ptr<const @type0>) -> i32>(%6, const<i32>(1), const<i32>(2), null<ptr<const @type0>>);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, i32, ptr<const @type[[TYPE_A]]>) -> i32>(%[[VALUE_foo]], const<i32>(1), const<i32>(2), null<ptr<const @type[[TYPE_A]]>>);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

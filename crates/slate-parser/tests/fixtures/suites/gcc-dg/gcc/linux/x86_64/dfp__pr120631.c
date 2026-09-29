@@ -49,24 +49,24 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: d64 [storage=static] = const<d64>(1234567891357900000.0) [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i64 [storage=static] = const<i64>(1234567891357900000) [linkage=external];
-// DEFAULT-NEXT:     global %2 c: d32 [storage=static] = const<d32>(1234567000000000000.0) [linkage=external];
-// DEFAULT-NEXT:     global %3 d: i64 [storage=static] = const<i64>(1234567000000000000) [linkage=external];
-// DEFAULT-NEXT:     fn %13 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<d64, exceptions=observable>(read<d64>(%0), int_to_float<d64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i64>(%1))), ne<i64>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=observable>(read<d64>(%0)), read<i64>(%1))), ne<d32, exceptions=observable>(read<d32>(%2), int_to_float<d32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i64>(%3)))), ne<i64>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=observable>(read<d32>(%2)), read<i64>(%3)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:         let %5 e: d64 [storage=automatic] = const<d64>(1234567891357900000.0);
-// DEFAULT-NEXT:         let %6 f: i64 [storage=automatic] = const<i64>(1234567891357900000);
-// DEFAULT-NEXT:         let %7 g: d64 [storage=automatic] = int_to_float<d64, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i64>(1234567891357900000));
-// DEFAULT-NEXT:         let %8 h: i64 [storage=automatic] = float_to_int<i64, reason=assign, out_of_range=ub, exceptions=observable>(const<d64>(1234567891357900000.0));
-// DEFAULT-NEXT:         let %9 i: d32 [storage=automatic] = const<d32>(1234567000000000000.0);
-// DEFAULT-NEXT:         let %10 j: i64 [storage=automatic] = const<i64>(1234567000000000000);
-// DEFAULT-NEXT:         let %11 k: d32 [storage=automatic] = int_to_float<d32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i64>(1234567000000000000));
-// DEFAULT-NEXT:         let %12 l: i64 [storage=automatic] = float_to_int<i64, reason=assign, out_of_range=ub, exceptions=observable>(const<d32>(1234567000000000000.0));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<d64, exceptions=observable>(read<d64>(%5), read<d64>(%7)), ne<i64>(read<i64>(%6), read<i64>(%8))), ne<d32, exceptions=observable>(read<d32>(%9), read<d32>(%11))), ne<i64>(read<i64>(%10), read<i64>(%12)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: d64 [storage=static] = const<d64>(1234567891357900000.0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i64 [storage=static] = const<i64>(1234567891357900000) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: d32 [storage=static] = const<d32>(1234567000000000000.0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i64 [storage=static] = const<i64>(1234567000000000000) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<d64, exceptions=observable>(read<d64>(%[[VALUE_a]]), int_to_float<d64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i64>(%[[VALUE_b]]))), ne<i64>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=observable>(read<d64>(%[[VALUE_a]])), read<i64>(%[[VALUE_b]]))), ne<d32, exceptions=observable>(read<d32>(%[[VALUE_c]]), int_to_float<d32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i64>(%[[VALUE_d]])))), ne<i64>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=observable>(read<d32>(%[[VALUE_c]])), read<i64>(%[[VALUE_d]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: d64 [storage=automatic] = const<d64>(1234567891357900000.0);
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: i64 [storage=automatic] = const<i64>(1234567891357900000);
+// DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: d64 [storage=automatic] = int_to_float<d64, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i64>(1234567891357900000));
+// DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: i64 [storage=automatic] = float_to_int<i64, reason=assign, out_of_range=ub, exceptions=observable>(const<d64>(1234567891357900000.0));
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: d32 [storage=automatic] = const<d32>(1234567000000000000.0);
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i64 [storage=automatic] = const<i64>(1234567000000000000);
+// DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: d32 [storage=automatic] = int_to_float<d32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i64>(1234567000000000000));
+// DEFAULT-NEXT:         let %[[VALUE_l:[0-9]+]] l: i64 [storage=automatic] = float_to_int<i64, reason=assign, out_of_range=ub, exceptions=observable>(const<d32>(1234567000000000000.0));
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<d64, exceptions=observable>(read<d64>(%[[VALUE_e]]), read<d64>(%[[VALUE_g]])), ne<i64>(read<i64>(%[[VALUE_f]]), read<i64>(%[[VALUE_h]]))), ne<d32, exceptions=observable>(read<d32>(%[[VALUE_i]]), read<d32>(%[[VALUE_k]]))), ne<i64>(read<i64>(%[[VALUE_j]]), read<i64>(%[[VALUE_l]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -59,22 +59,22 @@ int x;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %9 x: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @foo() -> i135b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %1 d: i135b [storage=automatic];
-// DEFAULT-NEXT:         let %2 e: i135b [storage=automatic] = add<i135b, overflow=ub>(read<i135b>(%1), widen<i135b, reason=usual_arith>(const<i3b>(2)));
-// DEFAULT-NEXT:         return read<i135b>(%2);
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i135b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i135b [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: i135b [storage=automatic] = add<i135b, overflow=ub>(read<i135b>(%[[VALUE_d]]), widen<i135b, reason=usual_arith>(const<i3b>(2)));
+// DEFAULT-NEXT:         return read<i135b>(%[[VALUE_e]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @bar() -> i575b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 d: i575b [storage=automatic];
-// DEFAULT-NEXT:         let %5 e: i575b [storage=automatic] = mul<i575b, overflow=ub>(read<i575b>(%4), widen<i575b, reason=usual_arith>(const<i7b>(42)));
-// DEFAULT-NEXT:         return read<i575b>(%5);
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i575b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_d_2:[0-9]+]] d: i575b [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_e_2:[0-9]+]] e: i575b [storage=automatic] = mul<i575b, overflow=ub>(read<i575b>(%[[VALUE_d_2]]), widen<i575b, reason=usual_arith>(const<i7b>(42)));
+// DEFAULT-NEXT:         return read<i575b>(%[[VALUE_e_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @baz(%7 x: i32) -> i575b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 d: i575b [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%7), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_x_2:[0-9]+]] x: i32) -> i575b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_d_3:[0-9]+]] d: i575b [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x_2]]), const<i32>(0))
 // DEFAULT-NEXT:             return widen<i575b, reason=return>(const<i67b>(59843758943759843574));
-// DEFAULT-NEXT:         return read<i575b>(%8);
+// DEFAULT-NEXT:         return read<i575b>(%[[VALUE_d_3]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -90,7 +90,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 X = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_X:[0-9]+]] X = struct {
 // DEFAULT-NEXT:         field0 u3: u32 : 3;
 // DEFAULT-NEXT:         field1 s31: i64 : 31;
 // DEFAULT-NEXT:         field2 s32: i64 : 32;
@@ -100,35 +100,35 @@ int main(void) {
 // DEFAULT-NEXT:         field6 ull35: u64 : 35;
 // DEFAULT-NEXT:         field7 u15: u32 : 15;
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 0, 8, 12, 16, 20, 24, 28], bit_offsets=[Some(0), Some(3), Some(64), Some(96), Some(128), Some(160), Some(192), Some(227)], bit_units=[(0, 5), (8, 8), (16, 5), (24, 7)], field_units=[Some(0), Some(0), Some(1), Some(1), Some(2), Some(2), Some(3), Some(3)]];
-// DEFAULT-NEXT:     global %3 x: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%5 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ge<i32>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..5, bits=0..3>(%3))), const<i32>(2)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ge<i32>(sub<i32, overflow=ub>(truncate<i32, reason=promotion, fits=unknown>(read<i64>(bitfield1<unit=0, bytes=0..5, bits=3..34>(%3))), const<i32>(2)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ge<i64>(sub<i64, overflow=ub>(read<i64>(bitfield2<unit=1, bytes=8..16, bits=0..32>(%3)), widen<i64, reason=usual_arith>(const<i32>(2))), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ge<i32>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield7<unit=3, bytes=24..31, bits=35..50>(%3))), const<i32>(2)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE_X]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ge<i32>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..5, bits=0..3>(%[[VALUE_x]]))), const<i32>(2)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ge<i32>(sub<i32, overflow=ub>(truncate<i32, reason=promotion, fits=unknown>(read<i64>(bitfield1<unit=0, bytes=0..5, bits=3..34>(%[[VALUE_x]]))), const<i32>(2)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ge<i64>(sub<i64, overflow=ub>(read<i64>(bitfield2<unit=1, bytes=8..16, bits=0..32>(%[[VALUE_x]])), widen<i64, reason=usual_arith>(const<i32>(2))), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ge<i32>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield7<unit=3, bytes=24..31, bits=35..50>(%[[VALUE_x]]))), const<i32>(2)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ge<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if ge<i32>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=1, bytes=8..16, bits=32..63>(%3)))), const<i32>(2)), const<i32>(0))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 if ge<i32>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=1, bytes=8..16, bits=32..63>(%[[VALUE_x]])))), const<i32>(2)), const<i32>(0))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if lt<i32>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=1, bytes=8..16, bits=32..63>(%3)))), const<i32>(2)), const<i32>(0))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 if lt<i32>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=1, bytes=8..16, bits=32..63>(%[[VALUE_x]])))), const<i32>(2)), const<i32>(0))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if lt<u64>(sub<u64, overflow=wrap>(read<u64>(bitfield4<unit=2, bytes=16..21, bits=0..32>(%3)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ge<i32>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield5<unit=2, bytes=16..21, bits=32..35>(%3)))), const<i32>(2)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if lt<u64>(sub<u64, overflow=wrap>(read<u64>(bitfield6<unit=3, bytes=24..31, bits=0..35>(%3)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         if lt<u64>(sub<u64, overflow=wrap>(read<u64>(bitfield4<unit=2, bytes=16..21, bits=0..32>(%[[VALUE_x]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ge<i32>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield5<unit=2, bytes=16..21, bits=32..35>(%[[VALUE_x]])))), const<i32>(2)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if lt<u64>(sub<u64, overflow=wrap>(read<u64>(bitfield6<unit=3, bytes=24..31, bits=0..35>(%[[VALUE_x]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -61,37 +61,37 @@ main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 usb_interface_descriptor = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_usb_interface_descriptor:[0-9]+]] usb_interface_descriptor = struct {
 // DEFAULT-NEXT:         field0 wMaxPacketSize: u16;
 // DEFAULT-NEXT:         field1 e: i8;
 // DEFAULT-NEXT:     } [size=3, align=1, offsets=[0, 2]];
-// DEFAULT-NEXT:     type @type1 usb_device = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_usb_device:[0-9]+]] usb_device = struct {
 // DEFAULT-NEXT:         field0 devnum: i32;
-// DEFAULT-NEXT:         field1 if_desc: array<@type0, 2>;
+// DEFAULT-NEXT:         field1 if_desc: array<@type[[TYPE_usb_interface_descriptor]], 2>;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %11 .str11: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %5 ndev: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @printf(%10 <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo(%4 a: u16) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u16>(%4))));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ndev:[0-9]+]] ndev: @type[[TYPE_usb_device]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: u16) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u16>(%[[VALUE_a]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @usb_set_maxpacket(%7 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %12
+// DEFAULT-NEXT:     fn %[[VALUE_usb_set_maxpacket:[0-9]+]] @usb_set_maxpacket(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%8, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%8), read<i32>(%7))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_n]]))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %13: i32 [synthetic] = read<i32>(%8);
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%8, read<i32>(%14));
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 call<void, signature=fn(u16) -> void>(%3, read<u16>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(2)>(field1(deref(addr_of<ptr<@type1>>(%5)))), read<i32>(%8))))));
+// DEFAULT-NEXT:                 call<void, signature=fn(u16) -> void>(%[[VALUE_foo]], read<u16>(field0(deref(ptr_offset<ptr<@type[[TYPE_usb_interface_descriptor]]>, subtract=false, element=@type[[TYPE_usb_interface_descriptor]], overflow=ub>(array_decay<ptr<@type[[TYPE_usb_interface_descriptor]]>, length=Some(2)>(field1(deref(addr_of<ptr<@type[[TYPE_usb_device]]>>(%[[VALUE_ndev]])))), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%6, const<i32>(2));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_usb_set_maxpacket]], const<i32>(2));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -36,8 +36,8 @@ foo (unsigned long var)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 var: u64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=nearest_even, exceptions=ignore>(read<u64>(%1));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_var:[0-9]+]] var: u64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=nearest_even, exceptions=ignore>(read<u64>(%[[VALUE_var]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

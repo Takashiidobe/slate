@@ -70,27 +70,27 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %29 .str29: array<i8, 29> [storage=static] = code_units<array<i8, 29>>([83, 76, 65, 84, 69, 95, 71, 69, 84, 69, 78, 86, 95, 70, 73, 88, 84, 85, 82, 69, 95, 80, 82, 69, 83, 69, 78, 84, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %30 .str30: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %31 .str31: array<i8, 29> [storage=static] = code_units<array<i8, 29>>([83, 76, 65, 84, 69, 95, 71, 69, 84, 69, 78, 86, 95, 70, 73, 88, 84, 85, 82, 69, 95, 80, 82, 69, 83, 69, 78, 84, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %32 .str32: array<i8, 28> [storage=static] = code_units<array<i8, 28>>([83, 76, 65, 84, 69, 95, 71, 69, 84, 69, 78, 86, 95, 70, 73, 88, 84, 85, 82, 69, 95, 65, 66, 83, 69, 78, 84, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %33 .str33: array<i8, 28> [storage=static] = code_units<array<i8, 28>>([83, 76, 65, 84, 69, 95, 71, 69, 84, 69, 78, 86, 95, 70, 73, 88, 84, 85, 82, 69, 95, 65, 66, 83, 69, 78, 84, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %34 .str34: array<i8, 30> [storage=static] = code_units<array<i8, 30>>([83, 76, 65, 84, 69, 95, 71, 69, 84, 69, 78, 86, 95, 70, 73, 88, 84, 85, 82, 69, 95, 82, 69, 74, 69, 67, 84, 69, 68, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %35 .str35: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([114, 101, 97, 100, 121, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %36 .str36: array<i8, 30> [storage=static] = code_units<array<i8, 30>>([83, 76, 65, 84, 69, 95, 71, 69, 84, 69, 78, 86, 95, 70, 73, 88, 84, 85, 82, 69, 95, 82, 69, 74, 69, 67, 84, 69, 68, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %37 .str37: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([114, 101, 97, 100, 121, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %38 .str38: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %39 .str39: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %40 .str40: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%21 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @getenv(%22 __name: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %7 @setenv(%23 __name: ptr<const i8>, %24 __value: ptr<const i8>, %25 __replace: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @unsetenv(%26 __name: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %12 @strcmp(%27 __s1: ptr<const i8>, %28 __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %13 @present_check() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ptr<const i8>, i32) -> i32>(%7, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(29)>(%29)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%30)), const<i32>(1));
-// DEFAULT-NEXT:         let %14 value: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(29)>(%31)));
-// DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%14), null<ptr<i8>>)
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 29> [storage=static] = code_units<array<i8, 29>>([83, 76, 65, 84, 69, 95, 71, 69, 84, 69, 78, 86, 95, 70, 73, 88, 84, 85, 82, 69, 95, 80, 82, 69, 83, 69, 78, 84, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 29> [storage=static] = code_units<array<i8, 29>>([83, 76, 65, 84, 69, 95, 71, 69, 84, 69, 78, 86, 95, 70, 73, 88, 84, 85, 82, 69, 95, 80, 82, 69, 83, 69, 78, 84, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 28> [storage=static] = code_units<array<i8, 28>>([83, 76, 65, 84, 69, 95, 71, 69, 84, 69, 78, 86, 95, 70, 73, 88, 84, 85, 82, 69, 95, 65, 66, 83, 69, 78, 84, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 28> [storage=static] = code_units<array<i8, 28>>([83, 76, 65, 84, 69, 95, 71, 69, 84, 69, 78, 86, 95, 70, 73, 88, 84, 85, 82, 69, 95, 65, 66, 83, 69, 78, 84, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_6:[0-9]+]] .str[[VALUE_str_6]]: array<i8, 30> [storage=static] = code_units<array<i8, 30>>([83, 76, 65, 84, 69, 95, 71, 69, 84, 69, 78, 86, 95, 70, 73, 88, 84, 85, 82, 69, 95, 82, 69, 74, 69, 67, 84, 69, 68, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_7:[0-9]+]] .str[[VALUE_str_7]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([114, 101, 97, 100, 121, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_8:[0-9]+]] .str[[VALUE_str_8]]: array<i8, 30> [storage=static] = code_units<array<i8, 30>>([83, 76, 65, 84, 69, 95, 71, 69, 84, 69, 78, 86, 95, 70, 73, 88, 84, 85, 82, 69, 95, 82, 69, 74, 69, 67, 84, 69, 68, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_9:[0-9]+]] .str[[VALUE_str_9]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([114, 101, 97, 100, 121, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_10:[0-9]+]] .str[[VALUE_str_10]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_11:[0-9]+]] .str[[VALUE_str_11]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_12:[0-9]+]] .str[[VALUE_str_12]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_getenv:[0-9]+]] @getenv(%[[VALUE___name:[0-9]+]] __name: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_setenv:[0-9]+]] @setenv(%[[VALUE___name_2:[0-9]+]] __name: ptr<const i8>, %[[VALUE___value:[0-9]+]] __value: ptr<const i8>, %[[VALUE___replace:[0-9]+]] __replace: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_unsetenv:[0-9]+]] @unsetenv(%[[VALUE___name_3:[0-9]+]] __name: ptr<const i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strcmp:[0-9]+]] @strcmp(%[[VALUE___s1:[0-9]+]] __s1: ptr<const i8>, %[[VALUE___s2:[0-9]+]] __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE_present_check:[0-9]+]] @present_check() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ptr<const i8>, i32) -> i32>(%[[VALUE_setenv]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(29)>(%[[VALUE_str]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_2]])), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_getenv]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(29)>(%[[VALUE_str_3]])));
+// DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_value]]), null<ptr<i8>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(1);
 // DEFAULT-NEXT:             }
@@ -99,10 +99,10 @@ int main(void) {
 // DEFAULT-NEXT:                 return const<i32>(0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @absent_check() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>) -> i32>(%9, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(28)>(%32)));
-// DEFAULT-NEXT:         let %16 value: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(28)>(%33)));
-// DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%16), null<ptr<i8>>)
+// DEFAULT-NEXT:     fn %[[VALUE_absent_check:[0-9]+]] @absent_check() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_unsetenv]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(28)>(%[[VALUE_str_4]])));
+// DEFAULT-NEXT:         let %[[VALUE_value_2:[0-9]+]] value: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_getenv]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(28)>(%[[VALUE_str_5]])));
+// DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_value_2]]), null<ptr<i8>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(1);
 // DEFAULT-NEXT:             }
@@ -111,24 +111,24 @@ int main(void) {
 // DEFAULT-NEXT:                 return const<i32>(0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @rejected_check() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ptr<const i8>, i32) -> i32>(%7, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%34)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%35)), const<i32>(1));
-// DEFAULT-NEXT:         let %18 value: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%36)));
-// DEFAULT-NEXT:         let %19 found: i32 [storage=automatic];
-// DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%18), null<ptr<i8>>)
+// DEFAULT-NEXT:     fn %[[VALUE_rejected_check:[0-9]+]] @rejected_check() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ptr<const i8>, i32) -> i32>(%[[VALUE_setenv]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%[[VALUE_str_6]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str_7]])), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE_value_3:[0-9]+]] value: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_getenv]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(30)>(%[[VALUE_str_8]])));
+// DEFAULT-NEXT:         let %[[VALUE_found:[0-9]+]] found: i32 [storage=automatic];
+// DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_value_3]]), null<ptr<i8>>)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%19, from_bool<i32, reason=assign>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%12, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%18)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%37))), const<i32>(0))));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_found]], from_bool<i32, reason=assign>(eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE_strcmp]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_value_3]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str_9]]))), const<i32>(0))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%19, const<i32>(0));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_found]], const<i32>(0));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<i32>(%19);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_found]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%38)), call<i32, signature=fn() -> i32>(%13));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%39)), call<i32, signature=fn() -> i32>(%15));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%40)), call<i32, signature=fn() -> i32>(%17));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_10]])), call<i32, signature=fn() -> i32>(%[[VALUE_present_check]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_11]])), call<i32, signature=fn() -> i32>(%[[VALUE_absent_check]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_12]])), call<i32, signature=fn() -> i32>(%[[VALUE_rejected_check]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

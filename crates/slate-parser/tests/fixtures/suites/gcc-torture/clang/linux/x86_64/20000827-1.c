@@ -41,19 +41,19 @@ foo ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         while %3 ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<i32>(const<i32>(1), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %1 a: i32 [storage=automatic];
-// DEFAULT-NEXT:                 let %2 b: i8 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b:[0-9]+]] b: i8 [storage=automatic];
 // DEFAULT-NEXT:                 asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:                     lateout 0 "r" [reg] width 32 place<i32>(%1);
+// DEFAULT-NEXT:                     lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_a]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:                 asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:                     lateout 0 "r" [reg] width 8 place<i8>(%2);
+// DEFAULT-NEXT:                     lateout 0 "r" [reg] width 8 place<i8>(%[[VALUE_b]]);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:                 if ne<i8>(read<i8>(%2), const<i8>(0))
-// DEFAULT-NEXT:                     return read<i32>(%1);
+// DEFAULT-NEXT:                 if ne<i8>(read<i8>(%[[VALUE_b]]), const<i8>(0))
+// DEFAULT-NEXT:                     return read<i32>(%[[VALUE_a]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

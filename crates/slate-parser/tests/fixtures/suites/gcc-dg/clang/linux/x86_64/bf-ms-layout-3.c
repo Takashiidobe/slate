@@ -76,58 +76,58 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s1_t = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s1_t:[0-9]+]] s1_t = struct {
 // DEFAULT-NEXT:         field0 a: i8;
 // DEFAULT-NEXT:         field1 b: i8;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16]];
-// DEFAULT-NEXT:     type @type1 s2_t = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s2_t:[0-9]+]] s2_t = struct {
 // DEFAULT-NEXT:         field0 a: i8;
 // DEFAULT-NEXT:         field1 b: i8;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     type @type2 s3_t = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s3_t:[0-9]+]] s3_t = struct {
 // DEFAULT-NEXT:         field0 a: i8 : 6;
 // DEFAULT-NEXT:         field1 b: i8;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16], bit_offsets=[Some(0), None], bit_units=[(0, 1)], field_units=[Some(0), None]];
-// DEFAULT-NEXT:     type @type3 s4_t = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s4_t:[0-9]+]] s4_t = struct {
 // DEFAULT-NEXT:         field0 a: i8 : 6;
 // DEFAULT-NEXT:         field1 b: i8;
 // DEFAULT-NEXT:     } [size=4, align=2, offsets=[0, 2], bit_offsets=[Some(0), None], bit_units=[(0, 1)], field_units=[Some(0), None]];
-// DEFAULT-NEXT:     type @type4 s5_t = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s5_t:[0-9]+]] s5_t = struct {
 // DEFAULT-NEXT:         field0 a: i8 : 6;
 // DEFAULT-NEXT:         field1 b: i8;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1], bit_offsets=[Some(0), None], bit_units=[(0, 1)], field_units=[Some(0), None]];
-// DEFAULT-NEXT:     global %2 s1: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 s2: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 s3: @type2 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 s4: @type3 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 s5: @type4 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort(unprototyped) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %11 @offs(%12 a: ptr<const void>, %13 b: ptr<const void>) -> i64 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%12)), pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%13)));
+// DEFAULT-NEXT:     global %[[VALUE_s1:[0-9]+]] s1: @type[[TYPE_s1_t]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s2:[0-9]+]] s2: @type[[TYPE_s2_t]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s3:[0-9]+]] s3: @type[[TYPE_s3_t]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s4:[0-9]+]] s4: @type[[TYPE_s4_t]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s5:[0-9]+]] s5: @type[[TYPE_s5_t]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_offs:[0-9]+]] @offs(%[[VALUE_a:[0-9]+]] a: ptr<const void>, %[[VALUE_b:[0-9]+]] b: ptr<const void>) -> i64 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%[[VALUE_a]])), pointer_cast<ptr<const i8>, reason=explicit>(read<ptr<const void>>(%[[VALUE_b]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %15: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(ptr<const void>, ptr<const void>) -> i64>(%11, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i8>>(field1(%2))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type0>>(%2))), widen<i64, reason=usual_arith>(const<i32>(16)))
-// DEFAULT-NEXT:             write<bool>(%15, const<bool>(true));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(ptr<const void>, ptr<const void>) -> i64>(%[[VALUE_offs]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i8>>(field1(%[[VALUE_s1]]))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s1_t]]>>(%[[VALUE_s1]]))), widen<i64, reason=usual_arith>(const<i32>(16)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%15, ne<i64>(call<i64, signature=fn(ptr<const void>, ptr<const void>) -> i64>(%11, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i8>>(field1(%4))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type1>>(%4))), widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         let %16: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%15)
-// DEFAULT-NEXT:             write<bool>(%16, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<i64>(call<i64, signature=fn(ptr<const void>, ptr<const void>) -> i64>(%[[VALUE_offs]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i8>>(field1(%[[VALUE_s2]]))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s2_t]]>>(%[[VALUE_s2]]))), widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE0]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%16, ne<i64>(call<i64, signature=fn(ptr<const void>, ptr<const void>) -> i64>(%11, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i8>>(field1(%6))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type2>>(%6))), widen<i64, reason=usual_arith>(const<i32>(16))));
-// DEFAULT-NEXT:         let %17: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%16)
-// DEFAULT-NEXT:             write<bool>(%17, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], ne<i64>(call<i64, signature=fn(ptr<const void>, ptr<const void>) -> i64>(%[[VALUE_offs]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i8>>(field1(%[[VALUE_s3]]))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s3_t]]>>(%[[VALUE_s3]]))), widen<i64, reason=usual_arith>(const<i32>(16))));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE1]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%17, ne<i64>(call<i64, signature=fn(ptr<const void>, ptr<const void>) -> i64>(%11, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i8>>(field1(%8))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type3>>(%8))), widen<i64, reason=usual_arith>(const<i32>(2))));
-// DEFAULT-NEXT:         let %18: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%17)
-// DEFAULT-NEXT:             write<bool>(%18, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], ne<i64>(call<i64, signature=fn(ptr<const void>, ptr<const void>) -> i64>(%[[VALUE_offs]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i8>>(field1(%[[VALUE_s4]]))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s4_t]]>>(%[[VALUE_s4]]))), widen<i64, reason=usual_arith>(const<i32>(2))));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE2]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE3]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%18, ne<i64>(call<i64, signature=fn(ptr<const void>, ptr<const void>) -> i64>(%11, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i8>>(field1(%10))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type4>>(%10))), widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         if read<bool>(%18)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             write<bool>(%[[VALUE3]], ne<i64>(call<i64, signature=fn(ptr<const void>, ptr<const void>) -> i64>(%[[VALUE_offs]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i8>>(field1(%[[VALUE_s5]]))), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<@type[[TYPE_s5_t]]>>(%[[VALUE_s5]]))), widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE3]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -37,26 +37,26 @@ struct Foo foo = { {}, 16877 };
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 sysfs_dirent = struct {
-// DEFAULT-NEXT:         field0 <anonymous>: @type1;
+// DEFAULT-NEXT:     type @type[[TYPE_sysfs_dirent:[0-9]+]] sysfs_dirent = struct {
+// DEFAULT-NEXT:         field0 <anonymous>: @type[[TYPE0:[0-9]+]];
 // DEFAULT-NEXT:         field1 s_mode: u16;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 = union {
-// DEFAULT-NEXT:         field0 s_dir: @type2;
+// DEFAULT-NEXT:     type @type[[TYPE0]] = union {
+// DEFAULT-NEXT:         field0 s_dir: @type[[TYPE_sysfs_elem_dir:[0-9]+]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 sysfs_elem_dir = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_sysfs_elem_dir]] sysfs_elem_dir = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 Foo = struct {
-// DEFAULT-NEXT:         field0 <anonymous>: @type4;
+// DEFAULT-NEXT:     type @type[[TYPE_Foo:[0-9]+]] Foo = struct {
+// DEFAULT-NEXT:         field0 <anonymous>: @type[[TYPE1:[0-9]+]];
 // DEFAULT-NEXT:         field1 s_mode: u16;
 // DEFAULT-NEXT:     } [size=6, align=2, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type4 = union {
-// DEFAULT-NEXT:         field0 x: @type5;
+// DEFAULT-NEXT:     type @type[[TYPE1]] = union {
+// DEFAULT-NEXT:         field0 x: @type[[TYPE_empty:[0-9]+]];
 // DEFAULT-NEXT:     } [size=4, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type5 empty = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_empty]] empty = struct {
 // DEFAULT-NEXT:     } [size=4, align=1, offsets=[]];
-// DEFAULT-NEXT:     global %3 sysfs_root: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = aggregate<@type1, zero_fill=false>(), field1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(16877)))) [linkage=external];
-// DEFAULT-NEXT:     global %7 foo: @type3 [storage=static] = aggregate<@type3, zero_fill=false>(field0 = aggregate<@type4, zero_fill=false>(), field1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(16877)))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_sysfs_root:[0-9]+]] sysfs_root: @type[[TYPE_sysfs_dirent]] [storage=static] = aggregate<@type[[TYPE_sysfs_dirent]], zero_fill=false>(field0 = aggregate<@type[[TYPE0]], zero_fill=false>(), field1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(16877)))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_foo:[0-9]+]] foo: @type[[TYPE_Foo]] [storage=static] = aggregate<@type[[TYPE_Foo]], zero_fill=false>(field0 = aggregate<@type[[TYPE1]], zero_fill=false>(), field1 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(16877)))) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

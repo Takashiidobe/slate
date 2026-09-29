@@ -37,10 +37,10 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 i: i129b [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i129b [storage=automatic];
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=readonly,nostack] {
-// DEFAULT-NEXT:             in 0 "rm" [reg | mem] -> mem width 192 place<i129b>(%1);
+// DEFAULT-NEXT:             in 0 "rm" [reg | mem] -> mem width 192 place<i129b>(%[[VALUE_i]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

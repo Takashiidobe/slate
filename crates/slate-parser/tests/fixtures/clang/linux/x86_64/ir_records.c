@@ -83,78 +83,78 @@ void update_bits(struct Flags *f, unsigned v) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 Mode = enum : u32 {
-// IR-NEXT:         %0 Idle = const<i32>(0);
-// IR-NEXT:         %1 Busy = const<i32>(1);
+// IR-NEXT:     type @type[[TYPE_Mode:[0-9]+]] Mode = enum : u32 {
+// IR-NEXT:         %[[VALUE_Idle:[0-9]+]] Idle = const<i32>(0);
+// IR-NEXT:         %[[VALUE_Busy:[0-9]+]] Busy = const<i32>(1);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     type @type1 Inner = struct {
+// IR-NEXT:     type @type[[TYPE_Inner:[0-9]+]] Inner = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:         field1 y: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type2 Value = union {
+// IR-NEXT:     type @type[[TYPE_Value:[0-9]+]] Value = union {
 // IR-NEXT:         field0 integer: i32;
 // IR-NEXT:         field1 real: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     type @type3 Outer = struct {
-// IR-NEXT:         field0 inner: @type1;
-// IR-NEXT:         field1 value: @type2;
-// IR-NEXT:         field2 <anonymous>: @type5;
+// IR-NEXT:     type @type[[TYPE_Outer:[0-9]+]] Outer = struct {
+// IR-NEXT:         field0 inner: @type[[TYPE_Inner]];
+// IR-NEXT:         field1 value: @type[[TYPE_Value]];
+// IR-NEXT:         field2 <anonymous>: @type[[TYPE0:[0-9]+]];
 // IR-NEXT:     } [size=20, align=4, offsets=[0, 8, 12]];
-// IR-NEXT:     type @type4 Tagged = struct {
+// IR-NEXT:     type @type[[TYPE_Tagged:[0-9]+]] Tagged = struct {
 // IR-NEXT:         field0 declared_only: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type5 = struct {
+// IR-NEXT:     type @type[[TYPE0]] = struct {
 // IR-NEXT:         field0 promoted: i32;
-// IR-NEXT:         field1 <anonymous>: @type6;
+// IR-NEXT:         field1 <anonymous>: @type[[TYPE1:[0-9]+]];
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type6 = union {
+// IR-NEXT:     type @type[[TYPE1]] = union {
 // IR-NEXT:         field0 left: i32;
 // IR-NEXT:         field1 right: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     type @type7 Flags = struct {
+// IR-NEXT:     type @type[[TYPE_Flags:[0-9]+]] Flags = struct {
 // IR-NEXT:         field0 low: u32 : 3;
 // IR-NEXT:         field1 high: u32 : 5;
 // IR-NEXT:         field2 narrow: i32 : 4;
 // IR-NEXT:         field3 <anonymous>: u32 : 0;
 // IR-NEXT:         field4 wide: u64 : 40;
 // IR-NEXT:         field5 present: bool : 1;
-// IR-NEXT:         field6 mode: @type0 : 2;
+// IR-NEXT:         field6 mode: @type[[TYPE_Mode]] : 2;
 // IR-NEXT:         field7 plain: i32;
 // IR-NEXT:     } [size=24, align=8, offsets=[0, 0, 1, 4, 8, 13, 13, 16], bit_offsets=[Some(0), Some(3), Some(8), Some(32), Some(64), Some(104), Some(105), None], bit_units=[(0, 2), (8, 6)], field_units=[Some(0), Some(0), Some(0), None, Some(1), Some(1), Some(1), None]];
-// IR-NEXT:     fn %10 @read_members(%11 o: ptr<@type3>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(field0(deref(read<ptr<@type3>>(%11))))), read<i32>(field0(field1(deref(read<ptr<@type3>>(%11)))))), read<i32>(field0(field2(deref(read<ptr<@type3>>(%11)))))), read<i32>(field0(field1(field2(deref(read<ptr<@type3>>(%11)))))));
+// IR-NEXT:     fn %[[VALUE_read_members:[0-9]+]] @read_members(%[[VALUE_o:[0-9]+]] o: ptr<@type[[TYPE_Outer]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(field0(deref(read<ptr<@type[[TYPE_Outer]]>>(%[[VALUE_o]]))))), read<i32>(field0(field1(deref(read<ptr<@type[[TYPE_Outer]]>>(%[[VALUE_o]])))))), read<i32>(field0(field2(deref(read<ptr<@type[[TYPE_Outer]]>>(%[[VALUE_o]])))))), read<i32>(field0(field1(field2(deref(read<ptr<@type[[TYPE_Outer]]>>(%[[VALUE_o]])))))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %12 @write_members(%13 o: ptr<@type3>, %14 v: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         write<i32>(field1(field0(deref(read<ptr<@type3>>(%13)))), read<i32>(%14));
-// IR-NEXT:         write<i32>(field0(field1(deref(read<ptr<@type3>>(%13)))), read<i32>(%14));
-// IR-NEXT:         write<f32>(field1(field1(field2(deref(read<ptr<@type3>>(%13))))), const<f32>(1.0));
+// IR-NEXT:     fn %[[VALUE_write_members:[0-9]+]] @write_members(%[[VALUE_o_2:[0-9]+]] o: ptr<@type[[TYPE_Outer]]>, %[[VALUE_v:[0-9]+]] v: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         write<i32>(field1(field0(deref(read<ptr<@type[[TYPE_Outer]]>>(%[[VALUE_o_2]])))), read<i32>(%[[VALUE_v]]));
+// IR-NEXT:         write<i32>(field0(field1(deref(read<ptr<@type[[TYPE_Outer]]>>(%[[VALUE_o_2]])))), read<i32>(%[[VALUE_v]]));
+// IR-NEXT:         write<f32>(field1(field1(field2(deref(read<ptr<@type[[TYPE_Outer]]>>(%[[VALUE_o_2]]))))), const<f32>(1.0));
 // IR-NEXT:     }
-// IR-NEXT:     fn %15 @read_bits(%16 f: ptr<@type7>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..2, bits=0..3>(deref(read<ptr<@type7>>(%16))))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=3..8>(deref(read<ptr<@type7>>(%16)))))), read<i32>(bitfield2<unit=0, bytes=0..2, bits=8..12>(deref(read<ptr<@type7>>(%16))))), read<i32>(field7(deref(read<ptr<@type7>>(%16)))));
+// IR-NEXT:     fn %[[VALUE_read_bits:[0-9]+]] @read_bits(%[[VALUE_f:[0-9]+]] f: ptr<@type[[TYPE_Flags]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..2, bits=0..3>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE_f]]))))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=3..8>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE_f]])))))), read<i32>(bitfield2<unit=0, bytes=0..2, bits=8..12>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE_f]]))))), read<i32>(field7(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE_f]])))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %17 @wide_bits(%18 f: ptr<@type7>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         write<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type7>>(%18))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(5))));
-// IR-NEXT:         let %24: ptr<@type7> [synthetic] = read<ptr<@type7>>(%18);
-// IR-NEXT:         let %25: u64 [synthetic] = read<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type7>>(%24))));
-// IR-NEXT:         let %26: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%25), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// IR-NEXT:         write<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type7>>(%24))), read<u64>(%26));
-// IR-NEXT:         return read<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type7>>(%18))));
+// IR-NEXT:     fn %[[VALUE_wide_bits:[0-9]+]] @wide_bits(%[[VALUE_f_2:[0-9]+]] f: ptr<@type[[TYPE_Flags]]>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         write<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE_f_2]]))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(5))));
+// IR-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<@type[[TYPE_Flags]]> [synthetic] = read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE_f_2]]);
+// IR-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = read<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE0]]))));
+// IR-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE1]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// IR-NEXT:         write<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE0]]))), read<u64>(%[[VALUE2]]));
+// IR-NEXT:         return read<u64>(bitfield4<unit=1, bytes=8..14, bits=0..40>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE_f_2]]))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %19 @bit_types(%20 f: ptr<@type7>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_bit_types:[0-9]+]] @bit_types(%[[VALUE_f_3:[0-9]+]] f: ptr<@type[[TYPE_Flags]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(1), const<i32>(4)), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(4)))), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(4))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %21 @update_bits(%22 f: ptr<@type7>, %23 v: u32) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..2, bits=0..3>(deref(read<ptr<@type7>>(%22))), read<u32>(%23));
-// IR-NEXT:         let %27: ptr<@type7> [synthetic] = read<ptr<@type7>>(%22);
-// IR-NEXT:         let %28: u32 [synthetic] = read<u32>(bitfield1<unit=0, bytes=0..2, bits=3..8>(deref(read<ptr<@type7>>(%27))));
-// IR-NEXT:         let %29: u32 [synthetic] = reinterpret<u32, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%28)), const<i32>(1)));
-// IR-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..2, bits=3..8>(deref(read<ptr<@type7>>(%27))), read<u32>(%29));
-// IR-NEXT:         let %30: ptr<@type7> [synthetic] = read<ptr<@type7>>(%22);
-// IR-NEXT:         let %31: i32 [synthetic] = read<i32>(bitfield2<unit=0, bytes=0..2, bits=8..12>(deref(read<ptr<@type7>>(%30))));
-// IR-NEXT:         let %32: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%31), const<i32>(1));
-// IR-NEXT:         write<i32>(bitfield2<unit=0, bytes=0..2, bits=8..12>(deref(read<ptr<@type7>>(%30))), read<i32>(%32));
-// IR-NEXT:         write<bool>(bitfield5<unit=1, bytes=8..14, bits=40..41>(deref(read<ptr<@type7>>(%22))), ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
-// IR-NEXT:         write<@type0>(bitfield6<unit=1, bytes=8..14, bits=41..43>(deref(read<ptr<@type7>>(%22))), int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
+// IR-NEXT:     fn %[[VALUE_update_bits:[0-9]+]] @update_bits(%[[VALUE_f_4:[0-9]+]] f: ptr<@type[[TYPE_Flags]]>, %[[VALUE_v_2:[0-9]+]] v: u32) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..2, bits=0..3>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE_f_4]]))), read<u32>(%[[VALUE_v_2]]));
+// IR-NEXT:         let %[[VALUE3:[0-9]+]]: ptr<@type[[TYPE_Flags]]> [synthetic] = read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE_f_4]]);
+// IR-NEXT:         let %[[VALUE4:[0-9]+]]: u32 [synthetic] = read<u32>(bitfield1<unit=0, bytes=0..2, bits=3..8>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE3]]))));
+// IR-NEXT:         let %[[VALUE5:[0-9]+]]: u32 [synthetic] = reinterpret<u32, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE4]])), const<i32>(1)));
+// IR-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..2, bits=3..8>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE3]]))), read<u32>(%[[VALUE5]]));
+// IR-NEXT:         let %[[VALUE6:[0-9]+]]: ptr<@type[[TYPE_Flags]]> [synthetic] = read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE_f_4]]);
+// IR-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(bitfield2<unit=0, bytes=0..2, bits=8..12>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE6]]))));
+// IR-NEXT:         let %[[VALUE8:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE7]]), const<i32>(1));
+// IR-NEXT:         write<i32>(bitfield2<unit=0, bytes=0..2, bits=8..12>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE6]]))), read<i32>(%[[VALUE8]]));
+// IR-NEXT:         write<bool>(bitfield5<unit=1, bytes=8..14, bits=40..41>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE_f_4]]))), ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
+// IR-NEXT:         write<@type[[TYPE_Mode]]>(bitfield6<unit=1, bytes=8..14, bits=41..43>(deref(read<ptr<@type[[TYPE_Flags]]>>(%[[VALUE_f_4]]))), int_to_enum<@type[[TYPE_Mode]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

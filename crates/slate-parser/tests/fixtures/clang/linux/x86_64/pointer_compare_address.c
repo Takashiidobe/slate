@@ -42,9 +42,9 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __time_t = i64;
-// DEFAULT-NEXT:     type @type1 time_t = i64;
-// DEFAULT-NEXT:     type @type2 tm = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___time_t:[0-9]+]] __time_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_time_t:[0-9]+]] time_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_tm:[0-9]+]] tm = struct {
 // DEFAULT-NEXT:         field0 tm_sec: i32;
 // DEFAULT-NEXT:         field1 tm_min: i32;
 // DEFAULT-NEXT:         field2 tm_hour: i32;
@@ -57,17 +57,17 @@ int main(void) {
 // DEFAULT-NEXT:         field9 tm_gmtoff: i64;
 // DEFAULT-NEXT:         field10 tm_zone: ptr<const i8>;
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48]];
-// DEFAULT-NEXT:     global %22 .str22: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @printf(%17 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @gmtime_r(%18 __timer: ptr<const i64> [restrict], %19 __tp: ptr<@type2> [restrict]) -> ptr<@type2> [linkage=external];
-// DEFAULT-NEXT:     fn %10 @localtime_r(%20 __timer: ptr<const i64> [restrict], %21 __tp: ptr<@type2> [restrict]) -> ptr<@type2> [linkage=external];
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 timestamp: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:         let %13 utc: @type2 [storage=automatic] = aggregate<@type2, zero_fill=true>();
-// DEFAULT-NEXT:         let %14 local: @type2 [storage=automatic] = aggregate<@type2, zero_fill=true>();
-// DEFAULT-NEXT:         let %15 utc_result: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<ptr<@type2>>(call<ptr<@type2>, signature=fn(ptr<const i64>, ptr<@type2>) -> ptr<@type2>>(%7, pointer_cast<ptr<const i64>, reason=arg>(addr_of<ptr<i64>>(%12)), addr_of<ptr<@type2>>(%13)), addr_of<ptr<@type2>>(%13)));
-// DEFAULT-NEXT:         let %16 local_result: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<ptr<@type2>>(call<ptr<@type2>, signature=fn(ptr<const i64>, ptr<@type2>) -> ptr<@type2>>(%10, pointer_cast<ptr<const i64>, reason=arg>(addr_of<ptr<i64>>(%12)), addr_of<ptr<@type2>>(%14)), addr_of<ptr<@type2>>(%14)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%22)), read<i32>(%15), read<i32>(%16));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_gmtime_r:[0-9]+]] @gmtime_r(%[[VALUE___timer:[0-9]+]] __timer: ptr<const i64> [restrict], %[[VALUE___tp:[0-9]+]] __tp: ptr<@type[[TYPE_tm]]> [restrict]) -> ptr<@type[[TYPE_tm]]> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_localtime_r:[0-9]+]] @localtime_r(%[[VALUE___timer_2:[0-9]+]] __timer: ptr<const i64> [restrict], %[[VALUE___tp_2:[0-9]+]] __tp: ptr<@type[[TYPE_tm]]> [restrict]) -> ptr<@type[[TYPE_tm]]> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_timestamp:[0-9]+]] timestamp: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE_utc:[0-9]+]] utc: @type[[TYPE_tm]] [storage=automatic] = aggregate<@type[[TYPE_tm]], zero_fill=true>();
+// DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: @type[[TYPE_tm]] [storage=automatic] = aggregate<@type[[TYPE_tm]], zero_fill=true>();
+// DEFAULT-NEXT:         let %[[VALUE_utc_result:[0-9]+]] utc_result: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<ptr<@type[[TYPE_tm]]>>(call<ptr<@type[[TYPE_tm]]>, signature=fn(ptr<const i64>, ptr<@type[[TYPE_tm]]>) -> ptr<@type[[TYPE_tm]]>>(%[[VALUE_gmtime_r]], pointer_cast<ptr<const i64>, reason=arg>(addr_of<ptr<i64>>(%[[VALUE_timestamp]])), addr_of<ptr<@type[[TYPE_tm]]>>(%[[VALUE_utc]])), addr_of<ptr<@type[[TYPE_tm]]>>(%[[VALUE_utc]])));
+// DEFAULT-NEXT:         let %[[VALUE_local_result:[0-9]+]] local_result: i32 [storage=automatic] = from_bool<i32, reason=assign>(eq<ptr<@type[[TYPE_tm]]>>(call<ptr<@type[[TYPE_tm]]>, signature=fn(ptr<const i64>, ptr<@type[[TYPE_tm]]>) -> ptr<@type[[TYPE_tm]]>>(%[[VALUE_localtime_r]], pointer_cast<ptr<const i64>, reason=arg>(addr_of<ptr<i64>>(%[[VALUE_timestamp]])), addr_of<ptr<@type[[TYPE_tm]]>>(%[[VALUE_local]])), addr_of<ptr<@type[[TYPE_tm]]>>(%[[VALUE_local]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])), read<i32>(%[[VALUE_utc_result]]), read<i32>(%[[VALUE_local_result]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

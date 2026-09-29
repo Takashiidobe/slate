@@ -35,14 +35,14 @@ int __seg_fs, __seg_gs;
 // X86-64-NEXT:         storage d64 [size=8, align=8];
 // X86-64-NEXT:         storage d128 [size=16, align=16];
 // X86-64-NEXT:     }
-// X86-64-NEXT:     type @type0 T = struct {
+// X86-64-NEXT:     type @type[[TYPE_T:[0-9]+]] T = struct {
 // X86-64-NEXT:         field0 x: i32;
 // X86-64-NEXT:     } [size=4, align=4, offsets=[0]];
-// X86-64-NEXT:     global %1 p: ptr<i32> [storage=static] [linkage=external];
-// X86-64-NEXT:     global %2 q: ptr<const i32> [storage=static] [linkage=external];
-// X86-64-NEXT:     global %3 r: ptr<i32> [storage=static] [linkage=external];
-// X86-64-NEXT:     fn %4 @f(%5 t: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// X86-64-NEXT:         return read<i32>(field0(deref(read<ptr<@type0>>(%5))));
+// X86-64-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=static] [linkage=external];
+// X86-64-NEXT:     global %[[VALUE_q:[0-9]+]] q: ptr<const i32> [storage=static] [linkage=external];
+// X86-64-NEXT:     global %[[VALUE_r:[0-9]+]] r: ptr<i32> [storage=static] [linkage=external];
+// X86-64-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_t:[0-9]+]] t: ptr<@type[[TYPE_T]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// X86-64-NEXT:         return read<i32>(field0(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_t]]))));
 // X86-64-NEXT:     }
 // X86-64-NEXT: }
 // SLATE-FILECHECK-END X86-64
@@ -69,7 +69,7 @@ int __seg_fs, __seg_gs;
 // STRICT-NEXT:         storage d64 [size=8, align=8];
 // STRICT-NEXT:         storage d128 [size=16, align=16];
 // STRICT-NEXT:     }
-// STRICT-NEXT:     global %0 __seg_fs: i32 [storage=static] [linkage=external];
-// STRICT-NEXT:     global %1 __seg_gs: i32 [storage=static] [linkage=external];
+// STRICT-NEXT:     global %[[VALUE___seg_fs:[0-9]+]] __seg_fs: i32 [storage=static] [linkage=external];
+// STRICT-NEXT:     global %[[VALUE___seg_gs:[0-9]+]] __seg_gs: i32 [storage=static] [linkage=external];
 // STRICT-NEXT: }
 // SLATE-FILECHECK-END STRICT

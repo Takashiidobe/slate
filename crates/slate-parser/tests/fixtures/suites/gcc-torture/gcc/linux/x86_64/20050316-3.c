@@ -59,36 +59,36 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 V2SI = vector<i32, 2>;
-// DEFAULT-NEXT:     type @type1 V2USI = vector<u32, 2>;
-// DEFAULT-NEXT:     type @type2 V2HI = vector<i16, 2>;
-// DEFAULT-NEXT:     type @type3 V2UHI = vector<u32, 1>;
-// DEFAULT-NEXT:     type @type4 = union {
+// DEFAULT-NEXT:     type @type[[TYPE_V2SI:[0-9]+]] V2SI = vector<i32, 2>;
+// DEFAULT-NEXT:     type @type[[TYPE_V2USI:[0-9]+]] V2USI = vector<u32, 2>;
+// DEFAULT-NEXT:     type @type[[TYPE_V2HI:[0-9]+]] V2HI = vector<i16, 2>;
+// DEFAULT-NEXT:     type @type[[TYPE_V2UHI:[0-9]+]] V2UHI = vector<u32, 1>;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 x: vector<i32, 2>;
 // DEFAULT-NEXT:         field1 y: array<i32, 2>;
 // DEFAULT-NEXT:         field2 z: vector<u32, 2>;
 // DEFAULT-NEXT:         field3 l: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0, 0, 0]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @test1(%6 x: vector<i32, 2>) -> vector<u32, 2> [linkage=external] [abi=sysv64(coerce<f64>) -> coerce<f64>] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return vector_bit_cast<vector<u32, 2>, reason=explicit>(vector_bit_cast<vector<i32, 2>, reason=explicit>(vector_bit_cast<i64, reason=explicit>(read<vector<i32, 2>>(%6))));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_x:[0-9]+]] x: vector<i32, 2>) -> vector<u32, 2> [linkage=external] [abi=sysv64(coerce<f64>) -> coerce<f64>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return vector_bit_cast<vector<u32, 2>, reason=explicit>(vector_bit_cast<vector<i32, 2>, reason=explicit>(vector_bit_cast<i64, reason=explicit>(read<vector<i32, 2>>(%[[VALUE_x]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @test2(%8 x: vector<i32, 2>) -> i64 [linkage=external] [abi=sysv64(coerce<f64>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return vector_bit_cast<i64, reason=explicit>(vector_bit_cast<vector<u32, 2>, reason=explicit>(vector_bit_cast<vector<i32, 2>, reason=explicit>(vector_bit_cast<i64, reason=explicit>(read<vector<i32, 2>>(%8)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_x_2:[0-9]+]] x: vector<i32, 2>) -> i64 [linkage=external] [abi=sysv64(coerce<f64>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return vector_bit_cast<i64, reason=explicit>(vector_bit_cast<vector<u32, 2>, reason=explicit>(vector_bit_cast<vector<i32, 2>, reason=explicit>(vector_bit_cast<i64, reason=explicit>(read<vector<i32, 2>>(%[[VALUE_x_2]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<u64>(const<u64>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), ne<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))), ne<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         let %11 u: @type4 [storage=automatic];
-// DEFAULT-NEXT:         let %12 a: vector<i32, 2> [storage=automatic] = aggregate<vector<i32, 2>, zero_fill=false>(index0 = neg<i32, overflow=ub>(const<i32>(3)), index1 = neg<i32, overflow=ub>(const<i32>(3)));
-// DEFAULT-NEXT:         write<vector<u32, 2>>(field2(%11), call<vector<u32, 2>, signature=fn(vector<i32, 2>) -> vector<u32, 2>, abi=sysv64(coerce<f64>) -> coerce<f64>>(%5, read<vector<i32, 2>>(%12)));
-// DEFAULT-NEXT:         call<vector<u32, 2>, signature=fn(vector<i32, 2>) -> vector<u32, 2>, abi=sysv64(coerce<f64>) -> coerce<f64>>(%5, read<vector<i32, 2>>(%12));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%11)), const<i32>(0)))), neg<i32, overflow=ub>(const<i32>(3))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%11)), const<i32>(1)))), neg<i32, overflow=ub>(const<i32>(3))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         write<i64>(field3(%11), call<i64, signature=fn(vector<i32, 2>) -> i64, abi=sysv64(coerce<f64>) -> scalar>(%7, read<vector<i32, 2>>(%12)));
-// DEFAULT-NEXT:         call<i64, signature=fn(vector<i32, 2>) -> i64, abi=sysv64(coerce<f64>) -> scalar>(%7, read<vector<i32, 2>>(%12));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%11)), const<i32>(0)))), neg<i32, overflow=ub>(const<i32>(3))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%11)), const<i32>(1)))), neg<i32, overflow=ub>(const<i32>(3))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: vector<i32, 2> [storage=automatic] = aggregate<vector<i32, 2>, zero_fill=false>(index0 = neg<i32, overflow=ub>(const<i32>(3)), index1 = neg<i32, overflow=ub>(const<i32>(3)));
+// DEFAULT-NEXT:         write<vector<u32, 2>>(field2(%[[VALUE_u]]), call<vector<u32, 2>, signature=fn(vector<i32, 2>) -> vector<u32, 2>, abi=sysv64(coerce<f64>) -> coerce<f64>>(%[[VALUE_test1]], read<vector<i32, 2>>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         call<vector<u32, 2>, signature=fn(vector<i32, 2>) -> vector<u32, 2>, abi=sysv64(coerce<f64>) -> coerce<f64>>(%[[VALUE_test1]], read<vector<i32, 2>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%[[VALUE_u]])), const<i32>(0)))), neg<i32, overflow=ub>(const<i32>(3))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%[[VALUE_u]])), const<i32>(1)))), neg<i32, overflow=ub>(const<i32>(3))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i64>(field3(%[[VALUE_u]]), call<i64, signature=fn(vector<i32, 2>) -> i64, abi=sysv64(coerce<f64>) -> scalar>(%[[VALUE_test2]], read<vector<i32, 2>>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         call<i64, signature=fn(vector<i32, 2>) -> i64, abi=sysv64(coerce<f64>) -> scalar>(%[[VALUE_test2]], read<vector<i32, 2>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%[[VALUE_u]])), const<i32>(0)))), neg<i32, overflow=ub>(const<i32>(3))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%[[VALUE_u]])), const<i32>(1)))), neg<i32, overflow=ub>(const<i32>(3))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

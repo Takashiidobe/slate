@@ -35,15 +35,15 @@ int completed; extern int completed;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 tentative: i32 [storage=static] [linkage=external] [common];
-// IR-NEXT:     global %1 aligned_tentative: i32 [storage=static] [align=16] [linkage=external] [common];
-// IR-NEXT:     global %2 nocommon_requested: i32 [storage=static] [linkage=external];
-// IR-NEXT:     global %3 initialized: i32 [storage=static] = const<i32>(1) [linkage=external];
-// IR-NEXT:     extern %4 declared: i32 [storage=static] [linkage=external];
-// IR-NEXT:     global %5 internal: i32 [storage=static] [linkage=internal];
-// IR-NEXT:     global %6 thread: i32 [storage=thread] [linkage=external];
-// IR-NEXT:     global %7 weak: i32 [storage=static] [linkage=external] [weak];
-// IR-NEXT:     global %8 sectioned: i32 [storage=static] [linkage=external] [section="data"];
-// IR-NEXT:     global %9 completed: i32 [storage=static] [linkage=external] [common];
+// IR-NEXT:     global %[[VALUE_tentative:[0-9]+]] tentative: i32 [storage=static] [linkage=external] [common];
+// IR-NEXT:     global %[[VALUE_aligned_tentative:[0-9]+]] aligned_tentative: i32 [storage=static] [align=16] [linkage=external] [common];
+// IR-NEXT:     global %[[VALUE_nocommon_requested:[0-9]+]] nocommon_requested: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_initialized:[0-9]+]] initialized: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-NEXT:     extern %[[VALUE_declared:[0-9]+]] declared: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_internal:[0-9]+]] internal: i32 [storage=static] [linkage=internal];
+// IR-NEXT:     global %[[VALUE_thread:[0-9]+]] thread: i32 [storage=thread] [linkage=external];
+// IR-NEXT:     global %[[VALUE_weak:[0-9]+]] weak: i32 [storage=static] [linkage=external] [weak];
+// IR-NEXT:     global %[[VALUE_sectioned:[0-9]+]] sectioned: i32 [storage=static] [linkage=external] [section="data"];
+// IR-NEXT:     global %[[VALUE_completed:[0-9]+]] completed: i32 [storage=static] [linkage=external] [common];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -63,24 +63,24 @@ void warn_fnone_pcv1_2 (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @fnone_pv1(%11 <unnamed>: ptr<void>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @nowarn_fnone_pv1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 x: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<void>) -> i32>(%0, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%2)));
+// DEFAULT-NEXT:     fn %[[VALUE_fnone_pv1:[0-9]+]] @fnone_pv1(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn_fnone_pv1:[0-9]+]] @nowarn_fnone_pv1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<void>) -> i32>(%[[VALUE_fnone_pv1]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_x]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @fnone_pcv1(%12 <unnamed>: ptr<const void>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @nowarn_fnone_pcv1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 a: array<i8, 2> [storage=automatic];
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const void>) -> i32>(%3, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%5)));
+// DEFAULT-NEXT:     fn %[[VALUE_fnone_pcv1:[0-9]+]] @fnone_pcv1(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn_fnone_pcv1:[0-9]+]] @nowarn_fnone_pcv1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: array<i8, 2> [storage=automatic];
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const void>) -> i32>(%[[VALUE_fnone_pcv1]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_a]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @fnone_pcv1_2(%13 <unnamed>: ptr<const void>, %14 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @nowarn_fnone_pcv1_2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 a: array<i8, 2> [storage=automatic];
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const void>, i32) -> i32>(%6, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%8)), const<i32>(2));
+// DEFAULT-NEXT:     fn %[[VALUE_fnone_pcv1_2:[0-9]+]] @fnone_pcv1_2(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_nowarn_fnone_pcv1_2:[0-9]+]] @nowarn_fnone_pcv1_2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: array<i8, 2> [storage=automatic];
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const void>, i32) -> i32>(%[[VALUE_fnone_pcv1_2]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_a_2]])), const<i32>(2));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @warn_fnone_pcv1_2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %10 a: array<i8, 3> [storage=automatic];
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const void>, i32) -> i32>(%6, pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%10)), const<i32>(4));
+// DEFAULT-NEXT:     fn %[[VALUE_warn_fnone_pcv1_2:[0-9]+]] @warn_fnone_pcv1_2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a_3:[0-9]+]] a: array<i8, 3> [storage=automatic];
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const void>, i32) -> i32>(%[[VALUE_fnone_pcv1_2]], pointer_cast<ptr<const void>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_a_3]])), const<i32>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -58,30 +58,30 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 mp_digit = u64;
-// DEFAULT-NEXT:     type @type1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_mp_digit:[0-9]+]] mp_digit = u64;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 used: i32;
 // DEFAULT-NEXT:         field1 alloc: i32;
 // DEFAULT-NEXT:         field2 sign: i32;
 // DEFAULT-NEXT:         field3 dp: ptr<u64>;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 4, 8, 16]];
-// DEFAULT-NEXT:     type @type2 mp_int = @type1;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @mytest(%7 a: ptr<@type1>, %8 b: u64) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(field2(deref(read<ptr<@type1>>(%7)))), const<i32>(1))
+// DEFAULT-NEXT:     type @type[[TYPE_mp_int:[0-9]+]] mp_int = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_mytest:[0-9]+]] @mytest(%[[VALUE_a:[0-9]+]] a: ptr<@type[[TYPE0]]>, %[[VALUE_b:[0-9]+]] b: u64) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(field2(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_a]])))), const<i32>(1))
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(1));
-// DEFAULT-NEXT:         if gt<i32>(read<i32>(field0(deref(read<ptr<@type1>>(%7)))), const<i32>(1))
+// DEFAULT-NEXT:         if gt<i32>(read<i32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_a]])))), const<i32>(1))
 // DEFAULT-NEXT:             return const<i32>(1);
-// DEFAULT-NEXT:         if gt<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(field3(deref(read<ptr<@type1>>(%7)))), const<i32>(0)))), read<u64>(%8))
+// DEFAULT-NEXT:         if gt<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_a]])))), const<i32>(0)))), read<u64>(%[[VALUE_b]]))
 // DEFAULT-NEXT:             return const<i32>(1);
-// DEFAULT-NEXT:         if lt<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(field3(deref(read<ptr<@type1>>(%7)))), const<i32>(0)))), read<u64>(%8))
+// DEFAULT-NEXT:         if lt<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_a]])))), const<i32>(0)))), read<u64>(%[[VALUE_b]]))
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10 i: @type1 [storage=automatic] = aggregate<@type1, zero_fill=true>(field0 = const<i32>(2), field1 = const<i32>(0), field2 = neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type1>, u64) -> i32>(%6, addr_of<ptr<@type1>>(%10), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=true>(field0 = const<i32>(2), field1 = const<i32>(0), field2 = neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE0]]>, u64) -> i32>(%[[VALUE_mytest]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_i]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

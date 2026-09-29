@@ -46,24 +46,24 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 pointer_returning_fn = fn(ptr<i32>) -> ptr<i32>;
-// DEFAULT-NEXT:     type @type1 Callback = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_pointer_returning_fn:[0-9]+]] pointer_returning_fn = fn(ptr<i32>) -> ptr<i32>;
+// DEFAULT-NEXT:     type @type[[TYPE_Callback:[0-9]+]] Callback = struct {
 // DEFAULT-NEXT:         field0 handler: ptr<fn(ptr<i32>) -> ptr<i32>>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %10 .str10: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @add_one(%5 value: ptr<i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11: ptr<i32> [synthetic] = read<ptr<i32>>(%5);
-// DEFAULT-NEXT:         let %12: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%11)));
-// DEFAULT-NEXT:         let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%11)), read<i32>(%13));
-// DEFAULT-NEXT:         return read<ptr<i32>>(%5);
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_add_one:[0-9]+]] @add_one(%[[VALUE_value:[0-9]+]] value: ptr<i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<i32> [synthetic] = read<ptr<i32>>(%[[VALUE_value]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%[[VALUE0]])));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE0]])), read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:         return read<ptr<i32>>(%[[VALUE_value]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 value: i32 [storage=automatic] = const<i32>(41);
-// DEFAULT-NEXT:         let %8 callback: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = null<ptr<fn(ptr<i32>) -> ptr<i32>>>);
-// DEFAULT-NEXT:         write<ptr<fn(ptr<i32>) -> ptr<i32>>>(field0(%8), function_decay<ptr<fn(ptr<i32>) -> ptr<i32>>>(%4));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%10)), read<i32>(deref(call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(read<ptr<fn(ptr<i32>) -> ptr<i32>>>(field0(%8)), addr_of<ptr<i32>>(%7)))));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_value_2:[0-9]+]] value: i32 [storage=automatic] = const<i32>(41);
+// DEFAULT-NEXT:         let %[[VALUE_callback:[0-9]+]] callback: @type[[TYPE_Callback]] [storage=automatic] = aggregate<@type[[TYPE_Callback]], zero_fill=false>(field0 = null<ptr<fn(ptr<i32>) -> ptr<i32>>>);
+// DEFAULT-NEXT:         write<ptr<fn(ptr<i32>) -> ptr<i32>>>(field0(%[[VALUE_callback]]), function_decay<ptr<fn(ptr<i32>) -> ptr<i32>>>(%[[VALUE_add_one]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), read<i32>(deref(call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(read<ptr<fn(ptr<i32>) -> ptr<i32>>>(field0(%[[VALUE_callback]])), addr_of<ptr<i32>>(%[[VALUE_value_2]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

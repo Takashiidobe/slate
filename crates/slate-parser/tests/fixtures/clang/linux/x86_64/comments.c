@@ -60,30 +60,30 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Mode = enum : u32 {
-// DEFAULT-NEXT:         %0 MODE_OFF = const<i32>(0);
-// DEFAULT-NEXT:         %1 MODE_ON = const<i32>(1);
+// DEFAULT-NEXT:     type @type[[TYPE_Mode:[0-9]+]] Mode = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_MODE_OFF:[0-9]+]] MODE_OFF = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_MODE_ON:[0-9]+]] MODE_ON = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 Holder = struct {
-// DEFAULT-NEXT:         field0 mode: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_Holder:[0-9]+]] Holder = struct {
+// DEFAULT-NEXT:         field0 mode: @type[[TYPE_Mode]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 Holder = @type1;
-// DEFAULT-NEXT:     global %5 completed_count: i32 [storage=static] = const<i32>(1) [linkage=internal];
-// DEFAULT-NEXT:     fn %6 @increment(%7 value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 next: volatile i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%7), const<i32>(1));
-// DEFAULT-NEXT:         let %11: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:         let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%5, read<i32>(%12));
-// DEFAULT-NEXT:         return read<i32, volatile>(%8);
+// DEFAULT-NEXT:     type @type[[TYPE_Holder_2:[0-9]+]] Holder = @type[[TYPE_Holder]];
+// DEFAULT-NEXT:     global %[[VALUE_completed_count:[0-9]+]] completed_count: i32 [storage=static] = const<i32>(1) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_increment:[0-9]+]] @increment(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_next:[0-9]+]] next: volatile i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%[[VALUE_value]]), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_completed_count]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_completed_count]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         return read<i32, volatile>(%[[VALUE_next]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10 holder: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         let %13: bool [synthetic];
-// DEFAULT-NEXT:         if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type0>(field0(%10))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
-// DEFAULT-NEXT:             write<bool>(%13, eq<i32>(call<i32, signature=fn(i32) -> i32>(%6, const<i32>(1)), const<i32>(2)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_holder:[0-9]+]] holder: @type[[TYPE_Holder]] [storage=automatic] = aggregate<@type[[TYPE_Holder]], zero_fill=false>(field0 = int_to_enum<@type[[TYPE_Mode]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_Mode]]>(field0(%[[VALUE_holder]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], eq<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_increment]], const<i32>(1)), const<i32>(2)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%13, const<bool>(false));
-// DEFAULT-NEXT:         return conditional<i32>(logical_and<bool>(read<bool>(%13), eq<i32>(read<i32>(%5), const<i32>(2))), const<i32>(0), const<i32>(1));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], const<bool>(false));
+// DEFAULT-NEXT:         return conditional<i32>(logical_and<bool>(read<bool>(%[[VALUE2]]), eq<i32>(read<i32>(%[[VALUE_completed_count]]), const<i32>(2))), const<i32>(0), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

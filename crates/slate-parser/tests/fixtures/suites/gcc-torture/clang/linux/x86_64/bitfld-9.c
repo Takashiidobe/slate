@@ -84,61 +84,61 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 mouse_button_str = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_mouse_button_str:[0-9]+]] mouse_button_str = struct {
 // DEFAULT-NEXT:         field0 left: u8 : 1;
 // DEFAULT-NEXT:         field1 right: u8 : 1;
 // DEFAULT-NEXT:         field2 middle: u8 : 1;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0, 0, 0], bit_offsets=[Some(0), Some(1), Some(2)], bit_units=[(0, 1)], field_units=[Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     global %1 button: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @fct(%4 newbutton: @type0) -> i8 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 l: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%4)))));
-// DEFAULT-NEXT:         let %6 r: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%4)))));
-// DEFAULT-NEXT:         let %7 m: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%4)))));
-// DEFAULT-NEXT:         return from_bool<i8, reason=return>(logical_and<bool>(logical_and<bool>(ne<i8>(read<i8>(%5), const<i8>(0)), ne<i8>(read<i8>(%6), const<i8>(0))), ne<i8>(read<i8>(%7), const<i8>(0))));
+// DEFAULT-NEXT:     global %[[VALUE_button:[0-9]+]] button: @type[[TYPE_mouse_button_str]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fct:[0-9]+]] @fct(%[[VALUE_newbutton:[0-9]+]] newbutton: @type[[TYPE_mouse_button_str]]) -> i8 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_l:[0-9]+]] l: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_newbutton]])))));
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%[[VALUE_newbutton]])))));
+// DEFAULT-NEXT:         let %[[VALUE_m:[0-9]+]] m: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%[[VALUE_newbutton]])))));
+// DEFAULT-NEXT:         return from_bool<i8, reason=return>(logical_and<bool>(logical_and<bool>(ne<i8>(read<i8>(%[[VALUE_l]]), const<i8>(0)), ne<i8>(read<i8>(%[[VALUE_r]]), const<i8>(0))), ne<i8>(read<i8>(%[[VALUE_m]]), const<i8>(0))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 newbutton1: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         if not<bool>(ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(native_c) -> scalar>(%3, copy<@type0, reason=arg>(read<@type0>(%9))), const<i8>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
-// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(native_c) -> scalar>(%3, copy<@type0, reason=arg>(read<@type0>(%9))), const<i8>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
-// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(native_c) -> scalar>(%3, copy<@type0, reason=arg>(read<@type0>(%9))), const<i8>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
-// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(native_c) -> scalar>(%3, copy<@type0, reason=arg>(read<@type0>(%9))), const<i8>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
-// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(native_c) -> scalar>(%3, copy<@type0, reason=arg>(read<@type0>(%9))), const<i8>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
-// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(native_c) -> scalar>(%3, copy<@type0, reason=arg>(read<@type0>(%9))), const<i8>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
-// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(native_c) -> scalar>(%3, copy<@type0, reason=arg>(read<@type0>(%9))), const<i8>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
-// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%9), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type0) -> i8, abi=sysv64(native_c) -> scalar>(%3, copy<@type0, reason=arg>(read<@type0>(%9))), const<i8>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_newbutton1:[0-9]+]] newbutton1: @type[[TYPE_mouse_button_str]] [storage=automatic];
+// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         if not<bool>(ne<i8>(call<i8, signature=fn(@type[[TYPE_mouse_button_str]]) -> i8, abi=sysv64(native_c) -> scalar>(%[[VALUE_fct]], copy<@type[[TYPE_mouse_button_str]], reason=arg>(read<@type[[TYPE_mouse_button_str]]>(%[[VALUE_newbutton1]]))), const<i8>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type[[TYPE_mouse_button_str]]) -> i8, abi=sysv64(native_c) -> scalar>(%[[VALUE_fct]], copy<@type[[TYPE_mouse_button_str]], reason=arg>(read<@type[[TYPE_mouse_button_str]]>(%[[VALUE_newbutton1]]))), const<i8>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type[[TYPE_mouse_button_str]]) -> i8, abi=sysv64(native_c) -> scalar>(%[[VALUE_fct]], copy<@type[[TYPE_mouse_button_str]], reason=arg>(read<@type[[TYPE_mouse_button_str]]>(%[[VALUE_newbutton1]]))), const<i8>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type[[TYPE_mouse_button_str]]) -> i8, abi=sysv64(native_c) -> scalar>(%[[VALUE_fct]], copy<@type[[TYPE_mouse_button_str]], reason=arg>(read<@type[[TYPE_mouse_button_str]]>(%[[VALUE_newbutton1]]))), const<i8>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type[[TYPE_mouse_button_str]]) -> i8, abi=sysv64(native_c) -> scalar>(%[[VALUE_fct]], copy<@type[[TYPE_mouse_button_str]], reason=arg>(read<@type[[TYPE_mouse_button_str]]>(%[[VALUE_newbutton1]]))), const<i8>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type[[TYPE_mouse_button_str]]) -> i8, abi=sysv64(native_c) -> scalar>(%[[VALUE_fct]], copy<@type[[TYPE_mouse_button_str]], reason=arg>(read<@type[[TYPE_mouse_button_str]]>(%[[VALUE_newbutton1]]))), const<i8>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type[[TYPE_mouse_button_str]]) -> i8, abi=sysv64(native_c) -> scalar>(%[[VALUE_fct]], copy<@type[[TYPE_mouse_button_str]], reason=arg>(read<@type[[TYPE_mouse_button_str]]>(%[[VALUE_newbutton1]]))), const<i8>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         write<u8>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u8>(bitfield2<unit=0, bytes=0..1, bits=2..3>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u8>(bitfield1<unit=0, bytes=0..1, bits=1..2>(%[[VALUE_newbutton1]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i8>(call<i8, signature=fn(@type[[TYPE_mouse_button_str]]) -> i8, abi=sysv64(native_c) -> scalar>(%[[VALUE_fct]], copy<@type[[TYPE_mouse_button_str]], reason=arg>(read<@type[[TYPE_mouse_button_str]]>(%[[VALUE_newbutton1]]))), const<i8>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

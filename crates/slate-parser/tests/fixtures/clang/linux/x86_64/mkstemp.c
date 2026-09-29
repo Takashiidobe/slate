@@ -41,19 +41,19 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %15 .str15: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%11 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @mkstemp(%12 __template: ptr<i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @close(%13 __fd: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @unlink(%14 __name: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 path: array<i8, 13> [storage=automatic] = code_units<array<i8, 13>>([115, 108, 97, 116, 101, 45, 88, 88, 88, 88, 88, 88, 0]);
-// DEFAULT-NEXT:         let %10 fd: i32 [storage=automatic] = call<i32, signature=fn(ptr<i8>) -> i32>(%3, array_decay<ptr<i8>, length=Some(13)>(%9));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%15)), from_bool<i32, reason=vararg>(ge<i32>(read<i32>(%10), const<i32>(0))));
-// DEFAULT-NEXT:         if ge<i32>(read<i32>(%10), const<i32>(0))
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_mkstemp:[0-9]+]] @mkstemp(%[[VALUE___template:[0-9]+]] __template: ptr<i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_close:[0-9]+]] @close(%[[VALUE___fd:[0-9]+]] __fd: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_unlink:[0-9]+]] @unlink(%[[VALUE___name:[0-9]+]] __name: ptr<const i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_path:[0-9]+]] path: array<i8, 13> [storage=automatic] = code_units<array<i8, 13>>([115, 108, 97, 116, 101, 45, 88, 88, 88, 88, 88, 88, 0]);
+// DEFAULT-NEXT:         let %[[VALUE_fd:[0-9]+]] fd: i32 [storage=automatic] = call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_mkstemp]], array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_path]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), from_bool<i32, reason=vararg>(ge<i32>(read<i32>(%[[VALUE_fd]]), const<i32>(0))));
+// DEFAULT-NEXT:         if ge<i32>(read<i32>(%[[VALUE_fd]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%5, read<i32>(%10));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>) -> i32>(%7, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%9)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_close]], read<i32>(%[[VALUE_fd]]));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_unlink]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_path]])));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

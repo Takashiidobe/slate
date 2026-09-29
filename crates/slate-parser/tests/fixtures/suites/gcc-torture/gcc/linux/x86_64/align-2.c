@@ -146,134 +146,134 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 a_short = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_a_short:[0-9]+]] a_short = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 s: i16;
 // DEFAULT-NEXT:     } [size=4, align=2, offsets=[0, 2]];
-// DEFAULT-NEXT:     type @type1 a_int = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_a_int:[0-9]+]] a_int = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 i: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type2 b_int = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_b_int:[0-9]+]] b_int = struct {
 // DEFAULT-NEXT:         field0 s: i16;
 // DEFAULT-NEXT:         field1 i: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type3 a_float = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_a_float:[0-9]+]] a_float = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 f: f32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type4 b_float = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_b_float:[0-9]+]] b_float = struct {
 // DEFAULT-NEXT:         field0 s: i16;
 // DEFAULT-NEXT:         field1 f: f32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type5 a_double = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_a_double:[0-9]+]] a_double = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 d: f64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type6 b_double = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_b_double:[0-9]+]] b_double = struct {
 // DEFAULT-NEXT:         field0 s: i16;
 // DEFAULT-NEXT:         field1 d: f64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type7 c_double = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_c_double:[0-9]+]] c_double = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:         field1 d: f64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type8 d_double = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_d_double:[0-9]+]] d_double = struct {
 // DEFAULT-NEXT:         field0 f: f32;
 // DEFAULT-NEXT:         field1 d: f64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type9 a_ldouble = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_a_ldouble:[0-9]+]] a_ldouble = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 ld: f80;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16]];
-// DEFAULT-NEXT:     type @type10 b_ldouble = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_b_ldouble:[0-9]+]] b_ldouble = struct {
 // DEFAULT-NEXT:         field0 s: i16;
 // DEFAULT-NEXT:         field1 ld: f80;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16]];
-// DEFAULT-NEXT:     type @type11 c_ldouble = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_c_ldouble:[0-9]+]] c_ldouble = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:         field1 ld: f80;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16]];
-// DEFAULT-NEXT:     type @type12 d_ldouble = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_d_ldouble:[0-9]+]] d_ldouble = struct {
 // DEFAULT-NEXT:         field0 f: f32;
 // DEFAULT-NEXT:         field1 ld: f80;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16]];
-// DEFAULT-NEXT:     type @type13 e_ldouble = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_e_ldouble:[0-9]+]] e_ldouble = struct {
 // DEFAULT-NEXT:         field0 d: f64;
 // DEFAULT-NEXT:         field1 ld: f80;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16]];
-// DEFAULT-NEXT:     global %2 s_c_s: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(97)), field1 = truncate<i16, reason=assign, fits=always>(const<i32>(13))) [linkage=external];
-// DEFAULT-NEXT:     global %4 s_c_i: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(98)), field1 = const<i32>(14)) [linkage=external];
-// DEFAULT-NEXT:     global %6 s_s_i: @type2 [storage=static] = aggregate<@type2, zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(15)), field1 = const<i32>(16)) [linkage=external];
-// DEFAULT-NEXT:     global %8 s_c_f: @type3 [storage=static] = aggregate<@type3, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(99)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(17.0))) [linkage=external];
-// DEFAULT-NEXT:     global %10 s_s_f: @type4 [storage=static] = aggregate<@type4, zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(18)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(19.0))) [linkage=external];
-// DEFAULT-NEXT:     global %12 s_c_d: @type5 [storage=static] = aggregate<@type5, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(100)), field1 = const<f64>(20.0)) [linkage=external];
-// DEFAULT-NEXT:     global %14 s_s_d: @type6 [storage=static] = aggregate<@type6, zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(21)), field1 = const<f64>(22.0)) [linkage=external];
-// DEFAULT-NEXT:     global %16 s_i_d: @type7 [storage=static] = aggregate<@type7, zero_fill=false>(field0 = const<i32>(23), field1 = const<f64>(24.0)) [linkage=external];
-// DEFAULT-NEXT:     global %18 s_f_d: @type8 [storage=static] = aggregate<@type8, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(25.0)), field1 = const<f64>(26.0)) [linkage=external];
-// DEFAULT-NEXT:     global %20 s_c_ld: @type9 [storage=static] = aggregate<@type9, zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(101)), field1 = float_widen<f80, reason=assign>(const<f64>(27.0))) [linkage=external];
-// DEFAULT-NEXT:     global %22 s_s_ld: @type10 [storage=static] = aggregate<@type10, zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(28)), field1 = float_widen<f80, reason=assign>(const<f64>(29.0))) [linkage=external];
-// DEFAULT-NEXT:     global %24 s_i_ld: @type11 [storage=static] = aggregate<@type11, zero_fill=false>(field0 = const<i32>(30), field1 = float_widen<f80, reason=assign>(const<f64>(31.0))) [linkage=external];
-// DEFAULT-NEXT:     global %26 s_f_ld: @type12 [storage=static] = aggregate<@type12, zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(32.0)), field1 = float_widen<f80, reason=assign>(const<f64>(33.0))) [linkage=external];
-// DEFAULT-NEXT:     global %28 s_d_ld: @type13 [storage=static] = aggregate<@type13, zero_fill=false>(field0 = const<f64>(34.0), field1 = float_widen<f80, reason=assign>(const<f64>(35.0))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %29 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%2))), const<i32>(97))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field1(%2))), const<i32>(13))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%4))), const<i32>(98))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(field1(%4)), const<i32>(14))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(%6))), const<i32>(15))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(field1(%6)), const<i32>(16))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%8))), const<i32>(99))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(read<f32>(field1(%8))), const<f64>(17.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(%10))), const<i32>(18))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(read<f32>(field1(%10))), const<f64>(19.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%12))), const<i32>(100))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(field1(%12)), const<f64>(20.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(%14))), const<i32>(21))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(field1(%14)), const<f64>(22.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%16)), const<i32>(23))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(field1(%16)), const<f64>(24.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(read<f32>(field0(%18))), const<f64>(25.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(field1(%18)), const<f64>(26.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%20))), const<i32>(101))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(field1(%20)), float_widen<f80, reason=usual_arith>(const<f64>(27.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(%22))), const<i32>(28))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(field1(%22)), float_widen<f80, reason=usual_arith>(const<f64>(29.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%24)), const<i32>(30))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(field1(%24)), float_widen<f80, reason=usual_arith>(const<f64>(31.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(read<f32>(field0(%26))), const<f64>(32.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(field1(%26)), float_widen<f80, reason=usual_arith>(const<f64>(33.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(field0(%28)), const<f64>(34.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(field1(%28)), float_widen<f80, reason=usual_arith>(const<f64>(35.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_s_c_s:[0-9]+]] s_c_s: @type[[TYPE_a_short]] [storage=static] = aggregate<@type[[TYPE_a_short]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(97)), field1 = truncate<i16, reason=assign, fits=always>(const<i32>(13))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s_c_i:[0-9]+]] s_c_i: @type[[TYPE_a_int]] [storage=static] = aggregate<@type[[TYPE_a_int]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(98)), field1 = const<i32>(14)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s_s_i:[0-9]+]] s_s_i: @type[[TYPE_b_int]] [storage=static] = aggregate<@type[[TYPE_b_int]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(15)), field1 = const<i32>(16)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s_c_f:[0-9]+]] s_c_f: @type[[TYPE_a_float]] [storage=static] = aggregate<@type[[TYPE_a_float]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(99)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(17.0))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s_s_f:[0-9]+]] s_s_f: @type[[TYPE_b_float]] [storage=static] = aggregate<@type[[TYPE_b_float]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(18)), field1 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(19.0))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s_c_d:[0-9]+]] s_c_d: @type[[TYPE_a_double]] [storage=static] = aggregate<@type[[TYPE_a_double]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(100)), field1 = const<f64>(20.0)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s_s_d:[0-9]+]] s_s_d: @type[[TYPE_b_double]] [storage=static] = aggregate<@type[[TYPE_b_double]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(21)), field1 = const<f64>(22.0)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s_i_d:[0-9]+]] s_i_d: @type[[TYPE_c_double]] [storage=static] = aggregate<@type[[TYPE_c_double]], zero_fill=false>(field0 = const<i32>(23), field1 = const<f64>(24.0)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s_f_d:[0-9]+]] s_f_d: @type[[TYPE_d_double]] [storage=static] = aggregate<@type[[TYPE_d_double]], zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(25.0)), field1 = const<f64>(26.0)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s_c_ld:[0-9]+]] s_c_ld: @type[[TYPE_a_ldouble]] [storage=static] = aggregate<@type[[TYPE_a_ldouble]], zero_fill=false>(field0 = truncate<i8, reason=assign, fits=always>(const<i32>(101)), field1 = float_widen<f80, reason=assign>(const<f64>(27.0))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s_s_ld:[0-9]+]] s_s_ld: @type[[TYPE_b_ldouble]] [storage=static] = aggregate<@type[[TYPE_b_ldouble]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(28)), field1 = float_widen<f80, reason=assign>(const<f64>(29.0))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s_i_ld:[0-9]+]] s_i_ld: @type[[TYPE_c_ldouble]] [storage=static] = aggregate<@type[[TYPE_c_ldouble]], zero_fill=false>(field0 = const<i32>(30), field1 = float_widen<f80, reason=assign>(const<f64>(31.0))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s_f_ld:[0-9]+]] s_f_ld: @type[[TYPE_d_ldouble]] [storage=static] = aggregate<@type[[TYPE_d_ldouble]], zero_fill=false>(field0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(32.0)), field1 = float_widen<f80, reason=assign>(const<f64>(33.0))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s_d_ld:[0-9]+]] s_d_ld: @type[[TYPE_e_ldouble]] [storage=static] = aggregate<@type[[TYPE_e_ldouble]], zero_fill=false>(field0 = const<f64>(34.0), field1 = float_widen<f80, reason=assign>(const<f64>(35.0))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%[[VALUE_s_c_s]]))), const<i32>(97))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field1(%[[VALUE_s_c_s]]))), const<i32>(13))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%[[VALUE_s_c_i]]))), const<i32>(98))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(field1(%[[VALUE_s_c_i]])), const<i32>(14))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(%[[VALUE_s_s_i]]))), const<i32>(15))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(field1(%[[VALUE_s_s_i]])), const<i32>(16))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%[[VALUE_s_c_f]]))), const<i32>(99))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(read<f32>(field1(%[[VALUE_s_c_f]]))), const<f64>(17.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(%[[VALUE_s_s_f]]))), const<i32>(18))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(read<f32>(field1(%[[VALUE_s_s_f]]))), const<f64>(19.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%[[VALUE_s_c_d]]))), const<i32>(100))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(field1(%[[VALUE_s_c_d]])), const<f64>(20.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(%[[VALUE_s_s_d]]))), const<i32>(21))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(field1(%[[VALUE_s_s_d]])), const<f64>(22.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%[[VALUE_s_i_d]])), const<i32>(23))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(field1(%[[VALUE_s_i_d]])), const<f64>(24.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(read<f32>(field0(%[[VALUE_s_f_d]]))), const<f64>(25.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(field1(%[[VALUE_s_f_d]])), const<f64>(26.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%[[VALUE_s_c_ld]]))), const<i32>(101))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(field1(%[[VALUE_s_c_ld]])), float_widen<f80, reason=usual_arith>(const<f64>(27.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(%[[VALUE_s_s_ld]]))), const<i32>(28))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(field1(%[[VALUE_s_s_ld]])), float_widen<f80, reason=usual_arith>(const<f64>(29.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%[[VALUE_s_i_ld]])), const<i32>(30))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(field1(%[[VALUE_s_i_ld]])), float_widen<f80, reason=usual_arith>(const<f64>(31.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(read<f32>(field0(%[[VALUE_s_f_ld]]))), const<f64>(32.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(field1(%[[VALUE_s_f_ld]])), float_widen<f80, reason=usual_arith>(const<f64>(33.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(field0(%[[VALUE_s_d_ld]])), const<f64>(34.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(field1(%[[VALUE_s_d_ld]])), float_widen<f80, reason=usual_arith>(const<f64>(35.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

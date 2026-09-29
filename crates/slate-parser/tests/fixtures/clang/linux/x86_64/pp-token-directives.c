@@ -35,7 +35,7 @@ TH];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 enabled: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 widths: array<i32, 4> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_enabled:[0-9]+]] enabled: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_widths:[0-9]+]] widths: array<i32, 4> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

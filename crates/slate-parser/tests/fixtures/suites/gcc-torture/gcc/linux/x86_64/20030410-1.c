@@ -51,29 +51,29 @@ static inline void zend_ptr_stack_clear_multiple(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 _zend_compiler_globals = struct {
+// DEFAULT-NEXT:     type @type[[TYPE__zend_compiler_globals:[0-9]+]] _zend_compiler_globals = struct {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
-// DEFAULT-NEXT:     type @type1 _zend_executor_globals = struct {
+// DEFAULT-NEXT:     type @type[[TYPE__zend_executor_globals:[0-9]+]] _zend_executor_globals = struct {
 // DEFAULT-NEXT:         field0 uninitialized_zval_ptr: ptr<i32>;
-// DEFAULT-NEXT:         field1 argument_stack: @type3;
+// DEFAULT-NEXT:         field1 argument_stack: @type[[TYPE__zend_ptr_stack:[0-9]+]];
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type2 zend_executor_globals = @type1;
-// DEFAULT-NEXT:     type @type3 _zend_ptr_stack = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_zend_executor_globals:[0-9]+]] zend_executor_globals = @type[[TYPE__zend_executor_globals]];
+// DEFAULT-NEXT:     type @type[[TYPE__zend_ptr_stack]] _zend_ptr_stack = struct {
 // DEFAULT-NEXT:         field0 top: i32;
 // DEFAULT-NEXT:         field1 top_element: ptr<ptr<void>>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type4 zend_ptr_stack = @type3;
-// DEFAULT-NEXT:     extern %1 compiler_globals: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 executor_globals: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %7 @safe_free_zval_ptr(%8 p: ptr<i32>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(%8), read<ptr<i32>>(field0(%4)))
+// DEFAULT-NEXT:     type @type[[TYPE_zend_ptr_stack:[0-9]+]] zend_ptr_stack = @type[[TYPE__zend_ptr_stack]];
+// DEFAULT-NEXT:     extern %[[VALUE_compiler_globals:[0-9]+]] compiler_globals: @type[[TYPE__zend_compiler_globals]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_executor_globals:[0-9]+]] executor_globals: @type[[TYPE__zend_executor_globals]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_safe_free_zval_ptr:[0-9]+]] @safe_free_zval_ptr(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), read<ptr<i32>>(field0(%[[VALUE_executor_globals]])))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @zend_ptr_stack_clear_multiple() -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %10: i32 [synthetic] = read<i32>(field0(field1(%4)));
-// DEFAULT-NEXT:         let %11: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%10), const<i32>(2));
-// DEFAULT-NEXT:         write<i32>(field0(field1(%4)), read<i32>(%11));
+// DEFAULT-NEXT:     fn %[[VALUE_zend_ptr_stack_clear_multiple:[0-9]+]] @zend_ptr_stack_clear_multiple() -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(field0(field1(%[[VALUE_executor_globals]])));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(2));
+// DEFAULT-NEXT:         write<i32>(field0(field1(%[[VALUE_executor_globals]])), read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

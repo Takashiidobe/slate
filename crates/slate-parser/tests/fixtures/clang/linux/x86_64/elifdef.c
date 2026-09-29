@@ -67,16 +67,16 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %7 .str7: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 elifdef_value: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %4 elifndef_value: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %5 inactive_value: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         write<i32>(%3, const<i32>(23));
-// DEFAULT-NEXT:         write<i32>(%4, const<i32>(29));
-// DEFAULT-NEXT:         write<i32>(%5, const<i32>(31));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%7)), read<i32>(%3), read<i32>(%4), read<i32>(%5));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_elifdef_value:[0-9]+]] elifdef_value: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_elifndef_value:[0-9]+]] elifndef_value: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_inactive_value:[0-9]+]] inactive_value: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_elifdef_value]], const<i32>(23));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_elifndef_value]], const<i32>(29));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_inactive_value]], const<i32>(31));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), read<i32>(%[[VALUE_elifdef_value]]), read<i32>(%[[VALUE_elifndef_value]]), read<i32>(%[[VALUE_inactive_value]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -88,32 +88,32 @@ void g(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 i: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %1 p: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %2 ci: atomic i32 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     extern %3 vi: volatile atomic i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %4 ri: atomic ptr<i32> [storage=static] [restrict] [linkage=external];
-// DEFAULT-NEXT:     extern %12 j: i32 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     extern %13 k: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %14 q: ptr<i32> [storage=static] [restrict] [linkage=external];
-// DEFAULT-NEXT:     extern %15 nci: i32 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     extern %16 nvi: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %17 nri: ptr<i32> [storage=static] [restrict] [linkage=external];
-// DEFAULT-NEXT:     fn %5 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %6 aci: i32 [storage=automatic] = read<i32, atomic=seq_cst>(%2);
-// DEFAULT-NEXT:         let %7 paci: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%6);
-// DEFAULT-NEXT:         let %8 avi: i32 [storage=automatic] = read<i32, volatile, atomic=seq_cst>(%3);
-// DEFAULT-NEXT:         let %9 pavi: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%8);
-// DEFAULT-NEXT:         let %10 ari: ptr<i32> [storage=automatic] = read<ptr<i32>, atomic=seq_cst>(%4);
-// DEFAULT-NEXT:         let %11 pari: ptr<ptr<i32>> [storage=automatic] = addr_of<ptr<ptr<i32>>>(%10);
+// DEFAULT-NEXT:     extern %[[VALUE_i:[0-9]+]] i: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_ci:[0-9]+]] ci: atomic i32 [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_vi:[0-9]+]] vi: volatile atomic i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_ri:[0-9]+]] ri: atomic ptr<i32> [storage=static] [restrict] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_j:[0-9]+]] j: i32 [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_k:[0-9]+]] k: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=static] [restrict] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_nci:[0-9]+]] nci: i32 [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_nvi:[0-9]+]] nvi: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_nri:[0-9]+]] nri: ptr<i32> [storage=static] [restrict] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_aci:[0-9]+]] aci: i32 [storage=automatic] = read<i32, atomic=seq_cst>(%[[VALUE_ci]]);
+// DEFAULT-NEXT:         let %[[VALUE_paci:[0-9]+]] paci: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_aci]]);
+// DEFAULT-NEXT:         let %[[VALUE_avi:[0-9]+]] avi: i32 [storage=automatic] = read<i32, volatile, atomic=seq_cst>(%[[VALUE_vi]]);
+// DEFAULT-NEXT:         let %[[VALUE_pavi:[0-9]+]] pavi: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_avi]]);
+// DEFAULT-NEXT:         let %[[VALUE_ari:[0-9]+]] ari: ptr<i32> [storage=automatic] = read<ptr<i32>, atomic=seq_cst>(%[[VALUE_ri]]);
+// DEFAULT-NEXT:         let %[[VALUE_pari:[0-9]+]] pari: ptr<ptr<i32>> [storage=automatic] = addr_of<ptr<ptr<i32>>>(%[[VALUE_ari]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @g() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %19 aci: i32 [storage=automatic] = read<i32>(%15);
-// DEFAULT-NEXT:         let %20 paci: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%19);
-// DEFAULT-NEXT:         let %21 avi: i32 [storage=automatic] = read<i32, volatile>(%16);
-// DEFAULT-NEXT:         let %22 pavi: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%21);
-// DEFAULT-NEXT:         let %23 ari: ptr<i32> [storage=automatic] = read<ptr<i32>>(%17);
-// DEFAULT-NEXT:         let %24 pari: ptr<ptr<i32>> [storage=automatic] = addr_of<ptr<ptr<i32>>>(%23);
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_aci_2:[0-9]+]] aci: i32 [storage=automatic] = read<i32>(%[[VALUE_nci]]);
+// DEFAULT-NEXT:         let %[[VALUE_paci_2:[0-9]+]] paci: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_aci_2]]);
+// DEFAULT-NEXT:         let %[[VALUE_avi_2:[0-9]+]] avi: i32 [storage=automatic] = read<i32, volatile>(%[[VALUE_nvi]]);
+// DEFAULT-NEXT:         let %[[VALUE_pavi_2:[0-9]+]] pavi: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_avi_2]]);
+// DEFAULT-NEXT:         let %[[VALUE_ari_2:[0-9]+]] ari: ptr<i32> [storage=automatic] = read<ptr<i32>>(%[[VALUE_nri]]);
+// DEFAULT-NEXT:         let %[[VALUE_pari_2:[0-9]+]] pari: ptr<ptr<i32>> [storage=automatic] = addr_of<ptr<ptr<i32>>>(%[[VALUE_ari_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -42,8 +42,8 @@ int sentinel_value = SENTINEL;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 flag: bool [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 answer: i32 [storage=static] = const<i32>(42) [linkage=external];
-// DEFAULT-NEXT:     global %2 sentinel_value: i32 [storage=static] = const<i32>(7) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_flag:[0-9]+]] flag: bool [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_answer:[0-9]+]] answer: i32 [storage=static] = const<i32>(42) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_sentinel_value:[0-9]+]] sentinel_value: i32 [storage=static] = const<i32>(7) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

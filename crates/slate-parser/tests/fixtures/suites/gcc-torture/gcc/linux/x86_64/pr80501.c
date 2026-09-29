@@ -40,22 +40,22 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 v: i8 [storage=static] = truncate<i8, reason=assign, fits=always>(const<i32>(0)) [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%2 x: i32, %3 y: i32) -> i8 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%2), read<i32>(%3)));
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: i8 [storage=static] = truncate<i8, reason=assign, fits=always>(const<i32>(0)) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32) -> i8 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%[[VALUE_x]]), read<i32>(%[[VALUE_y]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @bar() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<i32>(widen<i32, reason=promotion>(call<i8, signature=fn(i32, i32) -> i8>(%1, from_bool<i32, reason=arg>(ge<i32>(widen<i32, reason=promotion>(read<i8>(%0)), const<i32>(0))), sub<i32, overflow=ub>(const<i32>(8), const<i32>(1)))), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<i32>(widen<i32, reason=promotion>(call<i8, signature=fn(i32, i32) -> i8>(%[[VALUE_foo]], from_bool<i32, reason=arg>(ge<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_v]])), const<i32>(0))), sub<i32, overflow=ub>(const<i32>(8), const<i32>(1)))), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7: bool [synthetic];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if gt<u64>(const<u64>(4), const<u64>(1))
-// DEFAULT-NEXT:             write<bool>(%7, ne<i32>(call<i32, signature=fn() -> i32>(%4), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_bar]]), const<i32>(0)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%7, const<bool>(false));
-// DEFAULT-NEXT:         if read<bool>(%7)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(false));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE0]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -45,23 +45,23 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 box = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_box:[0-9]+]] box = struct {
 // DEFAULT-NEXT:         field0 tag: i32;
 // DEFAULT-NEXT:         field1 value: f80;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16]];
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @sum_box(%4 b: @type0) -> i32 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(field1(%4)), int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(field0(%4)))));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_sum_box:[0-9]+]] @sum_box(%[[VALUE_b:[0-9]+]] b: @type[[TYPE_box]]) -> i32 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(field1(%[[VALUE_b]])), int_to_float<f80, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(field0(%[[VALUE_b]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 b: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field0(%6), const<i32>(3));
-// DEFAULT-NEXT:         write<f80>(field1(%6), const<f80>(4.5));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%8)), call<i32, signature=fn(@type0) -> i32, abi=sysv64(native_c) -> scalar>(%3, copy<@type0, reason=arg>(read<@type0>(%6))));
-// DEFAULT-NEXT:         write<f80>(field1(%6), mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(field1(%6)), const<f80>(2)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%9)), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f80>(field1(%6))));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: @type[[TYPE_box]] [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_b_2]]), const<i32>(3));
+// DEFAULT-NEXT:         write<f80>(field1(%[[VALUE_b_2]]), const<f80>(4.5));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), call<i32, signature=fn(@type[[TYPE_box]]) -> i32, abi=sysv64(native_c) -> scalar>(%[[VALUE_sum_box]], copy<@type[[TYPE_box]], reason=arg>(read<@type[[TYPE_box]]>(%[[VALUE_b_2]]))));
+// DEFAULT-NEXT:         write<f80>(field1(%[[VALUE_b_2]]), mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(field1(%[[VALUE_b_2]])), const<f80>(2)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f80>(field1(%[[VALUE_b_2]]))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -58,23 +58,23 @@ void bar() { foo(); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Fn = ptr<fn() -> void>;
-// DEFAULT-NEXT:     fn %0 @caller(%1 f: ptr<fn(unprototyped) -> void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(read<ptr<fn(unprototyped) -> void>>(%1));
+// DEFAULT-NEXT:     type @type[[TYPE_Fn:[0-9]+]] Fn = ptr<fn() -> void>;
+// DEFAULT-NEXT:     fn %[[VALUE_caller:[0-9]+]] @caller(%[[VALUE_f:[0-9]+]] f: ptr<fn(unprototyped) -> void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(read<ptr<fn(unprototyped) -> void>>(%[[VALUE_f]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @g() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @h() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %5 @g1(unprototyped) -> ptr<fn() -> void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_g1:[0-9]+]] @g1(unprototyped) -> ptr<fn() -> void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_g]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @h1(unprototyped) -> ptr<fn() -> void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE_h1:[0-9]+]] @h1(unprototyped) -> ptr<fn() -> void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return addr_of<ptr<fn() -> void>>(%[[VALUE_h]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @foo(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @bar(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%7);
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

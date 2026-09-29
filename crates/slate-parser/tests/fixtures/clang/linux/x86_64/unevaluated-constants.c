@@ -37,18 +37,18 @@ int select_type(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 flags = enum : u32 {
-// DEFAULT-NEXT:         %0 A = const<i32>(8);
-// DEFAULT-NEXT:         %1 B = const<i32>(9);
-// DEFAULT-NEXT:         %2 C = const<i32>(10);
-// DEFAULT-NEXT:         %3 D = const<i32>(16);
+// DEFAULT-NEXT:     type @type[[TYPE_flags:[0-9]+]] flags = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(8);
+// DEFAULT-NEXT:         %[[VALUE_B:[0-9]+]] B = const<i32>(9);
+// DEFAULT-NEXT:         %[[VALUE_C:[0-9]+]] C = const<i32>(10);
+// DEFAULT-NEXT:         %[[VALUE_D:[0-9]+]] D = const<i32>(16);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 word = i64;
-// DEFAULT-NEXT:     global %6 table: array<i32, 18> [storage=static] [align=16] = aggregate<array<i32, 18>, zero_fill=true>(index8 = const<i32>(1), index10..=16 = const<i32>(3), index17 = const<i32>(2)) [linkage=external];
-// DEFAULT-NEXT:     fn %7 @select_int(%8 a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     type @type[[TYPE_word:[0-9]+]] word = i64;
+// DEFAULT-NEXT:     global %[[VALUE_table:[0-9]+]] table: array<i32, 18> [storage=static] [align=16] = aggregate<array<i32, 18>, zero_fill=true>(index8 = const<i32>(1), index10..=16 = const<i32>(3), index17 = const<i32>(2)) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_select_int:[0-9]+]] @select_int(%[[VALUE_a:[0-9]+]] a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @select_type() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_select_type:[0-9]+]] @select_type() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

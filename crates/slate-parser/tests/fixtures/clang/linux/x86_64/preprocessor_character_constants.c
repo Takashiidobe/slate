@@ -43,11 +43,11 @@ int utf8_is_unsigned = 1;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 plain_char_is_signed: i32 [storage=static] = const<i32>(1) [linkage=external];
-// IR-NEXT:     global %1 multicharacter_packs_bytes: i32 [storage=static] = const<i32>(1) [linkage=external];
-// IR-NEXT:     global %2 wchar_is_signed: i32 [storage=static] = const<i32>(1) [linkage=external];
-// IR-NEXT:     global %3 utf16_is_unsigned: i32 [storage=static] = const<i32>(1) [linkage=external];
-// IR-NEXT:     global %4 utf32_is_unsigned: i32 [storage=static] = const<i32>(1) [linkage=external];
-// IR-NEXT:     global %5 utf8_is_unsigned: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-NEXT:     global %[[VALUE_plain_char_is_signed:[0-9]+]] plain_char_is_signed: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-NEXT:     global %[[VALUE_multicharacter_packs_bytes:[0-9]+]] multicharacter_packs_bytes: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-NEXT:     global %[[VALUE_wchar_is_signed:[0-9]+]] wchar_is_signed: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-NEXT:     global %[[VALUE_utf16_is_unsigned:[0-9]+]] utf16_is_unsigned: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-NEXT:     global %[[VALUE_utf32_is_unsigned:[0-9]+]] utf32_is_unsigned: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-NEXT:     global %[[VALUE_utf8_is_unsigned:[0-9]+]] utf8_is_unsigned: i32 [storage=static] = const<i32>(1) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

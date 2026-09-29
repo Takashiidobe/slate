@@ -46,27 +46,27 @@ void bar (struct A *x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:         field3 d: i32;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 4, 8, 12]];
-// DEFAULT-NEXT:     fn %0 @foo() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @bar(%3 x: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 e: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %5 f: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%4, call<i32, signature=fn() -> i32>(%0));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%0);
-// DEFAULT-NEXT:         write<i32>(%4, div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%4), read<i32>(field1(deref(read<ptr<@type0>>(%3))))));
-// DEFAULT-NEXT:         if lt<i32>(read<i32>(%4), const<i32>(1))
-// DEFAULT-NEXT:             write<i32>(%4, const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%5, div<i32, by_zero=ub, min_by_neg_one=ub>(add<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<@type0>>(%3)))), read<i32>(field2(deref(read<ptr<@type0>>(%3))))), read<i32>(%4)));
-// DEFAULT-NEXT:         if lt<i32>(read<i32>(%5), read<i32>(field3(deref(read<ptr<@type0>>(%3)))))
-// DEFAULT-NEXT:             let %6: ptr<@type0> [synthetic] = read<ptr<@type0>>(%3);
-// DEFAULT-NEXT:             let %7: i32 [synthetic] = read<i32>(field3(deref(read<ptr<@type0>>(%6))));
-// DEFAULT-NEXT:             let %8: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%7), div<i32, by_zero=ub, min_by_neg_one=ub>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(16)), const<i32>(8)));
-// DEFAULT-NEXT:             write<i32>(field3(deref(read<ptr<@type0>>(%6))), read<i32>(%8));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE_A]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_e]], call<i32, signature=fn() -> i32>(%[[VALUE_foo]]));
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_e]], div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_e]]), read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]))))));
+// DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_e]]), const<i32>(1))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_e]], const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_f]], div<i32, by_zero=ub, min_by_neg_one=ub>(add<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]])))), read<i32>(field2(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]))))), read<i32>(%[[VALUE_e]])));
+// DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_f]]), read<i32>(field3(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]])))))
+// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: ptr<@type[[TYPE_A]]> [synthetic] = read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(field3(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE0]]))));
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE1]]), div<i32, by_zero=ub, min_by_neg_one=ub>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), const<i32>(16)), const<i32>(8)));
+// DEFAULT-NEXT:             write<i32>(field3(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE0]]))), read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

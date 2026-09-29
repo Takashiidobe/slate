@@ -47,22 +47,22 @@ int *restrict ip_fn2 (void) { return (int *)0; }; /* { dg-warning "qualifiers" "
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 int_ptr: ptr<fn() -> i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 void_ptr: ptr<fn() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 vvoid_ptr: ptr<fn() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 ip_ptr: ptr<fn() -> ptr<i32>> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @int_fn() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @int_fn2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_int_ptr:[0-9]+]] int_ptr: ptr<fn() -> i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_void_ptr:[0-9]+]] void_ptr: ptr<fn() -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_vvoid_ptr:[0-9]+]] vvoid_ptr: ptr<fn() -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ip_ptr:[0-9]+]] ip_ptr: ptr<fn() -> ptr<i32>> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_int_fn:[0-9]+]] @int_fn() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_int_fn2:[0-9]+]] @int_fn2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @void_fn() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %5 @void_fn2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_void_fn:[0-9]+]] @void_fn() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_void_fn2:[0-9]+]] @void_fn2() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @vvoid_fn() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %8 @vvoid_fn2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_vvoid_fn:[0-9]+]] @vvoid_fn() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_vvoid_fn2:[0-9]+]] @vvoid_fn2() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @ip_fn() -> ptr<i32> [linkage=external];
-// DEFAULT-NEXT:     fn %11 @ip_fn2() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_ip_fn:[0-9]+]] @ip_fn() -> ptr<i32> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_ip_fn2:[0-9]+]] @ip_fn2() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return null<ptr<i32>>;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

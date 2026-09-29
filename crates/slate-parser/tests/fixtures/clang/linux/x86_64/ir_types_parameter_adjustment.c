@@ -42,14 +42,14 @@ void multidimensional(int a[2][3]);
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 arr_t = array<i32, 3>;
-// IR-NEXT:     fn %1 @fixed(%0 a: ptr<i32> [array=10]) -> void [linkage=external];
-// IR-NEXT:     fn %3 @qualified(%2 a: ptr<const i32> [restrict] [array=static 4]) -> void [linkage=external];
-// IR-NEXT:     fn %5 @typedefed(%4 a: ptr<i32> [array=3]) -> void [linkage=external];
-// IR-NEXT:     fn %7 @unspecified(%6 a: ptr<i32>) -> void [linkage=external];
-// IR-NEXT:     fn %10 @variable(%8 n: i32, %9 a: ptr<i32> [array=*]) -> void [linkage=external];
-// IR-NEXT:     fn %12 @star(%11 a: ptr<i32> [array=*]) -> void [linkage=external];
-// IR-NEXT:     fn %15 @function(%13 cb: ptr<fn(i32) -> i32>, %14 fp: ptr<fn() -> i32>) -> void [linkage=external];
-// IR-NEXT:     fn %17 @multidimensional(%16 a: ptr<array<i32, 3>> [array=2]) -> void [linkage=external];
+// IR-NEXT:     type @type[[TYPE_arr_t:[0-9]+]] arr_t = array<i32, 3>;
+// IR-NEXT:     fn %[[VALUE_fixed:[0-9]+]] @fixed(%[[VALUE_a:[0-9]+]] a: ptr<i32> [array=10]) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_qualified:[0-9]+]] @qualified(%[[VALUE_a_2:[0-9]+]] a: ptr<const i32> [restrict] [array=static 4]) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_typedefed:[0-9]+]] @typedefed(%[[VALUE_a_3:[0-9]+]] a: ptr<i32> [array=3]) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_unspecified:[0-9]+]] @unspecified(%[[VALUE_a_4:[0-9]+]] a: ptr<i32>) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_variable:[0-9]+]] @variable(%[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_a_5:[0-9]+]] a: ptr<i32> [array=*]) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_star:[0-9]+]] @star(%[[VALUE_a_6:[0-9]+]] a: ptr<i32> [array=*]) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_function:[0-9]+]] @function(%[[VALUE_cb:[0-9]+]] cb: ptr<fn(i32) -> i32>, %[[VALUE_fp:[0-9]+]] fp: ptr<fn() -> i32>) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_multidimensional:[0-9]+]] @multidimensional(%[[VALUE_a_7:[0-9]+]] a: ptr<array<i32, 3>> [array=2]) -> void [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

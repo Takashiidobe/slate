@@ -32,8 +32,8 @@ float (*f)(void);
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @knr(%1 p: ptr<i8>, %2 a: ptr<i16> [array=4], %3 f: ptr<fn() -> f32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%1)))), widen<i32, reason=promotion>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%2), const<i32>(0)))))), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f32, signature=fn() -> f32>(read<ptr<fn() -> f32>>(%3))));
+// DEFAULT-NEXT:     fn %[[VALUE_knr:[0-9]+]] @knr(%[[VALUE_p:[0-9]+]] p: ptr<i8>, %[[VALUE_a:[0-9]+]] a: ptr<i16> [array=4], %[[VALUE_f:[0-9]+]] f: ptr<fn() -> f32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_p]])))), widen<i32, reason=promotion>(read<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(read<ptr<i16>>(%[[VALUE_a]]), const<i32>(0)))))), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(call<f32, signature=fn() -> f32>(read<ptr<fn() -> f32>>(%[[VALUE_f]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

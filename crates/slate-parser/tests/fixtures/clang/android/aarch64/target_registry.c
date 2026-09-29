@@ -37,17 +37,17 @@ struct pair record(struct pair value) { return value; }
 // AARCH64-ANDROID-CLANG-NEXT:         storage d64 [size=8, align=8];
 // AARCH64-ANDROID-CLANG-NEXT:         storage d128 [size=16, align=16];
 // AARCH64-ANDROID-CLANG-NEXT:     }
-// AARCH64-ANDROID-CLANG-NEXT:     type @type0 pair = struct {
+// AARCH64-ANDROID-CLANG-NEXT:     type @type[[TYPE_pair:[0-9]+]] pair = struct {
 // AARCH64-ANDROID-CLANG-NEXT:         field0 a: i32;
 // AARCH64-ANDROID-CLANG-NEXT:         field1 b: i32;
 // AARCH64-ANDROID-CLANG-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// AARCH64-ANDROID-CLANG-NEXT:     global %0 clang_major: i32 [storage=static] = const<i32>(22) [linkage=external];
-// AARCH64-ANDROID-CLANG-NEXT:     global %1 sizeof_long: u64 [storage=static] = const<u64>(8) [linkage=external];
-// AARCH64-ANDROID-CLANG-NEXT:     global %2 sizeof_long_double: u64 [storage=static] = const<u64>(16) [linkage=external];
-// AARCH64-ANDROID-CLANG-NEXT:     global %3 sizeof_va_list: u64 [storage=static] = const<u64>(32) [linkage=external];
-// AARCH64-ANDROID-CLANG-NEXT:     global %4 alignof_long_long: u64 [storage=static] = const<u64>(8) [linkage=external];
-// AARCH64-ANDROID-CLANG-NEXT:     fn %6 @record(%7 value: @type0) -> @type0 [linkage=external] [abi=aapcs64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// AARCH64-ANDROID-CLANG-NEXT:         return copy<@type0, reason=return>(read<@type0>(%7));
+// AARCH64-ANDROID-CLANG-NEXT:     global %[[VALUE_clang_major:[0-9]+]] clang_major: i32 [storage=static] = const<i32>(22) [linkage=external];
+// AARCH64-ANDROID-CLANG-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u64 [storage=static] = const<u64>(8) [linkage=external];
+// AARCH64-ANDROID-CLANG-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u64 [storage=static] = const<u64>(16) [linkage=external];
+// AARCH64-ANDROID-CLANG-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u64 [storage=static] = const<u64>(32) [linkage=external];
+// AARCH64-ANDROID-CLANG-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u64 [storage=static] = const<u64>(8) [linkage=external];
+// AARCH64-ANDROID-CLANG-NEXT:     fn %[[VALUE_record:[0-9]+]] @record(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=aapcs64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// AARCH64-ANDROID-CLANG-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value]]));
 // AARCH64-ANDROID-CLANG-NEXT:     }
 // AARCH64-ANDROID-CLANG-NEXT: }
 // SLATE-FILECHECK-END AARCH64-ANDROID-CLANG

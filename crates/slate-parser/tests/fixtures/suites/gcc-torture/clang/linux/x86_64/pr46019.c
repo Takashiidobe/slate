@@ -37,23 +37,23 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 l: u64 [storage=automatic] = const<u64>(4398046511104);
-// DEFAULT-NEXT:         let %3 n: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %4
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_l:[0-9]+]] l: u64 [storage=automatic] = const<u64>(4398046511104);
+// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%3, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%3), const<i32>(8))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_n]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_n]]), const<i32>(8))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %5: i32 [synthetic] = read<i32>(%3);
-// DEFAULT-NEXT:                 let %6: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%5), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%3, read<i32>(%6));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_n]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 if ne<u64>(div<u64, by_zero=ub>(read<u64>(%2), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(8589934592), read<i32>(%3))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(512), read<i32>(%3)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 if ne<u64>(div<u64, by_zero=ub>(read<u64>(%[[VALUE_l]]), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(8589934592), read<i32>(%[[VALUE_n]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(512), read<i32>(%[[VALUE_n]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

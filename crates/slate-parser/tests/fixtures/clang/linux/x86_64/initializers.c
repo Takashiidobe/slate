@@ -44,17 +44,17 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Point = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Point:[0-9]+]] Point = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:         field1 y: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %0 scalar: i32 [storage=static] = const<i32>(7) [linkage=external];
-// DEFAULT-NEXT:     global %1 message: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=external];
-// DEFAULT-NEXT:     global %2 matrix: array<array<i32, 2>, 2> [storage=static] [align=16] = aggregate<array<array<i32, 2>, 2>, zero_fill=false>(index0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)), index1 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(3), index1 = const<i32>(4))) [linkage=external];
-// DEFAULT-NEXT:     global %4 point: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(4), field1 = const<i32>(9)) [linkage=external];
-// DEFAULT-NEXT:     global %5 values: array<i32, 4> [storage=static] [align=16] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(1), index2 = const<i32>(8)) [linkage=external];
-// DEFAULT-NEXT:     global %6 selected: i32 [storage=static] = const<i32>(22) [linkage=external];
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     global %[[VALUE_scalar:[0-9]+]] scalar: i32 [storage=static] = const<i32>(7) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_message:[0-9]+]] message: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_matrix:[0-9]+]] matrix: array<array<i32, 2>, 2> [storage=static] [align=16] = aggregate<array<array<i32, 2>, 2>, zero_fill=false>(index0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)), index1 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(3), index1 = const<i32>(4))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_point:[0-9]+]] point: @type[[TYPE_Point]] [storage=static] = aggregate<@type[[TYPE_Point]], zero_fill=false>(field0 = const<i32>(4), field1 = const<i32>(9)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_values:[0-9]+]] values: array<i32, 4> [storage=static] [align=16] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(1), index2 = const<i32>(8)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_selected:[0-9]+]] selected: i32 [storage=static] = const<i32>(22) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
@@ -82,17 +82,17 @@ int main() {
 // ENABLED-NEXT:         storage d64 [size=8, align=8];
 // ENABLED-NEXT:         storage d128 [size=16, align=16];
 // ENABLED-NEXT:     }
-// ENABLED-NEXT:     type @type0 Point = struct {
+// ENABLED-NEXT:     type @type[[TYPE_Point:[0-9]+]] Point = struct {
 // ENABLED-NEXT:         field0 x: i32;
 // ENABLED-NEXT:         field1 y: i32;
 // ENABLED-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// ENABLED-NEXT:     global %0 scalar: i32 [storage=static] = const<i32>(7) [linkage=external];
-// ENABLED-NEXT:     global %1 message: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=external];
-// ENABLED-NEXT:     global %2 matrix: array<array<i32, 2>, 2> [storage=static] [align=16] = aggregate<array<array<i32, 2>, 2>, zero_fill=false>(index0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)), index1 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(3), index1 = const<i32>(4))) [linkage=external];
-// ENABLED-NEXT:     global %4 point: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(4), field1 = const<i32>(9)) [linkage=external];
-// ENABLED-NEXT:     global %5 values: array<i32, 4> [storage=static] [align=16] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(1), index2 = const<i32>(8)) [linkage=external];
-// ENABLED-NEXT:     global %6 selected: i32 [storage=static] = const<i32>(11) [linkage=external];
-// ENABLED-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// ENABLED-NEXT:     global %[[VALUE_scalar:[0-9]+]] scalar: i32 [storage=static] = const<i32>(7) [linkage=external];
+// ENABLED-NEXT:     global %[[VALUE_message:[0-9]+]] message: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=external];
+// ENABLED-NEXT:     global %[[VALUE_matrix:[0-9]+]] matrix: array<array<i32, 2>, 2> [storage=static] [align=16] = aggregate<array<array<i32, 2>, 2>, zero_fill=false>(index0 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)), index1 = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(3), index1 = const<i32>(4))) [linkage=external];
+// ENABLED-NEXT:     global %[[VALUE_point:[0-9]+]] point: @type[[TYPE_Point]] [storage=static] = aggregate<@type[[TYPE_Point]], zero_fill=false>(field0 = const<i32>(4), field1 = const<i32>(9)) [linkage=external];
+// ENABLED-NEXT:     global %[[VALUE_values:[0-9]+]] values: array<i32, 4> [storage=static] [align=16] = aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(1), index2 = const<i32>(8)) [linkage=external];
+// ENABLED-NEXT:     global %[[VALUE_selected:[0-9]+]] selected: i32 [storage=static] = const<i32>(11) [linkage=external];
+// ENABLED-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // ENABLED-NEXT:         return const<i32>(0);
 // ENABLED-NEXT:     }
 // ENABLED-NEXT: }

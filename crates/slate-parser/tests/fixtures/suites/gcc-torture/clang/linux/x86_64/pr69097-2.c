@@ -42,30 +42,30 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f1(%1 x: i32, %2 y: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%1), read<i32>(%2));
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_x]]), read<i32>(%[[VALUE_y]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @f2(%4 x: i32, %5 y: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%4), neg<i32, overflow=ub>(read<i32>(%5)));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_x_2:[0-9]+]] x: i32, %[[VALUE_y_2:[0-9]+]] y: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_x_2]]), neg<i32, overflow=ub>(read<i32>(%[[VALUE_y_2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f3(%7 x: i32, %8 y: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9 z: i32 [storage=automatic] = neg<i32, overflow=ub>(read<i32>(%8));
-// DEFAULT-NEXT:         return rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%7), read<i32>(%9));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_x_3:[0-9]+]] x: i32, %[[VALUE_y_3:[0-9]+]] y: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: i32 [storage=automatic] = neg<i32, overflow=ub>(read<i32>(%[[VALUE_y_3]]));
+// DEFAULT-NEXT:         return rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_x_3]]), read<i32>(%[[VALUE_z]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%0, sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(1)), const<i32>(0))
-// DEFAULT-NEXT:             write<bool>(%12, const<bool>(true));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_f1]], sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(1)), const<i32>(0))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%12, ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%3, sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1))), const<i32>(0)));
-// DEFAULT-NEXT:         let %13: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%12)
-// DEFAULT-NEXT:             write<bool>(%13, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_f2]], sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1))), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE0]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%13, ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%6, sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1))), const<i32>(0)));
-// DEFAULT-NEXT:         if read<bool>(%13)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_f3]], sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1))), const<i32>(0)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE1]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

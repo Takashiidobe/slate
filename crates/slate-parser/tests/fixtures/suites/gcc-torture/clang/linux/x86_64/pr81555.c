@@ -45,24 +45,24 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: u32 [storage=static] = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     global %1 d: u32 [storage=static] = const<u32>(4014) [linkage=external];
-// DEFAULT-NEXT:     global %2 e: u32 [storage=static] = const<u32>(58230) [linkage=external];
-// DEFAULT-NEXT:     global %3 b: bool [storage=static] = ne<i32, reason=assign>(const<i32>(0), const<i32>(0)) [linkage=external];
-// DEFAULT-NEXT:     global %4 f: bool [storage=static] = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)) [linkage=external];
-// DEFAULT-NEXT:     global %5 g: u8 [storage=static] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))) [linkage=external];
-// DEFAULT-NEXT:     fn %6 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 c: bool [storage=automatic] = ne<u32>(read<u32>(%0), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(read<bool>(%3))));
-// DEFAULT-NEXT:         if read<bool>(%7)
-// DEFAULT-NEXT:             write<bool>(%4, ne<i32, reason=assign>(const<i32>(0), const<i32>(0)));
-// DEFAULT-NEXT:         if ne<u32>(and<u32>(and<u32>(and<u32>(read<u32>(%2), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(read<bool>(%7)))), reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(truncate<u8, reason=explicit, fits=unknown>(read<u32>(%1)))))), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(read<bool>(%7)))), const<u32>(0))
-// DEFAULT-NEXT:             write<u8>(%5, reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: u32 [storage=static] = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: u32 [storage=static] = const<u32>(4014) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: u32 [storage=static] = const<u32>(58230) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: bool [storage=static] = ne<i32, reason=assign>(const<i32>(0), const<i32>(0)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: bool [storage=static] = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: u8 [storage=static] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: bool [storage=automatic] = ne<u32>(read<u32>(%[[VALUE_a]]), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_b]]))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE_c]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE_f]], ne<i32, reason=assign>(const<i32>(0), const<i32>(0)));
+// DEFAULT-NEXT:         if ne<u32>(and<u32>(and<u32>(and<u32>(read<u32>(%[[VALUE_e]]), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_c]])))), reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(truncate<u8, reason=explicit, fits=unknown>(read<u32>(%[[VALUE_d]])))))), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_c]])))), const<u32>(0))
+// DEFAULT-NEXT:             write<u8>(%[[VALUE_g]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
-// DEFAULT-NEXT:         if logical_or<bool>(read<bool>(%4), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%5))), const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:         if logical_or<bool>(read<bool>(%[[VALUE_f]]), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_g]]))), const<i32>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

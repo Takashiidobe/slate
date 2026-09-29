@@ -147,21 +147,21 @@ void assign(double _Imaginary *out, double _Imaginary y) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 global: imaginary<f64> [storage=static] [linkage=external];
-// IR-NEXT:     global %1 sizes: array<u64, 6> [storage=static] [align=16] = aggregate<array<u64, 6>, zero_fill=false>(index0 = const<u64>(4), index1 = const<u64>(4), index2 = const<u64>(8), index3 = const<u64>(8), index4 = const<u64>(16), index5 = const<u64>(16)) [linkage=external];
-// IR-NEXT:     fn %2 @literal() -> complex<f64> [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:     global %[[VALUE_global:[0-9]+]] global: imaginary<f64> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: array<u64, 6> [storage=static] [align=16] = aggregate<array<u64, 6>, zero_fill=false>(index0 = const<u64>(4), index1 = const<u64>(4), index2 = const<u64>(8), index3 = const<u64>(8), index4 = const<u64>(16), index5 = const<u64>(16)) [linkage=external];
+// IR-NEXT:     fn %[[VALUE_literal:[0-9]+]] @literal() -> complex<f64> [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0));
 // IR-NEXT:     }
-// IR-NEXT:     fn %3 @literal_float() -> complex<f32> [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_literal_float:[0-9]+]] @literal_float() -> complex<f32> [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(3.0));
 // IR-NEXT:     }
-// IR-NEXT:     fn %4 @literal_long() -> complex<f80> [linkage=external] [abi=sysv64() -> coerce<f80, f80>] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_literal_long:[0-9]+]] @literal_long() -> complex<f80> [linkage=external] [abi=sysv64() -> coerce<f80, f80>] [fallthrough=ub_if_used] {
 // IR-NEXT:         return aggregate<complex<f80>, zero_fill=false>(index0 = const<f80>(0), index1 = const<f80>(1.5));
 // IR-NEXT:     }
-// IR-NEXT:     fn %5 @literal_int() -> complex<i32> [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_literal_int:[0-9]+]] @literal_int() -> complex<i32> [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // IR-NEXT:         return aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(3));
 // IR-NEXT:     }
-// IR-NEXT:     fn %6 @literal_int_suffixes() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_literal_int_suffixes:[0-9]+]] @literal_int_suffixes() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         aggregate<complex<u32>, zero_fill=false>(index0 = const<u32>(0), index1 = const<u32>(3));
 // IR-NEXT:         aggregate<complex<u32>, zero_fill=false>(index0 = const<u32>(0), index1 = const<u32>(3));
 // IR-NEXT:         aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(16));
@@ -169,77 +169,77 @@ void assign(double _Imaginary *out, double _Imaginary y) {
 // IR-NEXT:         aggregate<complex<i64>, zero_fill=false>(index0 = const<i64>(0), index1 = const<i64>(5000000000));
 // IR-NEXT:         aggregate<complex<u64>, zero_fill=false>(index0 = const<u64>(0), index1 = const<u64>(3));
 // IR-NEXT:     }
-// IR-NEXT:     fn %7 @from_real(%8 x: f64) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return real_to_imaginary<imaginary<f64>, reason=return>(read<f64>(%8));
+// IR-NEXT:     fn %[[VALUE_from_real:[0-9]+]] @from_real(%[[VALUE_x:[0-9]+]] x: f64) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return real_to_imaginary<imaginary<f64>, reason=return>(read<f64>(%[[VALUE_x]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %9 @to_real(%10 y: imaginary<f64>) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return imaginary_to_real<f64, reason=return>(read<imaginary<f64>>(%10));
+// IR-NEXT:     fn %[[VALUE_to_real:[0-9]+]] @to_real(%[[VALUE_y:[0-9]+]] y: imaginary<f64>) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return imaginary_to_real<f64, reason=return>(read<imaginary<f64>>(%[[VALUE_y]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %11 @to_complex(%12 y: imaginary<f64>) -> complex<f64> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return imaginary_to_complex<complex<f64>, reason=return>(read<imaginary<f64>>(%12));
+// IR-NEXT:     fn %[[VALUE_to_complex:[0-9]+]] @to_complex(%[[VALUE_y_2:[0-9]+]] y: imaginary<f64>) -> complex<f64> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return imaginary_to_complex<complex<f64>, reason=return>(read<imaginary<f64>>(%[[VALUE_y_2]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %13 @from_complex(%14 z: complex<f64>) -> imaginary<f64> [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         return complex_to_imaginary<imaginary<f64>, reason=return>(read<complex<f64>>(%14));
+// IR-NEXT:     fn %[[VALUE_from_complex:[0-9]+]] @from_complex(%[[VALUE_z:[0-9]+]] z: complex<f64>) -> imaginary<f64> [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// IR-NEXT:         return complex_to_imaginary<imaginary<f64>, reason=return>(read<complex<f64>>(%[[VALUE_z]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %15 @from_int_complex(%16 z: complex<i32>) -> imaginary<f64> [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         return complex_to_imaginary<imaginary<f64>, reason=return>(complex_convert<complex<f64>, reason=return, exact=true, rounding=nearest_even, exceptions=ignore>(read<complex<i32>>(%16)));
+// IR-NEXT:     fn %[[VALUE_from_int_complex:[0-9]+]] @from_int_complex(%[[VALUE_z_2:[0-9]+]] z: complex<i32>) -> imaginary<f64> [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// IR-NEXT:         return complex_to_imaginary<imaginary<f64>, reason=return>(complex_convert<complex<f64>, reason=return, exact=true, rounding=nearest_even, exceptions=ignore>(read<complex<i32>>(%[[VALUE_z_2]])));
 // IR-NEXT:     }
-// IR-NEXT:     fn %17 @widen(%18 y: imaginary<f32>) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return imaginary_convert<imaginary<f64>, reason=return>(read<imaginary<f32>>(%18));
+// IR-NEXT:     fn %[[VALUE_widen:[0-9]+]] @widen(%[[VALUE_y_3:[0-9]+]] y: imaginary<f32>) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return imaginary_convert<imaginary<f64>, reason=return>(read<imaginary<f32>>(%[[VALUE_y_3]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %19 @narrow(%20 y: imaginary<f64>) -> imaginary<f32> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return imaginary_convert<imaginary<f32>, reason=return, rounding=nearest_even, exceptions=ignore>(read<imaginary<f64>>(%20));
+// IR-NEXT:     fn %[[VALUE_narrow:[0-9]+]] @narrow(%[[VALUE_y_4:[0-9]+]] y: imaginary<f64>) -> imaginary<f32> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return imaginary_convert<imaginary<f32>, reason=return, rounding=nearest_even, exceptions=ignore>(read<imaginary<f64>>(%[[VALUE_y_4]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %21 @real_times_imaginary(%22 x: f64, %23 y: imaginary<f64>) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return mul<imaginary<f64>, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%22), read<imaginary<f64>>(%23));
+// IR-NEXT:     fn %[[VALUE_real_times_imaginary:[0-9]+]] @real_times_imaginary(%[[VALUE_x_2:[0-9]+]] x: f64, %[[VALUE_y_5:[0-9]+]] y: imaginary<f64>) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return mul<imaginary<f64>, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_x_2]]), read<imaginary<f64>>(%[[VALUE_y_5]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %24 @imaginary_times_imaginary(%25 y: imaginary<f64>, %26 v: imaginary<f32>) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<imaginary<f64>>(%25), imaginary_convert<imaginary<f64>, reason=usual_arith>(read<imaginary<f32>>(%26)));
+// IR-NEXT:     fn %[[VALUE_imaginary_times_imaginary:[0-9]+]] @imaginary_times_imaginary(%[[VALUE_y_6:[0-9]+]] y: imaginary<f64>, %[[VALUE_v:[0-9]+]] v: imaginary<f32>) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<imaginary<f64>>(%[[VALUE_y_6]]), imaginary_convert<imaginary<f64>, reason=usual_arith>(read<imaginary<f32>>(%[[VALUE_v]])));
 // IR-NEXT:     }
-// IR-NEXT:     fn %27 @imaginary_over_imaginary(%28 y: imaginary<f64>, %29 v: imaginary<f64>) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<imaginary<f64>>(%28), read<imaginary<f64>>(%29));
+// IR-NEXT:     fn %[[VALUE_imaginary_over_imaginary:[0-9]+]] @imaginary_over_imaginary(%[[VALUE_y_7:[0-9]+]] y: imaginary<f64>, %[[VALUE_v_2:[0-9]+]] v: imaginary<f64>) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<imaginary<f64>>(%[[VALUE_y_7]]), read<imaginary<f64>>(%[[VALUE_v_2]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %30 @real_over_imaginary(%31 x: i32, %32 y: imaginary<f64>) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return div<imaginary<f64>, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%31)), read<imaginary<f64>>(%32));
+// IR-NEXT:     fn %[[VALUE_real_over_imaginary:[0-9]+]] @real_over_imaginary(%[[VALUE_x_3:[0-9]+]] x: i32, %[[VALUE_y_8:[0-9]+]] y: imaginary<f64>) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return div<imaginary<f64>, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%[[VALUE_x_3]])), read<imaginary<f64>>(%[[VALUE_y_8]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %33 @imaginary_sum(%34 y: imaginary<f64>, %35 v: imaginary<f64>) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<imaginary<f64>, rounding=nearest_even, exceptions=ignore, contract=on>(read<imaginary<f64>>(%34), read<imaginary<f64>>(%35));
+// IR-NEXT:     fn %[[VALUE_imaginary_sum:[0-9]+]] @imaginary_sum(%[[VALUE_y_9:[0-9]+]] y: imaginary<f64>, %[[VALUE_v_3:[0-9]+]] v: imaginary<f64>) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<imaginary<f64>, rounding=nearest_even, exceptions=ignore, contract=on>(read<imaginary<f64>>(%[[VALUE_y_9]]), read<imaginary<f64>>(%[[VALUE_v_3]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %36 @real_plus_imaginary(%37 x: f64, %38 y: imaginary<f64>) -> complex<f64> [linkage=external] [abi=sysv64(scalar, scalar) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<f64>(%37), read<imaginary<f64>>(%38));
+// IR-NEXT:     fn %[[VALUE_real_plus_imaginary:[0-9]+]] @real_plus_imaginary(%[[VALUE_x_4:[0-9]+]] x: f64, %[[VALUE_y_10:[0-9]+]] y: imaginary<f64>) -> complex<f64> [linkage=external] [abi=sysv64(scalar, scalar) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<f64>(%[[VALUE_x_4]]), read<imaginary<f64>>(%[[VALUE_y_10]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %39 @imaginary_minus_real(%40 y: imaginary<f64>, %41 x: f64) -> complex<f64> [linkage=external] [abi=sysv64(scalar, scalar) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<imaginary<f64>>(%40), read<f64>(%41));
+// IR-NEXT:     fn %[[VALUE_imaginary_minus_real:[0-9]+]] @imaginary_minus_real(%[[VALUE_y_11:[0-9]+]] y: imaginary<f64>, %[[VALUE_x_5:[0-9]+]] x: f64) -> complex<f64> [linkage=external] [abi=sysv64(scalar, scalar) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<imaginary<f64>>(%[[VALUE_y_11]]), read<f64>(%[[VALUE_x_5]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %42 @complex_times_imaginary(%43 z: complex<f64>, %44 y: imaginary<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c, scalar) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%43), read<imaginary<f64>>(%44));
+// IR-NEXT:     fn %[[VALUE_complex_times_imaginary:[0-9]+]] @complex_times_imaginary(%[[VALUE_z_3:[0-9]+]] z: complex<f64>, %[[VALUE_y_12:[0-9]+]] y: imaginary<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c, scalar) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%[[VALUE_z_3]]), read<imaginary<f64>>(%[[VALUE_y_12]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %45 @complex_plus_imaginary(%46 z: complex<f32>, %47 y: imaginary<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c, scalar) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(complex_convert<complex<f64>, reason=usual_arith>(read<complex<f32>>(%46)), read<imaginary<f64>>(%47));
+// IR-NEXT:     fn %[[VALUE_complex_plus_imaginary:[0-9]+]] @complex_plus_imaginary(%[[VALUE_z_4:[0-9]+]] z: complex<f32>, %[[VALUE_y_13:[0-9]+]] y: imaginary<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c, scalar) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(complex_convert<complex<f64>, reason=usual_arith>(read<complex<f32>>(%[[VALUE_z_4]])), read<imaginary<f64>>(%[[VALUE_y_13]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %48 @imaginary_equal(%49 y: imaginary<f64>, %50 v: imaginary<f64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return from_bool<i32, reason=return>(eq<imaginary<f64>, exceptions=ignore>(read<imaginary<f64>>(%49), read<imaginary<f64>>(%50)));
+// IR-NEXT:     fn %[[VALUE_imaginary_equal:[0-9]+]] @imaginary_equal(%[[VALUE_y_14:[0-9]+]] y: imaginary<f64>, %[[VALUE_v_4:[0-9]+]] v: imaginary<f64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return from_bool<i32, reason=return>(eq<imaginary<f64>, exceptions=ignore>(read<imaginary<f64>>(%[[VALUE_y_14]]), read<imaginary<f64>>(%[[VALUE_v_4]])));
 // IR-NEXT:     }
-// IR-NEXT:     fn %51 @real_equal_imaginary(%52 x: f64, %53 y: imaginary<f64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return from_bool<i32, reason=return>(eq<f64, exceptions=ignore>(read<f64>(%52), read<imaginary<f64>>(%53)));
+// IR-NEXT:     fn %[[VALUE_real_equal_imaginary:[0-9]+]] @real_equal_imaginary(%[[VALUE_x_6:[0-9]+]] x: f64, %[[VALUE_y_15:[0-9]+]] y: imaginary<f64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return from_bool<i32, reason=return>(eq<f64, exceptions=ignore>(read<f64>(%[[VALUE_x_6]]), read<imaginary<f64>>(%[[VALUE_y_15]])));
 // IR-NEXT:     }
-// IR-NEXT:     fn %54 @negate(%55 y: imaginary<f64>) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return neg<imaginary<f64>>(read<imaginary<f64>>(%55));
+// IR-NEXT:     fn %[[VALUE_negate:[0-9]+]] @negate(%[[VALUE_y_16:[0-9]+]] y: imaginary<f64>) -> imaginary<f64> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return neg<imaginary<f64>>(read<imaginary<f64>>(%[[VALUE_y_16]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %56 @truth(%57 y: imaginary<f64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         if ne<imaginary<f64>, exceptions=ignore>(read<imaginary<f64>>(%57), const<imaginary<f64>>(0.0))
-// IR-NEXT:             return from_bool<i32, reason=return>(not<bool>(ne<imaginary<f64>, exceptions=ignore>(read<imaginary<f64>>(%57), const<imaginary<f64>>(0.0))));
+// IR-NEXT:     fn %[[VALUE_truth:[0-9]+]] @truth(%[[VALUE_y_17:[0-9]+]] y: imaginary<f64>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         if ne<imaginary<f64>, exceptions=ignore>(read<imaginary<f64>>(%[[VALUE_y_17]]), const<imaginary<f64>>(0.0))
+// IR-NEXT:             return from_bool<i32, reason=return>(not<bool>(ne<imaginary<f64>, exceptions=ignore>(read<imaginary<f64>>(%[[VALUE_y_17]]), const<imaginary<f64>>(0.0))));
 // IR-NEXT:         return const<i32>(0);
 // IR-NEXT:     }
-// IR-NEXT:     fn %58 @choose(%59 c: i32, %60 y: imaginary<f64>, %61 x: f64) -> complex<f64> [linkage=external] [abi=sysv64(scalar, scalar, scalar) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return conditional<complex<f64>>(ne<i32>(read<i32>(%59), const<i32>(0)), imaginary_to_complex<complex<f64>, reason=usual_arith>(read<imaginary<f64>>(%60)), real_to_complex<complex<f64>, reason=usual_arith>(read<f64>(%61)));
+// IR-NEXT:     fn %[[VALUE_choose:[0-9]+]] @choose(%[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_y_18:[0-9]+]] y: imaginary<f64>, %[[VALUE_x_7:[0-9]+]] x: f64) -> complex<f64> [linkage=external] [abi=sysv64(scalar, scalar, scalar) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return conditional<complex<f64>>(ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0)), imaginary_to_complex<complex<f64>, reason=usual_arith>(read<imaginary<f64>>(%[[VALUE_y_18]])), real_to_complex<complex<f64>, reason=usual_arith>(read<f64>(%[[VALUE_x_7]])));
 // IR-NEXT:     }
-// IR-NEXT:     fn %62 @assign(%63 out: ptr<imaginary<f64>>, %64 y: imaginary<f64>) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %65: ptr<imaginary<f64>> [synthetic] = read<ptr<imaginary<f64>>>(%63);
-// IR-NEXT:         let %66: imaginary<f64> [synthetic] = read<imaginary<f64>>(deref(read<ptr<imaginary<f64>>>(%65)));
-// IR-NEXT:         let %67: imaginary<f64> [synthetic] = mul<imaginary<f64>, rounding=nearest_even, exceptions=ignore, contract=on>(read<imaginary<f64>>(%66), const<f64>(2.0));
-// IR-NEXT:         write<imaginary<f64>>(deref(read<ptr<imaginary<f64>>>(%65)), read<imaginary<f64>>(%67));
-// IR-NEXT:         write<imaginary<f64>>(deref(read<ptr<imaginary<f64>>>(%63)), read<imaginary<f64>>(%64));
+// IR-NEXT:     fn %[[VALUE_assign:[0-9]+]] @assign(%[[VALUE_out:[0-9]+]] out: ptr<imaginary<f64>>, %[[VALUE_y_19:[0-9]+]] y: imaginary<f64>) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<imaginary<f64>> [synthetic] = read<ptr<imaginary<f64>>>(%[[VALUE_out]]);
+// IR-NEXT:         let %[[VALUE1:[0-9]+]]: imaginary<f64> [synthetic] = read<imaginary<f64>>(deref(read<ptr<imaginary<f64>>>(%[[VALUE0]])));
+// IR-NEXT:         let %[[VALUE2:[0-9]+]]: imaginary<f64> [synthetic] = mul<imaginary<f64>, rounding=nearest_even, exceptions=ignore, contract=on>(read<imaginary<f64>>(%[[VALUE1]]), const<f64>(2.0));
+// IR-NEXT:         write<imaginary<f64>>(deref(read<ptr<imaginary<f64>>>(%[[VALUE0]])), read<imaginary<f64>>(%[[VALUE2]]));
+// IR-NEXT:         write<imaginary<f64>>(deref(read<ptr<imaginary<f64>>>(%[[VALUE_out]])), read<imaginary<f64>>(%[[VALUE_y_19]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

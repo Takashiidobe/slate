@@ -57,24 +57,24 @@ test (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 x: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo() -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @bar() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @baz() -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%0)));
-// DEFAULT-NEXT:         let %5 arr: vla<i8, %7> [storage=automatic];
-// DEFAULT-NEXT:         label %4 lab:
-// DEFAULT-NEXT:             if eq<i32>(call<i32, signature=fn() -> i32>(%1), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_x]])));
+// DEFAULT-NEXT:         let %[[VALUE_arr:[0-9]+]] arr: vla<i8, %[[VALUE0]]> [storage=automatic];
+// DEFAULT-NEXT:         label %[[VALUE_lab:[0-9]+]] lab:
+// DEFAULT-NEXT:             if eq<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_foo]]), neg<i32, overflow=ub>(const<i32>(1)))
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     goto %4;
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_bar]]);
+// DEFAULT-NEXT:                     goto %[[VALUE_lab]];
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @test() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_baz]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

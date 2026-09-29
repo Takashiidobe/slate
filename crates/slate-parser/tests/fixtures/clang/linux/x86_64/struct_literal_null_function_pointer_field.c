@@ -53,34 +53,34 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Callback = ptr<fn(i32) -> i32>;
-// DEFAULT-NEXT:     type @type1 Handlers = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Callback:[0-9]+]] Callback = ptr<fn(i32) -> i32>;
+// DEFAULT-NEXT:     type @type[[TYPE_Handlers:[0-9]+]] Handlers = struct {
 // DEFAULT-NEXT:         field0 label: ptr<const i8>;
 // DEFAULT-NEXT:         field1 onEvent: ptr<fn(i32) -> i32>;
 // DEFAULT-NEXT:         field2 counter: ptr<i32>;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     global %10 .str10: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([110, 111, 110, 101, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %11 .str11: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @report(%5 h: @type1) -> i32 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 total: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         if ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(field1(%5)), null<ptr<fn(i32) -> i32>>)
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([110, 111, 110, 101, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_report:[0-9]+]] @report(%[[VALUE_h:[0-9]+]] h: @type[[TYPE_Handlers]]) -> i32 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_total:[0-9]+]] total: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         if ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(field1(%[[VALUE_h]])), null<ptr<fn(i32) -> i32>>)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %12: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:                 let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field1(%5)), const<i32>(1)));
-// DEFAULT-NEXT:                 write<i32>(%6, read<i32>(%13));
+// DEFAULT-NEXT:                 let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field1(%[[VALUE_h]])), const<i32>(1)));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(field2(%5)), null<ptr<i32>>)
+// DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(field2(%[[VALUE_h]])), null<ptr<i32>>)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:                 let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), read<i32>(deref(read<ptr<i32>>(field2(%5)))));
-// DEFAULT-NEXT:                 write<i32>(%6, read<i32>(%15));
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), read<i32>(deref(read<ptr<i32>>(field2(%[[VALUE_h]])))));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<i32>(%6);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_total]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 h: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(5)>(%10)), field1 = null<ptr<fn(i32) -> i32>>, field2 = null<ptr<i32>>);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), call<i32, signature=fn(@type1) -> i32, abi=sysv64(native_c) -> scalar>(%4, copy<@type1, reason=arg>(read<@type1>(%8))));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_h_2:[0-9]+]] h: @type[[TYPE_Handlers]] [storage=automatic] = aggregate<@type[[TYPE_Handlers]], zero_fill=false>(field0 = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str]])), field1 = null<ptr<fn(i32) -> i32>>, field2 = null<ptr<i32>>);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), call<i32, signature=fn(@type[[TYPE_Handlers]]) -> i32, abi=sysv64(native_c) -> scalar>(%[[VALUE_report]], copy<@type[[TYPE_Handlers]], reason=arg>(read<@type[[TYPE_Handlers]]>(%[[VALUE_h_2]]))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -197,10 +197,10 @@ int val__thumb__[__thumb__];
 // CHECK-NEXT:         storage d64 [size=8, align=8];
 // CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     global %0 val__ARM_ARCH: array<i32, 7> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %1 val__ARM_ARCH_7A__: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %2 val__ARM_FEATURE_COPROC: array<i32, 15> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %3 val__ARM_FEATURE_UNALIGNED: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %4 val__SOFTFP__: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_ARCH:[0-9]+]] val__ARM_ARCH: array<i32, 7> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_ARCH_7A__:[0-9]+]] val__ARM_ARCH_7A__: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FEATURE_COPROC:[0-9]+]] val__ARM_FEATURE_COPROC: array<i32, 15> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FEATURE_UNALIGNED:[0-9]+]] val__ARM_FEATURE_UNALIGNED: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__SOFTFP__:[0-9]+]] val__SOFTFP__: array<i32, 1> [storage=static] [linkage=external];
 // CHECK-NEXT: }
 // SLATE-FILECHECK-END CHECK

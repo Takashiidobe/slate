@@ -29,8 +29,8 @@ __attribute__((noreturn)) void d0 (void), __attribute__((format(printf, 1, 2))) 
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @d0() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @d1(%3 <unnamed>: ptr<const i8>, ...) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @d2() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_d0:[0-9]+]] @d0() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_d1:[0-9]+]] @d1(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_d2:[0-9]+]] @d2() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

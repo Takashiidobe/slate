@@ -53,25 +53,25 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type1 va_list = va_list;
-// DEFAULT-NEXT:     type @type2 two = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_two:[0-9]+]] two = struct {
 // DEFAULT-NEXT:         field0 x: i64;
 // DEFAULT-NEXT:         field1 y: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @foo(%5 a: i32, %6 b: i32, %7 c: i32, %8 d: i32, %9 e: i32, %10 f: @type2, %11 g: i32, ...) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c, scalar) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %12 args: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %13 h: i32 [storage=automatic];
-// DEFAULT-NEXT:         va_start(%12);
-// DEFAULT-NEXT:         write<i32>(%13, va_arg<i32>(%12));
-// DEFAULT-NEXT:         va_arg<i32>(%12);
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%11), const<i32>(1)), ne<i32>(read<i32>(%13), const<i32>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32, %[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_d:[0-9]+]] d: i32, %[[VALUE_e:[0-9]+]] e: i32, %[[VALUE_f:[0-9]+]] f: @type[[TYPE_two]], %[[VALUE_g:[0-9]+]] g: i32, ...) -> void [linkage=external] [abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c, scalar) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_args:[0-9]+]] args: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: i32 [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_args]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_h]], va_arg<i32>(%[[VALUE_args]]));
+// DEFAULT-NEXT:         va_arg<i32>(%[[VALUE_args]]);
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_g]]), const<i32>(1)), ne<i32>(read<i32>(%[[VALUE_h]]), const<i32>(2)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %15 t: @type2 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(0)), field1 = widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, @type2, i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c, scalar, scalar) -> void>(%4, const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=arg>(read<@type2>(%15)), const<i32>(1), const<i32>(2));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE_two]] [storage=automatic] = aggregate<@type[[TYPE_two]], zero_fill=false>(field0 = widen<i64, reason=assign>(const<i32>(0)), field1 = widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, @type[[TYPE_two]], i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c, scalar, scalar) -> void>(%[[VALUE_foo]], const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_two]], reason=arg>(read<@type[[TYPE_two]]>(%[[VALUE_t]])), const<i32>(1), const<i32>(2));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

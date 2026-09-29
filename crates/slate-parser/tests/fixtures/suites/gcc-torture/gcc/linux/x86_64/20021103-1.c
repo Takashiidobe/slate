@@ -34,10 +34,10 @@ void foo(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 d1: f64 [storage=automatic] = const<f64>(3.14159);
-// DEFAULT-NEXT:         let %2 d2: f64 [storage=automatic];
-// DEFAULT-NEXT:         if eq<ptr<f64>>(addr_of<ptr<f64>>(%2), addr_of<ptr<f64>>(%1))
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_d1:[0-9]+]] d1: f64 [storage=automatic] = const<f64>(3.14159);
+// DEFAULT-NEXT:         let %[[VALUE_d2:[0-9]+]] d2: f64 [storage=automatic];
+// DEFAULT-NEXT:         if eq<ptr<f64>>(addr_of<ptr<f64>>(%[[VALUE_d2]]), addr_of<ptr<f64>>(%[[VALUE_d1]]))
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

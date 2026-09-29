@@ -48,31 +48,31 @@ int main(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(%6 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         goto %3;
-// DEFAULT-NEXT:         label %1 a:
-// DEFAULT-NEXT:             let %7 i: i32 [storage=automatic] = mul<i32, overflow=ub>(const<i32>(2), read<i32>(%6));
-// DEFAULT-NEXT:         label %2 aa:
-// DEFAULT-NEXT:             let %8 u: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %9 v: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         goto %4;
-// DEFAULT-NEXT:         label %3 b:
-// DEFAULT-NEXT:             goto %1;
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         goto %[[VALUE_b:[0-9]+]];
+// DEFAULT-NEXT:         label %[[VALUE_a:[0-9]+]] a:
+// DEFAULT-NEXT:             let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = mul<i32, overflow=ub>(const<i32>(2), read<i32>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         label %[[VALUE_aa:[0-9]+]] aa:
+// DEFAULT-NEXT:             let %[[VALUE_u:[0-9]+]] u: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         goto %[[VALUE_c:[0-9]+]];
+// DEFAULT-NEXT:         label %[[VALUE_b]] b:
+// DEFAULT-NEXT:             goto %[[VALUE_a]];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %12: i32 [synthetic] = read<i32>(%7);
-// DEFAULT-NEXT:             let %13: i32 [synthetic] = mul<i32, overflow=ub>(read<i32>(%12), const<i32>(3));
-// DEFAULT-NEXT:             write<i32>(%7, read<i32>(%13));
-// DEFAULT-NEXT:             label %4 c:
+// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = mul<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(3));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:             label %[[VALUE_c]] c:
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%7), read<i32>(%8)), read<i32>(%9));
-// DEFAULT-NEXT:         label %5 d:
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_u]])), read<i32>(%[[VALUE_v]]));
+// DEFAULT-NEXT:         label %[[VALUE_d:[0-9]+]] d:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(2), call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(2), call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], const<i32>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

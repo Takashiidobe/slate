@@ -39,23 +39,23 @@ g (int a, int b, int c, int d)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @__builtin_unreachable() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %0 @g(%1 a: i32, %2 b: i32, %3 c: i32, %4 d: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_unreachable:[0-9]+]] @__builtin_unreachable() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32, %[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_d:[0-9]+]] d: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %6: i32 [synthetic];
-// DEFAULT-NEXT:                 if not<bool>(logical_and<bool>(logical_and<bool>(ne<i32>(read<i32>(%1), const<i32>(0)), ne<i32>(read<i32>(%2), const<i32>(0))), ne<i32>(read<i32>(%3), const<i32>(0))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:                     write<i32>(%6, const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE0:[0-9]+]]: i32 [synthetic];
+// DEFAULT-NEXT:                 if not<bool>(logical_and<bool>(logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)), ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0))), ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_unreachable]]);
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE0]], const<i32>(0));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<i32>(%6, const<i32>(0));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE0]], const<i32>(0));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         let %7: i32 [synthetic];
-// DEFAULT-NEXT:         if not<bool>(logical_and<bool>(logical_and<bool>(ne<i32>(read<i32>(%1), const<i32>(0)), ne<i32>(read<i32>(%2), const<i32>(0))), ne<i32>(read<i32>(%3), const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:             write<i32>(%7, const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic];
+// DEFAULT-NEXT:         if not<bool>(logical_and<bool>(logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)), ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0))), ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_unreachable]]);
+// DEFAULT-NEXT:             write<i32>(%[[VALUE1]], const<i32>(0));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i32>(%7, const<i32>(0));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE1]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

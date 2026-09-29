@@ -34,10 +34,10 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %1 i: array<i8, 10> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     extern %[[VALUE_i:[0-9]+]] i: array<i8, 10> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %2 x: array<i8, 1> [storage=automatic];
+// DEFAULT-NEXT:             let %[[VALUE_x:[0-9]+]] x: array<i8, 1> [storage=automatic];
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

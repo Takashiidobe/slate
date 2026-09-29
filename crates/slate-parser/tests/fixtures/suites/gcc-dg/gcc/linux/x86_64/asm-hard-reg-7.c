@@ -66,20 +66,20 @@ test_2 (int x, int y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @test_1(%1 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_1:[0-9]+]] @test_1(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         asm "foo\\t%0,%0" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:             template: "foo\\t" %0 "," %0;
-// DEFAULT-NEXT:             inlateout 0 "{eax}" [{ax}] width 32 place<i32>(%1);
+// DEFAULT-NEXT:             inlateout 0 "{eax}" [{ax}] width 32 place<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<i32>(%1);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @test_2(%3 x: i32, %4 y: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_2:[0-9]+]] @test_2(%[[VALUE_x_2:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         asm "foo\\t%0,%1" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:             template: "foo\\t" %0 "," %1;
-// DEFAULT-NEXT:             lateout 0 "{eax}" [{ax}] width 32 place<i32>(%3);
-// DEFAULT-NEXT:             in 1 "{eax}" [{ax}] width 32 read<i32>(%4);
+// DEFAULT-NEXT:             lateout 0 "{eax}" [{ax}] width 32 place<i32>(%[[VALUE_x_2]]);
+// DEFAULT-NEXT:             in 1 "{eax}" [{ax}] width 32 read<i32>(%[[VALUE_y]]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<i32>(%3);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

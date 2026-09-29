@@ -40,17 +40,17 @@ int g(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 T = i32;
-// DEFAULT-NEXT:     type @type1 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 field: const i32;
 // DEFAULT-NEXT:         field1 pointer: const ptr<volatile i8>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %5 b: i32 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     global %6 c: i32 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @f(%9 a: i32 [const], %10 b: ptr<const i8> [restrict]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @g() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 local: i32 [storage=automatic] [const] = const<i32>(1);
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%8))), const<u64>(8))));
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a:[0-9]+]] a: i32 [const], %[[VALUE_b_2:[0-9]+]] b: ptr<const i8> [restrict]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: i32 [storage=automatic] [const] = const<i32>(1);
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_local]]))), const<u64>(8))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

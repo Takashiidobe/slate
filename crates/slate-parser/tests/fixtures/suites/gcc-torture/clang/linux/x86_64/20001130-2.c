@@ -52,34 +52,34 @@ int                main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 which_alternative: i32 [storage=static] = const<i32>(3) [linkage=internal];
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([109, 111, 118, 9, 37, 49, 44, 37, 48, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %10 .str10: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([108, 100, 9, 37, 49, 44, 37, 48, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %11 .str11: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([115, 116, 9, 37, 49, 44, 37, 48, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %12 .str12: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([102, 111, 111, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @i960_output_ldconst() -> ptr<const i8> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(4)>(%12));
+// DEFAULT-NEXT:     global %[[VALUE_which_alternative:[0-9]+]] which_alternative: i32 [storage=static] = const<i32>(3) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([109, 111, 118, 9, 37, 49, 44, 37, 48, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([108, 100, 9, 37, 49, 44, 37, 48, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([115, 116, 9, 37, 49, 44, 37, 48, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([102, 111, 111, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_i960_output_ldconst:[0-9]+]] @i960_output_ldconst() -> ptr<const i8> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_4]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @output_25() -> ptr<const i8> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         switch %8 read<i32>(%2)
+// DEFAULT-NEXT:     fn %[[VALUE_output_25:[0-9]+]] @output_25() -> ptr<const i8> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_which_alternative]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %8 const<i32>(0):
-// DEFAULT-NEXT:                     return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(10)>(%9));
-// DEFAULT-NEXT:                 case %8 const<i32>(1):
-// DEFAULT-NEXT:                     return call<ptr<const i8>, signature=fn() -> ptr<const i8>>(%3);
-// DEFAULT-NEXT:                 case %8 const<i32>(2):
-// DEFAULT-NEXT:                     return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(9)>(%10));
-// DEFAULT-NEXT:                 case %8 const<i32>(3):
-// DEFAULT-NEXT:                     return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(9)>(%11));
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(0):
+// DEFAULT-NEXT:                     return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]]));
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(1):
+// DEFAULT-NEXT:                     return call<ptr<const i8>, signature=fn() -> ptr<const i8>>(%[[VALUE_i960_output_ldconst]]);
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(2):
+// DEFAULT-NEXT:                     return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_2]]));
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(3):
+// DEFAULT-NEXT:                     return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_3]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 s: ptr<const i8> [storage=automatic] = call<ptr<const i8>, signature=fn() -> ptr<const i8>>(%4);
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%6), const<i32>(0))))), const<i32>(115))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: ptr<const i8> [storage=automatic] = call<ptr<const i8>, signature=fn() -> ptr<const i8>>(%[[VALUE_output_25]]);
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_s]]), const<i32>(0))))), const<i32>(115))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

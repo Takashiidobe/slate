@@ -37,15 +37,15 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: u32 [storage=static] = const<u32>(1387579096) [linkage=external];
-// DEFAULT-NEXT:     fn %2 @sinkandcheck(%3 b: u32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%0), read<u32>(%3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: u32 [storage=static] = const<u32>(1387579096) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_sinkandcheck:[0-9]+]] @sinkandcheck(%[[VALUE_b:[0-9]+]] b: u32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_a]]), read<u32>(%[[VALUE_b]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort:[0-9]+]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<u32>(%0, conditional<u32>(lt<u32>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)), not<u32>(read<u32>(%0))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)), not<u32>(read<u32>(%0))));
-// DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%2, reinterpret<u32, reason=arg, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_a]], conditional<u32>(lt<u32>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)), not<u32>(read<u32>(%[[VALUE_a]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)), not<u32>(read<u32>(%[[VALUE_a]]))));
+// DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%[[VALUE_sinkandcheck]], reinterpret<u32, reason=arg, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

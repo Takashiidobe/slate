@@ -60,38 +60,38 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 a: array<i8, 256>;
 // DEFAULT-NEXT:     } [size=256, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S_2:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 a: array<i8, 65536>;
 // DEFAULT-NEXT:     } [size=65536, align=1, offsets=[0]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         do %10
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %3 t: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(1));
-// DEFAULT-NEXT:                 let %4 a: array<array<@type0, 2>, 2> [storage=automatic] [align=16];
-// DEFAULT-NEXT:                 let %5 p: atomic ptr<array<@type0, 2>> [storage=automatic] = addr_of<ptr<array<@type0, 2>>>(deref(ptr_offset<ptr<array<@type0, 2>>, subtract=false, element=array<@type0, 2>, overflow=ub>(array_decay<ptr<array<@type0, 2>>, length=Some(2)>(%4), const<i32>(0))));
-// DEFAULT-NEXT:                 let %12: ptr<array<@type0, 2>> [synthetic] = update<ptr<array<@type0, 2>>, result=new, atomic=seq_cst>(%5, ptr_offset<ptr<array<@type0, 2>>, subtract=false, element=array<@type0, 2>, overflow=ub>(old<ptr<array<@type0, 2>>>, widen<i32, reason=promotion>(read<i8>(%3))));
-// DEFAULT-NEXT:                 if ne<ptr<array<@type0, 2>>>(read<ptr<array<@type0, 2>>, atomic=seq_cst>(%5), addr_of<ptr<array<@type0, 2>>>(deref(ptr_offset<ptr<array<@type0, 2>>, subtract=false, element=array<@type0, 2>, overflow=ub>(array_decay<ptr<array<@type0, 2>>, length=Some(2)>(%4), const<i32>(1)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:                 let %13: ptr<array<@type0, 2>> [synthetic] = update<ptr<array<@type0, 2>>, result=new, atomic=seq_cst>(%5, ptr_offset<ptr<array<@type0, 2>>, subtract=true, element=array<@type0, 2>, overflow=ub>(old<ptr<array<@type0, 2>>>, widen<i32, reason=promotion>(read<i8>(%3))));
-// DEFAULT-NEXT:                 if ne<ptr<array<@type0, 2>>>(read<ptr<array<@type0, 2>>, atomic=seq_cst>(%5), addr_of<ptr<array<@type0, 2>>>(deref(ptr_offset<ptr<array<@type0, 2>>, subtract=false, element=array<@type0, 2>, overflow=ub>(array_decay<ptr<array<@type0, 2>>, length=Some(2)>(%4), const<i32>(0)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 let %[[VALUE_t:[0-9]+]] t: i8 [storage=automatic] = truncate<i8, reason=assign, fits=always>(const<i32>(1));
+// DEFAULT-NEXT:                 let %[[VALUE_a:[0-9]+]] a: array<array<@type[[TYPE_S]], 2>, 2> [storage=automatic] [align=16];
+// DEFAULT-NEXT:                 let %[[VALUE_p:[0-9]+]] p: atomic ptr<array<@type[[TYPE_S]], 2>> [storage=automatic] = addr_of<ptr<array<@type[[TYPE_S]], 2>>>(deref(ptr_offset<ptr<array<@type[[TYPE_S]], 2>>, subtract=false, element=array<@type[[TYPE_S]], 2>, overflow=ub>(array_decay<ptr<array<@type[[TYPE_S]], 2>>, length=Some(2)>(%[[VALUE_a]]), const<i32>(0))));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: ptr<array<@type[[TYPE_S]], 2>> [synthetic] = update<ptr<array<@type[[TYPE_S]], 2>>, result=new, atomic=seq_cst>(%[[VALUE_p]], ptr_offset<ptr<array<@type[[TYPE_S]], 2>>, subtract=false, element=array<@type[[TYPE_S]], 2>, overflow=ub>(old<ptr<array<@type[[TYPE_S]], 2>>>, widen<i32, reason=promotion>(read<i8>(%[[VALUE_t]]))));
+// DEFAULT-NEXT:                 if ne<ptr<array<@type[[TYPE_S]], 2>>>(read<ptr<array<@type[[TYPE_S]], 2>>, atomic=seq_cst>(%[[VALUE_p]]), addr_of<ptr<array<@type[[TYPE_S]], 2>>>(deref(ptr_offset<ptr<array<@type[[TYPE_S]], 2>>, subtract=false, element=array<@type[[TYPE_S]], 2>, overflow=ub>(array_decay<ptr<array<@type[[TYPE_S]], 2>>, length=Some(2)>(%[[VALUE_a]]), const<i32>(1)))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: ptr<array<@type[[TYPE_S]], 2>> [synthetic] = update<ptr<array<@type[[TYPE_S]], 2>>, result=new, atomic=seq_cst>(%[[VALUE_p]], ptr_offset<ptr<array<@type[[TYPE_S]], 2>>, subtract=true, element=array<@type[[TYPE_S]], 2>, overflow=ub>(old<ptr<array<@type[[TYPE_S]], 2>>>, widen<i32, reason=promotion>(read<i8>(%[[VALUE_t]]))));
+// DEFAULT-NEXT:                 if ne<ptr<array<@type[[TYPE_S]], 2>>>(read<ptr<array<@type[[TYPE_S]], 2>>, atomic=seq_cst>(%[[VALUE_p]]), addr_of<ptr<array<@type[[TYPE_S]], 2>>>(deref(ptr_offset<ptr<array<@type[[TYPE_S]], 2>>, subtract=false, element=array<@type[[TYPE_S]], 2>, overflow=ub>(array_decay<ptr<array<@type[[TYPE_S]], 2>>, length=Some(2)>(%[[VALUE_a]]), const<i32>(0)))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %11
+// DEFAULT-NEXT:         do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %7 t: i16 [storage=automatic] = truncate<i16, reason=assign, fits=always>(const<i32>(1));
-// DEFAULT-NEXT:                 let %8 a: array<array<@type1, 2>, 2> [storage=automatic] [align=16];
-// DEFAULT-NEXT:                 let %9 p: atomic ptr<array<@type1, 2>> [storage=automatic] = addr_of<ptr<array<@type1, 2>>>(deref(ptr_offset<ptr<array<@type1, 2>>, subtract=false, element=array<@type1, 2>, overflow=ub>(array_decay<ptr<array<@type1, 2>>, length=Some(2)>(%8), const<i32>(0))));
-// DEFAULT-NEXT:                 let %14: ptr<array<@type1, 2>> [synthetic] = update<ptr<array<@type1, 2>>, result=new, atomic=seq_cst>(%9, ptr_offset<ptr<array<@type1, 2>>, subtract=false, element=array<@type1, 2>, overflow=ub>(old<ptr<array<@type1, 2>>>, widen<i32, reason=promotion>(read<i16>(%7))));
-// DEFAULT-NEXT:                 if ne<ptr<array<@type1, 2>>>(read<ptr<array<@type1, 2>>, atomic=seq_cst>(%9), addr_of<ptr<array<@type1, 2>>>(deref(ptr_offset<ptr<array<@type1, 2>>, subtract=false, element=array<@type1, 2>, overflow=ub>(array_decay<ptr<array<@type1, 2>>, length=Some(2)>(%8), const<i32>(1)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:                 let %15: ptr<array<@type1, 2>> [synthetic] = update<ptr<array<@type1, 2>>, result=new, atomic=seq_cst>(%9, ptr_offset<ptr<array<@type1, 2>>, subtract=true, element=array<@type1, 2>, overflow=ub>(old<ptr<array<@type1, 2>>>, widen<i32, reason=promotion>(read<i16>(%7))));
-// DEFAULT-NEXT:                 if ne<ptr<array<@type1, 2>>>(read<ptr<array<@type1, 2>>, atomic=seq_cst>(%9), addr_of<ptr<array<@type1, 2>>>(deref(ptr_offset<ptr<array<@type1, 2>>, subtract=false, element=array<@type1, 2>, overflow=ub>(array_decay<ptr<array<@type1, 2>>, length=Some(2)>(%8), const<i32>(0)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 let %[[VALUE_t_2:[0-9]+]] t: i16 [storage=automatic] = truncate<i16, reason=assign, fits=always>(const<i32>(1));
+// DEFAULT-NEXT:                 let %[[VALUE_a_2:[0-9]+]] a: array<array<@type[[TYPE_S_2]], 2>, 2> [storage=automatic] [align=16];
+// DEFAULT-NEXT:                 let %[[VALUE_p_2:[0-9]+]] p: atomic ptr<array<@type[[TYPE_S_2]], 2>> [storage=automatic] = addr_of<ptr<array<@type[[TYPE_S_2]], 2>>>(deref(ptr_offset<ptr<array<@type[[TYPE_S_2]], 2>>, subtract=false, element=array<@type[[TYPE_S_2]], 2>, overflow=ub>(array_decay<ptr<array<@type[[TYPE_S_2]], 2>>, length=Some(2)>(%[[VALUE_a_2]]), const<i32>(0))));
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<array<@type[[TYPE_S_2]], 2>> [synthetic] = update<ptr<array<@type[[TYPE_S_2]], 2>>, result=new, atomic=seq_cst>(%[[VALUE_p_2]], ptr_offset<ptr<array<@type[[TYPE_S_2]], 2>>, subtract=false, element=array<@type[[TYPE_S_2]], 2>, overflow=ub>(old<ptr<array<@type[[TYPE_S_2]], 2>>>, widen<i32, reason=promotion>(read<i16>(%[[VALUE_t_2]]))));
+// DEFAULT-NEXT:                 if ne<ptr<array<@type[[TYPE_S_2]], 2>>>(read<ptr<array<@type[[TYPE_S_2]], 2>>, atomic=seq_cst>(%[[VALUE_p_2]]), addr_of<ptr<array<@type[[TYPE_S_2]], 2>>>(deref(ptr_offset<ptr<array<@type[[TYPE_S_2]], 2>>, subtract=false, element=array<@type[[TYPE_S_2]], 2>, overflow=ub>(array_decay<ptr<array<@type[[TYPE_S_2]], 2>>, length=Some(2)>(%[[VALUE_a_2]]), const<i32>(1)))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: ptr<array<@type[[TYPE_S_2]], 2>> [synthetic] = update<ptr<array<@type[[TYPE_S_2]], 2>>, result=new, atomic=seq_cst>(%[[VALUE_p_2]], ptr_offset<ptr<array<@type[[TYPE_S_2]], 2>>, subtract=true, element=array<@type[[TYPE_S_2]], 2>, overflow=ub>(old<ptr<array<@type[[TYPE_S_2]], 2>>>, widen<i32, reason=promotion>(read<i16>(%[[VALUE_t_2]]))));
+// DEFAULT-NEXT:                 if ne<ptr<array<@type[[TYPE_S_2]], 2>>>(read<ptr<array<@type[[TYPE_S_2]], 2>>, atomic=seq_cst>(%[[VALUE_p_2]]), addr_of<ptr<array<@type[[TYPE_S_2]], 2>>>(deref(ptr_offset<ptr<array<@type[[TYPE_S_2]], 2>>, subtract=false, element=array<@type[[TYPE_S_2]], 2>, overflow=ub>(array_decay<ptr<array<@type[[TYPE_S_2]], 2>>, length=Some(2)>(%[[VALUE_a_2]]), const<i32>(0)))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }

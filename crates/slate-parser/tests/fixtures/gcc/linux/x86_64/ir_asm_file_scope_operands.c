@@ -29,9 +29,9 @@ asm("%0" : : "i"(x));
 // IR-NEXT:     }
 // IR-NEXT:     asm "%0" [dialect=att] [alternative=none] {
 // IR-NEXT:         template: %0;
-// IR-NEXT:         in 0 "i" [imm | sym] width 32 read<i32>(%0);
+// IR-NEXT:         in 0 "i" [imm | sym] width 32 read<i32>(%[[VALUE_x:[0-9]+]]);
 // IR-NEXT:         rejected: 0 (operand 0: not-constant);
 // IR-NEXT:     }
-// IR-NEXT:     global %0 x: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_x]] x: i32 [storage=static] [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

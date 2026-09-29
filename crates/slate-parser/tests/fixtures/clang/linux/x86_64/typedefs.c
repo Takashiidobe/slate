@@ -57,37 +57,37 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 my_int = i32;
-// DEFAULT-NEXT:     type @type1 byte = u8;
-// DEFAULT-NEXT:     type @type2 wide = i64;
-// DEFAULT-NEXT:     type @type3 multi_scalar = i64;
-// DEFAULT-NEXT:     type @type4 multi_array = array<i64, 23>;
-// DEFAULT-NEXT:     type @type5 multi_pointer = ptr<i64>;
-// DEFAULT-NEXT:     type @type6 Box = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_my_int:[0-9]+]] my_int = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_byte:[0-9]+]] byte = u8;
+// DEFAULT-NEXT:     type @type[[TYPE_wide:[0-9]+]] wide = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_multi_scalar:[0-9]+]] multi_scalar = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_multi_array:[0-9]+]] multi_array = array<i64, 23>;
+// DEFAULT-NEXT:     type @type[[TYPE_multi_pointer:[0-9]+]] multi_pointer = ptr<i64>;
+// DEFAULT-NEXT:     type @type[[TYPE_Box:[0-9]+]] Box = struct {
 // DEFAULT-NEXT:         field0 value: i32;
 // DEFAULT-NEXT:         field1 tag: u8;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %19 .str19: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %20 .str20: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %21 .str21: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([37, 108, 108, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %22 .str22: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%18 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @add_alias(%10 a: i32, %11 b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %12 c: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%10), read<i32>(%11));
-// DEFAULT-NEXT:         return read<i32>(%12);
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([37, 108, 108, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_add_alias:[0-9]+]] @add_alias(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_c]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %14 x: i32 [storage=automatic] = const<i32>(40);
-// DEFAULT-NEXT:         let %15 y: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(200)));
-// DEFAULT-NEXT:         let %16 z: i64 [storage=automatic] = const<i64>(9000000000);
-// DEFAULT-NEXT:         let %17 bx: @type6 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field0(%17), call<i32, signature=fn(i32, i32) -> i32>(%9, read<i32>(%14), const<i32>(2)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, i32) -> i32>(%9, read<i32>(%14), const<i32>(2));
-// DEFAULT-NEXT:         write<u8>(field1(%17), read<u8>(%15));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%19)), read<i32>(field0(%17)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%20)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(field1(%17)))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%21)), read<i64>(%16));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%22)), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(4))));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic] = const<i32>(40);
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(200)));
+// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: i64 [storage=automatic] = const<i64>(9000000000);
+// DEFAULT-NEXT:         let %[[VALUE_bx:[0-9]+]] bx: @type[[TYPE_Box]] [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_bx]]), call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_add_alias]], read<i32>(%[[VALUE_x]]), const<i32>(2)));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_add_alias]], read<i32>(%[[VALUE_x]]), const<i32>(2));
+// DEFAULT-NEXT:         write<u8>(field1(%[[VALUE_bx]]), read<u8>(%[[VALUE_y]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), read<i32>(field0(%[[VALUE_bx]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(field1(%[[VALUE_bx]])))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str_3]])), read<i64>(%[[VALUE_z]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_4]])), reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(4))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

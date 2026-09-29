@@ -79,37 +79,37 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @d(%3 k: u64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 x: f64 [storage=automatic];
-// DEFAULT-NEXT:         write<f64>(%4, int_to_float<f64, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(read<u64>(%3)));
-// DEFAULT-NEXT:         return read<f64>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_d:[0-9]+]] @d(%[[VALUE_k:[0-9]+]] k: u64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: f64 [storage=automatic];
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_x]], int_to_float<f64, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(read<u64>(%[[VALUE_k]])));
+// DEFAULT-NEXT:         return read<f64>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @s(%6 k: u64) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 x: f32 [storage=automatic];
-// DEFAULT-NEXT:         write<f32>(%7, int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(read<u64>(%6)));
-// DEFAULT-NEXT:         return read<f32>(%7);
+// DEFAULT-NEXT:     fn %[[VALUE_s:[0-9]+]] @s(%[[VALUE_k_2:[0-9]+]] k: u64) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: f32 [storage=automatic];
+// DEFAULT-NEXT:         write<f32>(%[[VALUE_x_2]], int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(read<u64>(%[[VALUE_k_2]])));
+// DEFAULT-NEXT:         return read<f32>(%[[VALUE_x_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 k: u64 [storage=automatic];
-// DEFAULT-NEXT:         let %10 x: f64 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_k_3:[0-9]+]] k: u64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_x_3:[0-9]+]] x: f64 [storage=automatic];
 // DEFAULT-NEXT:         if ge<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<u64>(%9, const<u64>(9697299402072392705));
-// DEFAULT-NEXT:                 write<f64>(%10, call<f64, signature=fn(u64) -> f64>(%2, read<u64>(%9)));
-// DEFAULT-NEXT:                 call<f64, signature=fn(u64) -> f64>(%2, read<u64>(%9));
-// DEFAULT-NEXT:                 write<u64>(%9, float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=observable>(read<f64>(%10)));
-// DEFAULT-NEXT:                 if ne<u64>(read<u64>(%9), const<u64>(9697299402072393728))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_k_3]], const<u64>(9697299402072392705));
+// DEFAULT-NEXT:                 write<f64>(%[[VALUE_x_3]], call<f64, signature=fn(u64) -> f64>(%[[VALUE_d]], read<u64>(%[[VALUE_k_3]])));
+// DEFAULT-NEXT:                 call<f64, signature=fn(u64) -> f64>(%[[VALUE_d]], read<u64>(%[[VALUE_k_3]]));
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_k_3]], float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=observable>(read<f64>(%[[VALUE_x_3]])));
+// DEFAULT-NEXT:                 if ne<u64>(read<u64>(%[[VALUE_k_3]]), const<u64>(9697299402072393728))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<u64>(%9, const<u64>(9382212434405621761));
-// DEFAULT-NEXT:         write<f64>(%10, float_widen<f64, reason=assign>(call<f32, signature=fn(u64) -> f32>(%5, read<u64>(%9))));
-// DEFAULT-NEXT:         float_widen<f64, reason=assign>(call<f32, signature=fn(u64) -> f32>(%5, read<u64>(%9)));
-// DEFAULT-NEXT:         write<u64>(%9, float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=observable>(read<f64>(%10)));
-// DEFAULT-NEXT:         if ne<u64>(read<u64>(%9), const<u64>(9382212984161435648))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_k_3]], const<u64>(9382212434405621761));
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_x_3]], float_widen<f64, reason=assign>(call<f32, signature=fn(u64) -> f32>(%[[VALUE_s]], read<u64>(%[[VALUE_k_3]]))));
+// DEFAULT-NEXT:         float_widen<f64, reason=assign>(call<f32, signature=fn(u64) -> f32>(%[[VALUE_s]], read<u64>(%[[VALUE_k_3]])));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_k_3]], float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=observable>(read<f64>(%[[VALUE_x_3]])));
+// DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_k_3]]), const<u64>(9382212984161435648))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

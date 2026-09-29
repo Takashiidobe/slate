@@ -35,14 +35,14 @@ int first_vararg(int count, ...) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 va_list = ptr<i8>;
-// IR-NEXT:     fn %1 @first_vararg(%2 count: i32, ...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %3 ap: ptr<i8> [storage=automatic];
-// IR-NEXT:         va_start(%3);
-// IR-NEXT:         let %4 value: i32 [storage=automatic] = va_arg<i32>(%3);
-// IR-NEXT:         va_end(%3);
-// IR-NEXT:         write<ptr<i8>>(%3, null<ptr<i8>>);
-// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%4), read<i32>(%2));
+// IR-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = ptr<i8>;
+// IR-NEXT:     fn %[[VALUE_first_vararg:[0-9]+]] @first_vararg(%[[VALUE_count:[0-9]+]] count: i32, ...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: ptr<i8> [storage=automatic];
+// IR-NEXT:         va_start(%[[VALUE_ap]]);
+// IR-NEXT:         let %[[VALUE_value:[0-9]+]] value: i32 [storage=automatic] = va_arg<i32>(%[[VALUE_ap]]);
+// IR-NEXT:         va_end(%[[VALUE_ap]]);
+// IR-NEXT:         write<ptr<i8>>(%[[VALUE_ap]], null<ptr<i8>>);
+// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_value]]), read<i32>(%[[VALUE_count]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

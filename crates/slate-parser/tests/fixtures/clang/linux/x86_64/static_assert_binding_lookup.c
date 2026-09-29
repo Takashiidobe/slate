@@ -38,19 +38,19 @@ int sized(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 = enum : u32 {
-// IR-NEXT:         %0 N = const<i32>(3);
+// IR-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// IR-NEXT:         %[[VALUE_N:[0-9]+]] N = const<i32>(3);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     global %7 buf: array<i32, 3> [storage=static] [linkage=internal];
-// IR-NEXT:     fn %0 @f(%1 a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<i32>(%1);
+// IR-NEXT:     global %[[VALUE_buf:[0-9]+]] buf: array<i32, 3> [storage=static] [linkage=internal];
+// IR-NEXT:     fn %[[VALUE_N]] @f(%[[VALUE_a:[0-9]+]] a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<i32>(%[[VALUE_a]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %4 @shadow() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %5 N: i32 [storage=automatic] = const<i32>(1);
-// IR-NEXT:         return read<i32>(%5);
+// IR-NEXT:     fn %[[VALUE_shadow:[0-9]+]] @shadow() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_N_2:[0-9]+]] N: i32 [storage=automatic] = const<i32>(1);
+// IR-NEXT:         return read<i32>(%[[VALUE_N_2]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %6 @sized() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%7), const<i32>(0))));
+// IR-NEXT:     fn %[[VALUE_sized:[0-9]+]] @sized() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_buf]]), const<i32>(0))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

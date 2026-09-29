@@ -74,56 +74,56 @@ test_subreg (long x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @test_char(%1 x: i8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 out: i32 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_test_char:[0-9]+]] @test_char(%[[VALUE_x:[0-9]+]] x: i8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_out:[0-9]+]] out: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm "foo" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:             template: "foo";
-// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%2);
-// DEFAULT-NEXT:             in 1 "{eax}" [{ax}] width 8 read<i8>(%1);
-// DEFAULT-NEXT:             in 2 "{ebx}" [{bx}] width 8 read<i8>(%1);
+// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_out]]);
+// DEFAULT-NEXT:             in 1 "{eax}" [{ax}] width 8 read<i8>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 2 "{ebx}" [{bx}] width 8 read<i8>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<i32>(%2);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_out]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @test_short(%4 x: i16) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 out: i32 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_test_short:[0-9]+]] @test_short(%[[VALUE_x_2:[0-9]+]] x: i16) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_out_2:[0-9]+]] out: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm "foo" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:             template: "foo";
-// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%5);
-// DEFAULT-NEXT:             in 1 "{eax}" [{ax}] width 16 read<i16>(%4);
-// DEFAULT-NEXT:             in 2 "{ebx}" [{bx}] width 16 read<i16>(%4);
+// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_out_2]]);
+// DEFAULT-NEXT:             in 1 "{eax}" [{ax}] width 16 read<i16>(%[[VALUE_x_2]]);
+// DEFAULT-NEXT:             in 2 "{ebx}" [{bx}] width 16 read<i16>(%[[VALUE_x_2]]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<i32>(%5);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_out_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @test_int(%7 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 out: i32 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_test_int:[0-9]+]] @test_int(%[[VALUE_x_3:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_out_3:[0-9]+]] out: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm "foo" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:             template: "foo";
-// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%8);
-// DEFAULT-NEXT:             in 1 "{eax}" [{ax}] width 32 read<i32>(%7);
-// DEFAULT-NEXT:             in 2 "{ebx}" [{bx}] width 32 read<i32>(%7);
+// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_out_3]]);
+// DEFAULT-NEXT:             in 1 "{eax}" [{ax}] width 32 read<i32>(%[[VALUE_x_3]]);
+// DEFAULT-NEXT:             in 2 "{ebx}" [{bx}] width 32 read<i32>(%[[VALUE_x_3]]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<i32>(%8);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_out_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @test_long(%10 x: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 out: i32 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_test_long:[0-9]+]] @test_long(%[[VALUE_x_4:[0-9]+]] x: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_out_4:[0-9]+]] out: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm "foo" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:             template: "foo";
-// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%11);
-// DEFAULT-NEXT:             in 1 "{eax}" [{ax}] width 64 read<i64>(%10);
-// DEFAULT-NEXT:             in 2 "{ebx}" [{bx}] width 64 read<i64>(%10);
+// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_out_4]]);
+// DEFAULT-NEXT:             in 1 "{eax}" [{ax}] width 64 read<i64>(%[[VALUE_x_4]]);
+// DEFAULT-NEXT:             in 2 "{ebx}" [{bx}] width 64 read<i64>(%[[VALUE_x_4]]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<i32>(%11);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_out_4]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @test_subreg(%13 x: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %14 out: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %15 subreg_x: i16 [storage=automatic] = truncate<i16, reason=assign, fits=unknown>(read<i64>(%13));
+// DEFAULT-NEXT:     fn %[[VALUE_test_subreg:[0-9]+]] @test_subreg(%[[VALUE_x_5:[0-9]+]] x: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_out_5:[0-9]+]] out: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_subreg_x:[0-9]+]] subreg_x: i16 [storage=automatic] = truncate<i16, reason=assign, fits=unknown>(read<i64>(%[[VALUE_x_5]]));
 // DEFAULT-NEXT:         asm "foo" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:             template: "foo";
-// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%14);
-// DEFAULT-NEXT:             in 1 "{eax}" [{ax}] width 64 read<i64>(%13);
-// DEFAULT-NEXT:             in 2 "{ebx}" [{bx}] width 16 read<i16>(%15);
+// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_out_5]]);
+// DEFAULT-NEXT:             in 1 "{eax}" [{ax}] width 64 read<i64>(%[[VALUE_x_5]]);
+// DEFAULT-NEXT:             in 2 "{ebx}" [{bx}] width 16 read<i16>(%[[VALUE_subreg_x]]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<i32>(%14);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_out_5]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

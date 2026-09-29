@@ -55,38 +55,38 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 start: ptr<i32>;
 // DEFAULT-NEXT:         field1 end: ptr<i32>;
 // DEFAULT-NEXT:         field2 pointer: ptr<i32>;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     type @type1 buffer_t = @type0;
-// DEFAULT-NEXT:     type @type2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_buffer_t:[0-9]+]] buffer_t = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:         field1 y: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %10 .str10: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %11 .str11: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 108, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %12 .str12: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 108, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 point: @type2 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4));
-// DEFAULT-NEXT:         let %7 storage: array<i32, 4> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %8 buf: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = null<ptr<i32>>, field1 = null<ptr<i32>>, field2 = null<ptr<i32>>);
-// DEFAULT-NEXT:         write<ptr<i32>>(field0(%8), array_decay<ptr<i32>, length=Some(4)>(%7));
-// DEFAULT-NEXT:         write<ptr<i32>>(field2(%8), array_decay<ptr<i32>, length=Some(4)>(%7));
-// DEFAULT-NEXT:         write<ptr<i32>>(field1(%8), ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%7), const<i32>(4)));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field2(%8))), add<i32, overflow=ub>(read<i32>(field0(%6)), read<i32>(field1(%6))));
-// DEFAULT-NEXT:         let %13: ptr<i32> [synthetic] = read<ptr<i32>>(field2(%8));
-// DEFAULT-NEXT:         let %14: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%13), const<i32>(1));
-// DEFAULT-NEXT:         write<ptr<i32>>(field2(%8), read<ptr<i32>>(%14));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field2(%8))), mul<i32, overflow=ub>(read<i32>(field0(%6)), read<i32>(field1(%6))));
-// DEFAULT-NEXT:         let %15: ptr<i32> [synthetic] = read<ptr<i32>>(field2(%8));
-// DEFAULT-NEXT:         let %16: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%15), const<i32>(1));
-// DEFAULT-NEXT:         write<ptr<i32>>(field2(%8), read<ptr<i32>>(%16));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%10)), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%7), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%7), const<i32>(1)))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%11)), ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(field2(%8)), read<ptr<i32>>(field0(%8))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%12)), ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(field1(%8)), read<ptr<i32>>(field0(%8))));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 108, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([37, 108, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_point:[0-9]+]] point: @type[[TYPE1]] [storage=automatic] = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<i32>(3), field1 = const<i32>(4));
+// DEFAULT-NEXT:         let %[[VALUE_storage:[0-9]+]] storage: array<i32, 4> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = null<ptr<i32>>, field1 = null<ptr<i32>>, field2 = null<ptr<i32>>);
+// DEFAULT-NEXT:         write<ptr<i32>>(field0(%[[VALUE_buf]]), array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_storage]]));
+// DEFAULT-NEXT:         write<ptr<i32>>(field2(%[[VALUE_buf]]), array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_storage]]));
+// DEFAULT-NEXT:         write<ptr<i32>>(field1(%[[VALUE_buf]]), ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_storage]]), const<i32>(4)));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field2(%[[VALUE_buf]]))), add<i32, overflow=ub>(read<i32>(field0(%[[VALUE_point]])), read<i32>(field1(%[[VALUE_point]]))));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<i32> [synthetic] = read<ptr<i32>>(field2(%[[VALUE_buf]]));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<i32>>(field2(%[[VALUE_buf]]), read<ptr<i32>>(%[[VALUE1]]));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field2(%[[VALUE_buf]]))), mul<i32, overflow=ub>(read<i32>(field0(%[[VALUE_point]])), read<i32>(field1(%[[VALUE_point]]))));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: ptr<i32> [synthetic] = read<ptr<i32>>(field2(%[[VALUE_buf]]));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<i32>>(field2(%[[VALUE_buf]]), read<ptr<i32>>(%[[VALUE3]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_storage]]), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_storage]]), const<i32>(1)))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_2]])), ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(field2(%[[VALUE_buf]])), read<ptr<i32>>(field0(%[[VALUE_buf]]))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_3]])), ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<i32>>(field1(%[[VALUE_buf]])), read<ptr<i32>>(field0(%[[VALUE_buf]]))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

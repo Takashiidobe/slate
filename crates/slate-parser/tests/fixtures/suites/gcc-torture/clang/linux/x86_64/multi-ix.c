@@ -220,241 +220,241 @@ void c(int n, ...) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 va_list = va_list;
-// DEFAULT-NEXT:     type @type1 l = array<i32, 500>;
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @exit(%100 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @s(%91 n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %92 list: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%92);
-// DEFAULT-NEXT:         while %105 {
-// DEFAULT-NEXT:             let %112: i32 [synthetic] = read<i32>(%91);
-// DEFAULT-NEXT:             let %113: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%112), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%91, read<i32>(%113));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%112), const<i32>(0));
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_l:[0-9]+]] l = array<i32, 500>;
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_s:[0-9]+]] @s(%[[VALUE_n:[0-9]+]] n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_list:[0-9]+]] list: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_list]]);
+// DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n]]);
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n]], read<i32>(%[[VALUE3]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE2]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %93 a: ptr<i32> [storage=automatic] = va_arg<ptr<i32>>(%92);
-// DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%93), const<i32>(0))), read<i32>(%91));
+// DEFAULT-NEXT:                 let %[[VALUE_a:[0-9]+]] a: ptr<i32> [storage=automatic] = va_arg<ptr<i32>>(%[[VALUE_list]]);
+// DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_a]]), const<i32>(0))), read<i32>(%[[VALUE_n]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         va_end(%92);
+// DEFAULT-NEXT:         va_end(%[[VALUE_list]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @z(%94 n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %95 list: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%95);
-// DEFAULT-NEXT:         while %106 {
-// DEFAULT-NEXT:             let %114: i32 [synthetic] = read<i32>(%94);
-// DEFAULT-NEXT:             let %115: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%114), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%94, read<i32>(%115));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%114), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_z:[0-9]+]] @z(%[[VALUE_n_2:[0-9]+]] n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_list_2:[0-9]+]] list: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_list_2]]);
+// DEFAULT-NEXT:         while %[[VALUE4:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n_2]]);
+// DEFAULT-NEXT:             let %[[VALUE6:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE5]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_2]], read<i32>(%[[VALUE6]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE5]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %96 a: ptr<i32> [storage=automatic] = va_arg<ptr<i32>>(%95);
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%110, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%96)), const<i32>(0), const<u64>(2000));
+// DEFAULT-NEXT:                 let %[[VALUE_a_2:[0-9]+]] a: ptr<i32> [storage=automatic] = va_arg<ptr<i32>>(%[[VALUE_list_2]]);
+// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset:[0-9]+]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%[[VALUE_a_2]])), const<i32>(0), const<u64>(2000));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         va_end(%95);
+// DEFAULT-NEXT:         va_end(%[[VALUE_list_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @c(%97 n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %98 list: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%98);
-// DEFAULT-NEXT:         while %111 {
-// DEFAULT-NEXT:             let %116: i32 [synthetic] = read<i32>(%97);
-// DEFAULT-NEXT:             let %117: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%116), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%97, read<i32>(%117));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%116), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_c:[0-9]+]] @c(%[[VALUE_n_3:[0-9]+]] n: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_list_3:[0-9]+]] list: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_list_3]]);
+// DEFAULT-NEXT:         while %[[VALUE7:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE8:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n_3]]);
+// DEFAULT-NEXT:             let %[[VALUE9:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE8]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_3]], read<i32>(%[[VALUE9]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE8]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %99 a: ptr<i32> [storage=automatic] = va_arg<ptr<i32>>(%98);
-// DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%99), read<i32>(%97)))), read<i32>(%97))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                 let %[[VALUE_a_3:[0-9]+]] a: ptr<i32> [storage=automatic] = va_arg<ptr<i32>>(%[[VALUE_list_3]]);
+// DEFAULT-NEXT:                 if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_a_3]]), read<i32>(%[[VALUE_n_3]])))), read<i32>(%[[VALUE_n_3]]))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         va_end(%98);
+// DEFAULT-NEXT:         va_end(%[[VALUE_list_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @f(%8 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %9 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %10 a0: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %11 a1: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %12 a2: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %13 a3: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %14 a4: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %15 a5: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %16 a6: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %17 a7: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %18 a8: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %19 a9: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %20 a10: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %21 a11: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %22 a12: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %23 a13: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %24 a14: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %25 a15: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %26 a16: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %27 a17: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %28 a18: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %29 a19: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %30 a20: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %31 a21: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %32 a22: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %33 a23: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %34 a24: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %35 a25: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %36 a26: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %37 a27: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %38 a28: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %39 a29: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %40 a30: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %41 a31: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %42 a32: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %43 a33: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %44 a34: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %45 a35: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %46 a36: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %47 a37: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %48 a38: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %49 a39: array<i32, 500> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %50 i0: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %51 i1: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %52 i2: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %53 i3: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %54 i4: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %55 i5: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %56 i6: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %57 i7: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %58 i8: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %59 i9: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %60 i10: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %61 i11: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %62 i12: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %63 i13: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %64 i14: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %65 i15: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %66 i16: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %67 i17: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %68 i18: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %69 i19: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %70 i20: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %71 i21: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %72 i22: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %73 i23: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %74 i24: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %75 i25: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %76 i26: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %77 i27: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %78 i28: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %79 i29: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %80 i30: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %81 i31: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %82 i32: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %83 i33: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %84 i34: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %85 i35: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %86 i36: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %87 i37: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %88 i38: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %89 i39: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %104
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_n_4:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_a0:[0-9]+]] a0: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a1:[0-9]+]] a1: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a2:[0-9]+]] a2: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a3:[0-9]+]] a3: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a4:[0-9]+]] a4: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a5:[0-9]+]] a5: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a6:[0-9]+]] a6: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a7:[0-9]+]] a7: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a8:[0-9]+]] a8: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a9:[0-9]+]] a9: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a10:[0-9]+]] a10: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a11:[0-9]+]] a11: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a12:[0-9]+]] a12: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a13:[0-9]+]] a13: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a14:[0-9]+]] a14: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a15:[0-9]+]] a15: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a16:[0-9]+]] a16: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a17:[0-9]+]] a17: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a18:[0-9]+]] a18: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a19:[0-9]+]] a19: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a20:[0-9]+]] a20: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a21:[0-9]+]] a21: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a22:[0-9]+]] a22: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a23:[0-9]+]] a23: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a24:[0-9]+]] a24: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a25:[0-9]+]] a25: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a26:[0-9]+]] a26: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a27:[0-9]+]] a27: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a28:[0-9]+]] a28: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a29:[0-9]+]] a29: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a30:[0-9]+]] a30: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a31:[0-9]+]] a31: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a32:[0-9]+]] a32: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a33:[0-9]+]] a33: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a34:[0-9]+]] a34: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a35:[0-9]+]] a35: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a36:[0-9]+]] a36: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a37:[0-9]+]] a37: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a38:[0-9]+]] a38: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_a39:[0-9]+]] a39: array<i32, 500> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_i0:[0-9]+]] i0: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i1:[0-9]+]] i1: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i2:[0-9]+]] i2: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i3:[0-9]+]] i3: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i4:[0-9]+]] i4: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i5:[0-9]+]] i5: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i6:[0-9]+]] i6: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i7:[0-9]+]] i7: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i8:[0-9]+]] i8: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i9:[0-9]+]] i9: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i10:[0-9]+]] i10: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i11:[0-9]+]] i11: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i12:[0-9]+]] i12: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i13:[0-9]+]] i13: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i14:[0-9]+]] i14: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i15:[0-9]+]] i15: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i16:[0-9]+]] i16: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i17:[0-9]+]] i17: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i18:[0-9]+]] i18: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i19:[0-9]+]] i19: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i20:[0-9]+]] i20: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i21:[0-9]+]] i21: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i22:[0-9]+]] i22: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i23:[0-9]+]] i23: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i24:[0-9]+]] i24: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i25:[0-9]+]] i25: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i26:[0-9]+]] i26: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i27:[0-9]+]] i27: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i28:[0-9]+]] i28: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i29:[0-9]+]] i29: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i30:[0-9]+]] i30: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i31:[0-9]+]] i31: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i32:[0-9]+]] i32: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i33:[0-9]+]] i33: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i34:[0-9]+]] i34: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i35:[0-9]+]] i35: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i36:[0-9]+]] i36: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i37:[0-9]+]] i37: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i38:[0-9]+]] i38: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i39:[0-9]+]] i39: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE10:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%9, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%9), read<i32>(%8))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_n_4]]))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %118: i32 [synthetic] = read<i32>(%9);
-// DEFAULT-NEXT:                 let %119: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%118), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%9, read<i32>(%119));
+// DEFAULT-NEXT:                 let %[[VALUE11:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE12:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE11]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE12]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, ...) -> void>(%3, const<i32>(40), array_decay<ptr<i32>, length=Some(500)>(%10), array_decay<ptr<i32>, length=Some(500)>(%11), array_decay<ptr<i32>, length=Some(500)>(%12), array_decay<ptr<i32>, length=Some(500)>(%13), array_decay<ptr<i32>, length=Some(500)>(%14), array_decay<ptr<i32>, length=Some(500)>(%15), array_decay<ptr<i32>, length=Some(500)>(%16), array_decay<ptr<i32>, length=Some(500)>(%17), array_decay<ptr<i32>, length=Some(500)>(%18), array_decay<ptr<i32>, length=Some(500)>(%19), array_decay<ptr<i32>, length=Some(500)>(%20), array_decay<ptr<i32>, length=Some(500)>(%21), array_decay<ptr<i32>, length=Some(500)>(%22), array_decay<ptr<i32>, length=Some(500)>(%23), array_decay<ptr<i32>, length=Some(500)>(%24), array_decay<ptr<i32>, length=Some(500)>(%25), array_decay<ptr<i32>, length=Some(500)>(%26), array_decay<ptr<i32>, length=Some(500)>(%27), array_decay<ptr<i32>, length=Some(500)>(%28), array_decay<ptr<i32>, length=Some(500)>(%29), array_decay<ptr<i32>, length=Some(500)>(%30), array_decay<ptr<i32>, length=Some(500)>(%31), array_decay<ptr<i32>, length=Some(500)>(%32), array_decay<ptr<i32>, length=Some(500)>(%33), array_decay<ptr<i32>, length=Some(500)>(%34), array_decay<ptr<i32>, length=Some(500)>(%35), array_decay<ptr<i32>, length=Some(500)>(%36), array_decay<ptr<i32>, length=Some(500)>(%37), array_decay<ptr<i32>, length=Some(500)>(%38), array_decay<ptr<i32>, length=Some(500)>(%39), array_decay<ptr<i32>, length=Some(500)>(%40), array_decay<ptr<i32>, length=Some(500)>(%41), array_decay<ptr<i32>, length=Some(500)>(%42), array_decay<ptr<i32>, length=Some(500)>(%43), array_decay<ptr<i32>, length=Some(500)>(%44), array_decay<ptr<i32>, length=Some(500)>(%45), array_decay<ptr<i32>, length=Some(500)>(%46), array_decay<ptr<i32>, length=Some(500)>(%47), array_decay<ptr<i32>, length=Some(500)>(%48), array_decay<ptr<i32>, length=Some(500)>(%49));
-// DEFAULT-NEXT:                     write<i32>(%50, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%10), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%51, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%11), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%52, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%12), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%53, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%13), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%54, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%14), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%55, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%15), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%56, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%16), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%57, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%17), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%58, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%18), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%59, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%19), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%60, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%20), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%61, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%21), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%62, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%22), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%63, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%23), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%64, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%24), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%65, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%25), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%66, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%26), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%67, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%27), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%68, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%28), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%69, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%29), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%70, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%30), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%71, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%31), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%72, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%32), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%73, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%33), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%74, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%34), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%75, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%35), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%76, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%36), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%77, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%37), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%78, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%38), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%79, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%39), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%80, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%40), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%81, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%41), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%82, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%42), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%83, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%43), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%84, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%44), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%85, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%45), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%86, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%46), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%87, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%47), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%88, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%48), const<i32>(0)))));
-// DEFAULT-NEXT:                     write<i32>(%89, read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%49), const<i32>(0)))));
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, ...) -> void>(%4, const<i32>(40), array_decay<ptr<i32>, length=Some(500)>(%10), array_decay<ptr<i32>, length=Some(500)>(%11), array_decay<ptr<i32>, length=Some(500)>(%12), array_decay<ptr<i32>, length=Some(500)>(%13), array_decay<ptr<i32>, length=Some(500)>(%14), array_decay<ptr<i32>, length=Some(500)>(%15), array_decay<ptr<i32>, length=Some(500)>(%16), array_decay<ptr<i32>, length=Some(500)>(%17), array_decay<ptr<i32>, length=Some(500)>(%18), array_decay<ptr<i32>, length=Some(500)>(%19), array_decay<ptr<i32>, length=Some(500)>(%20), array_decay<ptr<i32>, length=Some(500)>(%21), array_decay<ptr<i32>, length=Some(500)>(%22), array_decay<ptr<i32>, length=Some(500)>(%23), array_decay<ptr<i32>, length=Some(500)>(%24), array_decay<ptr<i32>, length=Some(500)>(%25), array_decay<ptr<i32>, length=Some(500)>(%26), array_decay<ptr<i32>, length=Some(500)>(%27), array_decay<ptr<i32>, length=Some(500)>(%28), array_decay<ptr<i32>, length=Some(500)>(%29), array_decay<ptr<i32>, length=Some(500)>(%30), array_decay<ptr<i32>, length=Some(500)>(%31), array_decay<ptr<i32>, length=Some(500)>(%32), array_decay<ptr<i32>, length=Some(500)>(%33), array_decay<ptr<i32>, length=Some(500)>(%34), array_decay<ptr<i32>, length=Some(500)>(%35), array_decay<ptr<i32>, length=Some(500)>(%36), array_decay<ptr<i32>, length=Some(500)>(%37), array_decay<ptr<i32>, length=Some(500)>(%38), array_decay<ptr<i32>, length=Some(500)>(%39), array_decay<ptr<i32>, length=Some(500)>(%40), array_decay<ptr<i32>, length=Some(500)>(%41), array_decay<ptr<i32>, length=Some(500)>(%42), array_decay<ptr<i32>, length=Some(500)>(%43), array_decay<ptr<i32>, length=Some(500)>(%44), array_decay<ptr<i32>, length=Some(500)>(%45), array_decay<ptr<i32>, length=Some(500)>(%46), array_decay<ptr<i32>, length=Some(500)>(%47), array_decay<ptr<i32>, length=Some(500)>(%48), array_decay<ptr<i32>, length=Some(500)>(%49));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%10), read<i32>(%50))), read<i32>(%50));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%11), read<i32>(%51))), read<i32>(%51));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%12), read<i32>(%52))), read<i32>(%52));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%13), read<i32>(%53))), read<i32>(%53));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%14), read<i32>(%54))), read<i32>(%54));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%15), read<i32>(%55))), read<i32>(%55));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%16), read<i32>(%56))), read<i32>(%56));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%17), read<i32>(%57))), read<i32>(%57));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%18), read<i32>(%58))), read<i32>(%58));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%19), read<i32>(%59))), read<i32>(%59));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%20), read<i32>(%60))), read<i32>(%60));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%21), read<i32>(%61))), read<i32>(%61));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%22), read<i32>(%62))), read<i32>(%62));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%23), read<i32>(%63))), read<i32>(%63));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%24), read<i32>(%64))), read<i32>(%64));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%25), read<i32>(%65))), read<i32>(%65));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%26), read<i32>(%66))), read<i32>(%66));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%27), read<i32>(%67))), read<i32>(%67));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%28), read<i32>(%68))), read<i32>(%68));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%29), read<i32>(%69))), read<i32>(%69));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%30), read<i32>(%70))), read<i32>(%70));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%31), read<i32>(%71))), read<i32>(%71));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%32), read<i32>(%72))), read<i32>(%72));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%33), read<i32>(%73))), read<i32>(%73));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%34), read<i32>(%74))), read<i32>(%74));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%35), read<i32>(%75))), read<i32>(%75));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%36), read<i32>(%76))), read<i32>(%76));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%37), read<i32>(%77))), read<i32>(%77));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%38), read<i32>(%78))), read<i32>(%78));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%39), read<i32>(%79))), read<i32>(%79));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%40), read<i32>(%80))), read<i32>(%80));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%41), read<i32>(%81))), read<i32>(%81));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%42), read<i32>(%82))), read<i32>(%82));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%43), read<i32>(%83))), read<i32>(%83));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%44), read<i32>(%84))), read<i32>(%84));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%45), read<i32>(%85))), read<i32>(%85));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%46), read<i32>(%86))), read<i32>(%86));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%47), read<i32>(%87))), read<i32>(%87));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%48), read<i32>(%88))), read<i32>(%88));
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%49), read<i32>(%89))), read<i32>(%89));
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, ...) -> void>(%5, const<i32>(40), array_decay<ptr<i32>, length=Some(500)>(%10), array_decay<ptr<i32>, length=Some(500)>(%11), array_decay<ptr<i32>, length=Some(500)>(%12), array_decay<ptr<i32>, length=Some(500)>(%13), array_decay<ptr<i32>, length=Some(500)>(%14), array_decay<ptr<i32>, length=Some(500)>(%15), array_decay<ptr<i32>, length=Some(500)>(%16), array_decay<ptr<i32>, length=Some(500)>(%17), array_decay<ptr<i32>, length=Some(500)>(%18), array_decay<ptr<i32>, length=Some(500)>(%19), array_decay<ptr<i32>, length=Some(500)>(%20), array_decay<ptr<i32>, length=Some(500)>(%21), array_decay<ptr<i32>, length=Some(500)>(%22), array_decay<ptr<i32>, length=Some(500)>(%23), array_decay<ptr<i32>, length=Some(500)>(%24), array_decay<ptr<i32>, length=Some(500)>(%25), array_decay<ptr<i32>, length=Some(500)>(%26), array_decay<ptr<i32>, length=Some(500)>(%27), array_decay<ptr<i32>, length=Some(500)>(%28), array_decay<ptr<i32>, length=Some(500)>(%29), array_decay<ptr<i32>, length=Some(500)>(%30), array_decay<ptr<i32>, length=Some(500)>(%31), array_decay<ptr<i32>, length=Some(500)>(%32), array_decay<ptr<i32>, length=Some(500)>(%33), array_decay<ptr<i32>, length=Some(500)>(%34), array_decay<ptr<i32>, length=Some(500)>(%35), array_decay<ptr<i32>, length=Some(500)>(%36), array_decay<ptr<i32>, length=Some(500)>(%37), array_decay<ptr<i32>, length=Some(500)>(%38), array_decay<ptr<i32>, length=Some(500)>(%39), array_decay<ptr<i32>, length=Some(500)>(%40), array_decay<ptr<i32>, length=Some(500)>(%41), array_decay<ptr<i32>, length=Some(500)>(%42), array_decay<ptr<i32>, length=Some(500)>(%43), array_decay<ptr<i32>, length=Some(500)>(%44), array_decay<ptr<i32>, length=Some(500)>(%45), array_decay<ptr<i32>, length=Some(500)>(%46), array_decay<ptr<i32>, length=Some(500)>(%47), array_decay<ptr<i32>, length=Some(500)>(%48), array_decay<ptr<i32>, length=Some(500)>(%49));
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, ...) -> void>(%[[VALUE_s]], const<i32>(40), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a0]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a1]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a2]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a3]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a4]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a5]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a6]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a7]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a8]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a9]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a10]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a11]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a12]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a13]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a14]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a15]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a16]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a17]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a18]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a19]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a20]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a21]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a22]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a23]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a24]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a25]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a26]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a27]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a28]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a29]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a30]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a31]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a32]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a33]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a34]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a35]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a36]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a37]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a38]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a39]]));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i0]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a0]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i1]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a1]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i2]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a2]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i3]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a3]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i4]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a4]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i5]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a5]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i6]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a6]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i7]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a7]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i8]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a8]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i9]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a9]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i10]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a10]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i11]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a11]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i12]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a12]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i13]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a13]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i14]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a14]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i15]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a15]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i16]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a16]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i17]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a17]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i18]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a18]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i19]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a19]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i20]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a20]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i21]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a21]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i22]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a22]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i23]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a23]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i24]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a24]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i25]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a25]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i26]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a26]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i27]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a27]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i28]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a28]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i29]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a29]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i30]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a30]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i31]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a31]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i32]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a32]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i33]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a33]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i34]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a34]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i35]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a35]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i36]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a36]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i37]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a37]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i38]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a38]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_i39]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a39]]), const<i32>(0)))));
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, ...) -> void>(%[[VALUE_z]], const<i32>(40), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a0]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a1]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a2]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a3]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a4]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a5]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a6]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a7]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a8]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a9]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a10]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a11]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a12]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a13]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a14]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a15]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a16]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a17]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a18]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a19]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a20]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a21]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a22]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a23]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a24]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a25]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a26]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a27]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a28]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a29]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a30]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a31]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a32]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a33]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a34]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a35]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a36]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a37]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a38]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a39]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a0]]), read<i32>(%[[VALUE_i0]]))), read<i32>(%[[VALUE_i0]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a1]]), read<i32>(%[[VALUE_i1]]))), read<i32>(%[[VALUE_i1]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a2]]), read<i32>(%[[VALUE_i2]]))), read<i32>(%[[VALUE_i2]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a3]]), read<i32>(%[[VALUE_i3]]))), read<i32>(%[[VALUE_i3]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a4]]), read<i32>(%[[VALUE_i4]]))), read<i32>(%[[VALUE_i4]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a5]]), read<i32>(%[[VALUE_i5]]))), read<i32>(%[[VALUE_i5]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a6]]), read<i32>(%[[VALUE_i6]]))), read<i32>(%[[VALUE_i6]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a7]]), read<i32>(%[[VALUE_i7]]))), read<i32>(%[[VALUE_i7]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a8]]), read<i32>(%[[VALUE_i8]]))), read<i32>(%[[VALUE_i8]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a9]]), read<i32>(%[[VALUE_i9]]))), read<i32>(%[[VALUE_i9]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a10]]), read<i32>(%[[VALUE_i10]]))), read<i32>(%[[VALUE_i10]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a11]]), read<i32>(%[[VALUE_i11]]))), read<i32>(%[[VALUE_i11]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a12]]), read<i32>(%[[VALUE_i12]]))), read<i32>(%[[VALUE_i12]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a13]]), read<i32>(%[[VALUE_i13]]))), read<i32>(%[[VALUE_i13]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a14]]), read<i32>(%[[VALUE_i14]]))), read<i32>(%[[VALUE_i14]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a15]]), read<i32>(%[[VALUE_i15]]))), read<i32>(%[[VALUE_i15]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a16]]), read<i32>(%[[VALUE_i16]]))), read<i32>(%[[VALUE_i16]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a17]]), read<i32>(%[[VALUE_i17]]))), read<i32>(%[[VALUE_i17]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a18]]), read<i32>(%[[VALUE_i18]]))), read<i32>(%[[VALUE_i18]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a19]]), read<i32>(%[[VALUE_i19]]))), read<i32>(%[[VALUE_i19]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a20]]), read<i32>(%[[VALUE_i20]]))), read<i32>(%[[VALUE_i20]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a21]]), read<i32>(%[[VALUE_i21]]))), read<i32>(%[[VALUE_i21]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a22]]), read<i32>(%[[VALUE_i22]]))), read<i32>(%[[VALUE_i22]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a23]]), read<i32>(%[[VALUE_i23]]))), read<i32>(%[[VALUE_i23]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a24]]), read<i32>(%[[VALUE_i24]]))), read<i32>(%[[VALUE_i24]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a25]]), read<i32>(%[[VALUE_i25]]))), read<i32>(%[[VALUE_i25]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a26]]), read<i32>(%[[VALUE_i26]]))), read<i32>(%[[VALUE_i26]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a27]]), read<i32>(%[[VALUE_i27]]))), read<i32>(%[[VALUE_i27]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a28]]), read<i32>(%[[VALUE_i28]]))), read<i32>(%[[VALUE_i28]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a29]]), read<i32>(%[[VALUE_i29]]))), read<i32>(%[[VALUE_i29]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a30]]), read<i32>(%[[VALUE_i30]]))), read<i32>(%[[VALUE_i30]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a31]]), read<i32>(%[[VALUE_i31]]))), read<i32>(%[[VALUE_i31]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a32]]), read<i32>(%[[VALUE_i32]]))), read<i32>(%[[VALUE_i32]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a33]]), read<i32>(%[[VALUE_i33]]))), read<i32>(%[[VALUE_i33]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a34]]), read<i32>(%[[VALUE_i34]]))), read<i32>(%[[VALUE_i34]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a35]]), read<i32>(%[[VALUE_i35]]))), read<i32>(%[[VALUE_i35]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a36]]), read<i32>(%[[VALUE_i36]]))), read<i32>(%[[VALUE_i36]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a37]]), read<i32>(%[[VALUE_i37]]))), read<i32>(%[[VALUE_i37]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a38]]), read<i32>(%[[VALUE_i38]]))), read<i32>(%[[VALUE_i38]]));
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a39]]), read<i32>(%[[VALUE_i39]]))), read<i32>(%[[VALUE_i39]]));
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, ...) -> void>(%[[VALUE_c]], const<i32>(40), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a0]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a1]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a2]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a3]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a4]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a5]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a6]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a7]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a8]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a9]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a10]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a11]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a12]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a13]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a14]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a15]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a16]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a17]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a18]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a19]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a20]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a21]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a22]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a23]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a24]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a25]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a26]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a27]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a28]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a29]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a30]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a31]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a32]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a33]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a34]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a35]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a36]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a37]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a38]]), array_decay<ptr<i32>, length=Some(500)>(%[[VALUE_a39]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %90 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if lt<i32>(const<i32>(500), const<i32>(40))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%7, const<i32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_f]], const<i32>(1));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %110 @__builtin_memset(%107 <unnamed>: ptr<void>, %108 <unnamed>: i32, %109 <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memset]] @__builtin_memset(%[[VALUE13:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE14:[0-9]+]] <unnamed>: i32, %[[VALUE15:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

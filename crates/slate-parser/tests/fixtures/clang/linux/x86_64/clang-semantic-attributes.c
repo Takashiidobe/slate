@@ -40,19 +40,19 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:         storage d64 [size=8, align=8];
 // GNU-NEXT:         storage d128 [size=16, align=16];
 // GNU-NEXT:     }
-// GNU-NEXT:     type @type0 int2 = vector<i32, 2>;
-// GNU-NEXT:     global %3 device_memory: ptr<i32> [storage=static] [linkage=external];
-// GNU-NEXT:     global %6 annotated: i32 [storage=static] [linkage=external];
-// GNU-NEXT:     global %11 weak_platform: i32 [storage=static] [linkage=external];
-// GNU-NEXT:     fn %0 @most() -> void [linkage=external];
-// GNU-NEXT:     fn %1 @all() -> void [linkage=external];
-// GNU-NEXT:     fn %2 @none() -> void [linkage=external];
-// GNU-NEXT:     fn %4 @overloaded(%14 <unnamed>: i32) -> i32 [linkage=external];
-// GNU-NEXT:     fn %5 @unoptimized(%16 <unnamed>: i32) -> i32 [linkage=external];
-// GNU-NEXT:     fn %7 @platform_api() -> i32 [linkage=external];
-// GNU-NEXT:     fn %8 @dispatch() -> i32 [linkage=external];
-// GNU-NEXT:     fn %9 @specialized() -> i32 [linkage=external];
-// GNU-NEXT:     fn %12 @noinline_fn() -> void [linkage=external] [inline=never];
-// GNU-NEXT:     fn %13 @inline_fn() -> void [linkage=external] [inline=always];
+// GNU-NEXT:     type @type[[TYPE_int2:[0-9]+]] int2 = vector<i32, 2>;
+// GNU-NEXT:     global %[[VALUE_device_memory:[0-9]+]] device_memory: ptr<i32> [storage=static] [linkage=external];
+// GNU-NEXT:     global %[[VALUE_annotated:[0-9]+]] annotated: i32 [storage=static] [linkage=external];
+// GNU-NEXT:     global %[[VALUE_weak_platform:[0-9]+]] weak_platform: i32 [storage=static] [linkage=external];
+// GNU-NEXT:     fn %[[VALUE_most:[0-9]+]] @most() -> void [linkage=external];
+// GNU-NEXT:     fn %[[VALUE_all:[0-9]+]] @all() -> void [linkage=external];
+// GNU-NEXT:     fn %[[VALUE_none:[0-9]+]] @none() -> void [linkage=external];
+// GNU-NEXT:     fn %[[VALUE_overloaded:[0-9]+]] @overloaded(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// GNU-NEXT:     fn %[[VALUE_unoptimized:[0-9]+]] @unoptimized(%[[VALUE1:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// GNU-NEXT:     fn %[[VALUE_platform_api:[0-9]+]] @platform_api() -> i32 [linkage=external];
+// GNU-NEXT:     fn %[[VALUE_dispatch:[0-9]+]] @dispatch() -> i32 [linkage=external];
+// GNU-NEXT:     fn %[[VALUE_specialized:[0-9]+]] @specialized() -> i32 [linkage=external];
+// GNU-NEXT:     fn %[[VALUE_noinline_fn:[0-9]+]] @noinline_fn() -> void [linkage=external] [inline=never];
+// GNU-NEXT:     fn %[[VALUE_inline_fn:[0-9]+]] @inline_fn() -> void [linkage=external] [inline=always];
 // GNU-NEXT: }
 // SLATE-FILECHECK-END GNU

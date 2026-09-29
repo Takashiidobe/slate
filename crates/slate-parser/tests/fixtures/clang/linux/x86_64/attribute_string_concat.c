@@ -32,12 +32,12 @@ int use(void) { return old_api() + placed + prefixed + hidden; }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %1 placed: i32 [storage=static] = const<i32>(1) [linkage=external] [section="data.custom"];
-// IR-NEXT:     global %2 prefixed: i32 [storage=static] = const<i32>(2) [linkage=external] [section=".wider"];
-// IR-NEXT:     global %3 hidden: i32 [storage=static] = const<i32>(3) [linkage=external] [visibility=hidden];
-// IR-NEXT:     fn %0 @old_api() -> i32 [linkage=external];
-// IR-NEXT:     fn %4 @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%0), read<i32>(%1)), read<i32>(%2)), read<i32>(%3));
+// IR-NEXT:     global %[[VALUE_placed:[0-9]+]] placed: i32 [storage=static] = const<i32>(1) [linkage=external] [section="data.custom"];
+// IR-NEXT:     global %[[VALUE_prefixed:[0-9]+]] prefixed: i32 [storage=static] = const<i32>(2) [linkage=external] [section=".wider"];
+// IR-NEXT:     global %[[VALUE_hidden:[0-9]+]] hidden: i32 [storage=static] = const<i32>(3) [linkage=external] [visibility=hidden];
+// IR-NEXT:     fn %[[VALUE_old_api:[0-9]+]] @old_api() -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_use:[0-9]+]] @use() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_old_api]]), read<i32>(%[[VALUE_placed]])), read<i32>(%[[VALUE_prefixed]])), read<i32>(%[[VALUE_hidden]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

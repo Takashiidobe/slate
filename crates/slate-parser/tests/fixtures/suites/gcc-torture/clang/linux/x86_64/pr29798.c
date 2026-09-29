@@ -48,33 +48,33 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %3 oldrho: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %4 beta: f64 [storage=automatic] = const<f64>(0.0);
-// DEFAULT-NEXT:         let %5 work: f64 [storage=automatic] = const<f64>(1.0);
-// DEFAULT-NEXT:         for %7
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_oldrho:[0-9]+]] oldrho: f64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_beta:[0-9]+]] beta: f64 [storage=automatic] = const<f64>(0.0);
+// DEFAULT-NEXT:         let %[[VALUE_work:[0-9]+]] work: f64 [storage=automatic] = const<f64>(1.0);
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%2, const<i32>(1));
-// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%2), const<i32>(2))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(1));
+// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%[[VALUE_i]]), const<i32>(2))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %8: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:                 let %9: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%8), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%9));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %6 rho: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%5), read<f64>(%5));
-// DEFAULT-NEXT:                     if ne<i32>(read<i32>(%2), const<i32>(1))
-// DEFAULT-NEXT:                         write<f64>(%4, div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%6), read<f64>(%3)));
-// DEFAULT-NEXT:                     if eq<f64, exceptions=ignore>(read<f64>(%4), const<f64>(1.0))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:                     let %10: f64 [synthetic] = read<f64>(%5);
-// DEFAULT-NEXT:                     let %11: f64 [synthetic] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), const<f64>(2.0));
-// DEFAULT-NEXT:                     write<f64>(%5, read<f64>(%11));
-// DEFAULT-NEXT:                     write<f64>(%3, read<f64>(%6));
+// DEFAULT-NEXT:                     let %[[VALUE_rho:[0-9]+]] rho: f64 [storage=automatic] = mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_work]]), read<f64>(%[[VALUE_work]]));
+// DEFAULT-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(1))
+// DEFAULT-NEXT:                         write<f64>(%[[VALUE_beta]], div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_rho]]), read<f64>(%[[VALUE_oldrho]])));
+// DEFAULT-NEXT:                     if eq<f64, exceptions=ignore>(read<f64>(%[[VALUE_beta]]), const<f64>(1.0))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: f64 [synthetic] = read<f64>(%[[VALUE_work]]);
+// DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: f64 [synthetic] = div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE3]]), const<f64>(2.0));
+// DEFAULT-NEXT:                     write<f64>(%[[VALUE_work]], read<f64>(%[[VALUE4]]));
+// DEFAULT-NEXT:                     write<f64>(%[[VALUE_oldrho]], read<f64>(%[[VALUE_rho]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

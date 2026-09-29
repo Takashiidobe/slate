@@ -160,10 +160,10 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __uint64_t = u64;
-// DEFAULT-NEXT:     type @type1 __off_t = i64;
-// DEFAULT-NEXT:     type @type2 __off64_t = i64;
-// DEFAULT-NEXT:     type @type3 _IO_FILE = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___uint64_t:[0-9]+]] __uint64_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE___off_t:[0-9]+]] __off_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE___off64_t:[0-9]+]] __off64_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE__IO_FILE:[0-9]+]] _IO_FILE = struct {
 // DEFAULT-NEXT:         field0 _flags: i32;
 // DEFAULT-NEXT:         field1 _IO_read_ptr: ptr<i8>;
 // DEFAULT-NEXT:         field2 _IO_read_end: ptr<i8>;
@@ -176,8 +176,8 @@ int main() {
 // DEFAULT-NEXT:         field9 _IO_save_base: ptr<i8>;
 // DEFAULT-NEXT:         field10 _IO_backup_base: ptr<i8>;
 // DEFAULT-NEXT:         field11 _IO_save_end: ptr<i8>;
-// DEFAULT-NEXT:         field12 _markers: ptr<@type5>;
-// DEFAULT-NEXT:         field13 _chain: ptr<@type3>;
+// DEFAULT-NEXT:         field12 _markers: ptr<@type[[TYPE__IO_marker:[0-9]+]]>;
+// DEFAULT-NEXT:         field13 _chain: ptr<@type[[TYPE__IO_FILE]]>;
 // DEFAULT-NEXT:         field14 _fileno: i32;
 // DEFAULT-NEXT:         field15 _flags2: i32 : 24;
 // DEFAULT-NEXT:         field16 _short_backupbuf: array<i8, 1>;
@@ -187,229 +187,229 @@ int main() {
 // DEFAULT-NEXT:         field20 _shortbuf: array<i8, 1>;
 // DEFAULT-NEXT:         field21 _lock: ptr<void>;
 // DEFAULT-NEXT:         field22 _offset: i64;
-// DEFAULT-NEXT:         field23 _codecvt: ptr<@type6>;
-// DEFAULT-NEXT:         field24 _wide_data: ptr<@type7>;
-// DEFAULT-NEXT:         field25 _freeres_list: ptr<@type3>;
+// DEFAULT-NEXT:         field23 _codecvt: ptr<@type[[TYPE__IO_codecvt:[0-9]+]]>;
+// DEFAULT-NEXT:         field24 _wide_data: ptr<@type[[TYPE__IO_wide_data:[0-9]+]]>;
+// DEFAULT-NEXT:         field25 _freeres_list: ptr<@type[[TYPE__IO_FILE]]>;
 // DEFAULT-NEXT:         field26 _freeres_buf: ptr<void>;
-// DEFAULT-NEXT:         field27 _prevchain: ptr<ptr<@type3>>;
+// DEFAULT-NEXT:         field27 _prevchain: ptr<ptr<@type[[TYPE__IO_FILE]]>>;
 // DEFAULT-NEXT:         field28 _mode: i32;
 // DEFAULT-NEXT:         field29 _unused3: i32;
 // DEFAULT-NEXT:         field30 _total_written: u64;
 // DEFAULT-NEXT:         field31 _unused2: array<i8, 8>;
 // DEFAULT-NEXT:     } [size=216, align=8, offsets=[0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 116, 119, 120, 128, 130, 131, 136, 144, 152, 160, 168, 176, 184, 192, 196, 200, 208], bit_offsets=[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, Some(928), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], bit_units=[(116, 3)], field_units=[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, Some(0), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]];
-// DEFAULT-NEXT:     type @type4 FILE = @type3;
-// DEFAULT-NEXT:     type @type5 _IO_marker = struct incomplete;
-// DEFAULT-NEXT:     type @type6 _IO_codecvt = struct incomplete;
-// DEFAULT-NEXT:     type @type7 _IO_wide_data = struct incomplete;
-// DEFAULT-NEXT:     type @type8 _IO_lock_t = void;
-// DEFAULT-NEXT:     extern %9 stderr: ptr<@type3> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %95 fail_count: i32 [storage=static] = const<i32>(0) [linkage=external];
-// DEFAULT-NEXT:     global %102 .str102: array<i8, 17> [storage=static] = code_units<array<i8, 17>>([84, 101, 115, 116, 32, 102, 97, 105, 108, 101, 100, 58, 32, 37, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %103 .str103: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([102, 112, 95, 97, 100, 100, 32, 49, 43, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %104 .str104: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([102, 112, 95, 115, 117, 98, 32, 51, 45, 50, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %105 .str105: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([102, 112, 95, 109, 117, 108, 32, 50, 42, 51, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %106 .str106: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([102, 112, 95, 100, 105, 118, 32, 51, 47, 50, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %107 .str107: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([102, 112, 95, 110, 101, 103, 32, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %108 .str108: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([100, 112, 95, 97, 100, 100, 32, 49, 43, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %109 .str109: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([100, 112, 95, 115, 117, 98, 32, 51, 45, 50, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %110 .str110: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([100, 112, 95, 109, 117, 108, 32, 50, 42, 51, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %111 .str111: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([100, 112, 95, 100, 105, 118, 32, 51, 47, 50, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %112 .str112: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([100, 112, 95, 110, 101, 103, 32, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %113 .str113: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([102, 112, 95, 116, 111, 95, 100, 112, 32, 49, 46, 53, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %114 .str114: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([100, 112, 95, 116, 111, 95, 102, 112, 32, 49, 46, 53, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %115 .str115: array<i8, 12> [storage=static] = code_units<array<i8, 12>>([102, 108, 111, 97, 116, 115, 105, 115, 102, 32, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %116 .str116: array<i8, 12> [storage=static] = code_units<array<i8, 12>>([102, 108, 111, 97, 116, 115, 105, 100, 102, 32, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %117 .str117: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([102, 105, 120, 115, 102, 115, 105, 32, 49, 46, 52, 50, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %118 .str118: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([102, 105, 120, 117, 110, 115, 115, 102, 115, 105, 32, 49, 46, 52, 50, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %119 .str119: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([102, 105, 120, 100, 102, 115, 105, 32, 49, 46, 52, 50, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %120 .str120: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([102, 105, 120, 117, 110, 115, 100, 102, 115, 105, 32, 49, 46, 52, 50, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %121 .str121: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([101, 113, 115, 102, 50, 32, 49, 61, 61, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %122 .str122: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([101, 113, 115, 102, 50, 32, 49, 61, 61, 50, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %123 .str123: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([110, 101, 115, 102, 50, 32, 49, 33, 61, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %124 .str124: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([110, 101, 115, 102, 50, 32, 49, 33, 61, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %125 .str125: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([103, 116, 115, 102, 50, 32, 50, 62, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %126 .str126: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([103, 116, 115, 102, 50, 32, 49, 62, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %127 .str127: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([103, 116, 115, 102, 50, 32, 48, 62, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %128 .str128: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([103, 101, 115, 102, 50, 32, 50, 62, 61, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %129 .str129: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([103, 101, 115, 102, 50, 32, 49, 62, 61, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %130 .str130: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([103, 101, 115, 102, 50, 32, 48, 62, 61, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %131 .str131: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([108, 116, 115, 102, 50, 32, 49, 60, 50, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %132 .str132: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([108, 116, 115, 102, 50, 32, 49, 60, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %133 .str133: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([108, 116, 115, 102, 50, 32, 49, 60, 48, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %134 .str134: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([108, 101, 115, 102, 50, 32, 49, 60, 61, 50, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %135 .str135: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([108, 101, 115, 102, 50, 32, 49, 60, 61, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %136 .str136: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([108, 101, 115, 102, 50, 32, 49, 60, 61, 48, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %12 @fprintf(%99 __stream: ptr<@type3> [restrict], %100 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %13 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %14 @exit(%101 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %15 @fp_add(%16 a: f32, %17 b: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(read<f32>(%16), read<f32>(%17));
+// DEFAULT-NEXT:     type @type[[TYPE_FILE:[0-9]+]] FILE = @type[[TYPE__IO_FILE]];
+// DEFAULT-NEXT:     type @type[[TYPE__IO_marker]] _IO_marker = struct incomplete;
+// DEFAULT-NEXT:     type @type[[TYPE__IO_codecvt]] _IO_codecvt = struct incomplete;
+// DEFAULT-NEXT:     type @type[[TYPE__IO_wide_data]] _IO_wide_data = struct incomplete;
+// DEFAULT-NEXT:     type @type[[TYPE__IO_lock_t:[0-9]+]] _IO_lock_t = void;
+// DEFAULT-NEXT:     extern %[[VALUE_stderr:[0-9]+]] stderr: ptr<@type[[TYPE__IO_FILE]]> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_fail_count:[0-9]+]] fail_count: i32 [storage=static] = const<i32>(0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 17> [storage=static] = code_units<array<i8, 17>>([84, 101, 115, 116, 32, 102, 97, 105, 108, 101, 100, 58, 32, 37, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([102, 112, 95, 97, 100, 100, 32, 49, 43, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([102, 112, 95, 115, 117, 98, 32, 51, 45, 50, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([102, 112, 95, 109, 117, 108, 32, 50, 42, 51, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([102, 112, 95, 100, 105, 118, 32, 51, 47, 50, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_6:[0-9]+]] .str[[VALUE_str_6]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([102, 112, 95, 110, 101, 103, 32, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_7:[0-9]+]] .str[[VALUE_str_7]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([100, 112, 95, 97, 100, 100, 32, 49, 43, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_8:[0-9]+]] .str[[VALUE_str_8]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([100, 112, 95, 115, 117, 98, 32, 51, 45, 50, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_9:[0-9]+]] .str[[VALUE_str_9]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([100, 112, 95, 109, 117, 108, 32, 50, 42, 51, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_10:[0-9]+]] .str[[VALUE_str_10]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([100, 112, 95, 100, 105, 118, 32, 51, 47, 50, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_11:[0-9]+]] .str[[VALUE_str_11]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([100, 112, 95, 110, 101, 103, 32, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_12:[0-9]+]] .str[[VALUE_str_12]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([102, 112, 95, 116, 111, 95, 100, 112, 32, 49, 46, 53, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_13:[0-9]+]] .str[[VALUE_str_13]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([100, 112, 95, 116, 111, 95, 102, 112, 32, 49, 46, 53, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_14:[0-9]+]] .str[[VALUE_str_14]]: array<i8, 12> [storage=static] = code_units<array<i8, 12>>([102, 108, 111, 97, 116, 115, 105, 115, 102, 32, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_15:[0-9]+]] .str[[VALUE_str_15]]: array<i8, 12> [storage=static] = code_units<array<i8, 12>>([102, 108, 111, 97, 116, 115, 105, 100, 102, 32, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_16:[0-9]+]] .str[[VALUE_str_16]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([102, 105, 120, 115, 102, 115, 105, 32, 49, 46, 52, 50, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_17:[0-9]+]] .str[[VALUE_str_17]]: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([102, 105, 120, 117, 110, 115, 115, 102, 115, 105, 32, 49, 46, 52, 50, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_18:[0-9]+]] .str[[VALUE_str_18]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([102, 105, 120, 100, 102, 115, 105, 32, 49, 46, 52, 50, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_19:[0-9]+]] .str[[VALUE_str_19]]: array<i8, 16> [storage=static] = code_units<array<i8, 16>>([102, 105, 120, 117, 110, 115, 100, 102, 115, 105, 32, 49, 46, 52, 50, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_20:[0-9]+]] .str[[VALUE_str_20]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([101, 113, 115, 102, 50, 32, 49, 61, 61, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_21:[0-9]+]] .str[[VALUE_str_21]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([101, 113, 115, 102, 50, 32, 49, 61, 61, 50, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_22:[0-9]+]] .str[[VALUE_str_22]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([110, 101, 115, 102, 50, 32, 49, 33, 61, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_23:[0-9]+]] .str[[VALUE_str_23]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([110, 101, 115, 102, 50, 32, 49, 33, 61, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_24:[0-9]+]] .str[[VALUE_str_24]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([103, 116, 115, 102, 50, 32, 50, 62, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_25:[0-9]+]] .str[[VALUE_str_25]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([103, 116, 115, 102, 50, 32, 49, 62, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_26:[0-9]+]] .str[[VALUE_str_26]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([103, 116, 115, 102, 50, 32, 48, 62, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_27:[0-9]+]] .str[[VALUE_str_27]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([103, 101, 115, 102, 50, 32, 50, 62, 61, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_28:[0-9]+]] .str[[VALUE_str_28]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([103, 101, 115, 102, 50, 32, 49, 62, 61, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_29:[0-9]+]] .str[[VALUE_str_29]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([103, 101, 115, 102, 50, 32, 48, 62, 61, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_30:[0-9]+]] .str[[VALUE_str_30]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([108, 116, 115, 102, 50, 32, 49, 60, 50, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_31:[0-9]+]] .str[[VALUE_str_31]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([108, 116, 115, 102, 50, 32, 49, 60, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_32:[0-9]+]] .str[[VALUE_str_32]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([108, 116, 115, 102, 50, 32, 49, 60, 48, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_33:[0-9]+]] .str[[VALUE_str_33]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([108, 101, 115, 102, 50, 32, 49, 60, 61, 50, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_34:[0-9]+]] .str[[VALUE_str_34]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([108, 101, 115, 102, 50, 32, 49, 60, 61, 49, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_35:[0-9]+]] .str[[VALUE_str_35]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([108, 101, 115, 102, 50, 32, 49, 60, 61, 48, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_fprintf:[0-9]+]] @fprintf(%[[VALUE___stream:[0-9]+]] __stream: ptr<@type[[TYPE__IO_FILE]]> [restrict], %[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_fp_add:[0-9]+]] @fp_add(%[[VALUE_a:[0-9]+]] a: f32, %[[VALUE_b:[0-9]+]] b: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(read<f32>(%[[VALUE_a]]), read<f32>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @fp_sub(%19 a: f32, %20 b: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return sub<f32, rounding=nearest_even, exceptions=observable, contract=fast>(read<f32>(%19), read<f32>(%20));
+// DEFAULT-NEXT:     fn %[[VALUE_fp_sub:[0-9]+]] @fp_sub(%[[VALUE_a_2:[0-9]+]] a: f32, %[[VALUE_b_2:[0-9]+]] b: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return sub<f32, rounding=nearest_even, exceptions=observable, contract=fast>(read<f32>(%[[VALUE_a_2]]), read<f32>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @fp_mul(%22 a: f32, %23 b: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<f32, rounding=nearest_even, exceptions=observable, contract=fast>(read<f32>(%22), read<f32>(%23));
+// DEFAULT-NEXT:     fn %[[VALUE_fp_mul:[0-9]+]] @fp_mul(%[[VALUE_a_3:[0-9]+]] a: f32, %[[VALUE_b_3:[0-9]+]] b: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return mul<f32, rounding=nearest_even, exceptions=observable, contract=fast>(read<f32>(%[[VALUE_a_3]]), read<f32>(%[[VALUE_b_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @fp_div(%25 a: f32, %26 b: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return div<f32, rounding=nearest_even, exceptions=observable, contract=fast>(read<f32>(%25), read<f32>(%26));
+// DEFAULT-NEXT:     fn %[[VALUE_fp_div:[0-9]+]] @fp_div(%[[VALUE_a_4:[0-9]+]] a: f32, %[[VALUE_b_4:[0-9]+]] b: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return div<f32, rounding=nearest_even, exceptions=observable, contract=fast>(read<f32>(%[[VALUE_a_4]]), read<f32>(%[[VALUE_b_4]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @fp_neg(%28 a: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return neg<f32>(read<f32>(%28));
+// DEFAULT-NEXT:     fn %[[VALUE_fp_neg:[0-9]+]] @fp_neg(%[[VALUE_a_5:[0-9]+]] a: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return neg<f32>(read<f32>(%[[VALUE_a_5]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @dp_add(%30 a: f64, %31 b: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%30), read<f64>(%31));
+// DEFAULT-NEXT:     fn %[[VALUE_dp_add:[0-9]+]] @dp_add(%[[VALUE_a_6:[0-9]+]] a: f64, %[[VALUE_b_5:[0-9]+]] b: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_a_6]]), read<f64>(%[[VALUE_b_5]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @dp_sub(%33 a: f64, %34 b: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%33), read<f64>(%34));
+// DEFAULT-NEXT:     fn %[[VALUE_dp_sub:[0-9]+]] @dp_sub(%[[VALUE_a_7:[0-9]+]] a: f64, %[[VALUE_b_6:[0-9]+]] b: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_a_7]]), read<f64>(%[[VALUE_b_6]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %35 @dp_mul(%36 a: f64, %37 b: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%36), read<f64>(%37));
+// DEFAULT-NEXT:     fn %[[VALUE_dp_mul:[0-9]+]] @dp_mul(%[[VALUE_a_8:[0-9]+]] a: f64, %[[VALUE_b_7:[0-9]+]] b: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_a_8]]), read<f64>(%[[VALUE_b_7]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %38 @dp_div(%39 a: f64, %40 b: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%39), read<f64>(%40));
+// DEFAULT-NEXT:     fn %[[VALUE_dp_div:[0-9]+]] @dp_div(%[[VALUE_a_9:[0-9]+]] a: f64, %[[VALUE_b_8:[0-9]+]] b: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_a_9]]), read<f64>(%[[VALUE_b_8]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %41 @dp_neg(%42 a: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return neg<f64>(read<f64>(%42));
+// DEFAULT-NEXT:     fn %[[VALUE_dp_neg:[0-9]+]] @dp_neg(%[[VALUE_a_10:[0-9]+]] a: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return neg<f64>(read<f64>(%[[VALUE_a_10]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %43 @fp_to_dp(%44 f: f32) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return float_widen<f64, reason=return>(read<f32>(%44));
+// DEFAULT-NEXT:     fn %[[VALUE_fp_to_dp:[0-9]+]] @fp_to_dp(%[[VALUE_f:[0-9]+]] f: f32) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return float_widen<f64, reason=return>(read<f32>(%[[VALUE_f]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %45 @dp_to_fp(%46 d: f64) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return float_narrow<f32, reason=return, rounding=nearest_even, exceptions=observable>(read<f64>(%46));
+// DEFAULT-NEXT:     fn %[[VALUE_dp_to_fp:[0-9]+]] @dp_to_fp(%[[VALUE_d:[0-9]+]] d: f64) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return float_narrow<f32, reason=return, rounding=nearest_even, exceptions=observable>(read<f64>(%[[VALUE_d]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %47 @eqsf2(%48 a: f32, %49 b: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<f32, exceptions=observable>(read<f32>(%48), read<f32>(%49)));
+// DEFAULT-NEXT:     fn %[[VALUE_eqsf2:[0-9]+]] @eqsf2(%[[VALUE_a_11:[0-9]+]] a: f32, %[[VALUE_b_9:[0-9]+]] b: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<f32, exceptions=observable>(read<f32>(%[[VALUE_a_11]]), read<f32>(%[[VALUE_b_9]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %50 @nesf2(%51 a: f32, %52 b: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<f32, exceptions=observable>(read<f32>(%51), read<f32>(%52)));
+// DEFAULT-NEXT:     fn %[[VALUE_nesf2:[0-9]+]] @nesf2(%[[VALUE_a_12:[0-9]+]] a: f32, %[[VALUE_b_10:[0-9]+]] b: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<f32, exceptions=observable>(read<f32>(%[[VALUE_a_12]]), read<f32>(%[[VALUE_b_10]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %53 @gtsf2(%54 a: f32, %55 b: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<f32, exceptions=observable>(read<f32>(%54), read<f32>(%55)));
+// DEFAULT-NEXT:     fn %[[VALUE_gtsf2:[0-9]+]] @gtsf2(%[[VALUE_a_13:[0-9]+]] a: f32, %[[VALUE_b_11:[0-9]+]] b: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<f32, exceptions=observable>(read<f32>(%[[VALUE_a_13]]), read<f32>(%[[VALUE_b_11]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %56 @gesf2(%57 a: f32, %58 b: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<f32, exceptions=observable>(read<f32>(%57), read<f32>(%58)));
+// DEFAULT-NEXT:     fn %[[VALUE_gesf2:[0-9]+]] @gesf2(%[[VALUE_a_14:[0-9]+]] a: f32, %[[VALUE_b_12:[0-9]+]] b: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<f32, exceptions=observable>(read<f32>(%[[VALUE_a_14]]), read<f32>(%[[VALUE_b_12]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %59 @ltsf2(%60 a: f32, %61 b: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<f32, exceptions=observable>(read<f32>(%60), read<f32>(%61)));
+// DEFAULT-NEXT:     fn %[[VALUE_ltsf2:[0-9]+]] @ltsf2(%[[VALUE_a_15:[0-9]+]] a: f32, %[[VALUE_b_13:[0-9]+]] b: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<f32, exceptions=observable>(read<f32>(%[[VALUE_a_15]]), read<f32>(%[[VALUE_b_13]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %62 @lesf2(%63 a: f32, %64 b: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(le<f32, exceptions=observable>(read<f32>(%63), read<f32>(%64)));
+// DEFAULT-NEXT:     fn %[[VALUE_lesf2:[0-9]+]] @lesf2(%[[VALUE_a_16:[0-9]+]] a: f32, %[[VALUE_b_14:[0-9]+]] b: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(le<f32, exceptions=observable>(read<f32>(%[[VALUE_a_16]]), read<f32>(%[[VALUE_b_14]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %65 @eqdf2(%66 a: f64, %67 b: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<f64, exceptions=observable>(read<f64>(%66), read<f64>(%67)));
+// DEFAULT-NEXT:     fn %[[VALUE_eqdf2:[0-9]+]] @eqdf2(%[[VALUE_a_17:[0-9]+]] a: f64, %[[VALUE_b_15:[0-9]+]] b: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<f64, exceptions=observable>(read<f64>(%[[VALUE_a_17]]), read<f64>(%[[VALUE_b_15]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %68 @nedf2(%69 a: f64, %70 b: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<f64, exceptions=observable>(read<f64>(%69), read<f64>(%70)));
+// DEFAULT-NEXT:     fn %[[VALUE_nedf2:[0-9]+]] @nedf2(%[[VALUE_a_18:[0-9]+]] a: f64, %[[VALUE_b_16:[0-9]+]] b: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<f64, exceptions=observable>(read<f64>(%[[VALUE_a_18]]), read<f64>(%[[VALUE_b_16]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %71 @gtdf2(%72 a: f64, %73 b: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<f64, exceptions=observable>(read<f64>(%72), read<f64>(%73)));
+// DEFAULT-NEXT:     fn %[[VALUE_gtdf2:[0-9]+]] @gtdf2(%[[VALUE_a_19:[0-9]+]] a: f64, %[[VALUE_b_17:[0-9]+]] b: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<f64, exceptions=observable>(read<f64>(%[[VALUE_a_19]]), read<f64>(%[[VALUE_b_17]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %74 @gedf2(%75 a: f64, %76 b: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<f64, exceptions=observable>(read<f64>(%75), read<f64>(%76)));
+// DEFAULT-NEXT:     fn %[[VALUE_gedf2:[0-9]+]] @gedf2(%[[VALUE_a_20:[0-9]+]] a: f64, %[[VALUE_b_18:[0-9]+]] b: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<f64, exceptions=observable>(read<f64>(%[[VALUE_a_20]]), read<f64>(%[[VALUE_b_18]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %77 @ltdf2(%78 a: f64, %79 b: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<f64, exceptions=observable>(read<f64>(%78), read<f64>(%79)));
+// DEFAULT-NEXT:     fn %[[VALUE_ltdf2:[0-9]+]] @ltdf2(%[[VALUE_a_21:[0-9]+]] a: f64, %[[VALUE_b_19:[0-9]+]] b: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<f64, exceptions=observable>(read<f64>(%[[VALUE_a_21]]), read<f64>(%[[VALUE_b_19]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %80 @ledf2(%81 a: f64, %82 b: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(le<f64, exceptions=observable>(read<f64>(%81), read<f64>(%82)));
+// DEFAULT-NEXT:     fn %[[VALUE_ledf2:[0-9]+]] @ledf2(%[[VALUE_a_22:[0-9]+]] a: f64, %[[VALUE_b_20:[0-9]+]] b: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(le<f64, exceptions=observable>(read<f64>(%[[VALUE_a_22]]), read<f64>(%[[VALUE_b_20]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %83 @floatsisf(%84 i: i32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=nearest_even, exceptions=observable>(read<i32>(%84));
+// DEFAULT-NEXT:     fn %[[VALUE_floatsisf:[0-9]+]] @floatsisf(%[[VALUE_i:[0-9]+]] i: i32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %85 @floatsidf(%86 i: i32) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%86));
+// DEFAULT-NEXT:     fn %[[VALUE_floatsidf:[0-9]+]] @floatsidf(%[[VALUE_i_2:[0-9]+]] i: i32) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_i_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %87 @fixsfsi(%88 f: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return float_to_int<i32, reason=return, out_of_range=ub, exceptions=observable>(read<f32>(%88));
+// DEFAULT-NEXT:     fn %[[VALUE_fixsfsi:[0-9]+]] @fixsfsi(%[[VALUE_f_2:[0-9]+]] f: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return float_to_int<i32, reason=return, out_of_range=ub, exceptions=observable>(read<f32>(%[[VALUE_f_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %89 @fixdfsi(%90 d: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return float_to_int<i32, reason=return, out_of_range=ub, exceptions=observable>(read<f64>(%90));
+// DEFAULT-NEXT:     fn %[[VALUE_fixdfsi:[0-9]+]] @fixdfsi(%[[VALUE_d_2:[0-9]+]] d: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return float_to_int<i32, reason=return, out_of_range=ub, exceptions=observable>(read<f64>(%[[VALUE_d_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %91 @fixunssfsi(%92 f: f32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return float_to_int<u32, reason=return, out_of_range=ub, exceptions=observable>(read<f32>(%92));
+// DEFAULT-NEXT:     fn %[[VALUE_fixunssfsi:[0-9]+]] @fixunssfsi(%[[VALUE_f_3:[0-9]+]] f: f32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return float_to_int<u32, reason=return, out_of_range=ub, exceptions=observable>(read<f32>(%[[VALUE_f_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %93 @fixunsdfsi(%94 d: f64) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return float_to_int<u32, reason=return, out_of_range=ub, exceptions=observable>(read<f64>(%94));
+// DEFAULT-NEXT:     fn %[[VALUE_fixunsdfsi:[0-9]+]] @fixunsdfsi(%[[VALUE_d_3:[0-9]+]] d: f64) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return float_to_int<u32, reason=return, out_of_range=ub, exceptions=observable>(read<f64>(%[[VALUE_d_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %96 @fail(%97 msg: ptr<i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %137: i32 [synthetic] = read<i32>(%95);
-// DEFAULT-NEXT:         let %138: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%137), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%95, read<i32>(%138));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type3>, ptr<const i8>, ...) -> i32>(%12, read<ptr<@type3>>(%9), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%102)), read<ptr<i8>>(%97));
+// DEFAULT-NEXT:     fn %[[VALUE_fail:[0-9]+]] @fail(%[[VALUE_msg:[0-9]+]] msg: ptr<i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_fail_count]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_fail_count]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, ptr<const i8>, ...) -> i32>(%[[VALUE_fprintf]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_stderr]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(17)>(%[[VALUE_str]])), read<ptr<i8>>(%[[VALUE_msg]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %98 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(call<f32, signature=fn(f32, f32) -> f32>(%15, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%103));
-// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(call<f32, signature=fn(f32, f32) -> f32>(%18, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(3)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%104));
-// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(call<f32, signature=fn(f32, f32) -> f32>(%21, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(3))), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(6)))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%105));
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(call<f32, signature=fn(f32, f32) -> f32>(%24, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(3)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)))), const<f64>(1.5))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%106));
-// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(call<f32, signature=fn(f32) -> f32>(%27, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(neg<i32, overflow=ub>(const<i32>(1))))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(9)>(%107));
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, f64) -> f64>(%29, int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%108));
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, f64) -> f64>(%32, int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(3)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%109));
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, f64) -> f64>(%35, int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(3))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(6)))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%110));
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, f64) -> f64>(%38, int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(3)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2))), const<f64>(1.5))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%111));
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%41, int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(neg<i32, overflow=ub>(const<i32>(1))))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(9)>(%112));
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f32) -> f64>(%43, float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.5))), const<f64>(1.5))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(13)>(%113));
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(call<f32, signature=fn(f64) -> f32>(%45, const<f64>(1.5))), const<f64>(1.5))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(13)>(%114));
-// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(call<f32, signature=fn(i32) -> f32>(%83, const<i32>(1)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(12)>(%115));
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(i32) -> f64>(%85, const<i32>(1)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(12)>(%116));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32) -> i32>(%87, float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.42))), const<i32>(1))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(13)>(%117));
-// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(f32) -> u32>(%91, float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.42))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(16)>(%118));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f64) -> i32>(%89, const<f64>(1.42)), const<i32>(1))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(13)>(%119));
-// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(f64) -> u32>(%93, const<f64>(1.42)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(16)>(%120));
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%47, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%121));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%47, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%122));
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%50, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%123));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%50, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%124));
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%53, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(10)>(%125));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%53, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(10)>(%126));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%53, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(10)>(%127));
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%56, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%128));
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%56, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%129));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%56, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%130));
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%59, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(10)>(%131));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%59, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(10)>(%132));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%59, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(10)>(%133));
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%62, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%134));
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%62, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%135));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%62, int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0))), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%96, array_decay<ptr<i8>, length=Some(11)>(%136));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%95), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%14, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_fp_add]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_2]]));
+// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_fp_sub]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(3)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_3]]));
+// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_fp_mul]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(3))), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(6)))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_4]]));
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_fp_div]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(3)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)))), const<f64>(1.5))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_5]]));
+// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(call<f32, signature=fn(f32) -> f32>(%[[VALUE_fp_neg]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(neg<i32, overflow=ub>(const<i32>(1))))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_6]]));
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_dp_add]], int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_7]]));
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_dp_sub]], int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(3)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_8]]));
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_dp_mul]], int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(3))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(6)))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_9]]));
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_dp_div]], int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(3)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2))), const<f64>(1.5))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_10]]));
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_dp_neg]], int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1))), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(neg<i32, overflow=ub>(const<i32>(1))))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_11]]));
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f32) -> f64>(%[[VALUE_fp_to_dp]], float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.5))), const<f64>(1.5))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_12]]));
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(call<f32, signature=fn(f64) -> f32>(%[[VALUE_dp_to_fp]], const<f64>(1.5))), const<f64>(1.5))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_13]]));
+// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(call<f32, signature=fn(i32) -> f32>(%[[VALUE_floatsisf]], const<i32>(1)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(12)>(%[[VALUE_str_14]]));
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(i32) -> f64>(%[[VALUE_floatsidf]], const<i32>(1)), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(1)))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(12)>(%[[VALUE_str_15]]));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32) -> i32>(%[[VALUE_fixsfsi]], float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.42))), const<i32>(1))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_16]]));
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(f32) -> u32>(%[[VALUE_fixunssfsi]], float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=observable>(const<f64>(1.42))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_str_17]]));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f64) -> i32>(%[[VALUE_fixdfsi]], const<f64>(1.42)), const<i32>(1))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_18]]));
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(f64) -> u32>(%[[VALUE_fixunsdfsi]], const<f64>(1.42)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_str_19]]));
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_eqsf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_20]]));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_eqsf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_21]]));
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_nesf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_22]]));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_nesf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_23]]));
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_gtsf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_24]]));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_gtsf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_25]]));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_gtsf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_26]]));
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_gesf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_27]]));
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_gesf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_28]]));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_gesf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_29]]));
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_ltsf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_30]]));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_ltsf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_31]]));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_ltsf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_32]]));
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_lesf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_33]]));
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_lesf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_34]]));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32, f32) -> i32>(%[[VALUE_lesf2]], int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0))), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_fail]], array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str_35]]));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_fail_count]]), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

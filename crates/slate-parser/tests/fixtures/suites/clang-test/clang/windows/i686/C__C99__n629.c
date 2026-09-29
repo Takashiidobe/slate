@@ -136,7 +136,7 @@ void test_hexadecimal_constants(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @test_decimal_constants() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_decimal_constants:[0-9]+]] @test_decimal_constants() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         const<i32>(1);
 // DEFAULT-NEXT:         const<i32>(1);
 // DEFAULT-NEXT:         const<i32>(1);
@@ -148,7 +148,7 @@ void test_hexadecimal_constants(void) {
 // DEFAULT-NEXT:         const<i32>(1);
 // DEFAULT-NEXT:         const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @test_octal_constants() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_octal_constants:[0-9]+]] @test_octal_constants() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         const<i32>(1);
 // DEFAULT-NEXT:         const<i32>(1);
 // DEFAULT-NEXT:         const<i32>(1);
@@ -160,7 +160,7 @@ void test_hexadecimal_constants(void) {
 // DEFAULT-NEXT:         const<i32>(1);
 // DEFAULT-NEXT:         const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @test_hexadecimal_constants() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_hexadecimal_constants:[0-9]+]] @test_hexadecimal_constants() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         const<i32>(1);
 // DEFAULT-NEXT:         const<i32>(1);
 // DEFAULT-NEXT:         const<i32>(1);

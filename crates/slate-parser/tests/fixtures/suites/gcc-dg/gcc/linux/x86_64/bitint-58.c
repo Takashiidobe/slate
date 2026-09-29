@@ -56,25 +56,25 @@ baz (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i3b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i8b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 c: i495b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 d: i513b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 e: i1085b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 f: i4096b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %6 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %10: i3b [synthetic] = read<i3b>(%0);
-// DEFAULT-NEXT:         let %11: i3b [synthetic] = truncate<i3b, reason=assign, fits=unknown>(sub<i4097b, overflow=ub>(widen<i4097b, reason=usual_arith>(read<i3b>(%10)), shr<i4097b, amount_out_of_range=ub, fill=sign_extend>(widen<i4097b, reason=explicit>(read<i513b>(%3)), read<i8b>(%1))));
-// DEFAULT-NEXT:         write<i3b>(%0, read<i3b>(%11));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i3b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i8b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i495b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i513b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i1085b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: i4096b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i3b [synthetic] = read<i3b>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i3b [synthetic] = truncate<i3b, reason=assign, fits=unknown>(sub<i4097b, overflow=ub>(widen<i4097b, reason=usual_arith>(read<i3b>(%[[VALUE0]])), shr<i4097b, amount_out_of_range=ub, fill=sign_extend>(widen<i4097b, reason=explicit>(read<i513b>(%[[VALUE_d]])), read<i8b>(%[[VALUE_b]]))));
+// DEFAULT-NEXT:         write<i3b>(%[[VALUE_a]], read<i3b>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         overflow_sub<bool>(shr<i767b, amount_out_of_range=ub, fill=sign_extend>(widen<i767b, reason=explicit>(read<i495b>(%2)), read<i1085b>(%4)), const<i32>(0), deref(addr_of<ptr<i3b>>(%0)));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         overflow_sub<bool>(shr<i767b, amount_out_of_range=ub, fill=sign_extend>(widen<i767b, reason=explicit>(read<i495b>(%[[VALUE_c]])), read<i1085b>(%[[VALUE_e]])), const<i32>(0), deref(addr_of<ptr<i3b>>(%[[VALUE_a]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @baz() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %9 x: i768b [storage=automatic] = widen<i768b, reason=assign>(truncate<i257b, reason=explicit, fits=unknown>(read<i4096b>(%5)));
-// DEFAULT-NEXT:         let %12: i8b [synthetic] = read<i8b>(%1);
-// DEFAULT-NEXT:         let %13: i8b [synthetic] = truncate<i8b, reason=assign, fits=unknown>(div<i768b, by_zero=ub, min_by_neg_one=ub>(widen<i768b, reason=usual_arith>(read<i8b>(%12)), shr<i768b, amount_out_of_range=ub, fill=sign_extend>(read<i768b>(%9), div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(0), const<i32>(0)))));
-// DEFAULT-NEXT:         write<i8b>(%1, read<i8b>(%13));
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i768b [storage=automatic] = widen<i768b, reason=assign>(truncate<i257b, reason=explicit, fits=unknown>(read<i4096b>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i8b [synthetic] = read<i8b>(%[[VALUE_b]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i8b [synthetic] = truncate<i8b, reason=assign, fits=unknown>(div<i768b, by_zero=ub, min_by_neg_one=ub>(widen<i768b, reason=usual_arith>(read<i8b>(%[[VALUE2]])), shr<i768b, amount_out_of_range=ub, fill=sign_extend>(read<i768b>(%[[VALUE_x]]), div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(0), const<i32>(0)))));
+// DEFAULT-NEXT:         write<i8b>(%[[VALUE_b]], read<i8b>(%[[VALUE3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

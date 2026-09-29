@@ -112,53 +112,53 @@ f12 (signed char a, unsigned char b)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f1(%1 a: i32, %2 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 c: u64 [storage=automatic];
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(overflow_mul<bool>(read<i32>(%1), read<i32>(%2), deref(addr_of<ptr<u64>>(%3))));
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u64 [storage=automatic];
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(overflow_mul<bool>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]]), deref(addr_of<ptr<u64>>(%[[VALUE_c]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @f2(%5 a: i32, %6 b: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 c: u64 [storage=automatic];
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(overflow_mul<bool>(read<i32>(%5), read<u32>(%6), deref(addr_of<ptr<u64>>(%7))));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b_2:[0-9]+]] b: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: u64 [storage=automatic];
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(overflow_mul<bool>(read<i32>(%[[VALUE_a_2]]), read<u32>(%[[VALUE_b_2]]), deref(addr_of<ptr<u64>>(%[[VALUE_c_2]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @f3(%9 a: u32, %10 b: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 c: i64 [storage=automatic];
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(overflow_mul<bool>(read<u32>(%9), read<u32>(%10), deref(addr_of<ptr<i64>>(%11))));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_a_3:[0-9]+]] a: u32, %[[VALUE_b_3:[0-9]+]] b: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c_3:[0-9]+]] c: i64 [storage=automatic];
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(overflow_mul<bool>(read<u32>(%[[VALUE_a_3]]), read<u32>(%[[VALUE_b_3]]), deref(addr_of<ptr<i64>>(%[[VALUE_c_3]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @f4(%13 a: i32, %14 b: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %15 c: i64 [storage=automatic];
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(overflow_mul<bool>(read<i32>(%13), read<u32>(%14), deref(addr_of<ptr<i64>>(%15))));
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_a_4:[0-9]+]] a: i32, %[[VALUE_b_4:[0-9]+]] b: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c_4:[0-9]+]] c: i64 [storage=automatic];
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(overflow_mul<bool>(read<i32>(%[[VALUE_a_4]]), read<u32>(%[[VALUE_b_4]]), deref(addr_of<ptr<i64>>(%[[VALUE_c_4]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @f5(%17 a: i16, %18 b: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %19 c: u32 [storage=automatic];
-// DEFAULT-NEXT:         return from_bool<i16, reason=return>(overflow_mul<bool>(read<i16>(%17), read<i16>(%18), deref(addr_of<ptr<u32>>(%19))));
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE_a_5:[0-9]+]] a: i16, %[[VALUE_b_5:[0-9]+]] b: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c_5:[0-9]+]] c: u32 [storage=automatic];
+// DEFAULT-NEXT:         return from_bool<i16, reason=return>(overflow_mul<bool>(read<i16>(%[[VALUE_a_5]]), read<i16>(%[[VALUE_b_5]]), deref(addr_of<ptr<u32>>(%[[VALUE_c_5]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @f6(%21 a: i16, %22 b: u16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %23 c: u32 [storage=automatic];
-// DEFAULT-NEXT:         return from_bool<i16, reason=return>(overflow_mul<bool>(read<i16>(%21), read<u16>(%22), deref(addr_of<ptr<u32>>(%23))));
+// DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(%[[VALUE_a_6:[0-9]+]] a: i16, %[[VALUE_b_6:[0-9]+]] b: u16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c_6:[0-9]+]] c: u32 [storage=automatic];
+// DEFAULT-NEXT:         return from_bool<i16, reason=return>(overflow_mul<bool>(read<i16>(%[[VALUE_a_6]]), read<u16>(%[[VALUE_b_6]]), deref(addr_of<ptr<u32>>(%[[VALUE_c_6]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @f7(%25 a: u16, %26 b: u16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %27 c: i32 [storage=automatic];
-// DEFAULT-NEXT:         return from_bool<i16, reason=return>(overflow_mul<bool>(read<u16>(%25), read<u16>(%26), deref(addr_of<ptr<i32>>(%27))));
+// DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_a_7:[0-9]+]] a: u16, %[[VALUE_b_7:[0-9]+]] b: u16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c_7:[0-9]+]] c: i32 [storage=automatic];
+// DEFAULT-NEXT:         return from_bool<i16, reason=return>(overflow_mul<bool>(read<u16>(%[[VALUE_a_7]]), read<u16>(%[[VALUE_b_7]]), deref(addr_of<ptr<i32>>(%[[VALUE_c_7]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %28 @f8(%29 a: i16, %30 b: u16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %31 c: i32 [storage=automatic];
-// DEFAULT-NEXT:         return from_bool<i16, reason=return>(overflow_mul<bool>(read<i16>(%29), read<u16>(%30), deref(addr_of<ptr<i32>>(%31))));
+// DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_a_8:[0-9]+]] a: i16, %[[VALUE_b_8:[0-9]+]] b: u16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c_8:[0-9]+]] c: i32 [storage=automatic];
+// DEFAULT-NEXT:         return from_bool<i16, reason=return>(overflow_mul<bool>(read<i16>(%[[VALUE_a_8]]), read<u16>(%[[VALUE_b_8]]), deref(addr_of<ptr<i32>>(%[[VALUE_c_8]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @f9(%33 a: i8, %34 b: i8) -> i8 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %35 c: u16 [storage=automatic];
-// DEFAULT-NEXT:         return from_bool<i8, reason=return>(overflow_mul<bool>(read<i8>(%33), read<i8>(%34), deref(addr_of<ptr<u16>>(%35))));
+// DEFAULT-NEXT:     fn %[[VALUE_f9:[0-9]+]] @f9(%[[VALUE_a_9:[0-9]+]] a: i8, %[[VALUE_b_9:[0-9]+]] b: i8) -> i8 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c_9:[0-9]+]] c: u16 [storage=automatic];
+// DEFAULT-NEXT:         return from_bool<i8, reason=return>(overflow_mul<bool>(read<i8>(%[[VALUE_a_9]]), read<i8>(%[[VALUE_b_9]]), deref(addr_of<ptr<u16>>(%[[VALUE_c_9]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %36 @f10(%37 a: i8, %38 b: u8) -> i8 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %39 c: u16 [storage=automatic];
-// DEFAULT-NEXT:         return from_bool<i8, reason=return>(overflow_mul<bool>(read<i8>(%37), read<u8>(%38), deref(addr_of<ptr<u16>>(%39))));
+// DEFAULT-NEXT:     fn %[[VALUE_f10:[0-9]+]] @f10(%[[VALUE_a_10:[0-9]+]] a: i8, %[[VALUE_b_10:[0-9]+]] b: u8) -> i8 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c_10:[0-9]+]] c: u16 [storage=automatic];
+// DEFAULT-NEXT:         return from_bool<i8, reason=return>(overflow_mul<bool>(read<i8>(%[[VALUE_a_10]]), read<u8>(%[[VALUE_b_10]]), deref(addr_of<ptr<u16>>(%[[VALUE_c_10]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %40 @f11(%41 a: u8, %42 b: u8) -> i8 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %43 c: i16 [storage=automatic];
-// DEFAULT-NEXT:         return from_bool<i8, reason=return>(overflow_mul<bool>(read<u8>(%41), read<u8>(%42), deref(addr_of<ptr<i16>>(%43))));
+// DEFAULT-NEXT:     fn %[[VALUE_f11:[0-9]+]] @f11(%[[VALUE_a_11:[0-9]+]] a: u8, %[[VALUE_b_11:[0-9]+]] b: u8) -> i8 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c_11:[0-9]+]] c: i16 [storage=automatic];
+// DEFAULT-NEXT:         return from_bool<i8, reason=return>(overflow_mul<bool>(read<u8>(%[[VALUE_a_11]]), read<u8>(%[[VALUE_b_11]]), deref(addr_of<ptr<i16>>(%[[VALUE_c_11]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %44 @f12(%45 a: i8, %46 b: u8) -> i8 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %47 c: i16 [storage=automatic];
-// DEFAULT-NEXT:         return from_bool<i8, reason=return>(overflow_mul<bool>(read<i8>(%45), read<u8>(%46), deref(addr_of<ptr<i16>>(%47))));
+// DEFAULT-NEXT:     fn %[[VALUE_f12:[0-9]+]] @f12(%[[VALUE_a_12:[0-9]+]] a: i8, %[[VALUE_b_12:[0-9]+]] b: u8) -> i8 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c_12:[0-9]+]] c: i16 [storage=automatic];
+// DEFAULT-NEXT:         return from_bool<i8, reason=return>(overflow_mul<bool>(read<i8>(%[[VALUE_a_12]]), read<u8>(%[[VALUE_b_12]]), deref(addr_of<ptr<i16>>(%[[VALUE_c_12]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

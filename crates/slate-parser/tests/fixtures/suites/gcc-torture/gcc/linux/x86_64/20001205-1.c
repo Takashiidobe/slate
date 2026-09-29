@@ -47,29 +47,29 @@ unsigned long osf_getsysinfo(unsigned long flags)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @rdfpcr() -> u64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %1 tmp: u64 [storage=automatic];
-// DEFAULT-NEXT:         let %2 ret: u64 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_rdfpcr:[0-9]+]] @rdfpcr() -> u64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_tmp:[0-9]+]] tmp: u64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ret:[0-9]+]] ret: u64 [storage=automatic];
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             lateout 0 "r" [reg] width 64 place<u64>(%1);
-// DEFAULT-NEXT:             lateout 1 "r" [reg] width 64 place<u64>(%2);
+// DEFAULT-NEXT:             lateout 0 "r" [reg] width 64 place<u64>(%[[VALUE_tmp]]);
+// DEFAULT-NEXT:             lateout 1 "r" [reg] width 64 place<u64>(%[[VALUE_ret]]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<u64>(%2);
+// DEFAULT-NEXT:         return read<u64>(%[[VALUE_ret]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @swcr_update_status(%4 swcr: u64, %5 fpcr: u64) -> u64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9: u64 [synthetic] = read<u64>(%4);
-// DEFAULT-NEXT:         let %10: u64 [synthetic] = and<u64>(read<u64>(%9), not<u64>(const<u64>(8257536)));
-// DEFAULT-NEXT:         write<u64>(%4, read<u64>(%10));
-// DEFAULT-NEXT:         let %11: u64 [synthetic] = read<u64>(%4);
-// DEFAULT-NEXT:         let %12: u64 [synthetic] = or<u64>(read<u64>(%11), and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%5), const<i32>(3)), const<u64>(8257536)));
-// DEFAULT-NEXT:         write<u64>(%4, read<u64>(%12));
-// DEFAULT-NEXT:         return read<u64>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_swcr_update_status:[0-9]+]] @swcr_update_status(%[[VALUE_swcr:[0-9]+]] swcr: u64, %[[VALUE_fpcr:[0-9]+]] fpcr: u64) -> u64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_swcr]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = and<u64>(read<u64>(%[[VALUE0]]), not<u64>(const<u64>(8257536)));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_swcr]], read<u64>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_swcr]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = or<u64>(read<u64>(%[[VALUE2]]), and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_fpcr]]), const<i32>(3)), const<u64>(8257536)));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_swcr]], read<u64>(%[[VALUE3]]));
+// DEFAULT-NEXT:         return read<u64>(%[[VALUE_swcr]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @osf_getsysinfo(%7 flags: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 w: u64 [storage=automatic];
-// DEFAULT-NEXT:         write<u64>(%8, call<u64, signature=fn(u64, u64) -> u64>(%3, read<u64>(%7), call<u64, signature=fn() -> u64>(%0)));
-// DEFAULT-NEXT:         call<u64, signature=fn(u64, u64) -> u64>(%3, read<u64>(%7), call<u64, signature=fn() -> u64>(%0));
-// DEFAULT-NEXT:         return read<u64>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_osf_getsysinfo:[0-9]+]] @osf_getsysinfo(%[[VALUE_flags:[0-9]+]] flags: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_w:[0-9]+]] w: u64 [storage=automatic];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_w]], call<u64, signature=fn(u64, u64) -> u64>(%[[VALUE_swcr_update_status]], read<u64>(%[[VALUE_flags]]), call<u64, signature=fn() -> u64>(%[[VALUE_rdfpcr]])));
+// DEFAULT-NEXT:         call<u64, signature=fn(u64, u64) -> u64>(%[[VALUE_swcr_update_status]], read<u64>(%[[VALUE_flags]]), call<u64, signature=fn() -> u64>(%[[VALUE_rdfpcr]]));
+// DEFAULT-NEXT:         return read<u64>(%[[VALUE_w]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

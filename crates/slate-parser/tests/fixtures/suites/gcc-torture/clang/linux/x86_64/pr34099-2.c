@@ -66,44 +66,44 @@ int         main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @test1(%1 b: i32, %2 c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 x: i8 [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(0))
-// DEFAULT-NEXT:             return div<i32, by_zero=ub, min_by_neg_one=ub>(widen<i32, reason=promotion>(read<i8>(%3)), read<i32>(%2));
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_b:[0-9]+]] b: i32, %[[VALUE_c:[0-9]+]] c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i8 [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0))
+// DEFAULT-NEXT:             return div<i32, by_zero=ub, min_by_neg_one=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_x]])), read<i32>(%[[VALUE_c]]));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @test2(%5 b: i32, %6 c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 x: i32 [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(0))
-// DEFAULT-NEXT:             return mul<i32, overflow=ub>(read<i32>(%7), read<i32>(%6));
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_b_2:[0-9]+]] b: i32, %[[VALUE_c_2:[0-9]+]] c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: i32 [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_b_2]]), const<i32>(0))
+// DEFAULT-NEXT:             return mul<i32, overflow=ub>(read<i32>(%[[VALUE_x_2]]), read<i32>(%[[VALUE_c_2]]));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @test3(%9 b: i32, %10 c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 x: i32 [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%9), const<i32>(0))
-// DEFAULT-NEXT:             return rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%11), read<i32>(%10));
+// DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_b_3:[0-9]+]] b: i32, %[[VALUE_c_3:[0-9]+]] c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_3:[0-9]+]] x: i32 [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_b_3]]), const<i32>(0))
+// DEFAULT-NEXT:             return rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_x_3]]), read<i32>(%[[VALUE_c_3]]));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @test4(%13 b: i32, %14 c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %15 x: i8 [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%13), const<i32>(0))
-// DEFAULT-NEXT:             return from_bool<i32, reason=return>(eq<i32>(widen<i32, reason=promotion>(read<i8>(%15)), read<i32>(%14)));
+// DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4(%[[VALUE_b_4:[0-9]+]] b: i32, %[[VALUE_c_4:[0-9]+]] c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_4:[0-9]+]] x: i8 [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_b_4]]), const<i32>(0))
+// DEFAULT-NEXT:             return from_bool<i32, reason=return>(eq<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_x_4]])), read<i32>(%[[VALUE_c_4]])));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %17 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%0, const<i32>(1), const<i32>(1000)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%16);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%4, const<i32>(1), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%16);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%8, const<i32>(1), const<i32>(1)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%16);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%12, const<i32>(1), const<i32>(1000)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_test1]], const<i32>(1), const<i32>(1000)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_test2]], const<i32>(1), const<i32>(0)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_test3]], const<i32>(1), const<i32>(1)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_test4]], const<i32>(1), const<i32>(1000)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

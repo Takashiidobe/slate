@@ -35,8 +35,8 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @printf(%0 __format: ptr<const i8> [restrict] [c="const char *restrict"] [c_restrict="true"], ...) -> i32 [linkage=external] [c="int"];
-// DEFAULT-NEXT:     fn %4 @add(%2 a: i32 [c="int"], %3 b: i32 [c="int"]) -> i32 [linkage=external] [c="int"];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [c="int"];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict] [c="const char *restrict"] [c_restrict="true"], ...) -> i32 [linkage=external] [c="int"];
+// DEFAULT-NEXT:     fn %[[VALUE_add:[0-9]+]] @add(%[[VALUE_a:[0-9]+]] a: i32 [c="int"], %[[VALUE_b:[0-9]+]] b: i32 [c="int"]) -> i32 [linkage=external] [c="int"];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [c="int"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

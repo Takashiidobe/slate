@@ -37,15 +37,15 @@ void conditional(int c, int *p, const int *q, void *v) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @conditional(%1 c: i32 [c="int"], %2 p: ptr<i32> [c="int *"], %3 q: ptr<const i32> [c="const int *"], %4 v: ptr<void> [c="void *"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(int, int *, const int *, void *)"] {
-// IR-NEXT:         let %5 merged_qualifiers: ptr<const i32> [storage=automatic] [c="typeof(c ? p : q)"] [c_canon="const int *"];
-// IR-NEXT:         let %6 merged_null: ptr<i32> [storage=automatic] [c="typeof(c ? (cast)0 : (cast)0)"] [c_canon="int *"];
-// IR-NEXT:         let %7 null_constant: ptr<i32> [storage=automatic] [c="typeof(c ? 0 : p)"] [c_canon="int *"];
-// IR-NEXT:         let %8 merged_void: ptr<void> [storage=automatic] [c="typeof(c ? v : p)"] [c_canon="void *"];
-// IR-NEXT:         read<ptr<const i32>>(%5);
-// IR-NEXT:         read<ptr<i32>>(%6);
-// IR-NEXT:         read<ptr<i32>>(%7);
-// IR-NEXT:         read<ptr<void>>(%8);
+// IR-NEXT:     fn %[[VALUE_conditional:[0-9]+]] @conditional(%[[VALUE_c:[0-9]+]] c: i32 [c="int"], %[[VALUE_p:[0-9]+]] p: ptr<i32> [c="int *"], %[[VALUE_q:[0-9]+]] q: ptr<const i32> [c="const int *"], %[[VALUE_v:[0-9]+]] v: ptr<void> [c="void *"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(int, int *, const int *, void *)"] {
+// IR-NEXT:         let %[[VALUE_merged_qualifiers:[0-9]+]] merged_qualifiers: ptr<const i32> [storage=automatic] [c="typeof(c ? p : q)"] [c_canon="const int *"];
+// IR-NEXT:         let %[[VALUE_merged_null:[0-9]+]] merged_null: ptr<i32> [storage=automatic] [c="typeof(c ? (cast)0 : (cast)0)"] [c_canon="int *"];
+// IR-NEXT:         let %[[VALUE_null_constant:[0-9]+]] null_constant: ptr<i32> [storage=automatic] [c="typeof(c ? 0 : p)"] [c_canon="int *"];
+// IR-NEXT:         let %[[VALUE_merged_void:[0-9]+]] merged_void: ptr<void> [storage=automatic] [c="typeof(c ? v : p)"] [c_canon="void *"];
+// IR-NEXT:         read<ptr<const i32>>(%[[VALUE_merged_qualifiers]]);
+// IR-NEXT:         read<ptr<i32>>(%[[VALUE_merged_null]]);
+// IR-NEXT:         read<ptr<i32>>(%[[VALUE_null_constant]]);
+// IR-NEXT:         read<ptr<void>>(%[[VALUE_merged_void]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

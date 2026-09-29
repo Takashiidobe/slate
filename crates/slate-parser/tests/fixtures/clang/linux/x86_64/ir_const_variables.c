@@ -40,18 +40,18 @@ int g(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 constant = i32;
-// IR-NEXT:     global %0 limit: i32 [storage=static] [const] = const<i32>(3) [linkage=external];
-// IR-NEXT:     global %10 s: i32 [storage=static] [const] = const<i32>(6) [linkage=internal];
-// IR-NEXT:     fn %2 @g() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %3 k: i32 [storage=automatic] [const] = const<i32>(4);
-// IR-NEXT:         let %4 x: i32 [storage=automatic];
-// IR-NEXT:         let %5 q: ptr<i32> [storage=automatic] [const] = addr_of<ptr<i32>>(%4);
-// IR-NEXT:         let %6 p: ptr<const i32> [storage=automatic] = pointer_cast<ptr<const i32>, reason=assign>(addr_of<ptr<i32>>(%4));
-// IR-NEXT:         let %7 table: array<i32, 2> [storage=automatic] [const] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2));
-// IR-NEXT:         let %8 t: i32 [storage=automatic] [const] = const<i32>(7);
-// IR-NEXT:         let %9 c: i32 [storage=automatic] [const] [constexpr] = const<i32>(5);
-// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%5))), read<i32>(deref(read<ptr<const i32>>(%6)))), read<i32>(%3)), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(2)>(%7), const<i32>(1))))), read<i32>(%8)), read<i32>(%9)), read<i32>(%10)), read<i32>(%0));
+// IR-NEXT:     type @type[[TYPE_constant:[0-9]+]] constant = i32;
+// IR-NEXT:     global %[[VALUE_limit:[0-9]+]] limit: i32 [storage=static] [const] = const<i32>(3) [linkage=external];
+// IR-NEXT:     global %[[VALUE_s:[0-9]+]] s: i32 [storage=static] [const] = const<i32>(6) [linkage=internal];
+// IR-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_k:[0-9]+]] k: i32 [storage=automatic] [const] = const<i32>(4);
+// IR-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
+// IR-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=automatic] [const] = addr_of<ptr<i32>>(%[[VALUE_x]]);
+// IR-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<const i32> [storage=automatic] = pointer_cast<ptr<const i32>, reason=assign>(addr_of<ptr<i32>>(%[[VALUE_x]]));
+// IR-NEXT:         let %[[VALUE_table:[0-9]+]] table: array<i32, 2> [storage=automatic] [const] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2));
+// IR-NEXT:         let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic] [const] = const<i32>(7);
+// IR-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic] [const] [constexpr] = const<i32>(5);
+// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_q]]))), read<i32>(deref(read<ptr<const i32>>(%[[VALUE_p]])))), read<i32>(%[[VALUE_k]])), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(2)>(%[[VALUE_table]]), const<i32>(1))))), read<i32>(%[[VALUE_t]])), read<i32>(%[[VALUE_c]])), read<i32>(%[[VALUE_s]])), read<i32>(%[[VALUE_limit]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

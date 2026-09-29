@@ -167,113 +167,113 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 atomic_int = i32;
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @test_inc_dec() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 i: atomic i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         let %17: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(%3, add<i32, overflow=ub>(old<i32>, const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%3), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %18: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(%3, sub<i32, overflow=ub>(old<i32>, const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%3), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %19: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%3, add<i32, overflow=ub>(old<i32>, const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%3), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %20: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%3, sub<i32, overflow=ub>(old<i32>, const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%3), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %21: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%3, add<i32, overflow=ub>(old<i32>, const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%21), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %22: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(%3, add<i32, overflow=ub>(old<i32>, const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%22), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%3), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %23: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(%3, sub<i32, overflow=ub>(old<i32>, const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%23), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%3), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_int:[0-9]+]] atomic_int = i32;
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_test_inc_dec:[0-9]+]] @test_inc_dec() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(%[[VALUE_i]], add<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i]]), const<i32>(2))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(%[[VALUE_i]], sub<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i]], add<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i]]), const<i32>(2))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i]], sub<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i]], add<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE4]]), const<i32>(2))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(%[[VALUE_i]], add<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE5]]), const<i32>(2))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i]]), const<i32>(3))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(%[[VALUE_i]], sub<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE6]]), const<i32>(3))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i]]), const<i32>(2))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @test_add_sub() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 i: atomic i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         let %24: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%5, add<i32, overflow=ub>(old<i32>, const<i32>(2)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%5), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %25: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%5, sub<i32, overflow=ub>(old<i32>, const<i32>(2)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%5), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %26: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%5, add<i32, overflow=ub>(old<i32>, const<i32>(2)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%26), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %27: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%5, sub<i32, overflow=ub>(old<i32>, const<i32>(2)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%27), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_test_add_sub:[0-9]+]] @test_add_sub() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i_2]], add<i32, overflow=ub>(old<i32>, const<i32>(2)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i_2]]), const<i32>(3))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i_2]], sub<i32, overflow=ub>(old<i32>, const<i32>(2)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i_2]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i_2]], add<i32, overflow=ub>(old<i32>, const<i32>(2)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE9]]), const<i32>(3))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i_2]], sub<i32, overflow=ub>(old<i32>, const<i32>(2)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE10]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @test_and() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 i: atomic i32 [storage=automatic] = const<i32>(5);
-// DEFAULT-NEXT:         let %28: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%7, and<i32>(old<i32>, const<i32>(4)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%7), const<i32>(4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %29: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%7, and<i32>(old<i32>, const<i32>(4)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%29), const<i32>(4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_test_and:[0-9]+]] @test_and() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i_3:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(5);
+// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i_3]], and<i32>(old<i32>, const<i32>(4)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i_3]]), const<i32>(4))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i_3]], and<i32>(old<i32>, const<i32>(4)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE12]]), const<i32>(4))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @test_xor() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %9 i: atomic i32 [storage=automatic] = const<i32>(5);
-// DEFAULT-NEXT:         let %30: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%9, xor<i32>(old<i32>, const<i32>(2)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%9), const<i32>(7))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %31: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%9, xor<i32>(old<i32>, const<i32>(4)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%31), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_test_xor:[0-9]+]] @test_xor() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i_4:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(5);
+// DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i_4]], xor<i32>(old<i32>, const<i32>(2)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i_4]]), const<i32>(7))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i_4]], xor<i32>(old<i32>, const<i32>(4)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE14]]), const<i32>(3))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @test_or() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %11 i: atomic i32 [storage=automatic] = const<i32>(5);
-// DEFAULT-NEXT:         let %32: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%11, or<i32>(old<i32>, const<i32>(2)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%11), const<i32>(7))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %33: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%11, or<i32>(old<i32>, const<i32>(8)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%33), const<i32>(15))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_test_or:[0-9]+]] @test_or() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i_5:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(5);
+// DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i_5]], or<i32>(old<i32>, const<i32>(2)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_i_5]]), const<i32>(7))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_i_5]], or<i32>(old<i32>, const<i32>(8)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE16]]), const<i32>(15))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @test_ptr(%13 p: ptr<atomic i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %34: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%13)), add<i32, overflow=ub>(old<i32>, const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%13))), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %35: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%13)), add<i32, overflow=ub>(old<i32>, const<i32>(2)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%13))), const<i32>(4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %36: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%13)), add<i32, overflow=ub>(old<i32>, const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%13))), const<i32>(5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %37: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%13)), sub<i32, overflow=ub>(old<i32>, const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%13))), const<i32>(4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %38: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%13)), sub<i32, overflow=ub>(old<i32>, const<i32>(1)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%13))), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %39: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%13)), sub<i32, overflow=ub>(old<i32>, const<i32>(2)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%13))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %14 j: atomic i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %40: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%14, add<i32, overflow=ub>(old<i32>, read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%13)))));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%14), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         let %41: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%14, sub<i32, overflow=ub>(old<i32>, read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%13)))));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%14), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_test_ptr:[0-9]+]] @test_ptr(%[[VALUE_p:[0-9]+]] p: ptr<atomic i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE17:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]])), add<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]]))), const<i32>(2))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE18:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]])), add<i32, overflow=ub>(old<i32>, const<i32>(2)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]]))), const<i32>(4))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE19:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]])), add<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]]))), const<i32>(5))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE20:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]])), sub<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]]))), const<i32>(4))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE21:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]])), sub<i32, overflow=ub>(old<i32>, const<i32>(1)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]]))), const<i32>(3))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE22:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]])), sub<i32, overflow=ub>(old<i32>, const<i32>(2)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: atomic i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE23:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_j]], add<i32, overflow=ub>(old<i32>, read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]])))));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_j]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE24:[0-9]+]]: i32 [synthetic] = update<i32, result=new, atomic=seq_cst>(%[[VALUE_j]], sub<i32, overflow=ub>(old<i32>, read<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p]])))));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_j]]), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %16 i: atomic i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%10);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<atomic i32>) -> void>(%12, addr_of<ptr<atomic i32>>(%16));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_i_6:[0-9]+]] i: atomic i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_inc_dec]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_add_sub]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_and]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_xor]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test_or]]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<atomic i32>) -> void>(%[[VALUE_test_ptr]], addr_of<ptr<atomic i32>>(%[[VALUE_i_6]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

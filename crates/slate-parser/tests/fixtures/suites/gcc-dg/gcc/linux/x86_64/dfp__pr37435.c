@@ -36,15 +36,15 @@ void foo()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 d: volatile d32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 i: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3: d32 [synthetic] = read<d32, volatile>(%0);
-// DEFAULT-NEXT:         let %4: d32 [synthetic] = add<d32, rounding=nearest_even, exceptions=observable, contract=fast>(read<d32>(%3), int_to_float<d32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i32, volatile>(%1)));
-// DEFAULT-NEXT:         write<d32, volatile>(%0, read<d32>(%4));
-// DEFAULT-NEXT:         let %5: d32 [synthetic] = read<d32, volatile>(%0);
-// DEFAULT-NEXT:         let %6: d32 [synthetic] = add<d32, rounding=nearest_even, exceptions=observable, contract=fast>(read<d32>(%5), int_to_float<d32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i32, volatile>(%1)));
-// DEFAULT-NEXT:         write<d32, volatile>(%0, read<d32>(%6));
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: volatile d32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: d32 [synthetic] = read<d32, volatile>(%[[VALUE_d]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: d32 [synthetic] = add<d32, rounding=nearest_even, exceptions=observable, contract=fast>(read<d32>(%[[VALUE0]]), int_to_float<d32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i32, volatile>(%[[VALUE_i]])));
+// DEFAULT-NEXT:         write<d32, volatile>(%[[VALUE_d]], read<d32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: d32 [synthetic] = read<d32, volatile>(%[[VALUE_d]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: d32 [synthetic] = add<d32, rounding=nearest_even, exceptions=observable, contract=fast>(read<d32>(%[[VALUE2]]), int_to_float<d32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i32, volatile>(%[[VALUE_i]])));
+// DEFAULT-NEXT:         write<d32, volatile>(%[[VALUE_d]], read<d32>(%[[VALUE3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

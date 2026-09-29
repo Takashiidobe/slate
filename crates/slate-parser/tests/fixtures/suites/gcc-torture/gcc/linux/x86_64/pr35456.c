@@ -43,17 +43,17 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @not_fabs(%2 x: f64) -> f64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<f64>(ge<f64, exceptions=observable>(read<f64>(%2), const<f64>(0.0)), read<f64>(%2), neg<f64>(read<f64>(%2)));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_not_fabs:[0-9]+]] @not_fabs(%[[VALUE_x:[0-9]+]] x: f64) -> f64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<f64>(ge<f64, exceptions=observable>(read<f64>(%[[VALUE_x]]), const<f64>(0.0)), read<f64>(%[[VALUE_x]]), neg<f64>(read<f64>(%[[VALUE_x]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 x: f64 [storage=automatic] = neg<f64>(const<f64>(0.0));
-// DEFAULT-NEXT:         let %5 y: f64 [storage=automatic];
-// DEFAULT-NEXT:         write<f64>(%5, call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%4)));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%4));
-// DEFAULT-NEXT:         if not<bool>(float_class<bool, test=sign_bit>(read<f64>(%5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: f64 [storage=automatic] = neg<f64>(const<f64>(0.0));
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: f64 [storage=automatic];
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_y]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_not_fabs]], read<f64>(%[[VALUE_x_2]])));
+// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE_not_fabs]], read<f64>(%[[VALUE_x_2]]));
+// DEFAULT-NEXT:         if not<bool>(float_class<bool, test=sign_bit>(read<f64>(%[[VALUE_y]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

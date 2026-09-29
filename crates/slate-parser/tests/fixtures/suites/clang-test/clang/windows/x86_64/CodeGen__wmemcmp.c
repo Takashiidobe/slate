@@ -35,11 +35,11 @@ int wmemcmp_test(const wchar_t *s1, const wchar_t *s2, size_t n) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     type @type1 wchar_t = u16;
-// DEFAULT-NEXT:     fn %9 @__builtin_wmemcmp(%6 <unnamed>: ptr<const u16>, %7 <unnamed>: ptr<const u16>, %8 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @wmemcmp_test(%3 s1: ptr<const u16>, %4 s2: ptr<const u16>, %5 n: u64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const u16>, ptr<const u16>, u64) -> i32>(%9, read<ptr<const u16>>(%3), read<ptr<const u16>>(%4), read<u64>(%5));
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = u16;
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_wmemcmp:[0-9]+]] @__builtin_wmemcmp(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const u16>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const u16>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_wmemcmp_test:[0-9]+]] @wmemcmp_test(%[[VALUE_s1:[0-9]+]] s1: ptr<const u16>, %[[VALUE_s2:[0-9]+]] s2: ptr<const u16>, %[[VALUE_n:[0-9]+]] n: u64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const u16>, ptr<const u16>, u64) -> i32>(%[[VALUE___builtin_wmemcmp]], read<ptr<const u16>>(%[[VALUE_s1]]), read<ptr<const u16>>(%[[VALUE_s2]]), read<u64>(%[[VALUE_n]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

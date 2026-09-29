@@ -32,9 +32,9 @@ int h (...) { return 0; } /* { dg-error "ISO C requires a named argument before"
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @g(%3 <unnamed>: ptr<fn(...) -> i32>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @h(...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: ptr<fn(...) -> i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

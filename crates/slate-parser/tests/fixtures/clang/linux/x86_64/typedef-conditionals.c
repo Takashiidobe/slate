@@ -41,10 +41,10 @@ RightOnly right_value;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Value = i8;
-// DEFAULT-NEXT:     type @type1 RightOnly = i32;
-// DEFAULT-NEXT:     global %1 value: i8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 right_value: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_Value:[0-9]+]] Value = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_RightOnly:[0-9]+]] RightOnly = i32;
+// DEFAULT-NEXT:     global %[[VALUE_value:[0-9]+]] value: i8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_right_value:[0-9]+]] right_value: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN INT
@@ -70,10 +70,10 @@ RightOnly right_value;
 // INT-NEXT:         storage d64 [size=8, align=8];
 // INT-NEXT:         storage d128 [size=16, align=16];
 // INT-NEXT:     }
-// INT-NEXT:     type @type0 Value = i32;
-// INT-NEXT:     type @type1 RightOnly = i32;
-// INT-NEXT:     global %1 value: i32 [storage=static] [linkage=external];
-// INT-NEXT:     global %3 right_value: i32 [storage=static] [linkage=external];
+// INT-NEXT:     type @type[[TYPE_Value:[0-9]+]] Value = i32;
+// INT-NEXT:     type @type[[TYPE_RightOnly:[0-9]+]] RightOnly = i32;
+// INT-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external];
+// INT-NEXT:     global %[[VALUE_right_value:[0-9]+]] right_value: i32 [storage=static] [linkage=external];
 // INT-NEXT: }
 // SLATE-FILECHECK-END INT
 // SLATE-FILECHECK-BEGIN LEFT
@@ -99,9 +99,9 @@ RightOnly right_value;
 // LEFT-NEXT:         storage d64 [size=8, align=8];
 // LEFT-NEXT:         storage d128 [size=16, align=16];
 // LEFT-NEXT:     }
-// LEFT-NEXT:     type @type0 Value = i8;
-// LEFT-NEXT:     type @type1 LeftOnly = i32;
-// LEFT-NEXT:     global %1 value: i8 [storage=static] [linkage=external];
-// LEFT-NEXT:     global %3 left_value: i32 [storage=static] [linkage=external];
+// LEFT-NEXT:     type @type[[TYPE_Value:[0-9]+]] Value = i8;
+// LEFT-NEXT:     type @type[[TYPE_LeftOnly:[0-9]+]] LeftOnly = i32;
+// LEFT-NEXT:     global %[[VALUE_value:[0-9]+]] value: i8 [storage=static] [linkage=external];
+// LEFT-NEXT:     global %[[VALUE_left_value:[0-9]+]] left_value: i32 [storage=static] [linkage=external];
 // LEFT-NEXT: }
 // SLATE-FILECHECK-END LEFT

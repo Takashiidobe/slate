@@ -36,11 +36,11 @@ int nand128 (void); /* { dg-warning "conflicting types for built-in function" } 
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @fabsd32() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @fabsd64() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @fabsd128() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @nand32() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @nand64() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @nand128() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fabsd32:[0-9]+]] @fabsd32() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fabsd64:[0-9]+]] @fabsd64() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fabsd128:[0-9]+]] @fabsd128() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_nand32:[0-9]+]] @nand32() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_nand64:[0-9]+]] @nand64() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_nand128:[0-9]+]] @nand128() -> i32 [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -49,24 +49,24 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 l1: u64 : 48;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 6)], field_units=[Some(0)]];
-// DEFAULT-NEXT:     fn %1 @foo(%2 x: u32) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return or<u32>(or<u32>(or<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%2), const<i32>(24)), and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%2), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(65280)))), and<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%2), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(16711680)))), shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%2), const<i32>(24)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: u32) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return or<u32>(or<u32>(or<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_x]]), const<i32>(24)), and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_x]]), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(65280)))), and<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_x]]), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(16711680)))), shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_x]]), const<i32>(24)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @bar(%4 x: ptr<@type0>) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u32, signature=fn(u32) -> u32>(%1, truncate<u32, reason=arg, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..6, bits=0..48>(deref(read<ptr<@type0>>(%4))))));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_2:[0-9]+]] x: ptr<@type[[TYPE_S]]>) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<u32, signature=fn(u32) -> u32>(%[[VALUE_foo]], truncate<u32, reason=arg, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..6, bits=0..48>(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_x_2]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(const<i32>(8), const<i32>(8)), ne<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))), ne<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         let %6 s: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..6, bits=0..48>(%6), or<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%1, const<u32>(3735928559))), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(65261), const<i32>(32))));
-// DEFAULT-NEXT:         or<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%1, const<u32>(3735928559))), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(65261), const<i32>(32)));
-// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(ptr<@type0>) -> u32>(%3, addr_of<ptr<@type0>>(%6)), const<u32>(3735928559))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=automatic];
+// DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..6, bits=0..48>(%[[VALUE_s]]), or<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_foo]], const<u32>(3735928559))), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(65261), const<i32>(32))));
+// DEFAULT-NEXT:         or<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_foo]], const<u32>(3735928559))), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(65261), const<i32>(32)));
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(ptr<@type[[TYPE_S]]>) -> u32>(%[[VALUE_bar]], addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]])), const<u32>(3735928559))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

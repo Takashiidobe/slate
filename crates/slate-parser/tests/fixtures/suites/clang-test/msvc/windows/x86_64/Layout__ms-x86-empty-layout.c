@@ -66,24 +66,24 @@ sizeof(struct EmptyPackedAligned8LongLongMemb)+
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 EmptyIntMemb = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_EmptyIntMemb:[0-9]+]] EmptyIntMemb = struct {
 // DEFAULT-NEXT:         field0 FlexArrayMemb: array<i32, 0>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 EmptyLongLongMemb = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_EmptyLongLongMemb:[0-9]+]] EmptyLongLongMemb = struct {
 // DEFAULT-NEXT:         field0 FlexArrayMemb: array<i64, 0>;
 // DEFAULT-NEXT:     } [size=4, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 EmptyAligned2LongLongMemb = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_EmptyAligned2LongLongMemb:[0-9]+]] EmptyAligned2LongLongMemb = struct {
 // DEFAULT-NEXT:         field0 FlexArrayMemb: array<i64, 0>;
 // DEFAULT-NEXT:     } [size=4, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 EmptyAligned8LongLongMemb = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_EmptyAligned8LongLongMemb:[0-9]+]] EmptyAligned8LongLongMemb = struct {
 // DEFAULT-NEXT:         field0 FlexArrayMemb: array<i64, 0>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type4 EmptyPackedAligned4LongLongMemb = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_EmptyPackedAligned4LongLongMemb:[0-9]+]] EmptyPackedAligned4LongLongMemb = struct {
 // DEFAULT-NEXT:         field0 FlexArrayMemb: array<i64, 0>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type5 EmptyPackedAligned8LongLongMemb = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_EmptyPackedAligned8LongLongMemb:[0-9]+]] EmptyPackedAligned8LongLongMemb = struct {
 // DEFAULT-NEXT:         field0 FlexArrayMemb: array<i64, 0>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %6 a: array<i32, 32> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: array<i32, 32> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

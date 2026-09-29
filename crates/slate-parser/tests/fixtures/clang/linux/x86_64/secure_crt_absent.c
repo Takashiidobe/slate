@@ -44,15 +44,15 @@ int main(void) { return 0; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 _ctime64_s: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %1 _dupenv_s: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %2 _get_errno: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %3 _itoa_s: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %4 _set_invalid_parameter_handler: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %5 fopen_s: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %6 strcpy_s: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %7 wcscpy_s: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     extern %[[VALUE__ctime64_s:[0-9]+]] _ctime64_s: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE__dupenv_s:[0-9]+]] _dupenv_s: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE__get_errno:[0-9]+]] _get_errno: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE__itoa_s:[0-9]+]] _itoa_s: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE__set_invalid_parameter_handler:[0-9]+]] _set_invalid_parameter_handler: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_fopen_s:[0-9]+]] fopen_s: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_strcpy_s:[0-9]+]] strcpy_s: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_wcscpy_s:[0-9]+]] wcscpy_s: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -51,23 +51,23 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %12 .str12: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([37, 46, 50, 48, 101, 32, 37, 46, 50, 48, 101, 32, 37, 46, 50, 48, 101, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @fesetround(%10 __rounding_direction: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @printf(%11 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 x: volatile f64 [storage=automatic] = const<f64>(3.0);
-// DEFAULT-NEXT:         let %6 y: volatile f64 [storage=automatic] = const<f64>(7.0);
-// DEFAULT-NEXT:         let %7 before: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %8 contended: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %9 after: f64 [storage=automatic];
-// DEFAULT-NEXT:         write<f64>(%7, add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(%5), read<f64, volatile>(%6)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%1, const<i32>(1024));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([37, 46, 50, 48, 101, 32, 37, 46, 50, 48, 101, 32, 37, 46, 50, 48, 101, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_fesetround:[0-9]+]] @fesetround(%[[VALUE___rounding_direction:[0-9]+]] __rounding_direction: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: volatile f64 [storage=automatic] = const<f64>(3.0);
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: volatile f64 [storage=automatic] = const<f64>(7.0);
+// DEFAULT-NEXT:         let %[[VALUE_before:[0-9]+]] before: f64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_contended:[0-9]+]] contended: f64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_after:[0-9]+]] after: f64 [storage=automatic];
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_before]], add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(%[[VALUE_x]]), read<f64, volatile>(%[[VALUE_y]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(1024));
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             write<f64>(%8, div<f64, rounding=environment, exceptions=observable, contract=on>(read<f64, volatile>(%5), read<f64, volatile>(%6)));
+// DEFAULT-NEXT:             write<f64>(%[[VALUE_contended]], div<f64, rounding=environment, exceptions=observable, contract=on>(read<f64, volatile>(%[[VALUE_x]]), read<f64, volatile>(%[[VALUE_y]])));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%1, const<i32>(0));
-// DEFAULT-NEXT:         write<f64>(%9, add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(%5), read<f64, volatile>(%6)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%12)), read<f64>(%7), read<f64>(%8), read<f64>(%9));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_fesetround]], const<i32>(0));
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_after]], add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(%[[VALUE_x]]), read<f64, volatile>(%[[VALUE_y]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%[[VALUE_str]])), read<f64>(%[[VALUE_before]]), read<f64>(%[[VALUE_contended]]), read<f64>(%[[VALUE_after]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

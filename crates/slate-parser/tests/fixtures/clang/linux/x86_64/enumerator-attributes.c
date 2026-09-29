@@ -38,18 +38,18 @@ enum Gnu {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Standard = enum : u32 {
-// DEFAULT-NEXT:         %0 BRACKET_WITH_VALUE = const<i32>(1);
-// DEFAULT-NEXT:         %1 BRACKET_WITH_MESSAGE = const<i32>(2);
-// DEFAULT-NEXT:         %2 BRACKET_WITHOUT_VALUE = const<i32>(3);
-// DEFAULT-NEXT:         %3 BRACKET_UNKNOWN = const<i32>(4);
+// DEFAULT-NEXT:     type @type[[TYPE_Standard:[0-9]+]] Standard = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_BRACKET_WITH_VALUE:[0-9]+]] BRACKET_WITH_VALUE = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_BRACKET_WITH_MESSAGE:[0-9]+]] BRACKET_WITH_MESSAGE = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE_BRACKET_WITHOUT_VALUE:[0-9]+]] BRACKET_WITHOUT_VALUE = const<i32>(3);
+// DEFAULT-NEXT:         %[[VALUE_BRACKET_UNKNOWN:[0-9]+]] BRACKET_UNKNOWN = const<i32>(4);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 Gnu = enum : u32 {
-// DEFAULT-NEXT:         %0 GNU_WITH_VALUE = const<i32>(1);
-// DEFAULT-NEXT:         %1 GNU_WITHOUT_VALUE = const<i32>(2);
-// DEFAULT-NEXT:         %2 GNU_UNKNOWN = const<i32>(3);
-// DEFAULT-NEXT:         %3 GNU_BOTH_SPELLINGS = const<i32>(8);
-// DEFAULT-NEXT:         %4 PLAIN = const<i32>(16);
+// DEFAULT-NEXT:     type @type[[TYPE_Gnu:[0-9]+]] Gnu = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_BRACKET_WITH_VALUE]] GNU_WITH_VALUE = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_BRACKET_WITH_MESSAGE]] GNU_WITHOUT_VALUE = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE_BRACKET_WITHOUT_VALUE]] GNU_UNKNOWN = const<i32>(3);
+// DEFAULT-NEXT:         %[[VALUE_BRACKET_UNKNOWN]] GNU_BOTH_SPELLINGS = const<i32>(8);
+// DEFAULT-NEXT:         %[[VALUE_PLAIN:[0-9]+]] PLAIN = const<i32>(16);
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

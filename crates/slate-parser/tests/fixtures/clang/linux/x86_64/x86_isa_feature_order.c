@@ -129,19 +129,19 @@ int biggest[__BIGGEST_ALIGNMENT__];
 // CHECK-NEXT:         storage d64 [size=8, align=8];
 // CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     global %0 has__MMX__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %1 has__SSE__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %2 has__SSE2__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %3 has__SSE3__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %4 has__SSSE3__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %5 has__SSE4_1__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %6 has__SSE4_2__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %7 has__CRC32__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %8 has__FXSR__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %9 has__LAHF_SAHF__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %10 has__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %11 has__SSE_MATH__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %12 has__SSE2_MATH__: i32 [storage=static] [linkage=external];
-// CHECK-NEXT:     global %13 biggest: array<i32, 16> [storage=static] [align=16] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__MMX__:[0-9]+]] has__MMX__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__SSE__:[0-9]+]] has__SSE__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__SSE2__:[0-9]+]] has__SSE2__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__SSE3__:[0-9]+]] has__SSE3__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__SSSE3__:[0-9]+]] has__SSSE3__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__SSE4_1__:[0-9]+]] has__SSE4_1__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__SSE4_2__:[0-9]+]] has__SSE4_2__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__CRC32__:[0-9]+]] has__CRC32__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__FXSR__:[0-9]+]] has__FXSR__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__LAHF_SAHF__:[0-9]+]] has__LAHF_SAHF__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16:[0-9]+]] has__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__SSE_MATH__:[0-9]+]] has__SSE_MATH__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_has__SSE2_MATH__:[0-9]+]] has__SSE2_MATH__: i32 [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_biggest:[0-9]+]] biggest: array<i32, 16> [storage=static] [align=16] [linkage=external];
 // CHECK-NEXT: }
 // SLATE-FILECHECK-END CHECK

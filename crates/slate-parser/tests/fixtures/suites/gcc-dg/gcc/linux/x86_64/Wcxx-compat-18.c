@@ -40,23 +40,23 @@ f3 (int i)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 E1 = enum : u32 {
-// DEFAULT-NEXT:         %0 A = const<i32>(0);
+// DEFAULT-NEXT:     type @type[[TYPE_E1:[0-9]+]] E1 = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(0);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 E2 = enum : u32 {
-// DEFAULT-NEXT:         %0 B = const<i32>(0);
+// DEFAULT-NEXT:     type @type[[TYPE_E2:[0-9]+]] E2 = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_A]] B = const<i32>(0);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     fn %4 @f1(%5 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<i32>(ne<i32>(read<i32>(%5), const<i32>(0)), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_i:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f2() -> @type0 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @f3(%8 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9: u32 [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%8), const<i32>(0))
-// DEFAULT-NEXT:             write<u32>(%9, enum_to_int<u32, reason=promotion>(call<@type0, signature=fn() -> @type0>(%6)));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2() -> @type[[TYPE_E1]] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_i_2:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u32 [synthetic];
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_i_2]]), const<i32>(0))
+// DEFAULT-NEXT:             write<u32>(%[[VALUE0]], enum_to_int<u32, reason=promotion>(call<@type[[TYPE_E1]], signature=fn() -> @type[[TYPE_E1]]>(%[[VALUE_f2]])));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<u32>(%9, reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(%9));
+// DEFAULT-NEXT:             write<u32>(%[[VALUE0]], reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(%[[VALUE0]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

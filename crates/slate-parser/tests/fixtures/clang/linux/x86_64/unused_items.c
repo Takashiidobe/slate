@@ -63,42 +63,42 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 totally_unused = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_totally_unused:[0-9]+]] totally_unused = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 linked_a = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_linked_a:[0-9]+]] linked_a = struct {
 // DEFAULT-NEXT:         field0 x: i32;
-// DEFAULT-NEXT:         field1 link: ptr<@type2>;
+// DEFAULT-NEXT:         field1 link: ptr<@type[[TYPE_linked_b:[0-9]+]]>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type2 linked_b = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_linked_b]] linked_b = struct {
 // DEFAULT-NEXT:         field0 y: i32;
-// DEFAULT-NEXT:         field1 link: ptr<@type1>;
+// DEFAULT-NEXT:         field1 link: ptr<@type[[TYPE_linked_a]]>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type3 truly_dead = enum : u32 {
-// DEFAULT-NEXT:         %0 DEAD_A = const<i32>(0);
-// DEFAULT-NEXT:         %1 DEAD_B = const<i32>(1);
+// DEFAULT-NEXT:     type @type[[TYPE_truly_dead:[0-9]+]] truly_dead = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_DEAD_A:[0-9]+]] DEAD_A = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_DEAD_B:[0-9]+]] DEAD_B = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type4 color = enum : u32 {
-// DEFAULT-NEXT:         %0 RED = const<i32>(0);
-// DEFAULT-NEXT:         %1 GREEN = const<i32>(1);
-// DEFAULT-NEXT:         %2 BLUE = const<i32>(2);
+// DEFAULT-NEXT:     type @type[[TYPE_color:[0-9]+]] color = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_DEAD_A]] RED = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_DEAD_B]] GREEN = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_BLUE:[0-9]+]] BLUE = const<i32>(2);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %12 hidden_static: i32 [storage=static] = const<i32>(5) [linkage=internal];
-// DEFAULT-NEXT:     global %13 live_static: i32 [storage=static] = const<i32>(7) [linkage=internal];
-// DEFAULT-NEXT:     global %19 .str19: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %20 .str20: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %21 .str21: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%18 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %14 @compute() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %15 x: i32 [storage=automatic] = read<i32>(%12);
+// DEFAULT-NEXT:     global %[[VALUE_hidden_static:[0-9]+]] hidden_static: i32 [storage=static] = const<i32>(5) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_live_static:[0-9]+]] live_static: i32 [storage=static] = const<i32>(7) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_DEAD_B]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_compute:[0-9]+]] @compute() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic] = read<i32>(%[[VALUE_hidden_static]]);
 // DEFAULT-NEXT:         return const<i32>(42);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %17 c: @type4 [storage=automatic] = int_to_enum<@type4, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%19)), enum_to_int<u32, reason=promotion>(read<@type4>(%17)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%20)), read<i32>(%13));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%21)), call<i32, signature=fn() -> i32>(%14));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: @type[[TYPE_color]] [storage=automatic] = int_to_enum<@type[[TYPE_color]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_DEAD_B]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), enum_to_int<u32, reason=promotion>(read<@type[[TYPE_color]]>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_DEAD_B]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), read<i32>(%[[VALUE_live_static]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_DEAD_B]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_3]])), call<i32, signature=fn() -> i32>(%[[VALUE_compute]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

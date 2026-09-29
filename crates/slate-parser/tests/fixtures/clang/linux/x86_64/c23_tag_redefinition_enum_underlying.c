@@ -89,36 +89,36 @@ struct Const { unsigned x; };
 // VALID-NEXT:         storage d64 [size=8, align=8];
 // VALID-NEXT:         storage d128 [size=16, align=16];
 // VALID-NEXT:     }
-// VALID-NEXT:     type @type0 E = enum : u32 {
-// VALID-NEXT:         %0 A = const<i32>(0);
+// VALID-NEXT:     type @type[[TYPE_E:[0-9]+]] E = enum : u32 {
+// VALID-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(0);
 // VALID-NEXT:     } [size=4, align=4];
-// VALID-NEXT:     type @type1 L = enum : i64 {
-// VALID-NEXT:         %0 B = const<@type1>(0);
+// VALID-NEXT:     type @type[[TYPE_L:[0-9]+]] L = enum : i64 {
+// VALID-NEXT:         %[[VALUE_A]] B = const<@type[[TYPE_L]]>(0);
 // VALID-NEXT:     } [size=8, align=8];
-// VALID-NEXT:     type @type2 Direct = struct {
-// VALID-NEXT:         field0 x: @type0;
+// VALID-NEXT:     type @type[[TYPE_Direct:[0-9]+]] Direct = struct {
+// VALID-NEXT:         field0 x: @type[[TYPE_E]];
 // VALID-NEXT:     } [size=4, align=4, offsets=[0]];
-// VALID-NEXT:     type @type3 Pointer = struct {
-// VALID-NEXT:         field0 p: ptr<@type0>;
+// VALID-NEXT:     type @type[[TYPE_Pointer:[0-9]+]] Pointer = struct {
+// VALID-NEXT:         field0 p: ptr<@type[[TYPE_E]]>;
 // VALID-NEXT:     } [size=8, align=8, offsets=[0]];
-// VALID-NEXT:     type @type4 Fixed = struct {
-// VALID-NEXT:         field0 x: @type1;
+// VALID-NEXT:     type @type[[TYPE_Fixed:[0-9]+]] Fixed = struct {
+// VALID-NEXT:         field0 x: @type[[TYPE_L]];
 // VALID-NEXT:     } [size=8, align=8, offsets=[0]];
-// VALID-NEXT:     type @type5 Parameter = struct {
-// VALID-NEXT:         field0 f: ptr<fn(@type0) -> void>;
+// VALID-NEXT:     type @type[[TYPE_Parameter:[0-9]+]] Parameter = struct {
+// VALID-NEXT:         field0 f: ptr<fn(@type[[TYPE_E]]) -> void>;
 // VALID-NEXT:     } [size=8, align=8, offsets=[0]];
-// VALID-NEXT:     type @type6 Array = struct {
-// VALID-NEXT:         field0 a: array<@type0, 2>;
+// VALID-NEXT:     type @type[[TYPE_Array:[0-9]+]] Array = struct {
+// VALID-NEXT:         field0 a: array<@type[[TYPE_E]], 2>;
 // VALID-NEXT:     } [size=8, align=4, offsets=[0]];
-// VALID-NEXT:     type @type7 I = i32;
-// VALID-NEXT:     type @type8 Typedef = struct {
+// VALID-NEXT:     type @type[[TYPE_I:[0-9]+]] I = i32;
+// VALID-NEXT:     type @type[[TYPE_Typedef:[0-9]+]] Typedef = struct {
 // VALID-NEXT:         field0 x: i32;
 // VALID-NEXT:     } [size=4, align=4, offsets=[0]];
-// VALID-NEXT:     global %11 direct: @type2 [storage=static] [linkage=external];
-// VALID-NEXT:     global %12 pointer: @type3 [storage=static] [linkage=external];
-// VALID-NEXT:     global %13 fixed: @type4 [storage=static] [linkage=external];
-// VALID-NEXT:     global %14 parameter: @type5 [storage=static] [linkage=external];
-// VALID-NEXT:     global %15 array: @type6 [storage=static] [linkage=external];
-// VALID-NEXT:     global %16 typedefed: @type8 [storage=static] [linkage=external];
+// VALID-NEXT:     global %[[VALUE_direct:[0-9]+]] direct: @type[[TYPE_Direct]] [storage=static] [linkage=external];
+// VALID-NEXT:     global %[[VALUE_pointer:[0-9]+]] pointer: @type[[TYPE_Pointer]] [storage=static] [linkage=external];
+// VALID-NEXT:     global %[[VALUE_fixed:[0-9]+]] fixed: @type[[TYPE_Fixed]] [storage=static] [linkage=external];
+// VALID-NEXT:     global %[[VALUE_parameter:[0-9]+]] parameter: @type[[TYPE_Parameter]] [storage=static] [linkage=external];
+// VALID-NEXT:     global %[[VALUE_array:[0-9]+]] array: @type[[TYPE_Array]] [storage=static] [linkage=external];
+// VALID-NEXT:     global %[[VALUE_typedefed:[0-9]+]] typedefed: @type[[TYPE_Typedef]] [storage=static] [linkage=external];
 // VALID-NEXT: }
 // SLATE-FILECHECK-END VALID

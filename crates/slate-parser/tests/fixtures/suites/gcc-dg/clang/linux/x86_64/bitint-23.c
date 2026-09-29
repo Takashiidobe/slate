@@ -43,15 +43,15 @@ long long j = __extension__ 60594869054uwb;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i63b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i15b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 c: u31b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 d: i32 [storage=static] = widen<i32, reason=assign>(const<i6b>(21)) [linkage=external];
-// DEFAULT-NEXT:     global %4 e: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u36b>(60594869054))) [linkage=external];
-// DEFAULT-NEXT:     global %5 f: i63b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 g: i15b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 h: u31b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 i: i32 [storage=static] = widen<i32, reason=assign>(const<i6b>(21)) [linkage=external];
-// DEFAULT-NEXT:     global %9 j: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u36b>(60594869054))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i63b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i15b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: u31b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] = widen<i32, reason=assign>(const<i6b>(21)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u36b>(60594869054))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: i63b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: i15b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_h:[0-9]+]] h: u31b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] = widen<i32, reason=assign>(const<i6b>(21)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u36b>(60594869054))) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

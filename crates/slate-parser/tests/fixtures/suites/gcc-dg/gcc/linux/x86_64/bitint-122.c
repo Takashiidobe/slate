@@ -45,13 +45,13 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 a: i32, %2 b: i129b, %3 c: i8) -> i8 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i32, reason=promotion>(read<i8>(%3)), rem<i129b, by_zero=ub, min_by_neg_one=ub>(div<i129b, by_zero=ub, min_by_neg_one=ub>(widen<i129b, reason=usual_arith>(const<i32>(5)), read<i129b>(%2)), reinterpret<i129b, reason=usual_arith, fits=unknown>(widen<u129b, reason=usual_arith>(or<u32>(const<u32>(3681934325), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%1))))))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i129b, %[[VALUE_c:[0-9]+]] c: i8) -> i8 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_c]])), rem<i129b, by_zero=ub, min_by_neg_one=ub>(div<i129b, by_zero=ub, min_by_neg_one=ub>(widen<i129b, reason=usual_arith>(const<i32>(5)), read<i129b>(%[[VALUE_b]])), reinterpret<i129b, reason=usual_arith, fits=unknown>(widen<u129b, reason=usual_arith>(or<u32>(const<u32>(3681934325), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_a]]))))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(call<i8, signature=fn(i32, i129b, i8) -> i8>(%0, const<i32>(0), widen<i129b, reason=arg>(const<i32>(6)), truncate<i8, reason=arg, fits=always>(const<i32>(1)))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(call<i8, signature=fn(i32, i129b, i8) -> i8>(%[[VALUE_foo]], const<i32>(0), widen<i129b, reason=arg>(const<i32>(6)), truncate<i8, reason=arg, fits=always>(const<i32>(1)))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

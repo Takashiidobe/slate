@@ -56,7 +56,7 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 reg_stat = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_reg_stat:[0-9]+]] reg_stat = struct {
 // DEFAULT-NEXT:         field0 last_death: ptr<void>;
 // DEFAULT-NEXT:         field1 last_set: ptr<void>;
 // DEFAULT-NEXT:         field2 last_set_value: ptr<void>;
@@ -67,19 +67,19 @@ int main(void) {
 // DEFAULT-NEXT:         field7 sign_bit_copies: i8;
 // DEFAULT-NEXT:         field8 nonzero_bits: i64;
 // DEFAULT-NEXT:     } [size=40, align=8, offsets=[0, 8, 16, 24, 28, 29, 30, 31, 32], bit_offsets=[None, None, None, None, None, Some(232), None, None, None], bit_units=[(29, 1)], field_units=[None, None, None, None, None, Some(0), None, None, None]];
-// DEFAULT-NEXT:     global %3 reg_stat: ptr<@type0> [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @memset(%7 <unnamed>: ptr<void>, %8 <unnamed>: i32, %9 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @init_reg_last() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type0>>(%3)), const<i32>(0), const<u64>(31));
+// DEFAULT-NEXT:     global %[[VALUE_reg_stat:[0-9]+]] reg_stat: ptr<@type[[TYPE_reg_stat]]> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_init_reg_last:[0-9]+]] @init_reg_last() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_reg_stat]]>>(%[[VALUE_reg_stat]])), const<i32>(0), const<u64>(31));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 r: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type0>>(%3, addr_of<ptr<@type0>>(%6));
-// DEFAULT-NEXT:         write<i64>(field8(%6), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1))));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         if ne<i64>(read<i64>(field8(%6)), widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: @type[[TYPE_reg_stat]] [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_reg_stat]]>>(%[[VALUE_reg_stat]], addr_of<ptr<@type[[TYPE_reg_stat]]>>(%[[VALUE_r]]));
+// DEFAULT-NEXT:         write<i64>(field8(%[[VALUE_r]]), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1))));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_init_reg_last]]);
+// DEFAULT-NEXT:         if ne<i64>(read<i64>(field8(%[[VALUE_r]])), widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

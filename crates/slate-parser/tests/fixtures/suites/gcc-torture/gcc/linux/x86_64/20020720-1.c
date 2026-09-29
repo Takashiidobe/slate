@@ -52,21 +52,21 @@ void link_error() { abort(); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @fabs(%8 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %2 @link_error() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_fabs:[0-9]+]] @fabs(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_link_error:[0-9]+]] @link_error() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @foo(%4 x: f64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 p: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %6 q: f64 [storage=automatic];
-// DEFAULT-NEXT:         write<f64>(%5, call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%4)));
-// DEFAULT-NEXT:         write<f64>(%6, const<f64>(0.0));
-// DEFAULT-NEXT:         if lt<f64, exceptions=observable>(read<f64>(%5), read<f64>(%6))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: f64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: f64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: f64 [storage=automatic];
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_p]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_fabs]], read<f64>(%[[VALUE_x]])));
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_q]], const<f64>(0.0));
+// DEFAULT-NEXT:         if lt<f64, exceptions=observable>(read<f64>(%[[VALUE_p]]), read<f64>(%[[VALUE_q]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(f64) -> void>(%3, const<f64>(1.0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(f64) -> void>(%[[VALUE_foo]], const<f64>(1.0));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

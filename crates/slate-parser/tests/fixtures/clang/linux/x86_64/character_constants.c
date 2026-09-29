@@ -40,14 +40,14 @@ unsigned int utf32 = U'\U0001F600';
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 plain: i32 [storage=static] = const<i32>(97) [linkage=external];
-// IR-NEXT:     global %1 signed_byte: i32 [storage=static] = const<i32>(-1) [linkage=external];
-// IR-NEXT:     global %2 multicharacter: i32 [storage=static] = const<i32>(24930) [linkage=external];
-// IR-NEXT:     global %3 multicharacter_truncated: i32 [storage=static] = const<i32>(1650680933) [linkage=external];
-// IR-NEXT:     global %4 wide: i32 [storage=static] = const<i32>(937) [linkage=external];
-// IR-NEXT:     global %5 wide_escape: i32 [storage=static] = const<i32>(255) [linkage=external];
-// IR-NEXT:     global %6 utf8: u8 [storage=static] = const<u8>(97) [linkage=external];
-// IR-NEXT:     global %7 utf16: u16 [storage=static] = const<u16>(937) [linkage=external];
-// IR-NEXT:     global %8 utf32: u32 [storage=static] = const<u32>(128512) [linkage=external];
+// IR-NEXT:     global %[[VALUE_plain:[0-9]+]] plain: i32 [storage=static] = const<i32>(97) [linkage=external];
+// IR-NEXT:     global %[[VALUE_signed_byte:[0-9]+]] signed_byte: i32 [storage=static] = const<i32>(-1) [linkage=external];
+// IR-NEXT:     global %[[VALUE_multicharacter:[0-9]+]] multicharacter: i32 [storage=static] = const<i32>(24930) [linkage=external];
+// IR-NEXT:     global %[[VALUE_multicharacter_truncated:[0-9]+]] multicharacter_truncated: i32 [storage=static] = const<i32>(1650680933) [linkage=external];
+// IR-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: i32 [storage=static] = const<i32>(937) [linkage=external];
+// IR-NEXT:     global %[[VALUE_wide_escape:[0-9]+]] wide_escape: i32 [storage=static] = const<i32>(255) [linkage=external];
+// IR-NEXT:     global %[[VALUE_utf8:[0-9]+]] utf8: u8 [storage=static] = const<u8>(97) [linkage=external];
+// IR-NEXT:     global %[[VALUE_utf16:[0-9]+]] utf16: u16 [storage=static] = const<u16>(937) [linkage=external];
+// IR-NEXT:     global %[[VALUE_utf32:[0-9]+]] utf32: u32 [storage=static] = const<u32>(128512) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

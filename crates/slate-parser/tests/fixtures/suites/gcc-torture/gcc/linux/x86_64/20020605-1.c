@@ -41,17 +41,17 @@ void f (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 c: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         do %2
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if ne<ptr<i8>>(read<ptr<i8>>(%1), null<ptr<i8>>)
-// DEFAULT-NEXT:                     break %2;
+// DEFAULT-NEXT:                 if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_c]]), null<ptr<i8>>)
+// DEFAULT-NEXT:                     break %[[VALUE0]];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(1), const<i32>(0));
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<i8>>(read<ptr<i8>>(%1), null<ptr<i8>>))
-// DEFAULT-NEXT:             while %3 ne<i32>(const<i32>(1), const<i32>(0))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_c]]), null<ptr<i8>>))
+// DEFAULT-NEXT:             while %[[VALUE1:[0-9]+]] ne<i32>(const<i32>(1), const<i32>(0))
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_f]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

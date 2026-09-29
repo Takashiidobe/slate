@@ -58,29 +58,29 @@ uint64_t foo64 (uint64_t a)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __uint16_t = u16;
-// DEFAULT-NEXT:     type @type1 __uint32_t = u32;
-// DEFAULT-NEXT:     type @type2 __uint64_t = u64;
-// DEFAULT-NEXT:     type @type3 uint16_t = u16;
-// DEFAULT-NEXT:     type @type4 uint32_t = u32;
-// DEFAULT-NEXT:     type @type5 uint64_t = u64;
-// DEFAULT-NEXT:     fn %16 @__builtin_bswap16(%15 <unnamed>: u16) -> u16 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %6 @foo16(%7 a: u16) -> u16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 b: u16 [storage=automatic];
-// DEFAULT-NEXT:         write<u16>(%8, call<u16, signature=fn(u16) -> u16>(%16, read<u16>(%7)));
-// DEFAULT-NEXT:         return read<u16>(%8);
+// DEFAULT-NEXT:     type @type[[TYPE___uint16_t:[0-9]+]] __uint16_t = u16;
+// DEFAULT-NEXT:     type @type[[TYPE___uint32_t:[0-9]+]] __uint32_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE___uint64_t:[0-9]+]] __uint64_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_uint16_t:[0-9]+]] uint16_t = u16;
+// DEFAULT-NEXT:     type @type[[TYPE_uint32_t:[0-9]+]] uint32_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_uint64_t:[0-9]+]] uint64_t = u64;
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_bswap16:[0-9]+]] @__builtin_bswap16(%[[VALUE0:[0-9]+]] <unnamed>: u16) -> u16 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_foo16:[0-9]+]] @foo16(%[[VALUE_a:[0-9]+]] a: u16) -> u16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u16 [storage=automatic];
+// DEFAULT-NEXT:         write<u16>(%[[VALUE_b]], call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], read<u16>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         return read<u16>(%[[VALUE_b]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @__builtin_bswap32(%17 <unnamed>: u32) -> u32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %9 @foo32(%10 a: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 b: u32 [storage=automatic];
-// DEFAULT-NEXT:         write<u32>(%11, call<u32, signature=fn(u32) -> u32>(%18, read<u32>(%10)));
-// DEFAULT-NEXT:         return read<u32>(%11);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_bswap32:[0-9]+]] @__builtin_bswap32(%[[VALUE1:[0-9]+]] <unnamed>: u32) -> u32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_foo32:[0-9]+]] @foo32(%[[VALUE_a_2:[0-9]+]] a: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: u32 [storage=automatic];
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_b_2]], call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], read<u32>(%[[VALUE_a_2]])));
+// DEFAULT-NEXT:         return read<u32>(%[[VALUE_b_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @__builtin_bswap64(%19 <unnamed>: u64) -> u64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %12 @foo64(%13 a: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %14 b: u64 [storage=automatic];
-// DEFAULT-NEXT:         write<u64>(%14, call<u64, signature=fn(u64) -> u64>(%20, read<u64>(%13)));
-// DEFAULT-NEXT:         return read<u64>(%14);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_bswap64:[0-9]+]] @__builtin_bswap64(%[[VALUE2:[0-9]+]] <unnamed>: u64) -> u64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_foo64:[0-9]+]] @foo64(%[[VALUE_a_3:[0-9]+]] a: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_b_3:[0-9]+]] b: u64 [storage=automatic];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_b_3]], call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_a_3]])));
+// DEFAULT-NEXT:         return read<u64>(%[[VALUE_b_3]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

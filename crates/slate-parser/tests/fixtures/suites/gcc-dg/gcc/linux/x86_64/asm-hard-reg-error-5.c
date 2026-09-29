@@ -52,21 +52,21 @@ test (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @test() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %1 x: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %2 y: i32 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             lateout 0 "{0}" [{ax}] width 32 place<i32>(%1);
-// DEFAULT-NEXT:             lateout 1 "{1}" [{dx}] width 32 place<i32>(%2);
+// DEFAULT-NEXT:             lateout 0 "{0}" [{ax}] width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             lateout 1 "{1}" [{dx}] width 32 place<i32>(%[[VALUE_y]]);
 // DEFAULT-NEXT:             clobbers: "1" as dx;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             lateout 0 "{0}" [{ax}] width 32 place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "{0}" [{ax}] width 32 read<i32>(%2);
-// DEFAULT-NEXT:             in 2 "{1}" [{dx}] width 32 read<i32>(%2);
+// DEFAULT-NEXT:             lateout 0 "{0}" [{ax}] width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "{0}" [{ax}] width 32 read<i32>(%[[VALUE_y]]);
+// DEFAULT-NEXT:             in 2 "{1}" [{dx}] width 32 read<i32>(%[[VALUE_y]]);
 // DEFAULT-NEXT:             clobbers: "1" as dx;
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%1), read<i32>(%2));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), read<i32>(%[[VALUE_y]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

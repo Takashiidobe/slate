@@ -116,20 +116,20 @@ int packed_size = sizeof(struct Packed);
 // IR-WARN-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     type @type0 Packed = struct {
+// IR-WARN-NEXT:     type @type[[TYPE_Packed:[0-9]+]] Packed = struct {
 // IR-WARN-NEXT:         field0 c: i8;
 // IR-WARN-NEXT:         field1 i: i32;
 // IR-WARN-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-WARN-NEXT:     global %0 imported: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %1 exported: i32 [storage=static] = const<i32>(1) [linkage=external];
-// IR-WARN-NEXT:     global %2 weak_value: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %3 hidden: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %4 gnu_aligned: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %5 moded: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %6 vector: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %8 aligned: i32 [storage=static] [align=16] [linkage=external];
-// IR-WARN-NEXT:     global %9 selected: i32 [storage=static] = const<i32>(1) [linkage=external] [selectany];
-// IR-WARN-NEXT:     global %11 packed_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
-// IR-WARN-NEXT:     fn %7 @wrapped() -> void [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_imported:[0-9]+]] imported: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_exported:[0-9]+]] exported: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_weak_value:[0-9]+]] weak_value: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_hidden:[0-9]+]] hidden: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_gnu_aligned:[0-9]+]] gnu_aligned: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_moded:[0-9]+]] moded: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_vector:[0-9]+]] vector: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_aligned:[0-9]+]] aligned: i32 [storage=static] [align=16] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_selected:[0-9]+]] selected: i32 [storage=static] = const<i32>(1) [linkage=external] [selectany];
+// IR-WARN-NEXT:     global %[[VALUE_packed_size:[0-9]+]] packed_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
+// IR-WARN-NEXT:     fn %[[VALUE_wrapped:[0-9]+]] @wrapped() -> void [linkage=external];
 // IR-WARN-NEXT: }
 // SLATE-FILECHECK-END IR-WARN

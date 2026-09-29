@@ -44,22 +44,22 @@ void undeclared(void) { abort(); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @exit(%8 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @toupper(%9 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @quit(%10 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @plain(%4 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%0, const<i32>(1));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%4)), call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%4)));
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_toupper:[0-9]+]] @toupper(%[[VALUE1:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_quit:[0-9]+]] @quit(%[[VALUE2:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_plain:[0-9]+]] @plain(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(1));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_toupper]], read<i32>(%[[VALUE_x]])), call<i32, signature=fn(i32) -> i32>(%[[VALUE_toupper]], read<i32>(%[[VALUE_x]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @before_declspec(%6 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%6), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%2, const<i32>(2));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%6), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_before_declspec:[0-9]+]] @before_declspec(%[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x_2]]), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_quit]], const<i32>(2));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_x_2]]), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @abort() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @undeclared() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%12);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_undeclared:[0-9]+]] @undeclared() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

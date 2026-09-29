@@ -40,22 +40,22 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 x: array<u32, 1> [storage=static] = aggregate<array<u32, 1>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(2))) [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo() -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4: ptr<u32> [synthetic] = ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1)>(%0), const<i32>(0));
-// DEFAULT-NEXT:         let %5: u32 [synthetic] = read<u32>(deref(read<ptr<u32>>(%4)));
-// DEFAULT-NEXT:         let %6: u32 [synthetic] = or<u32>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(128)));
-// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%4)), read<u32>(%6));
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: array<u32, 1> [storage=static] = aggregate<array<u32, 1>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(2))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<u32> [synthetic] = ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1)>(%[[VALUE_x]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(deref(read<ptr<u32>>(%[[VALUE0]])));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u32 [synthetic] = or<u32>(read<u32>(%[[VALUE1]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(128)));
+// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%[[VALUE0]])), read<u32>(%[[VALUE2]]));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=always>(const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7: ptr<u32> [synthetic] = ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1)>(%0), const<i32>(0));
-// DEFAULT-NEXT:         let %8: u32 [synthetic] = read<u32>(deref(read<ptr<u32>>(%7)));
-// DEFAULT-NEXT:         let %9: u32 [synthetic] = or<u32>(read<u32>(%8), call<u32, signature=fn() -> u32>(%1));
-// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%7)), read<u32>(%9));
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1)>(%0), const<i32>(0)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(131)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: ptr<u32> [synthetic] = ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1)>(%[[VALUE_x]]), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u32 [synthetic] = read<u32>(deref(read<ptr<u32>>(%[[VALUE3]])));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u32 [synthetic] = or<u32>(read<u32>(%[[VALUE4]]), call<u32, signature=fn() -> u32>(%[[VALUE_foo]]));
+// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%[[VALUE3]])), read<u32>(%[[VALUE5]]));
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(1)>(%[[VALUE_x]]), const<i32>(0)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(131)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

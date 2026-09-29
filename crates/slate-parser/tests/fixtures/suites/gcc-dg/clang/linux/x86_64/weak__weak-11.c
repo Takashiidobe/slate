@@ -35,6 +35,6 @@ static const int local = 1;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 local: i32 [storage=static] [const] = const<i32>(1) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_local:[0-9]+]] local: i32 [storage=static] [const] = const<i32>(1) [linkage=internal];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

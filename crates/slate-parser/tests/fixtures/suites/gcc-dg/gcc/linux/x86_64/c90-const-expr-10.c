@@ -55,24 +55,24 @@ h2 (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     type @type1 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 a: ptr<void>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %1 p: ptr<void> [storage=static] = int_to_ptr<ptr<void>, reason=assign>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>)) [linkage=external];
-// DEFAULT-NEXT:     global %3 q: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = int_to_ptr<ptr<void>, reason=assign>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>))) [linkage=external];
-// DEFAULT-NEXT:     fn %4 @f() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 r: ptr<void> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<void>>(%5, int_to_ptr<ptr<void>, reason=assign>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>)));
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<void> [storage=static] = int_to_ptr<ptr<void>, reason=assign>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: @type[[TYPE_s]] [storage=static] = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = int_to_ptr<ptr<void>, reason=assign>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: ptr<void> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_r]], int_to_ptr<ptr<void>, reason=assign>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>)));
 // DEFAULT-NEXT:         return int_to_ptr<ptr<void>, reason=return>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @g(%10 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @h() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%6, int_to_ptr<ptr<void>, reason=arg>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>)));
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_g]], int_to_ptr<ptr<void>, reason=arg>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @g2(%11 <unnamed>: i32, %12 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %9 @h2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<void>) -> void>(%8, const<i32>(0), int_to_ptr<ptr<void>, reason=arg>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>)));
+// DEFAULT-NEXT:     fn %[[VALUE_g2:[0-9]+]] @g2(%[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_h2:[0-9]+]] @h2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<void>) -> void>(%[[VALUE_g2]], const<i32>(0), int_to_ptr<ptr<void>, reason=arg>(ptr_to_int<u64, reason=explicit>(null<ptr<void>>)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -67,38 +67,38 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 t: i32;
 // DEFAULT-NEXT:         field1 i: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @bar(%3 p: ptr<f32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<f32>(deref(read<ptr<f32>>(%3)), float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(5.2)));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_p:[0-9]+]] p: ptr<f32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<f32>(deref(read<ptr<f32>>(%[[VALUE_p]])), float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(5.2)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @foo(%5 locp: ptr<@type0>, %6 i: i32, %7 str: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 f: f32 [storage=automatic];
-// DEFAULT-NEXT:         let %9 g: f32 [storage=automatic];
-// DEFAULT-NEXT:         let %10 p: ptr<f32> [storage=automatic];
-// DEFAULT-NEXT:         let %11 T355: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %12 T356: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<f32>>(%10, conditional<ptr<f32>>(ne<i32>(read<i32>(%6), const<i32>(0)), addr_of<ptr<f32>>(%9), addr_of<ptr<f32>>(%8)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>) -> void>(%2, read<ptr<f32>>(%10));
-// DEFAULT-NEXT:         if gt<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(read<f32>(deref(read<ptr<f32>>(%10)))), const<f64>(0.0))
-// DEFAULT-NEXT:             write<i32>(%7, const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%11, read<i32>(field1(deref(read<ptr<@type0>>(%5)))));
-// DEFAULT-NEXT:         write<ptr<i32>>(%12, addr_of<ptr<i32>>(field1(deref(read<ptr<@type0>>(%5)))));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%12)), read<i32>(%7));
-// DEFAULT-NEXT:         write<i32>(%11, read<i32>(field1(deref(read<ptr<@type0>>(%5)))));
-// DEFAULT-NEXT:         return read<i32>(%11);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_locp:[0-9]+]] locp: ptr<@type[[TYPE_A]]>, %[[VALUE_i:[0-9]+]] i: i32, %[[VALUE_str:[0-9]+]] str: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: f32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: f32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<f32> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_T355:[0-9]+]] T355: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_T356:[0-9]+]] T356: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<f32>>(%[[VALUE_p_2]], conditional<ptr<f32>>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), addr_of<ptr<f32>>(%[[VALUE_g]]), addr_of<ptr<f32>>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>) -> void>(%[[VALUE_bar]], read<ptr<f32>>(%[[VALUE_p_2]]));
+// DEFAULT-NEXT:         if gt<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(read<f32>(deref(read<ptr<f32>>(%[[VALUE_p_2]])))), const<f64>(0.0))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_str]], const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_T355]], read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_locp]])))));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_T356]], addr_of<ptr<i32>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_locp]])))));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_T356]])), read<i32>(%[[VALUE_str]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_T355]], read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_locp]])))));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_T355]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %14 loc: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %15 str: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field1(%14), const<i32>(2));
-// DEFAULT-NEXT:         write<i32>(%15, call<i32, signature=fn(ptr<@type0>, i32, i32) -> i32>(%4, addr_of<ptr<@type0>>(%14), const<i32>(10), const<i32>(3)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type0>, i32, i32) -> i32>(%4, addr_of<ptr<@type0>>(%14), const<i32>(10), const<i32>(3));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%15), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_loc:[0-9]+]] loc: @type[[TYPE_A]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_str_2:[0-9]+]] str: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_loc]]), const<i32>(2));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_str_2]], call<i32, signature=fn(ptr<@type[[TYPE_A]]>, i32, i32) -> i32>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_loc]]), const<i32>(10), const<i32>(3)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE_A]]>, i32, i32) -> i32>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_loc]]), const<i32>(10), const<i32>(3));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_str_2]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

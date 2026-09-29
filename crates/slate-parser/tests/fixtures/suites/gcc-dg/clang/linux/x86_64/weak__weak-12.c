@@ -45,10 +45,10 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @foo() -> i32 [linkage=external] [weak];
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<ptr<fn() -> i32>>(addr_of<ptr<fn() -> i32>>(%1), null<ptr<fn() -> i32>>)
-// DEFAULT-NEXT:             return call<i32, signature=fn() -> i32>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [weak];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<ptr<fn() -> i32>>(addr_of<ptr<fn() -> i32>>(%[[VALUE_foo]]), null<ptr<fn() -> i32>>)
+// DEFAULT-NEXT:             return call<i32, signature=fn() -> i32>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -42,58 +42,58 @@ int side_effect_branch(int i) { int n = _Generic(i, int: i++, default: 0); retur
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 Tag = struct {
+// IR-NEXT:     type @type[[TYPE_Tag:[0-9]+]] Tag = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     global %1 table: array<i32, 4> [storage=static] [align=16] [linkage=external];
-// IR-NEXT:     global %29 .str29: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([100, 111, 117, 98, 108, 101, 0]) [linkage=internal];
-// IR-NEXT:     fn %2 @routine() -> void [linkage=external];
-// IR-NEXT:     fn %3 @constant_branch(%4 i: i32, %5 d: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     global %[[VALUE_table:[0-9]+]] table: array<i32, 4> [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([100, 111, 117, 98, 108, 101, 0]) [linkage=internal];
+// IR-NEXT:     fn %[[VALUE_routine:[0-9]+]] @routine() -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_constant_branch:[0-9]+]] @constant_branch(%[[VALUE_i:[0-9]+]] i: i32, %[[VALUE_d:[0-9]+]] d: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(1);
 // IR-NEXT:     }
-// IR-NEXT:     fn %6 @runtime_branch(%7 i: i32, %8 l: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%7), const<i32>(1));
+// IR-NEXT:     fn %[[VALUE_runtime_branch:[0-9]+]] @runtime_branch(%[[VALUE_i_2:[0-9]+]] i: i32, %[[VALUE_l:[0-9]+]] l: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_i_2]]), const<i32>(1));
 // IR-NEXT:     }
-// IR-NEXT:     fn %9 @string_branch(%10 d: f64) -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(7)>(%29));
+// IR-NEXT:     fn %[[VALUE_string_branch:[0-9]+]] @string_branch(%[[VALUE_d_2:[0-9]+]] d: f64) -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %11 @type_operand() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_type_operand:[0-9]+]] @type_operand() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(1);
 // IR-NEXT:     }
-// IR-NEXT:     fn %12 @array_decays() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_array_decays:[0-9]+]] @array_decays() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(1);
 // IR-NEXT:     }
-// IR-NEXT:     fn %13 @function_decays() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_function_decays:[0-9]+]] @function_decays() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(1);
 // IR-NEXT:     }
-// IR-NEXT:     fn %14 @qualifier_stripped(%15 c: i32 [const]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_qualifier_stripped:[0-9]+]] @qualifier_stripped(%[[VALUE_c:[0-9]+]] c: i32 [const]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(1);
 // IR-NEXT:     }
-// IR-NEXT:     fn %16 @record_tag(%17 t: @type0) -> i32 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<i32>(field0(%17));
+// IR-NEXT:     fn %[[VALUE_record_tag:[0-9]+]] @record_tag(%[[VALUE_t:[0-9]+]] t: @type[[TYPE_Tag]]) -> i32 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<i32>(field0(%[[VALUE_t]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %18 @nested(%19 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_nested:[0-9]+]] @nested(%[[VALUE_i_3:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(1);
 // IR-NEXT:     }
-// IR-NEXT:     fn %20 @as_condition(%21 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         if ne<i32>(read<i32>(%21), const<i32>(0))
+// IR-NEXT:     fn %[[VALUE_as_condition:[0-9]+]] @as_condition(%[[VALUE_i_4:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         if ne<i32>(read<i32>(%[[VALUE_i_4]]), const<i32>(0))
 // IR-NEXT:             return const<i32>(1);
 // IR-NEXT:         return const<i32>(0);
 // IR-NEXT:     }
-// IR-NEXT:     fn %22 @as_place(%23 x: i32, %24 y: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         write<i32>(%23, const<i32>(5));
-// IR-NEXT:         return read<i32>(%23);
+// IR-NEXT:     fn %[[VALUE_as_place:[0-9]+]] @as_place(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         write<i32>(%[[VALUE_x]], const<i32>(5));
+// IR-NEXT:         return read<i32>(%[[VALUE_x]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %25 @unevaluated_controlling() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_unevaluated_controlling:[0-9]+]] @unevaluated_controlling() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(1);
 // IR-NEXT:     }
-// IR-NEXT:     fn %26 @side_effect_branch(%27 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %28 n: i32 [storage=automatic];
-// IR-NEXT:         let %30: i32 [synthetic] = read<i32>(%27);
-// IR-NEXT:         let %31: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%30), const<i32>(1));
-// IR-NEXT:         write<i32>(%27, read<i32>(%31));
-// IR-NEXT:         write<i32>(%28, read<i32>(%30));
-// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%28), read<i32>(%27));
+// IR-NEXT:     fn %[[VALUE_side_effect_branch:[0-9]+]] @side_effect_branch(%[[VALUE_i_5:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_n:[0-9]+]] n: i32 [storage=automatic];
+// IR-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_5]]);
+// IR-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// IR-NEXT:         write<i32>(%[[VALUE_i_5]], read<i32>(%[[VALUE1]]));
+// IR-NEXT:         write<i32>(%[[VALUE_n]], read<i32>(%[[VALUE0]]));
+// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_n]]), read<i32>(%[[VALUE_i_5]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

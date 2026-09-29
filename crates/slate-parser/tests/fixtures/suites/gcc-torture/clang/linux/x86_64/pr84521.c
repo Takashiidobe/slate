@@ -68,38 +68,38 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %3 x: volatile i32 [storage=static] = const<i32>(256) [linkage=external];
-// DEFAULT-NEXT:     global %4 p: volatile ptr<void> [storage=static] = pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<volatile i32>>(%3)) [linkage=external];
-// DEFAULT-NEXT:     global %5 p1: volatile ptr<void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %15 @__builtin_longjmp(%13 <unnamed>: ptr<ptr<void>>, %14 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @broken_longjmp(%2 p: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>, i32) -> void>(%15, pointer_cast<ptr<ptr<void>>, reason=arg>(read<ptr<void>>(%2)), const<i32>(1));
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: volatile i32 [storage=static] = const<i32>(256) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: volatile ptr<void> [storage=static] = pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<volatile i32>>(%[[VALUE_x]])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p1:[0-9]+]] p1: volatile ptr<void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_longjmp:[0-9]+]] @__builtin_longjmp(%[[VALUE0:[0-9]+]] <unnamed>: ptr<ptr<void>>, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_broken_longjmp:[0-9]+]] @broken_longjmp(%[[VALUE_p_2:[0-9]+]] p: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>, i32) -> void>(%[[VALUE___builtin_longjmp]], pointer_cast<ptr<ptr<void>>, reason=arg>(read<ptr<void>>(%[[VALUE_p_2]])), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @__builtin_setjmp(%16 <unnamed>: ptr<ptr<void>>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %6 @test() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 buf: array<ptr<void>, 5> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %8 q: volatile ptr<void> [storage=automatic] = read<ptr<void>, volatile>(%4);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<ptr<void>>) -> i32>(%17, array_decay<ptr<ptr<void>>, length=Some(5)>(%7)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<ptr<void>>, length=Some(5)>(%7)));
-// DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>, volatile>(%4), read<ptr<void>, volatile>(%8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_setjmp:[0-9]+]] @__builtin_setjmp(%[[VALUE2:[0-9]+]] <unnamed>: ptr<ptr<void>>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: array<ptr<void>, 5> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: volatile ptr<void> [storage=automatic] = read<ptr<void>, volatile>(%[[VALUE_p]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(ptr<ptr<void>>) -> i32>(%[[VALUE___builtin_setjmp]], array_decay<ptr<ptr<void>>, length=Some(5)>(%[[VALUE_buf]])), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_broken_longjmp]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<ptr<void>>, length=Some(5)>(%[[VALUE_buf]])));
+// DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>, volatile>(%[[VALUE_p]]), read<ptr<void>, volatile>(%[[VALUE_q]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @__builtin_alloca(%18 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %9 @test2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %10 q: volatile ptr<void> [storage=automatic] = read<ptr<void>, volatile>(%4);
-// DEFAULT-NEXT:         write<ptr<void>, volatile>(%5, call<ptr<void>, signature=fn(u64) -> ptr<void>>(%19, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32, volatile>(%3)))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(%19, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32, volatile>(%3))));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
-// DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>, volatile>(%4), read<ptr<void>, volatile>(%10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_alloca:[0-9]+]] @__builtin_alloca(%[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_q_2:[0-9]+]] q: volatile ptr<void> [storage=automatic] = read<ptr<void>, volatile>(%[[VALUE_p]]);
+// DEFAULT-NEXT:         write<ptr<void>, volatile>(%[[VALUE_p1]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32, volatile>(%[[VALUE_x]])))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32, volatile>(%[[VALUE_x]]))));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test]]);
+// DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>, volatile>(%[[VALUE_p]]), read<ptr<void>, volatile>(%[[VALUE_q_2]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 q: volatile ptr<void> [storage=automatic] = read<ptr<void>, volatile>(%4);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%9);
-// DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>, volatile>(%4), read<ptr<void>, volatile>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_q_3:[0-9]+]] q: volatile ptr<void> [storage=automatic] = read<ptr<void>, volatile>(%[[VALUE_p]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test2]]);
+// DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>, volatile>(%[[VALUE_p]]), read<ptr<void>, volatile>(%[[VALUE_q_3]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

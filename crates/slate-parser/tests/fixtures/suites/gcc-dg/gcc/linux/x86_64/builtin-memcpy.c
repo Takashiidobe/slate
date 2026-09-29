@@ -68,30 +68,30 @@ void f32 (const void *p)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 a1: array<i8, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 a2: array<i8, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 a4: array<i8, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 a8: array<i8, 8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 a16: array<i8, 16> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %6 a32: array<i8, 32> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @memcpy(%19 <unnamed>: ptr<void>, %20 <unnamed>: ptr<const void>, %21 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %7 @f1(%8 p: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%1)), read<ptr<const void>>(%8), mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
+// DEFAULT-NEXT:     global %[[VALUE_a1:[0-9]+]] a1: array<i8, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a2:[0-9]+]] a2: array<i8, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a4:[0-9]+]] a4: array<i8, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a8:[0-9]+]] a8: array<i8, 8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a16:[0-9]+]] a16: array<i8, 16> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a32:[0-9]+]] a32: array<i8, 32> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_memcpy:[0-9]+]] @memcpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_p:[0-9]+]] p: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_a1]])), read<ptr<const void>>(%[[VALUE_p]]), mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @f2(%10 p: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%2)), read<ptr<const void>>(%10), mul<u64, overflow=wrap>(const<u64>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_p_2:[0-9]+]] p: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_a2]])), read<ptr<const void>>(%[[VALUE_p_2]]), mul<u64, overflow=wrap>(const<u64>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @f4(%12 p: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%3)), read<ptr<const void>>(%12), mul<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_p_3:[0-9]+]] p: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_a4]])), read<ptr<const void>>(%[[VALUE_p_3]]), mul<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @f8(%14 p: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%4)), read<ptr<const void>>(%14), mul<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
+// DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_p_4:[0-9]+]] p: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_a8]])), read<ptr<const void>>(%[[VALUE_p_4]]), mul<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @f16(%16 p: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%5)), read<ptr<const void>>(%16), mul<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
+// DEFAULT-NEXT:     fn %[[VALUE_f16:[0-9]+]] @f16(%[[VALUE_p_5:[0-9]+]] p: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(16)>(%[[VALUE_a16]])), read<ptr<const void>>(%[[VALUE_p_5]]), mul<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @f32(%18 p: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(32)>(%6)), read<ptr<const void>>(%18), mul<u64, overflow=wrap>(const<u64>(32), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
+// DEFAULT-NEXT:     fn %[[VALUE_f32:[0-9]+]] @f32(%[[VALUE_p_6:[0-9]+]] p: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(32)>(%[[VALUE_a32]])), read<ptr<const void>>(%[[VALUE_p_6]]), mul<u64, overflow=wrap>(const<u64>(32), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

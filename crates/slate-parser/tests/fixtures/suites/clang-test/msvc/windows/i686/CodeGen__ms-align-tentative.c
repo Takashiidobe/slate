@@ -42,18 +42,18 @@ struct Wrap {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 T = i8;
-// DEFAULT-NEXT:     type @type1 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 fd: i8;
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 Wrap = struct {
-// DEFAULT-NEXT:         field0 x: @type1;
+// DEFAULT-NEXT:     type @type[[TYPE_Wrap:[0-9]+]] Wrap = struct {
+// DEFAULT-NEXT:         field0 x: @type[[TYPE_S]];
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0]];
-// DEFAULT-NEXT:     global %0 x: i8 [storage=static] [align=8192] [linkage=external];
-// DEFAULT-NEXT:     global %2 y: i8 [storage=static] [align=8192] [linkage=external];
-// DEFAULT-NEXT:     global %3 z: i8 [storage=static] [align=8192] [linkage=external];
-// DEFAULT-NEXT:     global %4 redef: i32 [storage=static] [align=32] = const<i32>(8) [linkage=external];
-// DEFAULT-NEXT:     global %6 s: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 w: @type2 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i8 [storage=static] [align=8192] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: i8 [storage=static] [align=8192] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_z:[0-9]+]] z: i8 [storage=static] [align=8192] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_redef:[0-9]+]] redef: i32 [storage=static] [align=32] = const<i32>(8) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_w:[0-9]+]] w: @type[[TYPE_Wrap]] [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

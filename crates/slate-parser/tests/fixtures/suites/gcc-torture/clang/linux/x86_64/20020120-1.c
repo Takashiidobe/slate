@@ -79,50 +79,50 @@ void foo (struct B *x, int y, const float *z)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 a: ptr<void>;
 // DEFAULT-NEXT:         field1 b: u32;
 // DEFAULT-NEXT:         field2 c: u32;
 // DEFAULT-NEXT:         field3 d: u32;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 12, 16]];
-// DEFAULT-NEXT:     type @type1 B = struct {
-// DEFAULT-NEXT:         field0 e: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
+// DEFAULT-NEXT:         field0 e: ptr<@type[[TYPE_A]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %2 @bar(%17 <unnamed>: ptr<@type0>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @baz(%18 <unnamed>: ptr<@type0>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @inl(%5 v: u32, %6 w: u8, %7 x: u8, %8 y: u8, %9 z: u8) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         switch %19 read<u32>(%5)
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_A]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE1:[0-9]+]] <unnamed>: ptr<@type[[TYPE_A]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_inl:[0-9]+]] @inl(%[[VALUE_v:[0-9]+]] v: u32, %[[VALUE_w:[0-9]+]] w: u8, %[[VALUE_x:[0-9]+]] x: u8, %[[VALUE_y:[0-9]+]] y: u8, %[[VALUE_z:[0-9]+]] z: u8) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         switch %[[VALUE2:[0-9]+]] read<u32>(%[[VALUE_v]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %19 const<u32>(2):
-// DEFAULT-NEXT:                     return reinterpret<u32, reason=return, fits=unknown>(or<i32>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%6))), const<i32>(248)), const<i32>(8)), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%7))), const<i32>(252)), const<i32>(3))), shr<i32, amount_out_of_range=ub, fill=sign_extend>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%8))), const<i32>(248)), const<i32>(3))));
-// DEFAULT-NEXT:                 case %19 const<u32>(4):
-// DEFAULT-NEXT:                     return reinterpret<u32, reason=return, fits=unknown>(or<i32>(or<i32>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%9))), const<i32>(24)), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%6))), const<i32>(16))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%7))), const<i32>(8))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%8)))));
-// DEFAULT-NEXT:                 default %19:
+// DEFAULT-NEXT:                 case %[[VALUE2]] const<u32>(2):
+// DEFAULT-NEXT:                     return reinterpret<u32, reason=return, fits=unknown>(or<i32>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_w]]))), const<i32>(248)), const<i32>(8)), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_x]]))), const<i32>(252)), const<i32>(3))), shr<i32, amount_out_of_range=ub, fill=sign_extend>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_y]]))), const<i32>(248)), const<i32>(3))));
+// DEFAULT-NEXT:                 case %[[VALUE2]] const<u32>(4):
+// DEFAULT-NEXT:                     return reinterpret<u32, reason=return, fits=unknown>(or<i32>(or<i32>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_z]]))), const<i32>(24)), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_w]]))), const<i32>(16))), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_x]]))), const<i32>(8))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_y]])))));
+// DEFAULT-NEXT:                 default %[[VALUE2]]:
 // DEFAULT-NEXT:                     return reinterpret<u32, reason=return, fits=always>(const<i32>(0));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @foo(%11 x: ptr<@type1>, %12 y: i32, %13 z: ptr<const f32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %14 a: ptr<@type0> [storage=automatic] = read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(%11))));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%12), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x_2:[0-9]+]] x: ptr<@type[[TYPE_B]]>, %[[VALUE_y_2:[0-9]+]] y: i32, %[[VALUE_z_2:[0-9]+]] z: ptr<const f32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: ptr<@type[[TYPE_A]]> [storage=automatic] = read<ptr<@type[[TYPE_A]]>>(field0(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x_2]]))));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_y_2]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if ne<ptr<void>>(read<ptr<void>>(field0(deref(read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(%11))))))), null<ptr<void>>)
-// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type0>) -> void>(%2, read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(%11)))));
+// DEFAULT-NEXT:                 if ne<ptr<void>>(read<ptr<void>>(field0(deref(read<ptr<@type[[TYPE_A]]>>(field0(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x_2]]))))))), null<ptr<void>>)
+// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_bar]], read<ptr<@type[[TYPE_A]]>>(field0(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_x_2]])))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %15 c: array<u8, 4> [storage=automatic];
-// DEFAULT-NEXT:                 let %16 b: u32 [storage=automatic];
-// DEFAULT-NEXT:                 write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%15), const<i32>(0))), float_to_int<u8, reason=assign, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<const f32>, subtract=false, element=f32, overflow=ub>(read<ptr<const f32>>(%13), const<i32>(0))))));
-// DEFAULT-NEXT:                 write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%15), const<i32>(1))), float_to_int<u8, reason=assign, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<const f32>, subtract=false, element=f32, overflow=ub>(read<ptr<const f32>>(%13), const<i32>(1))))));
-// DEFAULT-NEXT:                 write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%15), const<i32>(2))), float_to_int<u8, reason=assign, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<const f32>, subtract=false, element=f32, overflow=ub>(read<ptr<const f32>>(%13), const<i32>(2))))));
-// DEFAULT-NEXT:                 write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%15), const<i32>(3))), float_to_int<u8, reason=assign, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<const f32>, subtract=false, element=f32, overflow=ub>(read<ptr<const f32>>(%13), const<i32>(3))))));
-// DEFAULT-NEXT:                 write<u32>(%16, call<u32, signature=fn(u32, u8, u8, u8, u8) -> u32>(%4, read<u32>(field1(deref(read<ptr<@type0>>(%14)))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%15), const<i32>(0)))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%15), const<i32>(1)))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%15), const<i32>(2)))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%15), const<i32>(3))))));
-// DEFAULT-NEXT:                 call<u32, signature=fn(u32, u8, u8, u8, u8) -> u32>(%4, read<u32>(field1(deref(read<ptr<@type0>>(%14)))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%15), const<i32>(0)))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%15), const<i32>(1)))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%15), const<i32>(2)))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%15), const<i32>(3)))));
-// DEFAULT-NEXT:                 if ne<ptr<void>>(read<ptr<void>>(field0(deref(read<ptr<@type0>>(%14)))), null<ptr<void>>)
-// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type0>) -> void>(%2, read<ptr<@type0>>(%14));
+// DEFAULT-NEXT:                 let %[[VALUE_c:[0-9]+]] c: array<u8, 4> [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_b:[0-9]+]] b: u32 [storage=automatic];
+// DEFAULT-NEXT:                 write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_c]]), const<i32>(0))), float_to_int<u8, reason=assign, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<const f32>, subtract=false, element=f32, overflow=ub>(read<ptr<const f32>>(%[[VALUE_z_2]]), const<i32>(0))))));
+// DEFAULT-NEXT:                 write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_c]]), const<i32>(1))), float_to_int<u8, reason=assign, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<const f32>, subtract=false, element=f32, overflow=ub>(read<ptr<const f32>>(%[[VALUE_z_2]]), const<i32>(1))))));
+// DEFAULT-NEXT:                 write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_c]]), const<i32>(2))), float_to_int<u8, reason=assign, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<const f32>, subtract=false, element=f32, overflow=ub>(read<ptr<const f32>>(%[[VALUE_z_2]]), const<i32>(2))))));
+// DEFAULT-NEXT:                 write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_c]]), const<i32>(3))), float_to_int<u8, reason=assign, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<const f32>, subtract=false, element=f32, overflow=ub>(read<ptr<const f32>>(%[[VALUE_z_2]]), const<i32>(3))))));
+// DEFAULT-NEXT:                 write<u32>(%[[VALUE_b]], call<u32, signature=fn(u32, u8, u8, u8, u8) -> u32>(%[[VALUE_inl]], read<u32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]])))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_c]]), const<i32>(0)))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_c]]), const<i32>(1)))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_c]]), const<i32>(2)))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_c]]), const<i32>(3))))));
+// DEFAULT-NEXT:                 call<u32, signature=fn(u32, u8, u8, u8, u8) -> u32>(%[[VALUE_inl]], read<u32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]])))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_c]]), const<i32>(0)))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_c]]), const<i32>(1)))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_c]]), const<i32>(2)))), read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(4)>(%[[VALUE_c]]), const<i32>(3)))));
+// DEFAULT-NEXT:                 if ne<ptr<void>>(read<ptr<void>>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]])))), null<ptr<void>>)
+// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_bar]], read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type0>) -> void>(%3, read<ptr<@type0>>(%14));
-// DEFAULT-NEXT:                 write<u32>(field2(deref(read<ptr<@type0>>(%14))), read<u32>(%16));
+// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_baz]], read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:                 write<u32>(field2(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]]))), read<u32>(%[[VALUE_b]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

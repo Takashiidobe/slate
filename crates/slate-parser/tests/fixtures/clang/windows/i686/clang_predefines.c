@@ -41,7 +41,7 @@ struct Scalars { long value; long double real; int *pointer; };
 // CHECK-NEXT:         storage d64 [size=8, align=8];
 // CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     type @type0 Scalars = struct {
+// CHECK-NEXT:     type @type[[TYPE_Scalars:[0-9]+]] Scalars = struct {
 // CHECK-NEXT:         field0 value: i32;
 // CHECK-NEXT:         field1 real: f64;
 // CHECK-NEXT:         field2 pointer: ptr<i32>;

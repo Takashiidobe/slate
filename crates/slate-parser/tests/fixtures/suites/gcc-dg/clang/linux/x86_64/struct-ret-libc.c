@@ -41,19 +41,19 @@ int main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 quot: i32;
 // DEFAULT-NEXT:         field1 rem: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 div_t = @type0;
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @exit(%10 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @div(%11 __numer: i32, %12 __denom: i32) -> @type0 [linkage=external] [memory=none] [abi=sysv64(scalar, scalar) -> native_c];
-// DEFAULT-NEXT:     fn %8 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9 d: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn(i32, i32) -> @type0, abi=sysv64(scalar, scalar) -> native_c>(%7, const<i32>(20), const<i32>(5)));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(%9)), const<i32>(4)), ne<i32>(read<i32>(field1(%9)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(0));
+// DEFAULT-NEXT:     type @type[[TYPE_div_t:[0-9]+]] div_t = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_div:[0-9]+]] @div(%[[VALUE___numer:[0-9]+]] __numer: i32, %[[VALUE___denom:[0-9]+]] __denom: i32) -> @type[[TYPE0]] [linkage=external] [memory=none] [abi=sysv64(scalar, scalar) -> native_c];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: @type[[TYPE0]] [storage=automatic] = copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(i32, i32) -> @type[[TYPE0]], abi=sysv64(scalar, scalar) -> native_c>(%[[VALUE_div]], const<i32>(20), const<i32>(5)));
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(%[[VALUE_d]])), const<i32>(4)), ne<i32>(read<i32>(field1(%[[VALUE_d]])), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

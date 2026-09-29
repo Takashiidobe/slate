@@ -233,7 +233,7 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a1: i64;
 // DEFAULT-NEXT:         field1 n1: u64;
 // DEFAULT-NEXT:         field2 local1: u64;
@@ -260,8 +260,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         field23 bm11: u64;
 // DEFAULT-NEXT:         field24 misc12: u64;
 // DEFAULT-NEXT:     } [size=200, align=8, offsets=[0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192]];
-// DEFAULT-NEXT:     type @type1 ShrPcCommonStatSType = @type0;
-// DEFAULT-NEXT:     type @type2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_ShrPcCommonStatSType:[0-9]+]] ShrPcCommonStatSType = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 sharedAttached: u64;
 // DEFAULT-NEXT:         field1 totalAttached: u64;
 // DEFAULT-NEXT:         field2 avgPercentShared: i64;
@@ -276,8 +276,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         field11 gemsInCacheCount: u64;
 // DEFAULT-NEXT:         field12 targetFreeFrameCount: i64;
 // DEFAULT-NEXT:     } [size=248, align=8, offsets=[0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 152, 232, 240]];
-// DEFAULT-NEXT:     type @type3 ShrPcMonStatSType = @type2;
-// DEFAULT-NEXT:     type @type4 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_ShrPcMonStatSType:[0-9]+]] ShrPcMonStatSType = @type[[TYPE1]];
+// DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c1: u64;
 // DEFAULT-NEXT:         field1 c2: u64;
 // DEFAULT-NEXT:         field2 c3: u64;
@@ -311,19 +311,19 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         field30 a19: u64;
 // DEFAULT-NEXT:         field31 sessionStats: array<u64, 40>;
 // DEFAULT-NEXT:     } [size=568, align=8, offsets=[0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248]];
-// DEFAULT-NEXT:     type @type5 ShrPcGemStatSType = @type4;
-// DEFAULT-NEXT:     type @type6 ShrPcStatUnion = union {
-// DEFAULT-NEXT:         field0 monitor: @type2;
-// DEFAULT-NEXT:         field1 gem: @type4;
+// DEFAULT-NEXT:     type @type[[TYPE_ShrPcGemStatSType:[0-9]+]] ShrPcGemStatSType = @type[[TYPE2]];
+// DEFAULT-NEXT:     type @type[[TYPE_ShrPcStatUnion:[0-9]+]] ShrPcStatUnion = union {
+// DEFAULT-NEXT:         field0 monitor: @type[[TYPE1]];
+// DEFAULT-NEXT:         field1 gem: @type[[TYPE2]];
 // DEFAULT-NEXT:     } [size=568, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type7 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE3:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 processId: i32;
 // DEFAULT-NEXT:         field1 sessionId: i32;
-// DEFAULT-NEXT:         field2 cmn: @type0;
-// DEFAULT-NEXT:         field3 u: @type6;
+// DEFAULT-NEXT:         field2 cmn: @type[[TYPE0]];
+// DEFAULT-NEXT:         field3 u: @type[[TYPE_ShrPcStatUnion]];
 // DEFAULT-NEXT:     } [size=776, align=8, offsets=[0, 4, 8, 208]];
-// DEFAULT-NEXT:     type @type8 ShrPcStatsSType = @type7;
-// DEFAULT-NEXT:     type @type9 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_ShrPcStatsSType:[0-9]+]] ShrPcStatsSType = @type[[TYPE3]];
+// DEFAULT-NEXT:     type @type[[TYPE4:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 p1: ptr<u64>;
 // DEFAULT-NEXT:         field1 p2: ptr<u64>;
 // DEFAULT-NEXT:         field2 p3: ptr<u64>;
@@ -336,92 +336,92 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         field9 p10: ptr<u64>;
 // DEFAULT-NEXT:         field10 p11: ptr<u64>;
 // DEFAULT-NEXT:     } [size=88, align=8, offsets=[0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80]];
-// DEFAULT-NEXT:     type @type10 WorkEntrySType = @type9;
-// DEFAULT-NEXT:     type @type11 = struct {
-// DEFAULT-NEXT:         field0 stats: @type7;
+// DEFAULT-NEXT:     type @type[[TYPE_WorkEntrySType:[0-9]+]] WorkEntrySType = @type[[TYPE4]];
+// DEFAULT-NEXT:     type @type[[TYPE5:[0-9]+]] = struct {
+// DEFAULT-NEXT:         field0 stats: @type[[TYPE3]];
 // DEFAULT-NEXT:     } [size=776, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type12 ShrPcPteSType = @type11;
-// DEFAULT-NEXT:     global %0 Local1: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 Local2: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 Local3: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 RDbf1: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 RDbf2: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 RDbf3: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 IntVc1: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 IntVc2: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 IntCode3: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 IntCode4: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 IntCode5: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 IntCode6: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %12 Lom1: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %13 Lom2: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %14 Lom3: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %15 Lom4: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %16 Lom5: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %17 Lom6: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %18 Lom7: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %19 Lom8: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %20 Lom9: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %21 Lom10: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %22 RDbf11: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %23 RDbf12: ptr<u64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %35 Workspace: @type9 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %42 MyPte: @type11 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %36 @setStatPointers(%37 statsPtr: ptr<@type7>, %38 sessionId: i64) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type7>>(%37))), truncate<i32, reason=assign, fits=unknown>(read<i64>(%38)));
-// DEFAULT-NEXT:         write<i64>(field0(field2(deref(read<ptr<@type7>>(%37)))), widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         write<u64>(field1(field2(deref(read<ptr<@type7>>(%37)))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(5))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%0, addr_of<ptr<u64>>(field2(field2(deref(read<ptr<@type7>>(%37))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%1, addr_of<ptr<u64>>(field3(field2(deref(read<ptr<@type7>>(%37))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%2, addr_of<ptr<u64>>(field4(field2(deref(read<ptr<@type7>>(%37))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%3, addr_of<ptr<u64>>(field5(field2(deref(read<ptr<@type7>>(%37))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%4, addr_of<ptr<u64>>(field6(field2(deref(read<ptr<@type7>>(%37))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%5, addr_of<ptr<u64>>(field7(field2(deref(read<ptr<@type7>>(%37))))));
-// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%5)), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%6, addr_of<ptr<u64>>(field12(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%7, addr_of<ptr<u64>>(field13(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%8, addr_of<ptr<u64>>(field14(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%9, addr_of<ptr<u64>>(field15(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%10, addr_of<ptr<u64>>(field16(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%11, addr_of<ptr<u64>>(field17(field1(field3(deref(read<ptr<@type7>>(%37)))))));
+// DEFAULT-NEXT:     type @type[[TYPE_ShrPcPteSType:[0-9]+]] ShrPcPteSType = @type[[TYPE5]];
+// DEFAULT-NEXT:     global %[[VALUE_Local1:[0-9]+]] Local1: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_Local2:[0-9]+]] Local2: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_Local3:[0-9]+]] Local3: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_RDbf1:[0-9]+]] RDbf1: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_RDbf2:[0-9]+]] RDbf2: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_RDbf3:[0-9]+]] RDbf3: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_IntVc1:[0-9]+]] IntVc1: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_IntVc2:[0-9]+]] IntVc2: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_IntCode3:[0-9]+]] IntCode3: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_IntCode4:[0-9]+]] IntCode4: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_IntCode5:[0-9]+]] IntCode5: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_IntCode6:[0-9]+]] IntCode6: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_Lom1:[0-9]+]] Lom1: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_Lom2:[0-9]+]] Lom2: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_Lom3:[0-9]+]] Lom3: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_Lom4:[0-9]+]] Lom4: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_Lom5:[0-9]+]] Lom5: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_Lom6:[0-9]+]] Lom6: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_Lom7:[0-9]+]] Lom7: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_Lom8:[0-9]+]] Lom8: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_Lom9:[0-9]+]] Lom9: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_Lom10:[0-9]+]] Lom10: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_RDbf11:[0-9]+]] RDbf11: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_RDbf12:[0-9]+]] RDbf12: ptr<u64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_Workspace:[0-9]+]] Workspace: @type[[TYPE4]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_MyPte:[0-9]+]] MyPte: @type[[TYPE5]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_setStatPointers:[0-9]+]] @setStatPointers(%[[VALUE_statsPtr:[0-9]+]] statsPtr: ptr<@type[[TYPE3]]>, %[[VALUE_sessionId:[0-9]+]] sessionId: i64) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]]))), truncate<i32, reason=assign, fits=unknown>(read<i64>(%[[VALUE_sessionId]])));
+// DEFAULT-NEXT:         write<i64>(field0(field2(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))), widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:         write<u64>(field1(field2(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(5))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_Local1]], addr_of<ptr<u64>>(field2(field2(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]]))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_Local2]], addr_of<ptr<u64>>(field3(field2(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]]))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_Local3]], addr_of<ptr<u64>>(field4(field2(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]]))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_RDbf1]], addr_of<ptr<u64>>(field5(field2(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]]))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_RDbf2]], addr_of<ptr<u64>>(field6(field2(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]]))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_RDbf3]], addr_of<ptr<u64>>(field7(field2(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]]))))));
+// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_RDbf3]])), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_IntVc1]], addr_of<ptr<u64>>(field12(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_IntVc2]], addr_of<ptr<u64>>(field13(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_IntCode3]], addr_of<ptr<u64>>(field14(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_IntCode4]], addr_of<ptr<u64>>(field15(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_IntCode5]], addr_of<ptr<u64>>(field16(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_IntCode6]], addr_of<ptr<u64>>(field17(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %39 workSpPtr: ptr<@type9> [storage=automatic];
-// DEFAULT-NEXT:             write<ptr<@type9>>(%39, addr_of<ptr<@type9>>(%35));
-// DEFAULT-NEXT:             write<ptr<u64>>(field0(deref(read<ptr<@type9>>(%39))), addr_of<ptr<u64>>(field18(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:             write<ptr<u64>>(field1(deref(read<ptr<@type9>>(%39))), addr_of<ptr<u64>>(field19(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:             write<ptr<u64>>(field2(deref(read<ptr<@type9>>(%39))), addr_of<ptr<u64>>(field20(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:             write<ptr<u64>>(field3(deref(read<ptr<@type9>>(%39))), addr_of<ptr<u64>>(field21(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:             write<ptr<u64>>(field4(deref(read<ptr<@type9>>(%39))), addr_of<ptr<u64>>(field22(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:             write<ptr<u64>>(field5(deref(read<ptr<@type9>>(%39))), addr_of<ptr<u64>>(field23(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:             write<ptr<u64>>(field6(deref(read<ptr<@type9>>(%39))), addr_of<ptr<u64>>(field24(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:             write<ptr<u64>>(field7(deref(read<ptr<@type9>>(%39))), addr_of<ptr<u64>>(field25(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:             write<ptr<u64>>(field8(deref(read<ptr<@type9>>(%39))), addr_of<ptr<u64>>(field26(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:             write<ptr<u64>>(field9(deref(read<ptr<@type9>>(%39))), addr_of<ptr<u64>>(field27(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:             write<ptr<u64>>(field10(deref(read<ptr<@type9>>(%39))), addr_of<ptr<u64>>(field28(field1(field3(deref(read<ptr<@type7>>(%37)))))));
+// DEFAULT-NEXT:             let %[[VALUE_workSpPtr:[0-9]+]] workSpPtr: ptr<@type[[TYPE4]]> [storage=automatic];
+// DEFAULT-NEXT:             write<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]], addr_of<ptr<@type[[TYPE4]]>>(%[[VALUE_Workspace]]));
+// DEFAULT-NEXT:             write<ptr<u64>>(field0(deref(read<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]]))), addr_of<ptr<u64>>(field18(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:             write<ptr<u64>>(field1(deref(read<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]]))), addr_of<ptr<u64>>(field19(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:             write<ptr<u64>>(field2(deref(read<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]]))), addr_of<ptr<u64>>(field20(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:             write<ptr<u64>>(field3(deref(read<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]]))), addr_of<ptr<u64>>(field21(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:             write<ptr<u64>>(field4(deref(read<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]]))), addr_of<ptr<u64>>(field22(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:             write<ptr<u64>>(field5(deref(read<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]]))), addr_of<ptr<u64>>(field23(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:             write<ptr<u64>>(field6(deref(read<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]]))), addr_of<ptr<u64>>(field24(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:             write<ptr<u64>>(field7(deref(read<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]]))), addr_of<ptr<u64>>(field25(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:             write<ptr<u64>>(field8(deref(read<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]]))), addr_of<ptr<u64>>(field26(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:             write<ptr<u64>>(field9(deref(read<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]]))), addr_of<ptr<u64>>(field27(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:             write<ptr<u64>>(field10(deref(read<ptr<@type[[TYPE4]]>>(%[[VALUE_workSpPtr]]))), addr_of<ptr<u64>>(field28(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<ptr<u64>>(%12, addr_of<ptr<u64>>(field0(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%13, addr_of<ptr<u64>>(field1(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%14, addr_of<ptr<u64>>(field2(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%15, addr_of<ptr<u64>>(field3(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%16, addr_of<ptr<u64>>(field4(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%17, addr_of<ptr<u64>>(field5(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%18, addr_of<ptr<u64>>(field6(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%19, addr_of<ptr<u64>>(field7(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%20, addr_of<ptr<u64>>(field8(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%21, addr_of<ptr<u64>>(field9(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%22, addr_of<ptr<u64>>(field10(field1(field3(deref(read<ptr<@type7>>(%37)))))));
-// DEFAULT-NEXT:         write<ptr<u64>>(%23, addr_of<ptr<u64>>(field11(field1(field3(deref(read<ptr<@type7>>(%37)))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_Lom1]], addr_of<ptr<u64>>(field0(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_Lom2]], addr_of<ptr<u64>>(field1(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_Lom3]], addr_of<ptr<u64>>(field2(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_Lom4]], addr_of<ptr<u64>>(field3(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_Lom5]], addr_of<ptr<u64>>(field4(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_Lom6]], addr_of<ptr<u64>>(field5(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_Lom7]], addr_of<ptr<u64>>(field6(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_Lom8]], addr_of<ptr<u64>>(field7(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_Lom9]], addr_of<ptr<u64>>(field8(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_Lom10]], addr_of<ptr<u64>>(field9(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_RDbf11]], addr_of<ptr<u64>>(field10(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_RDbf12]], addr_of<ptr<u64>>(field11(field1(field3(deref(read<ptr<@type[[TYPE3]]>>(%[[VALUE_statsPtr]])))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %43 @initPte(%44 shrpcPtr: ptr<void>, %45 sessionId: i64) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %46 ptePtr: ptr<@type11> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type11>>(%46, addr_of<ptr<@type11>>(%42));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type7>, i64) -> void>(%36, addr_of<ptr<@type7>>(field0(deref(read<ptr<@type11>>(%46)))), read<i64>(%45));
+// DEFAULT-NEXT:     fn %[[VALUE_initPte:[0-9]+]] @initPte(%[[VALUE_shrpcPtr:[0-9]+]] shrpcPtr: ptr<void>, %[[VALUE_sessionId_2:[0-9]+]] sessionId: i64) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ptePtr:[0-9]+]] ptePtr: ptr<@type[[TYPE5]]> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE5]]>>(%[[VALUE_ptePtr]], addr_of<ptr<@type[[TYPE5]]>>(%[[VALUE_MyPte]]));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE3]]>, i64) -> void>(%[[VALUE_setStatPointers]], addr_of<ptr<@type[[TYPE3]]>>(field0(deref(read<ptr<@type[[TYPE5]]>>(%[[VALUE_ptePtr]])))), read<i64>(%[[VALUE_sessionId_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %47 @InitCache(%48 sessionId: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, i64) -> void>(%43, null<ptr<void>>, widen<i64, reason=arg>(read<i32>(%48)));
+// DEFAULT-NEXT:     fn %[[VALUE_InitCache:[0-9]+]] @InitCache(%[[VALUE_sessionId_3:[0-9]+]] sessionId: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, i64) -> void>(%[[VALUE_initPte]], null<ptr<void>>, widen<i64, reason=arg>(read<i32>(%[[VALUE_sessionId_3]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %49 @main(%50 argc: i32, %51 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%47, const<i32>(5));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_InitCache]], const<i32>(5));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -55,46 +55,46 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @bar(%2 i: u64) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<u64>(read<u64>(%2), const<u64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_i:[0-9]+]] i: u64) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_i]]), const<u64>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @foo(%4 r: ptr<u64>) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %11
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_r:[0-9]+]] r: ptr<u64>) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%5, const<i32>(0));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], const<i32>(0));
 // DEFAULT-NEXT:             condition: omitted
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %13: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%14));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_2]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 if ne<u64>(and<u64>(read<u64>(deref(read<ptr<u64>>(%4))), shl<u64, overflow=wrap, amount_out_of_range=ub>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))), sub<i32, overflow=ub>(const<i32>(63), read<i32>(%5)))), const<u64>(0))
-// DEFAULT-NEXT:                     break %11;
-// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%1, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%5))));
+// DEFAULT-NEXT:                 if ne<u64>(and<u64>(read<u64>(deref(read<ptr<u64>>(%[[VALUE_r]]))), shl<u64, overflow=wrap, amount_out_of_range=ub>(reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))), sub<i32, overflow=ub>(const<i32>(63), read<i32>(%[[VALUE_i_2]])))), const<u64>(0))
+// DEFAULT-NEXT:                     break %[[VALUE0]];
+// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_bar]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_i_2]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @do_test(%7 r: ptr<u64>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %12
+// DEFAULT-NEXT:     fn %[[VALUE_do_test:[0-9]+]] @do_test(%[[VALUE_r_2:[0-9]+]] r: ptr<u64>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i_3:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%8, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%8), const<i32>(2))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_3]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i_3]]), const<i32>(2))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %15: i32 [synthetic] = read<i32>(%8);
-// DEFAULT-NEXT:                 let %16: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%15), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%8, read<i32>(%16));
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_3]]);
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_3]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<u64>) -> void>(%3, read<ptr<u64>>(%7));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<u64>) -> void>(%[[VALUE_foo]], read<ptr<u64>>(%[[VALUE_r_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10 r: u64 [storage=automatic] = const<u64>(9223372036854775809);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<u64>) -> void>(%6, addr_of<ptr<u64>>(%10));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_r_3:[0-9]+]] r: u64 [storage=automatic] = const<u64>(9223372036854775809);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<u64>) -> void>(%[[VALUE_do_test]], addr_of<ptr<u64>>(%[[VALUE_r_3]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

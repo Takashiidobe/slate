@@ -47,27 +47,27 @@ void g3(void) { sizeof(f3()); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f0() -> void [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @g0() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_f0:[0-9]+]] @f0() -> void [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_g0:[0-9]+]] @g0() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_f0]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @f1() -> void [linkage=internal];
-// DEFAULT-NEXT:     fn %3 @g1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> void [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_g1:[0-9]+]] @g1() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_f1]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @f2() -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %5 @g2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8: i32 [synthetic];
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2() -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_g2:[0-9]+]] @g2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0))
-// DEFAULT-NEXT:             write<i32>(%8, call<i32, signature=fn() -> i32>(%4));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE0]], call<i32, signature=fn() -> i32>(%[[VALUE_f2]]));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i32>(%8, const<i32>(0));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE0]], const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f3() -> i32 [linkage=internal];
-// DEFAULT-NEXT:     fn %7 @g3() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3() -> i32 [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_g3:[0-9]+]] @g3() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         const<u64>(4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

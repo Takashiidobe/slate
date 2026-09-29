@@ -70,25 +70,25 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 c: ptr<i64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 .str4: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([70, 111, 111, 98, 97, 114, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %5 .str5: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([70, 111, 111, 98, 97, 114, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(%1, read<i32>(deref(conditional<ptr<i32>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<i32>>(%0), null<ptr<i32>>))));
-// DEFAULT-NEXT:         write<i32>(%1, read<i32>(deref(conditional<ptr<i32>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<i32>>(%0), null<ptr<i32>>))));
-// DEFAULT-NEXT:         write<ptr<i64>>(%2, pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%0)), null<ptr<void>>)));
-// DEFAULT-NEXT:         write<ptr<i64>>(%2, pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%0)), pointer_cast<ptr<void>, reason=explicit>(null<ptr<i8>>))));
-// DEFAULT-NEXT:         let %6: ptr<void> [synthetic];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: ptr<i64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([70, 111, 111, 98, 97, 114, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([70, 111, 111, 98, 97, 114, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], read<i32>(deref(conditional<ptr<i32>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<i32>>(%[[VALUE_a]]), null<ptr<i32>>))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], read<i32>(deref(conditional<ptr<i32>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<i32>>(%[[VALUE_a]]), null<ptr<i32>>))));
+// DEFAULT-NEXT:         write<ptr<i64>>(%[[VALUE_c]], pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%[[VALUE_a]])), null<ptr<void>>)));
+// DEFAULT-NEXT:         write<ptr<i64>>(%[[VALUE_c]], pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%[[VALUE_a]])), pointer_cast<ptr<void>, reason=explicit>(null<ptr<i8>>))));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<void> [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0))
-// DEFAULT-NEXT:             write<ptr<void>>(%6, pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%0)));
+// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE0]], pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%[[VALUE_a]])));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             const<i32>(0);
-// DEFAULT-NEXT:             write<ptr<void>>(%6, int_to_ptr<ptr<void>, reason=explicit>(const<i64>(0)));
-// DEFAULT-NEXT:         write<ptr<i64>>(%2, pointer_cast<ptr<i64>, reason=assign>(read<ptr<void>>(%6)));
-// DEFAULT-NEXT:         write<ptr<i64>>(%2, pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%0)), int_to_ptr<ptr<void>, reason=explicit>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(7)>(%4), const<i32>(0)))), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(7)>(%5), const<i32>(0)))))))));
-// DEFAULT-NEXT:         write<i32>(%1, read<i32>(deref(conditional<ptr<i32>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<i32>>(%0), null<ptr<i32>>))));
+// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE0]], int_to_ptr<ptr<void>, reason=explicit>(const<i64>(0)));
+// DEFAULT-NEXT:         write<ptr<i64>>(%[[VALUE_c]], pointer_cast<ptr<i64>, reason=assign>(read<ptr<void>>(%[[VALUE0]])));
+// DEFAULT-NEXT:         write<ptr<i64>>(%[[VALUE_c]], pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%[[VALUE_a]])), int_to_ptr<ptr<void>, reason=explicit>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]]), const<i32>(0)))), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_2]]), const<i32>(0)))))))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], read<i32>(deref(conditional<ptr<i32>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<i32>>(%[[VALUE_a]]), null<ptr<i32>>))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

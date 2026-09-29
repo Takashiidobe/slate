@@ -59,87 +59,87 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = enum : u32 {
-// DEFAULT-NEXT:         %0 FOO = const<i32>(0);
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_FOO:[0-9]+]] FOO = const<i32>(0);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 BAR = enum : u32 {
-// DEFAULT-NEXT:         %0 FOO = const<i32>(0);
+// DEFAULT-NEXT:     type @type[[TYPE_BAR:[0-9]+]] BAR = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_FOO]] FOO = const<i32>(0);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type2 T = i32;
-// DEFAULT-NEXT:     global %4 i: i32 [storage=static] = const<i32>(1) [linkage=internal];
-// DEFAULT-NEXT:     extern %5 i: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @bar() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 j: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         for %13
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = i32;
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] = const<i32>(1) [linkage=internal];
+// DEFAULT-NEXT:     extern %[[VALUE_i_2:[0-9]+]] i: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_FOO]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %2 i: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%2), const<i32>(10))
+// DEFAULT-NEXT:                 let %[[VALUE_i_3:[0-9]+]] i: i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%[[VALUE_i_3]]), const<i32>(10))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %19: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:                 let %20: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%19), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%20));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_3]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_3]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 let %21: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:                 let %22: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%21), read<i32>(%2));
-// DEFAULT-NEXT:                 write<i32>(%1, read<i32>(%22));
-// DEFAULT-NEXT:         for %14
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), read<i32>(%[[VALUE_i_3]]));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE4]]));
+// DEFAULT-NEXT:         for %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%4), const<i32>(10))
+// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%[[VALUE_i]]), const<i32>(10))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %23: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:                 let %24: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%23), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%24));
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE7]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 let %25: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:                 let %26: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%25), read<i32>(%4));
-// DEFAULT-NEXT:                 write<i32>(%1, read<i32>(%26));
-// DEFAULT-NEXT:         for %15
+// DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
+// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE8]]), read<i32>(%[[VALUE_i]]));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE9]]));
+// DEFAULT-NEXT:         for %[[VALUE10:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%1), const<i32>(500))
+// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%[[VALUE_j]]), const<i32>(500))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %27: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:                 let %28: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%27), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%1, read<i32>(%28));
+// DEFAULT-NEXT:                 let %[[VALUE11:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
+// DEFAULT-NEXT:                 let %[[VALUE12:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE11]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE12]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 let %29: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:                 let %30: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%29), const<i32>(5));
-// DEFAULT-NEXT:                 write<i32>(%1, read<i32>(%30));
-// DEFAULT-NEXT:         for %16
+// DEFAULT-NEXT:                 let %[[VALUE13:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
+// DEFAULT-NEXT:                 let %[[VALUE14:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE13]]), const<i32>(5));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE14]]));
+// DEFAULT-NEXT:         for %[[VALUE15:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %8 i: @type0 [storage=automatic] = int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:             condition: lt<u32>(enum_to_int<u32, reason=promotion>(read<@type0>(%8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10)))
+// DEFAULT-NEXT:                 let %[[VALUE_i_4:[0-9]+]] i: @type[[TYPE0]] [storage=automatic] = int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:             condition: lt<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_i_4]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %31: @type0 [synthetic] = read<@type0>(%8);
-// DEFAULT-NEXT:                 let %32: @type0 [synthetic] = int_to_enum<@type0, reason=assign>(add<u32, overflow=wrap>(enum_to_int<u32, reason=promotion>(read<@type0>(%31)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:                 write<@type0>(%8, read<@type0>(%32));
+// DEFAULT-NEXT:                 let %[[VALUE16:[0-9]+]]: @type[[TYPE0]] [synthetic] = read<@type[[TYPE0]]>(%[[VALUE_i_4]]);
+// DEFAULT-NEXT:                 let %[[VALUE17:[0-9]+]]: @type[[TYPE0]] [synthetic] = int_to_enum<@type[[TYPE0]], reason=assign>(add<u32, overflow=wrap>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE16]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:                 write<@type[[TYPE0]]>(%[[VALUE_i_4]], read<@type[[TYPE0]]>(%[[VALUE17]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 let %33: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:                 let %34: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%33)), enum_to_int<u32, reason=promotion>(read<@type0>(%8))));
-// DEFAULT-NEXT:                 write<i32>(%1, read<i32>(%34));
-// DEFAULT-NEXT:         for %17
+// DEFAULT-NEXT:                 let %[[VALUE18:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
+// DEFAULT-NEXT:                 let %[[VALUE19:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE18]])), enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_i_4]]))));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE19]]));
+// DEFAULT-NEXT:         for %[[VALUE20:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %11 i: @type1 [storage=automatic] = int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:             condition: lt<u32>(enum_to_int<u32, reason=promotion>(read<@type1>(%11)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10)))
+// DEFAULT-NEXT:                 let %[[VALUE_i_5:[0-9]+]] i: @type[[TYPE_BAR]] [storage=automatic] = int_to_enum<@type[[TYPE_BAR]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:             condition: lt<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_BAR]]>(%[[VALUE_i_5]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %35: @type1 [synthetic] = read<@type1>(%11);
-// DEFAULT-NEXT:                 let %36: @type1 [synthetic] = int_to_enum<@type1, reason=assign>(add<u32, overflow=wrap>(enum_to_int<u32, reason=promotion>(read<@type1>(%35)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:                 write<@type1>(%11, read<@type1>(%36));
+// DEFAULT-NEXT:                 let %[[VALUE21:[0-9]+]]: @type[[TYPE_BAR]] [synthetic] = read<@type[[TYPE_BAR]]>(%[[VALUE_i_5]]);
+// DEFAULT-NEXT:                 let %[[VALUE22:[0-9]+]]: @type[[TYPE_BAR]] [synthetic] = int_to_enum<@type[[TYPE_BAR]], reason=assign>(add<u32, overflow=wrap>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_BAR]]>(%[[VALUE21]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:                 write<@type[[TYPE_BAR]]>(%[[VALUE_i_5]], read<@type[[TYPE_BAR]]>(%[[VALUE22]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 let %37: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:                 let %38: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%37)), enum_to_int<u32, reason=promotion>(read<@type1>(%11))));
-// DEFAULT-NEXT:                 write<i32>(%1, read<i32>(%38));
-// DEFAULT-NEXT:         for %18
+// DEFAULT-NEXT:                 let %[[VALUE23:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
+// DEFAULT-NEXT:                 let %[[VALUE24:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE23]])), enum_to_int<u32, reason=promotion>(read<@type[[TYPE_BAR]]>(%[[VALUE_i_5]]))));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE24]]));
+// DEFAULT-NEXT:         for %[[VALUE25:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: omitted
 // DEFAULT-NEXT:             increment: omitted

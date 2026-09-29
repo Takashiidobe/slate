@@ -36,12 +36,12 @@ int x1[] = { [0] 1 }; /* { dg-warning "obsolete use of designated initializer wi
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %1 s0: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     global %2 s1: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     global %3 x0: array<i32, 1> [storage=static] = aggregate<array<i32, 1>, zero_fill=false>(index0 = const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     global %4 x1: array<i32, 1> [storage=static] = aggregate<array<i32, 1>, zero_fill=false>(index0 = const<i32>(1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s0:[0-9]+]] s0: @type[[TYPE_s]] [storage=static] = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = const<i32>(1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s1:[0-9]+]] s1: @type[[TYPE_s]] [storage=static] = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = const<i32>(1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x0:[0-9]+]] x0: array<i32, 1> [storage=static] = aggregate<array<i32, 1>, zero_fill=false>(index0 = const<i32>(1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x1:[0-9]+]] x1: array<i32, 1> [storage=static] = aggregate<array<i32, 1>, zero_fill=false>(index0 = const<i32>(1)) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

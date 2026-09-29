@@ -43,15 +43,15 @@ int f(int x) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 = enum : u32 {
-// IR-NEXT:         %0 K = const<i32>(3);
+// IR-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// IR-NEXT:         %[[VALUE_K:[0-9]+]] K = const<i32>(3);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     global %2 g: i32 [storage=static] [linkage=external] [c="int"];
-// IR-NEXT:     global %3 v: volatile i32 [storage=static] [linkage=external] [c="volatile int"] [c_volatile="true"];
-// IR-NEXT:     global %4 by_enum: array<i32, 3> [storage=static] [linkage=external] [c="int[3]"];
-// IR-NEXT:     global %5 bounded: array<i32, 4> [storage=static] [align=16] [linkage=external] [c="int[4]"];
-// IR-NEXT:     global %6 unbounded: array<i32, 8> [storage=static] [align=16] [linkage=external] [c="int[8]"];
-// IR-NEXT:     fn %7 @f(%8 x: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int)"] {
+// IR-NEXT:     global %[[VALUE_g:[0-9]+]] g: i32 [storage=static] [linkage=external] [c="int"];
+// IR-NEXT:     global %[[VALUE_v:[0-9]+]] v: volatile i32 [storage=static] [linkage=external] [c="volatile int"] [c_volatile="true"];
+// IR-NEXT:     global %[[VALUE_by_enum:[0-9]+]] by_enum: array<i32, 3> [storage=static] [linkage=external] [c="int[3]"];
+// IR-NEXT:     global %[[VALUE_bounded:[0-9]+]] bounded: array<i32, 4> [storage=static] [align=16] [linkage=external] [c="int[4]"];
+// IR-NEXT:     global %[[VALUE_unbounded:[0-9]+]] unbounded: array<i32, 8> [storage=static] [align=16] [linkage=external] [c="int[8]"];
+// IR-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int)"] {
 // IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(1) [c_builtin="__builtin_constant_p"], const<i32>(0) [c_builtin="__builtin_constant_p"]), const<i32>(0) [c_builtin="__builtin_constant_p"]);
 // IR-NEXT:     }
 // IR-NEXT: }

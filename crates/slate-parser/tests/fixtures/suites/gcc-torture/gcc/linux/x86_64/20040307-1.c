@@ -51,7 +51,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 bit0: u32 : 1;
 // DEFAULT-NEXT:         field1 bit1: u32 : 1;
 // DEFAULT-NEXT:         field2 bit2: u32 : 1;
@@ -61,25 +61,25 @@ int main() {
 // DEFAULT-NEXT:         field6 bit6: u32 : 1;
 // DEFAULT-NEXT:         field7 bit7: u32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 0, 0, 0, 0, 0, 0], bit_offsets=[Some(0), Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7)], bit_units=[(0, 1)], field_units=[Some(0), Some(0), Some(0), Some(0), Some(0), Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 b: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %4 sdata: @type0 [storage=automatic] = aggregate<@type0, zero_fill=true>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         while %5 {
-// DEFAULT-NEXT:             let %6: u32 [synthetic] = read<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%4));
-// DEFAULT-NEXT:             let %7: u32 [synthetic] = reinterpret<u32, reason=assign, fits=unknown>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%6)), const<i32>(1)));
-// DEFAULT-NEXT:             write<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%4), read<u32>(%7));
-// DEFAULT-NEXT:             yield gt<u32>(read<u32>(%6), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_sdata:[0-9]+]] sdata: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=true>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_sdata]]));
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: u32 [synthetic] = reinterpret<u32, reason=assign, fits=unknown>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE1]])), const<i32>(1)));
+// DEFAULT-NEXT:             write<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_sdata]]), read<u32>(%[[VALUE2]]));
+// DEFAULT-NEXT:             yield gt<u32>(read<u32>(%[[VALUE1]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %8: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:                 let %9: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%8), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%9));
-// DEFAULT-NEXT:                 if gt<i32>(read<i32>(%2), const<i32>(100))
-// DEFAULT-NEXT:                     break %5;
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_b]]);
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_b]], read<i32>(%[[VALUE4]]));
+// DEFAULT-NEXT:                 if gt<i32>(read<i32>(%[[VALUE_b]]), const<i32>(100))
+// DEFAULT-NEXT:                     break %[[VALUE0]];
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

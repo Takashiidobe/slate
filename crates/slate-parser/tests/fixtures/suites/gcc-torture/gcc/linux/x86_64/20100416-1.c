@@ -55,50 +55,50 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 test = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_test:[0-9]+]] test = struct {
 // DEFAULT-NEXT:         field0 val: i64;
 // DEFAULT-NEXT:         field1 ret: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %8 tests: array<@type0, 5> [storage=static] [align=16] = aggregate<array<@type0, 5>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(17293822569102704640)), field1 = neg<i32, overflow=ub>(const<i32>(1))), index1 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(17293822569102704639)), field1 = const<i32>(1)), index2 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(17293822569102704641)), field1 = neg<i32, overflow=ub>(const<i32>(1))), index3 = aggregate<@type0, zero_fill=false>(field0 = const<i64>(0), field1 = neg<i32, overflow=ub>(const<i32>(1))), index4 = aggregate<@type0, zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(9223372036854775808)), field1 = const<i32>(1))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @movegt(%2 x: i32, %3 y: i32, %4 a: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %6 ret: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         for %11
+// DEFAULT-NEXT:     global %[[VALUE_tests:[0-9]+]] tests: array<@type[[TYPE_test]], 5> [storage=static] [align=16] = aggregate<array<@type[[TYPE_test]], 5>, zero_fill=false>(index0 = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(17293822569102704640)), field1 = neg<i32, overflow=ub>(const<i32>(1))), index1 = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(17293822569102704639)), field1 = const<i32>(1)), index2 = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(17293822569102704641)), field1 = neg<i32, overflow=ub>(const<i32>(1))), index3 = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = const<i64>(0), field1 = neg<i32, overflow=ub>(const<i32>(1))), index4 = aggregate<@type[[TYPE_test]], zero_fill=false>(field0 = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(9223372036854775808)), field1 = const<i32>(1))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_movegt:[0-9]+]] @movegt(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32, %[[VALUE_a:[0-9]+]] a: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ret:[0-9]+]] ret: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%5, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%5), read<i32>(%3))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_y]]))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %13: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%14));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ge<i64>(read<i64>(%4), reinterpret<i64, reason=explicit, fits=unknown>(const<u64>(17293822569102704640)))
-// DEFAULT-NEXT:                         write<i32>(%6, read<i32>(%2));
+// DEFAULT-NEXT:                     if ge<i64>(read<i64>(%[[VALUE_a]]), reinterpret<i64, reason=explicit, fits=unknown>(const<u64>(17293822569102704640)))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_ret]], read<i32>(%[[VALUE_x]]));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<i32>(%6, read<i32>(%3));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_ret]], read<i32>(%[[VALUE_y]]));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         return read<i32>(%6);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_ret]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %12
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%10, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%10))), div<u64, by_zero=ub>(const<u64>(80), const<u64>(16)))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_i_2]]))), div<u64, by_zero=ub>(const<u64>(80), const<u64>(16)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %15: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                 let %16: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%15), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%16));
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_2]]);
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32, i64) -> i32>(%1, neg<i32, overflow=ub>(const<i32>(1)), const<i32>(1), read<i64>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%8), read<i32>(%10)))))), read<i32>(field1(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%8), read<i32>(%10))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     if ne<i32>(call<i32, signature=fn(i32, i32, i64) -> i32>(%[[VALUE_movegt]], neg<i32, overflow=ub>(const<i32>(1)), const<i32>(1), read<i64>(field0(deref(ptr_offset<ptr<@type[[TYPE_test]]>, subtract=false, element=@type[[TYPE_test]], overflow=ub>(array_decay<ptr<@type[[TYPE_test]]>, length=Some(5)>(%[[VALUE_tests]]), read<i32>(%[[VALUE_i_2]])))))), read<i32>(field1(deref(ptr_offset<ptr<@type[[TYPE_test]]>, subtract=false, element=@type[[TYPE_test]], overflow=ub>(array_decay<ptr<@type[[TYPE_test]]>, length=Some(5)>(%[[VALUE_tests]]), read<i32>(%[[VALUE_i_2]]))))))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

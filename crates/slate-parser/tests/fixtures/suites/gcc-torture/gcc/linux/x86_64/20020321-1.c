@@ -38,14 +38,14 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @g(%1 a: ptr<void>, %2 b: ptr<void>, %3 e: i32, %4 c: i32, %5 d: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<f32>(%5);
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_a:[0-9]+]] a: ptr<void>, %[[VALUE_b:[0-9]+]] b: ptr<void>, %[[VALUE_e:[0-9]+]] e: i32, %[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_d:[0-9]+]] d: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<f32>(%[[VALUE_d]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f(%7 a: ptr<void>, %8 b: ptr<void>, %9 c: i32, %10 d: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f32, signature=fn(ptr<void>, ptr<void>, i32, i32, f32) -> f32>(%0, read<ptr<void>>(%7), read<ptr<void>>(%8), const<i32>(0), read<i32>(%9), read<f32>(%10));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a_2:[0-9]+]] a: ptr<void>, %[[VALUE_b_2:[0-9]+]] b: ptr<void>, %[[VALUE_c_2:[0-9]+]] c: i32, %[[VALUE_d_2:[0-9]+]] d: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f32, signature=fn(ptr<void>, ptr<void>, i32, i32, f32) -> f32>(%[[VALUE_g]], read<ptr<void>>(%[[VALUE_a_2]]), read<ptr<void>>(%[[VALUE_b_2]]), const<i32>(0), read<i32>(%[[VALUE_c_2]]), read<f32>(%[[VALUE_d_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<f32, signature=fn(ptr<void>, ptr<void>, i32, f32) -> f32>(%6, null<ptr<void>>, null<ptr<void>>, const<i32>(1), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<f32, signature=fn(ptr<void>, ptr<void>, i32, f32) -> f32>(%[[VALUE_f]], null<ptr<void>>, null<ptr<void>>, const<i32>(1), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

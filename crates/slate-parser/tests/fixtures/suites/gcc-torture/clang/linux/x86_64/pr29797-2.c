@@ -37,18 +37,18 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @bar() -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(32768)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 nStyle: u64 [storage=automatic] = call<u64, signature=fn() -> u64>(%1);
-// DEFAULT-NEXT:         if ne<u64>(and<u64>(read<u64>(%3), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32768)))), const<u64>(0))
-// DEFAULT-NEXT:             let %4: u64 [synthetic] = read<u64>(%3);
-// DEFAULT-NEXT:             let %5: u64 [synthetic] = or<u64>(read<u64>(%4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(65536))));
-// DEFAULT-NEXT:             write<u64>(%3, read<u64>(%5));
-// DEFAULT-NEXT:         if ne<u64>(read<u64>(%3), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(or<i32>(const<i32>(32768), const<i32>(65536)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_nStyle:[0-9]+]] nStyle: u64 [storage=automatic] = call<u64, signature=fn() -> u64>(%[[VALUE_bar]]);
+// DEFAULT-NEXT:         if ne<u64>(and<u64>(read<u64>(%[[VALUE_nStyle]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32768)))), const<u64>(0))
+// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_nStyle]]);
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: u64 [synthetic] = or<u64>(read<u64>(%[[VALUE0]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(65536))));
+// DEFAULT-NEXT:             write<u64>(%[[VALUE_nStyle]], read<u64>(%[[VALUE1]]));
+// DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_nStyle]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(or<i32>(const<i32>(32768), const<i32>(65536)))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

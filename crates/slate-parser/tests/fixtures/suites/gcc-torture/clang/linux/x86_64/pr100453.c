@@ -41,30 +41,30 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 a = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_a:[0-9]+]] a = struct {
 // DEFAULT-NEXT:         field0 b: i32 : 4;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// DEFAULT-NEXT:     global %1 d: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 c: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %3 e: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %4 f: @type0 [storage=static] [const] [linkage=internal];
-// DEFAULT-NEXT:     fn %5 @g(%6 h: @type0 [const]) -> void [linkage=internal] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         for %8
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: @type[[TYPE_a]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: @type[[TYPE_a]] [storage=static] [const] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_h:[0-9]+]] h: @type[[TYPE_a]] [const]) -> void [linkage=internal] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%2), const<i32>(1))
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_c]]), const<i32>(1))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %9: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:                 let %10: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%9), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%2, read<i32>(%10));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 write<@type0>(%1, copy<@type0, reason=assign>(read<@type0>(%6)));
-// DEFAULT-NEXT:         write<i32>(%3, read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..4>(%6)));
-// DEFAULT-NEXT:         write<i32>(%2, read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..4>(%6)));
+// DEFAULT-NEXT:                 write<@type[[TYPE_a]]>(%[[VALUE_d]], copy<@type[[TYPE_a]], reason=assign>(read<@type[[TYPE_a]]>(%[[VALUE_h]])));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_e]], read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..4>(%[[VALUE_h]])));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..4>(%[[VALUE_h]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void, abi=sysv64(native_c) -> void>(%5, copy<@type0, reason=arg>(read<@type0>(%4)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_a]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_g]], copy<@type[[TYPE_a]], reason=arg>(read<@type[[TYPE_a]]>(%[[VALUE_f]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

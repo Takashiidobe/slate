@@ -60,40 +60,40 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = struct {
-// DEFAULT-NEXT:         field0 f: ptr<@type1>;
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = struct {
+// DEFAULT-NEXT:         field0 f: ptr<@type[[TYPE_bar:[0-9]+]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 bar = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_bar]] bar = struct {
 // DEFAULT-NEXT:         field0 x: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 bar = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_bar_2:[0-9]+]] bar = struct {
 // DEFAULT-NEXT:         field0 x: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 foo = struct {
-// DEFAULT-NEXT:         field0 f: ptr<@type2>;
+// DEFAULT-NEXT:     type @type[[TYPE_foo_2:[0-9]+]] foo = struct {
+// DEFAULT-NEXT:         field0 f: ptr<@type[[TYPE_bar_2]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type4 bar = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_bar_3:[0-9]+]] bar = struct {
 // DEFAULT-NEXT:         field0 x: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type5 foo = struct {
-// DEFAULT-NEXT:         field0 f: ptr<@type4>;
+// DEFAULT-NEXT:     type @type[[TYPE_foo_3:[0-9]+]] foo = struct {
+// DEFAULT-NEXT:         field0 f: ptr<@type[[TYPE_bar_3]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %0 @alias(%1 ap: ptr<void>, %2 bp: ptr<void>, %3 x: ptr<void>, %4 y: ptr<void>) -> ptr<void> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 a: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=assign>(read<ptr<void>>(%1));
-// DEFAULT-NEXT:         write<ptr<@type1>>(field0(deref(read<ptr<@type0>>(%7))), pointer_cast<ptr<@type1>, reason=assign>(read<ptr<void>>(%3)));
+// DEFAULT-NEXT:     fn %[[VALUE_alias:[0-9]+]] @alias(%[[VALUE_ap:[0-9]+]] ap: ptr<void>, %[[VALUE_bp:[0-9]+]] bp: ptr<void>, %[[VALUE_x:[0-9]+]] x: ptr<void>, %[[VALUE_y:[0-9]+]] y: ptr<void>) -> ptr<void> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: ptr<@type[[TYPE_foo]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_foo]]>, reason=assign>(read<ptr<void>>(%[[VALUE_ap]]));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_bar]]>>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_a]]))), pointer_cast<ptr<@type[[TYPE_bar]]>, reason=assign>(read<ptr<void>>(%[[VALUE_x]])));
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %10 b: ptr<@type3> [storage=automatic] = pointer_cast<ptr<@type3>, reason=assign>(read<ptr<void>>(%2));
-// DEFAULT-NEXT:             write<ptr<@type2>>(field0(deref(read<ptr<@type3>>(%10))), pointer_cast<ptr<@type2>, reason=assign>(read<ptr<void>>(%4)));
+// DEFAULT-NEXT:             let %[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE_foo_2]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_foo_2]]>, reason=assign>(read<ptr<void>>(%[[VALUE_bp]]));
+// DEFAULT-NEXT:             write<ptr<@type[[TYPE_bar_2]]>>(field0(deref(read<ptr<@type[[TYPE_foo_2]]>>(%[[VALUE_b]]))), pointer_cast<ptr<@type[[TYPE_bar_2]]>, reason=assign>(read<ptr<void>>(%[[VALUE_y]])));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(read<ptr<@type1>>(field0(deref(read<ptr<@type0>>(%7)))));
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(read<ptr<@type[[TYPE_bar]]>>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_a]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %14 a: @type5 [storage=automatic];
-// DEFAULT-NEXT:         let %15 x: @type4 [storage=automatic];
-// DEFAULT-NEXT:         let %16 y: @type4 [storage=automatic];
-// DEFAULT-NEXT:         if ne<ptr<@type4>>(addr_of<ptr<@type4>>(%16), pointer_cast<ptr<@type4>, reason=usual_arith>(call<ptr<void>, signature=fn(ptr<void>, ptr<void>, ptr<void>, ptr<void>) -> ptr<void>>(%0, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type5>>(%14)), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type5>>(%14)), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type4>>(%15)), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type4>>(%16)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%17);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: @type[[TYPE_foo_3]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: @type[[TYPE_bar_3]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: @type[[TYPE_bar_3]] [storage=automatic];
+// DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_bar_3]]>>(addr_of<ptr<@type[[TYPE_bar_3]]>>(%[[VALUE_y_2]]), pointer_cast<ptr<@type[[TYPE_bar_3]]>, reason=usual_arith>(call<ptr<void>, signature=fn(ptr<void>, ptr<void>, ptr<void>, ptr<void>) -> ptr<void>>(%[[VALUE_alias]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_foo_3]]>>(%[[VALUE_a_2]])), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_foo_3]]>>(%[[VALUE_a_2]])), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_bar_3]]>>(%[[VALUE_x_2]])), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_bar_3]]>>(%[[VALUE_y_2]])))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

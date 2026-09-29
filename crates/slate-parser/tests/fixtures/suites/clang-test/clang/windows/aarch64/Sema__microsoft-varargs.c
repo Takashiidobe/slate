@@ -117,15 +117,15 @@ wprintf(/*_In_z_ _Printf_format_string_*/ wchar_t const * const _Format, ...) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 va_list = ptr<i8>;
-// DEFAULT-NEXT:     type @type1 wchar_t = u16;
-// DEFAULT-NEXT:     fn %2 @__va_start(%7 <unnamed>: ptr<ptr<i8>>, ...) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @wprintf(%4 _Format: ptr<const u16> [const], ...) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 _Result: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %6 _ArgList: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<i8>>, ...) -> void>(%2, addr_of<ptr<ptr<i8>>>(%6), addr_of<ptr<const ptr<const u16>>>(%4), and<u64>(sub<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(not<i32>(sub<i32, overflow=ub>(const<i32>(8), const<i32>(1)))))), const<u64>(8), addr_of<ptr<const ptr<const u16>>>(%4));
-// DEFAULT-NEXT:         write<ptr<i8>>(%6, null<ptr<i8>>);
-// DEFAULT-NEXT:         return read<i32>(%5);
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = ptr<i8>;
+// DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = u16;
+// DEFAULT-NEXT:     fn %[[VALUE___va_start:[0-9]+]] @__va_start(%[[VALUE0:[0-9]+]] <unnamed>: ptr<ptr<i8>>, ...) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_wprintf:[0-9]+]] @wprintf(%[[VALUE__Format:[0-9]+]] _Format: ptr<const u16> [const], ...) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE__Result:[0-9]+]] _Result: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE__ArgList:[0-9]+]] _ArgList: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<i8>>, ...) -> void>(%[[VALUE___va_start]], addr_of<ptr<ptr<i8>>>(%[[VALUE__ArgList]]), addr_of<ptr<const ptr<const u16>>>(%[[VALUE__Format]]), and<u64>(sub<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(not<i32>(sub<i32, overflow=ub>(const<i32>(8), const<i32>(1)))))), const<u64>(8), addr_of<ptr<const ptr<const u16>>>(%[[VALUE__Format]]));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE__ArgList]], null<ptr<i8>>);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE__Result]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

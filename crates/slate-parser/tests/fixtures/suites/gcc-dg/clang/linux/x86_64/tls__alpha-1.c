@@ -35,9 +35,9 @@ int foo(void) { return xyzzy; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 xyzzy: i32 [storage=thread] [linkage=internal] [tls_model=initial-exec];
-// DEFAULT-NEXT:     fn %1 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_xyzzy:[0-9]+]] xyzzy: i32 [storage=thread] [linkage=internal] [tls_model=initial-exec];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_xyzzy]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -43,13 +43,13 @@ int init_module(void) __attribute__((alias("init_foobar")));
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @do_something() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @do_something_else() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @init_foobar() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_do_something:[0-9]+]] @do_something() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_do_something_else:[0-9]+]] @do_something_else() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_init_foobar:[0-9]+]] @init_foobar() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_do_something]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_do_something_else]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @init_module() -> i32 [linkage=external] [alias="init_foobar"];
+// DEFAULT-NEXT:     fn %[[VALUE_init_module:[0-9]+]] @init_module() -> i32 [linkage=external] [alias="init_foobar"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

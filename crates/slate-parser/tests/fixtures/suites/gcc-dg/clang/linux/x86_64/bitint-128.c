@@ -52,22 +52,22 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 V = vector<f32, 16>;
-// DEFAULT-NEXT:     type @type1 = union {
+// DEFAULT-NEXT:     type @type[[TYPE_V:[0-9]+]] V = vector<f32, 16>;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 b: i256b;
 // DEFAULT-NEXT:         field1 v: vector<f32, 16>;
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0, 0]];
-// DEFAULT-NEXT:     global %2 u: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo(%4 c: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %6: vector<f32, 16> [synthetic] = read<vector<f32, 16>>(field1(%2));
-// DEFAULT-NEXT:         let %7: vector<f32, 16> [synthetic] = sub<vector<f32, 16>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 16>>(%6), vector_splat<vector<f32, 16>, reason=usual_arith>(conditional<f32>(ne<i32>(read<i32>(%4), const<i32>(0)), const<f32>(0.0), const<f32>(1.0))));
-// DEFAULT-NEXT:         write<vector<f32, 16>>(field1(%2), read<vector<f32, 16>>(%7));
-// DEFAULT-NEXT:         let %8: i256b [synthetic] = read<i256b>(field0(%2));
-// DEFAULT-NEXT:         let %9: i256b [synthetic] = mul<i256b, overflow=ub>(read<i256b>(%8), widen<i256b, reason=usual_arith>(read<i32>(%4)));
-// DEFAULT-NEXT:         write<i256b>(field0(%2), read<i256b>(%9));
+// DEFAULT-NEXT:     global %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_c:[0-9]+]] c: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: vector<f32, 16> [synthetic] = read<vector<f32, 16>>(field1(%[[VALUE_u]]));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: vector<f32, 16> [synthetic] = sub<vector<f32, 16>, elementwise=true, rounding=nearest_even, exceptions=ignore, contract=on>(read<vector<f32, 16>>(%[[VALUE0]]), vector_splat<vector<f32, 16>, reason=usual_arith>(conditional<f32>(ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0)), const<f32>(0.0), const<f32>(1.0))));
+// DEFAULT-NEXT:         write<vector<f32, 16>>(field1(%[[VALUE_u]]), read<vector<f32, 16>>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i256b [synthetic] = read<i256b>(field0(%[[VALUE_u]]));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i256b [synthetic] = mul<i256b, overflow=ub>(read<i256b>(%[[VALUE2]]), widen<i256b, reason=usual_arith>(read<i32>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         write<i256b>(field0(%[[VALUE_u]]), read<i256b>(%[[VALUE3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(2));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], const<i32>(2));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -32,6 +32,6 @@ int nullptr_t;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 nullptr_t: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_nullptr_t:[0-9]+]] nullptr_t: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

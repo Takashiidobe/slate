@@ -47,22 +47,22 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 va_list = va_list;
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @fdouble(%4 one: f64, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 value: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %6 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%6);
-// DEFAULT-NEXT:         write<f64>(%5, va_arg<f64>(%6));
-// DEFAULT-NEXT:         va_arg<f64>(%6);
-// DEFAULT-NEXT:         va_end(%6);
-// DEFAULT-NEXT:         if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(%4), const<f64>(1.0)), ne<f64, exceptions=ignore>(read<f64>(%5), const<f64>(2.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_fdouble:[0-9]+]] @fdouble(%[[VALUE_one:[0-9]+]] one: f64, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: f64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_value]], va_arg<f64>(%[[VALUE_ap]]));
+// DEFAULT-NEXT:         va_arg<f64>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(%[[VALUE_one]]), const<f64>(1.0)), ne<f64, exceptions=ignore>(read<f64>(%[[VALUE_value]]), const<f64>(2.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(f64, ...) -> void>(%3, const<f64>(1.0), const<f64>(2.0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(f64, ...) -> void>(%[[VALUE_fdouble]], const<f64>(1.0), const<f64>(2.0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

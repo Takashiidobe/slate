@@ -48,20 +48,20 @@ int i;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 v: i129b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%4 a: i129b, %5 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:         let %8: i32 [synthetic] = and<i32>(read<i32>(%7), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%5, read<i32>(%8));
-// DEFAULT-NEXT:         let %6 p: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%2), index1 = label_addr<ptr<void>>(%3));
-// DEFAULT-NEXT:         label %2 l1:
-// DEFAULT-NEXT:             let %9: i129b [synthetic] = read<i129b>(%4);
-// DEFAULT-NEXT:             let %10: i129b [synthetic] = rem<i129b, by_zero=ub, min_by_neg_one=ub>(read<i129b>(%9), widen<i129b, reason=usual_arith>(const<i32>(3)));
-// DEFAULT-NEXT:             write<i129b>(%4, read<i129b>(%10));
-// DEFAULT-NEXT:         write<i129b>(%0, read<i129b>(%4));
-// DEFAULT-NEXT:         write<i32>(%5, from_bool<i32, reason=assign>(not<bool>(ne<i32>(read<i32>(%5), const<i32>(0)))));
-// DEFAULT-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%6), read<i32>(%5))));
-// DEFAULT-NEXT:         label %3 l2:
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: i129b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: i129b, %[[VALUE_i:[0-9]+]] i: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = and<i32>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%[[VALUE_l1:[0-9]+]]), index1 = label_addr<ptr<void>>(%[[VALUE_l2:[0-9]+]]));
+// DEFAULT-NEXT:         label %[[VALUE_l1]] l1:
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i129b [synthetic] = read<i129b>(%[[VALUE_a]]);
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: i129b [synthetic] = rem<i129b, by_zero=ub, min_by_neg_one=ub>(read<i129b>(%[[VALUE2]]), widen<i129b, reason=usual_arith>(const<i32>(3)));
+// DEFAULT-NEXT:             write<i129b>(%[[VALUE_a]], read<i129b>(%[[VALUE3]]));
+// DEFAULT-NEXT:         write<i129b>(%[[VALUE_v]], read<i129b>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], from_bool<i32, reason=assign>(not<bool>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)))));
+// DEFAULT-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%[[VALUE_p]]), read<i32>(%[[VALUE_i]]))));
+// DEFAULT-NEXT:         label %[[VALUE_l2]] l2:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

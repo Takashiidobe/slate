@@ -53,13 +53,13 @@ StartDisplay (struct display *d)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 display = struct {
-// DEFAULT-NEXT:         field0 hstent: ptr<@type1>;
+// DEFAULT-NEXT:     type @type[[TYPE_display:[0-9]+]] display = struct {
+// DEFAULT-NEXT:         field0 hstent: ptr<@type[[TYPE_disphist:[0-9]+]]>;
 // DEFAULT-NEXT:         field1 pid: i32;
 // DEFAULT-NEXT:         field2 status: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8, 12]];
-// DEFAULT-NEXT:     type @type1 disphist = struct {
-// DEFAULT-NEXT:         field0 next: ptr<@type1>;
+// DEFAULT-NEXT:     type @type[[TYPE_disphist]] disphist = struct {
+// DEFAULT-NEXT:         field0 next: ptr<@type[[TYPE_disphist]]>;
 // DEFAULT-NEXT:         field1 name: ptr<i8>;
 // DEFAULT-NEXT:         field2 startTries: i32;
 // DEFAULT-NEXT:         field3 rLogin: u32 : 2;
@@ -71,14 +71,14 @@ StartDisplay (struct display *d)
 // DEFAULT-NEXT:         field9 npass: ptr<i8>;
 // DEFAULT-NEXT:         field10 nargs: ptr<ptr<i8>>;
 // DEFAULT-NEXT:     } [size=48, align=8, offsets=[0, 8, 16, 20, 20, 20, 20, 20, 24, 32, 40], bit_offsets=[None, None, None, Some(160), Some(162), Some(164), Some(166), Some(167), None, None, None], bit_units=[(20, 1)], field_units=[None, None, None, Some(0), Some(0), Some(0), Some(0), Some(0), None, None, None]];
-// DEFAULT-NEXT:     fn %2 @StartDisplay(%3 d: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type0>>(%3))), const<i32>(0));
-// DEFAULT-NEXT:         write<i32>(field2(deref(read<ptr<@type0>>(%3))), const<i32>(0));
-// DEFAULT-NEXT:         write<u32>(bitfield5<unit=0, bytes=20..21, bits=4..6>(deref(read<ptr<@type1>>(field0(deref(read<ptr<@type0>>(%3)))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<u32>(bitfield4<unit=0, bytes=20..21, bits=2..4>(deref(read<ptr<@type1>>(field0(deref(read<ptr<@type0>>(%3)))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<u32>(bitfield7<unit=0, bytes=20..21, bits=7..8>(deref(read<ptr<@type1>>(field0(deref(read<ptr<@type0>>(%3)))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=20..21, bits=0..2>(deref(read<ptr<@type1>>(field0(deref(read<ptr<@type0>>(%3)))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<u32>(bitfield6<unit=0, bytes=20..21, bits=6..7>(deref(read<ptr<@type1>>(field0(deref(read<ptr<@type0>>(%3)))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:     fn %[[VALUE_StartDisplay:[0-9]+]] @StartDisplay(%[[VALUE_d:[0-9]+]] d: ptr<@type[[TYPE_display]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_display]]>>(%[[VALUE_d]]))), const<i32>(0));
+// DEFAULT-NEXT:         write<i32>(field2(deref(read<ptr<@type[[TYPE_display]]>>(%[[VALUE_d]]))), const<i32>(0));
+// DEFAULT-NEXT:         write<u32>(bitfield5<unit=0, bytes=20..21, bits=4..6>(deref(read<ptr<@type[[TYPE_disphist]]>>(field0(deref(read<ptr<@type[[TYPE_display]]>>(%[[VALUE_d]])))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         write<u32>(bitfield4<unit=0, bytes=20..21, bits=2..4>(deref(read<ptr<@type[[TYPE_disphist]]>>(field0(deref(read<ptr<@type[[TYPE_display]]>>(%[[VALUE_d]])))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         write<u32>(bitfield7<unit=0, bytes=20..21, bits=7..8>(deref(read<ptr<@type[[TYPE_disphist]]>>(field0(deref(read<ptr<@type[[TYPE_display]]>>(%[[VALUE_d]])))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=20..21, bits=0..2>(deref(read<ptr<@type[[TYPE_disphist]]>>(field0(deref(read<ptr<@type[[TYPE_display]]>>(%[[VALUE_d]])))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         write<u32>(bitfield6<unit=0, bytes=20..21, bits=6..7>(deref(read<ptr<@type[[TYPE_disphist]]>>(field0(deref(read<ptr<@type[[TYPE_display]]>>(%[[VALUE_d]])))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

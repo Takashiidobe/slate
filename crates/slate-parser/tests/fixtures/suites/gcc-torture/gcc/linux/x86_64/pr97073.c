@@ -46,25 +46,25 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 L = u64;
-// DEFAULT-NEXT:     type @type1 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_L:[0-9]+]] L = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_U:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 i: u64;
-// DEFAULT-NEXT:         field1 j: @type2;
+// DEFAULT-NEXT:         field1 j: @type[[TYPE_T:[0-9]+]];
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type2 T = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_T]] T = struct {
 // DEFAULT-NEXT:         field0 k: u32;
 // DEFAULT-NEXT:         field1 l: u64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %3 u: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @foo(%5 x: u64) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<u64>(field1(field1(%3)), and<u64>(read<u64>(field0(%3)), read<u64>(%5)));
+// DEFAULT-NEXT:     global %[[VALUE_u:[0-9]+]] u: @type[[TYPE_U]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: u64) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<u64>(field1(field1(%[[VALUE_u]])), and<u64>(read<u64>(field0(%[[VALUE_u]])), read<u64>(%[[VALUE_x]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<u64>(field0(%3), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(5))));
-// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%4, neg<u64, overflow=wrap>(const<u64>(1)));
-// DEFAULT-NEXT:         if ne<u64>(read<u64>(field1(field1(%3))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_u]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(5))));
+// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_foo]], neg<u64, overflow=wrap>(const<u64>(1)));
+// DEFAULT-NEXT:         if ne<u64>(read<u64>(field1(field1(%[[VALUE_u]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -57,44 +57,44 @@ add_bignums (int *out, int *x, int *y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @add_bignums(%1 out: ptr<i32>, %2 x: ptr<i32>, %3 y: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 p: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %5 sum: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %6 carry: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%4, const<i32>(0));
-// DEFAULT-NEXT:         for %7
+// DEFAULT-NEXT:     fn %[[VALUE_add_bignums:[0-9]+]] @add_bignums(%[[VALUE_out:[0-9]+]] out: ptr<i32>, %[[VALUE_x:[0-9]+]] x: ptr<i32>, %[[VALUE_y:[0-9]+]] y: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_sum:[0-9]+]] sum: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_carry:[0-9]+]] carry: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_p]], const<i32>(0));
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:             condition: ne<i32>(read<i32>(deref(read<ptr<i32>>(%2))), const<i32>(0))
+// DEFAULT-NEXT:             condition: ne<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_x]]))), const<i32>(0))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %8: ptr<i32> [synthetic] = read<ptr<i32>>(%2);
-// DEFAULT-NEXT:                 let %9: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%8), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<i32>>(%2, read<ptr<i32>>(%9));
-// DEFAULT-NEXT:                 let %10: ptr<i32> [synthetic] = read<ptr<i32>>(%3);
-// DEFAULT-NEXT:                 let %11: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%10), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<i32>>(%3, read<ptr<i32>>(%11));
-// DEFAULT-NEXT:                 let %12: ptr<i32> [synthetic] = read<ptr<i32>>(%1);
-// DEFAULT-NEXT:                 let %13: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%12), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<i32>>(%1, read<ptr<i32>>(%13));
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:                 let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%15));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: ptr<i32> [synthetic] = read<ptr<i32>>(%[[VALUE_x]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<i32>>(%[[VALUE_x]], read<ptr<i32>>(%[[VALUE2]]));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: ptr<i32> [synthetic] = read<ptr<i32>>(%[[VALUE_y]]);
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<i32>>(%[[VALUE_y]], read<ptr<i32>>(%[[VALUE4]]));
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: ptr<i32> [synthetic] = read<ptr<i32>>(%[[VALUE_out]]);
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE5]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<i32>>(%[[VALUE_out]], read<ptr<i32>>(%[[VALUE6]]));
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_p]]);
+// DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE7]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_p]], read<i32>(%[[VALUE8]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ne<i32>(read<i32>(%4), const<i32>(0))
-// DEFAULT-NEXT:                         write<i32>(%5, add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%2))), read<i32>(deref(read<ptr<i32>>(%3)))), read<i32>(%6)));
+// DEFAULT-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_p]]), const<i32>(0))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_sum]], add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_x]]))), read<i32>(deref(read<ptr<i32>>(%[[VALUE_y]])))), read<i32>(%[[VALUE_carry]])));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<i32>(%5, add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%2))), read<i32>(deref(read<ptr<i32>>(%3)))));
-// DEFAULT-NEXT:                     if lt<i32>(read<i32>(%5), const<i32>(0))
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_sum]], add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_x]]))), read<i32>(deref(read<ptr<i32>>(%[[VALUE_y]])))));
+// DEFAULT-NEXT:                     if lt<i32>(read<i32>(%[[VALUE_sum]]), const<i32>(0))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             write<i32>(%6, const<i32>(1));
-// DEFAULT-NEXT:                             let %16: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:                             let %17: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%16), const<i32>(2147483647));
-// DEFAULT-NEXT:                             write<i32>(%5, read<i32>(%17));
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_carry]], const<i32>(1));
+// DEFAULT-NEXT:                             let %[[VALUE9:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_sum]]);
+// DEFAULT-NEXT:                             let %[[VALUE10:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE9]]), const<i32>(2147483647));
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_sum]], read<i32>(%[[VALUE10]]));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<i32>(%6, const<i32>(0));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_carry]], const<i32>(0));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

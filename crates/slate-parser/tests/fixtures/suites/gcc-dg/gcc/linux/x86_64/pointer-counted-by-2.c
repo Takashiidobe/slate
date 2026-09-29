@@ -35,7 +35,7 @@ struct pointer_array {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 pointer_array = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_pointer_array:[0-9]+]] pointer_array = struct {
 // DEFAULT-NEXT:         field0 count: i24b;
 // DEFAULT-NEXT:         field1 array: ptr<i32>;
 // DEFAULT-NEXT:         field2 array1: ptr<i32>;

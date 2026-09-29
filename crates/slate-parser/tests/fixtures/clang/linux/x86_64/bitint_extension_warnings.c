@@ -80,13 +80,13 @@ _BitInt(33) function(_BitInt(9) parameter) {
 // IR-C17-NEXT:         storage d64 [size=8, align=8];
 // IR-C17-NEXT:         storage d128 [size=16, align=16];
 // IR-C17-NEXT:     }
-// IR-C17-NEXT:     type @type0 S = struct {
+// IR-C17-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // IR-C17-NEXT:         field0 field: i17b;
 // IR-C17-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-C17-NEXT:     global %0 global: i8b [storage=static] [linkage=external];
-// IR-C17-NEXT:     fn %2 @function(%3 parameter: i9b) -> i33b [linkage=external] [fallthrough=ub_if_used] {
-// IR-C17-NEXT:         let %4 local: i11b [storage=automatic];
-// IR-C17-NEXT:         return widen<i33b, reason=return>(add<i11b, overflow=ub>(read<i11b>(%4), widen<i11b, reason=usual_arith>(read<i9b>(%3))));
+// IR-C17-NEXT:     global %[[VALUE_global:[0-9]+]] global: i8b [storage=static] [linkage=external];
+// IR-C17-NEXT:     fn %[[VALUE_function:[0-9]+]] @function(%[[VALUE_parameter:[0-9]+]] parameter: i9b) -> i33b [linkage=external] [fallthrough=ub_if_used] {
+// IR-C17-NEXT:         let %[[VALUE_local:[0-9]+]] local: i11b [storage=automatic];
+// IR-C17-NEXT:         return widen<i33b, reason=return>(add<i11b, overflow=ub>(read<i11b>(%[[VALUE_local]]), widen<i11b, reason=usual_arith>(read<i9b>(%[[VALUE_parameter]]))));
 // IR-C17-NEXT:     }
 // IR-C17-NEXT: }
 // SLATE-FILECHECK-END IR-C17

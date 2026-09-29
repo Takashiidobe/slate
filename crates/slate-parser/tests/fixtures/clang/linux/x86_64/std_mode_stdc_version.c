@@ -48,7 +48,7 @@ int no_stdc_version;
 // C89-NEXT:         storage d64 [size=8, align=8];
 // C89-NEXT:         storage d128 [size=16, align=16];
 // C89-NEXT:     }
-// C89-NEXT:     global %0 no_stdc_version: i32 [storage=static] [linkage=external];
+// C89-NEXT:     global %[[VALUE_no_stdc_version:[0-9]+]] no_stdc_version: i32 [storage=static] [linkage=external];
 // C89-NEXT: }
 // SLATE-FILECHECK-END C89
 // SLATE-FILECHECK-BEGIN ISO1990
@@ -74,7 +74,7 @@ int no_stdc_version;
 // ISO1990-NEXT:         storage d64 [size=8, align=8];
 // ISO1990-NEXT:         storage d128 [size=16, align=16];
 // ISO1990-NEXT:     }
-// ISO1990-NEXT:     global %0 no_stdc_version: i32 [storage=static] [linkage=external];
+// ISO1990-NEXT:     global %[[VALUE_no_stdc_version:[0-9]+]] no_stdc_version: i32 [storage=static] [linkage=external];
 // ISO1990-NEXT: }
 // SLATE-FILECHECK-END ISO1990
 // SLATE-FILECHECK-BEGIN ISO199409
@@ -100,7 +100,7 @@ int no_stdc_version;
 // ISO199409-NEXT:         storage d64 [size=8, align=8];
 // ISO199409-NEXT:         storage d128 [size=16, align=16];
 // ISO199409-NEXT:     }
-// ISO199409-NEXT:     global %0 stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(199409)) [linkage=external];
+// ISO199409-NEXT:     global %[[VALUE_stdc_version:[0-9]+]] stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(199409)) [linkage=external];
 // ISO199409-NEXT: }
 // SLATE-FILECHECK-END ISO199409
 // SLATE-FILECHECK-BEGIN C99
@@ -126,7 +126,7 @@ int no_stdc_version;
 // C99-NEXT:         storage d64 [size=8, align=8];
 // C99-NEXT:         storage d128 [size=16, align=16];
 // C99-NEXT:     }
-// C99-NEXT:     global %0 stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(199901)) [linkage=external];
+// C99-NEXT:     global %[[VALUE_stdc_version:[0-9]+]] stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(199901)) [linkage=external];
 // C99-NEXT: }
 // SLATE-FILECHECK-END C99
 // SLATE-FILECHECK-BEGIN ISO1999
@@ -152,7 +152,7 @@ int no_stdc_version;
 // ISO1999-NEXT:         storage d64 [size=8, align=8];
 // ISO1999-NEXT:         storage d128 [size=16, align=16];
 // ISO1999-NEXT:     }
-// ISO1999-NEXT:     global %0 stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(199901)) [linkage=external];
+// ISO1999-NEXT:     global %[[VALUE_stdc_version:[0-9]+]] stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(199901)) [linkage=external];
 // ISO1999-NEXT: }
 // SLATE-FILECHECK-END ISO1999
 // SLATE-FILECHECK-BEGIN C11
@@ -178,7 +178,7 @@ int no_stdc_version;
 // C11-NEXT:         storage d64 [size=8, align=8];
 // C11-NEXT:         storage d128 [size=16, align=16];
 // C11-NEXT:     }
-// C11-NEXT:     global %0 stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(201112)) [linkage=external];
+// C11-NEXT:     global %[[VALUE_stdc_version:[0-9]+]] stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(201112)) [linkage=external];
 // C11-NEXT: }
 // SLATE-FILECHECK-END C11
 // SLATE-FILECHECK-BEGIN ISO2011
@@ -204,7 +204,7 @@ int no_stdc_version;
 // ISO2011-NEXT:         storage d64 [size=8, align=8];
 // ISO2011-NEXT:         storage d128 [size=16, align=16];
 // ISO2011-NEXT:     }
-// ISO2011-NEXT:     global %0 stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(201112)) [linkage=external];
+// ISO2011-NEXT:     global %[[VALUE_stdc_version:[0-9]+]] stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(201112)) [linkage=external];
 // ISO2011-NEXT: }
 // SLATE-FILECHECK-END ISO2011
 // SLATE-FILECHECK-BEGIN C17
@@ -230,7 +230,7 @@ int no_stdc_version;
 // C17-NEXT:         storage d64 [size=8, align=8];
 // C17-NEXT:         storage d128 [size=16, align=16];
 // C17-NEXT:     }
-// C17-NEXT:     global %0 stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(201710)) [linkage=external];
+// C17-NEXT:     global %[[VALUE_stdc_version:[0-9]+]] stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(201710)) [linkage=external];
 // C17-NEXT: }
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN ISO2017
@@ -256,7 +256,7 @@ int no_stdc_version;
 // ISO2017-NEXT:         storage d64 [size=8, align=8];
 // ISO2017-NEXT:         storage d128 [size=16, align=16];
 // ISO2017-NEXT:     }
-// ISO2017-NEXT:     global %0 stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(201710)) [linkage=external];
+// ISO2017-NEXT:     global %[[VALUE_stdc_version:[0-9]+]] stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(201710)) [linkage=external];
 // ISO2017-NEXT: }
 // SLATE-FILECHECK-END ISO2017
 // SLATE-FILECHECK-BEGIN C23
@@ -282,6 +282,6 @@ int no_stdc_version;
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     global %0 stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(202311)) [linkage=external];
+// C23-NEXT:     global %[[VALUE_stdc_version:[0-9]+]] stdc_version: i32 [storage=static] = truncate<i32, reason=assign, fits=always>(const<i64>(202311)) [linkage=external];
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

@@ -38,17 +38,17 @@ void foo()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type1 va_list = va_list;
-// DEFAULT-NEXT:     global %2 v: va_list [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 i: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32, volatile>(%3, widen<i32, reason=assign>(va_arg<i8>(%2)));
-// DEFAULT-NEXT:         widen<i32, reason=assign>(va_arg<i8>(%2));
-// DEFAULT-NEXT:         write<i32, volatile>(%3, widen<i32, reason=assign>(va_arg<i16>(%2)));
-// DEFAULT-NEXT:         widen<i32, reason=assign>(va_arg<i16>(%2));
-// DEFAULT-NEXT:         write<i32, volatile>(%3, float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(va_arg<f32>(%2)));
-// DEFAULT-NEXT:         float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(va_arg<f32>(%2));
+// DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: va_list [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_i]], widen<i32, reason=assign>(va_arg<i8>(%[[VALUE_v]])));
+// DEFAULT-NEXT:         widen<i32, reason=assign>(va_arg<i8>(%[[VALUE_v]]));
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_i]], widen<i32, reason=assign>(va_arg<i16>(%[[VALUE_v]])));
+// DEFAULT-NEXT:         widen<i32, reason=assign>(va_arg<i16>(%[[VALUE_v]]));
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_i]], float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(va_arg<f32>(%[[VALUE_v]])));
+// DEFAULT-NEXT:         float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(va_arg<f32>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

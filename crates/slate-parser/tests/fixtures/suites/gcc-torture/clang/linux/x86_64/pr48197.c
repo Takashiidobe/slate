@@ -48,24 +48,24 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 y: i32 [storage=static] = const<i32>(32768) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 x: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=unknown>(widen<i32, reason=assign>(truncate<i16, reason=explicit, fits=unknown>(read<i32>(%1))));
+// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: i32 [storage=static] = const<i32>(32768) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=unknown>(widen<i32, reason=assign>(truncate<i16, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_y]]))));
 // DEFAULT-NEXT:         if eq<u64>(const<u64>(8), const<u64>(4))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         if gt<i64>(const<i64>(0), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), reinterpret<u32, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(32768)))))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if gt<i64>(const<i64>(0), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), read<u32>(%3)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if gt<i64>(const<i64>(0), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), reinterpret<u32, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(read<i32>(%1))))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if gt<i64>(const<i64>(0), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), read<u32>(%[[VALUE_x]])))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if gt<i64>(const<i64>(0), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), reinterpret<u32, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_y]]))))))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if lt<i64>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), reinterpret<u32, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(32768)))))))), const<i64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if lt<i64>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), read<u32>(%3)))), const<i64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if lt<i64>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), reinterpret<u32, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(read<i32>(%1))))))), const<i64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if lt<i64>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), read<u32>(%[[VALUE_x]])))), const<i64>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if lt<i64>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(xor<u32>(const<u32>(0), reinterpret<u32, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_y]]))))))), const<i64>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

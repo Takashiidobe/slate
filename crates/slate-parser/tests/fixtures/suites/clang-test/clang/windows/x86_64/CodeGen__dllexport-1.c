@@ -40,12 +40,12 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 x: i32 [storage=static] [const] = const<i32>(3) [linkage=external] [dllexport];
-// DEFAULT-NEXT:     global %1 y: i32 [storage=static] [const] [linkage=external] [dllexport];
-// DEFAULT-NEXT:     global %2 z: i32 [storage=static] [const] = const<i32>(4) [linkage=external];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 a: i32 [storage=automatic] = add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%0), read<i32>(%1)), read<i32>(%2));
-// DEFAULT-NEXT:         return read<i32>(%4);
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [const] = const<i32>(3) [linkage=external] [dllexport];
+// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: i32 [storage=static] [const] [linkage=external] [dllexport];
+// DEFAULT-NEXT:     global %[[VALUE_z:[0-9]+]] z: i32 [storage=static] [const] = const<i32>(4) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), read<i32>(%[[VALUE_y]])), read<i32>(%[[VALUE_z]]));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

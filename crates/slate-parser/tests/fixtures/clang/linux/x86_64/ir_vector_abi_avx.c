@@ -40,17 +40,17 @@ v32si vector_1024(v32si value) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 v8si = vector<i32, 8>;
-// IR-NEXT:     type @type1 v16si = vector<i32, 16>;
-// IR-NEXT:     type @type2 v32si = vector<i32, 32>;
-// IR-NEXT:     fn %3 @vector_256(%4 value: vector<i32, 8>) -> vector<i32, 8> [linkage=external] [abi=sysv64(direct) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<i32, 8>>(%4);
+// IR-NEXT:     type @type[[TYPE_v8si:[0-9]+]] v8si = vector<i32, 8>;
+// IR-NEXT:     type @type[[TYPE_v16si:[0-9]+]] v16si = vector<i32, 16>;
+// IR-NEXT:     type @type[[TYPE_v32si:[0-9]+]] v32si = vector<i32, 32>;
+// IR-NEXT:     fn %[[VALUE_vector_256:[0-9]+]] @vector_256(%[[VALUE_value:[0-9]+]] value: vector<i32, 8>) -> vector<i32, 8> [linkage=external] [abi=sysv64(direct) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<vector<i32, 8>>(%[[VALUE_value]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %5 @vector_512(%6 value: vector<i32, 16>) -> vector<i32, 16> [linkage=external] [abi=sysv64(byval<align=64>) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<i32, 16>>(%6);
+// IR-NEXT:     fn %[[VALUE_vector_512:[0-9]+]] @vector_512(%[[VALUE_value_2:[0-9]+]] value: vector<i32, 16>) -> vector<i32, 16> [linkage=external] [abi=sysv64(byval<align=64>) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<vector<i32, 16>>(%[[VALUE_value_2]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %7 @vector_1024(%8 value: vector<i32, 32>) -> vector<i32, 32> [linkage=external] [abi=sysv64(byval<align=128>) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<i32, 32>>(%8);
+// IR-NEXT:     fn %[[VALUE_vector_1024:[0-9]+]] @vector_1024(%[[VALUE_value_3:[0-9]+]] value: vector<i32, 32>) -> vector<i32, 32> [linkage=external] [abi=sysv64(byval<align=128>) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<vector<i32, 32>>(%[[VALUE_value_3]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

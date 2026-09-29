@@ -41,14 +41,14 @@ void foo ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 p: ptr<i8> [storage=static] [linkage=external] [common];
-// DEFAULT-NEXT:     global %2 .str2: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([97, 98, 99, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<i8>>(%0, array_decay<ptr<i8>, length=Some(5)>(%2));
-// DEFAULT-NEXT:         while %3 ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%0)))), const<i32>(10))
-// DEFAULT-NEXT:             let %4: ptr<i8> [synthetic] = read<ptr<i8>>(%0);
-// DEFAULT-NEXT:             let %5: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(1));
-// DEFAULT-NEXT:             write<ptr<i8>>(%0, read<ptr<i8>>(%5));
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<i8> [storage=static] [linkage=external] [common];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([97, 98, 99, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_p]], array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str]]));
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_p]])))), const<i32>(10))
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_p]]);
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:             write<ptr<i8>>(%[[VALUE_p]], read<ptr<i8>>(%[[VALUE2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

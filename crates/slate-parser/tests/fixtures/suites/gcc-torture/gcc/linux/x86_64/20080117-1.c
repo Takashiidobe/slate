@@ -45,26 +45,26 @@ int         main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 gs_imager_state_s = struct {
-// DEFAULT-NEXT:         field0 line_params: @type1;
+// DEFAULT-NEXT:     type @type[[TYPE_gs_imager_state_s:[0-9]+]] gs_imager_state_s = struct {
+// DEFAULT-NEXT:         field0 line_params: @type[[TYPE0:[0-9]+]];
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0]] = struct {
 // DEFAULT-NEXT:         field0 half_width: i32;
 // DEFAULT-NEXT:         field1 cap: i32;
 // DEFAULT-NEXT:         field2 miter_limit: f32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     type @type2 gs_imager_state = @type0;
-// DEFAULT-NEXT:     global %3 gstate_initial: @type0 [storage=static] [const] = aggregate<@type0, zero_fill=false>(field0 = aggregate<@type1, zero_fill=true>(field0 = const<i32>(1))) [linkage=internal];
-// DEFAULT-NEXT:     fn %4 @gstate_path_memory(%5 pgs: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<@type0>(deref(read<ptr<@type0>>(%5)), copy<@type0, reason=assign>(read<@type0>(%3)));
+// DEFAULT-NEXT:     type @type[[TYPE_gs_imager_state:[0-9]+]] gs_imager_state = @type[[TYPE_gs_imager_state_s]];
+// DEFAULT-NEXT:     global %[[VALUE_gstate_initial:[0-9]+]] gstate_initial: @type[[TYPE_gs_imager_state_s]] [storage=static] [const] = aggregate<@type[[TYPE_gs_imager_state_s]], zero_fill=false>(field0 = aggregate<@type[[TYPE0]], zero_fill=true>(field0 = const<i32>(1))) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_gstate_path_memory:[0-9]+]] @gstate_path_memory(%[[VALUE_pgs:[0-9]+]] pgs: ptr<@type[[TYPE_gs_imager_state_s]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<@type[[TYPE_gs_imager_state_s]]>(deref(read<ptr<@type[[TYPE_gs_imager_state_s]]>>(%[[VALUE_pgs]])), copy<@type[[TYPE_gs_imager_state_s]], reason=assign>(read<@type[[TYPE_gs_imager_state_s]]>(%[[VALUE_gstate_initial]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @gs_state_update_overprint() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(field0(field0(%3)));
+// DEFAULT-NEXT:     fn %[[VALUE_gs_state_update_overprint:[0-9]+]] @gs_state_update_overprint() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(field0(field0(%[[VALUE_gstate_initial]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%6), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_gs_state_update_overprint]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

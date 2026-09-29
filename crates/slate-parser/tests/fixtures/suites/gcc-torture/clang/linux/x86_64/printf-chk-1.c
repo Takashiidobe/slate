@@ -72,154 +72,154 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type1 va_list = va_list;
-// DEFAULT-NEXT:     type @type2 va_list = va_list;
-// DEFAULT-NEXT:     global %6 should_optimize: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %15 .str15: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %16 .str16: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %17 .str17: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([104, 101, 108, 108, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %18 .str18: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([104, 101, 108, 108, 111, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %19 .str19: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %20 .str20: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %21 .str21: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %22 .str22: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %23 .str23: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %24 .str24: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %25 .str25: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %26 .str26: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %27 .str27: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %28 .str28: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %29 .str29: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %30 .str30: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %31 .str31: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 99, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %32 .str32: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 99, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %33 .str33: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %34 .str34: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 115, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %35 .str35: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %36 .str36: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %4 @vprintf(%13 __format: ptr<const i8> [restrict], %14 __arg: va_list) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @__printf_chk(%8 flag: i32, %9 fmt: ptr<const i8>, ...) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %11 ret: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(1));
-// DEFAULT-NEXT:         va_start(%10);
-// DEFAULT-NEXT:         write<i32>(%11, call<i32, signature=fn(ptr<const i8>, va_list) -> i32>(%4, read<ptr<const i8>>(%9), read<va_list>(%10)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, va_list) -> i32>(%4, read<ptr<const i8>>(%9), read<va_list>(%10));
-// DEFAULT-NEXT:         va_end(%10);
-// DEFAULT-NEXT:         return read<i32>(%11);
+// DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list_2:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     global %[[VALUE_should_optimize:[0-9]+]] should_optimize: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([104, 101, 108, 108, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([104, 101, 108, 108, 111, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_6:[0-9]+]] .str[[VALUE_str_6]]: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_7:[0-9]+]] .str[[VALUE_str_7]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_8:[0-9]+]] .str[[VALUE_str_8]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_9:[0-9]+]] .str[[VALUE_str_9]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_10:[0-9]+]] .str[[VALUE_str_10]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_11:[0-9]+]] .str[[VALUE_str_11]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_12:[0-9]+]] .str[[VALUE_str_12]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_13:[0-9]+]] .str[[VALUE_str_13]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_14:[0-9]+]] .str[[VALUE_str_14]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_15:[0-9]+]] .str[[VALUE_str_15]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_16:[0-9]+]] .str[[VALUE_str_16]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_17:[0-9]+]] .str[[VALUE_str_17]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 99, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_18:[0-9]+]] .str[[VALUE_str_18]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 99, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_19:[0-9]+]] .str[[VALUE_str_19]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_20:[0-9]+]] .str[[VALUE_str_20]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 115, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_21:[0-9]+]] .str[[VALUE_str_21]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_22:[0-9]+]] .str[[VALUE_str_22]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_vprintf:[0-9]+]] @vprintf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], %[[VALUE___arg:[0-9]+]] __arg: va_list) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE___printf_chk:[0-9]+]] @__printf_chk(%[[VALUE_flag:[0-9]+]] flag: i32, %[[VALUE_fmt:[0-9]+]] fmt: ptr<const i8>, ...) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ret:[0-9]+]] ret: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_ret]], call<i32, signature=fn(ptr<const i8>, va_list) -> i32>(%[[VALUE_vprintf]], read<ptr<const i8>>(%[[VALUE_fmt]]), read<va_list>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, va_list) -> i32>(%[[VALUE_vprintf]], read<ptr<const i8>>(%[[VALUE_fmt]]), read<va_list>(%[[VALUE_ap]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_ret]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%15)));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%16))), const<i32>(5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str]])));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str_2]]))), const<i32>(5))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%17)));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%18))), const<i32>(6))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_3]])));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_4]]))), const<i32>(6))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%19)));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%20))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_5]])));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_6]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%21)));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%22))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_7]])));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_8]]))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%23)));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%24))), const<i32>(5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_9]])));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_10]]))), const<i32>(5))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%25)));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%26))), const<i32>(6))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_11]])));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_12]]))), const<i32>(6))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%27)));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%28))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_13]])));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_14]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%29)));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%30))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_15]])));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_16]]))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%31)));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%32))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_17]])));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_18]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%33)));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%34))), const<i32>(7))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_19]])));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_20]]))), const<i32>(7))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(0));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%35)));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         write<i32, volatile>(%6, const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%7, const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%36))), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_21]])));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const i8>, ...) -> i32>(%[[VALUE___printf_chk]], const<i32>(1), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_22]]))), const<i32>(2))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32, volatile>(%[[VALUE_should_optimize]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -30,8 +30,8 @@ unsigned long function_size(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @add(%2 <unnamed>: i32, %3 <unnamed>: i32) -> i32 [linkage=external];
-// IR-NEXT:     fn %1 @function_size() -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_add:[0-9]+]] @add(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_function_size:[0-9]+]] @function_size() -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(1);
 // IR-NEXT:     }
 // IR-NEXT: }

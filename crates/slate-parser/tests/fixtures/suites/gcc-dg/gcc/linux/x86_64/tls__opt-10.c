@@ -43,24 +43,24 @@ spin (int n)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a_thread_local: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @spin(%2 n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %4
+// DEFAULT-NEXT:     global %[[VALUE_a_thread_local:[0-9]+]] a_thread_local: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_spin:[0-9]+]] @spin(%[[VALUE_n:[0-9]+]] n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%3, const<i32>(0));
-// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%3), read<i32>(%2))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
+// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_n]]))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %5: i32 [synthetic] = read<i32>(%3);
-// DEFAULT-NEXT:                 let %6: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%5), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%3, read<i32>(%6));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %7: i32 [synthetic] = read<i32>(%0);
-// DEFAULT-NEXT:                     let %8: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%7), read<i32>(%3));
-// DEFAULT-NEXT:                     write<i32>(%0, read<i32>(%8));
+// DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a_thread_local]]);
+// DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), read<i32>(%[[VALUE_i]]));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_a_thread_local]], read<i32>(%[[VALUE4]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

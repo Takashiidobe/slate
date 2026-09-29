@@ -34,9 +34,9 @@ char array[i == 6 ? 1 : -1];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = enum : u32 {
-// DEFAULT-NEXT:         %0 i = const<i32>(6);
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_i:[0-9]+]] i = const<i32>(6);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %2 array: array<i8, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_array:[0-9]+]] array: array<i8, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

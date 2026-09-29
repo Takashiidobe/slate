@@ -235,107 +235,107 @@ void falias_nothrow (void);
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 v0: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 v1: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %63 .str63: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([49, 50, 51, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %73 .str73: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([49, 50, 51, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @ref0() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f0() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @f1() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @f2() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %5 @f3() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %6 @f4() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %8 @f5() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %9 @f6() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %10 @xref1() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %11 @xref2() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %12 @xref3() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %13 @xref4() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %14 @xref5() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %15 @xref6() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %16 @xref7() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %17 @xref8() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %18 @xref9() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %19 @call_ref2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%11);
+// DEFAULT-NEXT:     global %[[VALUE_v0:[0-9]+]] v0: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_v1:[0-9]+]] v1: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([49, 50, 51, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([49, 50, 51, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_ref0:[0-9]+]] @ref0() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f0:[0-9]+]] @f0() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_xref1:[0-9]+]] @xref1() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_xref2:[0-9]+]] @xref2() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_xref3:[0-9]+]] @xref3() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_xref4:[0-9]+]] @xref4() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_xref5:[0-9]+]] @xref5() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_xref6:[0-9]+]] @xref6() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_xref7:[0-9]+]] @xref7() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_xref8:[0-9]+]] @xref8() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_xref9:[0-9]+]] @xref9() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_call_ref2:[0-9]+]] @call_ref2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_xref2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @call_ref3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%12);
+// DEFAULT-NEXT:     fn %[[VALUE_call_ref3:[0-9]+]] @call_ref3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_xref3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @call_ref4() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%13);
+// DEFAULT-NEXT:     fn %[[VALUE_call_ref4:[0-9]+]] @call_ref4() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_xref4]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @call_ref5() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%14);
+// DEFAULT-NEXT:     fn %[[VALUE_call_ref5:[0-9]+]] @call_ref5() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_xref5]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @call_ref6() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%15);
+// DEFAULT-NEXT:     fn %[[VALUE_call_ref6:[0-9]+]] @call_ref6() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_xref6]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @call_ref7() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:     fn %[[VALUE_call_ref7:[0-9]+]] @call_ref7() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_xref7]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @call_ref8() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%17);
+// DEFAULT-NEXT:     fn %[[VALUE_call_ref8:[0-9]+]] @call_ref8() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_xref8]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @call_ref9() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%18);
+// DEFAULT-NEXT:     fn %[[VALUE_call_ref9:[0-9]+]] @call_ref9() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_xref9]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @xref10() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %28 @xref11(%57 <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %29 @xref12(%58 <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %62 @__builtin___strcpy_chk(%59 <unnamed>: ptr<i8>, %60 <unnamed>: ptr<const i8>, %61 <unnamed>: u64) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %66 @__builtin_object_size(%64 <unnamed>: ptr<const void>, %65 <unnamed>: i32) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %30 @call_xref12() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %31 p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(i32) -> ptr<void>>(%29, const<i32>(3));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%62, pointer_cast<ptr<i8>, reason=arg>(read<ptr<void>>(%31)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%63)), call<u64, signature=fn(ptr<const void>, i32) -> u64>(%66, pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%31)), const<i32>(0)));
-// DEFAULT-NEXT:         return read<ptr<void>>(%31);
+// DEFAULT-NEXT:     fn %[[VALUE_xref10:[0-9]+]] @xref10() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_xref11:[0-9]+]] @xref11(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_xref12:[0-9]+]] @xref12(%[[VALUE1:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin___strcpy_chk:[0-9]+]] @__builtin___strcpy_chk(%[[VALUE2:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE3:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE4:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_object_size:[0-9]+]] @__builtin_object_size(%[[VALUE5:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE6:[0-9]+]] <unnamed>: i32) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_call_xref12:[0-9]+]] @call_xref12() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_xref12]], const<i32>(3));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE___builtin___strcpy_chk]], pointer_cast<ptr<i8>, reason=arg>(read<ptr<void>>(%[[VALUE_p]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p]])), const<i32>(0)));
+// DEFAULT-NEXT:         return read<ptr<void>>(%[[VALUE_p]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @fconst() -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %33 @fpure() -> i32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %34 @fconst_pure() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %35 @gconst() -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %36 @gpure_const() -> i32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %37 @fdeprecated() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %38 @fcurrent() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %39 @fcurrent2() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %40 @call_fcurrent() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%38), call<i32, signature=fn() -> i32>(%39));
+// DEFAULT-NEXT:     fn %[[VALUE_fconst:[0-9]+]] @fconst() -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_fpure:[0-9]+]] @fpure() -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE_fconst_pure:[0-9]+]] @fconst_pure() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_gconst:[0-9]+]] @gconst() -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_gpure_const:[0-9]+]] @gpure_const() -> i32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE_fdeprecated:[0-9]+]] @fdeprecated() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fcurrent:[0-9]+]] @fcurrent() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fcurrent2:[0-9]+]] @fcurrent2() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_call_fcurrent:[0-9]+]] @call_fcurrent() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_fcurrent]]), call<i32, signature=fn() -> i32>(%[[VALUE_fcurrent2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %41 @target_cold() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_target_cold:[0-9]+]] @target_cold() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %42 @alias_cold() -> i32 [linkage=external] [alias="target_cold"];
-// DEFAULT-NEXT:     fn %67 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %43 @fnoret() -> void [linkage=external] [noreturn] [fallthrough=ub] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%67);
+// DEFAULT-NEXT:     fn %[[VALUE_alias_cold:[0-9]+]] @alias_cold() -> i32 [linkage=external] [alias="target_cold"];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_fnoret:[0-9]+]] @fnoret() -> void [linkage=external] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %44 @fnoret_alias() -> void [linkage=external] [alias="fnoret"];
-// DEFAULT-NEXT:     fn %69 @exit(%68 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %45 @fnoret2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%69, const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_fnoret_alias:[0-9]+]] @fnoret_alias() -> void [linkage=external] [alias="fnoret"];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE7:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_fnoret2:[0-9]+]] @fnoret2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %46 @call_noret() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%45);
+// DEFAULT-NEXT:     fn %[[VALUE_call_noret:[0-9]+]] @call_noret() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fnoret2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %47 @ftarget_nonnull(%48 p: ptr<void>) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<ptr<void>>(%48);
+// DEFAULT-NEXT:     fn %[[VALUE_ftarget_nonnull:[0-9]+]] @ftarget_nonnull(%[[VALUE_p_2:[0-9]+]] p: ptr<void>) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<ptr<void>>(%[[VALUE_p_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %49 @falias_nonnull(%70 <unnamed>: ptr<void>) -> ptr<void> [linkage=external] [alias="ftarget_nonnull"];
-// DEFAULT-NEXT:     fn %50 @call_falias_nonnull() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%49, null<ptr<void>>);
+// DEFAULT-NEXT:     fn %[[VALUE_falias_nonnull:[0-9]+]] @falias_nonnull(%[[VALUE8:[0-9]+]] <unnamed>: ptr<void>) -> ptr<void> [linkage=external] [alias="ftarget_nonnull"];
+// DEFAULT-NEXT:     fn %[[VALUE_call_falias_nonnull:[0-9]+]] @call_falias_nonnull() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%[[VALUE_falias_nonnull]], null<ptr<void>>);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %72 @__builtin_malloc(%71 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %51 @ftarget_malloc() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64) -> ptr<void>>(%72, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE9:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_ftarget_malloc:[0-9]+]] @ftarget_malloc() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %52 @falias_malloc() -> ptr<void> [linkage=external] [alias="ftarget_malloc"];
-// DEFAULT-NEXT:     fn %53 @call_falias_malloc() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %54 p: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn() -> ptr<void>>(%52));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%62, read<ptr<i8>>(%54), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%73)), call<u64, signature=fn(ptr<const void>, i32) -> u64>(%66, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%54)), const<i32>(0)));
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(read<ptr<i8>>(%54));
+// DEFAULT-NEXT:     fn %[[VALUE_falias_malloc:[0-9]+]] @falias_malloc() -> ptr<void> [linkage=external] [alias="ftarget_malloc"];
+// DEFAULT-NEXT:     fn %[[VALUE_call_falias_malloc:[0-9]+]] @call_falias_malloc() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_p_3:[0-9]+]] p: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_falias_malloc]]));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE___builtin___strcpy_chk]], read<ptr<i8>>(%[[VALUE_p_3]]), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), call<u64, signature=fn(ptr<const void>, i32) -> u64>(%[[VALUE___builtin_object_size]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%[[VALUE_p_3]])), const<i32>(0)));
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(read<ptr<i8>>(%[[VALUE_p_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %55 @ftarget_nothrow() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_ftarget_nothrow:[0-9]+]] @ftarget_nothrow() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %56 @falias_nothrow() -> void [linkage=external] [alias="ftarget_nothrow"];
+// DEFAULT-NEXT:     fn %[[VALUE_falias_nothrow:[0-9]+]] @falias_nothrow() -> void [linkage=external] [alias="ftarget_nothrow"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

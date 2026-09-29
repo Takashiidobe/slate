@@ -53,36 +53,36 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%13 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @g0(%3 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_g0:[0-9]+]] @g0(%[[VALUE_x:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<f64>(1.0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @g1(%5 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g1:[0-9]+]] @g1(%[[VALUE_x_2:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return neg<f64>(const<f64>(1.0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @g2(%7 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g2:[0-9]+]] @g2(%[[VALUE_x_3:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<f64>(0.0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @xcexp(%9 x: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 r: f64 [storage=automatic];
-// DEFAULT-NEXT:         write<f64>(%10, call<f64, signature=fn(f64) -> f64>(%2, read<f64>(real(%9))));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%2, read<f64>(real(%9)));
-// DEFAULT-NEXT:         write<f64>(real(%9), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), call<f64, signature=fn(f64) -> f64>(%4, read<f64>(imag(%9)))));
-// DEFAULT-NEXT:         mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), call<f64, signature=fn(f64) -> f64>(%4, read<f64>(imag(%9))));
-// DEFAULT-NEXT:         write<f64>(imag(%9), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), call<f64, signature=fn(f64) -> f64>(%6, read<f64>(imag(%9)))));
-// DEFAULT-NEXT:         mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), call<f64, signature=fn(f64) -> f64>(%6, read<f64>(imag(%9))));
-// DEFAULT-NEXT:         return read<complex<f64>>(%9);
+// DEFAULT-NEXT:     fn %[[VALUE_xcexp:[0-9]+]] @xcexp(%[[VALUE_x_4:[0-9]+]] x: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: f64 [storage=automatic];
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_r]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_g0]], read<f64>(real(%[[VALUE_x_4]]))));
+// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE_g0]], read<f64>(real(%[[VALUE_x_4]])));
+// DEFAULT-NEXT:         write<f64>(real(%[[VALUE_x_4]]), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_r]]), call<f64, signature=fn(f64) -> f64>(%[[VALUE_g1]], read<f64>(imag(%[[VALUE_x_4]])))));
+// DEFAULT-NEXT:         mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_r]]), call<f64, signature=fn(f64) -> f64>(%[[VALUE_g1]], read<f64>(imag(%[[VALUE_x_4]]))));
+// DEFAULT-NEXT:         write<f64>(imag(%[[VALUE_x_4]]), mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_r]]), call<f64, signature=fn(f64) -> f64>(%[[VALUE_g2]], read<f64>(imag(%[[VALUE_x_4]])))));
+// DEFAULT-NEXT:         mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_r]]), call<f64, signature=fn(f64) -> f64>(%[[VALUE_g2]], read<f64>(imag(%[[VALUE_x_4]]))));
+// DEFAULT-NEXT:         return read<complex<f64>>(%[[VALUE_x_4]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 x: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         write<complex<f64>>(%12, call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%8, aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0))));
-// DEFAULT-NEXT:         call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%8, aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0)));
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(real(%12)), neg<f64>(const<f64>(1.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(imag(%12)), const<f64>(0.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x_5:[0-9]+]] x: complex<f64> [storage=automatic];
+// DEFAULT-NEXT:         write<complex<f64>>(%[[VALUE_x_5]], call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%[[VALUE_xcexp]], aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0))));
+// DEFAULT-NEXT:         call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%[[VALUE_xcexp]], aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0)));
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(real(%[[VALUE_x_5]])), neg<f64>(const<f64>(1.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(imag(%[[VALUE_x_5]])), const<f64>(0.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

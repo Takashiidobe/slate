@@ -32,7 +32,7 @@ struct flex { int a; int b[]; }; /* { dg-bogus "warning" "warning in place of er
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 flex = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_flex:[0-9]+]] flex = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: array<i32, incomplete>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 4]];

@@ -45,38 +45,38 @@ int foo(int x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @bar(%4 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%2 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6: i32 [synthetic];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %3 y: i32 [storage=automatic];
-// DEFAULT-NEXT:             switch %5 read<i32>(%2)
+// DEFAULT-NEXT:             let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic];
+// DEFAULT-NEXT:             switch %[[VALUE2:[0-9]+]] read<i32>(%[[VALUE_x]])
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     case %5 const<i32>(0):
-// DEFAULT-NEXT:                         write<i32>(%3, const<i32>(1));
-// DEFAULT-NEXT:                     break %5;
-// DEFAULT-NEXT:                     case %5 const<i32>(1):
-// DEFAULT-NEXT:                         write<i32>(%3, const<i32>(2));
-// DEFAULT-NEXT:                     break %5;
-// DEFAULT-NEXT:                     case %5 const<i32>(2):
-// DEFAULT-NEXT:                         write<i32>(%3, const<i32>(3));
-// DEFAULT-NEXT:                     break %5;
-// DEFAULT-NEXT:                     case %5 const<i32>(3):
-// DEFAULT-NEXT:                         write<i32>(%3, const<i32>(4));
-// DEFAULT-NEXT:                     break %5;
-// DEFAULT-NEXT:                     case %5 const<i32>(4):
-// DEFAULT-NEXT:                         write<i32>(%3, const<i32>(5));
-// DEFAULT-NEXT:                     break %5;
-// DEFAULT-NEXT:                     case %5 const<i32>(5):
-// DEFAULT-NEXT:                         write<i32>(%3, const<i32>(6));
-// DEFAULT-NEXT:                     break %5;
-// DEFAULT-NEXT:                     default %5:
-// DEFAULT-NEXT:                         write<i32>(%3, const<i32>(7));
-// DEFAULT-NEXT:                     break %5;
+// DEFAULT-NEXT:                     case %[[VALUE2]] const<i32>(0):
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_y]], const<i32>(1));
+// DEFAULT-NEXT:                     break %[[VALUE2]];
+// DEFAULT-NEXT:                     case %[[VALUE2]] const<i32>(1):
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_y]], const<i32>(2));
+// DEFAULT-NEXT:                     break %[[VALUE2]];
+// DEFAULT-NEXT:                     case %[[VALUE2]] const<i32>(2):
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_y]], const<i32>(3));
+// DEFAULT-NEXT:                     break %[[VALUE2]];
+// DEFAULT-NEXT:                     case %[[VALUE2]] const<i32>(3):
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_y]], const<i32>(4));
+// DEFAULT-NEXT:                     break %[[VALUE2]];
+// DEFAULT-NEXT:                     case %[[VALUE2]] const<i32>(4):
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_y]], const<i32>(5));
+// DEFAULT-NEXT:                     break %[[VALUE2]];
+// DEFAULT-NEXT:                     case %[[VALUE2]] const<i32>(5):
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_y]], const<i32>(6));
+// DEFAULT-NEXT:                     break %[[VALUE2]];
+// DEFAULT-NEXT:                     default %[[VALUE2]]:
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_y]], const<i32>(7));
+// DEFAULT-NEXT:                     break %[[VALUE2]];
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:             write<i32>(%6, read<i32>(%3));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE1]], read<i32>(%[[VALUE_y]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(const<i32>(1), call<i32, signature=fn(i32) -> i32>(%0, read<i32>(%6)));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(const<i32>(1), call<i32, signature=fn(i32) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE1]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

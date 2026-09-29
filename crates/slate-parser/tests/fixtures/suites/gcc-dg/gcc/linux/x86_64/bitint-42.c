@@ -35,7 +35,7 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo() -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> f32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return int_to_float<f32, reason=return, exact=false, rounding=environment, exceptions=observable>(const<u574b>(51441631083309184313435496923626431699697406185384986811300218556561965470218425783308778801748592322915101142266821623326688106425864884688172114173397118407357447763009120));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

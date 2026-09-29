@@ -69,35 +69,35 @@ foo(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @if1() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @if2() -> i8 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @if3() -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @rf1() -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @rf2() -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @rf3() -> d32 [linkage=external];
-// DEFAULT-NEXT:     fn %6 @rf4() -> d64 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @rf5() -> d128 [linkage=external];
-// DEFAULT-NEXT:     fn %8 @cf() -> complex<f64> [linkage=external] [abi=sysv64() -> native_c];
-// DEFAULT-NEXT:     fn %9 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<d32, signature=fn() -> d32>(%5);
-// DEFAULT-NEXT:         call<d64, signature=fn() -> d64>(%6);
-// DEFAULT-NEXT:         call<d128, signature=fn() -> d128>(%7);
-// DEFAULT-NEXT:         call<d32, signature=fn() -> d32>(%5);
-// DEFAULT-NEXT:         float_convert<d32, reason=explicit, rounding=nearest_even, exceptions=observable>(call<f32, signature=fn() -> f32>(%3));
-// DEFAULT-NEXT:         float_convert<d64, reason=explicit, rounding=nearest_even, exceptions=observable>(call<f64, signature=fn() -> f64>(%4));
-// DEFAULT-NEXT:         float_widen<d128, reason=explicit>(call<d32, signature=fn() -> d32>(%5));
-// DEFAULT-NEXT:         float_widen<d128, reason=explicit>(call<d64, signature=fn() -> d64>(%6));
-// DEFAULT-NEXT:         call<d128, signature=fn() -> d128>(%7);
-// DEFAULT-NEXT:         float_convert<f32, reason=explicit, rounding=nearest_even, exceptions=observable>(call<d32, signature=fn() -> d32>(%5));
-// DEFAULT-NEXT:         float_convert<f64, reason=explicit, rounding=nearest_even, exceptions=observable>(call<d64, signature=fn() -> d64>(%6));
-// DEFAULT-NEXT:         float_convert<f80, reason=explicit, rounding=nearest_even, exceptions=observable>(call<d128, signature=fn() -> d128>(%7));
-// DEFAULT-NEXT:         int_to_float<d32, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(call<i32, signature=fn() -> i32>(%0));
-// DEFAULT-NEXT:         int_to_float<d64, reason=explicit, exact=true, rounding=nearest_even, exceptions=observable>(call<i8, signature=fn() -> i8>(%1));
-// DEFAULT-NEXT:         int_to_float<d128, reason=explicit, exact=true, rounding=nearest_even, exceptions=observable>(call<i64, signature=fn() -> i64>(%2));
-// DEFAULT-NEXT:         float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(call<d32, signature=fn() -> d32>(%5));
-// DEFAULT-NEXT:         float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=observable>(call<d64, signature=fn() -> d64>(%6));
-// DEFAULT-NEXT:         float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=observable>(call<d128, signature=fn() -> d128>(%7));
-// DEFAULT-NEXT:         float_convert<d32, reason=explicit, rounding=nearest_even, exceptions=observable>(complex_to_real<f64, reason=explicit>(call<complex<f64>, signature=fn() -> complex<f64>, abi=sysv64() -> native_c>(%8)));
+// DEFAULT-NEXT:     fn %[[VALUE_if1:[0-9]+]] @if1() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_if2:[0-9]+]] @if2() -> i8 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_if3:[0-9]+]] @if3() -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_rf1:[0-9]+]] @rf1() -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_rf2:[0-9]+]] @rf2() -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_rf3:[0-9]+]] @rf3() -> d32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_rf4:[0-9]+]] @rf4() -> d64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_rf5:[0-9]+]] @rf5() -> d128 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_cf:[0-9]+]] @cf() -> complex<f64> [linkage=external] [abi=sysv64() -> native_c];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<d32, signature=fn() -> d32>(%[[VALUE_rf3]]);
+// DEFAULT-NEXT:         call<d64, signature=fn() -> d64>(%[[VALUE_rf4]]);
+// DEFAULT-NEXT:         call<d128, signature=fn() -> d128>(%[[VALUE_rf5]]);
+// DEFAULT-NEXT:         call<d32, signature=fn() -> d32>(%[[VALUE_rf3]]);
+// DEFAULT-NEXT:         float_convert<d32, reason=explicit, rounding=nearest_even, exceptions=observable>(call<f32, signature=fn() -> f32>(%[[VALUE_rf1]]));
+// DEFAULT-NEXT:         float_convert<d64, reason=explicit, rounding=nearest_even, exceptions=observable>(call<f64, signature=fn() -> f64>(%[[VALUE_rf2]]));
+// DEFAULT-NEXT:         float_widen<d128, reason=explicit>(call<d32, signature=fn() -> d32>(%[[VALUE_rf3]]));
+// DEFAULT-NEXT:         float_widen<d128, reason=explicit>(call<d64, signature=fn() -> d64>(%[[VALUE_rf4]]));
+// DEFAULT-NEXT:         call<d128, signature=fn() -> d128>(%[[VALUE_rf5]]);
+// DEFAULT-NEXT:         float_convert<f32, reason=explicit, rounding=nearest_even, exceptions=observable>(call<d32, signature=fn() -> d32>(%[[VALUE_rf3]]));
+// DEFAULT-NEXT:         float_convert<f64, reason=explicit, rounding=nearest_even, exceptions=observable>(call<d64, signature=fn() -> d64>(%[[VALUE_rf4]]));
+// DEFAULT-NEXT:         float_convert<f80, reason=explicit, rounding=nearest_even, exceptions=observable>(call<d128, signature=fn() -> d128>(%[[VALUE_rf5]]));
+// DEFAULT-NEXT:         int_to_float<d32, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(call<i32, signature=fn() -> i32>(%[[VALUE_if1]]));
+// DEFAULT-NEXT:         int_to_float<d64, reason=explicit, exact=true, rounding=nearest_even, exceptions=observable>(call<i8, signature=fn() -> i8>(%[[VALUE_if2]]));
+// DEFAULT-NEXT:         int_to_float<d128, reason=explicit, exact=true, rounding=nearest_even, exceptions=observable>(call<i64, signature=fn() -> i64>(%[[VALUE_if3]]));
+// DEFAULT-NEXT:         float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(call<d32, signature=fn() -> d32>(%[[VALUE_rf3]]));
+// DEFAULT-NEXT:         float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=observable>(call<d64, signature=fn() -> d64>(%[[VALUE_rf4]]));
+// DEFAULT-NEXT:         float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=observable>(call<d128, signature=fn() -> d128>(%[[VALUE_rf5]]));
+// DEFAULT-NEXT:         float_convert<d32, reason=explicit, rounding=nearest_even, exceptions=observable>(complex_to_real<f64, reason=explicit>(call<complex<f64>, signature=fn() -> complex<f64>, abi=sysv64() -> native_c>(%[[VALUE_cf]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

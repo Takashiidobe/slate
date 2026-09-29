@@ -46,20 +46,20 @@ long sys_reboot(int magic1, int magic2, int cmd, void * arg)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @sys_reboot(%1 magic1: i32, %2 magic2: i32, %3 cmd: i32, %4 arg: ptr<void>) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         switch %5 read<i32>(%3)
+// DEFAULT-NEXT:     fn %[[VALUE_sys_reboot:[0-9]+]] @sys_reboot(%[[VALUE_magic1:[0-9]+]] magic1: i32, %[[VALUE_magic2:[0-9]+]] magic2: i32, %[[VALUE_cmd:[0-9]+]] cmd: i32, %[[VALUE_arg:[0-9]+]] arg: ptr<void>) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_cmd]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %5 const<i32>(-1985229329):
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(-1985229329):
 // DEFAULT-NEXT:                     return widen<i64, reason=return>(const<i32>(1));
-// DEFAULT-NEXT:                 case %5 const<i32>(0):
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(0):
 // DEFAULT-NEXT:                     return widen<i64, reason=return>(const<i32>(2));
-// DEFAULT-NEXT:                 case %5 const<i32>(-839974621):
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(-839974621):
 // DEFAULT-NEXT:                     return widen<i64, reason=return>(const<i32>(3));
-// DEFAULT-NEXT:                 case %5 const<i32>(1126301404):
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(1126301404):
 // DEFAULT-NEXT:                     return widen<i64, reason=return>(const<i32>(4));
-// DEFAULT-NEXT:                 case %5 const<i32>(-1582119980):
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(-1582119980):
 // DEFAULT-NEXT:                     return widen<i64, reason=return>(const<i32>(5));
-// DEFAULT-NEXT:                 default %5:
+// DEFAULT-NEXT:                 default %[[VALUE0]]:
 // DEFAULT-NEXT:                     return widen<i64, reason=return>(const<i32>(0));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         ;

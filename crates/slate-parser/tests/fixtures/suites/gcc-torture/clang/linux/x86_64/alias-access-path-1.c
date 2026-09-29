@@ -48,26 +48,26 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 a = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_a:[0-9]+]] a = struct {
 // DEFAULT-NEXT:         field0 val: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 b = struct {
-// DEFAULT-NEXT:         field0 a: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_b:[0-9]+]] b = struct {
+// DEFAULT-NEXT:         field0 a: @type[[TYPE_a]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 c = struct {
-// DEFAULT-NEXT:         field0 b: @type1;
+// DEFAULT-NEXT:     type @type[[TYPE_c:[0-9]+]] c = struct {
+// DEFAULT-NEXT:         field0 b: @type[[TYPE_b]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %1 a: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     global %2 a2: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 val: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 cptr: ptr<@type2> [storage=static] = pointer_cast<ptr<@type2>, reason=assign>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%4))) [linkage=external];
-// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<@type0>(field0(field0(deref(read<ptr<@type2>>(%6)))), copy<@type0, reason=assign>(read<@type0>(%1)));
-// DEFAULT-NEXT:         write<i32>(%4, const<i32>(2));
-// DEFAULT-NEXT:         write<@type0>(%2, copy<@type0, reason=assign>(read<@type0>(field0(field0(deref(read<ptr<@type2>>(%6)))))));
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(field0(%2)), read<i32>(field0(%1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_a]] [storage=static] = aggregate<@type[[TYPE_a]], zero_fill=false>(field0 = const<i32>(1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a2:[0-9]+]] a2: @type[[TYPE_a]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_val:[0-9]+]] val: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_cptr:[0-9]+]] cptr: ptr<@type[[TYPE_c]]> [storage=static] = pointer_cast<ptr<@type[[TYPE_c]]>, reason=assign>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_val]]))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<@type[[TYPE_a]]>(field0(field0(deref(read<ptr<@type[[TYPE_c]]>>(%[[VALUE_cptr]])))), copy<@type[[TYPE_a]], reason=assign>(read<@type[[TYPE_a]]>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_val]], const<i32>(2));
+// DEFAULT-NEXT:         write<@type[[TYPE_a]]>(%[[VALUE_a2]], copy<@type[[TYPE_a]], reason=assign>(read<@type[[TYPE_a]]>(field0(field0(deref(read<ptr<@type[[TYPE_c]]>>(%[[VALUE_cptr]])))))));
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(field0(%[[VALUE_a2]])), read<i32>(field0(%[[VALUE_a]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

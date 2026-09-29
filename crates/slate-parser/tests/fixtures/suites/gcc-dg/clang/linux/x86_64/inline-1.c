@@ -54,23 +54,23 @@ int test2 (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @xyzzy0(%1 x: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_xyzzy0:[0-9]+]] @xyzzy0(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @test0() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%0, const<i32>(5));
+// DEFAULT-NEXT:     fn %[[VALUE_test0:[0-9]+]] @test0() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_xyzzy0]], const<i32>(5));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @xyzzy1(%4 x: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_xyzzy1:[0-9]+]] @xyzzy1(%[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @test1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%3, const<i32>(5));
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_xyzzy1]], const<i32>(5));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @xyzzy2(%7 x: i32) -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%7);
+// DEFAULT-NEXT:     fn %[[VALUE_xyzzy2:[0-9]+]] @xyzzy2(%[[VALUE_x_3:[0-9]+]] x: i32) -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @test2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%6, const<i32>(5));
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_xyzzy2]], const<i32>(5));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

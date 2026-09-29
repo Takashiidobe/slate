@@ -55,26 +55,26 @@ void f2(struct x *y) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 cf = complex<f32>;
-// DEFAULT-NEXT:     type @type1 x = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_cf:[0-9]+]] cf = complex<f32>;
+// DEFAULT-NEXT:     type @type[[TYPE_x:[0-9]+]] x = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 f: complex<f32>;
 // DEFAULT-NEXT:     } [size=9, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @f2(%8 y: ptr<@type1>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(ne<complex<f32>, exceptions=observable>(read<complex<f32>>(field1(deref(read<ptr<@type1>>(%8)))), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(deref(read<ptr<@type1>>(%8))))), const<i32>(42)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_y:[0-9]+]] y: ptr<@type[[TYPE_x]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(ne<complex<f32>, exceptions=observable>(read<complex<f32>>(field1(deref(read<ptr<@type[[TYPE_x]]>>(%[[VALUE_y]])))), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))), ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(deref(read<ptr<@type[[TYPE_x]]>>(%[[VALUE_y]]))))), const<i32>(42)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @f1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 s: @type1 [storage=automatic];
-// DEFAULT-NEXT:         write<complex<f32>>(field1(%7), real_to_complex<complex<f32>, reason=assign>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))));
-// DEFAULT-NEXT:         write<i8>(field0(%7), truncate<i8, reason=assign, fits=always>(const<i32>(42)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>) -> void>(%4, addr_of<ptr<@type1>>(%7));
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_x]] [storage=automatic];
+// DEFAULT-NEXT:         write<complex<f32>>(field1(%[[VALUE_s]]), real_to_complex<complex<f32>, reason=assign>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))));
+// DEFAULT-NEXT:         write<i8>(field0(%[[VALUE_s]]), truncate<i8, reason=assign, fits=always>(const<i32>(42)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_x]]>) -> void>(%[[VALUE_f2]], addr_of<ptr<@type[[TYPE_x]]>>(%[[VALUE_s]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_f1]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

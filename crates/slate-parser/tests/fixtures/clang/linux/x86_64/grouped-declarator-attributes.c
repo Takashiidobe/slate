@@ -25,6 +25,6 @@ void grouped_attribute(int (__attribute__((mode(SI))) *value));
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @grouped_attribute(%2 value: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_grouped_attribute:[0-9]+]] @grouped_attribute(%[[VALUE_value:[0-9]+]] value: ptr<i32>) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

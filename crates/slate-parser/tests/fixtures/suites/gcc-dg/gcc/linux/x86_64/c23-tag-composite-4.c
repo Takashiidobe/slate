@@ -46,24 +46,24 @@ void g(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 bar = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_bar:[0-9]+]] bar = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 bar = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_bar_2:[0-9]+]] bar = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %5 a: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %3 b: @type0 [storage=automatic];
-// DEFAULT-NEXT:         conditional<@type0>(ne<i32>(const<i32>(1), const<i32>(0)), read<@type0>(%2), read<@type0>(%3));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_bar]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: @type[[TYPE_foo]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_foo]] [storage=automatic];
+// DEFAULT-NEXT:         conditional<@type[[TYPE_foo]]>(ne<i32>(const<i32>(1), const<i32>(0)), read<@type[[TYPE_foo]]>(%[[VALUE_a_2]]), read<@type[[TYPE_foo]]>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @g() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 b: @type2 [storage=automatic];
-// DEFAULT-NEXT:         conditional<@type1>(ne<i32>(const<i32>(1), const<i32>(0)), read<@type1>(%5), read<@type2>(%8));
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: @type[[TYPE_bar_2]] [storage=automatic];
+// DEFAULT-NEXT:         conditional<@type[[TYPE_bar]]>(ne<i32>(const<i32>(1), const<i32>(0)), read<@type[[TYPE_bar]]>(%[[VALUE_a]]), read<@type[[TYPE_bar_2]]>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

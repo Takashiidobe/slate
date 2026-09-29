@@ -62,28 +62,28 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 wait = union {
+// DEFAULT-NEXT:     type @type[[TYPE_wait:[0-9]+]] wait = union {
 // DEFAULT-NEXT:         field0 w_status: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 = union {
-// DEFAULT-NEXT:         field0 uptr: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
+// DEFAULT-NEXT:         field0 uptr: ptr<@type[[TYPE_wait]]>;
 // DEFAULT-NEXT:         field1 iptr: ptr<i32>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type2 WAIT_STATUS = @type1;
-// DEFAULT-NEXT:     global %4 status: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 wstatus: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @test1(%7 s: @type1) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(field1(%7)), addr_of<ptr<i32>>(%4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     type @type[[TYPE_WAIT_STATUS:[0-9]+]] WAIT_STATUS = @type[[TYPE0]];
+// DEFAULT-NEXT:     global %[[VALUE_status:[0-9]+]] status: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wstatus:[0-9]+]] wstatus: @type[[TYPE_wait]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_s:[0-9]+]] s: @type[[TYPE0]]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(field1(%[[VALUE_s]])), addr_of<ptr<i32>>(%[[VALUE_status]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @test2(%9 s: @type1) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<ptr<@type0>>(read<ptr<@type0>>(field0(%9)), addr_of<ptr<@type0>>(%5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_s_2:[0-9]+]] s: @type[[TYPE0]]) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_wait]]>>(read<ptr<@type[[TYPE_wait]]>>(field0(%[[VALUE_s_2]])), addr_of<ptr<@type[[TYPE_wait]]>>(%[[VALUE_wstatus]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(@type1) -> void>(%6, aggregate<@type1, zero_fill=false>(field1 = addr_of<ptr<i32>>(%4)));
-// DEFAULT-NEXT:         call<void, signature=fn(@type1) -> void>(%8, aggregate<@type1, zero_fill=false>(field0 = addr_of<ptr<@type0>>(%5)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE0]]) -> void>(%[[VALUE_test1]], aggregate<@type[[TYPE0]], zero_fill=false>(field1 = addr_of<ptr<i32>>(%[[VALUE_status]])));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE0]]) -> void>(%[[VALUE_test2]], aggregate<@type[[TYPE0]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_wait]]>>(%[[VALUE_wstatus]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -40,9 +40,9 @@ int foo (void)
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     asm ".ascii bar" [dialect=att];
-// DEFAULT-NEXT:     extern %0 x: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %1 y: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     extern %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_y:[0-9]+]] y: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         asm ".ascii foo" [dialect=att] [options=nostack];
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

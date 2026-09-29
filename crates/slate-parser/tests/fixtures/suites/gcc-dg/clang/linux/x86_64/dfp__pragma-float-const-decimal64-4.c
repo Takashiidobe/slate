@@ -70,24 +70,24 @@ void f6 (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<f64>(%0, const<f64>(1.0));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], const<f64>(1.0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @f2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<f64>(%0, const<f64>(2.0));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], const<f64>(2.0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @f3() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<f64>(%0, const<f64>(3.0));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], const<f64>(3.0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @f4() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<f64>(%0, const<f64>(1.0));
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], const<f64>(1.0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @f5() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<f64>(%0, const<f64>(2.0));
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], const<f64>(2.0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f6() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<f64>(%0, const<f64>(3.0));
+// DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], const<f64>(3.0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

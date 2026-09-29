@@ -62,31 +62,31 @@ foo (_Float32 x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 x: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 a: i57b [storage=automatic] = float_to_int<i57b, reason=assign, out_of_range=ub, exceptions=observable>(const<f32>(1.5));
-// DEFAULT-NEXT:         let %3 b: i27b [storage=automatic] = reinterpret<i27b, reason=assign, fits=unknown>(const<u27b>(76117358));
-// DEFAULT-NEXT:         let %4 c: u27b [storage=automatic] = reinterpret<u27b, reason=assign, fits=unknown>(widen<i27b, reason=assign>(neg<i5b, overflow=ub>(const<i5b>(15))));
-// DEFAULT-NEXT:         let %5 d: i27b [storage=automatic] = truncate<i27b, reason=assign, fits=unknown>(neg<i30b, overflow=ub>(const<i30b>(390288573)));
-// DEFAULT-NEXT:         let %6 e: u27b [storage=automatic] = truncate<u27b, reason=assign, fits=unknown>(const<u29b>(309641337));
-// DEFAULT-NEXT:         let %7 f: i27b [storage=automatic] = reinterpret<i27b, reason=assign, fits=unknown>(truncate<u27b, reason=assign, fits=always>(const<u32>(76117358)));
-// DEFAULT-NEXT:         let %8 g: u27b [storage=automatic] = reinterpret<u27b, reason=assign, fits=unknown>(truncate<i27b, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(15))));
-// DEFAULT-NEXT:         let %9 h: i27b [storage=automatic] = truncate<i27b, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(390288573)));
-// DEFAULT-NEXT:         let %10 i: u27b [storage=automatic] = truncate<u27b, reason=assign, fits=unknown>(const<u32>(309641337));
-// DEFAULT-NEXT:         let %11 j: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(const<u32b>(2936216298));
-// DEFAULT-NEXT:         let %12 k: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=unknown>(widen<i32, reason=assign>(neg<i5b, overflow=ub>(const<i5b>(15))));
-// DEFAULT-NEXT:         let %13 l: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(neg<i64b, overflow=ub>(const<i64b>(8087431137529383656)));
-// DEFAULT-NEXT:         let %14 m: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(const<u61b>(1664073919553255778));
-// DEFAULT-NEXT:         let %15 n: f32 [storage=automatic] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i575b>(51441631083309184313435496923626431699697406185384986811300218556561965470218425783308778801748592322915101142266821623326688106425864884688172114173397118407357447763009120));
-// DEFAULT-NEXT:         let %16 o: i57b [storage=automatic] = float_to_int<i57b, reason=assign, out_of_range=ub, exceptions=observable>(read<f32>(%1));
-// DEFAULT-NEXT:         let %17 p: u15b [storage=automatic] = const<u15b>(32767);
-// DEFAULT-NEXT:         let %18 q: u15b [storage=automatic] = reinterpret<u15b, reason=assign, fits=unknown>(truncate<i15b, reason=assign, fits=unknown>(reinterpret<i42b, reason=explicit, fits=unknown>(widen<u42b, reason=explicit>(read<u15b>(%17)))));
-// DEFAULT-NEXT:         let %19 r: i17b [storage=automatic] = truncate<i17b, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:         let %20 s: i17b [storage=automatic] = truncate<i17b, reason=assign, fits=unknown>(and<i42b>(widen<i42b, reason=explicit>(read<i17b>(%19)), widen<i42b, reason=usual_arith>(const<i16b>(32767))));
-// DEFAULT-NEXT:         let %21 t: i575b [storage=automatic] = widen<i575b, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:         let %22 u: f32 [storage=automatic] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(read<i575b>(%21));
-// DEFAULT-NEXT:         let %23 v: i42b [storage=automatic] = widen<i42b, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:         let %24 w: u17b [storage=automatic] = reinterpret<u17b, reason=assign, fits=unknown>(truncate<i17b, reason=assign, fits=unknown>(read<i42b>(%23)));
-// DEFAULT-NEXT:         let %25 y: i17b [storage=automatic] = truncate<i17b, reason=assign, fits=unknown>(read<i42b>(%23));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i57b [storage=automatic] = float_to_int<i57b, reason=assign, out_of_range=ub, exceptions=observable>(const<f32>(1.5));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i27b [storage=automatic] = reinterpret<i27b, reason=assign, fits=unknown>(const<u27b>(76117358));
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u27b [storage=automatic] = reinterpret<u27b, reason=assign, fits=unknown>(widen<i27b, reason=assign>(neg<i5b, overflow=ub>(const<i5b>(15))));
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i27b [storage=automatic] = truncate<i27b, reason=assign, fits=unknown>(neg<i30b, overflow=ub>(const<i30b>(390288573)));
+// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: u27b [storage=automatic] = truncate<u27b, reason=assign, fits=unknown>(const<u29b>(309641337));
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: i27b [storage=automatic] = reinterpret<i27b, reason=assign, fits=unknown>(truncate<u27b, reason=assign, fits=always>(const<u32>(76117358)));
+// DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: u27b [storage=automatic] = reinterpret<u27b, reason=assign, fits=unknown>(truncate<i27b, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(15))));
+// DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: i27b [storage=automatic] = truncate<i27b, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(390288573)));
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: u27b [storage=automatic] = truncate<u27b, reason=assign, fits=unknown>(const<u32>(309641337));
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(const<u32b>(2936216298));
+// DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=unknown>(widen<i32, reason=assign>(neg<i5b, overflow=ub>(const<i5b>(15))));
+// DEFAULT-NEXT:         let %[[VALUE_l:[0-9]+]] l: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(neg<i64b, overflow=ub>(const<i64b>(8087431137529383656)));
+// DEFAULT-NEXT:         let %[[VALUE_m:[0-9]+]] m: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(const<u61b>(1664073919553255778));
+// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: f32 [storage=automatic] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i575b>(51441631083309184313435496923626431699697406185384986811300218556561965470218425783308778801748592322915101142266821623326688106425864884688172114173397118407357447763009120));
+// DEFAULT-NEXT:         let %[[VALUE_o:[0-9]+]] o: i57b [storage=automatic] = float_to_int<i57b, reason=assign, out_of_range=ub, exceptions=observable>(read<f32>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: u15b [storage=automatic] = const<u15b>(32767);
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: u15b [storage=automatic] = reinterpret<u15b, reason=assign, fits=unknown>(truncate<i15b, reason=assign, fits=unknown>(reinterpret<i42b, reason=explicit, fits=unknown>(widen<u42b, reason=explicit>(read<u15b>(%[[VALUE_p]])))));
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i17b [storage=automatic] = truncate<i17b, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: i17b [storage=automatic] = truncate<i17b, reason=assign, fits=unknown>(and<i42b>(widen<i42b, reason=explicit>(read<i17b>(%[[VALUE_r]])), widen<i42b, reason=usual_arith>(const<i16b>(32767))));
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: i575b [storage=automatic] = widen<i575b, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: f32 [storage=automatic] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(read<i575b>(%[[VALUE_t]]));
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: i42b [storage=automatic] = widen<i42b, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE_w:[0-9]+]] w: u17b [storage=automatic] = reinterpret<u17b, reason=assign, fits=unknown>(truncate<i17b, reason=assign, fits=unknown>(read<i42b>(%[[VALUE_v]])));
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: i17b [storage=automatic] = truncate<i17b, reason=assign, fits=unknown>(read<i42b>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

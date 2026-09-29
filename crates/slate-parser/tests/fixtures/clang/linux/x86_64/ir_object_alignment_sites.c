@@ -43,18 +43,18 @@ int reader(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 file_aligned: i32 [storage=static] [align=16] [linkage=external];
-// IR-NEXT:     global %1 file_alignas: i32 [storage=static] [align=32] [linkage=external];
-// IR-NEXT:     global %2 file_below: i32 [storage=static] [align=1] [linkage=external];
-// IR-NEXT:     global %3 alignof_file_aligned: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(16))) [linkage=external];
-// IR-NEXT:     global %4 alignof_file_alignas: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(32))) [linkage=external];
-// IR-NEXT:     global %5 alignof_file_below: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(1))) [linkage=external];
-// IR-NEXT:     global %10 static_local: i32 [storage=static] [align=64] [linkage=internal];
-// IR-NEXT:     fn %6 @reader() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %7 block_aligned: i32 [storage=automatic] [align=16];
-// IR-NEXT:         let %8 block_alignas: i32 [storage=automatic] [align=32];
-// IR-NEXT:         let %9 block_below: i32 [storage=automatic] [align=1];
-// IR-NEXT:         let %11 plain: i32 [storage=automatic];
+// IR-NEXT:     global %[[VALUE_file_aligned:[0-9]+]] file_aligned: i32 [storage=static] [align=16] [linkage=external];
+// IR-NEXT:     global %[[VALUE_file_alignas:[0-9]+]] file_alignas: i32 [storage=static] [align=32] [linkage=external];
+// IR-NEXT:     global %[[VALUE_file_below:[0-9]+]] file_below: i32 [storage=static] [align=1] [linkage=external];
+// IR-NEXT:     global %[[VALUE_alignof_file_aligned:[0-9]+]] alignof_file_aligned: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(16))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_alignof_file_alignas:[0-9]+]] alignof_file_alignas: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(32))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_alignof_file_below:[0-9]+]] alignof_file_below: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(1))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_static_local:[0-9]+]] static_local: i32 [storage=static] [align=64] [linkage=internal];
+// IR-NEXT:     fn %[[VALUE_reader:[0-9]+]] @reader() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_block_aligned:[0-9]+]] block_aligned: i32 [storage=automatic] [align=16];
+// IR-NEXT:         let %[[VALUE_block_alignas:[0-9]+]] block_alignas: i32 [storage=automatic] [align=32];
+// IR-NEXT:         let %[[VALUE_block_below:[0-9]+]] block_below: i32 [storage=automatic] [align=1];
+// IR-NEXT:         let %[[VALUE_plain:[0-9]+]] plain: i32 [storage=automatic];
 // IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(16), const<u64>(32)), const<u64>(1)), const<u64>(64)), const<u64>(4))));
 // IR-NEXT:     }
 // IR-NEXT: }

@@ -59,39 +59,39 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 max: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @storemax(%3 i: i32) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if gt<i32>(read<i32>(%3), read<i32>(%1))
-// DEFAULT-NEXT:             write<i32>(%1, read<i32>(%3));
+// DEFAULT-NEXT:     global %[[VALUE_max:[0-9]+]] max: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_storemax:[0-9]+]] @storemax(%[[VALUE_i:[0-9]+]] i: i32) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_max]]))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_max]], read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @CallFunctionRec(%6 fun: ptr<fn(i32) -> i32>, %7 depth: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%6), read<i32>(%7)), const<i32>(0)))
+// DEFAULT-NEXT:     fn %[[VALUE_CallFunctionRec:[0-9]+]] @CallFunctionRec(%[[VALUE_fun:[0-9]+]] fun: ptr<fn(i32) -> i32>, %[[VALUE_depth:[0-9]+]] depth: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%[[VALUE_fun]]), read<i32>(%[[VALUE_depth]])), const<i32>(0)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(0);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if lt<i32>(read<i32>(%7), const<i32>(10))
+// DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_depth]]), const<i32>(10))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%4, read<ptr<fn(i32) -> i32>>(%6), add<i32, overflow=ub>(read<i32>(%7), const<i32>(1)));
+// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%[[VALUE_CallFunctionRec]], read<ptr<fn(i32) -> i32>>(%[[VALUE_fun]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_depth]]), const<i32>(1)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @CallFunction(%10 fun: ptr<fn(i32) -> i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %14: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%4, read<ptr<fn(i32) -> i32>>(%10), const<i32>(1)), const<i32>(0))
-// DEFAULT-NEXT:             write<bool>(%14, not<bool>(ne<i32>(call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%10), const<i32>(0)), const<i32>(0))));
+// DEFAULT-NEXT:     fn %[[VALUE_CallFunction:[0-9]+]] @CallFunction(%[[VALUE_fun_2:[0-9]+]] fun: ptr<fn(i32) -> i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%[[VALUE_CallFunctionRec]], read<ptr<fn(i32) -> i32>>(%[[VALUE_fun_2]]), const<i32>(1)), const<i32>(0))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], not<bool>(ne<i32>(call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%[[VALUE_fun_2]]), const<i32>(0)), const<i32>(0))));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%14, const<bool>(false));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(read<bool>(%14));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(false));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(read<bool>(%[[VALUE0]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @callback(%12 depth: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, read<i32>(%12));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i32>(read<i32>(%12), const<i32>(0)));
+// DEFAULT-NEXT:     fn %[[VALUE_callback:[0-9]+]] @callback(%[[VALUE_depth_2:[0-9]+]] depth: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_storemax]], read<i32>(%[[VALUE_depth_2]]));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i32>(read<i32>(%[[VALUE_depth_2]]), const<i32>(0)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<fn(i32) -> i32>) -> i32>(%8, function_decay<ptr<fn(i32) -> i32>>(%11));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<fn(i32) -> i32>) -> i32>(%[[VALUE_CallFunction]], function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_callback]]));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_max]]), const<i32>(10))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

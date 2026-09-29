@@ -26,7 +26,7 @@ static __SIZE_TYPE__ x = (__SIZE_TYPE__) &_text - 0x10000000L - 1;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 _text: void [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 x: u64 [storage=static] = sub<u64, overflow=wrap>(sub<u64, overflow=wrap>(ptr_to_int<u64, reason=explicit>(addr_of<ptr<void>>(%0)), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(268435456))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))) [linkage=internal];
+// DEFAULT-NEXT:     extern %[[VALUE__text:[0-9]+]] _text: void [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: u64 [storage=static] = sub<u64, overflow=wrap>(sub<u64, overflow=wrap>(ptr_to_int<u64, reason=explicit>(addr_of<ptr<void>>(%[[VALUE__text]])), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(268435456))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))) [linkage=internal];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -69,12 +69,12 @@ void dr335(void) {
 // CFG0-NEXT:         storage d64 [size=8, align=8];
 // CFG0-NEXT:         storage d128 [size=16, align=16];
 // CFG0-NEXT:     }
-// CFG0-NEXT:     type @type0 bits_ = struct {
+// CFG0-NEXT:     type @type[[TYPE_bits_:[0-9]+]] bits_ = struct {
 // CFG0-NEXT:         field0 bbf1: bool : 1;
 // CFG0-NEXT:     } [size=1, align=1, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// CFG0-NEXT:     fn %0 @dr335() -> void [linkage=external] [fallthrough=ret_void] {
-// CFG0-NEXT:         let %2 bits: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
-// CFG0-NEXT:         write<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2), ne<i32, reason=assign>(not<i32>(from_bool<i32, reason=promotion>(read<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2)))), const<i32>(0)));
+// CFG0-NEXT:     fn %[[VALUE_dr335:[0-9]+]] @dr335() -> void [linkage=external] [fallthrough=ret_void] {
+// CFG0-NEXT:         let %[[VALUE_bits:[0-9]+]] bits: @type[[TYPE_bits_]] [storage=automatic] = aggregate<@type[[TYPE_bits_]], zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
+// CFG0-NEXT:         write<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_bits]]), ne<i32, reason=assign>(not<i32>(from_bool<i32, reason=promotion>(read<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_bits]])))), const<i32>(0)));
 // CFG0-NEXT:     }
 // CFG0-NEXT: }
 // SLATE-FILECHECK-END CFG0
@@ -100,12 +100,12 @@ void dr335(void) {
 // CFG1-NEXT:         storage d64 [size=8, align=8];
 // CFG1-NEXT:         storage d128 [size=16, align=16];
 // CFG1-NEXT:     }
-// CFG1-NEXT:     type @type0 bits_ = struct {
+// CFG1-NEXT:     type @type[[TYPE_bits_:[0-9]+]] bits_ = struct {
 // CFG1-NEXT:         field0 bbf1: bool : 1;
 // CFG1-NEXT:     } [size=1, align=1, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// CFG1-NEXT:     fn %0 @dr335() -> void [linkage=external] [fallthrough=ret_void] {
-// CFG1-NEXT:         let %2 bits: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
-// CFG1-NEXT:         write<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2), ne<i32, reason=assign>(not<i32>(from_bool<i32, reason=promotion>(read<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2)))), const<i32>(0)));
+// CFG1-NEXT:     fn %[[VALUE_dr335:[0-9]+]] @dr335() -> void [linkage=external] [fallthrough=ret_void] {
+// CFG1-NEXT:         let %[[VALUE_bits:[0-9]+]] bits: @type[[TYPE_bits_]] [storage=automatic] = aggregate<@type[[TYPE_bits_]], zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
+// CFG1-NEXT:         write<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_bits]]), ne<i32, reason=assign>(not<i32>(from_bool<i32, reason=promotion>(read<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_bits]])))), const<i32>(0)));
 // CFG1-NEXT:     }
 // CFG1-NEXT: }
 // SLATE-FILECHECK-END CFG1
@@ -131,12 +131,12 @@ void dr335(void) {
 // CFG2-NEXT:         storage d64 [size=8, align=8];
 // CFG2-NEXT:         storage d128 [size=16, align=16];
 // CFG2-NEXT:     }
-// CFG2-NEXT:     type @type0 bits_ = struct {
+// CFG2-NEXT:     type @type[[TYPE_bits_:[0-9]+]] bits_ = struct {
 // CFG2-NEXT:         field0 bbf1: bool : 1;
 // CFG2-NEXT:     } [size=1, align=1, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// CFG2-NEXT:     fn %0 @dr335() -> void [linkage=external] [fallthrough=ret_void] {
-// CFG2-NEXT:         let %2 bits: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
-// CFG2-NEXT:         write<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2), ne<i32, reason=assign>(not<i32>(from_bool<i32, reason=promotion>(read<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2)))), const<i32>(0)));
+// CFG2-NEXT:     fn %[[VALUE_dr335:[0-9]+]] @dr335() -> void [linkage=external] [fallthrough=ret_void] {
+// CFG2-NEXT:         let %[[VALUE_bits:[0-9]+]] bits: @type[[TYPE_bits_]] [storage=automatic] = aggregate<@type[[TYPE_bits_]], zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
+// CFG2-NEXT:         write<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_bits]]), ne<i32, reason=assign>(not<i32>(from_bool<i32, reason=promotion>(read<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_bits]])))), const<i32>(0)));
 // CFG2-NEXT:     }
 // CFG2-NEXT: }
 // SLATE-FILECHECK-END CFG2
@@ -162,12 +162,12 @@ void dr335(void) {
 // CFG3-NEXT:         storage d64 [size=8, align=8];
 // CFG3-NEXT:         storage d128 [size=16, align=16];
 // CFG3-NEXT:     }
-// CFG3-NEXT:     type @type0 bits_ = struct {
+// CFG3-NEXT:     type @type[[TYPE_bits_:[0-9]+]] bits_ = struct {
 // CFG3-NEXT:         field0 bbf1: bool : 1;
 // CFG3-NEXT:     } [size=1, align=1, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// CFG3-NEXT:     fn %0 @dr335() -> void [linkage=external] [fallthrough=ret_void] {
-// CFG3-NEXT:         let %2 bits: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
-// CFG3-NEXT:         write<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2), ne<i32, reason=assign>(not<i32>(from_bool<i32, reason=promotion>(read<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2)))), const<i32>(0)));
+// CFG3-NEXT:     fn %[[VALUE_dr335:[0-9]+]] @dr335() -> void [linkage=external] [fallthrough=ret_void] {
+// CFG3-NEXT:         let %[[VALUE_bits:[0-9]+]] bits: @type[[TYPE_bits_]] [storage=automatic] = aggregate<@type[[TYPE_bits_]], zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
+// CFG3-NEXT:         write<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_bits]]), ne<i32, reason=assign>(not<i32>(from_bool<i32, reason=promotion>(read<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_bits]])))), const<i32>(0)));
 // CFG3-NEXT:     }
 // CFG3-NEXT: }
 // SLATE-FILECHECK-END CFG3
@@ -193,12 +193,12 @@ void dr335(void) {
 // CFG4-NEXT:         storage d64 [size=8, align=8];
 // CFG4-NEXT:         storage d128 [size=16, align=16];
 // CFG4-NEXT:     }
-// CFG4-NEXT:     type @type0 bits_ = struct {
+// CFG4-NEXT:     type @type[[TYPE_bits_:[0-9]+]] bits_ = struct {
 // CFG4-NEXT:         field0 bbf1: bool : 1;
 // CFG4-NEXT:     } [size=1, align=1, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// CFG4-NEXT:     fn %0 @dr335() -> void [linkage=external] [fallthrough=ret_void] {
-// CFG4-NEXT:         let %2 bits: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
-// CFG4-NEXT:         write<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2), ne<i32, reason=assign>(not<i32>(from_bool<i32, reason=promotion>(read<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%2)))), const<i32>(0)));
+// CFG4-NEXT:     fn %[[VALUE_dr335:[0-9]+]] @dr335() -> void [linkage=external] [fallthrough=ret_void] {
+// CFG4-NEXT:         let %[[VALUE_bits:[0-9]+]] bits: @type[[TYPE_bits_]] [storage=automatic] = aggregate<@type[[TYPE_bits_]], zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
+// CFG4-NEXT:         write<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_bits]]), ne<i32, reason=assign>(not<i32>(from_bool<i32, reason=promotion>(read<bool>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_bits]])))), const<i32>(0)));
 // CFG4-NEXT:     }
 // CFG4-NEXT: }
 // SLATE-FILECHECK-END CFG4

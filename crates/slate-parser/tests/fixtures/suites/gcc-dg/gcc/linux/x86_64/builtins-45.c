@@ -73,48 +73,48 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %2 x: f32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %3 y: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %4 z: f80 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %15 .str15: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %18 .str18: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %21 .str21: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @f(%12 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @link_error() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %14 @__builtin_nan(%13 <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %17 @__builtin_nanf(%16 <unnamed>: ptr<const i8>) -> f32 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %20 @__builtin_nanl(%19 <unnamed>: ptr<const i8>) -> f80 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %22 @__builtin_inf() -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %23 @__builtin_inff() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %24 @__builtin_infl() -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %26 @finite(%25 <unnamed>: f64) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %28 @finitef(%27 <unnamed>: f32) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %30 @finitel(%29 <unnamed>: f80) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 nan: f64 [storage=automatic] = call<f64, signature=fn(ptr<const i8>) -> f64>(%14, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%15)));
-// DEFAULT-NEXT:         let %7 nanf: f32 [storage=automatic] = call<f32, signature=fn(ptr<const i8>) -> f32>(%17, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%18)));
-// DEFAULT-NEXT:         let %8 nanl: f80 [storage=automatic] = call<f80, signature=fn(ptr<const i8>) -> f80>(%20, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%21)));
-// DEFAULT-NEXT:         let %9 pinf: f64 [storage=automatic] = call<f64, signature=fn() -> f64>(%22);
-// DEFAULT-NEXT:         let %10 pinff: f32 [storage=automatic] = call<f32, signature=fn() -> f32>(%23);
-// DEFAULT-NEXT:         let %11 pinfl: f80 [storage=automatic] = call<f80, signature=fn() -> f80>(%24);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f64) -> i32>(%26, read<f64>(%9)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32) -> i32>(%28, read<f32>(%10)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f80) -> i32>(%30, read<f80>(%11)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f64) -> i32>(%26, read<f64>(%6)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32) -> i32>(%28, read<f32>(%7)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f80) -> i32>(%30, read<f80>(%8)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(f64) -> i32>(%26, const<f64>(4.0)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(f32) -> i32>(%28, float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f64>(4.0))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(f80) -> i32>(%30, float_widen<f80, reason=arg>(const<f64>(4.0))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     extern %[[VALUE_x:[0-9]+]] x: f32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_y:[0-9]+]] y: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_z:[0-9]+]] z: f80 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_link_error:[0-9]+]] @link_error() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_nan:[0-9]+]] @__builtin_nan(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_nanf:[0-9]+]] @__builtin_nanf(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>) -> f32 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_nanl:[0-9]+]] @__builtin_nanl(%[[VALUE3:[0-9]+]] <unnamed>: ptr<const i8>) -> f80 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_inf:[0-9]+]] @__builtin_inf() -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff:[0-9]+]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_infl:[0-9]+]] @__builtin_infl() -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_finite:[0-9]+]] @finite(%[[VALUE4:[0-9]+]] <unnamed>: f64) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_finitef:[0-9]+]] @finitef(%[[VALUE5:[0-9]+]] <unnamed>: f32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_finitel:[0-9]+]] @finitel(%[[VALUE6:[0-9]+]] <unnamed>: f80) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_nan:[0-9]+]] nan: f64 [storage=automatic] = call<f64, signature=fn(ptr<const i8>) -> f64>(%[[VALUE___builtin_nan]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]])));
+// DEFAULT-NEXT:         let %[[VALUE_nanf:[0-9]+]] nanf: f32 [storage=automatic] = call<f32, signature=fn(ptr<const i8>) -> f32>(%[[VALUE___builtin_nanf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_2]])));
+// DEFAULT-NEXT:         let %[[VALUE_nanl:[0-9]+]] nanl: f80 [storage=automatic] = call<f80, signature=fn(ptr<const i8>) -> f80>(%[[VALUE___builtin_nanl]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str_3]])));
+// DEFAULT-NEXT:         let %[[VALUE_pinf:[0-9]+]] pinf: f64 [storage=automatic] = call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]);
+// DEFAULT-NEXT:         let %[[VALUE_pinff:[0-9]+]] pinff: f32 [storage=automatic] = call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]);
+// DEFAULT-NEXT:         let %[[VALUE_pinfl:[0-9]+]] pinfl: f80 [storage=automatic] = call<f80, signature=fn() -> f80>(%[[VALUE___builtin_infl]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f64) -> i32>(%[[VALUE_finite]], read<f64>(%[[VALUE_pinf]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32) -> i32>(%[[VALUE_finitef]], read<f32>(%[[VALUE_pinff]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f80) -> i32>(%[[VALUE_finitel]], read<f80>(%[[VALUE_pinfl]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f64) -> i32>(%[[VALUE_finite]], read<f64>(%[[VALUE_nan]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f32) -> i32>(%[[VALUE_finitef]], read<f32>(%[[VALUE_nanf]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f80) -> i32>(%[[VALUE_finitel]], read<f80>(%[[VALUE_nanl]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(f64) -> i32>(%[[VALUE_finite]], const<f64>(4.0)), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(f32) -> i32>(%[[VALUE_finitef]], float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f64>(4.0))), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(f80) -> i32>(%[[VALUE_finitel]], float_widen<f80, reason=arg>(const<f64>(4.0))), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

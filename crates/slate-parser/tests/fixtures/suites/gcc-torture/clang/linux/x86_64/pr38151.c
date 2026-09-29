@@ -67,38 +67,38 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S2848 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S2848:[0-9]+]] S2848 = struct {
 // DEFAULT-NEXT:         field0 a: u32;
 // DEFAULT-NEXT:         field1 b: complex<i32>;
-// DEFAULT-NEXT:         field2 c: @type1;
+// DEFAULT-NEXT:         field2 c: @type[[TYPE0:[0-9]+]];
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0, 4, 16]];
-// DEFAULT-NEXT:     type @type1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0]] = struct {
 // DEFAULT-NEXT:     } [size=0, align=16, offsets=[]];
-// DEFAULT-NEXT:     global %3 s2848: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 fails: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @check2848va(%6 z: i32, ...) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 arg: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %8 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%8);
-// DEFAULT-NEXT:         write<@type0>(%7, copy<@type0, reason=assign>(va_arg<@type0>(%8)));
-// DEFAULT-NEXT:         copy<@type0, reason=assign>(va_arg<@type0>(%8));
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(field0(%3)), read<u32>(field0(%7)))
-// DEFAULT-NEXT:             let %10: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:             let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%4, read<i32>(%11));
-// DEFAULT-NEXT:         if ne<complex<i32>>(read<complex<i32>>(field1(%3)), read<complex<i32>>(field1(%7)))
-// DEFAULT-NEXT:             let %12: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:             let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%4, read<i32>(%13));
-// DEFAULT-NEXT:         va_end(%8);
+// DEFAULT-NEXT:     global %[[VALUE_s2848:[0-9]+]] s2848: @type[[TYPE_S2848]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_fails:[0-9]+]] fails: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_check2848va:[0-9]+]] @check2848va(%[[VALUE_z:[0-9]+]] z: i32, ...) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_arg:[0-9]+]] arg: @type[[TYPE_S2848]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         write<@type[[TYPE_S2848]]>(%[[VALUE_arg]], copy<@type[[TYPE_S2848]], reason=assign>(va_arg<@type[[TYPE_S2848]]>(%[[VALUE_ap]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_S2848]], reason=assign>(va_arg<@type[[TYPE_S2848]]>(%[[VALUE_ap]]));
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(field0(%[[VALUE_s2848]])), read<u32>(field0(%[[VALUE_arg]])))
+// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_fails]]);
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_fails]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         if ne<complex<i32>>(read<complex<i32>>(field1(%[[VALUE_s2848]])), read<complex<i32>>(field1(%[[VALUE_arg]])))
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_fails]]);
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_fails]], read<i32>(%[[VALUE3]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<u32>(field0(%3), const<u32>(4027477739));
-// DEFAULT-NEXT:         write<complex<i32>>(field1(%3), add<complex<i32>, complex=true, overflow=ub>(const<i32>(723419448), mul<complex<i32>, complex=true, overflow=ub>(neg<i32, overflow=ub>(const<i32>(218144346)), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1)))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%5, const<i32>(1), copy<@type0, reason=vararg>(read<@type0>(%3)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<u32>(field0(%[[VALUE_s2848]]), const<u32>(4027477739));
+// DEFAULT-NEXT:         write<complex<i32>>(field1(%[[VALUE_s2848]]), add<complex<i32>, complex=true, overflow=ub>(const<i32>(723419448), mul<complex<i32>, complex=true, overflow=ub>(neg<i32, overflow=ub>(const<i32>(218144346)), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1)))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%[[VALUE_check2848va]], const<i32>(1), copy<@type[[TYPE_S2848]], reason=vararg>(read<@type[[TYPE_S2848]]>(%[[VALUE_s2848]])));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_fails]]), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

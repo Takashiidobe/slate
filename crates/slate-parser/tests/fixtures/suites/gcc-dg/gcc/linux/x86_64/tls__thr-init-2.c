@@ -49,18 +49,18 @@ int main (int ac, char *av[])
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 fstat: i32 [storage=thread] = const<i32>(1) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @test_code(%3 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:         let %9: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%8), read<i32>(%3));
-// DEFAULT-NEXT:         write<i32>(%1, read<i32>(%9));
-// DEFAULT-NEXT:         return read<i32>(%1);
+// DEFAULT-NEXT:     global %[[VALUE_fstat:[0-9]+]] fstat: i32 [storage=thread] = const<i32>(1) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_test_code:[0-9]+]] @test_code(%[[VALUE_b:[0-9]+]] b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_fstat]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), read<i32>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_fstat]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_fstat]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @main(%5 ac: i32, %6 av: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 a: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%2, const<i32>(1));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%7), const<i32>(2)), ne<i32>(read<i32>(%1), const<i32>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_ac:[0-9]+]] ac: i32, %[[VALUE_av:[0-9]+]] av: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_test_code]], const<i32>(1));
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(2)), ne<i32>(read<i32>(%[[VALUE_fstat]]), const<i32>(2)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

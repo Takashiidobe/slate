@@ -46,22 +46,22 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 j: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @bla(%3 r: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 p: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         let %5 q: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<i32>>(%5, read<ptr<i32>>(%3));
-// DEFAULT-NEXT:         write<ptr<i32>>(%4, read<ptr<i32>>(%3));
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%4), null<ptr<i32>>))
-// DEFAULT-NEXT:             write<ptr<i32>>(%4, addr_of<ptr<i32>>(%1));
-// DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(%4), read<ptr<i32>>(%5))
-// DEFAULT-NEXT:             write<i32>(%1, const<i32>(1));
+// DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bla:[0-9]+]] @bla(%[[VALUE_r:[0-9]+]] r: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_q]], read<ptr<i32>>(%[[VALUE_r]]));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_p]], read<ptr<i32>>(%[[VALUE_r]]));
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), null<ptr<i32>>))
+// DEFAULT-NEXT:             write<ptr<i32>>(%[[VALUE_p]], addr_of<ptr<i32>>(%[[VALUE_j]]));
+// DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), read<ptr<i32>>(%[[VALUE_q]]))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_j]], const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%2, null<ptr<i32>>);
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%1), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_bla]], null<ptr<i32>>);
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%[[VALUE_j]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

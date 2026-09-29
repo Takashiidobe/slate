@@ -46,22 +46,22 @@ _Complex double f8(void) { return 1.0; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f1(%1 a: i8) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_a:[0-9]+]] a: i8) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @f2(%3 a: u8) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_a_2:[0-9]+]] a: u8) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @f3(%5 a: i16) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_a_3:[0-9]+]] a: i16) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f4(%7 a: u16) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_a_4:[0-9]+]] a: u16) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @f5(%9 a: complex<f32>) -> void [linkage=external] [abi=win64(native_c) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE_a_5:[0-9]+]] a: complex<f32>) -> void [linkage=external] [abi=win64(native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @f6(%11 a: complex<f64>) -> void [linkage=external] [abi=win64(native_c) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(%[[VALUE_a_6:[0-9]+]] a: complex<f64>) -> void [linkage=external] [abi=win64(native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @f7() -> complex<f32> [linkage=external] [abi=win64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7() -> complex<f32> [linkage=external] [abi=win64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return real_to_complex<complex<f32>, reason=return>(float_narrow<f32, reason=return, rounding=nearest_even, exceptions=ignore>(const<f64>(1.0)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @f8() -> complex<f64> [linkage=external] [abi=win64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8() -> complex<f64> [linkage=external] [abi=win64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return real_to_complex<complex<f64>, reason=return>(const<f64>(1.0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

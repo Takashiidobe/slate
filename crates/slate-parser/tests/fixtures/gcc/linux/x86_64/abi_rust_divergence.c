@@ -30,19 +30,19 @@ struct flexible_double flexible_double(struct flexible_double value) { return va
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 flexible = struct {
+// IR-NEXT:     type @type[[TYPE_flexible:[0-9]+]] flexible = struct {
 // IR-NEXT:         field0 n: i32;
 // IR-NEXT:         field1 tail: array<i32, incomplete>;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type1 flexible_double = struct {
+// IR-NEXT:     type @type[[TYPE_flexible_double:[0-9]+]] flexible_double = struct {
 // IR-NEXT:         field0 d: f64;
 // IR-NEXT:         field1 tail: array<f32, incomplete>;
 // IR-NEXT:     } [size=8, align=8, offsets=[0, 8]];
-// IR-NEXT:     fn %2 @flexible(%3 value: @type0) -> @type0 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type0, reason=return>(read<@type0>(%3));
+// IR-NEXT:     fn %[[VALUE_flexible:[0-9]+]] @flexible(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_flexible]]) -> @type[[TYPE_flexible]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_flexible]], reason=return>(read<@type[[TYPE_flexible]]>(%[[VALUE_value]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %4 @flexible_double(%5 value: @type1) -> @type1 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type1, reason=return>(read<@type1>(%5));
+// IR-NEXT:     fn %[[VALUE_flexible_double:[0-9]+]] @flexible_double(%[[VALUE_value_2:[0-9]+]] value: @type[[TYPE_flexible_double]]) -> @type[[TYPE_flexible_double]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_flexible_double]], reason=return>(read<@type[[TYPE_flexible_double]]>(%[[VALUE_value_2]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

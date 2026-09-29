@@ -51,30 +51,30 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 g: u8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%2 c: complex<u32>) -> u8 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 v: u8 [storage=automatic] = read<u8>(%0);
-// DEFAULT-NEXT:         let %4 t: complex<u32> [storage=automatic] = real_to_complex<complex<u32>, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(3)));
-// DEFAULT-NEXT:         let %12: complex<u32> [synthetic] = read<complex<u32>>(%4);
-// DEFAULT-NEXT:         let %13: complex<u32> [synthetic] = div<complex<u32>, complex=true, overflow=wrap, by_zero=ub>(read<complex<u32>>(%12), read<complex<u32>>(%2));
-// DEFAULT-NEXT:         write<complex<u32>>(%4, read<complex<u32>>(%13));
-// DEFAULT-NEXT:         return truncate<u8, reason=return, fits=unknown>(complex_to_real<u32, reason=return>(add<complex<u32>, complex=true, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%3)))), read<complex<u32>>(%4))));
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: u8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_c:[0-9]+]] c: complex<u32>) -> u8 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: u8 [storage=automatic] = read<u8>(%[[VALUE_g]]);
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: complex<u32> [storage=automatic] = real_to_complex<complex<u32>, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(3)));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: complex<u32> [synthetic] = read<complex<u32>>(%[[VALUE_t]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: complex<u32> [synthetic] = div<complex<u32>, complex=true, overflow=wrap, by_zero=ub>(read<complex<u32>>(%[[VALUE0]]), read<complex<u32>>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         write<complex<u32>>(%[[VALUE_t]], read<complex<u32>>(%[[VALUE1]]));
+// DEFAULT-NEXT:         return truncate<u8, reason=return, fits=unknown>(complex_to_real<u32, reason=return>(add<complex<u32>, complex=true, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_v]])))), read<complex<u32>>(%[[VALUE_t]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @bar(%6 c: complex<u32>) -> u8 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 v: u8 [storage=automatic] = read<u8>(%0);
-// DEFAULT-NEXT:         let %8 t: complex<u32> [storage=automatic] = real_to_complex<complex<u32>, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(42)));
-// DEFAULT-NEXT:         let %14: complex<u32> [synthetic] = read<complex<u32>>(%8);
-// DEFAULT-NEXT:         let %15: complex<u32> [synthetic] = div<complex<u32>, complex=true, overflow=wrap, by_zero=ub>(read<complex<u32>>(%14), read<complex<u32>>(%6));
-// DEFAULT-NEXT:         write<complex<u32>>(%8, read<complex<u32>>(%15));
-// DEFAULT-NEXT:         return truncate<u8, reason=return, fits=unknown>(complex_to_real<u32, reason=return>(add<complex<u32>, complex=true, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%7)))), read<complex<u32>>(%8))));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_c_2:[0-9]+]] c: complex<u32>) -> u8 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_v_2:[0-9]+]] v: u8 [storage=automatic] = read<u8>(%[[VALUE_g]]);
+// DEFAULT-NEXT:         let %[[VALUE_t_2:[0-9]+]] t: complex<u32> [storage=automatic] = real_to_complex<complex<u32>, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(42)));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: complex<u32> [synthetic] = read<complex<u32>>(%[[VALUE_t_2]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: complex<u32> [synthetic] = div<complex<u32>, complex=true, overflow=wrap, by_zero=ub>(read<complex<u32>>(%[[VALUE2]]), read<complex<u32>>(%[[VALUE_c_2]]));
+// DEFAULT-NEXT:         write<complex<u32>>(%[[VALUE_t_2]], read<complex<u32>>(%[[VALUE3]]));
+// DEFAULT-NEXT:         return truncate<u8, reason=return, fits=unknown>(complex_to_real<u32, reason=return>(add<complex<u32>, complex=true, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_v_2]])))), read<complex<u32>>(%[[VALUE_t_2]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10 x: u8 [storage=automatic] = call<u8, signature=fn(complex<u32>) -> u8, abi=sysv64(native_c) -> scalar>(%1, real_to_complex<complex<u32>, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(7))));
-// DEFAULT-NEXT:         if ne<u8>(read<u8>(%10), const<u8>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u8, signature=fn(complex<u32>) -> u8, abi=sysv64(native_c) -> scalar>(%5, real_to_complex<complex<u32>, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(7)))))), const<i32>(6))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%11);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u8 [storage=automatic] = call<u8, signature=fn(complex<u32>) -> u8, abi=sysv64(native_c) -> scalar>(%[[VALUE_foo]], real_to_complex<complex<u32>, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(7))));
+// DEFAULT-NEXT:         if ne<u8>(read<u8>(%[[VALUE_x]]), const<u8>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u8, signature=fn(complex<u32>) -> u8, abi=sysv64(native_c) -> scalar>(%[[VALUE_bar]], real_to_complex<complex<u32>, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(7)))))), const<i32>(6))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

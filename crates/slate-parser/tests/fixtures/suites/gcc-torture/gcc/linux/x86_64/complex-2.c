@@ -52,31 +52,31 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %5 ag: complex<f64> [storage=static] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0))) [linkage=external];
-// DEFAULT-NEXT:     global %6 bg: complex<f64> [storage=static] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(neg<f64>(const<f64>(2.0)), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @f(%3 x: complex<f64>, %4 y: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %12: complex<f64> [synthetic] = read<complex<f64>>(%3);
-// DEFAULT-NEXT:         let %13: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f64>>(%12), read<complex<f64>>(%4));
-// DEFAULT-NEXT:         write<complex<f64>>(%3, read<complex<f64>>(%13));
-// DEFAULT-NEXT:         return read<complex<f64>>(%3);
+// DEFAULT-NEXT:     global %[[VALUE_ag:[0-9]+]] ag: complex<f64> [storage=static] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bg:[0-9]+]] bg: complex<f64> [storage=static] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(neg<f64>(const<f64>(2.0)), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: complex<f64>, %[[VALUE_y:[0-9]+]] y: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: complex<f64> [synthetic] = read<complex<f64>>(%[[VALUE_x]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f64>>(%[[VALUE1]]), read<complex<f64>>(%[[VALUE_y]]));
+// DEFAULT-NEXT:         write<complex<f64>>(%[[VALUE_x]], read<complex<f64>>(%[[VALUE2]]));
+// DEFAULT-NEXT:         return read<complex<f64>>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 a: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         let %9 b: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         let %10 c: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         write<complex<f64>>(%8, read<complex<f64>>(%5));
-// DEFAULT-NEXT:         write<complex<f64>>(%9, add<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(neg<f64>(const<f64>(2.0)), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))));
-// DEFAULT-NEXT:         write<complex<f64>>(%10, call<complex<f64>, signature=fn(complex<f64>, complex<f64>) -> complex<f64>, abi=sysv64(native_c, native_c) -> native_c>(%2, read<complex<f64>>(%8), read<complex<f64>>(%9)));
-// DEFAULT-NEXT:         call<complex<f64>, signature=fn(complex<f64>, complex<f64>) -> complex<f64>, abi=sysv64(native_c, native_c) -> native_c>(%2, read<complex<f64>>(%8), read<complex<f64>>(%9));
-// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=observable>(read<complex<f64>>(%8), add<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=observable>(read<complex<f64>>(%9), add<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(neg<f64>(const<f64>(2.0)), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=observable>(read<complex<f64>>(%10), add<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(neg<f64>(const<f64>(1.0)), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(3.0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: complex<f64> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: complex<f64> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: complex<f64> [storage=automatic];
+// DEFAULT-NEXT:         write<complex<f64>>(%[[VALUE_a]], read<complex<f64>>(%[[VALUE_ag]]));
+// DEFAULT-NEXT:         write<complex<f64>>(%[[VALUE_b]], add<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(neg<f64>(const<f64>(2.0)), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))));
+// DEFAULT-NEXT:         write<complex<f64>>(%[[VALUE_c]], call<complex<f64>, signature=fn(complex<f64>, complex<f64>) -> complex<f64>, abi=sysv64(native_c, native_c) -> native_c>(%[[VALUE_f]], read<complex<f64>>(%[[VALUE_a]]), read<complex<f64>>(%[[VALUE_b]])));
+// DEFAULT-NEXT:         call<complex<f64>, signature=fn(complex<f64>, complex<f64>) -> complex<f64>, abi=sysv64(native_c, native_c) -> native_c>(%[[VALUE_f]], read<complex<f64>>(%[[VALUE_a]]), read<complex<f64>>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=observable>(read<complex<f64>>(%[[VALUE_a]]), add<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f64>(1.0), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(1.0))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=observable>(read<complex<f64>>(%[[VALUE_b]]), add<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(neg<f64>(const<f64>(2.0)), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(2.0))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=observable>(read<complex<f64>>(%[[VALUE_c]]), add<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(neg<f64>(const<f64>(1.0)), aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(0.0), index1 = const<f64>(3.0))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -39,11 +39,11 @@ void f5 (void) __attribute__((alias("\U0fffffff"))); /* { dg-error "undefined sy
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f0() -> void [linkage=external] [alias="\\xa1"];
-// DEFAULT-NEXT:     fn %1 @f1() -> void [linkage=external] [alias="\\u00e9"];
-// DEFAULT-NEXT:     fn %2 @f2() -> void [linkage=external] [alias="\\uffff"];
-// DEFAULT-NEXT:     fn %3 @f3() -> void [linkage=external] [alias="\\U000fffff"];
-// DEFAULT-NEXT:     fn %4 @f4() -> void [linkage=external] [alias="\\U00ffffff"];
-// DEFAULT-NEXT:     fn %5 @f5() -> void [linkage=external] [alias="\\U0fffffff"];
+// DEFAULT-NEXT:     fn %[[VALUE_f0:[0-9]+]] @f0() -> void [linkage=external] [alias="\\xa1"];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> void [linkage=external] [alias="\\u00e9"];
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2() -> void [linkage=external] [alias="\\uffff"];
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3() -> void [linkage=external] [alias="\\U000fffff"];
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4() -> void [linkage=external] [alias="\\U00ffffff"];
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5() -> void [linkage=external] [alias="\\U0fffffff"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

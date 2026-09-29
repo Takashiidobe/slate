@@ -34,13 +34,13 @@ ld a (ld x, ld y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 l: f80;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 ld = @type0;
-// DEFAULT-NEXT:     fn %2 @a(%3 x: @type0, %4 y: @type0) -> @type0 [linkage=external] [abi=sysv64(byval<align=16>, byval<align=16>) -> coerce<f80>] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 b: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<f80>(field0(%5), add<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(field0(%3)), read<f80>(field0(%4))));
+// DEFAULT-NEXT:     type @type[[TYPE_ld:[0-9]+]] ld = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_a:[0-9]+]] @a(%[[VALUE_x:[0-9]+]] x: @type[[TYPE0]], %[[VALUE_y:[0-9]+]] y: @type[[TYPE0]]) -> @type[[TYPE0]] [linkage=external] [abi=sysv64(byval<align=16>, byval<align=16>) -> coerce<f80>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         write<f80>(field0(%[[VALUE_b]]), add<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(field0(%[[VALUE_x]])), read<f80>(field0(%[[VALUE_y]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

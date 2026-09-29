@@ -37,15 +37,15 @@ void call_alloc(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Foo = struct incomplete;
-// DEFAULT-NEXT:     type @type1 Bar = struct incomplete;
-// DEFAULT-NEXT:     fn %2 @alloc_void() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @alloc_foo() -> ptr<@type0> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @call_alloc() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 p: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=assign>(call<ptr<void>, signature=fn() -> ptr<void>>(%2));
-// DEFAULT-NEXT:         let %6 w: ptr<@type0> [storage=automatic] = call<ptr<@type0>, signature=fn() -> ptr<@type0>>(%3);
-// DEFAULT-NEXT:         let %7 q: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=explicit>(call<ptr<void>, signature=fn() -> ptr<void>>(%2));
-// DEFAULT-NEXT:         let %8 r: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=explicit>(pointer_cast<ptr<@type1>, reason=explicit>(call<ptr<void>, signature=fn() -> ptr<void>>(%2)));
+// DEFAULT-NEXT:     type @type[[TYPE_Foo:[0-9]+]] Foo = struct incomplete;
+// DEFAULT-NEXT:     type @type[[TYPE_Bar:[0-9]+]] Bar = struct incomplete;
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_void:[0-9]+]] @alloc_void() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_foo:[0-9]+]] @alloc_foo() -> ptr<@type[[TYPE_Foo]]> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_call_alloc:[0-9]+]] @call_alloc() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_Foo]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_Foo]]>, reason=assign>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_alloc_void]]));
+// DEFAULT-NEXT:         let %[[VALUE_w:[0-9]+]] w: ptr<@type[[TYPE_Foo]]> [storage=automatic] = call<ptr<@type[[TYPE_Foo]]>, signature=fn() -> ptr<@type[[TYPE_Foo]]>>(%[[VALUE_alloc_foo]]);
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_Foo]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_Foo]]>, reason=explicit>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_alloc_void]]));
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: ptr<@type[[TYPE_Foo]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_Foo]]>, reason=explicit>(pointer_cast<ptr<@type[[TYPE_Bar]]>, reason=explicit>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_alloc_void]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

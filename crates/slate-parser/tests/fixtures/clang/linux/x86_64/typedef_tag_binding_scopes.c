@@ -51,28 +51,28 @@ _Static_assert(sizeof(struct T) == 12, "");
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 T = i32;
-// IR-NEXT:     type @type1 T = i64;
-// IR-NEXT:     type @type2 T = struct {
+// IR-NEXT:     type @type[[TYPE_T:[0-9]+]] T = i32;
+// IR-NEXT:     type @type[[TYPE_T_2:[0-9]+]] T = i64;
+// IR-NEXT:     type @type[[TYPE_T_3:[0-9]+]] T = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:     } [size=1, align=1, offsets=[0]];
-// IR-NEXT:     type @type3 T = struct {
+// IR-NEXT:     type @type[[TYPE_T_4:[0-9]+]] T = struct {
 // IR-NEXT:         field0 a: array<i32, 3>;
 // IR-NEXT:     } [size=12, align=4, offsets=[0]];
-// IR-NEXT:     type @type4 T = struct incomplete;
-// IR-NEXT:     type @type5 T = struct {
+// IR-NEXT:     type @type[[TYPE_T_5:[0-9]+]] T = struct incomplete;
+// IR-NEXT:     type @type[[TYPE_T_6:[0-9]+]] T = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:     } [size=1, align=1, offsets=[0]];
-// IR-NEXT:     global %5 y: i32 [storage=static] [linkage=external];
-// IR-NEXT:     fn %1 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %3 x: i64 [storage=automatic];
+// IR-NEXT:     global %[[VALUE_y:[0-9]+]] y: i32 [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_x:[0-9]+]] x: i64 [storage=automatic];
 // IR-NEXT:         {
 // IR-NEXT:         }
 // IR-NEXT:     }
-// IR-NEXT:     fn %7 @g() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %9 p: ptr<@type4> [storage=automatic];
+// IR-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_T_5]]> [storage=automatic];
 // IR-NEXT:         {
-// IR-NEXT:             let %11 q: @type5 [storage=automatic];
+// IR-NEXT:             let %[[VALUE_q:[0-9]+]] q: @type[[TYPE_T_6]] [storage=automatic];
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

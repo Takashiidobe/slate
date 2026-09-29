@@ -49,16 +49,16 @@ lab2:
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %5 x: array<ptr<void>, 2> [storage=static] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%1), index1 = label_addr<ptr<void>>(%2)) [linkage=internal];
-// DEFAULT-NEXT:     fn %6 @__builtin_unreachable() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %0 @foo(%3 b: i32, %4 c: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%3), read<i32>(%4))
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: array<ptr<void>, 2> [storage=static] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%[[VALUE_lab:[0-9]+]]), index1 = label_addr<ptr<void>>(%[[VALUE_lab2:[0-9]+]])) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_unreachable:[0-9]+]] @__builtin_unreachable() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_b:[0-9]+]] b: i32, %[[VALUE_c:[0-9]+]] c: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_b]]), read<i32>(%[[VALUE_c]]))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 label %1 lab:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%6);
+// DEFAULT-NEXT:                 label %[[VALUE_lab]] lab:
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_unreachable]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         label %2 lab2:
-// DEFAULT-NEXT:             goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%5), from_bool<i32, reason=promotion>(ne<i32>(read<i32>(%4), const<i32>(0))))));
+// DEFAULT-NEXT:         label %[[VALUE_lab2]] lab2:
+// DEFAULT-NEXT:             goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%[[VALUE_x]]), from_bool<i32, reason=promotion>(ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

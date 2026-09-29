@@ -39,8 +39,8 @@ char *foo(char *p, __UINTPTR_TYPE__ i)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 p: ptr<i8>, %2 i: u64) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(int_to_ptr<ptr<i8>, reason=explicit>(read<u64>(%2)), ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%1)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<i8>, %[[VALUE_i:[0-9]+]] i: u64) -> ptr<i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(int_to_ptr<ptr<i8>, reason=explicit>(read<u64>(%[[VALUE_i]])), ptr_to_int<u64, reason=explicit>(read<ptr<i8>>(%[[VALUE_p]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

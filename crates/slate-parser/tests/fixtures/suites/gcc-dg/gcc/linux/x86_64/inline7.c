@@ -34,11 +34,11 @@ inline void func3 (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 i: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %3 i: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @func1() -> void [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_i_2:[0-9]+]] i: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_func1:[0-9]+]] @func1() -> void [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @func3() -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_func3:[0-9]+]] @func3() -> void [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

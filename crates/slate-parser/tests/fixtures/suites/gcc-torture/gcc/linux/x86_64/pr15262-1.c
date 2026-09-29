@@ -73,38 +73,38 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 t: i32;
 // DEFAULT-NEXT:         field1 i: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(3);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @__builtin_malloc(%11 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 loc: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %5 locp: ptr<@type0> [storage=automatic];
-// DEFAULT-NEXT:         let %6 f: f32 [storage=automatic];
-// DEFAULT-NEXT:         let %7 g: f32 [storage=automatic];
-// DEFAULT-NEXT:         let %8 p: ptr<f32> [storage=automatic];
-// DEFAULT-NEXT:         let %9 T355: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %10 T356: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         write<f32>(%6, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(3)));
-// DEFAULT-NEXT:         write<f32>(%7, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)));
-// DEFAULT-NEXT:         write<ptr<f32>>(%8, conditional<ptr<f32>>(ne<i32>(call<i32, signature=fn() -> i32>(%2), const<i32>(0)), addr_of<ptr<f32>>(%7), addr_of<ptr<f32>>(%6)));
-// DEFAULT-NEXT:         conditional<ptr<f32>>(ne<i32>(call<i32, signature=fn() -> i32>(%2), const<i32>(0)), addr_of<ptr<f32>>(%7), addr_of<ptr<f32>>(%6));
-// DEFAULT-NEXT:         if gt<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(read<f32>(deref(read<ptr<f32>>(%8)))), const<f64>(0.0))
-// DEFAULT-NEXT:             write<f32>(%7, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<ptr<@type0>>(%5, pointer_cast<ptr<@type0>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%12, const<u64>(8))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type0>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%12, const<u64>(8)));
-// DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type0>>(%5))), const<i32>(10));
-// DEFAULT-NEXT:         write<i32>(%9, read<i32>(field1(deref(read<ptr<@type0>>(%5)))));
-// DEFAULT-NEXT:         write<ptr<i32>>(%10, addr_of<ptr<i32>>(field1(deref(read<ptr<@type0>>(%5)))));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%10)), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%9, read<i32>(field1(deref(read<ptr<@type0>>(%5)))));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%9), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_loc:[0-9]+]] loc: @type[[TYPE_A]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_locp:[0-9]+]] locp: ptr<@type[[TYPE_A]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: f32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: f32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<f32> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_T355:[0-9]+]] T355: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_T356:[0-9]+]] T356: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         write<f32>(%[[VALUE_f]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(3)));
+// DEFAULT-NEXT:         write<f32>(%[[VALUE_g]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)));
+// DEFAULT-NEXT:         write<ptr<f32>>(%[[VALUE_p]], conditional<ptr<f32>>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_foo]]), const<i32>(0)), addr_of<ptr<f32>>(%[[VALUE_g]]), addr_of<ptr<f32>>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         conditional<ptr<f32>>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_foo]]), const<i32>(0)), addr_of<ptr<f32>>(%[[VALUE_g]]), addr_of<ptr<f32>>(%[[VALUE_f]]));
+// DEFAULT-NEXT:         if gt<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(read<f32>(deref(read<ptr<f32>>(%[[VALUE_p]])))), const<f64>(0.0))
+// DEFAULT-NEXT:             write<f32>(%[[VALUE_g]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_A]]>>(%[[VALUE_locp]], pointer_cast<ptr<@type[[TYPE_A]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], const<u64>(8))));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_A]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], const<u64>(8)));
+// DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_locp]]))), const<i32>(10));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_T355]], read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_locp]])))));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_T356]], addr_of<ptr<i32>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_locp]])))));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_T356]])), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_T355]], read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_locp]])))));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_T355]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

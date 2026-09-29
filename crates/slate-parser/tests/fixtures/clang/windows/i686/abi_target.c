@@ -77,98 +77,98 @@ void pass_vectors(v4sf, v2si, v4sf, v4sf, v2si);
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 one_char = struct {
+// IR-NEXT:     type @type[[TYPE_one_char:[0-9]+]] one_char = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:     } [size=1, align=1, offsets=[0]];
-// IR-NEXT:     type @type1 three_chars = struct {
+// IR-NEXT:     type @type[[TYPE_three_chars:[0-9]+]] three_chars = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i8;
 // IR-NEXT:         field2 c: i8;
 // IR-NEXT:     } [size=3, align=1, offsets=[0, 1, 2]];
-// IR-NEXT:     type @type2 int_pair = struct {
+// IR-NEXT:     type @type[[TYPE_int_pair:[0-9]+]] int_pair = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type3 int_triple = struct {
+// IR-NEXT:     type @type[[TYPE_int_triple:[0-9]+]] int_triple = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:         field2 c: i32;
 // IR-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// IR-NEXT:     type @type4 one_float = struct {
+// IR-NEXT:     type @type[[TYPE_one_float:[0-9]+]] one_float = struct {
 // IR-NEXT:         field0 f: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type5 one_double = struct {
+// IR-NEXT:     type @type[[TYPE_one_double:[0-9]+]] one_double = struct {
 // IR-NEXT:         field0 d: f64;
 // IR-NEXT:     } [size=8, align=8, offsets=[0]];
-// IR-NEXT:     type @type6 char_array = struct {
+// IR-NEXT:     type @type[[TYPE_char_array:[0-9]+]] char_array = struct {
 // IR-NEXT:         field0 a: array<i8, 4>;
 // IR-NEXT:     } [size=4, align=1, offsets=[0]];
-// IR-NEXT:     type @type7 odd_array = struct {
+// IR-NEXT:     type @type[[TYPE_odd_array:[0-9]+]] odd_array = struct {
 // IR-NEXT:         field0 a: array<i8, 3>;
 // IR-NEXT:         field1 b: i8;
 // IR-NEXT:     } [size=4, align=1, offsets=[0, 3]];
-// IR-NEXT:     type @type8 char_short = struct {
+// IR-NEXT:     type @type[[TYPE_char_short:[0-9]+]] char_short = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i16;
 // IR-NEXT:     } [size=4, align=2, offsets=[0, 2]];
-// IR-NEXT:     type @type9 nested = struct {
-// IR-NEXT:         field0 inner: @type2;
+// IR-NEXT:     type @type[[TYPE_nested:[0-9]+]] nested = struct {
+// IR-NEXT:         field0 inner: @type[[TYPE_int_pair]];
 // IR-NEXT:     } [size=8, align=4, offsets=[0]];
-// IR-NEXT:     type @type10 pointer = struct {
+// IR-NEXT:     type @type[[TYPE_pointer:[0-9]+]] pointer = struct {
 // IR-NEXT:         field0 callback: ptr<fn() -> void>;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type11 aligned = struct {
+// IR-NEXT:     type @type[[TYPE_aligned:[0-9]+]] aligned = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:     } [size=8, align=8, offsets=[0]];
-// IR-NEXT:     type @type12 nested_aligned = struct {
-// IR-NEXT:         field0 inner: @type11;
+// IR-NEXT:     type @type[[TYPE_nested_aligned:[0-9]+]] nested_aligned = struct {
+// IR-NEXT:         field0 inner: @type[[TYPE_aligned]];
 // IR-NEXT:     } [size=8, align=8, offsets=[0]];
-// IR-NEXT:     type @type13 aligned16 = struct {
+// IR-NEXT:     type @type[[TYPE_aligned16:[0-9]+]] aligned16 = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:     } [size=16, align=16, offsets=[0]];
-// IR-NEXT:     type @type14 packed = struct {
+// IR-NEXT:     type @type[[TYPE_packed:[0-9]+]] packed = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 i: i32;
 // IR-NEXT:     } [size=5, align=1, offsets=[0, 1]];
-// IR-NEXT:     type @type15 int_or_float = union {
+// IR-NEXT:     type @type[[TYPE_int_or_float:[0-9]+]] int_or_float = union {
 // IR-NEXT:         field0 i: i32;
 // IR-NEXT:         field1 f: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     type @type16 odd_union = union {
+// IR-NEXT:     type @type[[TYPE_odd_union:[0-9]+]] odd_union = union {
 // IR-NEXT:         field0 c: array<i8, 3>;
 // IR-NEXT:         field1 s: i16;
 // IR-NEXT:     } [size=4, align=2, offsets=[0, 0]];
-// IR-NEXT:     type @type17 v4sf = vector<f32, 4>;
-// IR-NEXT:     type @type18 v2si = vector<i32, 2>;
-// IR-NEXT:     fn %17 @return_one_char() -> @type0 [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %18 @return_three_chars() -> @type1 [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %19 @return_int_pair() -> @type2 [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %20 @return_int_triple() -> @type3 [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %21 @return_one_float() -> @type4 [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %22 @return_one_double() -> @type5 [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %23 @return_char_array() -> @type6 [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %24 @return_odd_array() -> @type7 [linkage=external] [abi=x86_win32() -> sret<align=1>];
-// IR-NEXT:     fn %25 @return_char_short() -> @type8 [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %26 @return_nested() -> @type9 [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %27 @return_pointer() -> @type10 [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %28 @return_aligned() -> @type11 [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %29 @return_aligned16() -> @type13 [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %30 @return_packed() -> @type14 [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %31 @return_int_or_float() -> @type15 [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %32 @return_odd_union() -> @type16 [linkage=external] [abi=x86_win32() -> sret<align=2>];
-// IR-NEXT:     fn %33 @return_complex_float() -> complex<f32> [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %34 @return_complex_double() -> complex<f64> [linkage=external] [abi=x86_win32() -> native_c];
-// IR-NEXT:     fn %35 @return_atomic_pair() -> @type2 [linkage=external] [abi=x86_win32() -> sret<align=8>];
-// IR-NEXT:     fn %36 @pass_int_pair(%49 <unnamed>: @type2) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
-// IR-NEXT:     fn %37 @pass_one_double(%50 <unnamed>: @type5) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
-// IR-NEXT:     fn %38 @pass_aligned(%51 <unnamed>: @type11) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
-// IR-NEXT:     fn %39 @pass_nested_aligned(%52 <unnamed>: @type12) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
-// IR-NEXT:     fn %40 @pass_aligned16(%53 <unnamed>: @type13) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
-// IR-NEXT:     fn %41 @pass_complex_double(%54 <unnamed>: complex<f64>) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
-// IR-NEXT:     fn %42 @pass_atomic_pair(%55 <unnamed>: atomic @type2) -> void [linkage=external] [abi=x86_win32(byval<align=4>) -> void];
-// IR-NEXT:     fn %43 @pass_aligned_variadic(%56 <unnamed>: @type11, ...) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
-// IR-NEXT:     fn %46 @return_v2si() -> vector<i32, 2> [linkage=external] [abi=x86_win32() -> direct];
-// IR-NEXT:     fn %47 @return_v4sf() -> vector<f32, 4> [linkage=external] [abi=x86_win32() -> direct];
-// IR-NEXT:     fn %48 @pass_vectors(%57 <unnamed>: vector<f32, 4>, %58 <unnamed>: vector<i32, 2>, %59 <unnamed>: vector<f32, 4>, %60 <unnamed>: vector<f32, 4>, %61 <unnamed>: vector<i32, 2>) -> void [linkage=external] [abi=x86_win32(direct, direct, direct, byref<align=16>, byref<align=8>) -> void];
+// IR-NEXT:     type @type[[TYPE_v4sf:[0-9]+]] v4sf = vector<f32, 4>;
+// IR-NEXT:     type @type[[TYPE_v2si:[0-9]+]] v2si = vector<i32, 2>;
+// IR-NEXT:     fn %[[VALUE_return_one_char:[0-9]+]] @return_one_char() -> @type[[TYPE_one_char]] [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_three_chars:[0-9]+]] @return_three_chars() -> @type[[TYPE_three_chars]] [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_int_pair:[0-9]+]] @return_int_pair() -> @type[[TYPE_int_pair]] [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_int_triple:[0-9]+]] @return_int_triple() -> @type[[TYPE_int_triple]] [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_one_float:[0-9]+]] @return_one_float() -> @type[[TYPE_one_float]] [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_one_double:[0-9]+]] @return_one_double() -> @type[[TYPE_one_double]] [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_char_array:[0-9]+]] @return_char_array() -> @type[[TYPE_char_array]] [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_odd_array:[0-9]+]] @return_odd_array() -> @type[[TYPE_odd_array]] [linkage=external] [abi=x86_win32() -> sret<align=1>];
+// IR-NEXT:     fn %[[VALUE_return_char_short:[0-9]+]] @return_char_short() -> @type[[TYPE_char_short]] [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_nested:[0-9]+]] @return_nested() -> @type[[TYPE_nested]] [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_pointer:[0-9]+]] @return_pointer() -> @type[[TYPE_pointer]] [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_aligned:[0-9]+]] @return_aligned() -> @type[[TYPE_aligned]] [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_aligned16:[0-9]+]] @return_aligned16() -> @type[[TYPE_aligned16]] [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_packed:[0-9]+]] @return_packed() -> @type[[TYPE_packed]] [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_int_or_float:[0-9]+]] @return_int_or_float() -> @type[[TYPE_int_or_float]] [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_odd_union:[0-9]+]] @return_odd_union() -> @type[[TYPE_odd_union]] [linkage=external] [abi=x86_win32() -> sret<align=2>];
+// IR-NEXT:     fn %[[VALUE_return_complex_float:[0-9]+]] @return_complex_float() -> complex<f32> [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_complex_double:[0-9]+]] @return_complex_double() -> complex<f64> [linkage=external] [abi=x86_win32() -> native_c];
+// IR-NEXT:     fn %[[VALUE_return_atomic_pair:[0-9]+]] @return_atomic_pair() -> @type[[TYPE_int_pair]] [linkage=external] [abi=x86_win32() -> sret<align=8>];
+// IR-NEXT:     fn %[[VALUE_pass_int_pair:[0-9]+]] @pass_int_pair(%[[VALUE0:[0-9]+]] <unnamed>: @type[[TYPE_int_pair]]) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_one_double:[0-9]+]] @pass_one_double(%[[VALUE1:[0-9]+]] <unnamed>: @type[[TYPE_one_double]]) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_aligned:[0-9]+]] @pass_aligned(%[[VALUE2:[0-9]+]] <unnamed>: @type[[TYPE_aligned]]) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_nested_aligned:[0-9]+]] @pass_nested_aligned(%[[VALUE3:[0-9]+]] <unnamed>: @type[[TYPE_nested_aligned]]) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_aligned16:[0-9]+]] @pass_aligned16(%[[VALUE4:[0-9]+]] <unnamed>: @type[[TYPE_aligned16]]) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_complex_double:[0-9]+]] @pass_complex_double(%[[VALUE5:[0-9]+]] <unnamed>: complex<f64>) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_atomic_pair:[0-9]+]] @pass_atomic_pair(%[[VALUE6:[0-9]+]] <unnamed>: atomic @type[[TYPE_int_pair]]) -> void [linkage=external] [abi=x86_win32(byval<align=4>) -> void];
+// IR-NEXT:     fn %[[VALUE_pass_aligned_variadic:[0-9]+]] @pass_aligned_variadic(%[[VALUE7:[0-9]+]] <unnamed>: @type[[TYPE_aligned]], ...) -> void [linkage=external] [abi=x86_win32(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_return_v2si:[0-9]+]] @return_v2si() -> vector<i32, 2> [linkage=external] [abi=x86_win32() -> direct];
+// IR-NEXT:     fn %[[VALUE_return_v4sf:[0-9]+]] @return_v4sf() -> vector<f32, 4> [linkage=external] [abi=x86_win32() -> direct];
+// IR-NEXT:     fn %[[VALUE_pass_vectors:[0-9]+]] @pass_vectors(%[[VALUE8:[0-9]+]] <unnamed>: vector<f32, 4>, %[[VALUE9:[0-9]+]] <unnamed>: vector<i32, 2>, %[[VALUE10:[0-9]+]] <unnamed>: vector<f32, 4>, %[[VALUE11:[0-9]+]] <unnamed>: vector<f32, 4>, %[[VALUE12:[0-9]+]] <unnamed>: vector<i32, 2>) -> void [linkage=external] [abi=x86_win32(direct, direct, direct, byref<align=16>, byref<align=8>) -> void];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

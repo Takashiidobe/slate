@@ -45,16 +45,16 @@ int pp_shift_taken;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 MsvcConstants = enum : i32 {
-// IR-NEXT:         %0 DIV_ZERO = const<i32>(0);
-// IR-NEXT:         %1 SHIFT_HIGH = const<i32>(0);
-// IR-NEXT:         %2 SHIFT_NEGATIVE = const<i32>(0);
-// IR-NEXT:         %3 NEGATIVE_RIGHT = const<i32>(-1);
+// IR-NEXT:     type @type[[TYPE_MsvcConstants:[0-9]+]] MsvcConstants = enum : i32 {
+// IR-NEXT:         %[[VALUE_DIV_ZERO:[0-9]+]] DIV_ZERO = const<i32>(0);
+// IR-NEXT:         %[[VALUE_SHIFT_HIGH:[0-9]+]] SHIFT_HIGH = const<i32>(0);
+// IR-NEXT:         %[[VALUE_SHIFT_NEGATIVE:[0-9]+]] SHIFT_NEGATIVE = const<i32>(0);
+// IR-NEXT:         %[[VALUE_NEGATIVE_RIGHT:[0-9]+]] NEGATIVE_RIGHT = const<i32>(-1);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     global %5 global_div_zero: i32 [storage=static] = const<i32>(0) [linkage=external];
-// IR-NEXT:     global %7 local: i32 [storage=static] = const<i32>(0) [linkage=internal];
-// IR-NEXT:     global %8 pp_shift_taken: i32 [storage=static] [linkage=external];
-// IR-NEXT:     fn %6 @local_div_zero() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:     global %[[VALUE_global_div_zero:[0-9]+]] global_div_zero: i32 [storage=static] = const<i32>(0) [linkage=external];
+// IR-NEXT:     global %[[VALUE_local:[0-9]+]] local: i32 [storage=static] = const<i32>(0) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_pp_shift_taken:[0-9]+]] pp_shift_taken: i32 [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_local_div_zero:[0-9]+]] @local_div_zero() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

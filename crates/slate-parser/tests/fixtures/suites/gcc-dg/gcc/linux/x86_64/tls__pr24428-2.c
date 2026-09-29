@@ -39,23 +39,23 @@ int main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 thrtest: array<f64, 81> [storage=thread] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 p: ptr<f64> [storage=automatic];
-// DEFAULT-NEXT:         let %3 e: ptr<f64> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<f64>>(%3, addr_of<ptr<f64>>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(81)>(%0), const<i32>(81)))));
-// DEFAULT-NEXT:         for %4
+// DEFAULT-NEXT:     global %[[VALUE_thrtest:[0-9]+]] thrtest: array<f64, 81> [storage=thread] [align=16] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<f64> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: ptr<f64> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<f64>>(%[[VALUE_e]], addr_of<ptr<f64>>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(81)>(%[[VALUE_thrtest]]), const<i32>(81)))));
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<ptr<f64>>(%2, addr_of<ptr<f64>>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(81)>(%0), const<i32>(0)))));
-// DEFAULT-NEXT:             condition: lt<ptr<f64>>(read<ptr<f64>>(%2), read<ptr<f64>>(%3))
+// DEFAULT-NEXT:                 write<ptr<f64>>(%[[VALUE_p]], addr_of<ptr<f64>>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(array_decay<ptr<f64>, length=Some(81)>(%[[VALUE_thrtest]]), const<i32>(0)))));
+// DEFAULT-NEXT:             condition: lt<ptr<f64>>(read<ptr<f64>>(%[[VALUE_p]]), read<ptr<f64>>(%[[VALUE_e]]))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %5: ptr<f64> [synthetic] = read<ptr<f64>>(%2);
-// DEFAULT-NEXT:                 let %6: ptr<f64> [synthetic] = ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%5), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<f64>>(%2, read<ptr<f64>>(%6));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: ptr<f64> [synthetic] = read<ptr<f64>>(%[[VALUE_p]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: ptr<f64> [synthetic] = ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<f64>>(%[[VALUE_p]], read<ptr<f64>>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 write<f64>(deref(read<ptr<f64>>(%2)), const<f64>(1.0));
+// DEFAULT-NEXT:                 write<f64>(deref(read<ptr<f64>>(%[[VALUE_p]])), const<f64>(1.0));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

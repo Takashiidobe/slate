@@ -374,6 +374,110 @@ def loosen_ids(block: list[str]) -> list[str]:
     return result
 
 
+IR_CHECK_RE = re.compile(r"^(// [^:]+: )(.*)$")
+IR_QUOTED_RE = re.compile(r'"(?:[^"\\]|\\.)*"')
+IR_TYPE_REF_RE = re.compile(r"@type([0-9]+)\b(?!\()")
+IR_BINDING_RE = re.compile(r"(?<![\w%])%([0-9]+)\b(?: \.str([0-9]+)(?=:))?")
+IR_TYPE_DEF_RE = re.compile(r"^\s*type @type([0-9]+) (?:([A-Za-z_][A-Za-z0-9_]*) )?=")
+IR_BINDING_NAME_RES = (
+    re.compile(r"(?<![\w%])%([0-9]+) @([A-Za-z_][A-Za-z0-9_]*)\("),
+    re.compile(r"(?<![\w%])%([0-9]+) ([A-Za-z_][A-Za-z0-9_]*)(?::| =)"),
+    re.compile(r"(?<![\w%])%([0-9]+) \.(str)[0-9]+:"),
+)
+
+
+def loosen_ir_ids(block: list[str]) -> list[str]:
+    """Match IR type ids (@typeN) and bindings (%N) by FileCheck string
+    variables. Both are numbered over the whole module, system headers
+    included, so one more header declaration restamps every later id. Each id
+    is still a cross-reference: every use binds or reuses the variable named
+    after the entity's declared name, and the type or binding's one definition
+    line must carry the same number, so only the absolute number stops
+    mattering. Quoted strings and asm templates are left alone because their
+    %N are operand indices, not bindings."""
+    if len(block) < 2 or not block[1].endswith(": module {"):
+        return block
+    names: dict[tuple[str, str], str] = {}
+    taken: set[str] = set()
+    ordinals = {"TYPE": 0, "VALUE": 0}
+
+    def claim(kind: str, number: str, name: str | None) -> None:
+        if (kind, number) in names:
+            return
+        if name is None:
+            variable = f"{kind}{ordinals[kind]}"
+            ordinals[kind] += 1
+        else:
+            variable = f"{kind}_{name}"
+            suffix = 2
+            while variable in taken:
+                variable = f"{kind}_{name}_{suffix}"
+                suffix += 1
+        taken.add(variable)
+        names[(kind, number)] = variable
+
+    def outside_quotes(text: str) -> str:
+        return IR_QUOTED_RE.sub(lambda quoted: " " * len(quoted.group(0)), text)
+
+    for line in block:
+        check = IR_CHECK_RE.match(line)
+        if not check or check.group(2).lstrip().startswith("template:"):
+            continue
+        text = outside_quotes(check.group(2))
+        definition = IR_TYPE_DEF_RE.match(text)
+        if definition:
+            claim("TYPE", definition.group(1), definition.group(2))
+        for pattern in IR_BINDING_NAME_RES:
+            for binding in pattern.finditer(text):
+                claim("VALUE", binding.group(1), binding.group(2))
+
+    defined: set[str] = set()
+
+    def reference(kind: str, number: str) -> str:
+        claim(kind, number, None)
+        variable = names[(kind, number)]
+        if variable in defined:
+            return f"[[{variable}]]"
+        defined.add(variable)
+        return f"[[{variable}:[0-9]+]]"
+
+    result = []
+    for line in block:
+        check = IR_CHECK_RE.match(line)
+        if not check or check.group(2).lstrip().startswith("template:"):
+            result.append(line)
+            continue
+        text = check.group(2)
+        pieces = []
+        last = 0
+        for quoted in IR_QUOTED_RE.finditer(text):
+            pieces.append((text[last:quoted.start()], True))
+            pieces.append((quoted.group(0), False))
+            last = quoted.end()
+        pieces.append((text[last:], True))
+        def binding(match: re.Match[str]) -> str:
+            number, string = match.group(1), match.group(2)
+            rewritten = f"%{reference('VALUE', number)}"
+            if string is None:
+                return rewritten
+            # a string literal global is named after its own binding
+            if string == number:
+                return f"{rewritten} .str[[{names[('VALUE', number)]}]]"
+            return f"{rewritten} .str{string}"
+
+        rewritten = "".join(
+            IR_BINDING_RE.sub(
+                binding,
+                IR_TYPE_REF_RE.sub(lambda ty: f"@type{reference('TYPE', ty.group(1))}", piece),
+            )
+            if loosen
+            else piece
+            for piece, loosen in pieces
+        )
+        result.append(check.group(1) + rewritten)
+    return result
+
+
 CODE_UNITS_OPEN_RE = re.compile(r"^(\s*)code_units: \[$")
 PIECES_OPEN_RE = re.compile(r"^(\s*)pieces: \[$")
 QUOTED_LINE_RE = re.compile(r'^\s*"((?:[^"\\]|\\.)*)",?$')
@@ -528,7 +632,7 @@ def generated_blocks(repo: Path, fixture: Path, source: str) -> str:
             directive = check_prefix if force == "plain" or index == 0 else f"{check_prefix}-NEXT"
             text = escape_filecheck_literal(line) if escape else line
             block.append(f"// {directive}: {text}")
-        block = loosen_ids(loosen_system_provenance(block))
+        block = loosen_ir_ids(loosen_ids(loosen_system_provenance(block)))
         block.append(f"// SLATE-FILECHECK-END {check_prefix}")
         blocks.extend(block)
     return "\n".join(blocks)

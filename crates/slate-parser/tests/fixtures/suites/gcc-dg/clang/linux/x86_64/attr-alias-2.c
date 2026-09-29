@@ -45,16 +45,16 @@ int main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f1() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @g1() -> i32 [linkage=external] [alias="f1"];
-// DEFAULT-NEXT:     fn %2 @f2() -> i32 [linkage=internal] [asm_name="a2"] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g1:[0-9]+]] @g1() -> i32 [linkage=external] [alias="f1"];
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2() -> i32 [linkage=internal] [asm_name="a2"] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @g2() -> i32 [linkage=external] [alias="a2"];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%1), call<i32, signature=fn() -> i32>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_g2:[0-9]+]] @g2() -> i32 [linkage=external] [alias="a2"];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_g1]]), call<i32, signature=fn() -> i32>(%[[VALUE_g2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

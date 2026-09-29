@@ -45,21 +45,21 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @classify(%5 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if lt<i32>(read<i32>(%5), const<i32>(0))
-// DEFAULT-NEXT:             goto %3;
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%5), const<i32>(0))
-// DEFAULT-NEXT:             goto %4;
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_classify:[0-9]+]] @classify(%[[VALUE_n:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0))
+// DEFAULT-NEXT:             goto %[[VALUE_neg:[0-9]+]];
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0))
+// DEFAULT-NEXT:             goto %[[VALUE_zero:[0-9]+]];
 // DEFAULT-NEXT:         return const<i32>(1);
-// DEFAULT-NEXT:         label %3 neg:
+// DEFAULT-NEXT:         label %[[VALUE_neg]] neg:
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(1));
-// DEFAULT-NEXT:         label %4 zero:
+// DEFAULT-NEXT:         label %[[VALUE_zero]] zero:
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%8)), call<i32, signature=fn(i32) -> i32>(%2, neg<i32, overflow=ub>(const<i32>(5))), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(0)), call<i32, signature=fn(i32) -> i32>(%2, const<i32>(42)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], neg<i32, overflow=ub>(const<i32>(5))), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(0)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(42)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

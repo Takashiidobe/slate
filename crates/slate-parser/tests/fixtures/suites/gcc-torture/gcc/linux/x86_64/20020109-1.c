@@ -47,18 +47,18 @@ foo (A *x, A *y, A *z)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
-// DEFAULT-NEXT:         field0 s: ptr<@type0>;
-// DEFAULT-NEXT:         field1 t: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
+// DEFAULT-NEXT:         field0 s: ptr<@type[[TYPE_A]]>;
+// DEFAULT-NEXT:         field1 t: ptr<@type[[TYPE_A]]>;
 // DEFAULT-NEXT:         field2 u: u32;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     type @type1 A = @type0;
-// DEFAULT-NEXT:     fn %2 @bar(%7 <unnamed>: ptr<@type0>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo(%4 x: ptr<@type0>, %5 y: ptr<@type0>, %6 z: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         while %8 logical_and<bool>(ne<ptr<@type0>>(read<ptr<@type0>>(%5), null<ptr<@type0>>), eq<ptr<@type0>>(read<ptr<@type0>>(field1(deref(conditional<ptr<@type0>>(logical_and<bool>(logical_and<bool>(ne<ptr<@type0>>(read<ptr<@type0>>(%5), null<ptr<@type0>>), ne<ptr<@type0>>(read<ptr<@type0>>(field1(deref(read<ptr<@type0>>(%5)))), null<ptr<@type0>>)), ne<u32>(read<u32>(field2(deref(read<ptr<@type0>>(field1(deref(read<ptr<@type0>>(%5))))))), const<u32>(0))), read<ptr<@type0>>(%5), read<ptr<@type0>>(%6))))), read<ptr<@type0>>(field1(deref(conditional<ptr<@type0>>(logical_and<bool>(logical_and<bool>(ne<ptr<@type0>>(read<ptr<@type0>>(%4), null<ptr<@type0>>), ne<ptr<@type0>>(read<ptr<@type0>>(field1(deref(read<ptr<@type0>>(%4)))), null<ptr<@type0>>)), ne<u32>(read<u32>(field2(deref(read<ptr<@type0>>(field1(deref(read<ptr<@type0>>(%4))))))), const<u32>(0))), read<ptr<@type0>>(%4), read<ptr<@type0>>(%6)))))))
-// DEFAULT-NEXT:             write<ptr<@type0>>(%5, read<ptr<@type0>>(field0(deref(read<ptr<@type0>>(%5)))));
-// DEFAULT-NEXT:         if ne<ptr<@type0>>(read<ptr<@type0>>(%5), null<ptr<@type0>>)
-// DEFAULT-NEXT:             call<void, signature=fn(ptr<@type0>) -> void>(%2, read<ptr<@type0>>(%5));
+// DEFAULT-NEXT:     type @type[[TYPE_A_2:[0-9]+]] A = @type[[TYPE_A]];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_A]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE_A]]>, %[[VALUE_y:[0-9]+]] y: ptr<@type[[TYPE_A]]>, %[[VALUE_z:[0-9]+]] z: ptr<@type[[TYPE_A]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] logical_and<bool>(ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]), null<ptr<@type[[TYPE_A]]>>), eq<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(field1(deref(conditional<ptr<@type[[TYPE_A]]>>(logical_and<bool>(logical_and<bool>(ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]), null<ptr<@type[[TYPE_A]]>>), ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]])))), null<ptr<@type[[TYPE_A]]>>)), ne<u32>(read<u32>(field2(deref(read<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]))))))), const<u32>(0))), read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]), read<ptr<@type[[TYPE_A]]>>(%[[VALUE_z]]))))), read<ptr<@type[[TYPE_A]]>>(field1(deref(conditional<ptr<@type[[TYPE_A]]>>(logical_and<bool>(logical_and<bool>(ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]), null<ptr<@type[[TYPE_A]]>>), ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]])))), null<ptr<@type[[TYPE_A]]>>)), ne<u32>(read<u32>(field2(deref(read<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]))))))), const<u32>(0))), read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]), read<ptr<@type[[TYPE_A]]>>(%[[VALUE_z]])))))))
+// DEFAULT-NEXT:             write<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]], read<ptr<@type[[TYPE_A]]>>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]])))));
+// DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_A]]>>(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]), null<ptr<@type[[TYPE_A]]>>)
+// DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_bar]], read<ptr<@type[[TYPE_A]]>>(%[[VALUE_y]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -43,23 +43,23 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 V = vector<u32, 2>;
-// DEFAULT-NEXT:     fn %1 @foo(%2 v: ptr<vector<u32, 2>>, %3 w: ptr<vector<u32, 2>>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<vector<u32, 2>>(deref(read<ptr<vector<u32, 2>>>(%3)), div<vector<u32, 2>, elementwise=true, by_zero=ub>(neg<vector<u32, 2>, elementwise=true, overflow=wrap>(read<vector<u32, 2>>(deref(read<ptr<vector<u32, 2>>>(%2)))), vector_splat<vector<u32, 2>, reason=usual_arith>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(11)))));
+// DEFAULT-NEXT:     type @type[[TYPE_V:[0-9]+]] V = vector<u32, 2>;
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_v:[0-9]+]] v: ptr<vector<u32, 2>>, %[[VALUE_w:[0-9]+]] w: ptr<vector<u32, 2>>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<vector<u32, 2>>(deref(read<ptr<vector<u32, 2>>>(%[[VALUE_w]])), div<vector<u32, 2>, elementwise=true, by_zero=ub>(neg<vector<u32, 2>, elementwise=true, overflow=wrap>(read<vector<u32, 2>>(deref(read<ptr<vector<u32, 2>>>(%[[VALUE_v]])))), vector_splat<vector<u32, 2>, reason=usual_arith>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(11)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @bar(%5 v: ptr<vector<u32, 2>>, %6 w: ptr<vector<u32, 2>>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<vector<u32, 2>>(deref(read<ptr<vector<u32, 2>>>(%6)), div<vector<u32, 2>, elementwise=true, by_zero=ub>(vector_splat<vector<u32, 2>, reason=usual_arith>(reinterpret<u32, reason=usual_arith, fits=unknown>(neg<i32, overflow=ub>(const<i32>(18)))), neg<vector<u32, 2>, elementwise=true, overflow=wrap>(read<vector<u32, 2>>(deref(read<ptr<vector<u32, 2>>>(%5))))));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_v_2:[0-9]+]] v: ptr<vector<u32, 2>>, %[[VALUE_w_2:[0-9]+]] w: ptr<vector<u32, 2>>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<vector<u32, 2>>(deref(read<ptr<vector<u32, 2>>>(%[[VALUE_w_2]])), div<vector<u32, 2>, elementwise=true, by_zero=ub>(vector_splat<vector<u32, 2>, reason=usual_arith>(reinterpret<u32, reason=usual_arith, fits=unknown>(neg<i32, overflow=ub>(const<i32>(18)))), neg<vector<u32, 2>, elementwise=true, overflow=wrap>(read<vector<u32, 2>>(deref(read<ptr<vector<u32, 2>>>(%[[VALUE_v_2]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 a: vector<u32, 2> [storage=automatic] = read<vector<u32, 2>>(compound_literal %12 [storage=automatic] = aggregate<vector<u32, 2>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         let %9 b: vector<u32, 2> [storage=automatic] = read<vector<u32, 2>>(compound_literal %13 [storage=automatic] = aggregate<vector<u32, 2>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(3)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(2147483647))));
-// DEFAULT-NEXT:         let %10 c: vector<u32, 2> [storage=automatic];
-// DEFAULT-NEXT:         let %11 d: vector<u32, 2> [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<vector<u32, 2>>, ptr<vector<u32, 2>>) -> void>(%1, addr_of<ptr<vector<u32, 2>>>(%8), addr_of<ptr<vector<u32, 2>>>(%10));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<vector<u32, 2>>, ptr<vector<u32, 2>>) -> void>(%4, addr_of<ptr<vector<u32, 2>>>(%9), addr_of<ptr<vector<u32, 2>>>(%11));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<u32>(read<u32>(lane(%10, const<i32>(0))), div<u32, by_zero=ub>(neg<u32, overflow=wrap>(const<u32>(1)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(11)))), ne<u32>(read<u32>(lane(%10, const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))), ne<u32>(read<u32>(lane(%11, const<i32>(0))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))), ne<u32>(read<u32>(lane(%11, const<i32>(1))), div<u32, by_zero=ub>(neg<u32, overflow=wrap>(const<u32>(18)), reinterpret<u32, reason=usual_arith, fits=unknown>(neg<i32, overflow=ub>(const<i32>(2147483647))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%14);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: vector<u32, 2> [storage=automatic] = read<vector<u32, 2>>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<vector<u32, 2>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: vector<u32, 2> [storage=automatic] = read<vector<u32, 2>>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<vector<u32, 2>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(3)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(2147483647))));
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: vector<u32, 2> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: vector<u32, 2> [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<vector<u32, 2>>, ptr<vector<u32, 2>>) -> void>(%[[VALUE_foo]], addr_of<ptr<vector<u32, 2>>>(%[[VALUE_a]]), addr_of<ptr<vector<u32, 2>>>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<vector<u32, 2>>, ptr<vector<u32, 2>>) -> void>(%[[VALUE_bar]], addr_of<ptr<vector<u32, 2>>>(%[[VALUE_b]]), addr_of<ptr<vector<u32, 2>>>(%[[VALUE_d]]));
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<u32>(read<u32>(lane(%[[VALUE_c]], const<i32>(0))), div<u32, by_zero=ub>(neg<u32, overflow=wrap>(const<u32>(1)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(11)))), ne<u32>(read<u32>(lane(%[[VALUE_c]], const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))), ne<u32>(read<u32>(lane(%[[VALUE_d]], const<i32>(0))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))), ne<u32>(read<u32>(lane(%[[VALUE_d]], const<i32>(1))), div<u32, by_zero=ub>(neg<u32, overflow=wrap>(const<u32>(18)), reinterpret<u32, reason=usual_arith, fits=unknown>(neg<i32, overflow=ub>(const<i32>(2147483647))))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

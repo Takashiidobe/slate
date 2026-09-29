@@ -41,15 +41,15 @@ int *foo2(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 C = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_C:[0-9]+]] C = struct {
 // DEFAULT-NEXT:         field0 i: complex<i32>;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %1 p: array<@type0, 10> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo1() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<i32>>(real(field0(deref(array_decay<ptr<@type0>, length=Some(10)>(%1)))));
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: array<@type[[TYPE_C]], 10> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo1:[0-9]+]] @foo1() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return addr_of<ptr<i32>>(real(field0(deref(array_decay<ptr<@type[[TYPE_C]]>, length=Some(10)>(%[[VALUE_p]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @foo2() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<i32>>(imag(field0(deref(array_decay<ptr<@type0>, length=Some(10)>(%1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo2:[0-9]+]] @foo2() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return addr_of<ptr<i32>>(imag(field0(deref(array_decay<ptr<@type[[TYPE_C]]>, length=Some(10)>(%[[VALUE_p]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

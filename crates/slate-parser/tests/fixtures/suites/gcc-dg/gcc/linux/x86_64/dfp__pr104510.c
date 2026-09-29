@@ -37,10 +37,10 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 f: f32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 d: d64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<d64, exceptions=observable>(read<d64>(%1), float_widen<d64, reason=usual_arith>(float_narrow<d32, reason=explicit, rounding=nearest_even, exceptions=observable>(float_convert<d64, reason=explicit, rounding=nearest_even, exceptions=observable>(read<f32>(%0))))));
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: f32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: d64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<d64, exceptions=observable>(read<d64>(%[[VALUE_d]]), float_widen<d64, reason=usual_arith>(float_narrow<d32, reason=explicit, rounding=nearest_even, exceptions=observable>(float_convert<d64, reason=explicit, rounding=nearest_even, exceptions=observable>(read<f32>(%[[VALUE_f]]))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

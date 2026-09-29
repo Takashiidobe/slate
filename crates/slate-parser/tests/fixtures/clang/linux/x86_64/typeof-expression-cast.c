@@ -31,11 +31,11 @@ void convert(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 values: array<i32, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 source: array<f32, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @convert() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%0), read<i32>(%3))), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(2)>(%1), read<i32>(%3))))));
+// DEFAULT-NEXT:     global %[[VALUE_values:[0-9]+]] values: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_source:[0-9]+]] source: array<f32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_convert:[0-9]+]] @convert() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_values]]), read<i32>(%[[VALUE_i]]))), float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f32>(deref(ptr_offset<ptr<f32>, subtract=false, element=f32, overflow=ub>(array_decay<ptr<f32>, length=Some(2)>(%[[VALUE_source]]), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

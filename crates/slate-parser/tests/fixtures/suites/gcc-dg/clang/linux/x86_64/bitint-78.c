@@ -46,16 +46,16 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 c: i8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 g: i464b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 a: array<i464b, 2> [storage=automatic] [align=16] = aggregate<array<i464b, 2>, zero_fill=true>();
-// DEFAULT-NEXT:         let %4 b: i464b [storage=automatic];
-// DEFAULT-NEXT:         while %5 ne<i8>(read<i8>(%0), const<i8>(0))
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: i464b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: array<i464b, 2> [storage=automatic] [align=16] = aggregate<array<i464b, 2>, zero_fill=true>();
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i464b [storage=automatic];
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<i8>(read<i8>(%[[VALUE_c]]), const<i8>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i464b>(%4, add<i464b, overflow=ub>(read<i464b>(%1), widen<i464b, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                 write<i464b>(%1, read<i464b>(deref(ptr_offset<ptr<i464b>, subtract=false, element=i464b, overflow=ub>(array_decay<ptr<i464b>, length=Some(2)>(%3), const<i32>(0)))));
-// DEFAULT-NEXT:                 write<i464b>(deref(ptr_offset<ptr<i464b>, subtract=false, element=i464b, overflow=ub>(array_decay<ptr<i464b>, length=Some(2)>(%3), const<i32>(0))), read<i464b>(%4));
+// DEFAULT-NEXT:                 write<i464b>(%[[VALUE_b]], add<i464b, overflow=ub>(read<i464b>(%[[VALUE_g]]), widen<i464b, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:                 write<i464b>(%[[VALUE_g]], read<i464b>(deref(ptr_offset<ptr<i464b>, subtract=false, element=i464b, overflow=ub>(array_decay<ptr<i464b>, length=Some(2)>(%[[VALUE_a]]), const<i32>(0)))));
+// DEFAULT-NEXT:                 write<i464b>(deref(ptr_offset<ptr<i464b>, subtract=false, element=i464b, overflow=ub>(array_decay<ptr<i464b>, length=Some(2)>(%[[VALUE_a]]), const<i32>(0))), read<i464b>(%[[VALUE_b]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

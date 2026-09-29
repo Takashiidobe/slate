@@ -52,22 +52,22 @@ void g(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 ee = enum : u32 {
-// DEFAULT-NEXT:         %0 F = const<i32>(2);
+// DEFAULT-NEXT:     type @type[[TYPE_ee:[0-9]+]] ee = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_F:[0-9]+]] F = const<i32>(2);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 A = enum : u32 {
-// DEFAULT-NEXT:         %0 B = const<i32>(7);
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_F]] B = const<i32>(7);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type2 A = enum : u32 {
-// DEFAULT-NEXT:         %0 B = const<i32>(7);
+// DEFAULT-NEXT:     type @type[[TYPE_A_2:[0-9]+]] A = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_F]] B = const<i32>(7);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %7 y: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @test2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 a: ptr<@type0> [storage=automatic];
-// DEFAULT-NEXT:         let %4 b: ptr<@type0> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type0>>(%4, read<ptr<@type0>>(%2));
+// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: @type[[TYPE_A]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_F]] @test2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: ptr<@type[[TYPE_ee]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE_ee]]> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_ee]]>>(%[[VALUE_b]], read<ptr<@type[[TYPE_ee]]>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @g() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -38,11 +38,11 @@ int one_element[];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 shared: i32 [storage=static] [linkage=external] [c="int"];
-// DEFAULT-NEXT:     global %1 initialized: i32 [storage=static] = const<i32>(7) [linkage=external] [c="int"];
-// DEFAULT-NEXT:     extern %2 declaration_only: i32 [storage=static] [linkage=external] [c="int"];
-// DEFAULT-NEXT:     global %3 private_object: i32 [storage=static] [linkage=internal] [c="int"];
-// DEFAULT-NEXT:     global %4 completed: array<i32, 3> [storage=static] [linkage=external] [c="int[]"];
-// DEFAULT-NEXT:     global %5 one_element: array<i32, 1> [storage=static] [linkage=external] [c="int[]"];
+// DEFAULT-NEXT:     global %[[VALUE_shared:[0-9]+]] shared: i32 [storage=static] [linkage=external] [c="int"];
+// DEFAULT-NEXT:     global %[[VALUE_initialized:[0-9]+]] initialized: i32 [storage=static] = const<i32>(7) [linkage=external] [c="int"];
+// DEFAULT-NEXT:     extern %[[VALUE_declaration_only:[0-9]+]] declaration_only: i32 [storage=static] [linkage=external] [c="int"];
+// DEFAULT-NEXT:     global %[[VALUE_private_object:[0-9]+]] private_object: i32 [storage=static] [linkage=internal] [c="int"];
+// DEFAULT-NEXT:     global %[[VALUE_completed:[0-9]+]] completed: array<i32, 3> [storage=static] [linkage=external] [c="int[]"];
+// DEFAULT-NEXT:     global %[[VALUE_one_element:[0-9]+]] one_element: array<i32, 1> [storage=static] [linkage=external] [c="int[]"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

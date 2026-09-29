@@ -52,37 +52,37 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %47 .str47: array<i8, 35> [storage=static] = code_units<array<i8, 35>>([37, 46, 51, 102, 32, 37, 46, 51, 102, 32, 37, 46, 51, 102, 32, 37, 46, 51, 102, 32, 37, 108, 100, 32, 37, 108, 108, 100, 32, 37, 46, 51, 102, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%16 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %18 @__builtin_sin(%17 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %20 @__builtin_cos(%19 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %22 @__builtin_tan(%21 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %24 @__builtin_log(%23 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %26 @__builtin_log10(%25 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %28 @__builtin_log2(%27 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %31 @__builtin_pow(%29 <unnamed>: f64, %30 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %33 @__builtin_sqrt(%32 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %35 @__builtin_exp(%34 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %37 @__builtin_exp2(%36 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %40 @__builtin_fmod(%38 <unnamed>: f64, %39 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %42 @__builtin_lround(%41 <unnamed>: f64) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %44 @__builtin_llround(%43 <unnamed>: f64) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %46 @__builtin_elementwise_exp10(%45 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 a: volatile f64 [storage=automatic] = const<f64>(0.5);
-// DEFAULT-NEXT:         let %4 b: volatile f64 [storage=automatic] = const<f64>(2.0);
-// DEFAULT-NEXT:         let %5 c: volatile f64 [storage=automatic] = const<f64>(8.0);
-// DEFAULT-NEXT:         let %6 d: volatile f64 [storage=automatic] = const<f64>(5.75);
-// DEFAULT-NEXT:         let %7 e: volatile f64 [storage=automatic] = const<f64>(2.0);
-// DEFAULT-NEXT:         let %8 f: volatile f64 [storage=automatic] = const<f64>(2.5);
-// DEFAULT-NEXT:         let %9 trig: f64 [storage=automatic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(call<f64, signature=fn(f64) -> f64>(%18, read<f64, volatile>(%3)), call<f64, signature=fn(f64) -> f64>(%20, read<f64, volatile>(%3))), call<f64, signature=fn(f64) -> f64>(%22, read<f64, volatile>(%3)));
-// DEFAULT-NEXT:         let %10 logs: f64 [storage=automatic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(call<f64, signature=fn(f64) -> f64>(%24, read<f64, volatile>(%5)), call<f64, signature=fn(f64) -> f64>(%26, const<f64>(100.0))), call<f64, signature=fn(f64) -> f64>(%28, read<f64, volatile>(%5)));
-// DEFAULT-NEXT:         let %11 powers: f64 [storage=automatic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(call<f64, signature=fn(f64, f64) -> f64>(%31, read<f64, volatile>(%4), const<f64>(3.0)), call<f64, signature=fn(f64) -> f64>(%33, read<f64, volatile>(%5))), call<f64, signature=fn(f64) -> f64>(%35, const<f64>(1.0))), call<f64, signature=fn(f64) -> f64>(%37, const<f64>(3.0)));
-// DEFAULT-NEXT:         let %12 rem: f64 [storage=automatic] = call<f64, signature=fn(f64, f64) -> f64>(%40, read<f64, volatile>(%6), read<f64, volatile>(%7));
-// DEFAULT-NEXT:         let %13 rounded: i64 [storage=automatic] = call<i64, signature=fn(f64) -> i64>(%42, read<f64, volatile>(%8));
-// DEFAULT-NEXT:         let %14 rounded_ll: i64 [storage=automatic] = call<i64, signature=fn(f64) -> i64>(%44, read<f64, volatile>(%8));
-// DEFAULT-NEXT:         let %15 exp10_val: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(%46, const<f64>(2.0));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(35)>(%47)), read<f64>(%9), read<f64>(%10), read<f64>(%11), read<f64>(%12), read<i64>(%13), read<i64>(%14), read<f64>(%15));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 35> [storage=static] = code_units<array<i8, 35>>([37, 46, 51, 102, 32, 37, 46, 51, 102, 32, 37, 46, 51, 102, 32, 37, 46, 51, 102, 32, 37, 108, 100, 32, 37, 108, 108, 100, 32, 37, 46, 51, 102, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_sin:[0-9]+]] @__builtin_sin(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_cos:[0-9]+]] @__builtin_cos(%[[VALUE1:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_tan:[0-9]+]] @__builtin_tan(%[[VALUE2:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_log:[0-9]+]] @__builtin_log(%[[VALUE3:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_log10:[0-9]+]] @__builtin_log10(%[[VALUE4:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_log2:[0-9]+]] @__builtin_log2(%[[VALUE5:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_pow:[0-9]+]] @__builtin_pow(%[[VALUE6:[0-9]+]] <unnamed>: f64, %[[VALUE7:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_sqrt:[0-9]+]] @__builtin_sqrt(%[[VALUE8:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_exp:[0-9]+]] @__builtin_exp(%[[VALUE9:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_exp2:[0-9]+]] @__builtin_exp2(%[[VALUE10:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_fmod:[0-9]+]] @__builtin_fmod(%[[VALUE11:[0-9]+]] <unnamed>: f64, %[[VALUE12:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_lround:[0-9]+]] @__builtin_lround(%[[VALUE13:[0-9]+]] <unnamed>: f64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_llround:[0-9]+]] @__builtin_llround(%[[VALUE14:[0-9]+]] <unnamed>: f64) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_elementwise_exp10:[0-9]+]] @__builtin_elementwise_exp10(%[[VALUE15:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: volatile f64 [storage=automatic] = const<f64>(0.5);
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: volatile f64 [storage=automatic] = const<f64>(2.0);
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: volatile f64 [storage=automatic] = const<f64>(8.0);
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: volatile f64 [storage=automatic] = const<f64>(5.75);
+// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: volatile f64 [storage=automatic] = const<f64>(2.0);
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: volatile f64 [storage=automatic] = const<f64>(2.5);
+// DEFAULT-NEXT:         let %[[VALUE_trig:[0-9]+]] trig: f64 [storage=automatic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sin]], read<f64, volatile>(%[[VALUE_a]])), call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_cos]], read<f64, volatile>(%[[VALUE_a]]))), call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_tan]], read<f64, volatile>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         let %[[VALUE_logs:[0-9]+]] logs: f64 [storage=automatic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_log]], read<f64, volatile>(%[[VALUE_c]])), call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_log10]], const<f64>(100.0))), call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_log2]], read<f64, volatile>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         let %[[VALUE_powers:[0-9]+]] powers: f64 [storage=automatic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE___builtin_pow]], read<f64, volatile>(%[[VALUE_b]]), const<f64>(3.0)), call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sqrt]], read<f64, volatile>(%[[VALUE_c]]))), call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_exp]], const<f64>(1.0))), call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_exp2]], const<f64>(3.0)));
+// DEFAULT-NEXT:         let %[[VALUE_rem:[0-9]+]] rem: f64 [storage=automatic] = call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE___builtin_fmod]], read<f64, volatile>(%[[VALUE_d]]), read<f64, volatile>(%[[VALUE_e]]));
+// DEFAULT-NEXT:         let %[[VALUE_rounded:[0-9]+]] rounded: i64 [storage=automatic] = call<i64, signature=fn(f64) -> i64>(%[[VALUE___builtin_lround]], read<f64, volatile>(%[[VALUE_f]]));
+// DEFAULT-NEXT:         let %[[VALUE_rounded_ll:[0-9]+]] rounded_ll: i64 [storage=automatic] = call<i64, signature=fn(f64) -> i64>(%[[VALUE___builtin_llround]], read<f64, volatile>(%[[VALUE_f]]));
+// DEFAULT-NEXT:         let %[[VALUE_exp10_val:[0-9]+]] exp10_val: f64 [storage=automatic] = call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_elementwise_exp10]], const<f64>(2.0));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(35)>(%[[VALUE_str]])), read<f64>(%[[VALUE_trig]]), read<f64>(%[[VALUE_logs]]), read<f64>(%[[VALUE_powers]]), read<f64>(%[[VALUE_rem]]), read<i64>(%[[VALUE_rounded]]), read<i64>(%[[VALUE_rounded_ll]]), read<f64>(%[[VALUE_exp10_val]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

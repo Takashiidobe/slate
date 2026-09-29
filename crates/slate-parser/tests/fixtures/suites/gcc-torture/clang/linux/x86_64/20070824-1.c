@@ -48,33 +48,33 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
-// DEFAULT-NEXT:         field0 a: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
+// DEFAULT-NEXT:         field0 a: ptr<@type[[TYPE_S]]>;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @__builtin_alloca(%7 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 s: ptr<@type0> [storage=automatic] = null<ptr<@type0>>;
-// DEFAULT-NEXT:         let %4 p: ptr<ptr<@type0>> [storage=automatic];
-// DEFAULT-NEXT:         let %5 n: ptr<@type0> [storage=automatic];
-// DEFAULT-NEXT:         for %6
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_alloca:[0-9]+]] @__builtin_alloca(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_S]]> [storage=automatic] = null<ptr<@type[[TYPE_S]]>>;
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<ptr<@type[[TYPE_S]]>> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: ptr<@type[[TYPE_S]]> [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<ptr<ptr<@type0>>>(%4, addr_of<ptr<ptr<@type0>>>(%3));
-// DEFAULT-NEXT:             condition: ne<ptr<@type0>>(read<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4))), null<ptr<@type0>>)
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_S]]>>>(%[[VALUE_p]], addr_of<ptr<ptr<@type[[TYPE_S]]>>>(%[[VALUE_s]]));
+// DEFAULT-NEXT:             condition: ne<ptr<@type[[TYPE_S]]>>(read<ptr<@type[[TYPE_S]]>>(deref(read<ptr<ptr<@type[[TYPE_S]]>>>(%[[VALUE_p]]))), null<ptr<@type[[TYPE_S]]>>)
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 write<ptr<ptr<@type0>>>(%4, addr_of<ptr<ptr<@type0>>>(field0(deref(read<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4)))))));
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_S]]>>>(%[[VALUE_p]], addr_of<ptr<ptr<@type[[TYPE_S]]>>>(field0(deref(read<ptr<@type[[TYPE_S]]>>(deref(read<ptr<ptr<@type[[TYPE_S]]>>>(%[[VALUE_p]])))))));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:         write<ptr<@type0>>(%5, pointer_cast<ptr<@type0>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%8, const<u64>(16))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type0>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%8, const<u64>(16)));
-// DEFAULT-NEXT:         write<ptr<@type0>>(field0(deref(read<ptr<@type0>>(%5))), read<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4))));
-// DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type0>>(%5))), const<i32>(1));
-// DEFAULT-NEXT:         write<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4)), read<ptr<@type0>>(%5));
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<@type0>>(read<ptr<@type0>>(%3), null<ptr<@type0>>))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_S]]>>(%[[VALUE_n]], pointer_cast<ptr<@type[[TYPE_S]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], const<u64>(16))));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_S]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], const<u64>(16)));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_S]]>>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_n]]))), read<ptr<@type[[TYPE_S]]>>(deref(read<ptr<ptr<@type[[TYPE_S]]>>>(%[[VALUE_p]]))));
+// DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_n]]))), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_S]]>>(deref(read<ptr<ptr<@type[[TYPE_S]]>>>(%[[VALUE_p]])), read<ptr<@type[[TYPE_S]]>>(%[[VALUE_n]]));
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<@type[[TYPE_S]]>>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]]), null<ptr<@type[[TYPE_S]]>>))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

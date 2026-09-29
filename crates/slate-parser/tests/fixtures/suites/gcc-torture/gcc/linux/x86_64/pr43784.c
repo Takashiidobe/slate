@@ -57,60 +57,60 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 a: array<u8, 256>;
 // DEFAULT-NEXT:     } [size=256, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 u = union {
-// DEFAULT-NEXT:         field0 d: @type2;
-// DEFAULT-NEXT:         field1 e: @type3;
+// DEFAULT-NEXT:     type @type[[TYPE_u:[0-9]+]] u = union {
+// DEFAULT-NEXT:         field0 d: @type[[TYPE0:[0-9]+]];
+// DEFAULT-NEXT:         field1 e: @type[[TYPE1:[0-9]+]];
 // DEFAULT-NEXT:     } [size=260, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type2 = struct {
-// DEFAULT-NEXT:         field0 b: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE0]] = struct {
+// DEFAULT-NEXT:         field0 b: @type[[TYPE_s]];
 // DEFAULT-NEXT:         field1 c: i32;
 // DEFAULT-NEXT:     } [size=260, align=4, offsets=[0, 256]];
-// DEFAULT-NEXT:     type @type3 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE1]] = struct {
 // DEFAULT-NEXT:         field0 c: i32;
-// DEFAULT-NEXT:         field1 b: @type0;
+// DEFAULT-NEXT:         field1 b: @type[[TYPE_s]];
 // DEFAULT-NEXT:     } [size=260, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %4 v: @type1 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %5 p: ptr<@type0> [storage=static] = addr_of<ptr<@type0>>(field0(field0(%4))) [linkage=internal];
-// DEFAULT-NEXT:     global %6 q: ptr<@type0> [storage=static] = addr_of<ptr<@type0>>(field1(field1(%4))) [linkage=internal];
-// DEFAULT-NEXT:     fn %7 @rp() -> @type0 [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(deref(read<ptr<@type0>>(%5))));
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: @type[[TYPE_u]] [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_s]]> [storage=static] = addr_of<ptr<@type[[TYPE_s]]>>(field0(field0(%[[VALUE_v]]))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_s]]> [storage=static] = addr_of<ptr<@type[[TYPE_s]]>>(field1(field1(%[[VALUE_v]]))) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_rp:[0-9]+]] @rp() -> @type[[TYPE_s]] [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return copy<@type[[TYPE_s]], reason=return>(read<@type[[TYPE_s]]>(deref(read<ptr<@type[[TYPE_s]]>>(%[[VALUE_p]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @qp() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<@type0>(deref(read<ptr<@type0>>(%6)), copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%7)));
-// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%7));
+// DEFAULT-NEXT:     fn %[[VALUE_qp:[0-9]+]] @qp() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<@type[[TYPE_s]]>(deref(read<ptr<@type[[TYPE_s]]>>(%[[VALUE_q]])), copy<@type[[TYPE_s]], reason=assign>(call<@type[[TYPE_s]], signature=fn() -> @type[[TYPE_s]], abi=sysv64() -> native_c>(%[[VALUE_rp]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_s]], reason=assign>(call<@type[[TYPE_s]], signature=fn() -> @type[[TYPE_s]], abi=sysv64() -> native_c>(%[[VALUE_rp]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %11
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%10, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(256))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(256))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                 let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%15));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(256)>(field0(deref(read<ptr<@type0>>(%5)))), read<i32>(%10))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(read<i32>(%10))));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         for %12
+// DEFAULT-NEXT:                 write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(256)>(field0(deref(read<ptr<@type[[TYPE_s]]>>(%[[VALUE_p]])))), read<i32>(%[[VALUE_i]]))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(read<i32>(%[[VALUE_i]]))));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_qp]]);
+// DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%10, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(256))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(256))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %16: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                 let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%17));
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(256)>(field0(deref(read<ptr<@type0>>(%6)))), read<i32>(%10)))))), read<i32>(%10))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%13);
+// DEFAULT-NEXT:                 if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(256)>(field0(deref(read<ptr<@type[[TYPE_s]]>>(%[[VALUE_q]])))), read<i32>(%[[VALUE_i]])))))), read<i32>(%[[VALUE_i]]))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

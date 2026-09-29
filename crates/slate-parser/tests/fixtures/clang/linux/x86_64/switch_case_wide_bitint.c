@@ -51,27 +51,27 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 big = i256b;
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%7 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @classify(%4 seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 v: i256b [storage=automatic] = add<i256b, overflow=ub>(widen<i256b, reason=usual_arith>(const<i128b>(170141183460469231731687303715884105727)), widen<i256b, reason=explicit>(read<i32>(%4)));
-// DEFAULT-NEXT:         switch %8 read<i256b>(%5)
+// DEFAULT-NEXT:     type @type[[TYPE_big:[0-9]+]] big = i256b;
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_classify:[0-9]+]] @classify(%[[VALUE_seed:[0-9]+]] seed: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: i256b [storage=automatic] = add<i256b, overflow=ub>(widen<i256b, reason=usual_arith>(const<i128b>(170141183460469231731687303715884105727)), widen<i256b, reason=explicit>(read<i32>(%[[VALUE_seed]])));
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i256b>(%[[VALUE_v]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %8 const<i256b>(170141183460469231731687303715884105727):
-// DEFAULT-NEXT:                     case %8 const<i256b>(170141183460469231731687303715884105728):
-// DEFAULT-NEXT:                         case %8 const<i256b>(170141183460469231731687303715884105729):
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i256b>(170141183460469231731687303715884105727):
+// DEFAULT-NEXT:                     case %[[VALUE0]] const<i256b>(170141183460469231731687303715884105728):
+// DEFAULT-NEXT:                         case %[[VALUE0]] const<i256b>(170141183460469231731687303715884105729):
 // DEFAULT-NEXT:                             return const<i32>(1);
-// DEFAULT-NEXT:                 case %8 const<i256b>(170141183460469231731687303715884105736):
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i256b>(170141183460469231731687303715884105736):
 // DEFAULT-NEXT:                     return const<i32>(2);
-// DEFAULT-NEXT:                 case %8 const<i256b>(-170141183460469231731687303715884105727):
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i256b>(-170141183460469231731687303715884105727):
 // DEFAULT-NEXT:                     return const<i32>(3);
-// DEFAULT-NEXT:                 default %8:
+// DEFAULT-NEXT:                 default %[[VALUE0]]:
 // DEFAULT-NEXT:                     return const<i32>(0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%9)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(0)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(2)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(9)), call<i32, signature=fn(i32) -> i32>(%3, const<i32>(5)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str]])), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(0)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(2)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(9)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_classify]], const<i32>(5)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -43,18 +43,18 @@ foo (void *p)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 V = vector<i8, 16>;
-// DEFAULT-NEXT:     type @type1 W = vector<f128, 1>;
-// DEFAULT-NEXT:     type @type2 = union {
+// DEFAULT-NEXT:     type @type[[TYPE_V:[0-9]+]] V = vector<i8, 16>;
+// DEFAULT-NEXT:     type @type[[TYPE_W:[0-9]+]] W = vector<f128, 1>;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 a: vector<f128, 1>;
 // DEFAULT-NEXT:         field1 b: array<i8, 16>;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0, 0]];
-// DEFAULT-NEXT:     fn %2 @foo(%3 p: ptr<void>) -> f128 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 c: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(read<i128b>(deref(pointer_cast<ptr<i128b>, reason=explicit>(read<ptr<void>>(%3)))));
-// DEFAULT-NEXT:         let %5 f: f128 [storage=automatic] = read<f128>(deref(pointer_cast<ptr<f128>, reason=explicit>(read<ptr<void>>(%3))));
-// DEFAULT-NEXT:         let %6 w: vector<f128, 1> [storage=automatic] = read<vector<f128, 1>>(deref(pointer_cast<ptr<vector<f128, 1>>, reason=explicit>(read<ptr<void>>(%3))));
-// DEFAULT-NEXT:         let %7 r: i8 [storage=automatic] = read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(field1(temporary %9 = aggregate<@type2, zero_fill=false>(field0 = read<vector<f128, 1>>(%6)))), const<i32>(1))));
-// DEFAULT-NEXT:         return add<f128, rounding=nearest_even, exceptions=observable, contract=off>(int_to_float<f128, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(widen<i32, reason=promotion>(read<i8>(%7))), read<f128>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<void>) -> f128 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(read<i128b>(deref(pointer_cast<ptr<i128b>, reason=explicit>(read<ptr<void>>(%[[VALUE_p]])))));
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: f128 [storage=automatic] = read<f128>(deref(pointer_cast<ptr<f128>, reason=explicit>(read<ptr<void>>(%[[VALUE_p]]))));
+// DEFAULT-NEXT:         let %[[VALUE_w:[0-9]+]] w: vector<f128, 1> [storage=automatic] = read<vector<f128, 1>>(deref(pointer_cast<ptr<vector<f128, 1>>, reason=explicit>(read<ptr<void>>(%[[VALUE_p]]))));
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i8 [storage=automatic] = read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(field1(temporary %[[VALUE0:[0-9]+]] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = read<vector<f128, 1>>(%[[VALUE_w]])))), const<i32>(1))));
+// DEFAULT-NEXT:         return add<f128, rounding=nearest_even, exceptions=observable, contract=off>(int_to_float<f128, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_r]]))), read<f128>(%[[VALUE_f]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

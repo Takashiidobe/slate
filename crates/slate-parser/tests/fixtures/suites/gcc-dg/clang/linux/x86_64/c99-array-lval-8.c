@@ -55,26 +55,26 @@ f (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: array<i32, 1>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: const array<i32, 1>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: array<array<i32, 1>, 1>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 s: @type0 [storage=automatic] [const];
-// DEFAULT-NEXT:         let %4 p1: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(array_decay<ptr<const i32>, length=Some(1)>(field0(%3)));
-// DEFAULT-NEXT:         let %5 p2: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(1)>(field0(temporary %14 = conditional<@type0>(ne<i32>(read<i32>(%0), const<i32>(0)), read<@type0>(%3), read<@type0>(%3))));
-// DEFAULT-NEXT:         let %7 t: @type1 [storage=automatic];
-// DEFAULT-NEXT:         let %8 p3: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(array_decay<ptr<const i32>, length=Some(1)>(field0(%7)));
-// DEFAULT-NEXT:         let %9 p4: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(array_decay<ptr<const i32>, length=Some(1)>(field0(temporary %15 = conditional<@type1>(ne<i32>(read<i32>(%0), const<i32>(0)), read<@type1>(%7), read<@type1>(%7)))));
-// DEFAULT-NEXT:         let %11 u: @type2 [storage=automatic] [const];
-// DEFAULT-NEXT:         let %12 p5: ptr<const array<i32, 1>> [storage=automatic] = array_decay<ptr<const array<i32, 1>>, length=Some(1)>(field0(%11));
-// DEFAULT-NEXT:         let %13 p6: ptr<const array<i32, 1>> [storage=automatic] = pointer_cast<ptr<const array<i32, 1>>, reason=assign>(array_decay<ptr<array<i32, 1>>, length=Some(1)>(field0(temporary %16 = conditional<@type2>(ne<i32>(read<i32>(%0), const<i32>(0)), read<@type2>(%11), read<@type2>(%11)))));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE0]] [storage=automatic] [const];
+// DEFAULT-NEXT:         let %[[VALUE_p1:[0-9]+]] p1: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(array_decay<ptr<const i32>, length=Some(1)>(field0(%[[VALUE_s]])));
+// DEFAULT-NEXT:         let %[[VALUE_p2:[0-9]+]] p2: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(1)>(field0(temporary %[[VALUE0:[0-9]+]] = conditional<@type[[TYPE0]]>(ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)), read<@type[[TYPE0]]>(%[[VALUE_s]]), read<@type[[TYPE0]]>(%[[VALUE_s]]))));
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE1]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p3:[0-9]+]] p3: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(array_decay<ptr<const i32>, length=Some(1)>(field0(%[[VALUE_t]])));
+// DEFAULT-NEXT:         let %[[VALUE_p4:[0-9]+]] p4: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(array_decay<ptr<const i32>, length=Some(1)>(field0(temporary %[[VALUE1:[0-9]+]] = conditional<@type[[TYPE1]]>(ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)), read<@type[[TYPE1]]>(%[[VALUE_t]]), read<@type[[TYPE1]]>(%[[VALUE_t]])))));
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE2]] [storage=automatic] [const];
+// DEFAULT-NEXT:         let %[[VALUE_p5:[0-9]+]] p5: ptr<const array<i32, 1>> [storage=automatic] = array_decay<ptr<const array<i32, 1>>, length=Some(1)>(field0(%[[VALUE_u]]));
+// DEFAULT-NEXT:         let %[[VALUE_p6:[0-9]+]] p6: ptr<const array<i32, 1>> [storage=automatic] = pointer_cast<ptr<const array<i32, 1>>, reason=assign>(array_decay<ptr<array<i32, 1>>, length=Some(1)>(field0(temporary %[[VALUE2:[0-9]+]] = conditional<@type[[TYPE2]]>(ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)), read<@type[[TYPE2]]>(%[[VALUE_u]]), read<@type[[TYPE2]]>(%[[VALUE_u]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

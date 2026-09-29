@@ -51,36 +51,36 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 small: i8 [storage=static] = truncate<i8, reason=assign, fits=always>(const<i32>(12)) [linkage=internal];
-// DEFAULT-NEXT:     global %3 byte: u8 [storage=static] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(200))) [linkage=internal];
-// DEFAULT-NEXT:     global %4 ratio: f32 [storage=static] = const<f32>(1.5) [linkage=internal];
-// DEFAULT-NEXT:     global %5 total: f64 [storage=static] = const<f64>(2.25) [linkage=internal];
-// DEFAULT-NEXT:     global %17 .str17: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %18 .str18: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %19 .str19: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 102, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %20 .str20: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 102, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%16 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %6 @add_char(%7 a: i8, %8 b: i8) -> i8 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%7)), widen<i32, reason=promotion>(read<i8>(%8))));
+// DEFAULT-NEXT:     global %[[VALUE_small:[0-9]+]] small: i8 [storage=static] = truncate<i8, reason=assign, fits=always>(const<i32>(12)) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_byte:[0-9]+]] byte: u8 [storage=static] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(200))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ratio:[0-9]+]] ratio: f32 [storage=static] = const<f32>(1.5) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_total:[0-9]+]] total: f64 [storage=static] = const<f64>(2.25) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 102, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 102, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_add_char:[0-9]+]] @add_char(%[[VALUE_a:[0-9]+]] a: i8, %[[VALUE_b:[0-9]+]] b: i8) -> i8 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i8, reason=return, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_a]])), widen<i32, reason=promotion>(read<i8>(%[[VALUE_b]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @scale(%10 value: f32, %11 factor: f32) -> f32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%10), read<f32>(%11));
+// DEFAULT-NEXT:     fn %[[VALUE_scale:[0-9]+]] @scale(%[[VALUE_value:[0-9]+]] value: f32, %[[VALUE_factor:[0-9]+]] factor: f32) -> f32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%[[VALUE_value]]), read<f32>(%[[VALUE_factor]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @add_double(%13 a: f64, %14 b: f64) -> f64 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%13), read<f64>(%14));
+// DEFAULT-NEXT:     fn %[[VALUE_add_double:[0-9]+]] @add_double(%[[VALUE_a_2:[0-9]+]] a: f64, %[[VALUE_b_2:[0-9]+]] b: f64) -> f64 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_a_2]]), read<f64>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<i8>(%2, call<i8, signature=fn(i8, i8) -> i8>(%6, read<i8>(%2), truncate<i8, reason=arg, fits=always>(const<i32>(3))));
-// DEFAULT-NEXT:         call<i8, signature=fn(i8, i8) -> i8>(%6, read<i8>(%2), truncate<i8, reason=arg, fits=always>(const<i32>(3)));
-// DEFAULT-NEXT:         write<u8>(%3, reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%3))), const<i32>(1)))));
-// DEFAULT-NEXT:         write<f32>(%4, call<f32, signature=fn(f32, f32) -> f32>(%9, read<f32>(%4), const<f32>(2.0)));
-// DEFAULT-NEXT:         call<f32, signature=fn(f32, f32) -> f32>(%9, read<f32>(%4), const<f32>(2.0));
-// DEFAULT-NEXT:         write<f64>(%5, call<f64, signature=fn(f64, f64) -> f64>(%12, read<f64>(%5), float_widen<f64, reason=arg>(read<f32>(%4))));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64, f64) -> f64>(%12, read<f64>(%5), float_widen<f64, reason=arg>(read<f32>(%4)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%17)), widen<i32, reason=vararg>(read<i8>(%2)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%18)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%3))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%19)), float_widen<f64, reason=vararg>(read<f32>(%4)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%20)), read<f64>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<i8>(%[[VALUE_small]], call<i8, signature=fn(i8, i8) -> i8>(%[[VALUE_add_char]], read<i8>(%[[VALUE_small]]), truncate<i8, reason=arg, fits=always>(const<i32>(3))));
+// DEFAULT-NEXT:         call<i8, signature=fn(i8, i8) -> i8>(%[[VALUE_add_char]], read<i8>(%[[VALUE_small]]), truncate<i8, reason=arg, fits=always>(const<i32>(3)));
+// DEFAULT-NEXT:         write<u8>(%[[VALUE_byte]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_byte]]))), const<i32>(1)))));
+// DEFAULT-NEXT:         write<f32>(%[[VALUE_ratio]], call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_scale]], read<f32>(%[[VALUE_ratio]]), const<f32>(2.0)));
+// DEFAULT-NEXT:         call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_scale]], read<f32>(%[[VALUE_ratio]]), const<f32>(2.0));
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_total]], call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_add_double]], read<f64>(%[[VALUE_total]]), float_widen<f64, reason=arg>(read<f32>(%[[VALUE_ratio]]))));
+// DEFAULT-NEXT:         call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_add_double]], read<f64>(%[[VALUE_total]]), float_widen<f64, reason=arg>(read<f32>(%[[VALUE_ratio]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), widen<i32, reason=vararg>(read<i8>(%[[VALUE_small]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%[[VALUE_byte]]))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_3]])), float_widen<f64, reason=vararg>(read<f32>(%[[VALUE_ratio]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_4]])), read<f64>(%[[VALUE_total]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -65,14 +65,14 @@ int defines__building_module;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 defines__has_include: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 defines__has_include_next: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 defines__has_embed: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 defines__has_attribute: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 defines__has_c_attribute: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 defines__has_builtin: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 defines__has_feature: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 defines__has_extension: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 defines__building_module: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines__has_include:[0-9]+]] defines__has_include: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines__has_include_next:[0-9]+]] defines__has_include_next: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines__has_embed:[0-9]+]] defines__has_embed: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines__has_attribute:[0-9]+]] defines__has_attribute: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines__has_c_attribute:[0-9]+]] defines__has_c_attribute: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines__has_builtin:[0-9]+]] defines__has_builtin: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines__has_feature:[0-9]+]] defines__has_feature: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines__has_extension:[0-9]+]] defines__has_extension: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines__building_module:[0-9]+]] defines__building_module: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -34,12 +34,12 @@ int *foo() { return &s.x[2]; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 x: array<i32, 10>;
 // DEFAULT-NEXT:     } [size=40, align=4, offsets=[0]];
-// DEFAULT-NEXT:     extern %1 s: @type0 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(field0(%1)), const<i32>(2))));
+// DEFAULT-NEXT:     extern %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(10)>(field0(%[[VALUE_s]])), const<i32>(2))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -28,14 +28,14 @@ int f2(char *d, char *e, int f) { int g = e - d; return *f1(&f, &g); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f1(%1 a: ptr<i32>, %2 b: ptr<i32>) -> ptr<i32> [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if lt<i32>(read<i32>(deref(read<ptr<i32>>(%2))), read<i32>(deref(read<ptr<i32>>(%1))))
-// DEFAULT-NEXT:             return read<ptr<i32>>(%2);
-// DEFAULT-NEXT:         return read<ptr<i32>>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_a:[0-9]+]] a: ptr<i32>, %[[VALUE_b:[0-9]+]] b: ptr<i32>) -> ptr<i32> [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if lt<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_b]]))), read<i32>(deref(read<ptr<i32>>(%[[VALUE_a]]))))
+// DEFAULT-NEXT:             return read<ptr<i32>>(%[[VALUE_b]]);
+// DEFAULT-NEXT:         return read<ptr<i32>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @f2(%4 d: ptr<i8>, %5 e: ptr<i8>, %6 f: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 g: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%5), read<ptr<i8>>(%4)));
-// DEFAULT-NEXT:         return read<i32>(deref(call<ptr<i32>, signature=fn(ptr<i32>, ptr<i32>) -> ptr<i32>>(%0, addr_of<ptr<i32>>(%6), addr_of<ptr<i32>>(%7))));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_d:[0-9]+]] d: ptr<i8>, %[[VALUE_e:[0-9]+]] e: ptr<i8>, %[[VALUE_f:[0-9]+]] f: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(%[[VALUE_e]]), read<ptr<i8>>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         return read<i32>(deref(call<ptr<i32>, signature=fn(ptr<i32>, ptr<i32>) -> ptr<i32>>(%[[VALUE_f1]], addr_of<ptr<i32>>(%[[VALUE_f]]), addr_of<ptr<i32>>(%[[VALUE_g]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

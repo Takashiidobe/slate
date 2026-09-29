@@ -88,55 +88,55 @@ void link_error1() {}
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @link_error0() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_link_error0:[0-9]+]] @link_error0() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @link_error1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_link_error1:[0-9]+]] @link_error1() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @test1(%3 x: i32, %4 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_and<bool>(eq<i32>(read<i32>(%3), read<i32>(%4)), ne<i32>(read<i32>(%3), read<i32>(%4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_and<bool>(eq<i32>(read<i32>(%[[VALUE_x]]), read<i32>(%[[VALUE_y]])), ne<i32>(read<i32>(%[[VALUE_x]]), read<i32>(%[[VALUE_y]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error0]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @test2(%6 x: i32, %7 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_and<bool>(lt<i32>(read<i32>(%6), read<i32>(%7)), gt<i32>(read<i32>(%6), read<i32>(%7)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_x_2:[0-9]+]] x: i32, %[[VALUE_y_2:[0-9]+]] y: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_and<bool>(lt<i32>(read<i32>(%[[VALUE_x_2]]), read<i32>(%[[VALUE_y_2]])), gt<i32>(read<i32>(%[[VALUE_x_2]]), read<i32>(%[[VALUE_y_2]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error0]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @test3(%9 x: i32, %10 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_and<bool>(lt<i32>(read<i32>(%9), read<i32>(%10)), lt<i32>(read<i32>(%10), read<i32>(%9)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_x_3:[0-9]+]] x: i32, %[[VALUE_y_3:[0-9]+]] y: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_and<bool>(lt<i32>(read<i32>(%[[VALUE_x_3]]), read<i32>(%[[VALUE_y_3]])), lt<i32>(read<i32>(%[[VALUE_y_3]]), read<i32>(%[[VALUE_x_3]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error0]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @test4(%12 x: i32, %13 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(eq<i32>(read<i32>(%12), read<i32>(%13)), ne<i32>(read<i32>(%12), read<i32>(%13)))
+// DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4(%[[VALUE_x_4:[0-9]+]] x: i32, %[[VALUE_y_4:[0-9]+]] y: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(eq<i32>(read<i32>(%[[VALUE_x_4]]), read<i32>(%[[VALUE_y_4]])), ne<i32>(read<i32>(%[[VALUE_x_4]]), read<i32>(%[[VALUE_y_4]])))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error1]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @test5(%15 x: i32, %16 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(ge<i32>(read<i32>(%15), read<i32>(%16)), lt<i32>(read<i32>(%15), read<i32>(%16)))
+// DEFAULT-NEXT:     fn %[[VALUE_test5:[0-9]+]] @test5(%[[VALUE_x_5:[0-9]+]] x: i32, %[[VALUE_y_5:[0-9]+]] y: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(ge<i32>(read<i32>(%[[VALUE_x_5]]), read<i32>(%[[VALUE_y_5]])), lt<i32>(read<i32>(%[[VALUE_x_5]]), read<i32>(%[[VALUE_y_5]])))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error1]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @test6(%18 x: i32, %19 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(le<i32>(read<i32>(%18), read<i32>(%19)), lt<i32>(read<i32>(%19), read<i32>(%18)))
+// DEFAULT-NEXT:     fn %[[VALUE_test6:[0-9]+]] @test6(%[[VALUE_x_6:[0-9]+]] x: i32, %[[VALUE_y_6:[0-9]+]] y: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(le<i32>(read<i32>(%[[VALUE_x_6]]), read<i32>(%[[VALUE_y_6]])), lt<i32>(read<i32>(%[[VALUE_y_6]]), read<i32>(%[[VALUE_x_6]])))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error1]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @all_tests(%21 x: i32, %22 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%2, read<i32>(%21), read<i32>(%22));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%5, read<i32>(%21), read<i32>(%22));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%8, read<i32>(%21), read<i32>(%22));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%11, read<i32>(%21), read<i32>(%22));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%14, read<i32>(%21), read<i32>(%22));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%17, read<i32>(%21), read<i32>(%22));
+// DEFAULT-NEXT:     fn %[[VALUE_all_tests:[0-9]+]] @all_tests(%[[VALUE_x_7:[0-9]+]] x: i32, %[[VALUE_y_7:[0-9]+]] y: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_test1]], read<i32>(%[[VALUE_x_7]]), read<i32>(%[[VALUE_y_7]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_test2]], read<i32>(%[[VALUE_x_7]]), read<i32>(%[[VALUE_y_7]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_test3]], read<i32>(%[[VALUE_x_7]]), read<i32>(%[[VALUE_y_7]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_test4]], read<i32>(%[[VALUE_x_7]]), read<i32>(%[[VALUE_y_7]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_test5]], read<i32>(%[[VALUE_x_7]]), read<i32>(%[[VALUE_y_7]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_test6]], read<i32>(%[[VALUE_x_7]]), read<i32>(%[[VALUE_y_7]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%20, const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%20, const<i32>(1), const<i32>(2));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%20, const<i32>(4), const<i32>(3));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_all_tests]], const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_all_tests]], const<i32>(1), const<i32>(2));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_all_tests]], const<i32>(4), const<i32>(3));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

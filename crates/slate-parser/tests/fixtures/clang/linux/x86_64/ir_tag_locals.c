@@ -45,76 +45,76 @@ int nested_block(struct S *p) { { struct S s = *p; return s.a; } }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 S = struct {
+// IR-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type1 U = union {
+// IR-NEXT:     type @type[[TYPE_U:[0-9]+]] U = union {
 // IR-NEXT:         field0 i: i32;
 // IR-NEXT:         field1 f: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     type @type2 E = enum : u32 {
-// IR-NEXT:         %0 A = const<i32>(0);
-// IR-NEXT:         %1 B = const<i32>(1);
+// IR-NEXT:     type @type[[TYPE_E:[0-9]+]] E = enum : u32 {
+// IR-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(0);
+// IR-NEXT:         %[[VALUE_B:[0-9]+]] B = const<i32>(1);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     type @type3 Alias = @type0;
-// IR-NEXT:     type @type4 EnumAlias = @type2;
-// IR-NEXT:     global %7 global_enum: @type2 [storage=static] = int_to_enum<@type2, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))) [linkage=external];
-// IR-NEXT:     fn %8 @record_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %9 s: @type0 [storage=automatic];
-// IR-NEXT:         write<i32>(field0(%9), const<i32>(1));
-// IR-NEXT:         return read<i32>(field0(%9));
+// IR-NEXT:     type @type[[TYPE_Alias:[0-9]+]] Alias = @type[[TYPE_S]];
+// IR-NEXT:     type @type[[TYPE_EnumAlias:[0-9]+]] EnumAlias = @type[[TYPE_E]];
+// IR-NEXT:     global %[[VALUE_global_enum:[0-9]+]] global_enum: @type[[TYPE_E]] [storage=static] = int_to_enum<@type[[TYPE_E]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))) [linkage=external];
+// IR-NEXT:     fn %[[VALUE_record_local:[0-9]+]] @record_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=automatic];
+// IR-NEXT:         write<i32>(field0(%[[VALUE_s]]), const<i32>(1));
+// IR-NEXT:         return read<i32>(field0(%[[VALUE_s]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %10 @union_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %11 u: @type1 [storage=automatic];
-// IR-NEXT:         write<i32>(field0(%11), const<i32>(2));
-// IR-NEXT:         return read<i32>(field0(%11));
+// IR-NEXT:     fn %[[VALUE_union_local:[0-9]+]] @union_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE_U]] [storage=automatic];
+// IR-NEXT:         write<i32>(field0(%[[VALUE_u]]), const<i32>(2));
+// IR-NEXT:         return read<i32>(field0(%[[VALUE_u]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %12 @alias_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %13 a: @type0 [storage=automatic];
-// IR-NEXT:         write<i32>(field0(%13), const<i32>(3));
-// IR-NEXT:         return read<i32>(field0(%13));
+// IR-NEXT:     fn %[[VALUE_alias_local:[0-9]+]] @alias_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_S]] [storage=automatic];
+// IR-NEXT:         write<i32>(field0(%[[VALUE_a]]), const<i32>(3));
+// IR-NEXT:         return read<i32>(field0(%[[VALUE_a]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %14 @pointer_local(%15 p: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %16 q: ptr<@type0> [storage=automatic] = read<ptr<@type0>>(%15);
-// IR-NEXT:         return read<i32>(field0(deref(read<ptr<@type0>>(%16))));
+// IR-NEXT:     fn %[[VALUE_pointer_local:[0-9]+]] @pointer_local(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_S]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_S]]> [storage=automatic] = read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]]);
+// IR-NEXT:         return read<i32>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]]))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %17 @enum_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %18 e: @type2 [storage=automatic] = int_to_enum<@type2, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
-// IR-NEXT:         return from_bool<i32, reason=return>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type2>(%18)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// IR-NEXT:     fn %[[VALUE_enum_local:[0-9]+]] @enum_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_e:[0-9]+]] e: @type[[TYPE_E]] [storage=automatic] = int_to_enum<@type[[TYPE_E]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
+// IR-NEXT:         return from_bool<i32, reason=return>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %19 @enum_alias_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %20 e: @type2 [storage=automatic] = int_to_enum<@type2, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// IR-NEXT:         return from_bool<i32, reason=return>(ne<u32>(enum_to_int<u32, reason=promotion>(read<@type2>(%20)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// IR-NEXT:     fn %[[VALUE_enum_alias_local:[0-9]+]] @enum_alias_local() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_e_2:[0-9]+]] e: @type[[TYPE_E]] [storage=automatic] = int_to_enum<@type[[TYPE_E]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// IR-NEXT:         return from_bool<i32, reason=return>(ne<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e_2]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %21 @enum_parameter(%22 e: @type2) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return from_bool<i32, reason=return>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type2>(%22)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// IR-NEXT:     fn %[[VALUE_enum_parameter:[0-9]+]] @enum_parameter(%[[VALUE_e_3:[0-9]+]] e: @type[[TYPE_E]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return from_bool<i32, reason=return>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e_3]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %23 @enum_assigned() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %24 e: @type2 [storage=automatic];
-// IR-NEXT:         write<@type2>(%24, int_to_enum<@type2, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
-// IR-NEXT:         return from_bool<i32, reason=return>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type2>(%24)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))));
+// IR-NEXT:     fn %[[VALUE_enum_assigned:[0-9]+]] @enum_assigned() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_e_4:[0-9]+]] e: @type[[TYPE_E]] [storage=automatic];
+// IR-NEXT:         write<@type[[TYPE_E]]>(%[[VALUE_e_4]], int_to_enum<@type[[TYPE_E]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
+// IR-NEXT:         return from_bool<i32, reason=return>(eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e_4]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %25 @enum_arithmetic(%26 e: @type2) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(neg<u32, overflow=wrap>(enum_to_int<u32, reason=promotion>(read<@type2>(%26))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(not<bool>(ne<u32>(enum_to_int<u32, reason=promotion>(read<@type2>(%26)), const<u32>(0)))))));
+// IR-NEXT:     fn %[[VALUE_enum_arithmetic:[0-9]+]] @enum_arithmetic(%[[VALUE_e_5:[0-9]+]] e: @type[[TYPE_E]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(add<u32, overflow=wrap>(add<u32, overflow=wrap>(neg<u32, overflow=wrap>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e_5]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(not<bool>(ne<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e_5]])), const<u32>(0)))))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %27 @enum_condition(%28 e: @type2) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type2>(%28)), const<u32>(0))
+// IR-NEXT:     fn %[[VALUE_enum_condition:[0-9]+]] @enum_condition(%[[VALUE_e_6:[0-9]+]] e: @type[[TYPE_E]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e_6]])), const<u32>(0))
 // IR-NEXT:             return const<i32>(1);
 // IR-NEXT:         return const<i32>(0);
 // IR-NEXT:     }
-// IR-NEXT:     fn %29 @enum_switch(%30 e: @type2) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         switch %34 enum_to_int<u32, reason=promotion>(read<@type2>(%30))
+// IR-NEXT:     fn %[[VALUE_enum_switch:[0-9]+]] @enum_switch(%[[VALUE_e_7:[0-9]+]] e: @type[[TYPE_E]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         switch %[[VALUE0:[0-9]+]] enum_to_int<u32, reason=promotion>(read<@type[[TYPE_E]]>(%[[VALUE_e_7]]))
 // IR-NEXT:             {
-// IR-NEXT:                 case %34 const<u32>(0):
+// IR-NEXT:                 case %[[VALUE0]] const<u32>(0):
 // IR-NEXT:                     return const<i32>(1);
-// IR-NEXT:                 default %34:
+// IR-NEXT:                 default %[[VALUE0]]:
 // IR-NEXT:                     return const<i32>(0);
 // IR-NEXT:             }
 // IR-NEXT:     }
-// IR-NEXT:     fn %31 @nested_block(%32 p: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_nested_block:[0-9]+]] @nested_block(%[[VALUE_p_2:[0-9]+]] p: ptr<@type[[TYPE_S]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         {
-// IR-NEXT:             let %33 s: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(deref(read<ptr<@type0>>(%32))));
-// IR-NEXT:             return read<i32>(field0(%33));
+// IR-NEXT:             let %[[VALUE_s_2:[0-9]+]] s: @type[[TYPE_S]] [storage=automatic] = copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p_2]]))));
+// IR-NEXT:             return read<i32>(field0(%[[VALUE_s_2]]));
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

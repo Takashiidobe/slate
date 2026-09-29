@@ -100,74 +100,74 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %11 @__builtin_huge_val() -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %1 @test(%2 f: f64, %3 i: f64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%2), call<f64, signature=fn() -> f64>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%2), neg<f64>(call<f64, signature=fn() -> f64>(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%3), neg<f64>(call<f64, signature=fn() -> f64>(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%3), call<f64, signature=fn() -> f64>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ge<f64, exceptions=ignore>(read<f64>(%2), call<f64, signature=fn() -> f64>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if gt<f64, exceptions=ignore>(read<f64>(%2), call<f64, signature=fn() -> f64>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if gt<f64, exceptions=ignore>(read<f64>(%3), call<f64, signature=fn() -> f64>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if le<f64, exceptions=ignore>(read<f64>(%2), neg<f64>(call<f64, signature=fn() -> f64>(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(read<f64>(%2), neg<f64>(call<f64, signature=fn() -> f64>(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_val:[0-9]+]] @__builtin_huge_val() -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_f:[0-9]+]] f: f64, %[[VALUE_i:[0-9]+]] i: f64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%[[VALUE_f]]), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%[[VALUE_f]]), neg<f64>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%[[VALUE_i]]), neg<f64>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%[[VALUE_i]]), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ge<f64, exceptions=ignore>(read<f64>(%[[VALUE_f]]), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if gt<f64, exceptions=ignore>(read<f64>(%[[VALUE_f]]), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if gt<f64, exceptions=ignore>(read<f64>(%[[VALUE_i]]), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if le<f64, exceptions=ignore>(read<f64>(%[[VALUE_f]]), neg<f64>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(read<f64>(%[[VALUE_f]]), neg<f64>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @__builtin_huge_valf() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %4 @testf(%5 f: f32, %6 i: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%5), call<f32, signature=fn() -> f32>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%5), neg<f32>(call<f32, signature=fn() -> f32>(%12)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%6), neg<f32>(call<f32, signature=fn() -> f32>(%12)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(read<f32>(%6), call<f32, signature=fn() -> f32>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ge<f32, exceptions=ignore>(read<f32>(%5), call<f32, signature=fn() -> f32>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if gt<f32, exceptions=ignore>(read<f32>(%5), call<f32, signature=fn() -> f32>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if gt<f32, exceptions=ignore>(read<f32>(%6), call<f32, signature=fn() -> f32>(%12))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if le<f32, exceptions=ignore>(read<f32>(%5), neg<f32>(call<f32, signature=fn() -> f32>(%12)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if lt<f32, exceptions=ignore>(read<f32>(%5), neg<f32>(call<f32, signature=fn() -> f32>(%12)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_valf:[0-9]+]] @__builtin_huge_valf() -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_testf:[0-9]+]] @testf(%[[VALUE_f_2:[0-9]+]] f: f32, %[[VALUE_i_2:[0-9]+]] i: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%[[VALUE_f_2]]), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_huge_valf]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%[[VALUE_f_2]]), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_huge_valf]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%[[VALUE_i_2]]), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_huge_valf]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(read<f32>(%[[VALUE_i_2]]), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_huge_valf]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ge<f32, exceptions=ignore>(read<f32>(%[[VALUE_f_2]]), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_huge_valf]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if gt<f32, exceptions=ignore>(read<f32>(%[[VALUE_f_2]]), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_huge_valf]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if gt<f32, exceptions=ignore>(read<f32>(%[[VALUE_i_2]]), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_huge_valf]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if le<f32, exceptions=ignore>(read<f32>(%[[VALUE_f_2]]), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_huge_valf]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if lt<f32, exceptions=ignore>(read<f32>(%[[VALUE_f_2]]), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_huge_valf]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @__builtin_huge_vall() -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %7 @testl(%8 f: f80, %9 i: f80) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<f80, exceptions=ignore>(read<f80>(%8), call<f80, signature=fn() -> f80>(%13))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if eq<f80, exceptions=ignore>(read<f80>(%8), neg<f80>(call<f80, signature=fn() -> f80>(%13)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if eq<f80, exceptions=ignore>(read<f80>(%9), neg<f80>(call<f80, signature=fn() -> f80>(%13)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(read<f80>(%9), call<f80, signature=fn() -> f80>(%13))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ge<f80, exceptions=ignore>(read<f80>(%8), call<f80, signature=fn() -> f80>(%13))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if gt<f80, exceptions=ignore>(read<f80>(%8), call<f80, signature=fn() -> f80>(%13))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if gt<f80, exceptions=ignore>(read<f80>(%9), call<f80, signature=fn() -> f80>(%13))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if le<f80, exceptions=ignore>(read<f80>(%8), neg<f80>(call<f80, signature=fn() -> f80>(%13)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if lt<f80, exceptions=ignore>(read<f80>(%8), neg<f80>(call<f80, signature=fn() -> f80>(%13)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_huge_vall:[0-9]+]] @__builtin_huge_vall() -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_testl:[0-9]+]] @testl(%[[VALUE_f_3:[0-9]+]] f: f80, %[[VALUE_i_3:[0-9]+]] i: f80) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<f80, exceptions=ignore>(read<f80>(%[[VALUE_f_3]]), call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if eq<f80, exceptions=ignore>(read<f80>(%[[VALUE_f_3]]), neg<f80>(call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if eq<f80, exceptions=ignore>(read<f80>(%[[VALUE_i_3]]), neg<f80>(call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(read<f80>(%[[VALUE_i_3]]), call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ge<f80, exceptions=ignore>(read<f80>(%[[VALUE_f_3]]), call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if gt<f80, exceptions=ignore>(read<f80>(%[[VALUE_f_3]]), call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if gt<f80, exceptions=ignore>(read<f80>(%[[VALUE_i_3]]), call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if le<f80, exceptions=ignore>(read<f80>(%[[VALUE_f_3]]), neg<f80>(call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if lt<f80, exceptions=ignore>(read<f80>(%[[VALUE_f_3]]), neg<f80>(call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%1, const<f64>(34.0), call<f64, signature=fn() -> f64>(%11));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%4, const<f32>(34.0), call<f32, signature=fn() -> f32>(%12));
-// DEFAULT-NEXT:         call<void, signature=fn(f80, f80) -> void>(%7, const<f80>(34), call<f80, signature=fn() -> f80>(%13));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%[[VALUE_test]], const<f64>(34.0), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_huge_val]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_testf]], const<f32>(34.0), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_huge_valf]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f80, f80) -> void>(%[[VALUE_testl]], const<f80>(34), call<f80, signature=fn() -> f80>(%[[VALUE___builtin_huge_vall]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

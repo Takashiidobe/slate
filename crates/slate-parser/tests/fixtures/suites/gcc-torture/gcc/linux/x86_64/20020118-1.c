@@ -62,43 +62,43 @@ int main() { exit(0); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 q: ptr<volatile i8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 n: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @exit(%6 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 p: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         for %7
+// DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: ptr<volatile i8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_n:[0-9]+]] n: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: omitted
 // DEFAULT-NEXT:             increment: omitted
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<ptr<i8>>(%4, pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%1)));
-// DEFAULT-NEXT:                     write<i32, volatile>(%2, widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(2))))));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%4, pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%1)));
-// DEFAULT-NEXT:                     write<i32, volatile>(%2, widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(2))))));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%4, pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%1)));
-// DEFAULT-NEXT:                     write<i32, volatile>(%2, widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(2))))));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%4, pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%1)));
-// DEFAULT-NEXT:                     write<i32, volatile>(%2, widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(2))))));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%4, pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%1)));
-// DEFAULT-NEXT:                     write<i32, volatile>(%2, widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(2))))));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%4, pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%1)));
-// DEFAULT-NEXT:                     write<i32, volatile>(%2, widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(2))))));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%4, pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%1)));
-// DEFAULT-NEXT:                     write<i32, volatile>(%2, widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(2))))));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%4, pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%1)));
-// DEFAULT-NEXT:                     write<i32, volatile>(%2, widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(2))))));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%4, pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%1)));
-// DEFAULT-NEXT:                     write<i32, volatile>(%2, widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(2))))));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%4, pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%1)));
-// DEFAULT-NEXT:                     write<i32, volatile>(%2, widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(2))))));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%4, pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%1)));
-// DEFAULT-NEXT:                     write<i32, volatile>(%2, widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%4), const<i32>(2))))));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%[[VALUE_q]])));
+// DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_n]], widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(2))))));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%[[VALUE_q]])));
+// DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_n]], widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(2))))));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%[[VALUE_q]])));
+// DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_n]], widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(2))))));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%[[VALUE_q]])));
+// DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_n]], widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(2))))));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%[[VALUE_q]])));
+// DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_n]], widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(2))))));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%[[VALUE_q]])));
+// DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_n]], widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(2))))));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%[[VALUE_q]])));
+// DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_n]], widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(2))))));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%[[VALUE_q]])));
+// DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_n]], widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(2))))));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%[[VALUE_q]])));
+// DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_n]], widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(2))))));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%[[VALUE_q]])));
+// DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_n]], widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(2))))));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], pointer_cast<ptr<i8>, reason=explicit>(read<ptr<volatile i8>>(%[[VALUE_q]])));
+// DEFAULT-NEXT:                     write<i32, volatile>(%[[VALUE_n]], widen<i32, reason=assign>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(2))))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

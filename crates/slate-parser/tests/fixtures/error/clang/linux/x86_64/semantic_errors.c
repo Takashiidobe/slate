@@ -18,6 +18,14 @@ BAD_TYPE macro_missing;
 // SEMANTIC: 2 │ void *valid_pointer;
 // SEMANTIC: ╰────
 // SEMANTIC: Error:
+// SEMANTIC: × void array element
+// SEMANTIC: ╭─[tests/fixtures/error/clang/linux/x86_64/semantic_errors.c:4:1]
+// SEMANTIC: 3 │ void *valid_pointer_array[2];
+// SEMANTIC: 4 │ void invalid_array[2];
+// SEMANTIC: · ──────────────────────
+// SEMANTIC: 5 │ MissingType missing;
+// SEMANTIC: ╰────
+// SEMANTIC: Error:
 // SEMANTIC: × object cannot have type void
 // SEMANTIC: ╭─[tests/fixtures/error/clang/linux/x86_64/semantic_errors.c:4:1]
 // SEMANTIC: 3 │ void *valid_pointer_array[2];

@@ -47,21 +47,21 @@ _Static_assert (_Alignof (S) == N * 2, "N * 2");
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 f = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_f:[0-9]+]] f = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 T = @type0;
-// DEFAULT-NEXT:     type @type2 T = @type0;
-// DEFAULT-NEXT:     type @type3 T = @type0;
-// DEFAULT-NEXT:     type @type4 T = @type0;
-// DEFAULT-NEXT:     type @type5 T = @type0;
-// DEFAULT-NEXT:     type @type6 g = enum : u32 {
-// DEFAULT-NEXT:         %0 A = const<i32>(1);
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = @type[[TYPE_f]];
+// DEFAULT-NEXT:     type @type[[TYPE_T_2:[0-9]+]] T = @type[[TYPE_f]];
+// DEFAULT-NEXT:     type @type[[TYPE_T_3:[0-9]+]] T = @type[[TYPE_f]];
+// DEFAULT-NEXT:     type @type[[TYPE_T_4:[0-9]+]] T = @type[[TYPE_f]];
+// DEFAULT-NEXT:     type @type[[TYPE_T_5:[0-9]+]] T = @type[[TYPE_f]];
+// DEFAULT-NEXT:     type @type[[TYPE_g:[0-9]+]] g = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type7 S = @type6;
-// DEFAULT-NEXT:     type @type8 S = @type6;
-// DEFAULT-NEXT:     type @type9 S = @type6;
-// DEFAULT-NEXT:     type @type10 S = @type6;
-// DEFAULT-NEXT:     type @type11 S = @type6;
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = @type[[TYPE_g]];
+// DEFAULT-NEXT:     type @type[[TYPE_S_2:[0-9]+]] S = @type[[TYPE_g]];
+// DEFAULT-NEXT:     type @type[[TYPE_S_3:[0-9]+]] S = @type[[TYPE_g]];
+// DEFAULT-NEXT:     type @type[[TYPE_S_4:[0-9]+]] S = @type[[TYPE_g]];
+// DEFAULT-NEXT:     type @type[[TYPE_S_5:[0-9]+]] S = @type[[TYPE_g]];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

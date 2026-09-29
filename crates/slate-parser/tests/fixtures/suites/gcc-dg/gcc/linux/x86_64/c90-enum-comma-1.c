@@ -32,8 +32,8 @@ enum foo { bar, };  /* { dg-bogus "warning" "warning in place of error" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = enum : u32 {
-// DEFAULT-NEXT:         %0 bar = const<i32>(0);
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_bar:[0-9]+]] bar = const<i32>(0);
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

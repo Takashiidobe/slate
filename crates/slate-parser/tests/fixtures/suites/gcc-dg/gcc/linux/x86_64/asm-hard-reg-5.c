@@ -61,20 +61,20 @@ test_from_mem (V *x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 V = vector<i32, 4>;
-// DEFAULT-NEXT:     fn %1 @test(%2 x: vector<i32, 4>) -> vector<i32, 4> [linkage=external] [abi=sysv64(direct) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     type @type[[TYPE_V:[0-9]+]] V = vector<i32, 4>;
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_x:[0-9]+]] x: vector<i32, 4>) -> vector<i32, 4> [linkage=external] [abi=sysv64(direct) -> direct] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         asm "foo\\t%0" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:             template: "foo\\t" %0;
-// DEFAULT-NEXT:             inlateout 0 "{xmm9}" [{xmm9}] width 128 place<vector<i32, 4>>(%2);
+// DEFAULT-NEXT:             inlateout 0 "{xmm9}" [{xmm9}] width 128 place<vector<i32, 4>>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<vector<i32, 4>>(%2);
+// DEFAULT-NEXT:         return read<vector<i32, 4>>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @test_from_mem(%4 x: ptr<vector<i32, 4>>) -> vector<i32, 4> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_from_mem:[0-9]+]] @test_from_mem(%[[VALUE_x_2:[0-9]+]] x: ptr<vector<i32, 4>>) -> vector<i32, 4> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         asm "foo\\t%0" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:             template: "foo\\t" %0;
-// DEFAULT-NEXT:             inlateout 0 "{xmm9}" [{xmm9}] width 128 place<vector<i32, 4>>(deref(read<ptr<vector<i32, 4>>>(%4)));
+// DEFAULT-NEXT:             inlateout 0 "{xmm9}" [{xmm9}] width 128 place<vector<i32, 4>>(deref(read<ptr<vector<i32, 4>>>(%[[VALUE_x_2]])));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<vector<i32, 4>>(deref(read<ptr<vector<i32, 4>>>(%4)));
+// DEFAULT-NEXT:         return read<vector<i32, 4>>(deref(read<ptr<vector<i32, 4>>>(%[[VALUE_x_2]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -39,8 +39,8 @@ int foobar = 3;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 foobar: i32 [storage=static] = const<i32>(3) [linkage=external] [asm_name="_baz"];
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=external] [asm_name="_bar"] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_foobar:[0-9]+]] foobar: i32 [storage=static] = const<i32>(3) [linkage=external] [asm_name="_baz"];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [asm_name="_bar"] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

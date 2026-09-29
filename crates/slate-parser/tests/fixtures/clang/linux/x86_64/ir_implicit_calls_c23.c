@@ -32,10 +32,10 @@ int calls(void) {
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     fn %0 @empty() -> i32 [linkage=external] [c="int(void)"];
-// C23-NEXT:     fn %1 @explicit_void() -> i32 [linkage=external] [c="int(void)"];
-// C23-NEXT:     fn %2 @calls() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
-// C23-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%0), call<i32, signature=fn() -> i32>(%1));
+// C23-NEXT:     fn %[[VALUE_empty:[0-9]+]] @empty() -> i32 [linkage=external] [c="int(void)"];
+// C23-NEXT:     fn %[[VALUE_explicit_void:[0-9]+]] @explicit_void() -> i32 [linkage=external] [c="int(void)"];
+// C23-NEXT:     fn %[[VALUE_calls:[0-9]+]] @calls() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
+// C23-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_empty]]), call<i32, signature=fn() -> i32>(%[[VALUE_explicit_void]]));
 // C23-NEXT:     }
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

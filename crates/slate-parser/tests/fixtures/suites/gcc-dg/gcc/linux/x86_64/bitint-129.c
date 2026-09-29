@@ -39,9 +39,9 @@ int i;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo() -> i257b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %1 b: i1024b [storage=automatic] = widen<i1024b, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:         return read<i257b>(deref(pointer_cast<ptr<i257b>, reason=explicit>(addr_of<ptr<i1024b>>(%1))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i257b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i1024b [storage=automatic] = widen<i1024b, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:         return read<i257b>(deref(pointer_cast<ptr<i257b>, reason=explicit>(addr_of<ptr<i1024b>>(%[[VALUE_b]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

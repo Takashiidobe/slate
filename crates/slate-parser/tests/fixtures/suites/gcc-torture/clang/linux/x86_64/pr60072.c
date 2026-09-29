@@ -35,13 +35,13 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 c: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%2 p: ptr<i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<ptr<i32>>(%2);
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<ptr<i32>>(%[[VALUE_p]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<i32>(deref(call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(%1, addr_of<ptr<i32>>(%0))), const<i32>(2));
-// DEFAULT-NEXT:         return sub<i32, overflow=ub>(read<i32>(%0), const<i32>(2));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<i32>(deref(call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(%[[VALUE_foo]], addr_of<ptr<i32>>(%[[VALUE_c]]))), const<i32>(2));
+// DEFAULT-NEXT:         return sub<i32, overflow=ub>(read<i32>(%[[VALUE_c]]), const<i32>(2));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

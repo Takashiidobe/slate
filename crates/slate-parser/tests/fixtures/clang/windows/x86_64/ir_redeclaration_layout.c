@@ -49,7 +49,7 @@ long returns(int);
 // IR-WARN-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     global %0 object: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     fn %1 @returns(%2 <unnamed>: i32) -> i32 [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_object:[0-9]+]] object: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     fn %[[VALUE_returns:[0-9]+]] @returns(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
 // IR-WARN-NEXT: }
 // SLATE-FILECHECK-END IR-WARN

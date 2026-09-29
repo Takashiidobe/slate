@@ -68,36 +68,36 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 u = union {
+// DEFAULT-NEXT:     type @type[[TYPE_u:[0-9]+]] u = union {
 // DEFAULT-NEXT:         field0 d128: d128;
 // DEFAULT-NEXT:         field1 u128: u128;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0, 0]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%12 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %16 @__builtin_memcmp(%13 <unnamed>: ptr<const void>, %14 <unnamed>: ptr<const void>, %15 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 i: u128 [storage=automatic] = or<u128>(widen<u128, reason=explicit>(const<u64>(1)), shl<u128, overflow=wrap, amount_out_of_range=ub>(widen<u128, reason=explicit>(const<u64>(7960393816354062336)), const<i32>(64)));
-// DEFAULT-NEXT:         let %5 x: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %6 d128: d128 [storage=automatic];
-// DEFAULT-NEXT:         write<u128>(field1(%5), read<u128>(%4));
-// DEFAULT-NEXT:         write<d128>(%6, read<d128>(field0(%5)));
-// DEFAULT-NEXT:         let %7 d: volatile f64 [storage=automatic] = float_convert<f64, reason=assign, rounding=nearest_even, exceptions=observable>(read<d128>(%6));
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64, volatile>(%7), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %8 t1233: d128 [storage=automatic] = const<d128>(0.e1233);
-// DEFAULT-NEXT:         let %9 t1234: d128 [storage=automatic] = const<d128>(0.e1234);
-// DEFAULT-NEXT:         let %10 t1235: d128 [storage=automatic] = const<d128>(0.e1235);
-// DEFAULT-NEXT:         let %11 dx: d128 [storage=automatic];
-// DEFAULT-NEXT:         write<d128>(%11, add<d128, rounding=nearest_even, exceptions=observable, contract=fast>(read<d128>(%6), read<d128>(%8)));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%16, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%11)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%8)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16)))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         write<d128>(%11, add<d128, rounding=nearest_even, exceptions=observable, contract=fast>(read<d128>(%6), read<d128>(%9)));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%16, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%11)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16)))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         write<d128>(%11, add<d128, rounding=nearest_even, exceptions=observable, contract=fast>(read<d128>(%6), read<d128>(%10)));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%16, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%11)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%9)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16)))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcmp:[0-9]+]] @__builtin_memcmp(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: u128 [storage=automatic] = or<u128>(widen<u128, reason=explicit>(const<u64>(1)), shl<u128, overflow=wrap, amount_out_of_range=ub>(widen<u128, reason=explicit>(const<u64>(7960393816354062336)), const<i32>(64)));
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: @type[[TYPE_u]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_d128:[0-9]+]] d128: d128 [storage=automatic];
+// DEFAULT-NEXT:         write<u128>(field1(%[[VALUE_x]]), read<u128>(%[[VALUE_i]]));
+// DEFAULT-NEXT:         write<d128>(%[[VALUE_d128]], read<d128>(field0(%[[VALUE_x]])));
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: volatile f64 [storage=automatic] = float_convert<f64, reason=assign, rounding=nearest_even, exceptions=observable>(read<d128>(%[[VALUE_d128]]));
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64, volatile>(%[[VALUE_d]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE_t1233:[0-9]+]] t1233: d128 [storage=automatic] = const<d128>(0.e1233);
+// DEFAULT-NEXT:         let %[[VALUE_t1234:[0-9]+]] t1234: d128 [storage=automatic] = const<d128>(0.e1234);
+// DEFAULT-NEXT:         let %[[VALUE_t1235:[0-9]+]] t1235: d128 [storage=automatic] = const<d128>(0.e1235);
+// DEFAULT-NEXT:         let %[[VALUE_dx:[0-9]+]] dx: d128 [storage=automatic];
+// DEFAULT-NEXT:         write<d128>(%[[VALUE_dx]], add<d128, rounding=nearest_even, exceptions=observable, contract=fast>(read<d128>(%[[VALUE_d128]]), read<d128>(%[[VALUE_t1233]])));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_dx]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_t1233]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16)))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<d128>(%[[VALUE_dx]], add<d128, rounding=nearest_even, exceptions=observable, contract=fast>(read<d128>(%[[VALUE_d128]]), read<d128>(%[[VALUE_t1234]])));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_dx]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_t1234]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16)))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<d128>(%[[VALUE_dx]], add<d128, rounding=nearest_even, exceptions=observable, contract=fast>(read<d128>(%[[VALUE_d128]]), read<d128>(%[[VALUE_t1235]])));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_dx]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<d128>>(%[[VALUE_t1234]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(16)))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

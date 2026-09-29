@@ -47,15 +47,15 @@ int pp_shift_ok;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 E = enum : i32 {
-// IR-NEXT:         %0 OVERFLOW = const<i32>(-2147483648);
-// IR-NEXT:         %1 SHIFT_HIGH = const<i32>(-2147483648);
-// IR-NEXT:         %2 SHIFT_NEGATIVE = const<i32>(0);
+// IR-NEXT:     type @type[[TYPE_E:[0-9]+]] E = enum : i32 {
+// IR-NEXT:         %[[VALUE_OVERFLOW:[0-9]+]] OVERFLOW = const<i32>(-2147483648);
+// IR-NEXT:         %[[VALUE_SHIFT_HIGH:[0-9]+]] SHIFT_HIGH = const<i32>(-2147483648);
+// IR-NEXT:         %[[VALUE_SHIFT_NEGATIVE:[0-9]+]] SHIFT_NEGATIVE = const<i32>(0);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     global %4 overflow_initializer: i32 [storage=static] = add<i32>(const<i32>(2147483647), const<i32>(1)) [linkage=external];
-// IR-NEXT:     global %5 selected_initializer: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(1), const<i32>(0)), const<i32>(7), div<i32>(const<i32>(1), const<i32>(0))) [linkage=external];
-// IR-NEXT:     global %6 short_circuit_initializer: i32 [storage=static] = from_bool<i32>(logical_and<bool>(ne<i32>(const<i32>(0), const<i32>(0)), ne<i32>(div<i32>(const<i32>(1), const<i32>(0)), const<i32>(0)))) [linkage=external];
-// IR-NEXT:     global %7 unevaluated_initializer: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(4))) [linkage=external];
-// IR-NEXT:     global %8 pp_shift_ok: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_overflow_initializer:[0-9]+]] overflow_initializer: i32 [storage=static] = add<i32>(const<i32>(2147483647), const<i32>(1)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_selected_initializer:[0-9]+]] selected_initializer: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(1), const<i32>(0)), const<i32>(7), div<i32>(const<i32>(1), const<i32>(0))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_short_circuit_initializer:[0-9]+]] short_circuit_initializer: i32 [storage=static] = from_bool<i32>(logical_and<bool>(ne<i32>(const<i32>(0), const<i32>(0)), ne<i32>(div<i32>(const<i32>(1), const<i32>(0)), const<i32>(0)))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_unevaluated_initializer:[0-9]+]] unevaluated_initializer: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(4))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_pp_shift_ok:[0-9]+]] pp_shift_ok: i32 [storage=static] [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

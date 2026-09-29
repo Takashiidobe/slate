@@ -51,24 +51,24 @@ void kallsyms_expand_symbol(int *result)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 kallsyms_token_index: array<i32, incomplete> [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     extern %1 kallsyms_token_table: array<i32, incomplete> [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     fn %2 @kallsyms_expand_symbol(%3 result: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 len: i32 [storage=automatic] = read<i32>(deref(read<ptr<i32>>(%3)));
-// DEFAULT-NEXT:         let %5 tptr: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         while %6 ne<i32>(read<i32>(%4), const<i32>(0))
+// DEFAULT-NEXT:     extern %[[VALUE_kallsyms_token_index:[0-9]+]] kallsyms_token_index: array<i32, incomplete> [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     extern %[[VALUE_kallsyms_token_table:[0-9]+]] kallsyms_token_table: array<i32, incomplete> [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     fn %[[VALUE_kallsyms_expand_symbol:[0-9]+]] @kallsyms_expand_symbol(%[[VALUE_result:[0-9]+]] result: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_len:[0-9]+]] len: i32 [storage=automatic] = read<i32>(deref(read<ptr<i32>>(%[[VALUE_result]])));
+// DEFAULT-NEXT:         let %[[VALUE_tptr:[0-9]+]] tptr: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<i32>(read<i32>(%[[VALUE_len]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<ptr<i32>>(%5, addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%1), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%0), read<i32>(deref(read<ptr<i32>>(%3))))))))));
-// DEFAULT-NEXT:                 let %8: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:                 let %9: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%8), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%9));
-// DEFAULT-NEXT:                 while %7 ne<i32>(read<i32>(deref(read<ptr<i32>>(%5))), const<i32>(0))
-// DEFAULT-NEXT:                     let %10: ptr<i32> [synthetic] = read<ptr<i32>>(%5);
-// DEFAULT-NEXT:                     let %11: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%10), const<i32>(1));
-// DEFAULT-NEXT:                     write<ptr<i32>>(%5, read<ptr<i32>>(%11));
-// DEFAULT-NEXT:                 write<i32>(deref(read<ptr<i32>>(%5)), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<i32>>(%[[VALUE_tptr]], addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%[[VALUE_kallsyms_token_table]]), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%[[VALUE_kallsyms_token_index]]), read<i32>(deref(read<ptr<i32>>(%[[VALUE_result]]))))))))));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_len]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_len]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:                 while %[[VALUE3:[0-9]+]] ne<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_tptr]]))), const<i32>(0))
+// DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: ptr<i32> [synthetic] = read<ptr<i32>>(%[[VALUE_tptr]]);
+// DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE4]]), const<i32>(1));
+// DEFAULT-NEXT:                     write<ptr<i32>>(%[[VALUE_tptr]], read<ptr<i32>>(%[[VALUE5]]));
+// DEFAULT-NEXT:                 write<i32>(deref(read<ptr<i32>>(%[[VALUE_tptr]])), const<i32>(1));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%3)), const<i32>(0));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_result]])), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -38,25 +38,25 @@ int enumerator(int x) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 State = enum : u32 {
-// IR-NEXT:         %0 A = const<i32>(1);
-// IR-NEXT:         %1 B = const<i32>(2);
+// IR-NEXT:     type @type[[TYPE_State:[0-9]+]] State = enum : u32 {
+// IR-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(1);
+// IR-NEXT:         %[[VALUE_B:[0-9]+]] B = const<i32>(2);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     fn %3 @enum_discriminant(%4 value: @type0) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         switch %7 enum_to_int<u32, reason=promotion>(read<@type0>(%4))
+// IR-NEXT:     fn %[[VALUE_enum_discriminant:[0-9]+]] @enum_discriminant(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_State]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         switch %[[VALUE0:[0-9]+]] enum_to_int<u32, reason=promotion>(read<@type[[TYPE_State]]>(%[[VALUE_value]]))
 // IR-NEXT:             {
-// IR-NEXT:                 case %7 const<u32>(2):
+// IR-NEXT:                 case %[[VALUE0]] const<u32>(2):
 // IR-NEXT:                     return const<i32>(1);
-// IR-NEXT:                 default %7:
+// IR-NEXT:                 default %[[VALUE0]]:
 // IR-NEXT:                     return const<i32>(0);
 // IR-NEXT:             }
 // IR-NEXT:     }
-// IR-NEXT:     fn %5 @enumerator(%6 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         switch %8 read<i32>(%6)
+// IR-NEXT:     fn %[[VALUE_enumerator:[0-9]+]] @enumerator(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_x]])
 // IR-NEXT:             {
-// IR-NEXT:                 case %8 const<i32>(3):
+// IR-NEXT:                 case %[[VALUE1]] const<i32>(3):
 // IR-NEXT:                     return const<i32>(1);
-// IR-NEXT:                 default %8:
+// IR-NEXT:                 default %[[VALUE1]]:
 // IR-NEXT:                     return const<i32>(0);
 // IR-NEXT:             }
 // IR-NEXT:     }

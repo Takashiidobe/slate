@@ -3203,70 +3203,70 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 f1ae: f32 [storage=static] [const] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=internal];
-// DEFAULT-NEXT:     global %1 f1be: f32 [storage=static] [const] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=internal];
-// DEFAULT-NEXT:     global %2 f1ce: f32 [storage=static] [const] = const<f32>(1e-45) [linkage=internal];
-// DEFAULT-NEXT:     global %3 f1a: f32 [storage=static] [const] = const<f32>(0.0) [linkage=internal];
-// DEFAULT-NEXT:     global %4 f1b: f32 [storage=static] [const] = const<f32>(0.0) [linkage=internal];
-// DEFAULT-NEXT:     global %5 f1c: f32 [storage=static] [const] = const<f32>(1e-45) [linkage=internal];
-// DEFAULT-NEXT:     global %6 f2ae: f32 [storage=static] [const] = const<f32>(1e-45) [linkage=internal];
-// DEFAULT-NEXT:     global %7 f2be: f32 [storage=static] [const] = const<f32>(3e-45) [linkage=internal];
-// DEFAULT-NEXT:     global %8 f2ce: f32 [storage=static] [const] = const<f32>(3e-45) [linkage=internal];
-// DEFAULT-NEXT:     global %9 f2a: f32 [storage=static] [const] = const<f32>(1e-45) [linkage=internal];
-// DEFAULT-NEXT:     global %10 f2b: f32 [storage=static] [const] = const<f32>(3e-45) [linkage=internal];
-// DEFAULT-NEXT:     global %11 f2c: f32 [storage=static] [const] = const<f32>(3e-45) [linkage=internal];
-// DEFAULT-NEXT:     global %12 f3ae: f32 [storage=static] [const] = const<f32>(1.7014118e38) [linkage=internal];
-// DEFAULT-NEXT:     global %13 f3be: f32 [storage=static] [const] = const<f32>(1.7014118e38) [linkage=internal];
-// DEFAULT-NEXT:     global %14 f3ce: f32 [storage=static] [const] = const<f32>(1.701412e38) [linkage=internal];
-// DEFAULT-NEXT:     global %15 f3a: f32 [storage=static] [const] = const<f32>(1.7014118e38) [linkage=internal];
-// DEFAULT-NEXT:     global %16 f3b: f32 [storage=static] [const] = const<f32>(1.7014118e38) [linkage=internal];
-// DEFAULT-NEXT:     global %17 f3c: f32 [storage=static] [const] = const<f32>(1.701412e38) [linkage=internal];
-// DEFAULT-NEXT:     global %18 d1ae: f64 [storage=static] [const] = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=internal];
-// DEFAULT-NEXT:     global %19 d1be: f64 [storage=static] [const] = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=internal];
-// DEFAULT-NEXT:     global %20 d1ce: f64 [storage=static] [const] = const<f64>(5e-324) [linkage=internal];
-// DEFAULT-NEXT:     global %21 d1a: f64 [storage=static] [const] = const<f64>(0.0) [linkage=internal];
-// DEFAULT-NEXT:     global %22 d1b: f64 [storage=static] [const] = const<f64>(0.0) [linkage=internal];
-// DEFAULT-NEXT:     global %23 d1c: f64 [storage=static] [const] = const<f64>(5e-324) [linkage=internal];
-// DEFAULT-NEXT:     global %24 d2ae: f64 [storage=static] [const] = const<f64>(5e-324) [linkage=internal];
-// DEFAULT-NEXT:     global %25 d2be: f64 [storage=static] [const] = const<f64>(1e-323) [linkage=internal];
-// DEFAULT-NEXT:     global %26 d2ce: f64 [storage=static] [const] = const<f64>(1e-323) [linkage=internal];
-// DEFAULT-NEXT:     global %27 d2a: f64 [storage=static] [const] = const<f64>(5e-324) [linkage=internal];
-// DEFAULT-NEXT:     global %28 d2b: f64 [storage=static] [const] = const<f64>(1e-323) [linkage=internal];
-// DEFAULT-NEXT:     global %29 d2c: f64 [storage=static] [const] = const<f64>(1e-323) [linkage=internal];
-// DEFAULT-NEXT:     global %30 d3ae: f64 [storage=static] [const] = const<f64>(8.98846567431158e307) [linkage=internal];
-// DEFAULT-NEXT:     global %31 d3be: f64 [storage=static] [const] = const<f64>(8.98846567431158e307) [linkage=internal];
-// DEFAULT-NEXT:     global %32 d3ce: f64 [storage=static] [const] = const<f64>(8.988465674311582e307) [linkage=internal];
-// DEFAULT-NEXT:     global %33 d3a: f64 [storage=static] [const] = const<f64>(8.98846567431158e307) [linkage=internal];
-// DEFAULT-NEXT:     global %34 d3b: f64 [storage=static] [const] = const<f64>(8.98846567431158e307) [linkage=internal];
-// DEFAULT-NEXT:     global %35 d3c: f64 [storage=static] [const] = const<f64>(8.988465674311582e307) [linkage=internal];
-// DEFAULT-NEXT:     global %36 ld1ae: f80 [storage=static] [const] = int_to_float<f80, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=internal];
-// DEFAULT-NEXT:     global %37 ld1be: f80 [storage=static] [const] = int_to_float<f80, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=internal];
-// DEFAULT-NEXT:     global %38 ld1ce: f80 [storage=static] [const] = const<f80>(3.64519953188247460253E-4951) [linkage=internal];
-// DEFAULT-NEXT:     global %39 ld1a: f80 [storage=static] [const] = const<f80>(0) [linkage=internal];
-// DEFAULT-NEXT:     global %40 ld1b: f80 [storage=static] [const] = const<f80>(0) [linkage=internal];
-// DEFAULT-NEXT:     global %41 ld1c: f80 [storage=static] [const] = const<f80>(3.64519953188247460253E-4951) [linkage=internal];
-// DEFAULT-NEXT:     global %42 ld2ae: f80 [storage=static] [const] = const<f80>(3.64519953188247460253E-4951) [linkage=internal];
-// DEFAULT-NEXT:     global %43 ld2be: f80 [storage=static] [const] = const<f80>(7.29039906376494920506E-4951) [linkage=internal];
-// DEFAULT-NEXT:     global %44 ld2ce: f80 [storage=static] [const] = const<f80>(7.29039906376494920506E-4951) [linkage=internal];
-// DEFAULT-NEXT:     global %45 ld2a: f80 [storage=static] [const] = const<f80>(3.64519953188247460253E-4951) [linkage=internal];
-// DEFAULT-NEXT:     global %46 ld2b: f80 [storage=static] [const] = const<f80>(7.29039906376494920506E-4951) [linkage=internal];
-// DEFAULT-NEXT:     global %47 ld2c: f80 [storage=static] [const] = const<f80>(7.29039906376494920506E-4951) [linkage=internal];
-// DEFAULT-NEXT:     global %48 ld3ae: f80 [storage=static] [const] = const<f80>(5.94865747678615882543E+4931) [linkage=internal];
-// DEFAULT-NEXT:     global %49 ld3be: f80 [storage=static] [const] = const<f80>(5.94865747678615882543E+4931) [linkage=internal];
-// DEFAULT-NEXT:     global %50 ld3ce: f80 [storage=static] [const] = const<f80>(5.94865747678615882607E+4931) [linkage=internal];
-// DEFAULT-NEXT:     global %51 ld3a: f80 [storage=static] [const] = const<f80>(5.94865747678615882543E+4931) [linkage=internal];
-// DEFAULT-NEXT:     global %52 ld3b: f80 [storage=static] [const] = const<f80>(5.94865747678615882543E+4931) [linkage=internal];
-// DEFAULT-NEXT:     global %53 ld3c: f80 [storage=static] [const] = const<f80>(5.94865747678615882607E+4931) [linkage=internal];
-// DEFAULT-NEXT:     fn %54 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %55 @exit(%57 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %56 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f32, exceptions=observable>(read<f32>(%3), read<f32>(%0)), ne<f32, exceptions=observable>(read<f32>(%4), read<f32>(%1))), ne<f32, exceptions=observable>(read<f32>(%5), read<f32>(%2))), ne<f32, exceptions=observable>(read<f32>(%9), read<f32>(%6))), ne<f32, exceptions=observable>(read<f32>(%10), read<f32>(%7))), ne<f32, exceptions=observable>(read<f32>(%11), read<f32>(%8))), ne<f32, exceptions=observable>(read<f32>(%15), read<f32>(%12))), ne<f32, exceptions=observable>(read<f32>(%16), read<f32>(%13))), ne<f32, exceptions=observable>(read<f32>(%17), read<f32>(%14)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%54);
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=observable>(read<f64>(%21), read<f64>(%18)), ne<f64, exceptions=observable>(read<f64>(%22), read<f64>(%19))), ne<f64, exceptions=observable>(read<f64>(%23), read<f64>(%20))), ne<f64, exceptions=observable>(read<f64>(%27), read<f64>(%24))), ne<f64, exceptions=observable>(read<f64>(%28), read<f64>(%25))), ne<f64, exceptions=observable>(read<f64>(%29), read<f64>(%26))), ne<f64, exceptions=observable>(read<f64>(%33), read<f64>(%30))), ne<f64, exceptions=observable>(read<f64>(%34), read<f64>(%31))), ne<f64, exceptions=observable>(read<f64>(%35), read<f64>(%32)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%54);
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f80, exceptions=observable>(read<f80>(%39), read<f80>(%36)), ne<f80, exceptions=observable>(read<f80>(%40), read<f80>(%37))), ne<f80, exceptions=observable>(read<f80>(%41), read<f80>(%38))), ne<f80, exceptions=observable>(read<f80>(%45), read<f80>(%42))), ne<f80, exceptions=observable>(read<f80>(%46), read<f80>(%43))), ne<f80, exceptions=observable>(read<f80>(%47), read<f80>(%44))), ne<f80, exceptions=observable>(read<f80>(%51), read<f80>(%48))), ne<f80, exceptions=observable>(read<f80>(%52), read<f80>(%49))), ne<f80, exceptions=observable>(read<f80>(%53), read<f80>(%50)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%54);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%55, const<i32>(0));
+// DEFAULT-NEXT:     global %[[VALUE_f1ae:[0-9]+]] f1ae: f32 [storage=static] [const] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f1be:[0-9]+]] f1be: f32 [storage=static] [const] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f1ce:[0-9]+]] f1ce: f32 [storage=static] [const] = const<f32>(1e-45) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f1a:[0-9]+]] f1a: f32 [storage=static] [const] = const<f32>(0.0) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f1b:[0-9]+]] f1b: f32 [storage=static] [const] = const<f32>(0.0) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f1c:[0-9]+]] f1c: f32 [storage=static] [const] = const<f32>(1e-45) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f2ae:[0-9]+]] f2ae: f32 [storage=static] [const] = const<f32>(1e-45) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f2be:[0-9]+]] f2be: f32 [storage=static] [const] = const<f32>(3e-45) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f2ce:[0-9]+]] f2ce: f32 [storage=static] [const] = const<f32>(3e-45) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f2a:[0-9]+]] f2a: f32 [storage=static] [const] = const<f32>(1e-45) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f2b:[0-9]+]] f2b: f32 [storage=static] [const] = const<f32>(3e-45) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f2c:[0-9]+]] f2c: f32 [storage=static] [const] = const<f32>(3e-45) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f3ae:[0-9]+]] f3ae: f32 [storage=static] [const] = const<f32>(1.7014118e38) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f3be:[0-9]+]] f3be: f32 [storage=static] [const] = const<f32>(1.7014118e38) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f3ce:[0-9]+]] f3ce: f32 [storage=static] [const] = const<f32>(1.701412e38) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f3a:[0-9]+]] f3a: f32 [storage=static] [const] = const<f32>(1.7014118e38) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f3b:[0-9]+]] f3b: f32 [storage=static] [const] = const<f32>(1.7014118e38) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f3c:[0-9]+]] f3c: f32 [storage=static] [const] = const<f32>(1.701412e38) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d1ae:[0-9]+]] d1ae: f64 [storage=static] [const] = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d1be:[0-9]+]] d1be: f64 [storage=static] [const] = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d1ce:[0-9]+]] d1ce: f64 [storage=static] [const] = const<f64>(5e-324) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d1a:[0-9]+]] d1a: f64 [storage=static] [const] = const<f64>(0.0) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d1b:[0-9]+]] d1b: f64 [storage=static] [const] = const<f64>(0.0) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d1c:[0-9]+]] d1c: f64 [storage=static] [const] = const<f64>(5e-324) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d2ae:[0-9]+]] d2ae: f64 [storage=static] [const] = const<f64>(5e-324) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d2be:[0-9]+]] d2be: f64 [storage=static] [const] = const<f64>(1e-323) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d2ce:[0-9]+]] d2ce: f64 [storage=static] [const] = const<f64>(1e-323) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d2a:[0-9]+]] d2a: f64 [storage=static] [const] = const<f64>(5e-324) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d2b:[0-9]+]] d2b: f64 [storage=static] [const] = const<f64>(1e-323) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d2c:[0-9]+]] d2c: f64 [storage=static] [const] = const<f64>(1e-323) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d3ae:[0-9]+]] d3ae: f64 [storage=static] [const] = const<f64>(8.98846567431158e307) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d3be:[0-9]+]] d3be: f64 [storage=static] [const] = const<f64>(8.98846567431158e307) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d3ce:[0-9]+]] d3ce: f64 [storage=static] [const] = const<f64>(8.988465674311582e307) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d3a:[0-9]+]] d3a: f64 [storage=static] [const] = const<f64>(8.98846567431158e307) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d3b:[0-9]+]] d3b: f64 [storage=static] [const] = const<f64>(8.98846567431158e307) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d3c:[0-9]+]] d3c: f64 [storage=static] [const] = const<f64>(8.988465674311582e307) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld1ae:[0-9]+]] ld1ae: f80 [storage=static] [const] = int_to_float<f80, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld1be:[0-9]+]] ld1be: f80 [storage=static] [const] = int_to_float<f80, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld1ce:[0-9]+]] ld1ce: f80 [storage=static] [const] = const<f80>(3.64519953188247460253E-4951) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld1a:[0-9]+]] ld1a: f80 [storage=static] [const] = const<f80>(0) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld1b:[0-9]+]] ld1b: f80 [storage=static] [const] = const<f80>(0) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld1c:[0-9]+]] ld1c: f80 [storage=static] [const] = const<f80>(3.64519953188247460253E-4951) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld2ae:[0-9]+]] ld2ae: f80 [storage=static] [const] = const<f80>(3.64519953188247460253E-4951) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld2be:[0-9]+]] ld2be: f80 [storage=static] [const] = const<f80>(7.29039906376494920506E-4951) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld2ce:[0-9]+]] ld2ce: f80 [storage=static] [const] = const<f80>(7.29039906376494920506E-4951) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld2a:[0-9]+]] ld2a: f80 [storage=static] [const] = const<f80>(3.64519953188247460253E-4951) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld2b:[0-9]+]] ld2b: f80 [storage=static] [const] = const<f80>(7.29039906376494920506E-4951) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld2c:[0-9]+]] ld2c: f80 [storage=static] [const] = const<f80>(7.29039906376494920506E-4951) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld3ae:[0-9]+]] ld3ae: f80 [storage=static] [const] = const<f80>(5.94865747678615882543E+4931) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld3be:[0-9]+]] ld3be: f80 [storage=static] [const] = const<f80>(5.94865747678615882543E+4931) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld3ce:[0-9]+]] ld3ce: f80 [storage=static] [const] = const<f80>(5.94865747678615882607E+4931) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld3a:[0-9]+]] ld3a: f80 [storage=static] [const] = const<f80>(5.94865747678615882543E+4931) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld3b:[0-9]+]] ld3b: f80 [storage=static] [const] = const<f80>(5.94865747678615882543E+4931) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ld3c:[0-9]+]] ld3c: f80 [storage=static] [const] = const<f80>(5.94865747678615882607E+4931) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f32, exceptions=observable>(read<f32>(%[[VALUE_f1a]]), read<f32>(%[[VALUE_f1ae]])), ne<f32, exceptions=observable>(read<f32>(%[[VALUE_f1b]]), read<f32>(%[[VALUE_f1be]]))), ne<f32, exceptions=observable>(read<f32>(%[[VALUE_f1c]]), read<f32>(%[[VALUE_f1ce]]))), ne<f32, exceptions=observable>(read<f32>(%[[VALUE_f2a]]), read<f32>(%[[VALUE_f2ae]]))), ne<f32, exceptions=observable>(read<f32>(%[[VALUE_f2b]]), read<f32>(%[[VALUE_f2be]]))), ne<f32, exceptions=observable>(read<f32>(%[[VALUE_f2c]]), read<f32>(%[[VALUE_f2ce]]))), ne<f32, exceptions=observable>(read<f32>(%[[VALUE_f3a]]), read<f32>(%[[VALUE_f3ae]]))), ne<f32, exceptions=observable>(read<f32>(%[[VALUE_f3b]]), read<f32>(%[[VALUE_f3be]]))), ne<f32, exceptions=observable>(read<f32>(%[[VALUE_f3c]]), read<f32>(%[[VALUE_f3ce]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=observable>(read<f64>(%[[VALUE_d1a]]), read<f64>(%[[VALUE_d1ae]])), ne<f64, exceptions=observable>(read<f64>(%[[VALUE_d1b]]), read<f64>(%[[VALUE_d1be]]))), ne<f64, exceptions=observable>(read<f64>(%[[VALUE_d1c]]), read<f64>(%[[VALUE_d1ce]]))), ne<f64, exceptions=observable>(read<f64>(%[[VALUE_d2a]]), read<f64>(%[[VALUE_d2ae]]))), ne<f64, exceptions=observable>(read<f64>(%[[VALUE_d2b]]), read<f64>(%[[VALUE_d2be]]))), ne<f64, exceptions=observable>(read<f64>(%[[VALUE_d2c]]), read<f64>(%[[VALUE_d2ce]]))), ne<f64, exceptions=observable>(read<f64>(%[[VALUE_d3a]]), read<f64>(%[[VALUE_d3ae]]))), ne<f64, exceptions=observable>(read<f64>(%[[VALUE_d3b]]), read<f64>(%[[VALUE_d3be]]))), ne<f64, exceptions=observable>(read<f64>(%[[VALUE_d3c]]), read<f64>(%[[VALUE_d3ce]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f80, exceptions=observable>(read<f80>(%[[VALUE_ld1a]]), read<f80>(%[[VALUE_ld1ae]])), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_ld1b]]), read<f80>(%[[VALUE_ld1be]]))), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_ld1c]]), read<f80>(%[[VALUE_ld1ce]]))), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_ld2a]]), read<f80>(%[[VALUE_ld2ae]]))), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_ld2b]]), read<f80>(%[[VALUE_ld2be]]))), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_ld2c]]), read<f80>(%[[VALUE_ld2ce]]))), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_ld3a]]), read<f80>(%[[VALUE_ld3ae]]))), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_ld3b]]), read<f80>(%[[VALUE_ld3be]]))), ne<f80, exceptions=observable>(read<f80>(%[[VALUE_ld3c]]), read<f80>(%[[VALUE_ld3ce]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

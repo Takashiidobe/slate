@@ -45,21 +45,21 @@ int    main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 once: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 x: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @sqrt(%6 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @foo() -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:         let %8: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%7), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%8));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%7), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     global %[[VALUE_once:[0-9]+]] once: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_sqrt:[0-9]+]] @sqrt(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_once]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_once]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE1]]), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(0.0), const<f64>(0.0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<f64>(%4, call<f64, signature=fn(f64) -> f64>(%0, call<f64, signature=fn() -> f64>(%3)));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%0, call<f64, signature=fn() -> f64>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_x]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_sqrt]], call<f64, signature=fn() -> f64>(%[[VALUE_foo]])));
+// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE_sqrt]], call<f64, signature=fn() -> f64>(%[[VALUE_foo]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

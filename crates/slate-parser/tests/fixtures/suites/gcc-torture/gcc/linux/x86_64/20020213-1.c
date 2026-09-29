@@ -55,27 +55,27 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 a1: f32;
 // DEFAULT-NEXT:         field1 a2: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %3 a: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 b: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @bar(%6 x: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_A]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(2241);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(field1(%3), call<i32, signature=fn(f32) -> i32>(%1, read<f32>(field0(%3))));
-// DEFAULT-NEXT:         call<i32, signature=fn(f32) -> i32>(%1, read<f32>(field0(%3)));
-// DEFAULT-NEXT:         write<i32>(field1(%3), conditional<i32>(lt<i32>(read<i32>(field1(%3)), sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1))), read<i32>(field1(%3)), sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1))));
-// DEFAULT-NEXT:         if ge<i32>(read<i32>(field1(%3)), sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_a]]), call<i32, signature=fn(f32) -> i32>(%[[VALUE_bar]], read<f32>(field0(%[[VALUE_a]]))));
+// DEFAULT-NEXT:         call<i32, signature=fn(f32) -> i32>(%[[VALUE_bar]], read<f32>(field0(%[[VALUE_a]])));
+// DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_a]]), conditional<i32>(lt<i32>(read<i32>(field1(%[[VALUE_a]])), sub<i32, overflow=ub>(read<i32>(%[[VALUE_b]]), const<i32>(1))), read<i32>(field1(%[[VALUE_a]])), sub<i32, overflow=ub>(read<i32>(%[[VALUE_b]]), const<i32>(1))));
+// DEFAULT-NEXT:         if ge<i32>(read<i32>(field1(%[[VALUE_a]])), sub<i32, overflow=ub>(read<i32>(%[[VALUE_b]]), const<i32>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<f32>(field0(%3), const<f32>(1.0));
-// DEFAULT-NEXT:         write<i32>(%4, const<i32>(3384));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<f32>(field0(%[[VALUE_a]]), const<f32>(1.0));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], const<i32>(3384));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

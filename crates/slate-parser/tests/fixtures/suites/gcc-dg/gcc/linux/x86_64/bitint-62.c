@@ -57,20 +57,20 @@ baz (int x, _BitInt(6928) y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i8b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i55b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo(%3 c: u1b, %4 d: i401b) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %9: u1b [synthetic] = read<u1b>(%3);
-// DEFAULT-NEXT:         let %10: u1b [synthetic] = reinterpret<u1b, reason=assign, fits=unknown>(truncate<i1b, reason=assign, fits=unknown>(div<i401b, by_zero=ub, min_by_neg_one=ub>(reinterpret<i401b, reason=usual_arith, fits=unknown>(widen<u401b, reason=usual_arith>(read<u1b>(%9))), shl<i401b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i401b>(%4), read<i55b>(%1)))));
-// DEFAULT-NEXT:         write<u1b>(%3, read<u1b>(%10));
-// DEFAULT-NEXT:         write<i8b>(%0, reinterpret<i8b, reason=assign, fits=unknown>(widen<u8b, reason=assign>(read<u1b>(%3))));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i8b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i55b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_c:[0-9]+]] c: u1b, %[[VALUE_d:[0-9]+]] d: i401b) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u1b [synthetic] = read<u1b>(%[[VALUE_c]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u1b [synthetic] = reinterpret<u1b, reason=assign, fits=unknown>(truncate<i1b, reason=assign, fits=unknown>(div<i401b, by_zero=ub, min_by_neg_one=ub>(reinterpret<i401b, reason=usual_arith, fits=unknown>(widen<u401b, reason=usual_arith>(read<u1b>(%[[VALUE0]]))), shl<i401b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i401b>(%[[VALUE_d]]), read<i55b>(%[[VALUE_b]])))));
+// DEFAULT-NEXT:         write<u1b>(%[[VALUE_c]], read<u1b>(%[[VALUE1]]));
+// DEFAULT-NEXT:         write<i8b>(%[[VALUE_a]], reinterpret<i8b, reason=assign, fits=unknown>(widen<u8b, reason=assign>(read<u1b>(%[[VALUE_c]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(u1b, i401b) -> void>(%2, reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(const<i32>(1))), widen<i401b, reason=arg>(const<i32>(4)));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(u1b, i401b) -> void>(%[[VALUE_foo]], reinterpret<u1b, reason=arg, fits=unknown>(truncate<i1b, reason=arg, fits=unknown>(const<i32>(1))), widen<i401b, reason=arg>(const<i32>(4)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @baz(%7 x: i32, %8 y: i6928b) -> i6928b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%7), const<i32>(0))
-// DEFAULT-NEXT:             return read<i6928b>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i6928b) -> i6928b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
+// DEFAULT-NEXT:             return read<i6928b>(%[[VALUE_y]]);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return widen<i6928b, reason=return>(const<i32>(0));
 // DEFAULT-NEXT:     }

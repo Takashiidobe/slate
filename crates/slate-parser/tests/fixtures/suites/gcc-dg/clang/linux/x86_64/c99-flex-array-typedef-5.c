@@ -31,8 +31,8 @@ union u { int a; T b; }; /* { dg-error "flexible array member in union" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 T = array<i8, incomplete>;
-// DEFAULT-NEXT:     type @type1 u = union {
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = array<i8, incomplete>;
+// DEFAULT-NEXT:     type @type[[TYPE_u:[0-9]+]] u = union {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: array<i8, incomplete>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];

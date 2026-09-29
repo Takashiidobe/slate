@@ -65,57 +65,57 @@ int truth(void) { return !sign_extended; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 P = ptr<i32>;
-// DEFAULT-NEXT:     type @type1 narrow_member = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_P:[0-9]+]] P = ptr<i32>;
+// DEFAULT-NEXT:     type @type[[TYPE_narrow_member:[0-9]+]] narrow_member = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 p: ptr<i32, ptr32_sptr>;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %1 sign_extended: ptr<i32, ptr32_sptr> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 explicit_sign: ptr<i32, ptr32_sptr> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 zero_extended: ptr<i32, ptr32_uptr> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 wide: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 plain_uptr: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 through_typedef: ptr<i32, ptr32_sptr> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 constant_narrow: ptr<i32, ptr32_sptr> [storage=static] [const] = null<ptr<i32, ptr32_sptr>> [linkage=external];
-// DEFAULT-NEXT:     global %8 pointer_to_narrow: ptr<ptr<i32, ptr32_sptr>> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 narrow_function: ptr<fn() -> void, ptr32_sptr> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 narrow_array: array<ptr<i32, ptr32_sptr>, 3> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %12 narrow_record: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %13 target_object: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %14 narrowed_address: ptr<i32, ptr32_sptr> [storage=static] = address_space_cast<ptr<i32, ptr32_sptr>, reason=assign>(addr_of<ptr<i32>>(%13)) [linkage=external];
-// DEFAULT-NEXT:     fn %15 @widen_signed() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return address_space_cast<ptr<i32>, reason=return>(read<ptr<i32, ptr32_sptr>>(%1));
+// DEFAULT-NEXT:     global %[[VALUE_sign_extended:[0-9]+]] sign_extended: ptr<i32, ptr32_sptr> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_explicit_sign:[0-9]+]] explicit_sign: ptr<i32, ptr32_sptr> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_zero_extended:[0-9]+]] zero_extended: ptr<i32, ptr32_uptr> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_plain_uptr:[0-9]+]] plain_uptr: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_through_typedef:[0-9]+]] through_typedef: ptr<i32, ptr32_sptr> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_constant_narrow:[0-9]+]] constant_narrow: ptr<i32, ptr32_sptr> [storage=static] [const] = null<ptr<i32, ptr32_sptr>> [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_pointer_to_narrow:[0-9]+]] pointer_to_narrow: ptr<ptr<i32, ptr32_sptr>> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_narrow_function:[0-9]+]] narrow_function: ptr<fn() -> void, ptr32_sptr> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_narrow_array:[0-9]+]] narrow_array: array<ptr<i32, ptr32_sptr>, 3> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_narrow_record:[0-9]+]] narrow_record: @type[[TYPE_narrow_member]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_target_object:[0-9]+]] target_object: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_narrowed_address:[0-9]+]] narrowed_address: ptr<i32, ptr32_sptr> [storage=static] = address_space_cast<ptr<i32, ptr32_sptr>, reason=assign>(addr_of<ptr<i32>>(%[[VALUE_target_object]])) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_widen_signed:[0-9]+]] @widen_signed() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return address_space_cast<ptr<i32>, reason=return>(read<ptr<i32, ptr32_sptr>>(%[[VALUE_sign_extended]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @widen_unsigned() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return address_space_cast<ptr<i32>, reason=return>(read<ptr<i32, ptr32_uptr>>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_widen_unsigned:[0-9]+]] @widen_unsigned() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return address_space_cast<ptr<i32>, reason=return>(read<ptr<i32, ptr32_uptr>>(%[[VALUE_zero_extended]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @narrow(%18 p: ptr<i32>) -> ptr<i32, ptr32_sptr> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return address_space_cast<ptr<i32, ptr32_sptr>, reason=return>(read<ptr<i32>>(%18));
+// DEFAULT-NEXT:     fn %[[VALUE_narrow:[0-9]+]] @narrow(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> ptr<i32, ptr32_sptr> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return address_space_cast<ptr<i32, ptr32_sptr>, reason=return>(read<ptr<i32>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @take(%32 p: ptr<i32, ptr32_sptr>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %21 @pass(%22 p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32, ptr32_sptr>) -> void>(%20, address_space_cast<ptr<i32, ptr32_sptr>, reason=arg>(read<ptr<i32>>(%22)));
+// DEFAULT-NEXT:     fn %[[VALUE_take:[0-9]+]] @take(%[[VALUE_p_2:[0-9]+]] p: ptr<i32, ptr32_sptr>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_pass:[0-9]+]] @pass(%[[VALUE_p_3:[0-9]+]] p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32, ptr32_sptr>) -> void>(%[[VALUE_take]], address_space_cast<ptr<i32, ptr32_sptr>, reason=arg>(read<ptr<i32>>(%[[VALUE_p_3]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @swap_extension() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<i32, ptr32_sptr>>(%1, address_space_cast<ptr<i32, ptr32_sptr>, reason=assign>(read<ptr<i32, ptr32_uptr>>(%3)));
+// DEFAULT-NEXT:     fn %[[VALUE_swap_extension:[0-9]+]] @swap_extension() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<i32, ptr32_sptr>>(%[[VALUE_sign_extended]], address_space_cast<ptr<i32, ptr32_sptr>, reason=assign>(read<ptr<i32, ptr32_uptr>>(%[[VALUE_zero_extended]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @deref() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32, ptr32_sptr>>(%1)));
+// DEFAULT-NEXT:     fn %[[VALUE_deref:[0-9]+]] @deref() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32, ptr32_sptr>>(%[[VALUE_sign_extended]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @offset() -> ptr<i32, ptr32_sptr> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return ptr_offset<ptr<i32, ptr32_sptr>, subtract=false, element=i32, overflow=ub>(read<ptr<i32, ptr32_sptr>>(%1), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_offset:[0-9]+]] @offset() -> ptr<i32, ptr32_sptr> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return ptr_offset<ptr<i32, ptr32_sptr>, subtract=false, element=i32, overflow=ub>(read<ptr<i32, ptr32_sptr>>(%[[VALUE_sign_extended]]), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @to_integer() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return ptr_to_int<i64, reason=explicit>(read<ptr<i32, ptr32_uptr>>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_to_integer:[0-9]+]] @to_integer() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return ptr_to_int<i64, reason=explicit>(read<ptr<i32, ptr32_uptr>>(%[[VALUE_zero_extended]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @from_integer(%28 v: i64) -> ptr<i32, ptr32_sptr> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return int_to_ptr<ptr<i32, ptr32_sptr>, reason=explicit>(read<i64>(%28));
+// DEFAULT-NEXT:     fn %[[VALUE_from_integer:[0-9]+]] @from_integer(%[[VALUE_v:[0-9]+]] v: i64) -> ptr<i32, ptr32_sptr> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return int_to_ptr<ptr<i32, ptr32_sptr>, reason=explicit>(read<i64>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @compare(%30 p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<ptr<i32>>(read<ptr<i32>>(%30), address_space_cast<ptr<i32>, reason=usual_arith>(read<ptr<i32, ptr32_sptr>>(%1))), eq<ptr<i32, ptr32_sptr>>(read<ptr<i32, ptr32_sptr>>(%1), address_space_cast<ptr<i32, ptr32_sptr>, reason=usual_arith>(read<ptr<i32, ptr32_uptr>>(%3)))));
+// DEFAULT-NEXT:     fn %[[VALUE_compare:[0-9]+]] @compare(%[[VALUE_p_4:[0-9]+]] p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(eq<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p_4]]), address_space_cast<ptr<i32>, reason=usual_arith>(read<ptr<i32, ptr32_sptr>>(%[[VALUE_sign_extended]]))), eq<ptr<i32, ptr32_sptr>>(read<ptr<i32, ptr32_sptr>>(%[[VALUE_sign_extended]]), address_space_cast<ptr<i32, ptr32_sptr>, reason=usual_arith>(read<ptr<i32, ptr32_uptr>>(%[[VALUE_zero_extended]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @truth() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(not<bool>(ne<ptr<i32, ptr32_sptr>>(read<ptr<i32, ptr32_sptr>>(%1), null<ptr<i32, ptr32_sptr>>)));
+// DEFAULT-NEXT:     fn %[[VALUE_truth:[0-9]+]] @truth() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(not<bool>(ne<ptr<i32, ptr32_sptr>>(read<ptr<i32, ptr32_sptr>>(%[[VALUE_sign_extended]]), null<ptr<i32, ptr32_sptr>>)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

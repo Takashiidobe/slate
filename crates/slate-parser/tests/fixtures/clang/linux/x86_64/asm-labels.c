@@ -43,26 +43,26 @@ void locals(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 labeled_type = i32;
-// DEFAULT-NEXT:     extern %0 renamed: i32 [storage=static] [linkage=external] [asm_name="real_name"];
-// DEFAULT-NEXT:     extern %1 concatenated: i32 [storage=static] [linkage=external] [asm_name="concat"];
-// DEFAULT-NEXT:     extern %3 first: i32 [storage=static] [linkage=external] [asm_name="first_symbol"];
-// DEFAULT-NEXT:     extern %4 second: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %5 third: i32 [storage=static] [linkage=external] [asm_name="third_symbol"];
-// DEFAULT-NEXT:     extern %6 with_attribute: i32 [storage=static] [linkage=external] [asm_name="attributed"] [weak];
-// DEFAULT-NEXT:     global %7 initialized: i32 [storage=static] = const<i32>(3) [linkage=internal] [asm_name="initialized_symbol"];
-// DEFAULT-NEXT:     global %9 function_pointer: ptr<fn() -> i32> [storage=static] [linkage=external] [asm_name="pointer_symbol"];
-// DEFAULT-NEXT:     global %10 stack_pointer: i64 [storage=static] [register="rsp"] [linkage=external];
-// DEFAULT-NEXT:     global %18 static_local: i32 [storage=static] [linkage=internal] [asm_name="static_local_symbol"];
-// DEFAULT-NEXT:     extern %19 extern_local: i32 [storage=static] [linkage=external] [asm_name="extern_local_symbol"];
-// DEFAULT-NEXT:     fn %2 @function_label() -> i32 [linkage=external] [asm_name="function_symbol"];
-// DEFAULT-NEXT:     fn %11 @locals() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %12 eax_register: i32 [storage=automatic] [register="eax"];
-// DEFAULT-NEXT:         let %13 percent_register: i64 [storage=automatic] [register="%r9"];
-// DEFAULT-NEXT:         let %14 hash_register: i64 [storage=automatic] [register="#r10b"] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:         let %15 high_byte: i32 [storage=automatic] [register="ah"];
-// DEFAULT-NEXT:         let %16 numbered: i32 [storage=automatic] [register="0x7"];
-// DEFAULT-NEXT:         let %17 xmm_register: i32 [storage=automatic] [register="xmm16"];
+// DEFAULT-NEXT:     type @type[[TYPE_labeled_type:[0-9]+]] labeled_type = i32;
+// DEFAULT-NEXT:     extern %[[VALUE_renamed:[0-9]+]] renamed: i32 [storage=static] [linkage=external] [asm_name="real_name"];
+// DEFAULT-NEXT:     extern %[[VALUE_concatenated:[0-9]+]] concatenated: i32 [storage=static] [linkage=external] [asm_name="concat"];
+// DEFAULT-NEXT:     extern %[[VALUE_first:[0-9]+]] first: i32 [storage=static] [linkage=external] [asm_name="first_symbol"];
+// DEFAULT-NEXT:     extern %[[VALUE_second:[0-9]+]] second: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_third:[0-9]+]] third: i32 [storage=static] [linkage=external] [asm_name="third_symbol"];
+// DEFAULT-NEXT:     extern %[[VALUE_with_attribute:[0-9]+]] with_attribute: i32 [storage=static] [linkage=external] [asm_name="attributed"] [weak];
+// DEFAULT-NEXT:     global %[[VALUE_initialized:[0-9]+]] initialized: i32 [storage=static] = const<i32>(3) [linkage=internal] [asm_name="initialized_symbol"];
+// DEFAULT-NEXT:     global %[[VALUE_function_pointer:[0-9]+]] function_pointer: ptr<fn() -> i32> [storage=static] [linkage=external] [asm_name="pointer_symbol"];
+// DEFAULT-NEXT:     global %[[VALUE_stack_pointer:[0-9]+]] stack_pointer: i64 [storage=static] [register="rsp"] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_static_local:[0-9]+]] static_local: i32 [storage=static] [linkage=internal] [asm_name="static_local_symbol"];
+// DEFAULT-NEXT:     extern %[[VALUE_extern_local:[0-9]+]] extern_local: i32 [storage=static] [linkage=external] [asm_name="extern_local_symbol"];
+// DEFAULT-NEXT:     fn %[[VALUE_function_label:[0-9]+]] @function_label() -> i32 [linkage=external] [asm_name="function_symbol"];
+// DEFAULT-NEXT:     fn %[[VALUE_locals:[0-9]+]] @locals() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_eax_register:[0-9]+]] eax_register: i32 [storage=automatic] [register="eax"];
+// DEFAULT-NEXT:         let %[[VALUE_percent_register:[0-9]+]] percent_register: i64 [storage=automatic] [register="%r9"];
+// DEFAULT-NEXT:         let %[[VALUE_hash_register:[0-9]+]] hash_register: i64 [storage=automatic] [register="#r10b"] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE_high_byte:[0-9]+]] high_byte: i32 [storage=automatic] [register="ah"];
+// DEFAULT-NEXT:         let %[[VALUE_numbered:[0-9]+]] numbered: i32 [storage=automatic] [register="0x7"];
+// DEFAULT-NEXT:         let %[[VALUE_xmm_register:[0-9]+]] xmm_register: i32 [storage=automatic] [register="xmm16"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

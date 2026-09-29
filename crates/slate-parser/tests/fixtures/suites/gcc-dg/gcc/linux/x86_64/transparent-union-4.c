@@ -34,15 +34,15 @@ void g (int *s) { h (s); } /* { dg-warning "ISO C prohibits argument conversion 
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = union {
-// DEFAULT-NEXT:         field0 u: ptr<@type1>;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
+// DEFAULT-NEXT:         field0 u: ptr<@type[[TYPE_w:[0-9]+]]>;
 // DEFAULT-NEXT:         field1 i: ptr<i32>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type1 w = union incomplete;
-// DEFAULT-NEXT:     type @type2 H = @type0;
-// DEFAULT-NEXT:     global %3 h: ptr<fn(@type0) -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @g(%5 s: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(read<ptr<fn(@type0) -> void>>(%3), aggregate<@type0, zero_fill=false>(field1 = read<ptr<i32>>(%5)));
+// DEFAULT-NEXT:     type @type[[TYPE_w]] w = union incomplete;
+// DEFAULT-NEXT:     type @type[[TYPE_H:[0-9]+]] H = @type[[TYPE0]];
+// DEFAULT-NEXT:     global %[[VALUE_h:[0-9]+]] h: ptr<fn(@type[[TYPE0]]) -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_s:[0-9]+]] s: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE0]]) -> void>(read<ptr<fn(@type[[TYPE0]]) -> void>>(%[[VALUE_h]]), aggregate<@type[[TYPE0]], zero_fill=false>(field1 = read<ptr<i32>>(%[[VALUE_s]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -27,10 +27,10 @@ int z = (&"Foobar"[1] - &"Foobar"[0]);
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 x: array<i32, 60> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %1 y: ptr<i8> [storage=static] = ptr_offset<ptr<i8>, subtract=true, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(60)>(%0), add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(2), const<i32>(8)), const<i32>(2)))))), const<i32>(8)) [linkage=external];
-// DEFAULT-NEXT:     global %3 .str3: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([70, 111, 111, 98, 97, 114, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %4 .str4: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([70, 111, 111, 98, 97, 114, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %2 z: i32 [storage=static] = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(7)>(%3), const<i32>(1)))), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(7)>(%4), const<i32>(0)))))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: array<i32, 60> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: ptr<i8> [storage=static] = ptr_offset<ptr<i8>, subtract=true, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(60)>(%[[VALUE_x]]), add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(2), const<i32>(8)), const<i32>(2)))))), const<i32>(8)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([70, 111, 111, 98, 97, 114, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([70, 111, 111, 98, 97, 114, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_z:[0-9]+]] z: i32 [storage=static] = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]]), const<i32>(1)))), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_2]]), const<i32>(0)))))) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

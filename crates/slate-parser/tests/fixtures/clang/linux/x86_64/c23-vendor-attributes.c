@@ -34,15 +34,15 @@
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     fn %0 @caller() -> void [linkage=external];
-// C23-NEXT:     fn %1 @callee() -> void [linkage=external];
-// C23-NEXT:     fn %2 @fast() -> void [linkage=external];
-// C23-NEXT:     fn %3 @vector() -> void [linkage=external] [abi=sysv64 vectorcall() -> void];
-// C23-NEXT:     fn %4 @method(%10 <unnamed>: ptr<void>) -> void [linkage=external];
-// C23-NEXT:     fn %5 @ms() -> void [linkage=external];
-// C23-NEXT:     fn %6 @sysv() -> void [linkage=external];
-// C23-NEXT:     fn %7 @registers(%11 <unnamed>: i32, %12 <unnamed>: i32) -> void [linkage=external];
-// C23-NEXT:     fn %8 @arm() -> void [linkage=external];
-// C23-NEXT:     fn %9 @arm_vfp() -> void [linkage=external];
+// C23-NEXT:     fn %[[VALUE_caller:[0-9]+]] @caller() -> void [linkage=external];
+// C23-NEXT:     fn %[[VALUE_callee:[0-9]+]] @callee() -> void [linkage=external];
+// C23-NEXT:     fn %[[VALUE_fast:[0-9]+]] @fast() -> void [linkage=external];
+// C23-NEXT:     fn %[[VALUE_vector:[0-9]+]] @vector() -> void [linkage=external] [abi=sysv64 vectorcall() -> void];
+// C23-NEXT:     fn %[[VALUE_method:[0-9]+]] @method(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// C23-NEXT:     fn %[[VALUE_ms:[0-9]+]] @ms() -> void [linkage=external];
+// C23-NEXT:     fn %[[VALUE_sysv:[0-9]+]] @sysv() -> void [linkage=external];
+// C23-NEXT:     fn %[[VALUE_registers:[0-9]+]] @registers(%[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// C23-NEXT:     fn %[[VALUE_arm:[0-9]+]] @arm() -> void [linkage=external];
+// C23-NEXT:     fn %[[VALUE_arm_vfp:[0-9]+]] @arm_vfp() -> void [linkage=external];
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

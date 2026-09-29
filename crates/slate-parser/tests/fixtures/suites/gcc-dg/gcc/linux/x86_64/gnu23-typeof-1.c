@@ -64,26 +64,26 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 p: volatile ptr<fn() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 pp: volatile ptr<volatile ptr<fn() -> void>> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 flag: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 x: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @f() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @link_failure() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @g() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>, volatile>(%1));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: volatile ptr<fn() -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_pp:[0-9]+]] pp: volatile ptr<volatile ptr<fn() -> void>> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_flag:[0-9]+]] flag: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_link_failure:[0-9]+]] @link_failure() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>, volatile>(%[[VALUE_p]]));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_link_failure]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @h() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>, volatile>(deref(read<ptr<volatile ptr<fn() -> void>>, volatile>(%2))));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>, volatile>(deref(read<ptr<volatile ptr<fn() -> void>>, volatile>(%[[VALUE_pp]]))));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_link_failure]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%6), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%6), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         return read<i32, volatile>(%7);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%[[VALUE_flag]]), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_g]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%[[VALUE_flag]]), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_h]]);
+// DEFAULT-NEXT:         return read<i32, volatile>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

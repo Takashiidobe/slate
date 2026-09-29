@@ -94,119 +94,119 @@ TEST (size_t, 0, ALLOC_MAX);           /* { dg-warning "argument 1 range \\\[13,
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 ptrdiff_t = i64;
-// DEFAULT-NEXT:     type @type1 size_t = u64;
-// DEFAULT-NEXT:     type @type2 dummy = void;
-// DEFAULT-NEXT:     type @type3 dummy = void;
-// DEFAULT-NEXT:     type @type4 dummy = void;
-// DEFAULT-NEXT:     type @type5 dummy = void;
-// DEFAULT-NEXT:     type @type6 dummy = void;
-// DEFAULT-NEXT:     type @type7 dummy = void;
-// DEFAULT-NEXT:     type @type8 dummy = void;
-// DEFAULT-NEXT:     type @type9 dummy = void;
-// DEFAULT-NEXT:     type @type10 dummy = void;
-// DEFAULT-NEXT:     type @type11 dummy = void;
-// DEFAULT-NEXT:     type @type12 dummy = void;
-// DEFAULT-NEXT:     type @type13 dummy = void;
-// DEFAULT-NEXT:     type @type14 dummy = void;
-// DEFAULT-NEXT:     type @type15 dummy = void;
-// DEFAULT-NEXT:     type @type16 dummy = void;
-// DEFAULT-NEXT:     type @type17 dummy = void;
-// DEFAULT-NEXT:     fn %4 @alloc_anti_range_50(%51 <unnamed>: i8) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @test_anti_range_50(%3 n: i8) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(127)), const<i32>(1)), const<i32>(2)), widen<i32, reason=promotion>(read<i8>(%3))), le<i32>(widen<i32, reason=promotion>(read<i8>(%3)), const<i32>(12)))
-// DEFAULT-NEXT:             write<i8>(%3, truncate<i8, reason=assign, fits=unknown>(sub<i32, overflow=ub>(add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(127)), const<i32>(1)), const<i32>(2)), const<i32>(1))));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i8) -> ptr<void>>(%4, read<i8>(%3));
+// DEFAULT-NEXT:     type @type[[TYPE_ptrdiff_t:[0-9]+]] ptrdiff_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_2:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_3:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_4:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_5:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_6:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_7:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_8:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_9:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_10:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_11:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_12:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_13:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_14:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_15:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     type @type[[TYPE_dummy_16:[0-9]+]] dummy = void;
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_50:[0-9]+]] @alloc_anti_range_50(%[[VALUE0:[0-9]+]] <unnamed>: i8) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_50:[0-9]+]] @test_anti_range_50(%[[VALUE_n:[0-9]+]] n: i8) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(127)), const<i32>(1)), const<i32>(2)), widen<i32, reason=promotion>(read<i8>(%[[VALUE_n]]))), le<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_n]])), const<i32>(12)))
+// DEFAULT-NEXT:             write<i8>(%[[VALUE_n]], truncate<i8, reason=assign, fits=unknown>(sub<i32, overflow=ub>(add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(127)), const<i32>(1)), const<i32>(2)), const<i32>(1))));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i8) -> ptr<void>>(%[[VALUE_alloc_anti_range_50]], read<i8>(%[[VALUE_n]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @alloc_anti_range_51(%52 <unnamed>: i16) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %6 @test_anti_range_51(%7 n: i16) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(32767)), const<i32>(1)), const<i32>(2)), widen<i32, reason=promotion>(read<i16>(%7))), le<i32>(widen<i32, reason=promotion>(read<i16>(%7)), const<i32>(12)))
-// DEFAULT-NEXT:             write<i16>(%7, truncate<i16, reason=assign, fits=unknown>(sub<i32, overflow=ub>(add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(32767)), const<i32>(1)), const<i32>(2)), const<i32>(1))));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i16) -> ptr<void>>(%8, read<i16>(%7));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_51:[0-9]+]] @alloc_anti_range_51(%[[VALUE1:[0-9]+]] <unnamed>: i16) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_51:[0-9]+]] @test_anti_range_51(%[[VALUE_n_2:[0-9]+]] n: i16) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(32767)), const<i32>(1)), const<i32>(2)), widen<i32, reason=promotion>(read<i16>(%[[VALUE_n_2]]))), le<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_n_2]])), const<i32>(12)))
+// DEFAULT-NEXT:             write<i16>(%[[VALUE_n_2]], truncate<i16, reason=assign, fits=unknown>(sub<i32, overflow=ub>(add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(32767)), const<i32>(1)), const<i32>(2)), const<i32>(1))));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i16) -> ptr<void>>(%[[VALUE_alloc_anti_range_51]], read<i16>(%[[VALUE_n_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @alloc_anti_range_52(%53 <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %9 @test_anti_range_52(%10 n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(2)), read<i32>(%10)), le<i32>(read<i32>(%10), const<i32>(12)))
-// DEFAULT-NEXT:             write<i32>(%10, sub<i32, overflow=ub>(add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(2)), const<i32>(1)));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%11, read<i32>(%10));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_52:[0-9]+]] @alloc_anti_range_52(%[[VALUE2:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_52:[0-9]+]] @test_anti_range_52(%[[VALUE_n_3:[0-9]+]] n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(2)), read<i32>(%[[VALUE_n_3]])), le<i32>(read<i32>(%[[VALUE_n_3]]), const<i32>(12)))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_3]], sub<i32, overflow=ub>(add<i32, overflow=ub>(sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2147483647)), const<i32>(1)), const<i32>(2)), const<i32>(1)));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_alloc_anti_range_52]], read<i32>(%[[VALUE_n_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @alloc_anti_range_53(%54 <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %12 @test_anti_range_53(%13 n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(neg<i32, overflow=ub>(const<i32>(3)), read<i32>(%13)), le<i32>(read<i32>(%13), const<i32>(12)))
-// DEFAULT-NEXT:             write<i32>(%13, sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(3)), const<i32>(1)));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%14, read<i32>(%13));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_53:[0-9]+]] @alloc_anti_range_53(%[[VALUE3:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_53:[0-9]+]] @test_anti_range_53(%[[VALUE_n_4:[0-9]+]] n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(neg<i32, overflow=ub>(const<i32>(3)), read<i32>(%[[VALUE_n_4]])), le<i32>(read<i32>(%[[VALUE_n_4]]), const<i32>(12)))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_4]], sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(3)), const<i32>(1)));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_alloc_anti_range_53]], read<i32>(%[[VALUE_n_4]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @alloc_anti_range_54(%55 <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %15 @test_anti_range_54(%16 n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(neg<i32, overflow=ub>(const<i32>(2)), read<i32>(%16)), le<i32>(read<i32>(%16), const<i32>(12)))
-// DEFAULT-NEXT:             write<i32>(%16, sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2)), const<i32>(1)));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%17, read<i32>(%16));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_54:[0-9]+]] @alloc_anti_range_54(%[[VALUE4:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_54:[0-9]+]] @test_anti_range_54(%[[VALUE_n_5:[0-9]+]] n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(neg<i32, overflow=ub>(const<i32>(2)), read<i32>(%[[VALUE_n_5]])), le<i32>(read<i32>(%[[VALUE_n_5]]), const<i32>(12)))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_5]], sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(2)), const<i32>(1)));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_alloc_anti_range_54]], read<i32>(%[[VALUE_n_5]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @alloc_anti_range_55(%56 <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %18 @test_anti_range_55(%19 n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(neg<i32, overflow=ub>(const<i32>(1)), read<i32>(%19)), le<i32>(read<i32>(%19), const<i32>(12)))
-// DEFAULT-NEXT:             write<i32>(%19, sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(1)), const<i32>(1)));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%20, read<i32>(%19));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_55:[0-9]+]] @alloc_anti_range_55(%[[VALUE5:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_55:[0-9]+]] @test_anti_range_55(%[[VALUE_n_6:[0-9]+]] n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(neg<i32, overflow=ub>(const<i32>(1)), read<i32>(%[[VALUE_n_6]])), le<i32>(read<i32>(%[[VALUE_n_6]]), const<i32>(12)))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_6]], sub<i32, overflow=ub>(neg<i32, overflow=ub>(const<i32>(1)), const<i32>(1)));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_alloc_anti_range_55]], read<i32>(%[[VALUE_n_6]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @alloc_anti_range_56(%57 <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %21 @test_anti_range_56(%22 n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(const<i32>(0), read<i32>(%22)), le<i32>(read<i32>(%22), const<i32>(12)))
-// DEFAULT-NEXT:             write<i32>(%22, sub<i32, overflow=ub>(const<i32>(0), const<i32>(1)));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%23, read<i32>(%22));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_56:[0-9]+]] @alloc_anti_range_56(%[[VALUE6:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_56:[0-9]+]] @test_anti_range_56(%[[VALUE_n_7:[0-9]+]] n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(const<i32>(0), read<i32>(%[[VALUE_n_7]])), le<i32>(read<i32>(%[[VALUE_n_7]]), const<i32>(12)))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_7]], sub<i32, overflow=ub>(const<i32>(0), const<i32>(1)));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_alloc_anti_range_56]], read<i32>(%[[VALUE_n_7]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @alloc_anti_range_57(%58 <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %24 @test_anti_range_57(%25 n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(const<i32>(1), read<i32>(%25)), le<i32>(read<i32>(%25), const<i32>(12)))
-// DEFAULT-NEXT:             write<i32>(%25, sub<i32, overflow=ub>(const<i32>(1), const<i32>(1)));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%26, read<i32>(%25));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_57:[0-9]+]] @alloc_anti_range_57(%[[VALUE7:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_57:[0-9]+]] @test_anti_range_57(%[[VALUE_n_8:[0-9]+]] n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(const<i32>(1), read<i32>(%[[VALUE_n_8]])), le<i32>(read<i32>(%[[VALUE_n_8]]), const<i32>(12)))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_8]], sub<i32, overflow=ub>(const<i32>(1), const<i32>(1)));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_alloc_anti_range_57]], read<i32>(%[[VALUE_n_8]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @alloc_anti_range_58(%59 <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %27 @test_anti_range_58(%28 n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(const<i32>(1), read<i32>(%28)), le<i32>(read<i32>(%28), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(1))))
-// DEFAULT-NEXT:             write<i32>(%28, sub<i32, overflow=ub>(const<i32>(1), const<i32>(1)));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%29, read<i32>(%28));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_58:[0-9]+]] @alloc_anti_range_58(%[[VALUE8:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_58:[0-9]+]] @test_anti_range_58(%[[VALUE_n_9:[0-9]+]] n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(const<i32>(1), read<i32>(%[[VALUE_n_9]])), le<i32>(read<i32>(%[[VALUE_n_9]]), sub<i32, overflow=ub>(const<i32>(2147483647), const<i32>(1))))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_9]], sub<i32, overflow=ub>(const<i32>(1), const<i32>(1)));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_alloc_anti_range_58]], read<i32>(%[[VALUE_n_9]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @alloc_anti_range_61(%60 <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %30 @test_anti_range_61(%31 n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(const<i32>(1), read<i32>(%31)), le<i32>(read<i32>(%31), const<i32>(2147483647)))
-// DEFAULT-NEXT:             write<i32>(%31, sub<i32, overflow=ub>(const<i32>(1), const<i32>(1)));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%32, read<i32>(%31));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_61:[0-9]+]] @alloc_anti_range_61(%[[VALUE9:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_61:[0-9]+]] @test_anti_range_61(%[[VALUE_n_10:[0-9]+]] n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(const<i32>(1), read<i32>(%[[VALUE_n_10]])), le<i32>(read<i32>(%[[VALUE_n_10]]), const<i32>(2147483647)))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_10]], sub<i32, overflow=ub>(const<i32>(1), const<i32>(1)));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_alloc_anti_range_61]], read<i32>(%[[VALUE_n_10]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %35 @alloc_anti_range_62(%61 <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %33 @test_anti_range_62(%34 n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(const<i32>(0), read<i32>(%34)), le<i32>(read<i32>(%34), const<i32>(2147483647)))
-// DEFAULT-NEXT:             write<i32>(%34, sub<i32, overflow=ub>(const<i32>(0), const<i32>(1)));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%35, read<i32>(%34));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_62:[0-9]+]] @alloc_anti_range_62(%[[VALUE10:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_62:[0-9]+]] @test_anti_range_62(%[[VALUE_n_11:[0-9]+]] n: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(const<i32>(0), read<i32>(%[[VALUE_n_11]])), le<i32>(read<i32>(%[[VALUE_n_11]]), const<i32>(2147483647)))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n_11]], sub<i32, overflow=ub>(const<i32>(0), const<i32>(1)));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_alloc_anti_range_62]], read<i32>(%[[VALUE_n_11]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %38 @alloc_anti_range_64(%62 <unnamed>: i64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %36 @test_anti_range_64(%37 n: i64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<i64>(add<i64, overflow=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(2))), read<i64>(%37)), le<i64>(read<i64>(%37), widen<i64, reason=usual_arith>(const<i32>(12))))
-// DEFAULT-NEXT:             write<i64>(%37, sub<i64, overflow=ub>(add<i64, overflow=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(2))), widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i64) -> ptr<void>>(%38, read<i64>(%37));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_64:[0-9]+]] @alloc_anti_range_64(%[[VALUE11:[0-9]+]] <unnamed>: i64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_64:[0-9]+]] @test_anti_range_64(%[[VALUE_n_12:[0-9]+]] n: i64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<i64>(add<i64, overflow=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(2))), read<i64>(%[[VALUE_n_12]])), le<i64>(read<i64>(%[[VALUE_n_12]]), widen<i64, reason=usual_arith>(const<i32>(12))))
+// DEFAULT-NEXT:             write<i64>(%[[VALUE_n_12]], sub<i64, overflow=ub>(add<i64, overflow=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(2))), widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i64) -> ptr<void>>(%[[VALUE_alloc_anti_range_64]], read<i64>(%[[VALUE_n_12]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %41 @alloc_anti_range_65(%63 <unnamed>: i64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %39 @test_anti_range_65(%40 n: i64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<i64>(add<i64, overflow=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(2))), read<i64>(%40)), le<i64>(read<i64>(%40), widen<i64, reason=usual_arith>(const<i32>(12))))
-// DEFAULT-NEXT:             write<i64>(%40, sub<i64, overflow=ub>(add<i64, overflow=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(2))), widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i64) -> ptr<void>>(%41, read<i64>(%40));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_65:[0-9]+]] @alloc_anti_range_65(%[[VALUE12:[0-9]+]] <unnamed>: i64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_65:[0-9]+]] @test_anti_range_65(%[[VALUE_n_13:[0-9]+]] n: i64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<i64>(add<i64, overflow=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(2))), read<i64>(%[[VALUE_n_13]])), le<i64>(read<i64>(%[[VALUE_n_13]]), widen<i64, reason=usual_arith>(const<i32>(12))))
+// DEFAULT-NEXT:             write<i64>(%[[VALUE_n_13]], sub<i64, overflow=ub>(add<i64, overflow=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), widen<i64, reason=usual_arith>(const<i32>(2))), widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(i64) -> ptr<void>>(%[[VALUE_alloc_anti_range_65]], read<i64>(%[[VALUE_n_13]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %44 @alloc_anti_range_67(%64 <unnamed>: u32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %42 @test_anti_range_67(%43 n: u32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<u32>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)), read<u32>(%43)), le<u32>(read<u32>(%43), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(12))))
-// DEFAULT-NEXT:             write<u32>(%43, reinterpret<u32, reason=assign, fits=unknown>(sub<i32, overflow=ub>(const<i32>(0), const<i32>(1))));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u32) -> ptr<void>>(%44, read<u32>(%43));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_67:[0-9]+]] @alloc_anti_range_67(%[[VALUE13:[0-9]+]] <unnamed>: u32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_67:[0-9]+]] @test_anti_range_67(%[[VALUE_n_14:[0-9]+]] n: u32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<u32>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)), read<u32>(%[[VALUE_n_14]])), le<u32>(read<u32>(%[[VALUE_n_14]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(12))))
+// DEFAULT-NEXT:             write<u32>(%[[VALUE_n_14]], reinterpret<u32, reason=assign, fits=unknown>(sub<i32, overflow=ub>(const<i32>(0), const<i32>(1))));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE_alloc_anti_range_67]], read<u32>(%[[VALUE_n_14]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %47 @alloc_anti_range_68(%65 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %45 @test_anti_range_68(%46 n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))), read<u64>(%46)), le<u64>(read<u64>(%46), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12)))))
-// DEFAULT-NEXT:             write<u64>(%46, reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(sub<i32, overflow=ub>(const<i32>(0), const<i32>(1)))));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64) -> ptr<void>>(%47, read<u64>(%46));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_68:[0-9]+]] @alloc_anti_range_68(%[[VALUE14:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_68:[0-9]+]] @test_anti_range_68(%[[VALUE_n_15:[0-9]+]] n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))), read<u64>(%[[VALUE_n_15]])), le<u64>(read<u64>(%[[VALUE_n_15]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12)))))
+// DEFAULT-NEXT:             write<u64>(%[[VALUE_n_15]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(sub<i32, overflow=ub>(const<i32>(0), const<i32>(1)))));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_alloc_anti_range_68]], read<u64>(%[[VALUE_n_15]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %50 @alloc_anti_range_69(%66 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %48 @test_anti_range_69(%49 n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_and<bool>(le<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))), read<u64>(%49)), le<u64>(read<u64>(%49), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12)))))
-// DEFAULT-NEXT:             write<u64>(%49, reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(sub<i32, overflow=ub>(const<i32>(0), const<i32>(1)))));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64) -> ptr<void>>(%50, read<u64>(%49));
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_anti_range_69:[0-9]+]] @alloc_anti_range_69(%[[VALUE15:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_anti_range_69:[0-9]+]] @test_anti_range_69(%[[VALUE_n_16:[0-9]+]] n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_and<bool>(le<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))), read<u64>(%[[VALUE_n_16]])), le<u64>(read<u64>(%[[VALUE_n_16]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(12)))))
+// DEFAULT-NEXT:             write<u64>(%[[VALUE_n_16]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(sub<i32, overflow=ub>(const<i32>(0), const<i32>(1)))));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_alloc_anti_range_69]], read<u64>(%[[VALUE_n_16]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

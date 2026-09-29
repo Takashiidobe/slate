@@ -37,9 +37,9 @@ foo (const char *p)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 a: array<i8, incomplete> [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%2 p: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<i32>(gt<ptr<const i8>>(read<ptr<const i8>>(%2), array_decay<ptr<const i8>, length=None>(%0)), const<i32>(0), const<i32>(2));
+// DEFAULT-NEXT:     extern %[[VALUE_a:[0-9]+]] a: array<i8, incomplete> [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<const i8>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<i32>(gt<ptr<const i8>>(read<ptr<const i8>>(%[[VALUE_p]]), array_decay<ptr<const i8>, length=None>(%[[VALUE_a]])), const<i32>(0), const<i32>(2));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -45,11 +45,11 @@ __extension__ _Float32x f
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: f32 [storage=static] = const<f32>(1.0) [linkage=external];
-// DEFAULT-NEXT:     global %1 b: f64 [storage=static] = const<f64>(1.0) [linkage=external];
-// DEFAULT-NEXT:     global %2 c: f64 [storage=static] = const<f64>(1.0) [linkage=external];
-// DEFAULT-NEXT:     global %3 d: f32 [storage=static] = const<f32>(2.0) [linkage=external];
-// DEFAULT-NEXT:     global %4 e: f64 [storage=static] = const<f64>(2.0) [linkage=external];
-// DEFAULT-NEXT:     global %5 f: f64 [storage=static] = const<f64>(2.0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: f32 [storage=static] = const<f32>(1.0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: f64 [storage=static] = const<f64>(1.0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: f64 [storage=static] = const<f64>(1.0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: f32 [storage=static] = const<f32>(2.0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: f64 [storage=static] = const<f64>(2.0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: f64 [storage=static] = const<f64>(2.0) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

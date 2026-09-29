@@ -38,15 +38,15 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @__builtin_bswap16(%4 <unnamed>: u16) -> u16 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %0 @foo(%1 c: u32) -> u8 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<u8, reason=return, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%5, truncate<u16, reason=arg, fits=unknown>(or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(52428), read<u32>(%1)), shr<u64, amount_out_of_range=ub, fill=zero_extend>(const<u64>(52428), and<u32>(neg<u32, overflow=wrap>(read<u32>(%1)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(63))))))));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_bswap16:[0-9]+]] @__builtin_bswap16(%[[VALUE0:[0-9]+]] <unnamed>: u16) -> u16 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_c:[0-9]+]] c: u32) -> u8 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<u8, reason=return, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], truncate<u16, reason=arg, fits=unknown>(or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(52428), read<u32>(%[[VALUE_c]])), shr<u64, amount_out_of_range=ub, fill=zero_extend>(const<u64>(52428), and<u32>(neg<u32, overflow=wrap>(read<u32>(%[[VALUE_c]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(63))))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 x: u8 [storage=automatic] = call<u8, signature=fn(u32) -> u8>(%0, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i32>(const<i32>(8), const<i32>(8)), eq<i32>(const<i32>(2), const<i32>(2))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%3))), const<i32>(204)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u8 [storage=automatic] = call<u8, signature=fn(u32) -> u8>(%[[VALUE_foo]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i32>(const<i32>(8), const<i32>(8)), eq<i32>(const<i32>(2), const<i32>(2))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_x]]))), const<i32>(204)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

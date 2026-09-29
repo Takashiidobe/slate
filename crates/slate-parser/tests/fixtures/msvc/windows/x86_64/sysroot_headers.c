@@ -26,6 +26,6 @@ int msvc_sysroot_windows_version = _WIN32_WINNT_WIN10;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 msvc_sysroot_windows_version: i32 [storage=static] = const<i32>(2560) [linkage=external];
+// IR-NEXT:     global %[[VALUE_msvc_sysroot_windows_version:[0-9]+]] msvc_sysroot_windows_version: i32 [storage=static] = const<i32>(2560) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -41,33 +41,33 @@ const char *retained(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %10 .str10: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([112, 108, 97, 105, 110, 0]) [linkage=internal];
-// IR-NEXT:     global %11 .str11: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([97, 108, 105, 97, 115, 0]) [linkage=internal];
-// IR-NEXT:     global %12 .str12: array<i8, 32> [storage=static] = code_units<array<i8, 32>>([99, 111, 110, 115, 116, 32, 99, 104, 97, 114, 32, 42, 112, 114, 101, 116, 116, 121, 40, 105, 110, 116, 44, 32, 99, 104, 97, 114, 32, 42, 41, 0]) [linkage=internal];
-// IR-NEXT:     global %13 .str13: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([98, 117, 105, 108, 116, 105, 110, 0]) [linkage=internal];
-// IR-NEXT:     global %14 .str14: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([105, 110, 100, 101, 120, 101, 100, 0]) [linkage=internal];
-// IR-NEXT:     global %15 .str15: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([114, 101, 116, 97, 105, 110, 101, 100, 0]) [linkage=internal];
-// IR-NEXT:     global %9 held: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(9)>(%15)) [linkage=internal];
-// IR-NEXT:     fn %0 @plain() -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(6)>(%10));
+// IR-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([112, 108, 97, 105, 110, 0]) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 6> [storage=static] = code_units<array<i8, 6>>([97, 108, 105, 97, 115, 0]) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 32> [storage=static] = code_units<array<i8, 32>>([99, 111, 110, 115, 116, 32, 99, 104, 97, 114, 32, 42, 112, 114, 101, 116, 116, 121, 40, 105, 110, 116, 44, 32, 99, 104, 97, 114, 32, 42, 41, 0]) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([98, 117, 105, 108, 116, 105, 110, 0]) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_str_5:[0-9]+]] .str[[VALUE_str_5]]: array<i8, 8> [storage=static] = code_units<array<i8, 8>>([105, 110, 100, 101, 120, 101, 100, 0]) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_str_6:[0-9]+]] .str[[VALUE_str_6]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([114, 101, 116, 97, 105, 110, 101, 100, 0]) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_held:[0-9]+]] held: ptr<const i8> [storage=static] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_6]])) [linkage=internal];
+// IR-NEXT:     fn %[[VALUE_plain:[0-9]+]] @plain() -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %1 @alias() -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(6)>(%11));
+// IR-NEXT:     fn %[[VALUE_alias:[0-9]+]] @alias() -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(6)>(%[[VALUE_str_2]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %2 @pretty(%3 q: i32, %4 s: ptr<i8>) -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(32)>(%12));
+// IR-NEXT:     fn %[[VALUE_pretty:[0-9]+]] @pretty(%[[VALUE_q:[0-9]+]] q: i32, %[[VALUE_s:[0-9]+]] s: ptr<i8>) -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(32)>(%[[VALUE_str_3]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %5 @builtin() -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(8)>(%13));
+// IR-NEXT:     fn %[[VALUE_builtin:[0-9]+]] @builtin() -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str_4]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %6 @measured() -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_measured:[0-9]+]] @measured() -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(9);
 // IR-NEXT:     }
-// IR-NEXT:     fn %7 @indexed() -> i8 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(8)>(%14), const<i32>(1))));
+// IR-NEXT:     fn %[[VALUE_indexed:[0-9]+]] @indexed() -> i8 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_str_5]]), const<i32>(1))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %8 @retained() -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<ptr<const i8>>(%9);
+// IR-NEXT:     fn %[[VALUE_retained:[0-9]+]] @retained() -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<ptr<const i8>>(%[[VALUE_held]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

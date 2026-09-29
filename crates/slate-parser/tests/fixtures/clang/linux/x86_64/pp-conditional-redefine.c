@@ -40,8 +40,8 @@ int nested[X];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 redefined: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 nested: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_redefined:[0-9]+]] redefined: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_nested:[0-9]+]] nested: array<i32, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
@@ -67,8 +67,8 @@ int nested[X];
 // A-NEXT:         storage d64 [size=8, align=8];
 // A-NEXT:         storage d128 [size=16, align=16];
 // A-NEXT:     }
-// A-NEXT:     global %0 redefined: array<i32, 2> [storage=static] [linkage=external];
-// A-NEXT:     global %1 nested: array<i32, 2> [storage=static] [linkage=external];
+// A-NEXT:     global %[[VALUE_redefined:[0-9]+]] redefined: array<i32, 2> [storage=static] [linkage=external];
+// A-NEXT:     global %[[VALUE_nested:[0-9]+]] nested: array<i32, 2> [storage=static] [linkage=external];
 // A-NEXT: }
 // SLATE-FILECHECK-END A
 // SLATE-FILECHECK-BEGIN B
@@ -94,8 +94,8 @@ int nested[X];
 // B-NEXT:         storage d64 [size=8, align=8];
 // B-NEXT:         storage d128 [size=16, align=16];
 // B-NEXT:     }
-// B-NEXT:     global %0 redefined: array<i32, 1> [storage=static] [linkage=external];
-// B-NEXT:     global %1 nested: array<i32, 1> [storage=static] [linkage=external];
+// B-NEXT:     global %[[VALUE_redefined:[0-9]+]] redefined: array<i32, 1> [storage=static] [linkage=external];
+// B-NEXT:     global %[[VALUE_nested:[0-9]+]] nested: array<i32, 1> [storage=static] [linkage=external];
 // B-NEXT: }
 // SLATE-FILECHECK-END B
 // SLATE-FILECHECK-BEGIN AB
@@ -121,7 +121,7 @@ int nested[X];
 // AB-NEXT:         storage d64 [size=8, align=8];
 // AB-NEXT:         storage d128 [size=16, align=16];
 // AB-NEXT:     }
-// AB-NEXT:     global %0 redefined: array<i32, 2> [storage=static] [linkage=external];
-// AB-NEXT:     global %1 nested: array<i32, 5> [storage=static] [align=16] [linkage=external];
+// AB-NEXT:     global %[[VALUE_redefined:[0-9]+]] redefined: array<i32, 2> [storage=static] [linkage=external];
+// AB-NEXT:     global %[[VALUE_nested:[0-9]+]] nested: array<i32, 5> [storage=static] [align=16] [linkage=external];
 // AB-NEXT: }
 // SLATE-FILECHECK-END AB

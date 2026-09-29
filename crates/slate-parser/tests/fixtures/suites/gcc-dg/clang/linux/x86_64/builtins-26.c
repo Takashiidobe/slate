@@ -129,80 +129,80 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @link_error() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @trunc(%17 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %2 @floor(%18 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %3 @ceil(%19 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %4 @truncf(%20 <unnamed>: f32) -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %5 @floorf(%21 <unnamed>: f32) -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %6 @ceilf(%22 <unnamed>: f32) -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %7 @truncl(%23 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %8 @floorl(%24 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %9 @ceill(%25 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %10 @test(%11 x: f64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%1, call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%11))), call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%1, call<f64, signature=fn(f64) -> f64>(%2, read<f64>(%11))), call<f64, signature=fn(f64) -> f64>(%2, read<f64>(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%1, call<f64, signature=fn(f64) -> f64>(%3, read<f64>(%11))), call<f64, signature=fn(f64) -> f64>(%3, read<f64>(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%2, call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%11))), call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%2, call<f64, signature=fn(f64) -> f64>(%2, read<f64>(%11))), call<f64, signature=fn(f64) -> f64>(%2, read<f64>(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%2, call<f64, signature=fn(f64) -> f64>(%3, read<f64>(%11))), call<f64, signature=fn(f64) -> f64>(%3, read<f64>(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%3, call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%11))), call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%3, call<f64, signature=fn(f64) -> f64>(%2, read<f64>(%11))), call<f64, signature=fn(f64) -> f64>(%2, read<f64>(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%3, call<f64, signature=fn(f64) -> f64>(%3, read<f64>(%11))), call<f64, signature=fn(f64) -> f64>(%3, read<f64>(%11)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_link_error:[0-9]+]] @link_error() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_trunc:[0-9]+]] @trunc(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_floor:[0-9]+]] @floor(%[[VALUE1:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_ceil:[0-9]+]] @ceil(%[[VALUE2:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_truncf:[0-9]+]] @truncf(%[[VALUE3:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_floorf:[0-9]+]] @floorf(%[[VALUE4:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_ceilf:[0-9]+]] @ceilf(%[[VALUE5:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_truncl:[0-9]+]] @truncl(%[[VALUE6:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_floorl:[0-9]+]] @floorl(%[[VALUE7:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_ceill:[0-9]+]] @ceill(%[[VALUE8:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_x:[0-9]+]] x: f64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_trunc]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_trunc]], read<f64>(%[[VALUE_x]]))), call<f64, signature=fn(f64) -> f64>(%[[VALUE_trunc]], read<f64>(%[[VALUE_x]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_trunc]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_floor]], read<f64>(%[[VALUE_x]]))), call<f64, signature=fn(f64) -> f64>(%[[VALUE_floor]], read<f64>(%[[VALUE_x]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_trunc]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_ceil]], read<f64>(%[[VALUE_x]]))), call<f64, signature=fn(f64) -> f64>(%[[VALUE_ceil]], read<f64>(%[[VALUE_x]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_floor]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_trunc]], read<f64>(%[[VALUE_x]]))), call<f64, signature=fn(f64) -> f64>(%[[VALUE_trunc]], read<f64>(%[[VALUE_x]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_floor]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_floor]], read<f64>(%[[VALUE_x]]))), call<f64, signature=fn(f64) -> f64>(%[[VALUE_floor]], read<f64>(%[[VALUE_x]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_floor]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_ceil]], read<f64>(%[[VALUE_x]]))), call<f64, signature=fn(f64) -> f64>(%[[VALUE_ceil]], read<f64>(%[[VALUE_x]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_ceil]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_trunc]], read<f64>(%[[VALUE_x]]))), call<f64, signature=fn(f64) -> f64>(%[[VALUE_trunc]], read<f64>(%[[VALUE_x]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_ceil]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_floor]], read<f64>(%[[VALUE_x]]))), call<f64, signature=fn(f64) -> f64>(%[[VALUE_floor]], read<f64>(%[[VALUE_x]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_ceil]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_ceil]], read<f64>(%[[VALUE_x]]))), call<f64, signature=fn(f64) -> f64>(%[[VALUE_ceil]], read<f64>(%[[VALUE_x]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @testf(%13 x: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%4, call<f32, signature=fn(f32) -> f32>(%4, read<f32>(%13))), call<f32, signature=fn(f32) -> f32>(%4, read<f32>(%13)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%4, call<f32, signature=fn(f32) -> f32>(%5, read<f32>(%13))), call<f32, signature=fn(f32) -> f32>(%5, read<f32>(%13)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%4, call<f32, signature=fn(f32) -> f32>(%6, read<f32>(%13))), call<f32, signature=fn(f32) -> f32>(%6, read<f32>(%13)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%5, call<f32, signature=fn(f32) -> f32>(%4, read<f32>(%13))), call<f32, signature=fn(f32) -> f32>(%4, read<f32>(%13)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%5, call<f32, signature=fn(f32) -> f32>(%5, read<f32>(%13))), call<f32, signature=fn(f32) -> f32>(%5, read<f32>(%13)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%5, call<f32, signature=fn(f32) -> f32>(%6, read<f32>(%13))), call<f32, signature=fn(f32) -> f32>(%6, read<f32>(%13)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%6, call<f32, signature=fn(f32) -> f32>(%4, read<f32>(%13))), call<f32, signature=fn(f32) -> f32>(%4, read<f32>(%13)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%6, call<f32, signature=fn(f32) -> f32>(%5, read<f32>(%13))), call<f32, signature=fn(f32) -> f32>(%5, read<f32>(%13)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%6, call<f32, signature=fn(f32) -> f32>(%6, read<f32>(%13))), call<f32, signature=fn(f32) -> f32>(%6, read<f32>(%13)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_testf:[0-9]+]] @testf(%[[VALUE_x_2:[0-9]+]] x: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%[[VALUE_truncf]], call<f32, signature=fn(f32) -> f32>(%[[VALUE_truncf]], read<f32>(%[[VALUE_x_2]]))), call<f32, signature=fn(f32) -> f32>(%[[VALUE_truncf]], read<f32>(%[[VALUE_x_2]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%[[VALUE_truncf]], call<f32, signature=fn(f32) -> f32>(%[[VALUE_floorf]], read<f32>(%[[VALUE_x_2]]))), call<f32, signature=fn(f32) -> f32>(%[[VALUE_floorf]], read<f32>(%[[VALUE_x_2]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%[[VALUE_truncf]], call<f32, signature=fn(f32) -> f32>(%[[VALUE_ceilf]], read<f32>(%[[VALUE_x_2]]))), call<f32, signature=fn(f32) -> f32>(%[[VALUE_ceilf]], read<f32>(%[[VALUE_x_2]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%[[VALUE_floorf]], call<f32, signature=fn(f32) -> f32>(%[[VALUE_truncf]], read<f32>(%[[VALUE_x_2]]))), call<f32, signature=fn(f32) -> f32>(%[[VALUE_truncf]], read<f32>(%[[VALUE_x_2]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%[[VALUE_floorf]], call<f32, signature=fn(f32) -> f32>(%[[VALUE_floorf]], read<f32>(%[[VALUE_x_2]]))), call<f32, signature=fn(f32) -> f32>(%[[VALUE_floorf]], read<f32>(%[[VALUE_x_2]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%[[VALUE_floorf]], call<f32, signature=fn(f32) -> f32>(%[[VALUE_ceilf]], read<f32>(%[[VALUE_x_2]]))), call<f32, signature=fn(f32) -> f32>(%[[VALUE_ceilf]], read<f32>(%[[VALUE_x_2]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%[[VALUE_ceilf]], call<f32, signature=fn(f32) -> f32>(%[[VALUE_truncf]], read<f32>(%[[VALUE_x_2]]))), call<f32, signature=fn(f32) -> f32>(%[[VALUE_truncf]], read<f32>(%[[VALUE_x_2]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%[[VALUE_ceilf]], call<f32, signature=fn(f32) -> f32>(%[[VALUE_floorf]], read<f32>(%[[VALUE_x_2]]))), call<f32, signature=fn(f32) -> f32>(%[[VALUE_floorf]], read<f32>(%[[VALUE_x_2]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(call<f32, signature=fn(f32) -> f32>(%[[VALUE_ceilf]], call<f32, signature=fn(f32) -> f32>(%[[VALUE_ceilf]], read<f32>(%[[VALUE_x_2]]))), call<f32, signature=fn(f32) -> f32>(%[[VALUE_ceilf]], read<f32>(%[[VALUE_x_2]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @testl(%15 x: f80) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%7, call<f80, signature=fn(f80) -> f80>(%7, read<f80>(%15))), call<f80, signature=fn(f80) -> f80>(%7, read<f80>(%15)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%7, call<f80, signature=fn(f80) -> f80>(%8, read<f80>(%15))), call<f80, signature=fn(f80) -> f80>(%8, read<f80>(%15)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%7, call<f80, signature=fn(f80) -> f80>(%9, read<f80>(%15))), call<f80, signature=fn(f80) -> f80>(%9, read<f80>(%15)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%8, call<f80, signature=fn(f80) -> f80>(%7, read<f80>(%15))), call<f80, signature=fn(f80) -> f80>(%7, read<f80>(%15)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%8, call<f80, signature=fn(f80) -> f80>(%8, read<f80>(%15))), call<f80, signature=fn(f80) -> f80>(%8, read<f80>(%15)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%8, call<f80, signature=fn(f80) -> f80>(%9, read<f80>(%15))), call<f80, signature=fn(f80) -> f80>(%9, read<f80>(%15)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%9, call<f80, signature=fn(f80) -> f80>(%7, read<f80>(%15))), call<f80, signature=fn(f80) -> f80>(%7, read<f80>(%15)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%9, call<f80, signature=fn(f80) -> f80>(%8, read<f80>(%15))), call<f80, signature=fn(f80) -> f80>(%8, read<f80>(%15)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%9, call<f80, signature=fn(f80) -> f80>(%9, read<f80>(%15))), call<f80, signature=fn(f80) -> f80>(%9, read<f80>(%15)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_testl:[0-9]+]] @testl(%[[VALUE_x_3:[0-9]+]] x: f80) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%[[VALUE_truncl]], call<f80, signature=fn(f80) -> f80>(%[[VALUE_truncl]], read<f80>(%[[VALUE_x_3]]))), call<f80, signature=fn(f80) -> f80>(%[[VALUE_truncl]], read<f80>(%[[VALUE_x_3]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%[[VALUE_truncl]], call<f80, signature=fn(f80) -> f80>(%[[VALUE_floorl]], read<f80>(%[[VALUE_x_3]]))), call<f80, signature=fn(f80) -> f80>(%[[VALUE_floorl]], read<f80>(%[[VALUE_x_3]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%[[VALUE_truncl]], call<f80, signature=fn(f80) -> f80>(%[[VALUE_ceill]], read<f80>(%[[VALUE_x_3]]))), call<f80, signature=fn(f80) -> f80>(%[[VALUE_ceill]], read<f80>(%[[VALUE_x_3]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%[[VALUE_floorl]], call<f80, signature=fn(f80) -> f80>(%[[VALUE_truncl]], read<f80>(%[[VALUE_x_3]]))), call<f80, signature=fn(f80) -> f80>(%[[VALUE_truncl]], read<f80>(%[[VALUE_x_3]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%[[VALUE_floorl]], call<f80, signature=fn(f80) -> f80>(%[[VALUE_floorl]], read<f80>(%[[VALUE_x_3]]))), call<f80, signature=fn(f80) -> f80>(%[[VALUE_floorl]], read<f80>(%[[VALUE_x_3]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%[[VALUE_floorl]], call<f80, signature=fn(f80) -> f80>(%[[VALUE_ceill]], read<f80>(%[[VALUE_x_3]]))), call<f80, signature=fn(f80) -> f80>(%[[VALUE_ceill]], read<f80>(%[[VALUE_x_3]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%[[VALUE_ceill]], call<f80, signature=fn(f80) -> f80>(%[[VALUE_truncl]], read<f80>(%[[VALUE_x_3]]))), call<f80, signature=fn(f80) -> f80>(%[[VALUE_truncl]], read<f80>(%[[VALUE_x_3]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%[[VALUE_ceill]], call<f80, signature=fn(f80) -> f80>(%[[VALUE_floorl]], read<f80>(%[[VALUE_x_3]]))), call<f80, signature=fn(f80) -> f80>(%[[VALUE_floorl]], read<f80>(%[[VALUE_x_3]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%[[VALUE_ceill]], call<f80, signature=fn(f80) -> f80>(%[[VALUE_ceill]], read<f80>(%[[VALUE_x_3]]))), call<f80, signature=fn(f80) -> f80>(%[[VALUE_ceill]], read<f80>(%[[VALUE_x_3]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(f64) -> void>(%10, const<f64>(3.2));
-// DEFAULT-NEXT:         call<void, signature=fn(f32) -> void>(%12, const<f32>(3.2));
-// DEFAULT-NEXT:         call<void, signature=fn(f80) -> void>(%14, const<f80>(3.20000000000000000004));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(f64) -> void>(%[[VALUE_test]], const<f64>(3.2));
+// DEFAULT-NEXT:         call<void, signature=fn(f32) -> void>(%[[VALUE_testf]], const<f32>(3.2));
+// DEFAULT-NEXT:         call<void, signature=fn(f80) -> void>(%[[VALUE_testl]], const<f80>(3.20000000000000000004));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

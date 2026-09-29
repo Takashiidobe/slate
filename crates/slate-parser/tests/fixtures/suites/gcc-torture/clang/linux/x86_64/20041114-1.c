@@ -52,17 +52,17 @@ void link_failure(void) { abort(); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 v: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @link_failure() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_link_failure:[0-9]+]] @link_failure() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @foo(%4 var: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(le<i32>(read<i32>(%4), const<i32>(0)), lt<u64>(widen<u64, reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1)))), widen<u64, reason=usual_arith>(add<u32, overflow=wrap>(mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)), const<u32>(2)), const<u32>(1))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_var:[0-9]+]] var: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(le<i32>(read<i32>(%[[VALUE_var]]), const<i32>(0)), lt<u64>(widen<u64, reason=explicit>(reinterpret<u32, reason=explicit, fits=unknown>(sub<i32, overflow=ub>(read<i32>(%[[VALUE_var]]), const<i32>(1)))), widen<u64, reason=usual_arith>(add<u32, overflow=wrap>(mul<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2147483647)), const<u32>(2)), const<u32>(1))))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_failure]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main(%6 argc: i32, %7 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, read<i32, volatile>(%2));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], read<i32, volatile>(%[[VALUE_v]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

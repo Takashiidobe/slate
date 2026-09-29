@@ -121,38 +121,38 @@ void passed_cast_argument(int *value) { take_unsigned((int *)value); }
 // IR-WARN-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %0 @take(%27 <unnamed>: ptr<i32>) -> void [linkage=external];
-// IR-WARN-NEXT:     fn %1 @returned(%2 value: ptr<i32>) -> ptr<u32> [linkage=external] [fallthrough=ub_if_used] {
-// IR-WARN-NEXT:         return pointer_cast<ptr<u32>, reason=return>(read<ptr<i32>>(%2));
+// IR-WARN-NEXT:     fn %[[VALUE_take:[0-9]+]] @take(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
+// IR-WARN-NEXT:     fn %[[VALUE_returned:[0-9]+]] @returned(%[[VALUE_value:[0-9]+]] value: ptr<i32>) -> ptr<u32> [linkage=external] [fallthrough=ub_if_used] {
+// IR-WARN-NEXT:         return pointer_cast<ptr<u32>, reason=return>(read<ptr<i32>>(%[[VALUE_value]]));
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %3 @passed(%4 value: ptr<u32>) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-WARN-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%0, pointer_cast<ptr<i32>, reason=arg>(read<ptr<u32>>(%4)));
+// IR-WARN-NEXT:     fn %[[VALUE_passed:[0-9]+]] @passed(%[[VALUE_value_2:[0-9]+]] value: ptr<u32>) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-WARN-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_take]], pointer_cast<ptr<i32>, reason=arg>(read<ptr<u32>>(%[[VALUE_value_2]])));
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %5 @assigned(%6 value: ptr<u32>, %7 constant: ptr<const i32>, %8 shared: ptr<volatile i32>, %9 nested: ptr<ptr<const i32>>) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-WARN-NEXT:         let %10 sign: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(read<ptr<u32>>(%6));
-// IR-WARN-NEXT:         let %11 dropped_const: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(read<ptr<const i32>>(%7));
-// IR-WARN-NEXT:         let %12 dropped_volatile: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(read<ptr<volatile i32>>(%8));
-// IR-WARN-NEXT:         let %13 dropped_nested: ptr<ptr<i32>> [storage=automatic] = pointer_cast<ptr<ptr<i32>>, reason=assign>(read<ptr<ptr<const i32>>>(%9));
-// IR-WARN-NEXT:         let %14 added_const: ptr<const u32> [storage=automatic] = pointer_cast<ptr<const u32>, reason=assign>(read<ptr<i32>>(%10));
-// IR-WARN-NEXT:         let %15 explicit_cast: ptr<u32> [storage=automatic] = pointer_cast<ptr<u32>, reason=explicit>(read<ptr<i32>>(%10));
-// IR-WARN-NEXT:         let %16 compatible: ptr<const i32> [storage=automatic] = pointer_cast<ptr<const i32>, reason=assign>(read<ptr<i32>>(%10));
-// IR-WARN-NEXT:         read<ptr<i32>>(%11);
-// IR-WARN-NEXT:         read<ptr<i32>>(%12);
-// IR-WARN-NEXT:         read<ptr<ptr<i32>>>(%13);
-// IR-WARN-NEXT:         read<ptr<const u32>>(%14);
-// IR-WARN-NEXT:         read<ptr<u32>>(%15);
-// IR-WARN-NEXT:         read<ptr<const i32>>(%16);
+// IR-WARN-NEXT:     fn %[[VALUE_assigned:[0-9]+]] @assigned(%[[VALUE_value_3:[0-9]+]] value: ptr<u32>, %[[VALUE_constant:[0-9]+]] constant: ptr<const i32>, %[[VALUE_shared:[0-9]+]] shared: ptr<volatile i32>, %[[VALUE_nested:[0-9]+]] nested: ptr<ptr<const i32>>) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-WARN-NEXT:         let %[[VALUE_sign:[0-9]+]] sign: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(read<ptr<u32>>(%[[VALUE_value_3]]));
+// IR-WARN-NEXT:         let %[[VALUE_dropped_const:[0-9]+]] dropped_const: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(read<ptr<const i32>>(%[[VALUE_constant]]));
+// IR-WARN-NEXT:         let %[[VALUE_dropped_volatile:[0-9]+]] dropped_volatile: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(read<ptr<volatile i32>>(%[[VALUE_shared]]));
+// IR-WARN-NEXT:         let %[[VALUE_dropped_nested:[0-9]+]] dropped_nested: ptr<ptr<i32>> [storage=automatic] = pointer_cast<ptr<ptr<i32>>, reason=assign>(read<ptr<ptr<const i32>>>(%[[VALUE_nested]]));
+// IR-WARN-NEXT:         let %[[VALUE_added_const:[0-9]+]] added_const: ptr<const u32> [storage=automatic] = pointer_cast<ptr<const u32>, reason=assign>(read<ptr<i32>>(%[[VALUE_sign]]));
+// IR-WARN-NEXT:         let %[[VALUE_explicit_cast:[0-9]+]] explicit_cast: ptr<u32> [storage=automatic] = pointer_cast<ptr<u32>, reason=explicit>(read<ptr<i32>>(%[[VALUE_sign]]));
+// IR-WARN-NEXT:         let %[[VALUE_compatible:[0-9]+]] compatible: ptr<const i32> [storage=automatic] = pointer_cast<ptr<const i32>, reason=assign>(read<ptr<i32>>(%[[VALUE_sign]]));
+// IR-WARN-NEXT:         read<ptr<i32>>(%[[VALUE_dropped_const]]);
+// IR-WARN-NEXT:         read<ptr<i32>>(%[[VALUE_dropped_volatile]]);
+// IR-WARN-NEXT:         read<ptr<ptr<i32>>>(%[[VALUE_dropped_nested]]);
+// IR-WARN-NEXT:         read<ptr<const u32>>(%[[VALUE_added_const]]);
+// IR-WARN-NEXT:         read<ptr<u32>>(%[[VALUE_explicit_cast]]);
+// IR-WARN-NEXT:         read<ptr<const i32>>(%[[VALUE_compatible]]);
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %17 @compared(%18 left: ptr<i32>, %19 right: ptr<u32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-WARN-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%18), pointer_cast<ptr<i32>, reason=explicit>(read<ptr<u32>>(%19))));
+// IR-WARN-NEXT:     fn %[[VALUE_compared:[0-9]+]] @compared(%[[VALUE_left:[0-9]+]] left: ptr<i32>, %[[VALUE_right:[0-9]+]] right: ptr<u32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-WARN-NEXT:         return from_bool<i32, reason=return>(eq<ptr<i32>>(read<ptr<i32>>(%[[VALUE_left]]), pointer_cast<ptr<i32>, reason=explicit>(read<ptr<u32>>(%[[VALUE_right]]))));
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %20 @initialized_from_cast(%21 value: ptr<u32>) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// IR-WARN-NEXT:         let %22 result: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(read<ptr<u32>>(%21));
-// IR-WARN-NEXT:         return read<ptr<i32>>(%22);
+// IR-WARN-NEXT:     fn %[[VALUE_initialized_from_cast:[0-9]+]] @initialized_from_cast(%[[VALUE_value_4:[0-9]+]] value: ptr<u32>) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// IR-WARN-NEXT:         let %[[VALUE_result:[0-9]+]] result: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(read<ptr<u32>>(%[[VALUE_value_4]]));
+// IR-WARN-NEXT:         return read<ptr<i32>>(%[[VALUE_result]]);
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %24 @take_unsigned(%28 value: ptr<u32>) -> void [linkage=external];
-// IR-WARN-NEXT:     fn %25 @passed_cast_argument(%26 value: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-WARN-NEXT:         call<void, signature=fn(ptr<u32>) -> void>(%24, pointer_cast<ptr<u32>, reason=arg>(read<ptr<i32>>(%26)));
+// IR-WARN-NEXT:     fn %[[VALUE_take_unsigned:[0-9]+]] @take_unsigned(%[[VALUE_value_5:[0-9]+]] value: ptr<u32>) -> void [linkage=external];
+// IR-WARN-NEXT:     fn %[[VALUE_passed_cast_argument:[0-9]+]] @passed_cast_argument(%[[VALUE_value_6:[0-9]+]] value: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-WARN-NEXT:         call<void, signature=fn(ptr<u32>) -> void>(%[[VALUE_take_unsigned]], pointer_cast<ptr<u32>, reason=arg>(read<ptr<i32>>(%[[VALUE_value_6]])));
 // IR-WARN-NEXT:     }
 // IR-WARN-NEXT: }
 // SLATE-FILECHECK-END IR-WARN

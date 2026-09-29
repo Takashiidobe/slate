@@ -36,14 +36,14 @@ struct Trailing {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 PackedAligned = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_PackedAligned:[0-9]+]] PackedAligned = struct {
 // DEFAULT-NEXT:         field0 a: i8;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type1 aligned_t = i32;
-// DEFAULT-NEXT:     type @type2 vector_t = vector<i32, 4>;
-// DEFAULT-NEXT:     type @type3 mode_t = i8;
-// DEFAULT-NEXT:     type @type4 Trailing = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_aligned_t:[0-9]+]] aligned_t = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_vector_t:[0-9]+]] vector_t = vector<i32, 4>;
+// DEFAULT-NEXT:     type @type[[TYPE_mode_t:[0-9]+]] mode_t = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_Trailing:[0-9]+]] Trailing = struct {
 // DEFAULT-NEXT:         field0 value: i32;
 // DEFAULT-NEXT:     } [size=4, align=1, offsets=[0]];
 // DEFAULT-NEXT: }

@@ -73,49 +73,49 @@ char testH[sizeof(struct H) == 2 * sizeof(struct A) ? 1 : -1];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 a: i8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 B = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
 // DEFAULT-NEXT:         field0 b: i8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 C = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_C:[0-9]+]] C = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 D = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_D:[0-9]+]] D = struct {
 // DEFAULT-NEXT:         field0 d: i8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type4 E = struct {
-// DEFAULT-NEXT:         field0 <anonymous>: @type5;
+// DEFAULT-NEXT:     type @type[[TYPE_E:[0-9]+]] E = struct {
+// DEFAULT-NEXT:         field0 <anonymous>: @type[[TYPE0:[0-9]+]];
 // DEFAULT-NEXT:         field1 e: i8;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     type @type5 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0]] = struct {
 // DEFAULT-NEXT:         field0 z: i8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type6 typedef_A = @type0;
-// DEFAULT-NEXT:     type @type7 F = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_typedef_A:[0-9]+]] typedef_A = @type[[TYPE_A]];
+// DEFAULT-NEXT:     type @type[[TYPE_F:[0-9]+]] F = struct {
 // DEFAULT-NEXT:         field0 f: i8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type8 G = struct {
-// DEFAULT-NEXT:         field0 <anonymous>: @type9;
+// DEFAULT-NEXT:     type @type[[TYPE_G:[0-9]+]] G = struct {
+// DEFAULT-NEXT:         field0 <anonymous>: @type[[TYPE1:[0-9]+]];
 // DEFAULT-NEXT:         field1 g: i8;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     type @type9 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE1]] = struct {
 // DEFAULT-NEXT:         field0 z: i8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type10 H = struct {
-// DEFAULT-NEXT:         field0 <anonymous>: @type11;
+// DEFAULT-NEXT:     type @type[[TYPE_H:[0-9]+]] H = struct {
+// DEFAULT-NEXT:         field0 <anonymous>: @type[[TYPE2:[0-9]+]];
 // DEFAULT-NEXT:         field1 h: i8;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     type @type11 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE2]] = struct {
 // DEFAULT-NEXT:         field0 z: i8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     global %2 testB: array<i8, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 testC: array<i8, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 testD: array<i8, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 testE: array<i8, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %12 testF: array<i8, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %15 testG: array<i8, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %18 testH: array<i8, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_testB:[0-9]+]] testB: array<i8, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_testC:[0-9]+]] testC: array<i8, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_testD:[0-9]+]] testD: array<i8, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_testE:[0-9]+]] testE: array<i8, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_testF:[0-9]+]] testF: array<i8, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_testG:[0-9]+]] testG: array<i8, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_testH:[0-9]+]] testH: array<i8, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

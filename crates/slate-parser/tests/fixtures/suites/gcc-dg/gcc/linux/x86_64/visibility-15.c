@@ -37,10 +37,10 @@ foo_t g(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo_t = ptr<fn() -> void>;
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=external] [visibility=hidden];
-// DEFAULT-NEXT:     fn %2 @g() -> ptr<fn() -> void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return function_decay<ptr<fn() -> void>>(%0);
+// DEFAULT-NEXT:     type @type[[TYPE_foo_t:[0-9]+]] foo_t = ptr<fn() -> void>;
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [visibility=hidden];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> ptr<fn() -> void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return function_decay<ptr<fn() -> void>>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

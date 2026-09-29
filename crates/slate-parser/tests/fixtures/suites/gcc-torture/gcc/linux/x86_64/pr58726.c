@@ -47,28 +47,28 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = union {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 f1: i32;
 // DEFAULT-NEXT:         field1 f2: i32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0], bit_offsets=[None, Some(0)], bit_units=[(0, 1)], field_units=[None, Some(0)]];
-// DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 c: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 b: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @foo(%5 p: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(conditional<i32>(lt<i32>(widen<i32, reason=promotion>(read<i16>(%5)), const<i32>(0)), widen<i32, reason=promotion>(read<i16>(%5)), read<i32>(%0)));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE0]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(conditional<i32>(lt<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_p]])), const<i32>(0)), widen<i32, reason=promotion>(read<i16>(%[[VALUE_p]])), read<i32>(%[[VALUE_a]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(mul<u64, overflow=wrap>(const<u64>(2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16)))), ne<u64>(mul<u64, overflow=wrap>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32)))))
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         write<i32>(field0(%3), const<i32>(56374));
-// DEFAULT-NEXT:         let %7 d: u16 [storage=automatic];
-// DEFAULT-NEXT:         let %8 e: i32 [storage=automatic] = read<i32>(bitfield1<unit=0, bytes=0..1, bits=0..1>(%3));
-// DEFAULT-NEXT:         write<u16>(%7, reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(conditional<i32>(eq<i32>(read<i32>(%8), const<i32>(0)), read<i32>(field0(%3)), const<i32>(0)))));
-// DEFAULT-NEXT:         write<i32>(%1, widen<i32, reason=assign>(call<i16, signature=fn(i16) -> i16>(%4, reinterpret<i16, reason=arg, fits=unknown>(read<u16>(%7)))));
-// DEFAULT-NEXT:         widen<i32, reason=assign>(call<i16, signature=fn(i16) -> i16>(%4, reinterpret<i16, reason=arg, fits=unknown>(read<u16>(%7))));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(const<i32>(56374))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_b]]), const<i32>(56374));
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: u16 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: i32 [storage=automatic] = read<i32>(bitfield1<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         write<u16>(%[[VALUE_d]], reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(conditional<i32>(eq<i32>(read<i32>(%[[VALUE_e]]), const<i32>(0)), read<i32>(field0(%[[VALUE_b]])), const<i32>(0)))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], widen<i32, reason=assign>(call<i16, signature=fn(i16) -> i16>(%[[VALUE_foo]], reinterpret<i16, reason=arg, fits=unknown>(read<u16>(%[[VALUE_d]])))));
+// DEFAULT-NEXT:         widen<i32, reason=assign>(call<i16, signature=fn(i16) -> i16>(%[[VALUE_foo]], reinterpret<i16, reason=arg, fits=unknown>(read<u16>(%[[VALUE_d]]))));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_c]]), widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(const<i32>(56374))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

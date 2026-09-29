@@ -50,40 +50,40 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 t: i32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// DEFAULT-NEXT:     fn %4 @f(%5 t: @type0, %6 a: i32, %7 b: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(native_c, scalar, scalar) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 bd: i32 [storage=automatic] = read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%5));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%8), const<i32>(0))
-// DEFAULT-NEXT:             let %23: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:             let %24: i32 [synthetic] = or<i32>(read<i32>(%23), read<i32>(%7));
-// DEFAULT-NEXT:             write<i32>(%6, read<i32>(%24));
-// DEFAULT-NEXT:         return read<i32>(%6);
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_t:[0-9]+]] t: @type[[TYPE_s]], %[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(native_c, scalar, scalar) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_bd:[0-9]+]] bd: i32 [storage=automatic] = read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_t]]));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_bd]]), const<i32>(0))
+// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = or<i32>(read<i32>(%[[VALUE0]]), read<i32>(%[[VALUE_b]]));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10 t: @type0 [storage=automatic];
-// DEFAULT-NEXT:         for %21
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_t_2:[0-9]+]] t: @type[[TYPE_s]] [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %11 i: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
-// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%11), const<i32>(1))
+// DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
+// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%[[VALUE_i]]), const<i32>(1))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %25: i32 [synthetic] = read<i32>(%11);
-// DEFAULT-NEXT:                 let %26: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%25), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%11, read<i32>(%26));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE4]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %12 a: i32 [storage=automatic] = const<i32>(16);
-// DEFAULT-NEXT:                     let %13 b: i32 [storage=automatic] = const<i32>(15);
-// DEFAULT-NEXT:                     let %14 c: i32 [storage=automatic] = or<i32>(read<i32>(%12), read<i32>(%13));
-// DEFAULT-NEXT:                     let %15 t: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = read<i32>(%11));
-// DEFAULT-NEXT:                     let %16 r: i32 [storage=automatic] = call<i32, signature=fn(@type0, i32, i32) -> i32, abi=sysv64(native_c, scalar, scalar) -> scalar>(%4, copy<@type0, reason=arg>(read<@type0>(%15)), read<i32>(%12), read<i32>(%13));
-// DEFAULT-NEXT:                     let %17 exp: i32 [storage=automatic] = conditional<i32>(ne<i32>(read<i32>(%11), const<i32>(0)), or<i32>(read<i32>(%12), read<i32>(%13)), read<i32>(%12));
-// DEFAULT-NEXT:                     if ne<i32>(read<i32>(%17), read<i32>(%16))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%22);
+// DEFAULT-NEXT:                     let %[[VALUE_a_2:[0-9]+]] a: i32 [storage=automatic] = const<i32>(16);
+// DEFAULT-NEXT:                     let %[[VALUE_b_2:[0-9]+]] b: i32 [storage=automatic] = const<i32>(15);
+// DEFAULT-NEXT:                     let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic] = or<i32>(read<i32>(%[[VALUE_a_2]]), read<i32>(%[[VALUE_b_2]]));
+// DEFAULT-NEXT:                     let %[[VALUE_t_3:[0-9]+]] t: @type[[TYPE_s]] [storage=automatic] = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = read<i32>(%[[VALUE_i]]));
+// DEFAULT-NEXT:                     let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] = call<i32, signature=fn(@type[[TYPE_s]], i32, i32) -> i32, abi=sysv64(native_c, scalar, scalar) -> scalar>(%[[VALUE_f]], copy<@type[[TYPE_s]], reason=arg>(read<@type[[TYPE_s]]>(%[[VALUE_t_3]])), read<i32>(%[[VALUE_a_2]]), read<i32>(%[[VALUE_b_2]]));
+// DEFAULT-NEXT:                     let %[[VALUE_exp:[0-9]+]] exp: i32 [storage=automatic] = conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), or<i32>(read<i32>(%[[VALUE_a_2]]), read<i32>(%[[VALUE_b_2]])), read<i32>(%[[VALUE_a_2]]));
+// DEFAULT-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_exp]]), read<i32>(%[[VALUE_r]]))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

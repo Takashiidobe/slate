@@ -50,25 +50,25 @@ t()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 a = enum : u32 {
-// DEFAULT-NEXT:         %0 test1 = const<i32>(0);
-// DEFAULT-NEXT:         %1 test2 = const<i32>(1);
-// DEFAULT-NEXT:         %2 test3 = const<i32>(2147483647);
+// DEFAULT-NEXT:     type @type[[TYPE_a:[0-9]+]] a = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_test1:[0-9]+]] test1 = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_test2:[0-9]+]] test2 = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_test3:[0-9]+]] test3 = const<i32>(2147483647);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %4 a: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 b: ptr<@type0> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %6 @reset() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @t() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type0>(%4)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type0>(deref(read<ptr<@type0>>(%5)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
-// DEFAULT-NEXT:         if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type0>(%4)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type0>(deref(read<ptr<@type0>>(%5)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_a]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE_a]]> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_reset:[0-9]+]] @reset() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_t:[0-9]+]] @t() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_a]]>(%[[VALUE_a]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_a]]>(deref(read<ptr<@type[[TYPE_a]]>>(%[[VALUE_b]])))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_reset]]);
+// DEFAULT-NEXT:         if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_a]]>(%[[VALUE_a]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_a]]>(deref(read<ptr<@type[[TYPE_a]]>>(%[[VALUE_b]])))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

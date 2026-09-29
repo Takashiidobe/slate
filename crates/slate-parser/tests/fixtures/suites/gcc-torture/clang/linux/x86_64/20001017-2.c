@@ -40,17 +40,17 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @fn_4parms(%2 a: u8, %3 b: ptr<i64>, %4 c: ptr<i64>, %5 d: ptr<u32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i64>(read<i64>(deref(read<ptr<i64>>(%3))), widen<i64, reason=usual_arith>(const<i32>(1))), ne<i64>(read<i64>(deref(read<ptr<i64>>(%4))), widen<i64, reason=usual_arith>(const<i32>(2)))), ne<u32>(read<u32>(deref(read<ptr<u32>>(%5))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_fn_4parms:[0-9]+]] @fn_4parms(%[[VALUE_a:[0-9]+]] a: u8, %[[VALUE_b:[0-9]+]] b: ptr<i64>, %[[VALUE_c:[0-9]+]] c: ptr<i64>, %[[VALUE_d:[0-9]+]] d: ptr<u32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i64>(read<i64>(deref(read<ptr<i64>>(%[[VALUE_b]]))), widen<i64, reason=usual_arith>(const<i32>(1))), ne<i64>(read<i64>(deref(read<ptr<i64>>(%[[VALUE_c]]))), widen<i64, reason=usual_arith>(const<i32>(2)))), ne<u32>(read<u32>(deref(read<ptr<u32>>(%[[VALUE_d]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 a: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         let %8 b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1)));
-// DEFAULT-NEXT:         let %9 c: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(2)));
-// DEFAULT-NEXT:         let %10 d: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(3));
-// DEFAULT-NEXT:         call<void, signature=fn(u8, ptr<i64>, ptr<i64>, ptr<u32>) -> void>(%1, read<u8>(%7), pointer_cast<ptr<i64>, reason=arg>(addr_of<ptr<u64>>(%8)), pointer_cast<ptr<i64>, reason=arg>(addr_of<ptr<u64>>(%9)), addr_of<ptr<u32>>(%10));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: u8 [storage=automatic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(2)));
+// DEFAULT-NEXT:         let %[[VALUE_d_2:[0-9]+]] d: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(3));
+// DEFAULT-NEXT:         call<void, signature=fn(u8, ptr<i64>, ptr<i64>, ptr<u32>) -> void>(%[[VALUE_fn_4parms]], read<u8>(%[[VALUE_a_2]]), pointer_cast<ptr<i64>, reason=arg>(addr_of<ptr<u64>>(%[[VALUE_b_2]])), pointer_cast<ptr<i64>, reason=arg>(addr_of<ptr<u64>>(%[[VALUE_c_2]])), addr_of<ptr<u32>>(%[[VALUE_d_2]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

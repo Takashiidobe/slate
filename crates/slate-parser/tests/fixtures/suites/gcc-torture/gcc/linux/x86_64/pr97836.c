@@ -42,27 +42,27 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @b(%2 c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_b:[0-9]+]] @b(%[[VALUE_c:[0-9]+]] c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @d(%4 e: ptr<i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_d:[0-9]+]] @d(%[[VALUE_e:[0-9]+]] e: ptr<i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %8: bool [synthetic];
-// DEFAULT-NEXT:                 if ne<i32>(read<i32>(%0), const<i32>(0))
-// DEFAULT-NEXT:                     write<bool>(%8, ne<i32>(call<i32, signature=fn(i32) -> i32>(%1, read<i32>(deref(read<ptr<i32>>(%4)))), const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE0:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:                 if ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE0]], ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_b]], read<i32>(deref(read<ptr<i32>>(%[[VALUE_e]])))), const<i32>(0)));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%8, const<bool>(false));
-// DEFAULT-NEXT:                 write<i32>(%0, from_bool<i32, reason=assign>(read<bool>(%8)));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE0]], const<bool>(false));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_a]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE0]])));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<ptr<i32>>(%4);
+// DEFAULT-NEXT:         return read<ptr<i32>>(%[[VALUE_e]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 f: i32 [storage=automatic];
-// DEFAULT-NEXT:         if ne<ptr<i32>>(call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(%3, addr_of<ptr<i32>>(%6)), addr_of<ptr<i32>>(%6))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: i32 [storage=automatic];
+// DEFAULT-NEXT:         if ne<ptr<i32>>(call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(%[[VALUE_d]], addr_of<ptr<i32>>(%[[VALUE_f]])), addr_of<ptr<i32>>(%[[VALUE_f]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

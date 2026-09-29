@@ -61,35 +61,35 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 _st = struct {
+// DEFAULT-NEXT:     type @type[[TYPE__st:[0-9]+]] _st = struct {
 // DEFAULT-NEXT:         field0 iIndex: i64 : 24;
 // DEFAULT-NEXT:         field1 iIndex1: i64 : 24;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 3], bit_offsets=[Some(0), Some(24)], bit_units=[(0, 6)], field_units=[Some(0), Some(0)]];
-// DEFAULT-NEXT:     type @type1 st = @type0;
-// DEFAULT-NEXT:     global %2 next: ptr<@type0> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 constreg: array<i32, 1> [storage=static] [const] = aggregate<array<i32, 1>, zero_fill=false>(index0 = const<i32>(0)) [linkage=internal];
-// DEFAULT-NEXT:     global %9 constreg: array<i64, 1> [storage=static] [const] = aggregate<array<i64, 1>, zero_fill=false>(index0 = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(4278124286)))) [linkage=internal];
-// DEFAULT-NEXT:     fn %3 @g() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 next: ptr<@type0> [storage=automatic] = null<ptr<@type0>>;
-// DEFAULT-NEXT:         let %5 nIndx: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%5, const<i32>(0));
-// DEFAULT-NEXT:         write<i64>(bitfield0<unit=0, bytes=0..6, bits=0..24>(deref(read<ptr<@type0>>(%4))), widen<i64, reason=assign>(read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(1)>(%6), read<i32>(%5))))));
+// DEFAULT-NEXT:     type @type[[TYPE_st:[0-9]+]] st = @type[[TYPE__st]];
+// DEFAULT-NEXT:     global %[[VALUE_next:[0-9]+]] next: ptr<@type[[TYPE__st]]> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_constreg:[0-9]+]] constreg: array<i32, 1> [storage=static] [const] = aggregate<array<i32, 1>, zero_fill=false>(index0 = const<i32>(0)) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_constreg_2:[0-9]+]] constreg: array<i64, 1> [storage=static] [const] = aggregate<array<i64, 1>, zero_fill=false>(index0 = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(4278124286)))) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_next_2:[0-9]+]] next: ptr<@type[[TYPE__st]]> [storage=automatic] = null<ptr<@type[[TYPE__st]]>>;
+// DEFAULT-NEXT:         let %[[VALUE_nIndx:[0-9]+]] nIndx: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_nIndx]], const<i32>(0));
+// DEFAULT-NEXT:         write<i64>(bitfield0<unit=0, bytes=0..6, bits=0..24>(deref(read<ptr<@type[[TYPE__st]]>>(%[[VALUE_next_2]]))), widen<i64, reason=assign>(read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(1)>(%[[VALUE_constreg]]), read<i32>(%[[VALUE_nIndx]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 nIndx: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%8, const<i32>(0));
-// DEFAULT-NEXT:         write<i64>(bitfield0<unit=0, bytes=0..6, bits=0..24>(deref(read<ptr<@type0>>(%2))), read<i64>(deref(ptr_offset<ptr<const i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<const i64>, length=Some(1)>(%9), read<i32>(%8)))));
-// DEFAULT-NEXT:         write<i64>(bitfield1<unit=0, bytes=0..6, bits=24..48>(deref(read<ptr<@type0>>(%2))), read<i64>(deref(ptr_offset<ptr<const i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<const i64>, length=Some(1)>(%9), read<i32>(%8)))));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_nIndx_2:[0-9]+]] nIndx: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_nIndx_2]], const<i32>(0));
+// DEFAULT-NEXT:         write<i64>(bitfield0<unit=0, bytes=0..6, bits=0..24>(deref(read<ptr<@type[[TYPE__st]]>>(%[[VALUE_next]]))), read<i64>(deref(ptr_offset<ptr<const i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<const i64>, length=Some(1)>(%[[VALUE_constreg_2]]), read<i32>(%[[VALUE_nIndx_2]])))));
+// DEFAULT-NEXT:         write<i64>(bitfield1<unit=0, bytes=0..6, bits=24..48>(deref(read<ptr<@type[[TYPE__st]]>>(%[[VALUE_next]]))), read<i64>(deref(ptr_offset<ptr<const i64>, subtract=false, element=i64, overflow=ub>(array_decay<ptr<const i64>, length=Some(1)>(%[[VALUE_constreg_2]]), read<i32>(%[[VALUE_nIndx_2]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %11 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type0>>(%2, addr_of<ptr<@type0>>(%11));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(truncate<i32, reason=promotion, fits=unknown>(read<i64>(bitfield0<unit=0, bytes=0..6, bits=0..24>(deref(read<ptr<@type0>>(%2)))))), const<u32>(4294901502))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
-// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(truncate<i32, reason=promotion, fits=unknown>(read<i64>(bitfield1<unit=0, bytes=0..6, bits=24..48>(deref(read<ptr<@type0>>(%2)))))), const<u32>(4294901502))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE__st]] [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE__st]]>>(%[[VALUE_next]], addr_of<ptr<@type[[TYPE__st]]>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_f]]);
+// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(truncate<i32, reason=promotion, fits=unknown>(read<i64>(bitfield0<unit=0, bytes=0..6, bits=0..24>(deref(read<ptr<@type[[TYPE__st]]>>(%[[VALUE_next]])))))), const<u32>(4294901502))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(truncate<i32, reason=promotion, fits=unknown>(read<i64>(bitfield1<unit=0, bytes=0..6, bits=24..48>(deref(read<ptr<@type[[TYPE__st]]>>(%[[VALUE_next]])))))), const<u32>(4294901502))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

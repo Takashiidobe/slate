@@ -92,41 +92,41 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 x: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 x1: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 x2: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 x4: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 x8: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 y8: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 z8: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 x16: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 x32: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 x64: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 x128: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %12 y128: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %13 z128: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %14 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x1:[0-9]+]] x1: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x2:[0-9]+]] x2: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x4:[0-9]+]] x4: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x8:[0-9]+]] x8: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_y8:[0-9]+]] y8: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_z8:[0-9]+]] z8: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x16:[0-9]+]] x16: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x32:[0-9]+]] x32: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x64:[0-9]+]] x64: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x128:[0-9]+]] x128: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_y128:[0-9]+]] y128: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_z128:[0-9]+]] z128: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(16))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(32))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(64))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(128))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(128))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if lt<u64>(const<u64>(4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(128))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

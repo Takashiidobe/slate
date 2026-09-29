@@ -44,17 +44,17 @@ int foo(long x, long y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @fixfloor(%1 x: i64) -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ge<i64>(read<i64>(%1), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             return truncate<i32, reason=return, fits=unknown>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%1), const<i32>(16)));
+// DEFAULT-NEXT:     fn %[[VALUE_fixfloor:[0-9]+]] @fixfloor(%[[VALUE_x:[0-9]+]] x: i64) -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ge<i64>(read<i64>(%[[VALUE_x]]), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             return truncate<i32, reason=return, fits=unknown>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%[[VALUE_x]]), const<i32>(16)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             return truncate<i32, reason=return, fits=unknown>(not<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(not<i64>(read<i64>(%1)), const<i32>(16))));
+// DEFAULT-NEXT:             return truncate<i32, reason=return, fits=unknown>(not<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(not<i64>(read<i64>(%[[VALUE_x]])), const<i32>(16))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @fixtoi(%3 x: i64) -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(add<i64, overflow=ub>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) -> i32>(%0, read<i64>(%3))), shr<i64, amount_out_of_range=ub, fill=sign_extend>(and<i64>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(32768))), const<i32>(15))));
+// DEFAULT-NEXT:     fn %[[VALUE_fixtoi:[0-9]+]] @fixtoi(%[[VALUE_x_2:[0-9]+]] x: i64) -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(add<i64, overflow=ub>(widen<i64, reason=usual_arith>(call<i32, signature=fn(i64) -> i32>(%[[VALUE_fixfloor]], read<i64>(%[[VALUE_x_2]]))), shr<i64, amount_out_of_range=ub, fill=sign_extend>(and<i64>(read<i64>(%[[VALUE_x_2]]), widen<i64, reason=usual_arith>(const<i32>(32768))), const<i32>(15))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @foo(%5 x: i64, %6 y: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i64) -> i32>(%2, mul<i64, overflow=ub>(read<i64>(%5), read<i64>(%6)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x_3:[0-9]+]] x: i64, %[[VALUE_y:[0-9]+]] y: i64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i64) -> i32>(%[[VALUE_fixtoi]], mul<i64, overflow=ub>(read<i64>(%[[VALUE_x_3]]), read<i64>(%[[VALUE_y]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

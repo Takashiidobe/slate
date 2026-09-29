@@ -33,13 +33,13 @@ unsigned _BitInt(8) unsigned_mixed_wbu = 7wBu;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 large: i256b [storage=static] = widen<i256b, reason=assign>(const<i130b>(340282366920938463463374607431768211456)) [linkage=external];
-// DEFAULT-NEXT:     global %1 signed_wb: i8b [storage=static] = widen<i8b, reason=assign>(const<i2b>(1)) [linkage=external];
-// DEFAULT-NEXT:     global %2 unsigned_uwb: u8b [storage=static] = widen<u8b, reason=assign>(const<u2b>(2)) [linkage=external];
-// DEFAULT-NEXT:     global %3 unsigned_wbu: u8b [storage=static] = widen<u8b, reason=assign>(const<u2b>(3)) [linkage=external];
-// DEFAULT-NEXT:     global %4 unsigned_upper_uwb: u8b [storage=static] = widen<u8b, reason=assign>(const<u3b>(4)) [linkage=external];
-// DEFAULT-NEXT:     global %5 unsigned_upper_wbu: u8b [storage=static] = widen<u8b, reason=assign>(const<u3b>(5)) [linkage=external];
-// DEFAULT-NEXT:     global %6 unsigned_mixed_uwb: u8b [storage=static] = widen<u8b, reason=assign>(const<u3b>(6)) [linkage=external];
-// DEFAULT-NEXT:     global %7 unsigned_mixed_wbu: u8b [storage=static] = widen<u8b, reason=assign>(const<u3b>(7)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_large:[0-9]+]] large: i256b [storage=static] = widen<i256b, reason=assign>(const<i130b>(340282366920938463463374607431768211456)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_signed_wb:[0-9]+]] signed_wb: i8b [storage=static] = widen<i8b, reason=assign>(const<i2b>(1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unsigned_uwb:[0-9]+]] unsigned_uwb: u8b [storage=static] = widen<u8b, reason=assign>(const<u2b>(2)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unsigned_wbu:[0-9]+]] unsigned_wbu: u8b [storage=static] = widen<u8b, reason=assign>(const<u2b>(3)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unsigned_upper_uwb:[0-9]+]] unsigned_upper_uwb: u8b [storage=static] = widen<u8b, reason=assign>(const<u3b>(4)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unsigned_upper_wbu:[0-9]+]] unsigned_upper_wbu: u8b [storage=static] = widen<u8b, reason=assign>(const<u3b>(5)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unsigned_mixed_uwb:[0-9]+]] unsigned_mixed_uwb: u8b [storage=static] = widen<u8b, reason=assign>(const<u3b>(6)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unsigned_mixed_wbu:[0-9]+]] unsigned_mixed_wbu: u8b [storage=static] = widen<u8b, reason=assign>(const<u3b>(7)) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

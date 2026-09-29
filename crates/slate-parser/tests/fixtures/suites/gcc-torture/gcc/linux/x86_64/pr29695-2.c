@@ -71,54 +71,54 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 a: i32 [storage=static] = const<i32>(128) [linkage=external];
-// DEFAULT-NEXT:     global %2 b: u8 [storage=static] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(128))) [linkage=external];
-// DEFAULT-NEXT:     global %3 c: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
-// DEFAULT-NEXT:     global %4 d: u32 [storage=static] = const<u32>(2147483648) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @f1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<i32>(ne<i32>(and<i32>(read<i32>(%1), const<i32>(128)), const<i32>(0)), const<i32>(128), const<i32>(0));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] = const<i32>(128) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: u8 [storage=static] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(128))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i64 [storage=static] = const<i64>(2147483648) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: u32 [storage=static] = const<u32>(2147483648) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<i32>(ne<i32>(and<i32>(read<i32>(%[[VALUE_a]]), const<i32>(128)), const<i32>(0)), const<i32>(128), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<i32>(ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%2))), const<i32>(128)), const<i32>(0)), const<i32>(128), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<i32>(ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_b]]))), const<i32>(128)), const<i32>(0)), const<i32>(128), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @f3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<i32>(ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%2))), const<i32>(128)), const<i32>(0)), const<i32>(896), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<i32>(ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_b]]))), const<i32>(128)), const<i32>(0)), const<i32>(896), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @f4() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<i32>(ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%2))), const<i32>(128)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(128)), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<i32>(ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_b]]))), const<i32>(128)), const<i32>(0)), neg<i32, overflow=ub>(const<i32>(128)), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @f5() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<i64>(ne<i64>(and<i64>(read<i64>(%3), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(const<u32>(2147483648)))), const<i64>(0)), const<i64>(2147483648), const<i64>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<i64>(ne<i64>(and<i64>(read<i64>(%[[VALUE_c]]), reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(const<u32>(2147483648)))), const<i64>(0)), const<i64>(2147483648), const<i64>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @f6() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<i64>(ne<u32>(and<u32>(read<u32>(%4), const<u32>(2147483648)), const<u32>(0)), const<i64>(2147483648), const<i64>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<i64>(ne<u32>(and<u32>(read<u32>(%[[VALUE_d]]), const<u32>(2147483648)), const<u32>(0)), const<i64>(2147483648), const<i64>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @f7() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<i64>(ne<u32>(and<u32>(read<u32>(%4), const<u32>(2147483648)), const<u32>(0)), const<i64>(15032385536), const<i64>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<i64>(ne<u32>(and<u32>(read<u32>(%[[VALUE_d]]), const<u32>(2147483648)), const<u32>(0)), const<i64>(15032385536), const<i64>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @f8() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<i64>(ne<u32>(and<u32>(read<u32>(%4), const<u32>(2147483648)), const<u32>(0)), neg<i64, overflow=ub>(const<i64>(2147483648)), const<i64>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<i64>(ne<u32>(and<u32>(read<u32>(%[[VALUE_d]]), const<u32>(2147483648)), const<u32>(0)), neg<i64, overflow=ub>(const<i64>(2147483648)), const<i64>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(truncate<i8, reason=explicit, fits=unknown>(const<i32>(128))), neg<i32, overflow=ub>(const<i32>(128))), ne<i64>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=explicit, fits=unknown>(const<u32>(2147483648))), neg<i64, overflow=ub>(const<i64>(2147483648))))
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%5), const<i32>(128))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%6), const<i32>(128))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%7), const<i32>(896))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%8), neg<i32, overflow=ub>(const<i32>(128)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn() -> i64>(%9), const<i64>(2147483648))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn() -> i64>(%10), const<i64>(2147483648))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn() -> i64>(%11), const<i64>(15032385536))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn() -> i64>(%12), neg<i64, overflow=ub>(const<i64>(2147483648)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_f1]]), const<i32>(128))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_f2]]), const<i32>(128))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_f3]]), const<i32>(896))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_f4]]), neg<i32, overflow=ub>(const<i32>(128)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn() -> i64>(%[[VALUE_f5]]), const<i64>(2147483648))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn() -> i64>(%[[VALUE_f6]]), const<i64>(2147483648))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn() -> i64>(%[[VALUE_f7]]), const<i64>(15032385536))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn() -> i64>(%[[VALUE_f8]]), neg<i64, overflow=ub>(const<i64>(2147483648)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

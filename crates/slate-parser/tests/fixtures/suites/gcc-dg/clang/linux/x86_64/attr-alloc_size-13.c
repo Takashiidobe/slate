@@ -59,12 +59,12 @@ typedef A (1) char* F3_2_3 (int, int, int);   // { dg-warning "ignoring attribut
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 F3_2_3 = fn(i32, i32, i32) -> ptr<i8>;
-// DEFAULT-NEXT:     type @type1 F3_2_3 = fn(i32, i32, i32) -> ptr<i8>;
-// DEFAULT-NEXT:     type @type2 F3_2_3 = fn(i32, i32, i32) -> ptr<i8>;
-// DEFAULT-NEXT:     type @type3 F3_2_3 = fn(i32, i32, i32) -> ptr<i8>;
-// DEFAULT-NEXT:     fn %0 @f2_1(%4 <unnamed>: i32, %5 <unnamed>: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f2_2(%12 <unnamed>: i32, %13 <unnamed>: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @f3_1(%18 <unnamed>: i32, %19 <unnamed>: i32, %20 <unnamed>: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_F3_2_3:[0-9]+]] F3_2_3 = fn(i32, i32, i32) -> ptr<i8>;
+// DEFAULT-NEXT:     type @type[[TYPE_F3_2_3_2:[0-9]+]] F3_2_3 = fn(i32, i32, i32) -> ptr<i8>;
+// DEFAULT-NEXT:     type @type[[TYPE_F3_2_3_3:[0-9]+]] F3_2_3 = fn(i32, i32, i32) -> ptr<i8>;
+// DEFAULT-NEXT:     type @type[[TYPE_F3_2_3_4:[0-9]+]] F3_2_3 = fn(i32, i32, i32) -> ptr<i8>;
+// DEFAULT-NEXT:     fn %[[VALUE_f2_1:[0-9]+]] @f2_1(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f2_2:[0-9]+]] @f2_2(%[[VALUE2:[0-9]+]] <unnamed>: i32, %[[VALUE3:[0-9]+]] <unnamed>: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f3_1:[0-9]+]] @f3_1(%[[VALUE4:[0-9]+]] <unnamed>: i32, %[[VALUE5:[0-9]+]] <unnamed>: i32, %[[VALUE6:[0-9]+]] <unnamed>: i32) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

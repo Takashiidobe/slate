@@ -36,9 +36,9 @@ fn (int *p)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @fn(%1 p: ptr<i32>) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<ptr<i32>>(%1, null<ptr<i32>>);
-// DEFAULT-NEXT:         return read<ptr<i32>>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_fn:[0-9]+]] @fn(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_p]], null<ptr<i32>>);
+// DEFAULT-NEXT:         return read<ptr<i32>>(%[[VALUE_p]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

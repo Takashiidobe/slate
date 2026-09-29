@@ -85,30 +85,30 @@ wchar_t *p = (wchar_t [5]){ (L"p") }; /* { dg-bogus "warning" "warning in place 
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 wchar_t = i32;
-// DEFAULT-NEXT:     type @type1 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 a: array<i8, 10>;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:         field2 c: array<i32, 10>;
 // DEFAULT-NEXT:     } [size=56, align=4, offsets=[0, 12, 16]];
-// DEFAULT-NEXT:     global %18 .str18: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %1 a: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(2)>(%18) [linkage=external];
-// DEFAULT-NEXT:     global %19 .str19: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([98, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %2 b: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(2)>(%19) [linkage=external];
-// DEFAULT-NEXT:     global %20 .str20: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([99, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %3 c: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(2)>(%20) [linkage=external];
-// DEFAULT-NEXT:     global %4 d: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([100, 0]) [linkage=external];
-// DEFAULT-NEXT:     global %5 e: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([101, 0]) [linkage=external];
-// DEFAULT-NEXT:     global %6 f: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([102, 0]) [linkage=external];
-// DEFAULT-NEXT:     global %7 g: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([100, 0]) [linkage=external];
-// DEFAULT-NEXT:     global %8 h: array<u8, 2> [storage=static] = code_units<array<u8, 2>>([101, 0]) [linkage=external];
-// DEFAULT-NEXT:     global %9 i: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([102, 0]) [linkage=external];
-// DEFAULT-NEXT:     global %11 j: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = code_units<array<i8, 10>>([106, 0, 0, 0, 0, 0, 0, 0, 0, 0]), field1 = const<i32>(1), field2 = code_units<array<i32, 10>>([106, 0, 0, 0, 0, 0, 0, 0, 0, 0])) [linkage=external];
-// DEFAULT-NEXT:     global %12 k: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = code_units<array<i8, 10>>([107, 0, 0, 0, 0, 0, 0, 0, 0, 0]), field1 = const<i32>(1), field2 = code_units<array<i32, 10>>([107, 0, 0, 0, 0, 0, 0, 0, 0, 0])) [linkage=external];
-// DEFAULT-NEXT:     global %13 l: @type1 [storage=static] = aggregate<@type1, zero_fill=true>(field0 = code_units<array<i8, 10>>([108, 0, 0, 0, 0, 0, 0, 0, 0, 0]), field2 = code_units<array<i32, 10>>([108, 0, 0, 0, 0, 0, 0, 0, 0, 0])) [linkage=external];
-// DEFAULT-NEXT:     global %14 m: @type1 [storage=static] = aggregate<@type1, zero_fill=true>(field0 = code_units<array<i8, 10>>([109, 0, 0, 0, 0, 0, 0, 0, 0, 0]), field2 = code_units<array<i32, 10>>([109, 0, 0, 0, 0, 0, 0, 0, 0, 0])) [linkage=external];
-// DEFAULT-NEXT:     global %15 n: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(2)>(compound_literal %21 [storage=static] = code_units<array<i8, 2>>([110, 0])) [linkage=external];
-// DEFAULT-NEXT:     global %16 o: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(2)>(compound_literal %22 [storage=static] = code_units<array<i8, 2>>([111, 0])) [linkage=external];
-// DEFAULT-NEXT:     global %17 p: ptr<i32> [storage=static] = array_decay<ptr<i32>, length=Some(5)>(compound_literal %23 [storage=static] = code_units<array<i32, 5>>([112, 0, 0, 0, 0])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([97, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([98, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_2]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([99, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_3]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([100, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([101, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([102, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([100, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_h:[0-9]+]] h: array<u8, 2> [storage=static] = code_units<array<u8, 2>>([101, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([102, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: @type[[TYPE_s]] [storage=static] = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = code_units<array<i8, 10>>([106, 0, 0, 0, 0, 0, 0, 0, 0, 0]), field1 = const<i32>(1), field2 = code_units<array<i32, 10>>([106, 0, 0, 0, 0, 0, 0, 0, 0, 0])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_k:[0-9]+]] k: @type[[TYPE_s]] [storage=static] = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = code_units<array<i8, 10>>([107, 0, 0, 0, 0, 0, 0, 0, 0, 0]), field1 = const<i32>(1), field2 = code_units<array<i32, 10>>([107, 0, 0, 0, 0, 0, 0, 0, 0, 0])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_l:[0-9]+]] l: @type[[TYPE_s]] [storage=static] = aggregate<@type[[TYPE_s]], zero_fill=true>(field0 = code_units<array<i8, 10>>([108, 0, 0, 0, 0, 0, 0, 0, 0, 0]), field2 = code_units<array<i32, 10>>([108, 0, 0, 0, 0, 0, 0, 0, 0, 0])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_m:[0-9]+]] m: @type[[TYPE_s]] [storage=static] = aggregate<@type[[TYPE_s]], zero_fill=true>(field0 = code_units<array<i8, 10>>([109, 0, 0, 0, 0, 0, 0, 0, 0, 0]), field2 = code_units<array<i32, 10>>([109, 0, 0, 0, 0, 0, 0, 0, 0, 0])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_n:[0-9]+]] n: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(2)>(compound_literal %[[VALUE0:[0-9]+]] [storage=static] = code_units<array<i8, 2>>([110, 0])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_o:[0-9]+]] o: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(2)>(compound_literal %[[VALUE1:[0-9]+]] [storage=static] = code_units<array<i8, 2>>([111, 0])) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=static] = array_decay<ptr<i32>, length=Some(5)>(compound_literal %[[VALUE2:[0-9]+]] [storage=static] = code_units<array<i32, 5>>([112, 0, 0, 0, 0])) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

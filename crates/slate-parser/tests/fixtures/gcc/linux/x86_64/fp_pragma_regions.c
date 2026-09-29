@@ -39,12 +39,12 @@ _Complex double full_range(_Complex double a, _Complex double b) { return a / b;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @ignored(%1 a: f64, %2 b: f64, %3 c: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 x: f64 [storage=automatic] = read<f64>(%1);
-// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%4), read<f64>(%2)), read<f64>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_ignored:[0-9]+]] @ignored(%[[VALUE_a:[0-9]+]] a: f64, %[[VALUE_b:[0-9]+]] b: f64, %[[VALUE_c:[0-9]+]] c: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: f64 [storage=automatic] = read<f64>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_x]]), read<f64>(%[[VALUE_b]])), read<f64>(%[[VALUE_c]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @full_range(%6 a: complex<f64>, %7 b: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return div<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f64>>(%6), read<complex<f64>>(%7));
+// DEFAULT-NEXT:     fn %[[VALUE_full_range:[0-9]+]] @full_range(%[[VALUE_a_2:[0-9]+]] a: complex<f64>, %[[VALUE_b_2:[0-9]+]] b: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return div<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f64>>(%[[VALUE_a_2]]), read<complex<f64>>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
@@ -71,12 +71,12 @@ _Complex double full_range(_Complex double a, _Complex double b) { return a / b;
 // ISO-NEXT:         storage d64 [size=8, align=8];
 // ISO-NEXT:         storage d128 [size=16, align=16];
 // ISO-NEXT:     }
-// ISO-NEXT:     fn %0 @ignored(%1 a: f64, %2 b: f64, %3 c: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// ISO-NEXT:         let %4 x: f64 [storage=automatic] = read<f64>(%1);
-// ISO-NEXT:         return add<f64, rounding=nearest_even, exceptions=observable, contract=off>(mul<f64, rounding=nearest_even, exceptions=observable, contract=off>(read<f64>(%4), read<f64>(%2)), read<f64>(%3));
+// ISO-NEXT:     fn %[[VALUE_ignored:[0-9]+]] @ignored(%[[VALUE_a:[0-9]+]] a: f64, %[[VALUE_b:[0-9]+]] b: f64, %[[VALUE_c:[0-9]+]] c: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// ISO-NEXT:         let %[[VALUE_x:[0-9]+]] x: f64 [storage=automatic] = read<f64>(%[[VALUE_a]]);
+// ISO-NEXT:         return add<f64, rounding=nearest_even, exceptions=observable, contract=off>(mul<f64, rounding=nearest_even, exceptions=observable, contract=off>(read<f64>(%[[VALUE_x]]), read<f64>(%[[VALUE_b]])), read<f64>(%[[VALUE_c]]));
 // ISO-NEXT:     }
-// ISO-NEXT:     fn %5 @full_range(%6 a: complex<f64>, %7 b: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
-// ISO-NEXT:         return div<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f64>>(%6), read<complex<f64>>(%7));
+// ISO-NEXT:     fn %[[VALUE_full_range:[0-9]+]] @full_range(%[[VALUE_a_2:[0-9]+]] a: complex<f64>, %[[VALUE_b_2:[0-9]+]] b: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
+// ISO-NEXT:         return div<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f64>>(%[[VALUE_a_2]]), read<complex<f64>>(%[[VALUE_b_2]]));
 // ISO-NEXT:     }
 // ISO-NEXT: }
 // SLATE-FILECHECK-END ISO

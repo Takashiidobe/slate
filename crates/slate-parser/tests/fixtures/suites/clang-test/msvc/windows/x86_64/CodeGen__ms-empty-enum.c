@@ -29,10 +29,10 @@ void empty_enum(A a) {}
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 tag1 = enum : u32 {
+// DEFAULT-NEXT:     type @type[[TYPE_tag1:[0-9]+]] tag1 = enum : u32 {
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 A = @type0;
-// DEFAULT-NEXT:     fn %2 @empty_enum(%3 a: @type0) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = @type[[TYPE_tag1]];
+// DEFAULT-NEXT:     fn %[[VALUE_empty_enum:[0-9]+]] @empty_enum(%[[VALUE_a:[0-9]+]] a: @type[[TYPE_tag1]]) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

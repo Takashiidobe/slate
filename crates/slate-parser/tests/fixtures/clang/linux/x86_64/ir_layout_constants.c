@@ -37,16 +37,16 @@ unsigned long layout(int x) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 Inner = struct {
+// IR-NEXT:     type @type[[TYPE_Inner:[0-9]+]] Inner = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 value: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type1 Outer = struct {
+// IR-NEXT:     type @type[[TYPE_Outer:[0-9]+]] Outer = struct {
 // IR-NEXT:         field0 tag: i8;
-// IR-NEXT:         field1 inner: @type0;
+// IR-NEXT:         field1 inner: @type[[TYPE_Inner]];
 // IR-NEXT:         field2 items: array<i32, 3>;
 // IR-NEXT:     } [size=24, align=4, offsets=[0, 4, 12]];
-// IR-NEXT:     fn %2 @layout(%3 x: i32 [c="int"]) -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(int)"] {
+// IR-NEXT:     fn %[[VALUE_layout:[0-9]+]] @layout(%[[VALUE_x:[0-9]+]] x: i32 [c="int"]) -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(int)"] {
 // IR-NEXT:         const<u64>(4) [size_of="i32"];
 // IR-NEXT:         const<u64>(8) [align_of="f64"];
 // IR-NEXT:         const<u64>(24) [size_of="@type1"];

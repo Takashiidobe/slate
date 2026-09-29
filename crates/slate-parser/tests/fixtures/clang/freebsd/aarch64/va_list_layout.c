@@ -35,28 +35,28 @@ int sum(int count, ...) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 va_list_size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(32))) [linkage=external];
-// IR-NEXT:     global %1 va_list_align: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(8))) [linkage=external];
-// IR-NEXT:     fn %2 @sum(%3 count: i32, ...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %4 ap: va_list [storage=automatic];
-// IR-NEXT:         va_start(%4);
-// IR-NEXT:         let %5 total: i32 [storage=automatic] = const<i32>(0);
-// IR-NEXT:         for %7
+// IR-NEXT:     global %[[VALUE_va_list_size:[0-9]+]] va_list_size: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(32))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_va_list_align:[0-9]+]] va_list_align: i32 [storage=static] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(8))) [linkage=external];
+// IR-NEXT:     fn %[[VALUE_sum:[0-9]+]] @sum(%[[VALUE_count:[0-9]+]] count: i32, ...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// IR-NEXT:         va_start(%[[VALUE_ap]]);
+// IR-NEXT:         let %[[VALUE_total:[0-9]+]] total: i32 [storage=automatic] = const<i32>(0);
+// IR-NEXT:         for %[[VALUE0:[0-9]+]]
 // IR-NEXT:             init:
-// IR-NEXT:                 let %6 i: i32 [storage=automatic] = const<i32>(0);
-// IR-NEXT:             condition: lt<i32>(read<i32>(%6), read<i32>(%3))
+// IR-NEXT:                 let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// IR-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_count]]))
 // IR-NEXT:             increment: {
-// IR-NEXT:                 let %8: i32 [synthetic] = read<i32>(%6);
-// IR-NEXT:                 let %9: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%8), const<i32>(1));
-// IR-NEXT:                 write<i32>(%6, read<i32>(%9));
+// IR-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// IR-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// IR-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // IR-NEXT:                 yield void;
 // IR-NEXT:             }
 // IR-NEXT:             body:
-// IR-NEXT:                 let %10: i32 [synthetic] = read<i32>(%5);
-// IR-NEXT:                 let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), va_arg<i32>(%4));
-// IR-NEXT:                 write<i32>(%5, read<i32>(%11));
-// IR-NEXT:         va_end(%4);
-// IR-NEXT:         return read<i32>(%5);
+// IR-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
+// IR-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), va_arg<i32>(%[[VALUE_ap]]));
+// IR-NEXT:                 write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE4]]));
+// IR-NEXT:         va_end(%[[VALUE_ap]]);
+// IR-NEXT:         return read<i32>(%[[VALUE_total]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

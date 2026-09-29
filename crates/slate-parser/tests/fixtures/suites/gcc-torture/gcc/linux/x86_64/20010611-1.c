@@ -49,13 +49,13 @@ fgetws (buf, n, fp)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 _IO_FILE = struct {
+// DEFAULT-NEXT:     type @type[[TYPE__IO_FILE:[0-9]+]] _IO_FILE = struct {
 // DEFAULT-NEXT:         field0 _flags: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 __FILE = @type0;
-// DEFAULT-NEXT:     type @type2 _IO_FILE = @type0;
-// DEFAULT-NEXT:     type @type3 wchar_t = i64;
-// DEFAULT-NEXT:     fn %7 @fgetws(%8 buf: ptr<i64>, %9 n: i32, %10 fp: ptr<@type0>) -> ptr<i64> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     type @type[[TYPE___FILE:[0-9]+]] __FILE = @type[[TYPE__IO_FILE]];
+// DEFAULT-NEXT:     type @type[[TYPE__IO_FILE_2:[0-9]+]] _IO_FILE = @type[[TYPE__IO_FILE]];
+// DEFAULT-NEXT:     type @type[[TYPE_wchar_t:[0-9]+]] wchar_t = i64;
+// DEFAULT-NEXT:     fn %[[VALUE_fgetws:[0-9]+]] @fgetws(%[[VALUE_buf:[0-9]+]] buf: ptr<i64>, %[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_fp:[0-9]+]] fp: ptr<@type[[TYPE__IO_FILE]]>) -> ptr<i64> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return null<ptr<i64>>;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

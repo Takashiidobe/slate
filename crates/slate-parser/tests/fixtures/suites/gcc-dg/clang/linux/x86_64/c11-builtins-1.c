@@ -44,19 +44,19 @@ int strndup (void);
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @exp10() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exp10f() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @exp10l() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @fabsd32() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @fabsd64() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @fabsd128() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %6 @nand32() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @nand64() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %8 @nand128() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @roundeven() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %10 @roundevenf() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %11 @roundevenl() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %12 @strdup() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %13 @strndup() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_exp10:[0-9]+]] @exp10() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_exp10f:[0-9]+]] @exp10f() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_exp10l:[0-9]+]] @exp10l() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fabsd32:[0-9]+]] @fabsd32() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fabsd64:[0-9]+]] @fabsd64() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fabsd128:[0-9]+]] @fabsd128() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_nand32:[0-9]+]] @nand32() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_nand64:[0-9]+]] @nand64() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_nand128:[0-9]+]] @nand128() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_roundeven:[0-9]+]] @roundeven() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_roundevenf:[0-9]+]] @roundevenf() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_roundevenl:[0-9]+]] @roundevenl() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strdup:[0-9]+]] @strdup() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strndup:[0-9]+]] @strndup() -> i32 [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -72,50 +72,50 @@ union rf4 a4[1]; /* { dg-bogus "warning" "warning in place of error" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 flex = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_flex:[0-9]+]] flex = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: array<i32, incomplete>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 rf1 = union {
-// DEFAULT-NEXT:         field0 a: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_rf1:[0-9]+]] rf1 = union {
+// DEFAULT-NEXT:         field0 a: @type[[TYPE_flex]];
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type2 rf2 = union {
+// DEFAULT-NEXT:     type @type[[TYPE_rf2:[0-9]+]] rf2 = union {
 // DEFAULT-NEXT:         field0 a: i32;
-// DEFAULT-NEXT:         field1 b: @type0;
+// DEFAULT-NEXT:         field1 b: @type[[TYPE_flex]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type3 rf3 = union {
+// DEFAULT-NEXT:     type @type[[TYPE_rf3:[0-9]+]] rf3 = union {
 // DEFAULT-NEXT:         field0 a: i32;
-// DEFAULT-NEXT:         field1 b: @type1;
+// DEFAULT-NEXT:         field1 b: @type[[TYPE_rf1]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type4 rf4 = union {
-// DEFAULT-NEXT:         field0 a: @type2;
+// DEFAULT-NEXT:     type @type[[TYPE_rf4:[0-9]+]] rf4 = union {
+// DEFAULT-NEXT:         field0 a: @type[[TYPE_rf2]];
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type5 t0 = struct {
-// DEFAULT-NEXT:         field0 a: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_t0:[0-9]+]] t0 = struct {
+// DEFAULT-NEXT:         field0 a: @type[[TYPE_flex]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type6 t1 = struct {
-// DEFAULT-NEXT:         field0 a: @type1;
+// DEFAULT-NEXT:     type @type[[TYPE_t1:[0-9]+]] t1 = struct {
+// DEFAULT-NEXT:         field0 a: @type[[TYPE_rf1]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type7 t2 = struct {
-// DEFAULT-NEXT:         field0 a: @type2;
+// DEFAULT-NEXT:     type @type[[TYPE_t2:[0-9]+]] t2 = struct {
+// DEFAULT-NEXT:         field0 a: @type[[TYPE_rf2]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type8 t3 = struct {
-// DEFAULT-NEXT:         field0 a: @type3;
+// DEFAULT-NEXT:     type @type[[TYPE_t3:[0-9]+]] t3 = struct {
+// DEFAULT-NEXT:         field0 a: @type[[TYPE_rf3]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type9 t4 = struct {
-// DEFAULT-NEXT:         field0 a: @type4;
+// DEFAULT-NEXT:     type @type[[TYPE_t4:[0-9]+]] t4 = struct {
+// DEFAULT-NEXT:         field0 a: @type[[TYPE_rf4]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %15 a0: array<@type0, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %16 a1: array<@type1, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %17 a2: array<@type2, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %18 a3: array<@type3, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %19 a4: array<@type4, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %10 @f0(%20 <unnamed>: ptr<@type0>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %11 @f1(%21 <unnamed>: ptr<@type1>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %12 @f2(%22 <unnamed>: ptr<@type2>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %13 @f3(%23 <unnamed>: ptr<@type3>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %14 @f4(%24 <unnamed>: ptr<@type4>) -> void [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a0:[0-9]+]] a0: array<@type[[TYPE_flex]], 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a1:[0-9]+]] a1: array<@type[[TYPE_rf1]], 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a2:[0-9]+]] a2: array<@type[[TYPE_rf2]], 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a3:[0-9]+]] a3: array<@type[[TYPE_rf3]], 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a4:[0-9]+]] a4: array<@type[[TYPE_rf4]], 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f0:[0-9]+]] @f0(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_flex]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE1:[0-9]+]] <unnamed>: ptr<@type[[TYPE_rf1]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE2:[0-9]+]] <unnamed>: ptr<@type[[TYPE_rf2]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE3:[0-9]+]] <unnamed>: ptr<@type[[TYPE_rf3]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE4:[0-9]+]] <unnamed>: ptr<@type[[TYPE_rf4]]>) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

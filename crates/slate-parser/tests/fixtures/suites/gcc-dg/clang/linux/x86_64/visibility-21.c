@@ -39,9 +39,9 @@ int *f_weak_hidden ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 weak_hidden: array<i32, 3> [storage=static] [linkage=external] [visibility=hidden] [weak];
-// DEFAULT-NEXT:     fn %1 @f_weak_hidden() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return array_decay<ptr<i32>, length=Some(3)>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_weak_hidden:[0-9]+]] weak_hidden: array<i32, 3> [storage=static] [linkage=external] [visibility=hidden] [weak];
+// DEFAULT-NEXT:     fn %[[VALUE_f_weak_hidden:[0-9]+]] @f_weak_hidden() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_weak_hidden]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

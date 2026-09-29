@@ -43,20 +43,20 @@ int main() { return 0; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 offset: i32;
-// DEFAULT-NEXT:         field1 slot: array<@type1, 4>;
+// DEFAULT-NEXT:         field1 slot: array<@type[[TYPE_slot:[0-9]+]], 4>;
 // DEFAULT-NEXT:     } [size=100, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 slot = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_slot]] slot = struct {
 // DEFAULT-NEXT:         field0 field: array<i32, 6>;
 // DEFAULT-NEXT:     } [size=24, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %2 s: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @x() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 toggle: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %5 r: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(6)>(field0(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(4)>(field1(%2)), const<i32>(0))))), from_bool<i32, reason=promotion>(not<bool>(ne<i32>(read<i32>(%4), const<i32>(0)))))));
-// DEFAULT-NEXT:         return read<i32>(%5);
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE0]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_x:[0-9]+]] @x() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_toggle:[0-9]+]] toggle: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(6)>(field0(deref(ptr_offset<ptr<@type[[TYPE_slot]]>, subtract=false, element=@type[[TYPE_slot]], overflow=ub>(array_decay<ptr<@type[[TYPE_slot]]>, length=Some(4)>(field1(%[[VALUE_s]])), const<i32>(0))))), from_bool<i32, reason=promotion>(not<bool>(ne<i32>(read<i32>(%[[VALUE_toggle]]), const<i32>(0)))))));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_r]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

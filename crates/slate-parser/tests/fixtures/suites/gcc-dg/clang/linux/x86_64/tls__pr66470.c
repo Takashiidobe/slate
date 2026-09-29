@@ -54,21 +54,21 @@ baz (long x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     extern %0 a: array<u64, 10> [storage=thread] [align=16] [linkage=external];
-// DEFAULT-NEXT:     extern %2 b: array<@type0, 10> [storage=thread] [align=16] [linkage=external];
-// DEFAULT-NEXT:     extern %7 c: array<u128, 10> [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo(%4 x: i64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(10)>(%0), read<i64>(%4))));
+// DEFAULT-NEXT:     extern %[[VALUE_a:[0-9]+]] a: array<u64, 10> [storage=thread] [align=16] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_b:[0-9]+]] b: array<@type[[TYPE_S]], 10> [storage=thread] [align=16] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_c:[0-9]+]] c: array<u128, 10> [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(10)>(%[[VALUE_a]]), read<i64>(%[[VALUE_x]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @bar(%6 x: i64) -> @type0 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(10)>(%2), read<i64>(%6)))));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_2:[0-9]+]] x: i64) -> @type[[TYPE_S]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return copy<@type[[TYPE_S]], reason=return>(read<@type[[TYPE_S]]>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(10)>(%[[VALUE_b]]), read<i64>(%[[VALUE_x_2]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @baz(%9 x: i64) -> u128 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<u128>(deref(ptr_offset<ptr<u128>, subtract=false, element=u128, overflow=ub>(array_decay<ptr<u128>, length=Some(10)>(%7), read<i64>(%9))));
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_x_3:[0-9]+]] x: i64) -> u128 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<u128>(deref(ptr_offset<ptr<u128>, subtract=false, element=u128, overflow=ub>(array_decay<ptr<u128>, length=Some(10)>(%[[VALUE_c]]), read<i64>(%[[VALUE_x_3]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

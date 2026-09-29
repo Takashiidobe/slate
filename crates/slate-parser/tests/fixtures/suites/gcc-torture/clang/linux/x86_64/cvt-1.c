@@ -45,25 +45,25 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @g1(%3 x: f64) -> i64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return float_to_int<i64, reason=return, out_of_range=ub, exceptions=ignore>(int_to_float<f64, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%3))));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_g1:[0-9]+]] @g1(%[[VALUE_x:[0-9]+]] x: f64) -> i64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return float_to_int<i64, reason=return, out_of_range=ub, exceptions=ignore>(int_to_float<f64, reason=explicit, exact=false, rounding=nearest_even, exceptions=ignore>(float_to_int<i64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%[[VALUE_x]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @g2(%5 f: f64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return float_to_int<i64, reason=return, out_of_range=ub, exceptions=ignore>(read<f64>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE_g2:[0-9]+]] @g2(%[[VALUE_f:[0-9]+]] f: f64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return float_to_int<i64, reason=return, out_of_range=ub, exceptions=ignore>(read<f64>(%[[VALUE_f]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f(%7 i: i64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(f64) -> i64>(%2, int_to_float<f64, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%7))), call<i64, signature=fn(f64) -> i64>(%4, int_to_float<f64, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%7))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=nearest_even, exceptions=ignore>(call<i64, signature=fn(f64) -> i64>(%4, int_to_float<f64, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%7))));
+// DEFAULT-NEXT:     fn %[[VALUE_f_2:[0-9]+]] @f(%[[VALUE_i:[0-9]+]] i: i64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(f64) -> i64>(%[[VALUE_g1]], int_to_float<f64, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%[[VALUE_i]]))), call<i64, signature=fn(f64) -> i64>(%[[VALUE_g2]], int_to_float<f64, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%[[VALUE_i]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         return int_to_float<f64, reason=return, exact=false, rounding=nearest_even, exceptions=ignore>(call<i64, signature=fn(f64) -> i64>(%[[VALUE_g2]], int_to_float<f64, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%[[VALUE_i]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(i64) -> f64>(%6, const<i64>(123456789)), int_to_float<f64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i64>(123456789)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(i64) -> f64>(%6, const<i64>(123456789)), int_to_float<f64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(call<i64, signature=fn(f64) -> i64>(%4, int_to_float<f64, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i64>(123456789)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(i64) -> f64>(%[[VALUE_f_2]], const<i64>(123456789)), int_to_float<f64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(const<i64>(123456789)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(call<f64, signature=fn(i64) -> f64>(%[[VALUE_f_2]], const<i64>(123456789)), int_to_float<f64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(call<i64, signature=fn(f64) -> i64>(%[[VALUE_g2]], int_to_float<f64, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i64>(123456789)))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

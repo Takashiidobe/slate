@@ -64,30 +64,30 @@ void *test_maybe_used (void *d, const void *s, __SIZE_TYPE__ n) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @__builtin_mempcpy(%24 <unnamed>: ptr<void>, %25 <unnamed>: ptr<const void>, %26 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %0 @test_unused_indirect(%1 d: ptr<void>, %2 s: ptr<const void>, %3 n: u64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 a: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%27, read<ptr<void>>(%1), read<ptr<const void>>(%2), read<u64>(%3));
-// DEFAULT-NEXT:         let %5 b: ptr<void> [storage=automatic] = read<ptr<void>>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_mempcpy:[0-9]+]] @__builtin_mempcpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_unused_indirect:[0-9]+]] @test_unused_indirect(%[[VALUE_d:[0-9]+]] d: ptr<void>, %[[VALUE_s:[0-9]+]] s: ptr<const void>, %[[VALUE_n:[0-9]+]] n: u64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_mempcpy]], read<ptr<void>>(%[[VALUE_d]]), read<ptr<const void>>(%[[VALUE_s]]), read<u64>(%[[VALUE_n]]));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<void> [storage=automatic] = read<ptr<void>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @test_used_simple(%7 d: ptr<void>, %8 s: ptr<const void>, %9 n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%27, read<ptr<void>>(%7), read<ptr<const void>>(%8), read<u64>(%9));
+// DEFAULT-NEXT:     fn %[[VALUE_test_used_simple:[0-9]+]] @test_used_simple(%[[VALUE_d_2:[0-9]+]] d: ptr<void>, %[[VALUE_s_2:[0-9]+]] s: ptr<const void>, %[[VALUE_n_2:[0-9]+]] n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_mempcpy]], read<ptr<void>>(%[[VALUE_d_2]]), read<ptr<const void>>(%[[VALUE_s_2]]), read<u64>(%[[VALUE_n_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @test_used_in_expr(%11 d: ptr<i8>, %12 s: ptr<const i8>, %13 n: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%27, pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%11)), pointer_cast<ptr<const void>, reason=arg>(read<ptr<const i8>>(%12)), read<u64>(%13))), read<ptr<i8>>(%11)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_used_in_expr:[0-9]+]] @test_used_in_expr(%[[VALUE_d_3:[0-9]+]] d: ptr<i8>, %[[VALUE_s_3:[0-9]+]] s: ptr<const i8>, %[[VALUE_n_3:[0-9]+]] n: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_mempcpy]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%[[VALUE_d_3]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<const i8>>(%[[VALUE_s_3]])), read<u64>(%[[VALUE_n_3]]))), read<ptr<i8>>(%[[VALUE_d_3]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @test_unused_indirect2(%15 d: ptr<void>, %16 s: ptr<const void>, %17 n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %18 a: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%27, read<ptr<void>>(%15), read<ptr<const void>>(%16), read<u64>(%17));
-// DEFAULT-NEXT:         if gt<u64>(read<u64>(%17), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(20))))
+// DEFAULT-NEXT:     fn %[[VALUE_test_unused_indirect2:[0-9]+]] @test_unused_indirect2(%[[VALUE_d_4:[0-9]+]] d: ptr<void>, %[[VALUE_s_4:[0-9]+]] s: ptr<const void>, %[[VALUE_n_4:[0-9]+]] n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_mempcpy]], read<ptr<void>>(%[[VALUE_d_4]]), read<ptr<const void>>(%[[VALUE_s_4]]), read<u64>(%[[VALUE_n_4]]));
+// DEFAULT-NEXT:         if gt<u64>(read<u64>(%[[VALUE_n_4]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(20))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return int_to_ptr<ptr<void>, reason=explicit>(const<i32>(20));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return int_to_ptr<ptr<void>, reason=explicit>(const<i32>(7));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @test_maybe_used(%20 d: ptr<void>, %21 s: ptr<const void>, %22 n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %23 a: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%27, read<ptr<void>>(%20), read<ptr<const void>>(%21), read<u64>(%22));
-// DEFAULT-NEXT:         if gt<u64>(read<u64>(%22), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(20))))
+// DEFAULT-NEXT:     fn %[[VALUE_test_maybe_used:[0-9]+]] @test_maybe_used(%[[VALUE_d_5:[0-9]+]] d: ptr<void>, %[[VALUE_s_5:[0-9]+]] s: ptr<const void>, %[[VALUE_n_5:[0-9]+]] n: u64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_a_3:[0-9]+]] a: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_mempcpy]], read<ptr<void>>(%[[VALUE_d_5]]), read<ptr<const void>>(%[[VALUE_s_5]]), read<u64>(%[[VALUE_n_5]]));
+// DEFAULT-NEXT:         if gt<u64>(read<u64>(%[[VALUE_n_5]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(20))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 return read<ptr<void>>(%23);
+// DEFAULT-NEXT:                 return read<ptr<void>>(%[[VALUE_a_3]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return null<ptr<void>>;
 // DEFAULT-NEXT:     }

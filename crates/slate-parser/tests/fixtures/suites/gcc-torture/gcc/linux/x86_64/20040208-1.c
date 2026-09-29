@@ -37,17 +37,17 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%4 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 x: f80 [storage=automatic];
-// DEFAULT-NEXT:         write<f80>(%3, const<f80>(3.05493636349960468205E-151));
-// DEFAULT-NEXT:         let %5: f80 [synthetic] = read<f80>(%3);
-// DEFAULT-NEXT:         let %6: f80 [synthetic] = mul<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%5), const<f80>(7.28353587031270189774E-158));
-// DEFAULT-NEXT:         write<f80>(%3, read<f80>(%6));
-// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(%3), const<f80>(2.22507385850720138309E-308))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: f80 [storage=automatic];
+// DEFAULT-NEXT:         write<f80>(%[[VALUE_x]], const<f80>(3.05493636349960468205E-151));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: f80 [synthetic] = read<f80>(%[[VALUE_x]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: f80 [synthetic] = mul<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%[[VALUE1]]), const<f80>(7.28353587031270189774E-158));
+// DEFAULT-NEXT:         write<f80>(%[[VALUE_x]], read<f80>(%[[VALUE2]]));
+// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(%[[VALUE_x]]), const<f80>(2.22507385850720138309E-308))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

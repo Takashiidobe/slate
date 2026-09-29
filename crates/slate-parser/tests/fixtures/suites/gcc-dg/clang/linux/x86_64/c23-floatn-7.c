@@ -34,7 +34,7 @@ __extension__ _Float16 b
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: f16 [storage=static] = const<f16>(1) [linkage=external];
-// DEFAULT-NEXT:     global %1 b: f16 [storage=static] = const<f16>(2) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: f16 [storage=static] = const<f16>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: f16 [storage=static] = const<f16>(2) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

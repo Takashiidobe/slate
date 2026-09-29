@@ -32,10 +32,10 @@ L:
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @receivePtrs(%3 <unnamed>: ptr<ptr<void>>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         label %2 L:
-// DEFAULT-NEXT:             call<void, signature=fn(ptr<ptr<void>>) -> void>(%0, array_decay<ptr<ptr<void>>, length=Some(3)>(compound_literal %4 [storage=automatic] = aggregate<array<ptr<void>, 3>, zero_fill=false>(index0 = label_addr<ptr<void>>(%2), index1 = null<ptr<void>>, index2 = null<ptr<void>>)));
+// DEFAULT-NEXT:     fn %[[VALUE_receivePtrs:[0-9]+]] @receivePtrs(%[[VALUE0:[0-9]+]] <unnamed>: ptr<ptr<void>>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         label %[[VALUE_L:[0-9]+]] L:
+// DEFAULT-NEXT:             call<void, signature=fn(ptr<ptr<void>>) -> void>(%[[VALUE_receivePtrs]], array_decay<ptr<ptr<void>>, length=Some(3)>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<array<ptr<void>, 3>, zero_fill=false>(index0 = label_addr<ptr<void>>(%[[VALUE_L]]), index1 = null<ptr<void>>, index2 = null<ptr<void>>)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

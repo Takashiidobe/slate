@@ -83,23 +83,23 @@ ATTR (alias ("tls_target"), copy (tls_target)) extern int
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %6 tls_target: i32 [storage=thread] [linkage=external] [tls_model=global-dynamic];
-// DEFAULT-NEXT:     global %7 thread_alias: i32 [storage=thread] [linkage=external] [alias="tls_target"];
-// DEFAULT-NEXT:     global %8 alias: i32 [storage=static] [linkage=external] [alias="tls_target"];
-// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %0 @finline_noret() -> i32 [linkage=external] [inline=always] [definition=emitted] [noreturn] [fallthrough=ub] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%9);
+// DEFAULT-NEXT:     global %[[VALUE_tls_target:[0-9]+]] tls_target: i32 [storage=thread] [linkage=external] [tls_model=global-dynamic];
+// DEFAULT-NEXT:     global %[[VALUE_thread_alias:[0-9]+]] thread_alias: i32 [storage=thread] [linkage=external] [alias="tls_target"];
+// DEFAULT-NEXT:     global %[[VALUE_alias:[0-9]+]] alias: i32 [storage=static] [linkage=external] [alias="tls_target"];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_finline_noret:[0-9]+]] @finline_noret() -> i32 [linkage=external] [inline=always] [definition=emitted] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @call_finline_noret() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_call_finline_noret:[0-9]+]] @call_finline_noret() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_finline_noret]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @fnoret() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @call_fnoret() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_fnoret:[0-9]+]] @fnoret() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_call_fnoret:[0-9]+]] @call_fnoret() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_fnoret]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @finline() -> i32 [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_finline:[0-9]+]] @finline() -> i32 [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @fnoinline() -> i32 [linkage=external] [alias="finline"] [inline=never];
+// DEFAULT-NEXT:     fn %[[VALUE_fnoinline:[0-9]+]] @fnoinline() -> i32 [linkage=external] [alias="finline"] [inline=never];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

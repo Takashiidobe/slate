@@ -38,11 +38,11 @@ int prescanned() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 added: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 stringified: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 joined: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 variadic: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @prescanned() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_added:[0-9]+]] added: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_stringified:[0-9]+]] stringified: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_joined:[0-9]+]] joined: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_variadic:[0-9]+]] variadic: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_prescanned:[0-9]+]] @prescanned() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(7);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

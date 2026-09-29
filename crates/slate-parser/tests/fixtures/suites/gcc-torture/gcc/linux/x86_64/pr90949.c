@@ -57,37 +57,37 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Node = struct {
-// DEFAULT-NEXT:         field0 child: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_Node:[0-9]+]] Node = struct {
+// DEFAULT-NEXT:         field0 child: ptr<@type[[TYPE_Node]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %5 space: array<@type0, 2> [storage=static] [align=16] = aggregate<array<@type0, 2>, zero_fill=true>() [linkage=external];
-// DEFAULT-NEXT:     global %13 .str13: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([78, 111, 32, 99, 108, 101, 97, 110, 117, 112, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @my_puts(%1 str: ptr<const i8>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_space:[0-9]+]] space: array<@type[[TYPE_Node]], 2> [storage=static] [align=16] = aggregate<array<@type[[TYPE_Node]], 2>, zero_fill=true>() [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([78, 111, 32, 99, 108, 101, 97, 110, 117, 112, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_my_puts:[0-9]+]] @my_puts(%[[VALUE_str_2:[0-9]+]] str: ptr<const i8>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @my_free(%3 p: ptr<void>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_my_free:[0-9]+]] @my_free(%[[VALUE_p:[0-9]+]] p: ptr<void>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @my_malloc(%7 bytes: i32) -> ptr<@type0> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<@type0>>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(2)>(%5), const<i32>(0))));
+// DEFAULT-NEXT:     fn %[[VALUE_my_malloc:[0-9]+]] @my_malloc(%[[VALUE_bytes:[0-9]+]] bytes: i32) -> ptr<@type[[TYPE_Node]]> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return addr_of<ptr<@type[[TYPE_Node]]>>(deref(ptr_offset<ptr<@type[[TYPE_Node]]>, subtract=false, element=@type[[TYPE_Node]], overflow=ub>(array_decay<ptr<@type[[TYPE_Node]]>, length=Some(2)>(%[[VALUE_space]]), const<i32>(0))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @walk(%9 module: ptr<@type0>, %10 cleanup: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<ptr<@type0>>(read<ptr<@type0>>(%9), null<ptr<@type0>>)
+// DEFAULT-NEXT:     fn %[[VALUE_walk:[0-9]+]] @walk(%[[VALUE_module:[0-9]+]] module: ptr<@type[[TYPE_Node]]>, %[[VALUE_cleanup:[0-9]+]] cleanup: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<ptr<@type[[TYPE_Node]]>>(read<ptr<@type[[TYPE_Node]]>>(%[[VALUE_module]]), null<ptr<@type[[TYPE_Node]]>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%10), const<i32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%[[VALUE_cleanup]]), const<i32>(0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<const i8>) -> void>(%0, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%13)));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<const i8>) -> void>(%[[VALUE_my_puts]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(11)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, i32) -> void>(%8, read<ptr<@type0>>(field0(deref(read<ptr<@type0>>(%9)))), read<i32>(%10));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%10), const<i32>(0))
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_Node]]>, i32) -> void>(%[[VALUE_walk]], read<ptr<@type[[TYPE_Node]]>>(field0(deref(read<ptr<@type[[TYPE_Node]]>>(%[[VALUE_module]])))), read<i32>(%[[VALUE_cleanup]]));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_cleanup]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<void>) -> void>(%2, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type0>>(%9)));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_my_free]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_Node]]>>(%[[VALUE_module]])));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 node: ptr<@type0> [storage=automatic] = call<ptr<@type0>, signature=fn(i32) -> ptr<@type0>>(%6, reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(8))));
-// DEFAULT-NEXT:         write<ptr<@type0>>(field0(deref(read<ptr<@type0>>(%12))), null<ptr<@type0>>);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>, i32) -> void>(%8, read<ptr<@type0>>(%12), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_node:[0-9]+]] node: ptr<@type[[TYPE_Node]]> [storage=automatic] = call<ptr<@type[[TYPE_Node]]>, signature=fn(i32) -> ptr<@type[[TYPE_Node]]>>(%[[VALUE_my_malloc]], reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=always>(const<u64>(8))));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_Node]]>>(field0(deref(read<ptr<@type[[TYPE_Node]]>>(%[[VALUE_node]]))), null<ptr<@type[[TYPE_Node]]>>);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_Node]]>, i32) -> void>(%[[VALUE_walk]], read<ptr<@type[[TYPE_Node]]>>(%[[VALUE_node]]), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

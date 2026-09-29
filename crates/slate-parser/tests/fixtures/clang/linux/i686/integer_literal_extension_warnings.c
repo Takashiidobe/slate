@@ -89,8 +89,8 @@ long long implicitly_unsigned = 18446744073709551615;
 // IR-C89-NEXT:         storage d64 [size=8, align=8];
 // IR-C89-NEXT:         storage d128 [size=16, align=16];
 // IR-C89-NEXT:     }
-// IR-C89-NEXT:     global %0 c99_compat: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
-// IR-C89-NEXT:     global %1 long_long_extension: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
-// IR-C89-NEXT:     global %2 implicitly_unsigned: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(18446744073709551615)) [linkage=external];
+// IR-C89-NEXT:     global %[[VALUE_c99_compat:[0-9]+]] c99_compat: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2147483648))) [linkage=external];
+// IR-C89-NEXT:     global %[[VALUE_long_long_extension:[0-9]+]] long_long_extension: i64 [storage=static] = const<i64>(4294967296) [linkage=external];
+// IR-C89-NEXT:     global %[[VALUE_implicitly_unsigned:[0-9]+]] implicitly_unsigned: i64 [storage=static] = reinterpret<i64, reason=assign, fits=unknown>(const<u64>(18446744073709551615)) [linkage=external];
 // IR-C89-NEXT: }
 // SLATE-FILECHECK-END IR-C89

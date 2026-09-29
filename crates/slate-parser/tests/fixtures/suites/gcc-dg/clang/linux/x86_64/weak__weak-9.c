@@ -49,17 +49,17 @@ void f4();
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @notf1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_notf1:[0-9]+]] @notf1() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @notf2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_notf2:[0-9]+]] @notf2() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @notf3() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_notf3:[0-9]+]] @notf3() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @notf4() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_notf4:[0-9]+]] @notf4() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @f1() -> void [linkage=external] [weak] [alias="notf1"];
-// DEFAULT-NEXT:     fn %5 @f2() -> void [linkage=external] [weak] [alias="notf2"];
-// DEFAULT-NEXT:     fn %6 @f3() -> void [linkage=external] [weak] [alias="notf3"];
-// DEFAULT-NEXT:     fn %7 @f4() -> void [linkage=external] [weak] [alias="notf4"];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> void [linkage=external] [weak] [alias="notf1"];
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2() -> void [linkage=external] [weak] [alias="notf2"];
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3() -> void [linkage=external] [weak] [alias="notf3"];
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4() -> void [linkage=external] [weak] [alias="notf4"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

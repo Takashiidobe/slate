@@ -72,31 +72,31 @@ extern void hoo(int) __attribute__ ((ifunc("hoo_ifunc")));
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo_t = ptr<fn(i32) -> i32>;
-// DEFAULT-NEXT:     global %6 global: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @foo(%14 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f1(%2 i: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%2), const<i32>(1));
+// DEFAULT-NEXT:     type @type[[TYPE_foo_t:[0-9]+]] foo_t = ptr<fn(i32) -> i32>;
+// DEFAULT-NEXT:     global %[[VALUE_global:[0-9]+]] global: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_i:[0-9]+]] i: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @f2(%4 i: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%4), const<i32>(2));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_i_2:[0-9]+]] i: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_i_2]]), const<i32>(2));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @foo_ifunc() -> ptr<fn(i32) -> i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<ptr<fn(i32) -> i32>>(ne<i32>(read<i32, volatile>(%6), const<i32>(0)), function_decay<ptr<fn(i32) -> i32>>(%1), function_decay<ptr<fn(i32) -> i32>>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_foo_ifunc:[0-9]+]] @foo_ifunc() -> ptr<fn(i32) -> i32> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<ptr<fn(i32) -> i32>>(ne<i32>(read<i32, volatile>(%[[VALUE_global]]), const<i32>(0)), function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_f1]]), function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_f2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%0, const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @goo() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %10 @bar2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%9);
+// DEFAULT-NEXT:     fn %[[VALUE_goo:[0-9]+]] @goo() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar2:[0-9]+]] @bar2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_goo]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @goo_ifunc() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_goo_ifunc:[0-9]+]] @goo_ifunc() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return null<ptr<void>>;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @hoo_ifunc() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_hoo_ifunc:[0-9]+]] @hoo_ifunc() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return null<ptr<void>>;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @hoo(%15 <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_hoo:[0-9]+]] @hoo(%[[VALUE1:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

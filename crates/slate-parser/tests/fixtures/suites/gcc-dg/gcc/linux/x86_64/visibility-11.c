@@ -51,14 +51,14 @@ foo (struct a *a, struct a *b, int c)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 a = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_a:[0-9]+]] a = struct {
 // DEFAULT-NEXT:         field0 a: array<i32, 4096>;
 // DEFAULT-NEXT:     } [size=16384, align=4, offsets=[0]];
-// DEFAULT-NEXT:     fn %0 @memcpy(%8 <unnamed>: ptr<void>, %9 <unnamed>: ptr<const void>, %10 <unnamed>: u64) -> ptr<void> [linkage=external] [visibility=hidden];
-// DEFAULT-NEXT:     fn %2 @bar(%11 <unnamed>: ptr<@type0>, %12 <unnamed>: ptr<@type0>, %13 <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo(%4 a: ptr<@type0>, %5 b: ptr<@type0>, %6 c: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 cc: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(deref(read<ptr<@type0>>(%5))));
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(ptr<@type0>, ptr<@type0>, i32) -> ptr<void>>(%2, read<ptr<@type0>>(%4), addr_of<ptr<@type0>>(%7), mul<i32, overflow=ub>(const<i32>(4), read<i32>(%6)));
+// DEFAULT-NEXT:     fn %[[VALUE_memcpy:[0-9]+]] @memcpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external] [visibility=hidden];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE3:[0-9]+]] <unnamed>: ptr<@type[[TYPE_a]]>, %[[VALUE4:[0-9]+]] <unnamed>: ptr<@type[[TYPE_a]]>, %[[VALUE5:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: ptr<@type[[TYPE_a]]>, %[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE_a]]>, %[[VALUE_c:[0-9]+]] c: i32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_cc:[0-9]+]] cc: @type[[TYPE_a]] [storage=automatic] = copy<@type[[TYPE_a]], reason=assign>(read<@type[[TYPE_a]]>(deref(read<ptr<@type[[TYPE_a]]>>(%[[VALUE_b]]))));
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(ptr<@type[[TYPE_a]]>, ptr<@type[[TYPE_a]]>, i32) -> ptr<void>>(%[[VALUE_bar]], read<ptr<@type[[TYPE_a]]>>(%[[VALUE_a]]), addr_of<ptr<@type[[TYPE_a]]>>(%[[VALUE_cc]]), mul<i32, overflow=ub>(const<i32>(4), read<i32>(%[[VALUE_c]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

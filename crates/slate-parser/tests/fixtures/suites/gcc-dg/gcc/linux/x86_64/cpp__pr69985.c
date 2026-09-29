@@ -32,10 +32,10 @@ void test (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 .str4: array<i8, 148> [storage=static] = code_units<array<i8, 148>>([37, 108, 108, 117, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%3 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @test() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(148)>(%4)));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 148> [storage=static] = code_units<array<i8, 148>>([37, 108, 108, 117, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56, 57, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(148)>(%[[VALUE_str]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -82,39 +82,39 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 a: i32;
-// DEFAULT-NEXT:         field1 <anonymous>: @type1;
-// DEFAULT-NEXT:         field2 <anonymous>: @type2;
-// DEFAULT-NEXT:         field3 <anonymous>: @type4;
+// DEFAULT-NEXT:         field1 <anonymous>: @type[[TYPE0:[0-9]+]];
+// DEFAULT-NEXT:         field2 <anonymous>: @type[[TYPE1:[0-9]+]];
+// DEFAULT-NEXT:         field3 <anonymous>: @type[[TYPE3:[0-9]+]];
 // DEFAULT-NEXT:     } [size=20, align=4, offsets=[0, 4, 12, 16]];
-// DEFAULT-NEXT:     type @type1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0]] = struct {
 // DEFAULT-NEXT:         field0 b: i32;
 // DEFAULT-NEXT:         field1 c: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type2 = union {
+// DEFAULT-NEXT:     type @type[[TYPE1]] = union {
 // DEFAULT-NEXT:         field0 d: i32;
-// DEFAULT-NEXT:         field1 <anonymous>: @type3;
+// DEFAULT-NEXT:         field1 <anonymous>: @type[[TYPE2:[0-9]+]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type3 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE2]] = struct {
 // DEFAULT-NEXT:         field0 e: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type4 = struct {
-// DEFAULT-NEXT:         field0 <anonymous>: @type5;
+// DEFAULT-NEXT:     type @type[[TYPE3]] = struct {
+// DEFAULT-NEXT:         field0 <anonymous>: @type[[TYPE4:[0-9]+]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type5 = struct {
-// DEFAULT-NEXT:         field0 <anonymous>: @type6;
+// DEFAULT-NEXT:     type @type[[TYPE4]] = struct {
+// DEFAULT-NEXT:         field0 <anonymous>: @type[[TYPE5:[0-9]+]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type6 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE5]] = struct {
 // DEFAULT-NEXT:         field0 f: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %9 x: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = aggregate<@type1, zero_fill=false>(field0 = const<i32>(4), field1 = const<i32>(9)), field2 = aggregate<@type2, zero_fill=false>(field1 = aggregate<@type3, zero_fill=false>(field0 = const<i32>(5))), field3 = aggregate<@type4, zero_fill=false>(field0 = aggregate<@type5, zero_fill=false>(field0 = aggregate<@type6, zero_fill=false>(field0 = const<i32>(7))))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%9)), const<i32>(3)), ne<i32>(read<i32>(field0(field1(%9))), const<i32>(4))), ne<i32>(read<i32>(field1(field1(%9))), const<i32>(9))), ne<i32>(read<i32>(field0(field2(%9))), const<i32>(5))), ne<i32>(read<i32>(field0(field1(field2(%9)))), const<i32>(5))), ne<i32>(read<i32>(field0(field0(field0(field3(%9))))), const<i32>(7)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE_s]] [storage=static] = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = const<i32>(3), field1 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(4), field1 = const<i32>(9)), field2 = aggregate<@type[[TYPE1]], zero_fill=false>(field1 = aggregate<@type[[TYPE2]], zero_fill=false>(field0 = const<i32>(5))), field3 = aggregate<@type[[TYPE3]], zero_fill=false>(field0 = aggregate<@type[[TYPE4]], zero_fill=false>(field0 = aggregate<@type[[TYPE5]], zero_fill=false>(field0 = const<i32>(7))))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(%[[VALUE_x]])), const<i32>(3)), ne<i32>(read<i32>(field0(field1(%[[VALUE_x]]))), const<i32>(4))), ne<i32>(read<i32>(field1(field1(%[[VALUE_x]]))), const<i32>(9))), ne<i32>(read<i32>(field0(field2(%[[VALUE_x]]))), const<i32>(5))), ne<i32>(read<i32>(field0(field1(field2(%[[VALUE_x]])))), const<i32>(5))), ne<i32>(read<i32>(field0(field0(field0(field3(%[[VALUE_x]]))))), const<i32>(7)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

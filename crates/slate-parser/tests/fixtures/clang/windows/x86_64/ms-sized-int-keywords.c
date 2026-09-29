@@ -41,13 +41,13 @@ unsigned __int64 widen(__int32 value) { return (unsigned __int64)value; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 uintptr_like = u64;
-// DEFAULT-NEXT:     global %1 counter: volatile i64 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @sum(%3 a: i16, %4 b: u8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%3)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%4))));
+// DEFAULT-NEXT:     type @type[[TYPE_uintptr_like:[0-9]+]] uintptr_like = u64;
+// DEFAULT-NEXT:     global %[[VALUE_counter:[0-9]+]] counter: volatile i64 [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_sum:[0-9]+]] @sum(%[[VALUE_a:[0-9]+]] a: i16, %[[VALUE_b:[0-9]+]] b: u8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_a]])), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_b]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @widen(%6 value: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(read<i32>(%6)));
+// DEFAULT-NEXT:     fn %[[VALUE_widen:[0-9]+]] @widen(%[[VALUE_value:[0-9]+]] value: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(read<i32>(%[[VALUE_value]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

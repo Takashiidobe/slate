@@ -53,17 +53,17 @@ int test1l(long double x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @isinf(%9 <unnamed>: f64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @isinff(%10 <unnamed>: f32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @isinfl(%11 <unnamed>: f80) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @test1(%4 x: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(f64) -> i32>(%0, read<f64>(%4));
+// DEFAULT-NEXT:     fn %[[VALUE_isinf:[0-9]+]] @isinf(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_isinff:[0-9]+]] @isinff(%[[VALUE1:[0-9]+]] <unnamed>: f32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_isinfl:[0-9]+]] @isinfl(%[[VALUE2:[0-9]+]] <unnamed>: f80) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_x:[0-9]+]] x: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(f64) -> i32>(%[[VALUE_isinf]], read<f64>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @test1f(%6 x: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(f32) -> i32>(%1, read<f32>(%6));
+// DEFAULT-NEXT:     fn %[[VALUE_test1f:[0-9]+]] @test1f(%[[VALUE_x_2:[0-9]+]] x: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(f32) -> i32>(%[[VALUE_isinff]], read<f32>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @test1l(%8 x: f80) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(f80) -> i32>(%2, read<f80>(%8));
+// DEFAULT-NEXT:     fn %[[VALUE_test1l:[0-9]+]] @test1l(%[[VALUE_x_3:[0-9]+]] x: f80) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(f80) -> i32>(%[[VALUE_isinfl]], read<f80>(%[[VALUE_x_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -54,36 +54,36 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 barstruct = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_barstruct:[0-9]+]] barstruct = struct {
 // DEFAULT-NEXT:         field0 some_string: ptr<const i8>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %1 x: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([69, 118, 101, 114, 121, 116, 104, 105, 110, 103, 32, 79, 75, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %10 .str10: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([69, 118, 101, 114, 121, 116, 104, 105, 110, 103, 32, 79, 75, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<const i8>>(read<ptr<const i8>>(field0(%1)), null<ptr<const i8>>))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE_barstruct]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([69, 118, 101, 114, 121, 116, 104, 105, 110, 103, 32, 79, 75, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([69, 118, 101, 114, 121, 116, 104, 105, 110, 103, 32, 79, 75, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<const i8>>(read<ptr<const i8>>(field0(%[[VALUE_x]])), null<ptr<const i8>>))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @baz(%5 b: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %6 bar: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %7 barptr: ptr<@type0> [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(0))
-// DEFAULT-NEXT:             write<ptr<@type0>>(%7, addr_of<ptr<@type0>>(%6));
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_b:[0-9]+]] b: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_bar:[0-9]+]] bar: @type[[TYPE_barstruct]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_barptr:[0-9]+]] barptr: ptr<@type[[TYPE_barstruct]]> [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0))
+// DEFAULT-NEXT:             write<ptr<@type[[TYPE_barstruct]]>>(%[[VALUE_barptr]], addr_of<ptr<@type[[TYPE_barstruct]]>>(%[[VALUE_bar]]));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<ptr<@type0>>(%7, ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(addr_of<ptr<@type0>>(%1), const<i32>(1)));
-// DEFAULT-NEXT:                 write<ptr<@type0>>(%7, ptr_offset<ptr<@type0>, subtract=true, element=@type0, overflow=ub>(read<ptr<@type0>>(%7), const<i32>(1)));
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_barstruct]]>>(%[[VALUE_barptr]], ptr_offset<ptr<@type[[TYPE_barstruct]]>, subtract=false, element=@type[[TYPE_barstruct]], overflow=ub>(addr_of<ptr<@type[[TYPE_barstruct]]>>(%[[VALUE_x]]), const<i32>(1)));
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_barstruct]]>>(%[[VALUE_barptr]], ptr_offset<ptr<@type[[TYPE_barstruct]]>, subtract=true, element=@type[[TYPE_barstruct]], overflow=ub>(read<ptr<@type[[TYPE_barstruct]]>>(%[[VALUE_barptr]]), const<i32>(1)));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<ptr<const i8>>(field0(deref(read<ptr<@type0>>(%7))), pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(14)>(%9)));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
-// DEFAULT-NEXT:         write<ptr<const i8>>(field0(deref(read<ptr<@type0>>(%7))), pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(14)>(%10)));
+// DEFAULT-NEXT:         write<ptr<const i8>>(field0(deref(read<ptr<@type[[TYPE_barstruct]]>>(%[[VALUE_barptr]]))), pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str]])));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:         write<ptr<const i8>>(field0(deref(read<ptr<@type[[TYPE_barstruct]]>>(%[[VALUE_barptr]]))), pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str_2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<ptr<const i8>>(field0(%1), null<ptr<const i8>>);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%4, const<i32>(0));
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<const i8>>(read<ptr<const i8>>(field0(%1)), null<ptr<const i8>>))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<ptr<const i8>>(field0(%[[VALUE_x]]), null<ptr<const i8>>);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_baz]], const<i32>(0));
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<const i8>>(read<ptr<const i8>>(field0(%[[VALUE_x]])), null<ptr<const i8>>))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

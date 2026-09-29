@@ -40,24 +40,24 @@ foo (A x, A **y, A z)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = union {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 d: f64;
 // DEFAULT-NEXT:         field1 ll: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type1 A = @type0;
-// DEFAULT-NEXT:     fn %2 @foo(%3 x: @type0, %4 y: ptr<ptr<@type0>>, %5 z: @type0) -> void [linkage=external] [abi=sysv64(native_c, scalar, native_c) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         for %6
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: @type[[TYPE0]], %[[VALUE_y:[0-9]+]] y: ptr<ptr<@type[[TYPE0]]>>, %[[VALUE_z:[0-9]+]] z: @type[[TYPE0]]) -> void [linkage=external] [abi=sysv64(native_c, scalar, native_c) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:             condition: ne<ptr<@type0>>(read<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4))), null<ptr<@type0>>)
+// DEFAULT-NEXT:             condition: ne<ptr<@type[[TYPE0]]>>(read<ptr<@type[[TYPE0]]>>(deref(read<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE_y]]))), null<ptr<@type[[TYPE0]]>>)
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %7: ptr<ptr<@type0>> [synthetic] = read<ptr<ptr<@type0>>>(%4);
-// DEFAULT-NEXT:                 let %8: ptr<ptr<@type0>> [synthetic] = ptr_offset<ptr<ptr<@type0>>, subtract=false, element=ptr<@type0>, overflow=ub>(read<ptr<ptr<@type0>>>(%7), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<ptr<@type0>>>(%4, read<ptr<ptr<@type0>>>(%8));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: ptr<ptr<@type[[TYPE0]]>> [synthetic] = read<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE_y]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: ptr<ptr<@type[[TYPE0]]>> [synthetic] = ptr_offset<ptr<ptr<@type[[TYPE0]]>>, subtract=false, element=ptr<@type[[TYPE0]]>, overflow=ub>(read<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE_y]], read<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 if logical_and<bool>(eq<i64>(read<i64>(field1(%3)), widen<i64, reason=usual_arith>(const<i32>(262))), eq<f64, exceptions=ignore>(read<f64>(field0(deref(read<ptr<@type0>>(deref(read<ptr<ptr<@type0>>>(%4)))))), read<f64>(field0(%5))))
-// DEFAULT-NEXT:                     break %6;
+// DEFAULT-NEXT:                 if logical_and<bool>(eq<i64>(read<i64>(field1(%[[VALUE_x]])), widen<i64, reason=usual_arith>(const<i32>(262))), eq<f64, exceptions=ignore>(read<f64>(field0(deref(read<ptr<@type[[TYPE0]]>>(deref(read<ptr<ptr<@type[[TYPE0]]>>>(%[[VALUE_y]])))))), read<f64>(field0(%[[VALUE_z]]))))
+// DEFAULT-NEXT:                     break %[[VALUE0]];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

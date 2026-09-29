@@ -115,299 +115,299 @@ int main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 fpt = ptr<fn() -> void>;
-// DEFAULT-NEXT:     type @type1 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_fpt:[0-9]+]] fpt = ptr<fn() -> void>;
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:         field1 y: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type2 u = union {
+// DEFAULT-NEXT:     type @type[[TYPE_u:[0-9]+]] u = union {
 // DEFAULT-NEXT:         field0 p: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 T1 = i8;
-// DEFAULT-NEXT:     type @type4 T2 = i8;
-// DEFAULT-NEXT:     type @type5 T1pp = ptr<ptr<i8>>;
-// DEFAULT-NEXT:     type @type6 T2pp = ptr<ptr<i8>>;
-// DEFAULT-NEXT:     type @type7 T1a = i8;
-// DEFAULT-NEXT:     type @type8 T1b = i8;
-// DEFAULT-NEXT:     type @type9 T2a = i8;
-// DEFAULT-NEXT:     type @type10 T2b = i8;
-// DEFAULT-NEXT:     type @type11 T1app = ptr<ptr<i8>>;
-// DEFAULT-NEXT:     type @type12 T1bpp = ptr<ptr<i8>>;
-// DEFAULT-NEXT:     type @type13 T2app = ptr<ptr<i8>>;
-// DEFAULT-NEXT:     type @type14 T2bpp = ptr<ptr<i8>>;
-// DEFAULT-NEXT:     type @type15 T1 = ptr<void>;
-// DEFAULT-NEXT:     type @type16 T2 = i8;
-// DEFAULT-NEXT:     type @type17 T1pp = ptr<ptr<ptr<void>>>;
-// DEFAULT-NEXT:     type @type18 T2pp = ptr<ptr<i8>>;
-// DEFAULT-NEXT:     type @type19 T1a = ptr<void>;
-// DEFAULT-NEXT:     type @type20 T1b = ptr<void>;
-// DEFAULT-NEXT:     type @type21 T2a = i8;
-// DEFAULT-NEXT:     type @type22 T2b = i8;
-// DEFAULT-NEXT:     type @type23 T1app = ptr<ptr<ptr<void>>>;
-// DEFAULT-NEXT:     type @type24 T1bpp = ptr<ptr<ptr<void>>>;
-// DEFAULT-NEXT:     type @type25 T2app = ptr<ptr<i8>>;
-// DEFAULT-NEXT:     type @type26 T2bpp = ptr<ptr<i8>>;
-// DEFAULT-NEXT:     type @type27 T1 = i32;
-// DEFAULT-NEXT:     type @type28 T2 = i32;
-// DEFAULT-NEXT:     type @type29 T1pp = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type30 T2pp = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type31 T1a = i32;
-// DEFAULT-NEXT:     type @type32 T1b = i32;
-// DEFAULT-NEXT:     type @type33 T2a = i32;
-// DEFAULT-NEXT:     type @type34 T2b = i32;
-// DEFAULT-NEXT:     type @type35 T1app = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type36 T1bpp = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type37 T2app = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type38 T2bpp = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type39 T1 = f64;
-// DEFAULT-NEXT:     type @type40 T2 = fn() -> i32;
-// DEFAULT-NEXT:     type @type41 T1pp = ptr<ptr<f64>>;
-// DEFAULT-NEXT:     type @type42 T2pp = ptr<ptr<fn() -> i32>>;
-// DEFAULT-NEXT:     type @type43 T1a = f64;
-// DEFAULT-NEXT:     type @type44 T1b = f64;
-// DEFAULT-NEXT:     type @type45 T2a = fn() -> i32;
-// DEFAULT-NEXT:     type @type46 T2b = fn() -> i32;
-// DEFAULT-NEXT:     type @type47 T1app = ptr<ptr<f64>>;
-// DEFAULT-NEXT:     type @type48 T1bpp = ptr<ptr<f64>>;
-// DEFAULT-NEXT:     type @type49 T2app = ptr<ptr<fn() -> i32>>;
-// DEFAULT-NEXT:     type @type50 T2bpp = ptr<ptr<fn() -> i32>>;
-// DEFAULT-NEXT:     type @type51 T1 = f32;
-// DEFAULT-NEXT:     type @type52 T2 = i32;
-// DEFAULT-NEXT:     type @type53 T1pp = ptr<ptr<f32>>;
-// DEFAULT-NEXT:     type @type54 T2pp = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type55 T1a = f32;
-// DEFAULT-NEXT:     type @type56 T1b = f32;
-// DEFAULT-NEXT:     type @type57 T2a = i32;
-// DEFAULT-NEXT:     type @type58 T2b = i32;
-// DEFAULT-NEXT:     type @type59 T1app = ptr<ptr<f32>>;
-// DEFAULT-NEXT:     type @type60 T1bpp = ptr<ptr<f32>>;
-// DEFAULT-NEXT:     type @type61 T2app = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type62 T2bpp = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type63 T1 = i32;
-// DEFAULT-NEXT:     type @type64 T2 = f32;
-// DEFAULT-NEXT:     type @type65 T1pp = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type66 T2pp = ptr<ptr<f32>>;
-// DEFAULT-NEXT:     type @type67 T1a = i32;
-// DEFAULT-NEXT:     type @type68 T1b = i32;
-// DEFAULT-NEXT:     type @type69 T2a = f32;
-// DEFAULT-NEXT:     type @type70 T2b = f32;
-// DEFAULT-NEXT:     type @type71 T1app = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type72 T1bpp = ptr<ptr<i32>>;
-// DEFAULT-NEXT:     type @type73 T2app = ptr<ptr<f32>>;
-// DEFAULT-NEXT:     type @type74 T2bpp = ptr<ptr<f32>>;
-// DEFAULT-NEXT:     type @type75 T1 = ptr<fn() -> void>;
-// DEFAULT-NEXT:     type @type76 T2 = @type1;
-// DEFAULT-NEXT:     type @type77 T1pp = ptr<ptr<ptr<fn() -> void>>>;
-// DEFAULT-NEXT:     type @type78 T2pp = ptr<ptr<@type1>>;
-// DEFAULT-NEXT:     type @type79 T1a = ptr<fn() -> void>;
-// DEFAULT-NEXT:     type @type80 T1b = ptr<fn() -> void>;
-// DEFAULT-NEXT:     type @type81 T2a = @type1;
-// DEFAULT-NEXT:     type @type82 T2b = @type1;
-// DEFAULT-NEXT:     type @type83 T1app = ptr<ptr<ptr<fn() -> void>>>;
-// DEFAULT-NEXT:     type @type84 T1bpp = ptr<ptr<ptr<fn() -> void>>>;
-// DEFAULT-NEXT:     type @type85 T2app = ptr<ptr<@type1>>;
-// DEFAULT-NEXT:     type @type86 T2bpp = ptr<ptr<@type1>>;
-// DEFAULT-NEXT:     type @type87 T1 = @type2;
-// DEFAULT-NEXT:     type @type88 T2 = @type2;
-// DEFAULT-NEXT:     type @type89 T1pp = ptr<ptr<@type2>>;
-// DEFAULT-NEXT:     type @type90 T2pp = ptr<ptr<@type2>>;
-// DEFAULT-NEXT:     type @type91 T1a = @type2;
-// DEFAULT-NEXT:     type @type92 T1b = @type2;
-// DEFAULT-NEXT:     type @type93 T2a = @type2;
-// DEFAULT-NEXT:     type @type94 T2b = @type2;
-// DEFAULT-NEXT:     type @type95 T1app = ptr<ptr<@type2>>;
-// DEFAULT-NEXT:     type @type96 T1bpp = ptr<ptr<@type2>>;
-// DEFAULT-NEXT:     type @type97 T2app = ptr<ptr<@type2>>;
-// DEFAULT-NEXT:     type @type98 T2bpp = ptr<ptr<@type2>>;
-// DEFAULT-NEXT:     type @type99 T1 = @type2;
-// DEFAULT-NEXT:     type @type100 T2 = fn() -> i32;
-// DEFAULT-NEXT:     type @type101 T1pp = ptr<ptr<@type2>>;
-// DEFAULT-NEXT:     type @type102 T2pp = ptr<ptr<fn() -> i32>>;
-// DEFAULT-NEXT:     type @type103 T1a = @type2;
-// DEFAULT-NEXT:     type @type104 T1b = @type2;
-// DEFAULT-NEXT:     type @type105 T2a = fn() -> i32;
-// DEFAULT-NEXT:     type @type106 T2b = fn() -> i32;
-// DEFAULT-NEXT:     type @type107 T1app = ptr<ptr<@type2>>;
-// DEFAULT-NEXT:     type @type108 T1bpp = ptr<ptr<@type2>>;
-// DEFAULT-NEXT:     type @type109 T2app = ptr<ptr<fn() -> i32>>;
-// DEFAULT-NEXT:     type @type110 T2bpp = ptr<ptr<fn() -> i32>>;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%183 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @bad() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     type @type[[TYPE_T1:[0-9]+]] T1 = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_T2:[0-9]+]] T2 = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_T1pp:[0-9]+]] T1pp = ptr<ptr<i8>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2pp:[0-9]+]] T2pp = ptr<ptr<i8>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1a:[0-9]+]] T1a = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_T1b:[0-9]+]] T1b = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_T2a:[0-9]+]] T2a = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_T2b:[0-9]+]] T2b = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_T1app:[0-9]+]] T1app = ptr<ptr<i8>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1bpp:[0-9]+]] T1bpp = ptr<ptr<i8>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2app:[0-9]+]] T2app = ptr<ptr<i8>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2bpp:[0-9]+]] T2bpp = ptr<ptr<i8>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1_2:[0-9]+]] T1 = ptr<void>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2_2:[0-9]+]] T2 = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_T1pp_2:[0-9]+]] T1pp = ptr<ptr<ptr<void>>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2pp_2:[0-9]+]] T2pp = ptr<ptr<i8>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1a_2:[0-9]+]] T1a = ptr<void>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1b_2:[0-9]+]] T1b = ptr<void>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2a_2:[0-9]+]] T2a = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_T2b_2:[0-9]+]] T2b = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_T1app_2:[0-9]+]] T1app = ptr<ptr<ptr<void>>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1bpp_2:[0-9]+]] T1bpp = ptr<ptr<ptr<void>>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2app_2:[0-9]+]] T2app = ptr<ptr<i8>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2bpp_2:[0-9]+]] T2bpp = ptr<ptr<i8>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1_3:[0-9]+]] T1 = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T2_3:[0-9]+]] T2 = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T1pp_3:[0-9]+]] T1pp = ptr<ptr<i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2pp_3:[0-9]+]] T2pp = ptr<ptr<i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1a_3:[0-9]+]] T1a = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T1b_3:[0-9]+]] T1b = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T2a_3:[0-9]+]] T2a = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T2b_3:[0-9]+]] T2b = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T1app_3:[0-9]+]] T1app = ptr<ptr<i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1bpp_3:[0-9]+]] T1bpp = ptr<ptr<i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2app_3:[0-9]+]] T2app = ptr<ptr<i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2bpp_3:[0-9]+]] T2bpp = ptr<ptr<i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1_4:[0-9]+]] T1 = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_T2_4:[0-9]+]] T2 = fn() -> i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T1pp_4:[0-9]+]] T1pp = ptr<ptr<f64>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2pp_4:[0-9]+]] T2pp = ptr<ptr<fn() -> i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1a_4:[0-9]+]] T1a = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_T1b_4:[0-9]+]] T1b = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_T2a_4:[0-9]+]] T2a = fn() -> i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T2b_4:[0-9]+]] T2b = fn() -> i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T1app_4:[0-9]+]] T1app = ptr<ptr<f64>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1bpp_4:[0-9]+]] T1bpp = ptr<ptr<f64>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2app_4:[0-9]+]] T2app = ptr<ptr<fn() -> i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2bpp_4:[0-9]+]] T2bpp = ptr<ptr<fn() -> i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1_5:[0-9]+]] T1 = f32;
+// DEFAULT-NEXT:     type @type[[TYPE_T2_5:[0-9]+]] T2 = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T1pp_5:[0-9]+]] T1pp = ptr<ptr<f32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2pp_5:[0-9]+]] T2pp = ptr<ptr<i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1a_5:[0-9]+]] T1a = f32;
+// DEFAULT-NEXT:     type @type[[TYPE_T1b_5:[0-9]+]] T1b = f32;
+// DEFAULT-NEXT:     type @type[[TYPE_T2a_5:[0-9]+]] T2a = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T2b_5:[0-9]+]] T2b = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T1app_5:[0-9]+]] T1app = ptr<ptr<f32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1bpp_5:[0-9]+]] T1bpp = ptr<ptr<f32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2app_5:[0-9]+]] T2app = ptr<ptr<i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2bpp_5:[0-9]+]] T2bpp = ptr<ptr<i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1_6:[0-9]+]] T1 = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T2_6:[0-9]+]] T2 = f32;
+// DEFAULT-NEXT:     type @type[[TYPE_T1pp_6:[0-9]+]] T1pp = ptr<ptr<i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2pp_6:[0-9]+]] T2pp = ptr<ptr<f32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1a_6:[0-9]+]] T1a = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T1b_6:[0-9]+]] T1b = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T2a_6:[0-9]+]] T2a = f32;
+// DEFAULT-NEXT:     type @type[[TYPE_T2b_6:[0-9]+]] T2b = f32;
+// DEFAULT-NEXT:     type @type[[TYPE_T1app_6:[0-9]+]] T1app = ptr<ptr<i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1bpp_6:[0-9]+]] T1bpp = ptr<ptr<i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2app_6:[0-9]+]] T2app = ptr<ptr<f32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2bpp_6:[0-9]+]] T2bpp = ptr<ptr<f32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1_7:[0-9]+]] T1 = ptr<fn() -> void>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2_7:[0-9]+]] T2 = @type[[TYPE_S]];
+// DEFAULT-NEXT:     type @type[[TYPE_T1pp_7:[0-9]+]] T1pp = ptr<ptr<ptr<fn() -> void>>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2pp_7:[0-9]+]] T2pp = ptr<ptr<@type[[TYPE_S]]>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1a_7:[0-9]+]] T1a = ptr<fn() -> void>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1b_7:[0-9]+]] T1b = ptr<fn() -> void>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2a_7:[0-9]+]] T2a = @type[[TYPE_S]];
+// DEFAULT-NEXT:     type @type[[TYPE_T2b_7:[0-9]+]] T2b = @type[[TYPE_S]];
+// DEFAULT-NEXT:     type @type[[TYPE_T1app_7:[0-9]+]] T1app = ptr<ptr<ptr<fn() -> void>>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1bpp_7:[0-9]+]] T1bpp = ptr<ptr<ptr<fn() -> void>>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2app_7:[0-9]+]] T2app = ptr<ptr<@type[[TYPE_S]]>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2bpp_7:[0-9]+]] T2bpp = ptr<ptr<@type[[TYPE_S]]>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1_8:[0-9]+]] T1 = @type[[TYPE_u]];
+// DEFAULT-NEXT:     type @type[[TYPE_T2_8:[0-9]+]] T2 = @type[[TYPE_u]];
+// DEFAULT-NEXT:     type @type[[TYPE_T1pp_8:[0-9]+]] T1pp = ptr<ptr<@type[[TYPE_u]]>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2pp_8:[0-9]+]] T2pp = ptr<ptr<@type[[TYPE_u]]>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1a_8:[0-9]+]] T1a = @type[[TYPE_u]];
+// DEFAULT-NEXT:     type @type[[TYPE_T1b_8:[0-9]+]] T1b = @type[[TYPE_u]];
+// DEFAULT-NEXT:     type @type[[TYPE_T2a_8:[0-9]+]] T2a = @type[[TYPE_u]];
+// DEFAULT-NEXT:     type @type[[TYPE_T2b_8:[0-9]+]] T2b = @type[[TYPE_u]];
+// DEFAULT-NEXT:     type @type[[TYPE_T1app_8:[0-9]+]] T1app = ptr<ptr<@type[[TYPE_u]]>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1bpp_8:[0-9]+]] T1bpp = ptr<ptr<@type[[TYPE_u]]>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2app_8:[0-9]+]] T2app = ptr<ptr<@type[[TYPE_u]]>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2bpp_8:[0-9]+]] T2bpp = ptr<ptr<@type[[TYPE_u]]>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1_9:[0-9]+]] T1 = @type[[TYPE_u]];
+// DEFAULT-NEXT:     type @type[[TYPE_T2_9:[0-9]+]] T2 = fn() -> i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T1pp_9:[0-9]+]] T1pp = ptr<ptr<@type[[TYPE_u]]>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2pp_9:[0-9]+]] T2pp = ptr<ptr<fn() -> i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1a_9:[0-9]+]] T1a = @type[[TYPE_u]];
+// DEFAULT-NEXT:     type @type[[TYPE_T1b_9:[0-9]+]] T1b = @type[[TYPE_u]];
+// DEFAULT-NEXT:     type @type[[TYPE_T2a_9:[0-9]+]] T2a = fn() -> i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T2b_9:[0-9]+]] T2b = fn() -> i32;
+// DEFAULT-NEXT:     type @type[[TYPE_T1app_9:[0-9]+]] T1app = ptr<ptr<@type[[TYPE_u]]>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T1bpp_9:[0-9]+]] T1bpp = ptr<ptr<@type[[TYPE_u]]>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2app_9:[0-9]+]] T2app = ptr<ptr<fn() -> i32>>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2bpp_9:[0-9]+]] T2bpp = ptr<ptr<fn() -> i32>>;
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bad:[0-9]+]] @bad() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @good() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_good:[0-9]+]] @good() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 sc1: i8 [storage=automatic];
-// DEFAULT-NEXT:         let %6 sc2: i8 [storage=automatic];
-// DEFAULT-NEXT:         let %7 v1: ptr<void> [storage=automatic];
-// DEFAULT-NEXT:         let %8 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %9 j: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %10 dd: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %11 f: f32 [storage=automatic];
-// DEFAULT-NEXT:         let %13 triple: ptr<fn() -> void> [storage=automatic];
-// DEFAULT-NEXT:         let %15 pour: @type1 [storage=automatic];
-// DEFAULT-NEXT:         let %16 some: @type1 [storage=automatic];
-// DEFAULT-NEXT:         let %17 sugar: @type1 [storage=automatic];
-// DEFAULT-NEXT:         let %19 united: @type2 [storage=automatic];
-// DEFAULT-NEXT:         let %20 nations: @type2 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_sc1:[0-9]+]] sc1: i8 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_sc2:[0-9]+]] sc2: i8 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_v1:[0-9]+]] v1: ptr<void> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_dd:[0-9]+]] dd: f64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: f32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_triple:[0-9]+]] triple: ptr<fn() -> void> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_pour:[0-9]+]] pour: @type[[TYPE_S]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_some:[0-9]+]] some: @type[[TYPE_S]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_sugar:[0-9]+]] sugar: @type[[TYPE_S]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_united:[0-9]+]] united: @type[[TYPE_u]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_nations:[0-9]+]] nations: @type[[TYPE_u]] [storage=automatic];
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(const<i32>(0), const<i32>(0)), not<bool>(ne<i32>(const<i32>(5), const<i32>(0)))), not<bool>(ne<i32>(const<i32>(3), const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         do %184
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %33 t1: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
-// DEFAULT-NEXT:                 let %34 t2: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
-// DEFAULT-NEXT:                 let %35 t1a: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
-// DEFAULT-NEXT:                 let %36 t1b: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
-// DEFAULT-NEXT:                 let %37 t2a: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
-// DEFAULT-NEXT:                 let %38 t2b: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<i8>>>(%33, read<ptr<ptr<i8>>>(%35));
-// DEFAULT-NEXT:                 write<ptr<ptr<i8>>>(%33, read<ptr<ptr<i8>>>(%36));
-// DEFAULT-NEXT:                 write<ptr<ptr<i8>>>(%34, read<ptr<ptr<i8>>>(%37));
-// DEFAULT-NEXT:                 write<ptr<ptr<i8>>>(%34, read<ptr<ptr<i8>>>(%38));
-// DEFAULT-NEXT:                 read<ptr<ptr<i8>>>(%33);
-// DEFAULT-NEXT:                 read<ptr<ptr<i8>>>(%34);
+// DEFAULT-NEXT:                 let %[[VALUE_t1:[0-9]+]] t1: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2:[0-9]+]] t2: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1a:[0-9]+]] t1a: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1b:[0-9]+]] t1b: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2a:[0-9]+]] t2a: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2b:[0-9]+]] t2b: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
+// DEFAULT-NEXT:                 write<ptr<ptr<i8>>>(%[[VALUE_t1]], read<ptr<ptr<i8>>>(%[[VALUE_t1a]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<i8>>>(%[[VALUE_t1]], read<ptr<ptr<i8>>>(%[[VALUE_t1b]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<i8>>>(%[[VALUE_t2]], read<ptr<ptr<i8>>>(%[[VALUE_t2a]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<i8>>>(%[[VALUE_t2]], read<ptr<ptr<i8>>>(%[[VALUE_t2b]]));
+// DEFAULT-NEXT:                 read<ptr<ptr<i8>>>(%[[VALUE_t1]]);
+// DEFAULT-NEXT:                 read<ptr<ptr<i8>>>(%[[VALUE_t2]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %185
+// DEFAULT-NEXT:         do %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %51 t1: ptr<ptr<ptr<void>>> [storage=automatic] = null<ptr<ptr<ptr<void>>>>;
-// DEFAULT-NEXT:                 let %52 t2: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
-// DEFAULT-NEXT:                 let %53 t1a: ptr<ptr<ptr<void>>> [storage=automatic] = null<ptr<ptr<ptr<void>>>>;
-// DEFAULT-NEXT:                 let %54 t1b: ptr<ptr<ptr<void>>> [storage=automatic] = null<ptr<ptr<ptr<void>>>>;
-// DEFAULT-NEXT:                 let %55 t2a: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
-// DEFAULT-NEXT:                 let %56 t2b: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<void>>>>(%51, read<ptr<ptr<ptr<void>>>>(%53));
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<void>>>>(%51, read<ptr<ptr<ptr<void>>>>(%54));
-// DEFAULT-NEXT:                 write<ptr<ptr<i8>>>(%52, read<ptr<ptr<i8>>>(%55));
-// DEFAULT-NEXT:                 write<ptr<ptr<i8>>>(%52, read<ptr<ptr<i8>>>(%56));
-// DEFAULT-NEXT:                 read<ptr<ptr<ptr<void>>>>(%51);
-// DEFAULT-NEXT:                 read<ptr<ptr<i8>>>(%52);
+// DEFAULT-NEXT:                 let %[[VALUE_t1_2:[0-9]+]] t1: ptr<ptr<ptr<void>>> [storage=automatic] = null<ptr<ptr<ptr<void>>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2_2:[0-9]+]] t2: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1a_2:[0-9]+]] t1a: ptr<ptr<ptr<void>>> [storage=automatic] = null<ptr<ptr<ptr<void>>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1b_2:[0-9]+]] t1b: ptr<ptr<ptr<void>>> [storage=automatic] = null<ptr<ptr<ptr<void>>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2a_2:[0-9]+]] t2a: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2b_2:[0-9]+]] t2b: ptr<ptr<i8>> [storage=automatic] = null<ptr<ptr<i8>>>;
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<void>>>>(%[[VALUE_t1_2]], read<ptr<ptr<ptr<void>>>>(%[[VALUE_t1a_2]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<void>>>>(%[[VALUE_t1_2]], read<ptr<ptr<ptr<void>>>>(%[[VALUE_t1b_2]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<i8>>>(%[[VALUE_t2_2]], read<ptr<ptr<i8>>>(%[[VALUE_t2a_2]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<i8>>>(%[[VALUE_t2_2]], read<ptr<ptr<i8>>>(%[[VALUE_t2b_2]]));
+// DEFAULT-NEXT:                 read<ptr<ptr<ptr<void>>>>(%[[VALUE_t1_2]]);
+// DEFAULT-NEXT:                 read<ptr<ptr<i8>>>(%[[VALUE_t2_2]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %186
+// DEFAULT-NEXT:         do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %69 t1: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 let %70 t2: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 let %71 t1a: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 let %72 t1b: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 let %73 t2a: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 let %74 t2b: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%69, read<ptr<ptr<i32>>>(%71));
-// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%69, read<ptr<ptr<i32>>>(%72));
-// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%70, read<ptr<ptr<i32>>>(%73));
-// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%70, read<ptr<ptr<i32>>>(%74));
-// DEFAULT-NEXT:                 read<ptr<ptr<i32>>>(%69);
-// DEFAULT-NEXT:                 read<ptr<ptr<i32>>>(%70);
+// DEFAULT-NEXT:                 let %[[VALUE_t1_3:[0-9]+]] t1: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2_3:[0-9]+]] t2: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1a_3:[0-9]+]] t1a: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1b_3:[0-9]+]] t1b: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2a_3:[0-9]+]] t2a: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2b_3:[0-9]+]] t2b: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
+// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%[[VALUE_t1_3]], read<ptr<ptr<i32>>>(%[[VALUE_t1a_3]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%[[VALUE_t1_3]], read<ptr<ptr<i32>>>(%[[VALUE_t1b_3]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%[[VALUE_t2_3]], read<ptr<ptr<i32>>>(%[[VALUE_t2a_3]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%[[VALUE_t2_3]], read<ptr<ptr<i32>>>(%[[VALUE_t2b_3]]));
+// DEFAULT-NEXT:                 read<ptr<ptr<i32>>>(%[[VALUE_t1_3]]);
+// DEFAULT-NEXT:                 read<ptr<ptr<i32>>>(%[[VALUE_t2_3]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %187
+// DEFAULT-NEXT:         do %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %87 t1: ptr<ptr<f64>> [storage=automatic] = null<ptr<ptr<f64>>>;
-// DEFAULT-NEXT:                 let %88 t2: ptr<ptr<fn() -> i32>> [storage=automatic] = null<ptr<ptr<fn() -> i32>>>;
-// DEFAULT-NEXT:                 let %89 t1a: ptr<ptr<f64>> [storage=automatic] = null<ptr<ptr<f64>>>;
-// DEFAULT-NEXT:                 let %90 t1b: ptr<ptr<f64>> [storage=automatic] = null<ptr<ptr<f64>>>;
-// DEFAULT-NEXT:                 let %91 t2a: ptr<ptr<fn() -> i32>> [storage=automatic] = null<ptr<ptr<fn() -> i32>>>;
-// DEFAULT-NEXT:                 let %92 t2b: ptr<ptr<fn() -> i32>> [storage=automatic] = null<ptr<ptr<fn() -> i32>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<f64>>>(%87, read<ptr<ptr<f64>>>(%89));
-// DEFAULT-NEXT:                 write<ptr<ptr<f64>>>(%87, read<ptr<ptr<f64>>>(%90));
-// DEFAULT-NEXT:                 write<ptr<ptr<fn() -> i32>>>(%88, read<ptr<ptr<fn() -> i32>>>(%91));
-// DEFAULT-NEXT:                 write<ptr<ptr<fn() -> i32>>>(%88, read<ptr<ptr<fn() -> i32>>>(%92));
-// DEFAULT-NEXT:                 read<ptr<ptr<f64>>>(%87);
-// DEFAULT-NEXT:                 read<ptr<ptr<fn() -> i32>>>(%88);
+// DEFAULT-NEXT:                 let %[[VALUE_t1_4:[0-9]+]] t1: ptr<ptr<f64>> [storage=automatic] = null<ptr<ptr<f64>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2_4:[0-9]+]] t2: ptr<ptr<fn() -> i32>> [storage=automatic] = null<ptr<ptr<fn() -> i32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1a_4:[0-9]+]] t1a: ptr<ptr<f64>> [storage=automatic] = null<ptr<ptr<f64>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1b_4:[0-9]+]] t1b: ptr<ptr<f64>> [storage=automatic] = null<ptr<ptr<f64>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2a_4:[0-9]+]] t2a: ptr<ptr<fn() -> i32>> [storage=automatic] = null<ptr<ptr<fn() -> i32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2b_4:[0-9]+]] t2b: ptr<ptr<fn() -> i32>> [storage=automatic] = null<ptr<ptr<fn() -> i32>>>;
+// DEFAULT-NEXT:                 write<ptr<ptr<f64>>>(%[[VALUE_t1_4]], read<ptr<ptr<f64>>>(%[[VALUE_t1a_4]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<f64>>>(%[[VALUE_t1_4]], read<ptr<ptr<f64>>>(%[[VALUE_t1b_4]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<fn() -> i32>>>(%[[VALUE_t2_4]], read<ptr<ptr<fn() -> i32>>>(%[[VALUE_t2a_4]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<fn() -> i32>>>(%[[VALUE_t2_4]], read<ptr<ptr<fn() -> i32>>>(%[[VALUE_t2b_4]]));
+// DEFAULT-NEXT:                 read<ptr<ptr<f64>>>(%[[VALUE_t1_4]]);
+// DEFAULT-NEXT:                 read<ptr<ptr<fn() -> i32>>>(%[[VALUE_t2_4]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %188
+// DEFAULT-NEXT:         do %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %105 t1: ptr<ptr<f32>> [storage=automatic] = null<ptr<ptr<f32>>>;
-// DEFAULT-NEXT:                 let %106 t2: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 let %107 t1a: ptr<ptr<f32>> [storage=automatic] = null<ptr<ptr<f32>>>;
-// DEFAULT-NEXT:                 let %108 t1b: ptr<ptr<f32>> [storage=automatic] = null<ptr<ptr<f32>>>;
-// DEFAULT-NEXT:                 let %109 t2a: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 let %110 t2b: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<f32>>>(%105, read<ptr<ptr<f32>>>(%107));
-// DEFAULT-NEXT:                 write<ptr<ptr<f32>>>(%105, read<ptr<ptr<f32>>>(%108));
-// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%106, read<ptr<ptr<i32>>>(%109));
-// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%106, read<ptr<ptr<i32>>>(%110));
-// DEFAULT-NEXT:                 read<ptr<ptr<f32>>>(%105);
-// DEFAULT-NEXT:                 read<ptr<ptr<i32>>>(%106);
+// DEFAULT-NEXT:                 let %[[VALUE_t1_5:[0-9]+]] t1: ptr<ptr<f32>> [storage=automatic] = null<ptr<ptr<f32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2_5:[0-9]+]] t2: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1a_5:[0-9]+]] t1a: ptr<ptr<f32>> [storage=automatic] = null<ptr<ptr<f32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1b_5:[0-9]+]] t1b: ptr<ptr<f32>> [storage=automatic] = null<ptr<ptr<f32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2a_5:[0-9]+]] t2a: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2b_5:[0-9]+]] t2b: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
+// DEFAULT-NEXT:                 write<ptr<ptr<f32>>>(%[[VALUE_t1_5]], read<ptr<ptr<f32>>>(%[[VALUE_t1a_5]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<f32>>>(%[[VALUE_t1_5]], read<ptr<ptr<f32>>>(%[[VALUE_t1b_5]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%[[VALUE_t2_5]], read<ptr<ptr<i32>>>(%[[VALUE_t2a_5]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%[[VALUE_t2_5]], read<ptr<ptr<i32>>>(%[[VALUE_t2b_5]]));
+// DEFAULT-NEXT:                 read<ptr<ptr<f32>>>(%[[VALUE_t1_5]]);
+// DEFAULT-NEXT:                 read<ptr<ptr<i32>>>(%[[VALUE_t2_5]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %189
+// DEFAULT-NEXT:         do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %123 t1: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 let %124 t2: ptr<ptr<f32>> [storage=automatic] = null<ptr<ptr<f32>>>;
-// DEFAULT-NEXT:                 let %125 t1a: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 let %126 t1b: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
-// DEFAULT-NEXT:                 let %127 t2a: ptr<ptr<f32>> [storage=automatic] = null<ptr<ptr<f32>>>;
-// DEFAULT-NEXT:                 let %128 t2b: ptr<ptr<f32>> [storage=automatic] = null<ptr<ptr<f32>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%123, read<ptr<ptr<i32>>>(%125));
-// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%123, read<ptr<ptr<i32>>>(%126));
-// DEFAULT-NEXT:                 write<ptr<ptr<f32>>>(%124, read<ptr<ptr<f32>>>(%127));
-// DEFAULT-NEXT:                 write<ptr<ptr<f32>>>(%124, read<ptr<ptr<f32>>>(%128));
-// DEFAULT-NEXT:                 read<ptr<ptr<i32>>>(%123);
-// DEFAULT-NEXT:                 read<ptr<ptr<f32>>>(%124);
+// DEFAULT-NEXT:                 let %[[VALUE_t1_6:[0-9]+]] t1: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2_6:[0-9]+]] t2: ptr<ptr<f32>> [storage=automatic] = null<ptr<ptr<f32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1a_6:[0-9]+]] t1a: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1b_6:[0-9]+]] t1b: ptr<ptr<i32>> [storage=automatic] = null<ptr<ptr<i32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2a_6:[0-9]+]] t2a: ptr<ptr<f32>> [storage=automatic] = null<ptr<ptr<f32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2b_6:[0-9]+]] t2b: ptr<ptr<f32>> [storage=automatic] = null<ptr<ptr<f32>>>;
+// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%[[VALUE_t1_6]], read<ptr<ptr<i32>>>(%[[VALUE_t1a_6]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<i32>>>(%[[VALUE_t1_6]], read<ptr<ptr<i32>>>(%[[VALUE_t1b_6]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<f32>>>(%[[VALUE_t2_6]], read<ptr<ptr<f32>>>(%[[VALUE_t2a_6]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<f32>>>(%[[VALUE_t2_6]], read<ptr<ptr<f32>>>(%[[VALUE_t2b_6]]));
+// DEFAULT-NEXT:                 read<ptr<ptr<i32>>>(%[[VALUE_t1_6]]);
+// DEFAULT-NEXT:                 read<ptr<ptr<f32>>>(%[[VALUE_t2_6]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %190
+// DEFAULT-NEXT:         do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %141 t1: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>>;
-// DEFAULT-NEXT:                 let %142 t2: ptr<ptr<@type1>> [storage=automatic] = null<ptr<ptr<@type1>>>;
-// DEFAULT-NEXT:                 let %143 t1a: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>>;
-// DEFAULT-NEXT:                 let %144 t1b: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>>;
-// DEFAULT-NEXT:                 let %145 t2a: ptr<ptr<@type1>> [storage=automatic] = null<ptr<ptr<@type1>>>;
-// DEFAULT-NEXT:                 let %146 t2b: ptr<ptr<@type1>> [storage=automatic] = null<ptr<ptr<@type1>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<fn() -> void>>>>(%141, read<ptr<ptr<ptr<fn() -> void>>>>(%143));
-// DEFAULT-NEXT:                 write<ptr<ptr<ptr<fn() -> void>>>>(%141, read<ptr<ptr<ptr<fn() -> void>>>>(%144));
-// DEFAULT-NEXT:                 write<ptr<ptr<@type1>>>(%142, read<ptr<ptr<@type1>>>(%145));
-// DEFAULT-NEXT:                 write<ptr<ptr<@type1>>>(%142, read<ptr<ptr<@type1>>>(%146));
-// DEFAULT-NEXT:                 read<ptr<ptr<ptr<fn() -> void>>>>(%141);
-// DEFAULT-NEXT:                 read<ptr<ptr<@type1>>>(%142);
+// DEFAULT-NEXT:                 let %[[VALUE_t1_7:[0-9]+]] t1: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2_7:[0-9]+]] t2: ptr<ptr<@type[[TYPE_S]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_S]]>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1a_7:[0-9]+]] t1a: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1b_7:[0-9]+]] t1b: ptr<ptr<ptr<fn() -> void>>> [storage=automatic] = null<ptr<ptr<ptr<fn() -> void>>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2a_7:[0-9]+]] t2a: ptr<ptr<@type[[TYPE_S]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_S]]>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2b_7:[0-9]+]] t2b: ptr<ptr<@type[[TYPE_S]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_S]]>>>;
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_t1_7]], read<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_t1a_7]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_t1_7]], read<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_t1b_7]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_S]]>>>(%[[VALUE_t2_7]], read<ptr<ptr<@type[[TYPE_S]]>>>(%[[VALUE_t2a_7]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_S]]>>>(%[[VALUE_t2_7]], read<ptr<ptr<@type[[TYPE_S]]>>>(%[[VALUE_t2b_7]]));
+// DEFAULT-NEXT:                 read<ptr<ptr<ptr<fn() -> void>>>>(%[[VALUE_t1_7]]);
+// DEFAULT-NEXT:                 read<ptr<ptr<@type[[TYPE_S]]>>>(%[[VALUE_t2_7]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %191
+// DEFAULT-NEXT:         do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %159 t1: ptr<ptr<@type2>> [storage=automatic] = null<ptr<ptr<@type2>>>;
-// DEFAULT-NEXT:                 let %160 t2: ptr<ptr<@type2>> [storage=automatic] = null<ptr<ptr<@type2>>>;
-// DEFAULT-NEXT:                 let %161 t1a: ptr<ptr<@type2>> [storage=automatic] = null<ptr<ptr<@type2>>>;
-// DEFAULT-NEXT:                 let %162 t1b: ptr<ptr<@type2>> [storage=automatic] = null<ptr<ptr<@type2>>>;
-// DEFAULT-NEXT:                 let %163 t2a: ptr<ptr<@type2>> [storage=automatic] = null<ptr<ptr<@type2>>>;
-// DEFAULT-NEXT:                 let %164 t2b: ptr<ptr<@type2>> [storage=automatic] = null<ptr<ptr<@type2>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<@type2>>>(%159, read<ptr<ptr<@type2>>>(%161));
-// DEFAULT-NEXT:                 write<ptr<ptr<@type2>>>(%159, read<ptr<ptr<@type2>>>(%162));
-// DEFAULT-NEXT:                 write<ptr<ptr<@type2>>>(%160, read<ptr<ptr<@type2>>>(%163));
-// DEFAULT-NEXT:                 write<ptr<ptr<@type2>>>(%160, read<ptr<ptr<@type2>>>(%164));
-// DEFAULT-NEXT:                 read<ptr<ptr<@type2>>>(%159);
-// DEFAULT-NEXT:                 read<ptr<ptr<@type2>>>(%160);
+// DEFAULT-NEXT:                 let %[[VALUE_t1_8:[0-9]+]] t1: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2_8:[0-9]+]] t2: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1a_8:[0-9]+]] t1a: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1b_8:[0-9]+]] t1b: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2a_8:[0-9]+]] t2a: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2b_8:[0-9]+]] t2b: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>>;
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t1_8]], read<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t1a_8]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t1_8]], read<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t1b_8]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t2_8]], read<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t2a_8]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t2_8]], read<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t2b_8]]));
+// DEFAULT-NEXT:                 read<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t1_8]]);
+// DEFAULT-NEXT:                 read<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t2_8]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %192
+// DEFAULT-NEXT:         do %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %177 t1: ptr<ptr<@type2>> [storage=automatic] = null<ptr<ptr<@type2>>>;
-// DEFAULT-NEXT:                 let %178 t2: ptr<ptr<fn() -> i32>> [storage=automatic] = null<ptr<ptr<fn() -> i32>>>;
-// DEFAULT-NEXT:                 let %179 t1a: ptr<ptr<@type2>> [storage=automatic] = null<ptr<ptr<@type2>>>;
-// DEFAULT-NEXT:                 let %180 t1b: ptr<ptr<@type2>> [storage=automatic] = null<ptr<ptr<@type2>>>;
-// DEFAULT-NEXT:                 let %181 t2a: ptr<ptr<fn() -> i32>> [storage=automatic] = null<ptr<ptr<fn() -> i32>>>;
-// DEFAULT-NEXT:                 let %182 t2b: ptr<ptr<fn() -> i32>> [storage=automatic] = null<ptr<ptr<fn() -> i32>>>;
-// DEFAULT-NEXT:                 write<ptr<ptr<@type2>>>(%177, read<ptr<ptr<@type2>>>(%179));
-// DEFAULT-NEXT:                 write<ptr<ptr<@type2>>>(%177, read<ptr<ptr<@type2>>>(%180));
-// DEFAULT-NEXT:                 write<ptr<ptr<fn() -> i32>>>(%178, read<ptr<ptr<fn() -> i32>>>(%181));
-// DEFAULT-NEXT:                 write<ptr<ptr<fn() -> i32>>>(%178, read<ptr<ptr<fn() -> i32>>>(%182));
-// DEFAULT-NEXT:                 read<ptr<ptr<@type2>>>(%177);
-// DEFAULT-NEXT:                 read<ptr<ptr<fn() -> i32>>>(%178);
+// DEFAULT-NEXT:                 let %[[VALUE_t1_9:[0-9]+]] t1: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2_9:[0-9]+]] t2: ptr<ptr<fn() -> i32>> [storage=automatic] = null<ptr<ptr<fn() -> i32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1a_9:[0-9]+]] t1a: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t1b_9:[0-9]+]] t1b: ptr<ptr<@type[[TYPE_u]]>> [storage=automatic] = null<ptr<ptr<@type[[TYPE_u]]>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2a_9:[0-9]+]] t2a: ptr<ptr<fn() -> i32>> [storage=automatic] = null<ptr<ptr<fn() -> i32>>>;
+// DEFAULT-NEXT:                 let %[[VALUE_t2b_9:[0-9]+]] t2b: ptr<ptr<fn() -> i32>> [storage=automatic] = null<ptr<ptr<fn() -> i32>>>;
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t1_9]], read<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t1a_9]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t1_9]], read<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t1b_9]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<fn() -> i32>>>(%[[VALUE_t2_9]], read<ptr<ptr<fn() -> i32>>>(%[[VALUE_t2a_9]]));
+// DEFAULT-NEXT:                 write<ptr<ptr<fn() -> i32>>>(%[[VALUE_t2_9]], read<ptr<ptr<fn() -> i32>>>(%[[VALUE_t2b_9]]));
+// DEFAULT-NEXT:                 read<ptr<ptr<@type[[TYPE_u]]>>>(%[[VALUE_t1_9]]);
+// DEFAULT-NEXT:                 read<ptr<ptr<fn() -> i32>>>(%[[VALUE_t2_9]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<i32>(field1(%15), const<i32>(69));
-// DEFAULT-NEXT:         write<@type1>(%17, copy<@type1, reason=assign>(read<@type1>(%15)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(field1(%17)), const<i32>(69))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         write<f32>(%11, const<f32>(3.5));
-// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(read<f32>(%11), const<f32>(3.5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_pour]]), const<i32>(69));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_sugar]], copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_pour]])));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(field1(%[[VALUE_sugar]])), const<i32>(69))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<f32>(%[[VALUE_f]], const<f32>(3.5));
+// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(read<f32>(%[[VALUE_f]]), const<f32>(3.5))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_good]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

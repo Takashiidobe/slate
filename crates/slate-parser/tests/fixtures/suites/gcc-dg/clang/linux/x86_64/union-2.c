@@ -53,21 +53,21 @@ int main(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 va_list = va_list;
-// DEFAULT-NEXT:     type @type1 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_U:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 l1: array<i64, 2>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %2 u: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo(%4 z: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %6 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%6);
-// DEFAULT-NEXT:         write<i32>(%5, va_arg<i32>(%6));
-// DEFAULT-NEXT:         va_arg<i32>(%6);
-// DEFAULT-NEXT:         va_end(%6);
+// DEFAULT-NEXT:     global %[[VALUE_u:[0-9]+]] u: @type[[TYPE_U]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_z:[0-9]+]] z: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], va_arg<i32>(%[[VALUE_ap]]));
+// DEFAULT-NEXT:         va_arg<i32>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%3, const<i32>(1), const<i32>(1), const<i32>(1), const<i32>(1), const<i32>(1), copy<@type1, reason=vararg>(read<@type1>(%2)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_foo]], const<i32>(1), const<i32>(1), const<i32>(1), const<i32>(1), const<i32>(1), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(%[[VALUE_u]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

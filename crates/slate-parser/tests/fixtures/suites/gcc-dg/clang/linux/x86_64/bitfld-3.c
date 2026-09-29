@@ -92,61 +92,61 @@ int main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 la = i64;
-// DEFAULT-NEXT:     type @type1 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_la:[0-9]+]] la = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 a: i8;
-// DEFAULT-NEXT:         field1 b: @type2;
+// DEFAULT-NEXT:         field1 b: @type[[TYPE_UA:[0-9]+]];
 // DEFAULT-NEXT:         field2 c: i8;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     type @type2 UA = union {
+// DEFAULT-NEXT:     type @type[[TYPE_UA]] UA = union {
 // DEFAULT-NEXT:         field0 x: i8;
 // DEFAULT-NEXT:         field1 y: i64 : 6;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0], bit_offsets=[None, Some(0)], bit_units=[(0, 1)], field_units=[None, Some(0)]];
-// DEFAULT-NEXT:     type @type3 B = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
 // DEFAULT-NEXT:         field0 a: i8;
-// DEFAULT-NEXT:         field1 b: @type4;
+// DEFAULT-NEXT:         field1 b: @type[[TYPE_UB:[0-9]+]];
 // DEFAULT-NEXT:         field2 c: i8;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     type @type4 UB = union {
+// DEFAULT-NEXT:     type @type[[TYPE_UB]] UB = union {
 // DEFAULT-NEXT:         field0 x: i8;
 // DEFAULT-NEXT:         field1 y: i64 : 6;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0], bit_offsets=[None, Some(0)], bit_units=[(0, 1)], field_units=[None, Some(0)]];
-// DEFAULT-NEXT:     type @type5 C = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_C:[0-9]+]] C = struct {
 // DEFAULT-NEXT:         field0 a: i8;
-// DEFAULT-NEXT:         field1 b: @type6;
+// DEFAULT-NEXT:         field1 b: @type[[TYPE_UC:[0-9]+]];
 // DEFAULT-NEXT:         field2 c: i8;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     type @type6 UC = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_UC]] UC = struct {
 // DEFAULT-NEXT:         field0 y: i64 : 6;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// DEFAULT-NEXT:     type @type7 D = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_D:[0-9]+]] D = struct {
 // DEFAULT-NEXT:         field0 a: i8;
-// DEFAULT-NEXT:         field1 b: @type8;
+// DEFAULT-NEXT:         field1 b: @type[[TYPE_UD:[0-9]+]];
 // DEFAULT-NEXT:         field2 c: i8;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     type @type8 UD = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_UD]] UD = struct {
 // DEFAULT-NEXT:         field0 y: i64 : 6;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// DEFAULT-NEXT:     global %5 a: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 b: @type3 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 c: @type5 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %14 d: @type7 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%16 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_A]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE_B]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: @type[[TYPE_C]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: @type[[TYPE_D]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(24), const<u64>(24))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(24), const<u64>(24))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(24), const<u64>(24))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(field2(%5)), addr_of<ptr<i8>>(field0(%5))), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(field2(%8)), addr_of<ptr<i8>>(field0(%8))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(field2(%5)), addr_of<ptr<i8>>(field0(%5))), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(field2(%11)), addr_of<ptr<i8>>(field0(%11))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(field2(%5)), addr_of<ptr<i8>>(field0(%5))), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(field2(%14)), addr_of<ptr<i8>>(field0(%14))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(field2(%[[VALUE_a]])), addr_of<ptr<i8>>(field0(%[[VALUE_a]]))), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(field2(%[[VALUE_b]])), addr_of<ptr<i8>>(field0(%[[VALUE_b]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(field2(%[[VALUE_a]])), addr_of<ptr<i8>>(field0(%[[VALUE_a]]))), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(field2(%[[VALUE_c]])), addr_of<ptr<i8>>(field0(%[[VALUE_c]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(field2(%[[VALUE_a]])), addr_of<ptr<i8>>(field0(%[[VALUE_a]]))), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(addr_of<ptr<i8>>(field2(%[[VALUE_d]])), addr_of<ptr<i8>>(field0(%[[VALUE_d]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

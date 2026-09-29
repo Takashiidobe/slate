@@ -78,33 +78,33 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @link_error() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exp(%10 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @sqrt(%11 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @cbrt(%12 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %4 @pow(%13 <unnamed>: f64, %14 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @test(%6 x: f64, %7 y: f64, %8 z: f64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(call<f64, signature=fn(f64) -> f64>(%2, read<f64>(%6)), call<f64, signature=fn(f64) -> f64>(%2, read<f64>(%6))), read<f64>(%6))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(call<f64, signature=fn(f64) -> f64>(%2, read<f64>(%6)), call<f64, signature=fn(f64) -> f64>(%2, read<f64>(%7))), call<f64, signature=fn(f64) -> f64>(%2, mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%6), read<f64>(%7))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%6)), call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%7))), call<f64, signature=fn(f64) -> f64>(%1, add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%6), read<f64>(%7))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(call<f64, signature=fn(f64, f64) -> f64>(%4, read<f64>(%6), read<f64>(%7)), call<f64, signature=fn(f64, f64) -> f64>(%4, read<f64>(%8), read<f64>(%7))), call<f64, signature=fn(f64, f64) -> f64>(%4, mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%8), read<f64>(%6)), read<f64>(%7)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(call<f64, signature=fn(f64, f64) -> f64>(%4, read<f64>(%6), read<f64>(%7)), call<f64, signature=fn(f64, f64) -> f64>(%4, read<f64>(%6), read<f64>(%8))), call<f64, signature=fn(f64, f64) -> f64>(%4, read<f64>(%6), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%7), read<f64>(%8))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%6), call<f64, signature=fn(f64) -> f64>(%1, read<f64>(%7))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%6), call<f64, signature=fn(f64) -> f64>(%1, neg<f64>(read<f64>(%7)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%6), call<f64, signature=fn(f64, f64) -> f64>(%4, read<f64>(%7), read<f64>(%8))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%6), call<f64, signature=fn(f64, f64) -> f64>(%4, read<f64>(%7), neg<f64>(read<f64>(%8)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%6), call<f64, signature=fn(f64) -> f64>(%2, div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%7), read<f64>(%8)))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%6), call<f64, signature=fn(f64) -> f64>(%2, div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%8), read<f64>(%7)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%6), call<f64, signature=fn(f64) -> f64>(%3, div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%7), read<f64>(%8)))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%6), call<f64, signature=fn(f64) -> f64>(%3, div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%8), read<f64>(%7)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_link_error:[0-9]+]] @link_error() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_exp:[0-9]+]] @exp(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_sqrt:[0-9]+]] @sqrt(%[[VALUE1:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_cbrt:[0-9]+]] @cbrt(%[[VALUE2:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_pow:[0-9]+]] @pow(%[[VALUE3:[0-9]+]] <unnamed>: f64, %[[VALUE4:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_x:[0-9]+]] x: f64, %[[VALUE_y:[0-9]+]] y: f64, %[[VALUE_z:[0-9]+]] z: f64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_sqrt]], read<f64>(%[[VALUE_x]])), call<f64, signature=fn(f64) -> f64>(%[[VALUE_sqrt]], read<f64>(%[[VALUE_x]]))), read<f64>(%[[VALUE_x]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_sqrt]], read<f64>(%[[VALUE_x]])), call<f64, signature=fn(f64) -> f64>(%[[VALUE_sqrt]], read<f64>(%[[VALUE_y]]))), call<f64, signature=fn(f64) -> f64>(%[[VALUE_sqrt]], mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_x]]), read<f64>(%[[VALUE_y]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_exp]], read<f64>(%[[VALUE_x]])), call<f64, signature=fn(f64) -> f64>(%[[VALUE_exp]], read<f64>(%[[VALUE_y]]))), call<f64, signature=fn(f64) -> f64>(%[[VALUE_exp]], add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_x]]), read<f64>(%[[VALUE_y]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_pow]], read<f64>(%[[VALUE_x]]), read<f64>(%[[VALUE_y]])), call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_pow]], read<f64>(%[[VALUE_z]]), read<f64>(%[[VALUE_y]]))), call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_pow]], mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_z]]), read<f64>(%[[VALUE_x]])), read<f64>(%[[VALUE_y]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_pow]], read<f64>(%[[VALUE_x]]), read<f64>(%[[VALUE_y]])), call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_pow]], read<f64>(%[[VALUE_x]]), read<f64>(%[[VALUE_z]]))), call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_pow]], read<f64>(%[[VALUE_x]]), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_y]]), read<f64>(%[[VALUE_z]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_x]]), call<f64, signature=fn(f64) -> f64>(%[[VALUE_exp]], read<f64>(%[[VALUE_y]]))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_x]]), call<f64, signature=fn(f64) -> f64>(%[[VALUE_exp]], neg<f64>(read<f64>(%[[VALUE_y]])))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_x]]), call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_pow]], read<f64>(%[[VALUE_y]]), read<f64>(%[[VALUE_z]]))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_x]]), call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_pow]], read<f64>(%[[VALUE_y]]), neg<f64>(read<f64>(%[[VALUE_z]])))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_x]]), call<f64, signature=fn(f64) -> f64>(%[[VALUE_sqrt]], div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_y]]), read<f64>(%[[VALUE_z]])))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_x]]), call<f64, signature=fn(f64) -> f64>(%[[VALUE_sqrt]], div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_z]]), read<f64>(%[[VALUE_y]])))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_x]]), call<f64, signature=fn(f64) -> f64>(%[[VALUE_cbrt]], div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_y]]), read<f64>(%[[VALUE_z]])))), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_x]]), call<f64, signature=fn(f64) -> f64>(%[[VALUE_cbrt]], div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_z]]), read<f64>(%[[VALUE_y]])))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64, f64) -> void>(%5, const<f64>(2.0), const<f64>(3.0), const<f64>(4.0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64, f64) -> void>(%[[VALUE_test]], const<f64>(2.0), const<f64>(3.0), const<f64>(4.0));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

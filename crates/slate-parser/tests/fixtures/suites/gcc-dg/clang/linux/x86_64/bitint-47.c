@@ -38,8 +38,8 @@ int x;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 x: i128b, %2 y: i256b) -> i256b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<i256b, overflow=ub>(widen<i256b, reason=usual_arith>(mul<i128b, overflow=ub>(read<i128b>(%1), widen<i128b, reason=usual_arith>(const<i32>(5)))), read<i256b>(%2));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i128b, %[[VALUE_y:[0-9]+]] y: i256b) -> i256b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return mul<i256b, overflow=ub>(widen<i256b, reason=usual_arith>(mul<i128b, overflow=ub>(read<i128b>(%[[VALUE_x]]), widen<i128b, reason=usual_arith>(const<i32>(5)))), read<i256b>(%[[VALUE_y]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

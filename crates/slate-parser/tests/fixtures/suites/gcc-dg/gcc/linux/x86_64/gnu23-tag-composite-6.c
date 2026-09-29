@@ -55,42 +55,42 @@ int g()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = struct {
-// DEFAULT-NEXT:         field0 x: ptr<@type2>;
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = struct {
+// DEFAULT-NEXT:         field0 x: ptr<@type[[TYPE_foo_2:[0-9]+]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 bar = @type0;
-// DEFAULT-NEXT:     type @type2 foo = struct {
-// DEFAULT-NEXT:         field0 x: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_bar:[0-9]+]] bar = @type[[TYPE_foo]];
+// DEFAULT-NEXT:     type @type[[TYPE_foo_2]] foo = struct {
+// DEFAULT-NEXT:         field0 x: ptr<@type[[TYPE_foo]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 fo2 = struct {
-// DEFAULT-NEXT:         field0 x: ptr<@type5>;
+// DEFAULT-NEXT:     type @type[[TYPE_fo2:[0-9]+]] fo2 = struct {
+// DEFAULT-NEXT:         field0 x: ptr<@type[[TYPE_fo2_2:[0-9]+]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type4 bar = @type3;
-// DEFAULT-NEXT:     type @type5 fo2 = struct {
-// DEFAULT-NEXT:         field0 x: ptr<@type6>;
+// DEFAULT-NEXT:     type @type[[TYPE_bar_2:[0-9]+]] bar = @type[[TYPE_fo2]];
+// DEFAULT-NEXT:     type @type[[TYPE_fo2_2]] fo2 = struct {
+// DEFAULT-NEXT:         field0 x: ptr<@type[[TYPE_fo2_3:[0-9]+]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type6 fo2 = struct {
-// DEFAULT-NEXT:         field0 x: ptr<@type3>;
+// DEFAULT-NEXT:     type @type[[TYPE_fo2_3]] fo2 = struct {
+// DEFAULT-NEXT:         field0 x: ptr<@type[[TYPE_fo2]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %0 @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 q: ptr<@type0> [storage=automatic];
-// DEFAULT-NEXT:         let %5 p0: ptr<@type2> [storage=automatic];
-// DEFAULT-NEXT:         let %6 p1: ptr<@type2> [storage=automatic];
-// DEFAULT-NEXT:         conditional<ptr<@type2>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type2>>(%5), pointer_cast<ptr<@type2>, reason=usual_arith>(read<ptr<@type0>>(%4)));
-// DEFAULT-NEXT:         conditional<ptr<@type2>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type2>>(%6), pointer_cast<ptr<@type2>, reason=usual_arith>(read<ptr<@type0>>(%4)));
-// DEFAULT-NEXT:         conditional<ptr<@type2>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type2>>(%5), read<ptr<@type2>>(%6));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_foo]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p0:[0-9]+]] p0: ptr<@type[[TYPE_foo_2]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p1:[0-9]+]] p1: ptr<@type[[TYPE_foo_2]]> [storage=automatic];
+// DEFAULT-NEXT:         conditional<ptr<@type[[TYPE_foo_2]]>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type[[TYPE_foo_2]]>>(%[[VALUE_p0]]), pointer_cast<ptr<@type[[TYPE_foo_2]]>, reason=usual_arith>(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_q]])));
+// DEFAULT-NEXT:         conditional<ptr<@type[[TYPE_foo_2]]>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type[[TYPE_foo_2]]>>(%[[VALUE_p1]]), pointer_cast<ptr<@type[[TYPE_foo_2]]>, reason=usual_arith>(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_q]])));
+// DEFAULT-NEXT:         conditional<ptr<@type[[TYPE_foo_2]]>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type[[TYPE_foo_2]]>>(%[[VALUE_p0]]), read<ptr<@type[[TYPE_foo_2]]>>(%[[VALUE_p1]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @g() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %12 q: ptr<@type3> [storage=automatic];
-// DEFAULT-NEXT:         let %13 p0: ptr<@type5> [storage=automatic];
-// DEFAULT-NEXT:         let %14 p1: ptr<@type6> [storage=automatic];
-// DEFAULT-NEXT:         let %15 p2: ptr<@type3> [storage=automatic];
-// DEFAULT-NEXT:         conditional<ptr<@type5>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type5>>(%13), pointer_cast<ptr<@type5>, reason=usual_arith>(read<ptr<@type3>>(%12)));
-// DEFAULT-NEXT:         conditional<ptr<@type6>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type6>>(%14), pointer_cast<ptr<@type6>, reason=usual_arith>(read<ptr<@type3>>(%12)));
-// DEFAULT-NEXT:         conditional<ptr<@type3>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type3>>(%15), read<ptr<@type3>>(%12));
-// DEFAULT-NEXT:         conditional<ptr<@type5>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type5>>(%13), pointer_cast<ptr<@type5>, reason=usual_arith>(read<ptr<@type6>>(%14)));
-// DEFAULT-NEXT:         conditional<ptr<@type3>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type3>>(%15), pointer_cast<ptr<@type3>, reason=usual_arith>(read<ptr<@type6>>(%14)));
-// DEFAULT-NEXT:         conditional<ptr<@type5>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type5>>(%13), pointer_cast<ptr<@type5>, reason=usual_arith>(read<ptr<@type3>>(%15)));
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_q_2:[0-9]+]] q: ptr<@type[[TYPE_fo2]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p0_2:[0-9]+]] p0: ptr<@type[[TYPE_fo2_2]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p1_2:[0-9]+]] p1: ptr<@type[[TYPE_fo2_3]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p2:[0-9]+]] p2: ptr<@type[[TYPE_fo2]]> [storage=automatic];
+// DEFAULT-NEXT:         conditional<ptr<@type[[TYPE_fo2_2]]>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type[[TYPE_fo2_2]]>>(%[[VALUE_p0_2]]), pointer_cast<ptr<@type[[TYPE_fo2_2]]>, reason=usual_arith>(read<ptr<@type[[TYPE_fo2]]>>(%[[VALUE_q_2]])));
+// DEFAULT-NEXT:         conditional<ptr<@type[[TYPE_fo2_3]]>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type[[TYPE_fo2_3]]>>(%[[VALUE_p1_2]]), pointer_cast<ptr<@type[[TYPE_fo2_3]]>, reason=usual_arith>(read<ptr<@type[[TYPE_fo2]]>>(%[[VALUE_q_2]])));
+// DEFAULT-NEXT:         conditional<ptr<@type[[TYPE_fo2]]>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type[[TYPE_fo2]]>>(%[[VALUE_p2]]), read<ptr<@type[[TYPE_fo2]]>>(%[[VALUE_q_2]]));
+// DEFAULT-NEXT:         conditional<ptr<@type[[TYPE_fo2_2]]>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type[[TYPE_fo2_2]]>>(%[[VALUE_p0_2]]), pointer_cast<ptr<@type[[TYPE_fo2_2]]>, reason=usual_arith>(read<ptr<@type[[TYPE_fo2_3]]>>(%[[VALUE_p1_2]])));
+// DEFAULT-NEXT:         conditional<ptr<@type[[TYPE_fo2]]>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type[[TYPE_fo2]]>>(%[[VALUE_p2]]), pointer_cast<ptr<@type[[TYPE_fo2]]>, reason=usual_arith>(read<ptr<@type[[TYPE_fo2_3]]>>(%[[VALUE_p1_2]])));
+// DEFAULT-NEXT:         conditional<ptr<@type[[TYPE_fo2_2]]>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type[[TYPE_fo2_2]]>>(%[[VALUE_p0_2]]), pointer_cast<ptr<@type[[TYPE_fo2_2]]>, reason=usual_arith>(read<ptr<@type[[TYPE_fo2]]>>(%[[VALUE_p2]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

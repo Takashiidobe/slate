@@ -30,9 +30,9 @@ void clobber_register()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 global_one: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @clobber_register() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<u8, volatile>(deref(int_to_ptr<ptr<volatile u8>, reason=explicit>(mul<u32, overflow=wrap>(const<u32>(3758096384), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%0))))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:     global %[[VALUE_global_one:[0-9]+]] global_one: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_clobber_register:[0-9]+]] @clobber_register() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<u8, volatile>(deref(int_to_ptr<ptr<volatile u8>, reason=explicit>(mul<u32, overflow=wrap>(const<u32>(3758096384), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_global_one]]))))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

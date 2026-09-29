@@ -43,9 +43,9 @@ extern typeof_unqual (volatile _Atomic int [2][2]) b;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: atomic array<i32, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 b: atomic array<array<i32, 2>, 2> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %2 c: atomic array<i32, 2> [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     global %3 d: atomic array<array<i32, 2>, 2> [storage=static] [const] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: atomic array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: atomic array<array<i32, 2>, 2> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: atomic array<i32, 2> [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: atomic array<array<i32, 2>, 2> [storage=static] [const] [align=16] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

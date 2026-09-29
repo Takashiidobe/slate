@@ -38,10 +38,10 @@ int read_constant(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %6 constant: i32 [storage=static] [const] [constexpr] = const<i32>(5) [linkage=internal] [c="const int"] [c_const="true"];
-// DEFAULT-NEXT:     global %7 null_pointer: ptr<i32> [storage=static] [const] [constexpr] = null<ptr<i32>> [linkage=internal] [c="int *const"] [c_const="true"];
-// DEFAULT-NEXT:     fn %0 @stop() -> void [linkage=external] [noreturn] [fallthrough=ub] [c="void(void)"] {
-// DEFAULT-NEXT:         for %10
+// DEFAULT-NEXT:     global %[[VALUE_constant:[0-9]+]] constant: i32 [storage=static] [const] [constexpr] = const<i32>(5) [linkage=internal] [c="const int"] [c_const="true"];
+// DEFAULT-NEXT:     global %[[VALUE_null_pointer:[0-9]+]] null_pointer: ptr<i32> [storage=static] [const] [constexpr] = null<ptr<i32>> [linkage=internal] [c="int *const"] [c_const="true"];
+// DEFAULT-NEXT:     fn %[[VALUE_stop:[0-9]+]] @stop() -> void [linkage=external] [noreturn] [fallthrough=ub] [c="void(void)"] {
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: omitted
 // DEFAULT-NEXT:             increment: omitted
@@ -49,16 +49,16 @@ int read_constant(void) {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @halt() -> void [linkage=external] [noreturn] [fallthrough=ub] [c_storage="none"] [c_return="void"] [c="void(void)"] [c_attributes="[NoReturn]"] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_halt:[0-9]+]] @halt() -> void [linkage=external] [noreturn] [fallthrough=ub] [c_storage="none"] [c_return="void"] [c="void(void)"] [c_attributes="[NoReturn]"] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_stop]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @aborting() -> void [linkage=external] [noreturn] [c="void(void)"] [c_attributes="[NoReturn, Cold]"];
-// DEFAULT-NEXT:     fn %4 @inspect(%5 x: i32 [c="int"]) -> i32 [linkage=external] [memory=read] [fallthrough=ub_if_used] [c="int(int)"] [c_attributes="[WarnUnusedResult, Pure]"] {
-// DEFAULT-NEXT:         return read<i32>(%5);
+// DEFAULT-NEXT:     fn %[[VALUE_aborting:[0-9]+]] @aborting() -> void [linkage=external] [noreturn] [c="void(void)"] [c_attributes="[NoReturn, Cold]"];
+// DEFAULT-NEXT:     fn %[[VALUE_inspect:[0-9]+]] @inspect(%[[VALUE_x:[0-9]+]] x: i32 [c="int"]) -> i32 [linkage=external] [memory=read] [fallthrough=ub_if_used] [c="int(int)"] [c_attributes="[WarnUnusedResult, Pure]"] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @read_constant() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
-// DEFAULT-NEXT:         let %9 local: i32 [storage=automatic] [const] [constexpr] = const<i32>(3) [c="const int"] [c_const="true"];
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%6), read<i32>(%9));
+// DEFAULT-NEXT:     fn %[[VALUE_read_constant:[0-9]+]] @read_constant() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
+// DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: i32 [storage=automatic] [const] [constexpr] = const<i32>(3) [c="const int"] [c_const="true"];
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_constant]]), read<i32>(%[[VALUE_local]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

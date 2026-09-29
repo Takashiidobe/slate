@@ -51,27 +51,27 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 g_7: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %3 g_6: volatile ptr<i32> [storage=static] = addr_of<ptr<i32>>(%2) [linkage=internal];
-// DEFAULT-NEXT:     global %4 g_3: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%12 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @f1(%6 p_58: ptr<i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32>>(%6)));
+// DEFAULT-NEXT:     global %[[VALUE_g_7:[0-9]+]] g_7: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_g_6:[0-9]+]] g_6: volatile ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_g_7]]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_g_3:[0-9]+]] g_3: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_p_58:[0-9]+]] p_58: ptr<i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32>>(%[[VALUE_p_58]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @f2(%9 i: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(%4, read<i32>(%9));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_i:[0-9]+]] i: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_g_3]], read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @f3() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>, volatile>(%3)), const<i32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%8, call<i32, signature=fn(ptr<i32>) -> i32>(%5, addr_of<ptr<i32>>(%2)));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3() -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>, volatile>(%[[VALUE_g_6]])), const<i32>(1));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_f2]], call<i32, signature=fn(ptr<i32>) -> i32>(%[[VALUE_f1]], addr_of<ptr<i32>>(%[[VALUE_g_7]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%10);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_f3]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_g_3]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -40,54 +40,54 @@ _Complex long double complex_long_double(_Complex long double value) { return va
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 floats = struct {
+// IR-NEXT:     type @type[[TYPE_floats:[0-9]+]] floats = struct {
 // IR-NEXT:         field0 a: f32;
 // IR-NEXT:         field1 b: f32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type1 zero_tail = struct {
+// IR-NEXT:     type @type[[TYPE_zero_tail:[0-9]+]] zero_tail = struct {
 // IR-NEXT:         field0 d: f64;
 // IR-NEXT:         field1 tail: array<f32, 0>;
 // IR-NEXT:     } [size=8, align=8, offsets=[0, 8]];
-// IR-NEXT:     type @type2 flexible = struct {
+// IR-NEXT:     type @type[[TYPE_flexible:[0-9]+]] flexible = struct {
 // IR-NEXT:         field0 d: f64;
 // IR-NEXT:         field1 tail: array<f32, incomplete>;
 // IR-NEXT:     } [size=8, align=8, offsets=[0, 8]];
-// IR-NEXT:     type @type3 empty = struct {
+// IR-NEXT:     type @type[[TYPE_empty:[0-9]+]] empty = struct {
 // IR-NEXT:     } [size=0, align=1, offsets=[]];
-// IR-NEXT:     type @type4 empty_then_float = struct {
-// IR-NEXT:         field0 e: @type3;
+// IR-NEXT:     type @type[[TYPE_empty_then_float:[0-9]+]] empty_then_float = struct {
+// IR-NEXT:         field0 e: @type[[TYPE_empty]];
 // IR-NEXT:         field1 f: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     type @type5 halves = struct {
+// IR-NEXT:     type @type[[TYPE_halves:[0-9]+]] halves = struct {
 // IR-NEXT:         field0 a: f16;
 // IR-NEXT:         field1 b: f16;
 // IR-NEXT:     } [size=4, align=2, offsets=[0, 2]];
-// IR-NEXT:     type @type6 long_double = struct {
+// IR-NEXT:     type @type[[TYPE_long_double:[0-9]+]] long_double = struct {
 // IR-NEXT:         field0 x: f128;
 // IR-NEXT:     } [size=16, align=16, offsets=[0]];
-// IR-NEXT:     fn %7 @floats(%8 value: @type0) -> @type0 [linkage=external] [abi=aapcs64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type0, reason=return>(read<@type0>(%8));
+// IR-NEXT:     fn %[[VALUE_floats:[0-9]+]] @floats(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_floats]]) -> @type[[TYPE_floats]] [linkage=external] [abi=aapcs64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_floats]], reason=return>(read<@type[[TYPE_floats]]>(%[[VALUE_value]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %9 @zero_tail(%10 value: @type1) -> @type1 [linkage=external] [abi=aapcs64(coerce<i64>) -> coerce<i64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type1, reason=return>(read<@type1>(%10));
+// IR-NEXT:     fn %[[VALUE_zero_tail:[0-9]+]] @zero_tail(%[[VALUE_value_2:[0-9]+]] value: @type[[TYPE_zero_tail]]) -> @type[[TYPE_zero_tail]] [linkage=external] [abi=aapcs64(coerce<i64>) -> coerce<i64>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_zero_tail]], reason=return>(read<@type[[TYPE_zero_tail]]>(%[[VALUE_value_2]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %11 @flexible(%12 value: @type2) -> @type2 [linkage=external] [abi=aapcs64(coerce<i64>) -> coerce<i64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type2, reason=return>(read<@type2>(%12));
+// IR-NEXT:     fn %[[VALUE_flexible:[0-9]+]] @flexible(%[[VALUE_value_3:[0-9]+]] value: @type[[TYPE_flexible]]) -> @type[[TYPE_flexible]] [linkage=external] [abi=aapcs64(coerce<i64>) -> coerce<i64>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_flexible]], reason=return>(read<@type[[TYPE_flexible]]>(%[[VALUE_value_3]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %13 @empty_then_float(%14 value: @type4) -> @type4 [linkage=external] [abi=aapcs64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type4, reason=return>(read<@type4>(%14));
+// IR-NEXT:     fn %[[VALUE_empty_then_float:[0-9]+]] @empty_then_float(%[[VALUE_value_4:[0-9]+]] value: @type[[TYPE_empty_then_float]]) -> @type[[TYPE_empty_then_float]] [linkage=external] [abi=aapcs64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_empty_then_float]], reason=return>(read<@type[[TYPE_empty_then_float]]>(%[[VALUE_value_4]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %15 @halves(%16 value: @type5) -> @type5 [linkage=external] [abi=aapcs64(coerce<f16, f16>) -> coerce<f16, f16>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type5, reason=return>(read<@type5>(%16));
+// IR-NEXT:     fn %[[VALUE_halves:[0-9]+]] @halves(%[[VALUE_value_5:[0-9]+]] value: @type[[TYPE_halves]]) -> @type[[TYPE_halves]] [linkage=external] [abi=aapcs64(coerce<f16, f16>) -> coerce<f16, f16>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_halves]], reason=return>(read<@type[[TYPE_halves]]>(%[[VALUE_value_5]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %17 @long_double(%18 value: @type6) -> @type6 [linkage=external] [abi=aapcs64(coerce<f128>) -> coerce<f128>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type6, reason=return>(read<@type6>(%18));
+// IR-NEXT:     fn %[[VALUE_long_double:[0-9]+]] @long_double(%[[VALUE_value_6:[0-9]+]] value: @type[[TYPE_long_double]]) -> @type[[TYPE_long_double]] [linkage=external] [abi=aapcs64(coerce<f128>) -> coerce<f128>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_long_double]], reason=return>(read<@type[[TYPE_long_double]]>(%[[VALUE_value_6]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %19 @complex_half(%20 value: complex<f16>) -> complex<f16> [linkage=external] [abi=aapcs64(coerce<f16, f16>) -> coerce<f16, f16>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<complex<f16>>(%20);
+// IR-NEXT:     fn %[[VALUE_complex_half:[0-9]+]] @complex_half(%[[VALUE_value_7:[0-9]+]] value: complex<f16>) -> complex<f16> [linkage=external] [abi=aapcs64(coerce<f16, f16>) -> coerce<f16, f16>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<complex<f16>>(%[[VALUE_value_7]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %21 @complex_long_double(%22 value: complex<f128>) -> complex<f128> [linkage=external] [abi=aapcs64(coerce<f128, f128>) -> coerce<f128, f128>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<complex<f128>>(%22);
+// IR-NEXT:     fn %[[VALUE_complex_long_double:[0-9]+]] @complex_long_double(%[[VALUE_value_8:[0-9]+]] value: complex<f128>) -> complex<f128> [linkage=external] [abi=aapcs64(coerce<f128, f128>) -> coerce<f128, f128>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<complex<f128>>(%[[VALUE_value_8]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

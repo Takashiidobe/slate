@@ -39,16 +39,16 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%5 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 xx: u64 [storage=automatic];
-// DEFAULT-NEXT:         let %4 x: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%3);
-// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%4)), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(3)))));
-// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%4)), mul<u64, overflow=wrap>(read<u64>(deref(read<ptr<u64>>(%4))), read<u64>(deref(read<ptr<u64>>(%4)))));
-// DEFAULT-NEXT:         if ne<u64>(read<u64>(deref(read<ptr<u64>>(%4))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(9))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_xx:[0-9]+]] xx: u64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: ptr<u64> [storage=automatic] = addr_of<ptr<u64>>(%[[VALUE_xx]]);
+// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_x]])), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(3)))));
+// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_x]])), mul<u64, overflow=wrap>(read<u64>(deref(read<ptr<u64>>(%[[VALUE_x]]))), read<u64>(deref(read<ptr<u64>>(%[[VALUE_x]])))));
+// DEFAULT-NEXT:         if ne<u64>(read<u64>(deref(read<ptr<u64>>(%[[VALUE_x]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(9))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

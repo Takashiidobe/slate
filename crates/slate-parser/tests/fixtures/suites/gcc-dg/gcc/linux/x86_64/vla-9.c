@@ -35,11 +35,11 @@ void f(__SIZE_TYPE__ d)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 t = vla<i32, %4>;
-// DEFAULT-NEXT:     fn %0 @f(%1 d: u64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4: u64 [synthetic] = read<u64>(%1);
-// DEFAULT-NEXT:         let %3 g: ptr<vla<i32, %4>> [storage=automatic] = int_to_ptr<ptr<vla<i32, %4>>, reason=explicit>(read<u64>(%1));
-// DEFAULT-NEXT:         read<ptr<vla<i32, %4>>>(%3);
+// DEFAULT-NEXT:     type @type[[TYPE_t:[0-9]+]] t = vla<i32, %[[VALUE0:[0-9]+]]>;
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_d:[0-9]+]] d: u64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = read<u64>(%[[VALUE_d]]);
+// DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: ptr<vla<i32, %[[VALUE0]]>> [storage=automatic] = int_to_ptr<ptr<vla<i32, %[[VALUE0]]>>, reason=explicit>(read<u64>(%[[VALUE_d]]));
+// DEFAULT-NEXT:         read<ptr<vla<i32, %[[VALUE0]]>>>(%[[VALUE_g]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

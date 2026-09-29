@@ -53,17 +53,17 @@ long double testl(__complex__ long double x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @__builtin_cabs(%6 <unnamed>: complex<f64>) -> f64 [linkage=external] [abi=sysv64(native_c) -> scalar];
-// DEFAULT-NEXT:     fn %0 @test(%1 x: complex<f64>) -> f64 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%7, read<complex<f64>>(%1));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_cabs:[0-9]+]] @__builtin_cabs(%[[VALUE0:[0-9]+]] <unnamed>: complex<f64>) -> f64 [linkage=external] [abi=sysv64(native_c) -> scalar];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_x:[0-9]+]] x: complex<f64>) -> f64 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%[[VALUE___builtin_cabs]], read<complex<f64>>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @__builtin_cabsf(%8 <unnamed>: complex<f32>) -> f32 [linkage=external] [abi=sysv64(native_c) -> scalar];
-// DEFAULT-NEXT:     fn %2 @testf(%3 x: complex<f32>) -> f32 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f32, signature=fn(complex<f32>) -> f32, abi=sysv64(native_c) -> scalar>(%9, read<complex<f32>>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_cabsf:[0-9]+]] @__builtin_cabsf(%[[VALUE1:[0-9]+]] <unnamed>: complex<f32>) -> f32 [linkage=external] [abi=sysv64(native_c) -> scalar];
+// DEFAULT-NEXT:     fn %[[VALUE_testf:[0-9]+]] @testf(%[[VALUE_x_2:[0-9]+]] x: complex<f32>) -> f32 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f32, signature=fn(complex<f32>) -> f32, abi=sysv64(native_c) -> scalar>(%[[VALUE___builtin_cabsf]], read<complex<f32>>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @__builtin_cabsl(%10 <unnamed>: complex<f80>) -> f80 [linkage=external] [abi=sysv64(byval<align=16>) -> scalar];
-// DEFAULT-NEXT:     fn %4 @testl(%5 x: complex<f80>) -> f80 [linkage=external] [abi=sysv64(byval<align=16>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<f80, signature=fn(complex<f80>) -> f80, abi=sysv64(byval<align=16>) -> scalar>(%11, read<complex<f80>>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_cabsl:[0-9]+]] @__builtin_cabsl(%[[VALUE2:[0-9]+]] <unnamed>: complex<f80>) -> f80 [linkage=external] [abi=sysv64(byval<align=16>) -> scalar];
+// DEFAULT-NEXT:     fn %[[VALUE_testl:[0-9]+]] @testl(%[[VALUE_x_3:[0-9]+]] x: complex<f80>) -> f80 [linkage=external] [abi=sysv64(byval<align=16>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<f80, signature=fn(complex<f80>) -> f80, abi=sysv64(byval<align=16>) -> scalar>(%[[VALUE___builtin_cabsl]], read<complex<f80>>(%[[VALUE_x_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

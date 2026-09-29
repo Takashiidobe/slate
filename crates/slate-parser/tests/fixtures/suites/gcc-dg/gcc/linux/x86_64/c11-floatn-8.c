@@ -33,7 +33,7 @@ __extension__ _Float64x b
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: f80 [storage=static] = const<f80>(1) [linkage=external];
-// DEFAULT-NEXT:     global %1 b: f80 [storage=static] = const<f80>(2) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: f80 [storage=static] = const<f80>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: f80 [storage=static] = const<f80>(2) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

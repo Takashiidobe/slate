@@ -35,22 +35,22 @@ const char *test3(void) { return "hi there"; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 .str4: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([104, 105, 32, 116, 104, 101, 114, 101, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %5 .str5: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([104, 105, 32, 116, 104, 101, 114, 101, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %6 .str6: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([104, 105, 32, 116, 104, 101, 114, 101, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @returns_23() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([104, 105, 32, 116, 104, 101, 114, 101, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([104, 105, 32, 116, 104, 101, 114, 101, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([104, 105, 32, 116, 104, 101, 114, 101, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_returns_23:[0-9]+]] @returns_23() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(23);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @test1() -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1() -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_returns_23]]), const<i32>(0))
 // DEFAULT-NEXT:             return null<ptr<const i8>>;
-// DEFAULT-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(9)>(%4));
+// DEFAULT-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @test2() -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(9)>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2() -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @test3() -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(9)>(%6));
+// DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3() -> ptr<const i8> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<const i8>, reason=return>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

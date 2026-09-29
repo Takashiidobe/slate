@@ -45,13 +45,13 @@ f1 (a)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f0(%1 a: ptr<i32> [restrict]) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 b: ptr<ptr<i32>> [storage=automatic] = pointer_cast<ptr<ptr<i32>>, reason=assign>(addr_of<ptr<ptr<i32>>>(%1));
-// DEFAULT-NEXT:         let %3 c: ptr<ptr<i32>> [storage=automatic] = addr_of<ptr<ptr<i32>>>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_f0:[0-9]+]] @f0(%[[VALUE_a:[0-9]+]] a: ptr<i32> [restrict]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<ptr<i32>> [storage=automatic] = pointer_cast<ptr<ptr<i32>>, reason=assign>(addr_of<ptr<ptr<i32>>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: ptr<ptr<i32>> [storage=automatic] = addr_of<ptr<ptr<i32>>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @f1(%5 a: ptr<i32> [restrict]) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %6 b: ptr<ptr<i32>> [storage=automatic] = pointer_cast<ptr<ptr<i32>>, reason=assign>(addr_of<ptr<ptr<i32>>>(%5));
-// DEFAULT-NEXT:         let %7 c: ptr<ptr<i32>> [storage=automatic] = addr_of<ptr<ptr<i32>>>(%5);
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_a_2:[0-9]+]] a: ptr<i32> [restrict]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: ptr<ptr<i32>> [storage=automatic] = pointer_cast<ptr<ptr<i32>>, reason=assign>(addr_of<ptr<ptr<i32>>>(%[[VALUE_a_2]]));
+// DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: ptr<ptr<i32>> [storage=automatic] = addr_of<ptr<ptr<i32>>>(%[[VALUE_a_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

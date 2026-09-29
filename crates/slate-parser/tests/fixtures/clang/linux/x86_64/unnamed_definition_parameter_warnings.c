@@ -83,15 +83,15 @@ int declaration_only(int, int);
 // IR-C89-NEXT:         storage d64 [size=8, align=8];
 // IR-C89-NEXT:         storage d128 [size=16, align=16];
 // IR-C89-NEXT:     }
-// IR-C89-NEXT:     fn %0 @first(%6 <unnamed>: i32, %1 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-C89-NEXT:         return read<i32>(%1);
+// IR-C89-NEXT:     fn %[[VALUE_first:[0-9]+]] @first(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE_b:[0-9]+]] b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-C89-NEXT:         return read<i32>(%[[VALUE_b]]);
 // IR-C89-NEXT:     }
-// IR-C89-NEXT:     fn %2 @pointer(%7 <unnamed>: ptr<i8>, %8 <unnamed>: i64) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-C89-NEXT:     fn %[[VALUE_pointer:[0-9]+]] @pointer(%[[VALUE1:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE2:[0-9]+]] <unnamed>: i64) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-C89-NEXT:     }
-// IR-C89-NEXT:     fn %3 @named(%4 a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-C89-NEXT:         return read<i32>(%4);
+// IR-C89-NEXT:     fn %[[VALUE_named:[0-9]+]] @named(%[[VALUE_a:[0-9]+]] a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-C89-NEXT:         return read<i32>(%[[VALUE_a]]);
 // IR-C89-NEXT:     }
-// IR-C89-NEXT:     fn %5 @declaration_only(%9 <unnamed>: i32, %10 <unnamed>: i32) -> i32 [linkage=external];
+// IR-C89-NEXT:     fn %[[VALUE_declaration_only:[0-9]+]] @declaration_only(%[[VALUE3:[0-9]+]] <unnamed>: i32, %[[VALUE4:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
 // IR-C89-NEXT: }
 // SLATE-FILECHECK-END IR-C89
 // SLATE-FILECHECK-BEGIN IR-C17
@@ -117,14 +117,14 @@ int declaration_only(int, int);
 // IR-C17-NEXT:         storage d64 [size=8, align=8];
 // IR-C17-NEXT:         storage d128 [size=16, align=16];
 // IR-C17-NEXT:     }
-// IR-C17-NEXT:     fn %0 @first(%6 <unnamed>: i32, %1 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-C17-NEXT:         return read<i32>(%1);
+// IR-C17-NEXT:     fn %[[VALUE_first:[0-9]+]] @first(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE_b:[0-9]+]] b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-C17-NEXT:         return read<i32>(%[[VALUE_b]]);
 // IR-C17-NEXT:     }
-// IR-C17-NEXT:     fn %2 @pointer(%7 <unnamed>: ptr<i8>, %8 <unnamed>: i64) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-C17-NEXT:     fn %[[VALUE_pointer:[0-9]+]] @pointer(%[[VALUE1:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE2:[0-9]+]] <unnamed>: i64) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-C17-NEXT:     }
-// IR-C17-NEXT:     fn %3 @named(%4 a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-C17-NEXT:         return read<i32>(%4);
+// IR-C17-NEXT:     fn %[[VALUE_named:[0-9]+]] @named(%[[VALUE_a:[0-9]+]] a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-C17-NEXT:         return read<i32>(%[[VALUE_a]]);
 // IR-C17-NEXT:     }
-// IR-C17-NEXT:     fn %5 @declaration_only(%9 <unnamed>: i32, %10 <unnamed>: i32) -> i32 [linkage=external];
+// IR-C17-NEXT:     fn %[[VALUE_declaration_only:[0-9]+]] @declaration_only(%[[VALUE3:[0-9]+]] <unnamed>: i32, %[[VALUE4:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
 // IR-C17-NEXT: }
 // SLATE-FILECHECK-END IR-C17

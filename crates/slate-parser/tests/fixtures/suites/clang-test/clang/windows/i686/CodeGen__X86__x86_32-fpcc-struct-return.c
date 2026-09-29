@@ -37,35 +37,35 @@ ZeroSized returnZero(ZeroSized x) { return x; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:         field3 d: i32;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 4, 8, 12]];
-// DEFAULT-NEXT:     type @type1 Big = @type0;
-// DEFAULT-NEXT:     type @type2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Big:[0-9]+]] Big = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 Small = @type2;
-// DEFAULT-NEXT:     type @type4 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Small:[0-9]+]] Small = @type[[TYPE1]];
+// DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 s: i16;
 // DEFAULT-NEXT:     } [size=2, align=2, offsets=[0]];
-// DEFAULT-NEXT:     type @type5 Short = @type4;
-// DEFAULT-NEXT:     type @type6 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Short:[0-9]+]] Short = @type[[TYPE2]];
+// DEFAULT-NEXT:     type @type[[TYPE3:[0-9]+]] = struct {
 // DEFAULT-NEXT:     } [size=4, align=1, offsets=[]];
-// DEFAULT-NEXT:     type @type7 ZeroSized = @type6;
-// DEFAULT-NEXT:     fn %8 @returnBig(%9 x: @type0) -> @type0 [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%9));
+// DEFAULT-NEXT:     type @type[[TYPE_ZeroSized:[0-9]+]] ZeroSized = @type[[TYPE3]];
+// DEFAULT-NEXT:     fn %[[VALUE_returnBig:[0-9]+]] @returnBig(%[[VALUE_x:[0-9]+]] x: @type[[TYPE0]]) -> @type[[TYPE0]] [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @returnSmall(%11 x: @type2) -> @type2 [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type2, reason=return>(read<@type2>(%11));
+// DEFAULT-NEXT:     fn %[[VALUE_returnSmall:[0-9]+]] @returnSmall(%[[VALUE_x_2:[0-9]+]] x: @type[[TYPE1]]) -> @type[[TYPE1]] [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return copy<@type[[TYPE1]], reason=return>(read<@type[[TYPE1]]>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @returnShort(%13 x: @type4) -> @type4 [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type4, reason=return>(read<@type4>(%13));
+// DEFAULT-NEXT:     fn %[[VALUE_returnShort:[0-9]+]] @returnShort(%[[VALUE_x_3:[0-9]+]] x: @type[[TYPE2]]) -> @type[[TYPE2]] [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return copy<@type[[TYPE2]], reason=return>(read<@type[[TYPE2]]>(%[[VALUE_x_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @returnZero(%15 x: @type6) -> @type6 [linkage=external] [abi=x86_win32(native_c) -> void] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type6, reason=return>(read<@type6>(%15));
+// DEFAULT-NEXT:     fn %[[VALUE_returnZero:[0-9]+]] @returnZero(%[[VALUE_x_4:[0-9]+]] x: @type[[TYPE3]]) -> @type[[TYPE3]] [linkage=external] [abi=x86_win32(native_c) -> void] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return copy<@type[[TYPE3]], reason=return>(read<@type[[TYPE3]]>(%[[VALUE_x_4]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

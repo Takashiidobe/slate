@@ -65,12 +65,12 @@ _Static_assert(sizeof(_Float64x) == 16, "");
 // AARCH64-NEXT:         storage d64 [size=8, align=8];
 // AARCH64-NEXT:         storage d128 [size=16, align=16];
 // AARCH64-NEXT:     }
-// AARCH64-NEXT:     global %0 f32: f32 [storage=static] = const<f32>(1.5) [linkage=external];
-// AARCH64-NEXT:     global %1 f64: f64 [storage=static] = const<f64>(2.5) [linkage=external];
-// AARCH64-NEXT:     global %2 f32x: f64 [storage=static] = const<f64>(3.5) [linkage=external];
-// AARCH64-NEXT:     global %3 f64x: f128 [storage=static] = const<f128>(4.5) [linkage=external];
-// AARCH64-NEXT:     global %4 f128: f128 [storage=static] = const<f128>(5.5) [linkage=external];
-// AARCH64-NEXT:     global %5 c32: complex<f32> [storage=static] [linkage=external];
-// AARCH64-NEXT:     global %6 c64: complex<f64> [storage=static] [linkage=external];
+// AARCH64-NEXT:     global %[[VALUE_f32:[0-9]+]] f32: f32 [storage=static] = const<f32>(1.5) [linkage=external];
+// AARCH64-NEXT:     global %[[VALUE_f64:[0-9]+]] f64: f64 [storage=static] = const<f64>(2.5) [linkage=external];
+// AARCH64-NEXT:     global %[[VALUE_f32x:[0-9]+]] f32x: f64 [storage=static] = const<f64>(3.5) [linkage=external];
+// AARCH64-NEXT:     global %[[VALUE_f64x:[0-9]+]] f64x: f128 [storage=static] = const<f128>(4.5) [linkage=external];
+// AARCH64-NEXT:     global %[[VALUE_f128:[0-9]+]] f128: f128 [storage=static] = const<f128>(5.5) [linkage=external];
+// AARCH64-NEXT:     global %[[VALUE_c32:[0-9]+]] c32: complex<f32> [storage=static] [linkage=external];
+// AARCH64-NEXT:     global %[[VALUE_c64:[0-9]+]] c64: complex<f64> [storage=static] [linkage=external];
 // AARCH64-NEXT: }
 // SLATE-FILECHECK-END AARCH64

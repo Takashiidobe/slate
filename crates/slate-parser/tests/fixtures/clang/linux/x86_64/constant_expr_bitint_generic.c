@@ -28,9 +28,9 @@ int generic_bound[_Generic((int)0, int: 7, default: 3)];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 bitint_size_9: array<i32, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 bitint_size_65: array<i32, 16> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %2 bitint_wrap: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 generic_bound: array<i32, 7> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bitint_size_9:[0-9]+]] bitint_size_9: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bitint_size_65:[0-9]+]] bitint_size_65: array<i32, 16> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bitint_wrap:[0-9]+]] bitint_wrap: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_generic_bound:[0-9]+]] generic_bound: array<i32, 7> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

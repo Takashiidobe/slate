@@ -12,5 +12,6 @@ int (*q)(int) = f;
 // SEMANTIC: 2 │ int __vectorcall f(int);
 // SEMANTIC: 3 │ int (*q)(int) = f;
 // SEMANTIC: ·                 ─
+// SEMANTIC: 4 │
 // SEMANTIC: ╰────
 // SLATE-FILECHECK-END SEMANTIC

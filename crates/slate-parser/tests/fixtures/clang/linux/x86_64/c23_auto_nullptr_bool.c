@@ -65,11 +65,11 @@ void f(void) {
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     fn %0 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// C23-NEXT:         let %1 z: f64 [storage=automatic] = const<f64>(1.0);
-// C23-NEXT:         let %2 p: ptr<i32> [storage=automatic] = null<ptr<i32>>;
-// C23-NEXT:         let %3 t: bool [storage=automatic] = const<bool>(true);
-// C23-NEXT:         let %4 u: bool [storage=automatic] = const<bool>(false);
+// C23-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// C23-NEXT:         let %[[VALUE_z:[0-9]+]] z: f64 [storage=automatic] = const<f64>(1.0);
+// C23-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=automatic] = null<ptr<i32>>;
+// C23-NEXT:         let %[[VALUE_t:[0-9]+]] t: bool [storage=automatic] = const<bool>(true);
+// C23-NEXT:         let %[[VALUE_u:[0-9]+]] u: bool [storage=automatic] = const<bool>(false);
 // C23-NEXT:     }
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

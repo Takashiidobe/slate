@@ -68,88 +68,88 @@ int vector_variadic(v4si narrow, v8si wide) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 pair = struct {
+// IR-NEXT:     type @type[[TYPE_pair:[0-9]+]] pair = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type1 float_pair = struct {
+// IR-NEXT:     type @type[[TYPE_float_pair:[0-9]+]] float_pair = struct {
 // IR-NEXT:         field0 a: f32;
 // IR-NEXT:         field1 b: f32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type2 double_pair = struct {
+// IR-NEXT:     type @type[[TYPE_double_pair:[0-9]+]] double_pair = struct {
 // IR-NEXT:         field0 a: f64;
 // IR-NEXT:         field1 b: f64;
 // IR-NEXT:     } [size=16, align=4, offsets=[0, 8]];
-// IR-NEXT:     type @type3 mixed = struct {
+// IR-NEXT:     type @type[[TYPE_mixed:[0-9]+]] mixed = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: f64;
 // IR-NEXT:     } [size=12, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type4 large = struct {
+// IR-NEXT:     type @type[[TYPE_large:[0-9]+]] large = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:         field2 c: i32;
 // IR-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// IR-NEXT:     type @type5 v1c = vector<i8, 1>;
-// IR-NEXT:     type @type6 v2ss = vector<i16, 2>;
-// IR-NEXT:     type @type7 v2si = vector<i32, 2>;
-// IR-NEXT:     type @type8 v1df = vector<f64, 1>;
-// IR-NEXT:     type @type9 v4si = vector<i32, 4>;
-// IR-NEXT:     type @type10 v8si = vector<i32, 8>;
-// IR-NEXT:     fn %5 @complex_float(%6 value: complex<f32>) -> complex<f32> [linkage=external] [abi=x86_cdecl(native_c) -> coerce<i64>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<complex<f32>>(%6);
+// IR-NEXT:     type @type[[TYPE_v1c:[0-9]+]] v1c = vector<i8, 1>;
+// IR-NEXT:     type @type[[TYPE_v2ss:[0-9]+]] v2ss = vector<i16, 2>;
+// IR-NEXT:     type @type[[TYPE_v2si:[0-9]+]] v2si = vector<i32, 2>;
+// IR-NEXT:     type @type[[TYPE_v1df:[0-9]+]] v1df = vector<f64, 1>;
+// IR-NEXT:     type @type[[TYPE_v4si:[0-9]+]] v4si = vector<i32, 4>;
+// IR-NEXT:     type @type[[TYPE_v8si:[0-9]+]] v8si = vector<i32, 8>;
+// IR-NEXT:     fn %[[VALUE_complex_float:[0-9]+]] @complex_float(%[[VALUE_value:[0-9]+]] value: complex<f32>) -> complex<f32> [linkage=external] [abi=x86_cdecl(native_c) -> coerce<i64>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<complex<f32>>(%[[VALUE_value]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %7 @complex_double(%8 value: complex<f64>) -> complex<f64> [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<complex<f64>>(%8);
+// IR-NEXT:     fn %[[VALUE_complex_double:[0-9]+]] @complex_double(%[[VALUE_value_2:[0-9]+]] value: complex<f64>) -> complex<f64> [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<complex<f64>>(%[[VALUE_value_2]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %9 @complex_long_double(%10 value: complex<f80>) -> complex<f80> [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<complex<f80>>(%10);
+// IR-NEXT:     fn %[[VALUE_complex_long_double:[0-9]+]] @complex_long_double(%[[VALUE_value_3:[0-9]+]] value: complex<f80>) -> complex<f80> [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<complex<f80>>(%[[VALUE_value_3]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %11 @record_pair(%12 value: @type0) -> @type0 [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type0, reason=return>(read<@type0>(%12));
+// IR-NEXT:     fn %[[VALUE_record_pair:[0-9]+]] @record_pair(%[[VALUE_value_4:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value_4]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %13 @record_float_pair(%14 value: @type1) -> @type1 [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type1, reason=return>(read<@type1>(%14));
+// IR-NEXT:     fn %[[VALUE_record_float_pair:[0-9]+]] @record_float_pair(%[[VALUE_value_5:[0-9]+]] value: @type[[TYPE_float_pair]]) -> @type[[TYPE_float_pair]] [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_float_pair]], reason=return>(read<@type[[TYPE_float_pair]]>(%[[VALUE_value_5]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %15 @record_double_pair(%16 value: @type2) -> @type2 [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type2, reason=return>(read<@type2>(%16));
+// IR-NEXT:     fn %[[VALUE_record_double_pair:[0-9]+]] @record_double_pair(%[[VALUE_value_6:[0-9]+]] value: @type[[TYPE_double_pair]]) -> @type[[TYPE_double_pair]] [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_double_pair]], reason=return>(read<@type[[TYPE_double_pair]]>(%[[VALUE_value_6]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %17 @record_mixed(%18 value: @type3) -> @type3 [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type3, reason=return>(read<@type3>(%18));
+// IR-NEXT:     fn %[[VALUE_record_mixed:[0-9]+]] @record_mixed(%[[VALUE_value_7:[0-9]+]] value: @type[[TYPE_mixed]]) -> @type[[TYPE_mixed]] [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_mixed]], reason=return>(read<@type[[TYPE_mixed]]>(%[[VALUE_value_7]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %19 @record_large(%20 value: @type4) -> @type4 [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type4, reason=return>(read<@type4>(%20));
+// IR-NEXT:     fn %[[VALUE_record_large:[0-9]+]] @record_large(%[[VALUE_value_8:[0-9]+]] value: @type[[TYPE_large]]) -> @type[[TYPE_large]] [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_large]], reason=return>(read<@type[[TYPE_large]]>(%[[VALUE_value_8]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %21 @scalar(%22 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<i32>(%22);
+// IR-NEXT:     fn %[[VALUE_scalar:[0-9]+]] @scalar(%[[VALUE_value_9:[0-9]+]] value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<i32>(%[[VALUE_value_9]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %23 @forward(%24 callback: ptr<fn(complex<f64>) -> complex<f64>>, %25 value: complex<f64>) -> complex<f64> [linkage=external] [abi=x86_cdecl(scalar, native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=x86_cdecl(native_c) -> native_c>(read<ptr<fn(complex<f64>) -> complex<f64>>>(%24), read<complex<f64>>(%25));
+// IR-NEXT:     fn %[[VALUE_forward:[0-9]+]] @forward(%[[VALUE_callback:[0-9]+]] callback: ptr<fn(complex<f64>) -> complex<f64>>, %[[VALUE_value_10:[0-9]+]] value: complex<f64>) -> complex<f64> [linkage=external] [abi=x86_cdecl(scalar, native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=x86_cdecl(native_c) -> native_c>(read<ptr<fn(complex<f64>) -> complex<f64>>>(%[[VALUE_callback]]), read<complex<f64>>(%[[VALUE_value_10]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %27 @variadic_sink(%53 tag: i32, ...) -> complex<f64> [linkage=external] [abi=x86_cdecl(scalar) -> native_c];
-// IR-NEXT:     fn %28 @variadic_forward(%29 value: complex<f64>) -> complex<f64> [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<complex<f64>, signature=fn(i32, ...) -> complex<f64>, abi=x86_cdecl(scalar, native_c) -> native_c>(%27, const<i32>(1), read<complex<f64>>(%29));
+// IR-NEXT:     fn %[[VALUE_variadic_sink:[0-9]+]] @variadic_sink(%[[VALUE_tag:[0-9]+]] tag: i32, ...) -> complex<f64> [linkage=external] [abi=x86_cdecl(scalar) -> native_c];
+// IR-NEXT:     fn %[[VALUE_variadic_forward:[0-9]+]] @variadic_forward(%[[VALUE_value_11:[0-9]+]] value: complex<f64>) -> complex<f64> [linkage=external] [abi=x86_cdecl(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return call<complex<f64>, signature=fn(i32, ...) -> complex<f64>, abi=x86_cdecl(scalar, native_c) -> native_c>(%[[VALUE_variadic_sink]], const<i32>(1), read<complex<f64>>(%[[VALUE_value_11]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %36 @vector_byte(%37 value: vector<i8, 1>) -> vector<i8, 1> [linkage=external] [abi=x86_cdecl(direct) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<i8, 1>>(%37);
+// IR-NEXT:     fn %[[VALUE_vector_byte:[0-9]+]] @vector_byte(%[[VALUE_value_12:[0-9]+]] value: vector<i8, 1>) -> vector<i8, 1> [linkage=external] [abi=x86_cdecl(direct) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<vector<i8, 1>>(%[[VALUE_value_12]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %38 @vector_word(%39 value: vector<i16, 2>) -> vector<i16, 2> [linkage=external] [abi=x86_cdecl(direct) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<i16, 2>>(%39);
+// IR-NEXT:     fn %[[VALUE_vector_word:[0-9]+]] @vector_word(%[[VALUE_value_13:[0-9]+]] value: vector<i16, 2>) -> vector<i16, 2> [linkage=external] [abi=x86_cdecl(direct) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<vector<i16, 2>>(%[[VALUE_value_13]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %40 @vector_integer_pair(%41 value: vector<i32, 2>) -> vector<i32, 2> [linkage=external] [abi=x86_cdecl(coerce<i64>) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<i32, 2>>(%41);
+// IR-NEXT:     fn %[[VALUE_vector_integer_pair:[0-9]+]] @vector_integer_pair(%[[VALUE_value_14:[0-9]+]] value: vector<i32, 2>) -> vector<i32, 2> [linkage=external] [abi=x86_cdecl(coerce<i64>) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<vector<i32, 2>>(%[[VALUE_value_14]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %42 @vector_one_double(%43 value: vector<f64, 1>) -> vector<f64, 1> [linkage=external] [abi=x86_cdecl(direct) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<f64, 1>>(%43);
+// IR-NEXT:     fn %[[VALUE_vector_one_double:[0-9]+]] @vector_one_double(%[[VALUE_value_15:[0-9]+]] value: vector<f64, 1>) -> vector<f64, 1> [linkage=external] [abi=x86_cdecl(direct) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<vector<f64, 1>>(%[[VALUE_value_15]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %44 @vector_128(%45 value: vector<i32, 4>) -> vector<i32, 4> [linkage=external] [abi=x86_cdecl(direct) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<i32, 4>>(%45);
+// IR-NEXT:     fn %[[VALUE_vector_128:[0-9]+]] @vector_128(%[[VALUE_value_16:[0-9]+]] value: vector<i32, 4>) -> vector<i32, 4> [linkage=external] [abi=x86_cdecl(direct) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<vector<i32, 4>>(%[[VALUE_value_16]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %46 @vector_256(%47 value: vector<i32, 8>) -> vector<i32, 8> [linkage=external] [abi=x86_cdecl(direct) -> direct] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<vector<i32, 8>>(%47);
+// IR-NEXT:     fn %[[VALUE_vector_256:[0-9]+]] @vector_256(%[[VALUE_value_17:[0-9]+]] value: vector<i32, 8>) -> vector<i32, 8> [linkage=external] [abi=x86_cdecl(direct) -> direct] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<vector<i32, 8>>(%[[VALUE_value_17]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %49 @vector_sink(%54 tag: i32, ...) -> i32 [linkage=external];
-// IR-NEXT:     fn %50 @vector_variadic(%51 narrow: vector<i32, 4>, %52 wide: vector<i32, 8>) -> i32 [linkage=external] [abi=x86_cdecl(direct, direct) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         return call<i32, signature=fn(i32, ...) -> i32, abi=x86_cdecl(scalar, direct, direct) -> scalar>(%49, const<i32>(1), read<vector<i32, 4>>(%51), read<vector<i32, 8>>(%52));
+// IR-NEXT:     fn %[[VALUE_vector_sink:[0-9]+]] @vector_sink(%[[VALUE_tag_2:[0-9]+]] tag: i32, ...) -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_vector_variadic:[0-9]+]] @vector_variadic(%[[VALUE_narrow:[0-9]+]] narrow: vector<i32, 4>, %[[VALUE_wide:[0-9]+]] wide: vector<i32, 8>) -> i32 [linkage=external] [abi=x86_cdecl(direct, direct) -> scalar] [fallthrough=ub_if_used] {
+// IR-NEXT:         return call<i32, signature=fn(i32, ...) -> i32, abi=x86_cdecl(scalar, direct, direct) -> scalar>(%[[VALUE_vector_sink]], const<i32>(1), read<vector<i32, 4>>(%[[VALUE_narrow]]), read<vector<i32, 8>>(%[[VALUE_wide]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

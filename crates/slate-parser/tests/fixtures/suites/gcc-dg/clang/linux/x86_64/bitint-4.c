@@ -64,27 +64,27 @@ qux (_BitInt(575) x, _BitInt(575) y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %6 a: i128b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 b: i128b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 c: i128b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %12 d: i575b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %13 e: i575b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %14 f: i575b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @foo(%1 x: i2b, %2 y: i15b) -> i2b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i2b, reason=return, fits=unknown>(add<i15b, overflow=ub>(widen<i15b, reason=usual_arith>(read<i2b>(%1)), read<i15b>(%2)));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i128b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i128b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i128b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i575b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i575b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: i575b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i2b, %[[VALUE_y:[0-9]+]] y: i15b) -> i2b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i2b, reason=return, fits=unknown>(add<i15b, overflow=ub>(widen<i15b, reason=usual_arith>(read<i2b>(%[[VALUE_x]])), read<i15b>(%[[VALUE_y]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @bar(%4 x: i64b, %5 y: i64b) -> i64b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i64b, overflow=ub>(read<i64b>(%4), read<i64b>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_2:[0-9]+]] x: i64b, %[[VALUE_y_2:[0-9]+]] y: i64b) -> i64b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i64b, overflow=ub>(read<i64b>(%[[VALUE_x_2]]), read<i64b>(%[[VALUE_y_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @baz(%10 x: i128b, %11 y: i128b) -> i128b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i128b>(%6, read<i128b>(%10));
-// DEFAULT-NEXT:         write<i128b>(%7, read<i128b>(%11));
-// DEFAULT-NEXT:         return read<i128b>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_x_3:[0-9]+]] x: i128b, %[[VALUE_y_3:[0-9]+]] y: i128b) -> i128b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i128b>(%[[VALUE_a]], read<i128b>(%[[VALUE_x_3]]));
+// DEFAULT-NEXT:         write<i128b>(%[[VALUE_b]], read<i128b>(%[[VALUE_y_3]]));
+// DEFAULT-NEXT:         return read<i128b>(%[[VALUE_c]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @qux(%16 x: i575b, %17 y: i575b) -> i575b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i575b>(%12, read<i575b>(%16));
-// DEFAULT-NEXT:         write<i575b>(%13, read<i575b>(%17));
-// DEFAULT-NEXT:         return read<i575b>(%14);
+// DEFAULT-NEXT:     fn %[[VALUE_qux:[0-9]+]] @qux(%[[VALUE_x_4:[0-9]+]] x: i575b, %[[VALUE_y_4:[0-9]+]] y: i575b) -> i575b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_d]], read<i575b>(%[[VALUE_x_4]]));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_e]], read<i575b>(%[[VALUE_y_4]]));
+// DEFAULT-NEXT:         return read<i575b>(%[[VALUE_f]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

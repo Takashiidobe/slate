@@ -39,12 +39,12 @@ int applicability(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 used_global: i32 [storage=static] = const<i32>(1) [linkage=external] [used];
-// IR-NEXT:     global %1 uncommon_global: i32 [storage=static] = const<i32>(2) [linkage=external];
-// IR-NEXT:     global %3 used_static: i32 [storage=static] = const<i32>(3) [linkage=internal] [used];
-// IR-NEXT:     fn %2 @applicability() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %4 used_automatic: i32 [storage=automatic] = const<i32>(4);
-// IR-NEXT:         return add<i32>(add<i32>(add<i32>(read<i32>(%3), read<i32>(%4)), read<i32>(%0)), read<i32>(%1));
+// IR-NEXT:     global %[[VALUE_used_global:[0-9]+]] used_global: i32 [storage=static] = const<i32>(1) [linkage=external] [used];
+// IR-NEXT:     global %[[VALUE_uncommon_global:[0-9]+]] uncommon_global: i32 [storage=static] = const<i32>(2) [linkage=external];
+// IR-NEXT:     global %[[VALUE_used_static:[0-9]+]] used_static: i32 [storage=static] = const<i32>(3) [linkage=internal] [used];
+// IR-NEXT:     fn %[[VALUE_applicability:[0-9]+]] @applicability() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_used_automatic:[0-9]+]] used_automatic: i32 [storage=automatic] = const<i32>(4);
+// IR-NEXT:         return add<i32>(add<i32>(add<i32>(read<i32>(%[[VALUE_used_static]]), read<i32>(%[[VALUE_used_automatic]])), read<i32>(%[[VALUE_used_global]])), read<i32>(%[[VALUE_uncommon_global]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

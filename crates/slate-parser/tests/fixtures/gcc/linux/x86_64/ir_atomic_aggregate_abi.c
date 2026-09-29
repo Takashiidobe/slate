@@ -66,57 +66,57 @@ void caller(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 pair = struct {
+// IR-NEXT:     type @type[[TYPE_pair:[0-9]+]] pair = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type1 one = struct {
+// IR-NEXT:     type @type[[TYPE_one:[0-9]+]] one = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type2 wide = struct {
+// IR-NEXT:     type @type[[TYPE_wide:[0-9]+]] wide = struct {
 // IR-NEXT:         field0 a: i64;
 // IR-NEXT:         field1 b: i64;
 // IR-NEXT:         field2 c: i64;
 // IR-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// IR-NEXT:     type @type3 wrapped = struct {
+// IR-NEXT:     type @type[[TYPE_wrapped:[0-9]+]] wrapped = struct {
 // IR-NEXT:         field0 bytes: array<i8, 8>;
 // IR-NEXT:     } [size=8, align=1, offsets=[0]];
-// IR-NEXT:     type @type4 choice = union {
+// IR-NEXT:     type @type[[TYPE_choice:[0-9]+]] choice = union {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     fn %6 @atomic_pair(%35 v: atomic @type0) -> void [linkage=external] [abi=sysv64(native_c) -> void];
-// IR-NEXT:     fn %8 @plain_pair(%36 v: @type0) -> void [linkage=external] [abi=sysv64(native_c) -> void];
-// IR-NEXT:     fn %10 @atomic_one(%37 v: atomic @type1) -> void [linkage=external] [abi=sysv64(native_c) -> void];
-// IR-NEXT:     fn %12 @plain_one(%38 v: @type1) -> void [linkage=external] [abi=sysv64(native_c) -> void];
-// IR-NEXT:     fn %14 @atomic_wide(%39 v: atomic @type2) -> void [linkage=external] [abi=sysv64(native_c) -> void];
-// IR-NEXT:     fn %16 @atomic_wrapped(%40 v: atomic @type3) -> void [linkage=external] [abi=sysv64(native_c) -> void];
-// IR-NEXT:     fn %18 @atomic_union(%41 v: atomic @type4) -> void [linkage=external] [abi=sysv64(native_c) -> void];
-// IR-NEXT:     fn %20 @atomic_complex(%42 v: atomic complex<f64>) -> void [linkage=external] [abi=sysv64(native_c) -> void];
-// IR-NEXT:     fn %22 @atomic_scalar(%43 v: atomic i64) -> void [linkage=external];
-// IR-NEXT:     fn %23 @atomic_result() -> @type0 [linkage=external] [abi=sysv64() -> native_c];
-// IR-NEXT:     fn %24 @plain_result() -> @type0 [linkage=external] [abi=sysv64() -> native_c];
-// IR-NEXT:     fn %25 @caller() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %26 a: atomic @type0 [storage=automatic];
-// IR-NEXT:         let %27 b: @type0 [storage=automatic];
-// IR-NEXT:         let %28 c: atomic @type1 [storage=automatic];
-// IR-NEXT:         let %29 d: @type1 [storage=automatic];
-// IR-NEXT:         let %30 e: atomic @type2 [storage=automatic];
-// IR-NEXT:         let %31 f: atomic @type3 [storage=automatic];
-// IR-NEXT:         let %32 g: atomic @type4 [storage=automatic];
-// IR-NEXT:         let %33 h: atomic complex<f64> [storage=automatic];
-// IR-NEXT:         let %34 i: atomic i64 [storage=automatic];
-// IR-NEXT:         call<void, signature=fn(@type0) -> void, abi=sysv64(native_c) -> void>(%6, copy<@type0, reason=arg>(read<@type0, atomic=seq_cst>(%26)));
-// IR-NEXT:         call<void, signature=fn(@type0) -> void, abi=sysv64(native_c) -> void>(%8, copy<@type0, reason=arg>(read<@type0>(%27)));
-// IR-NEXT:         call<void, signature=fn(@type1) -> void, abi=sysv64(native_c) -> void>(%10, copy<@type1, reason=arg>(read<@type1, atomic=seq_cst>(%28)));
-// IR-NEXT:         call<void, signature=fn(@type1) -> void, abi=sysv64(native_c) -> void>(%12, copy<@type1, reason=arg>(read<@type1>(%29)));
-// IR-NEXT:         call<void, signature=fn(@type2) -> void, abi=sysv64(native_c) -> void>(%14, copy<@type2, reason=arg>(read<@type2, atomic=seq_cst>(%30)));
-// IR-NEXT:         call<void, signature=fn(@type3) -> void, abi=sysv64(native_c) -> void>(%16, copy<@type3, reason=arg>(read<@type3, atomic=seq_cst>(%31)));
-// IR-NEXT:         call<void, signature=fn(@type4) -> void, abi=sysv64(native_c) -> void>(%18, copy<@type4, reason=arg>(read<@type4, atomic=seq_cst>(%32)));
-// IR-NEXT:         call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%20, read<complex<f64>, atomic=seq_cst>(%33));
-// IR-NEXT:         call<void, signature=fn(i64) -> void>(%22, read<i64, atomic=seq_cst>(%34));
-// IR-NEXT:         call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%23);
-// IR-NEXT:         call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%24);
+// IR-NEXT:     fn %[[VALUE_atomic_pair:[0-9]+]] @atomic_pair(%[[VALUE_v:[0-9]+]] v: atomic @type[[TYPE_pair]]) -> void [linkage=external] [abi=sysv64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_plain_pair:[0-9]+]] @plain_pair(%[[VALUE_v_2:[0-9]+]] v: @type[[TYPE_pair]]) -> void [linkage=external] [abi=sysv64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_atomic_one:[0-9]+]] @atomic_one(%[[VALUE_v_3:[0-9]+]] v: atomic @type[[TYPE_one]]) -> void [linkage=external] [abi=sysv64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_plain_one:[0-9]+]] @plain_one(%[[VALUE_v_4:[0-9]+]] v: @type[[TYPE_one]]) -> void [linkage=external] [abi=sysv64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_atomic_wide:[0-9]+]] @atomic_wide(%[[VALUE_v_5:[0-9]+]] v: atomic @type[[TYPE_wide]]) -> void [linkage=external] [abi=sysv64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_atomic_wrapped:[0-9]+]] @atomic_wrapped(%[[VALUE_v_6:[0-9]+]] v: atomic @type[[TYPE_wrapped]]) -> void [linkage=external] [abi=sysv64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_atomic_union:[0-9]+]] @atomic_union(%[[VALUE_v_7:[0-9]+]] v: atomic @type[[TYPE_choice]]) -> void [linkage=external] [abi=sysv64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_atomic_complex:[0-9]+]] @atomic_complex(%[[VALUE_v_8:[0-9]+]] v: atomic complex<f64>) -> void [linkage=external] [abi=sysv64(native_c) -> void];
+// IR-NEXT:     fn %[[VALUE_atomic_scalar:[0-9]+]] @atomic_scalar(%[[VALUE_v_9:[0-9]+]] v: atomic i64) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_atomic_result:[0-9]+]] @atomic_result() -> @type[[TYPE_pair]] [linkage=external] [abi=sysv64() -> native_c];
+// IR-NEXT:     fn %[[VALUE_plain_result:[0-9]+]] @plain_result() -> @type[[TYPE_pair]] [linkage=external] [abi=sysv64() -> native_c];
+// IR-NEXT:     fn %[[VALUE_caller:[0-9]+]] @caller() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_a:[0-9]+]] a: atomic @type[[TYPE_pair]] [storage=automatic];
+// IR-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_pair]] [storage=automatic];
+// IR-NEXT:         let %[[VALUE_c:[0-9]+]] c: atomic @type[[TYPE_one]] [storage=automatic];
+// IR-NEXT:         let %[[VALUE_d:[0-9]+]] d: @type[[TYPE_one]] [storage=automatic];
+// IR-NEXT:         let %[[VALUE_e:[0-9]+]] e: atomic @type[[TYPE_wide]] [storage=automatic];
+// IR-NEXT:         let %[[VALUE_f:[0-9]+]] f: atomic @type[[TYPE_wrapped]] [storage=automatic];
+// IR-NEXT:         let %[[VALUE_g:[0-9]+]] g: atomic @type[[TYPE_choice]] [storage=automatic];
+// IR-NEXT:         let %[[VALUE_h:[0-9]+]] h: atomic complex<f64> [storage=automatic];
+// IR-NEXT:         let %[[VALUE_i:[0-9]+]] i: atomic i64 [storage=automatic];
+// IR-NEXT:         call<void, signature=fn(@type[[TYPE_pair]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_atomic_pair]], copy<@type[[TYPE_pair]], reason=arg>(read<@type[[TYPE_pair]], atomic=seq_cst>(%[[VALUE_a]])));
+// IR-NEXT:         call<void, signature=fn(@type[[TYPE_pair]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_plain_pair]], copy<@type[[TYPE_pair]], reason=arg>(read<@type[[TYPE_pair]]>(%[[VALUE_b]])));
+// IR-NEXT:         call<void, signature=fn(@type[[TYPE_one]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_atomic_one]], copy<@type[[TYPE_one]], reason=arg>(read<@type[[TYPE_one]], atomic=seq_cst>(%[[VALUE_c]])));
+// IR-NEXT:         call<void, signature=fn(@type[[TYPE_one]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_plain_one]], copy<@type[[TYPE_one]], reason=arg>(read<@type[[TYPE_one]]>(%[[VALUE_d]])));
+// IR-NEXT:         call<void, signature=fn(@type[[TYPE_wide]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_atomic_wide]], copy<@type[[TYPE_wide]], reason=arg>(read<@type[[TYPE_wide]], atomic=seq_cst>(%[[VALUE_e]])));
+// IR-NEXT:         call<void, signature=fn(@type[[TYPE_wrapped]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_atomic_wrapped]], copy<@type[[TYPE_wrapped]], reason=arg>(read<@type[[TYPE_wrapped]], atomic=seq_cst>(%[[VALUE_f]])));
+// IR-NEXT:         call<void, signature=fn(@type[[TYPE_choice]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_atomic_union]], copy<@type[[TYPE_choice]], reason=arg>(read<@type[[TYPE_choice]], atomic=seq_cst>(%[[VALUE_g]])));
+// IR-NEXT:         call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_atomic_complex]], read<complex<f64>, atomic=seq_cst>(%[[VALUE_h]]));
+// IR-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_atomic_scalar]], read<i64, atomic=seq_cst>(%[[VALUE_i]]));
+// IR-NEXT:         call<@type[[TYPE_pair]], signature=fn() -> @type[[TYPE_pair]], abi=sysv64() -> native_c>(%[[VALUE_atomic_result]]);
+// IR-NEXT:         call<@type[[TYPE_pair]], signature=fn() -> @type[[TYPE_pair]], abi=sysv64() -> native_c>(%[[VALUE_plain_result]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

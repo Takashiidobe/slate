@@ -31,8 +31,8 @@ unsigned int foo (unsigned int u)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 u: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%1), const<i32>(32)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(65535)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_u:[0-9]+]] u: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_u]]), const<i32>(32)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(65535)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

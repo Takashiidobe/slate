@@ -36,12 +36,12 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 a: i128b [storage=automatic] = widen<i128b, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:         let %2: i128b [synthetic] = read<i128b>(%1);
-// DEFAULT-NEXT:         let %3: i128b [synthetic] = div<i128b, by_zero=ub, min_by_neg_one=ub>(read<i128b>(%2), widen<i128b, reason=usual_arith>(const<i32>(0)));
-// DEFAULT-NEXT:         write<i128b>(%1, read<i128b>(%3));
-// DEFAULT-NEXT:         addr_of<ptr<i128b>>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i128b [storage=automatic] = widen<i128b, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i128b [synthetic] = read<i128b>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i128b [synthetic] = div<i128b, by_zero=ub, min_by_neg_one=ub>(read<i128b>(%[[VALUE0]]), widen<i128b, reason=usual_arith>(const<i32>(0)));
+// DEFAULT-NEXT:         write<i128b>(%[[VALUE_a]], read<i128b>(%[[VALUE1]]));
+// DEFAULT-NEXT:         addr_of<ptr<i128b>>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

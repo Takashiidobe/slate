@@ -54,14 +54,14 @@ h (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(%5 <unnamed>: u32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @g() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 a: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%0, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%2)));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE0:[0-9]+]] <unnamed>: u32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%[[VALUE_f]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_a]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @h() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 a: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%0, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%4)));
+// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: i32 [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(u32) -> void>(%[[VALUE_f]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_a_2]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

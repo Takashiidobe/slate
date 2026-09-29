@@ -41,19 +41,19 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 a: i22b : 7;
 // DEFAULT-NEXT:         field1 b: i22b : 7;
 // DEFAULT-NEXT:         field2 c: u22b : 7;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 1], bit_offsets=[Some(0), Some(7), Some(14)], bit_units=[(0, 3)], field_units=[Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     global %1 s: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<i22b>(bitfield0<unit=0, bytes=0..3, bits=0..7>(%1), truncate<i22b, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(64))));
-// DEFAULT-NEXT:         write<i22b>(bitfield1<unit=0, bytes=0..3, bits=7..14>(%1), truncate<i22b, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(64))));
-// DEFAULT-NEXT:         write<u22b>(bitfield2<unit=0, bytes=0..3, bits=14..21>(%1), reinterpret<u22b, reason=assign, fits=unknown>(truncate<i22b, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(64)))));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=usual_arith>(read<i22b>(bitfield0<unit=0, bytes=0..3, bits=0..7>(%1))), neg<i32, overflow=ub>(const<i32>(64))), ne<i32>(widen<i32, reason=usual_arith>(read<i22b>(bitfield1<unit=0, bytes=0..3, bits=7..14>(%1))), neg<i32, overflow=ub>(const<i32>(64)))), ne<i32>(reinterpret<i32, reason=usual_arith, fits=unknown>(widen<u32, reason=usual_arith>(read<u22b>(bitfield2<unit=0, bytes=0..3, bits=14..21>(%1)))), const<i32>(64)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<i22b>(bitfield0<unit=0, bytes=0..3, bits=0..7>(%[[VALUE_s]]), truncate<i22b, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(64))));
+// DEFAULT-NEXT:         write<i22b>(bitfield1<unit=0, bytes=0..3, bits=7..14>(%[[VALUE_s]]), truncate<i22b, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(64))));
+// DEFAULT-NEXT:         write<u22b>(bitfield2<unit=0, bytes=0..3, bits=14..21>(%[[VALUE_s]]), reinterpret<u22b, reason=assign, fits=unknown>(truncate<i22b, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(64)))));
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=usual_arith>(read<i22b>(bitfield0<unit=0, bytes=0..3, bits=0..7>(%[[VALUE_s]]))), neg<i32, overflow=ub>(const<i32>(64))), ne<i32>(widen<i32, reason=usual_arith>(read<i22b>(bitfield1<unit=0, bytes=0..3, bits=7..14>(%[[VALUE_s]]))), neg<i32, overflow=ub>(const<i32>(64)))), ne<i32>(reinterpret<i32, reason=usual_arith, fits=unknown>(widen<u32, reason=usual_arith>(read<u22b>(bitfield2<unit=0, bytes=0..3, bits=14..21>(%[[VALUE_s]])))), const<i32>(64)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

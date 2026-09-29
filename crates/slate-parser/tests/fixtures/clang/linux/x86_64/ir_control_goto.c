@@ -33,20 +33,20 @@ void local_labels(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @jump(%2 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         goto %1;
-// IR-NEXT:         label %1 done:
-// IR-NEXT:             return read<i32>(%2);
+// IR-NEXT:     fn %[[VALUE_jump:[0-9]+]] @jump(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         goto %[[VALUE_done:[0-9]+]];
+// IR-NEXT:         label %[[VALUE_done]] done:
+// IR-NEXT:             return read<i32>(%[[VALUE_x]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %3 @local_labels() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_local_labels:[0-9]+]] @local_labels() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         {
-// IR-NEXT:             goto %4;
-// IR-NEXT:             label %4 done:
+// IR-NEXT:             goto %[[VALUE_done_2:[0-9]+]];
+// IR-NEXT:             label %[[VALUE_done_2]] done:
 // IR-NEXT:                 ;
 // IR-NEXT:         }
 // IR-NEXT:         {
-// IR-NEXT:             goto %5;
-// IR-NEXT:             label %5 done:
+// IR-NEXT:             goto %[[VALUE_done_3:[0-9]+]];
+// IR-NEXT:             label %[[VALUE_done_3]] done:
 // IR-NEXT:                 {
 // IR-NEXT:                 }
 // IR-NEXT:         }

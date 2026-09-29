@@ -47,19 +47,19 @@ int vla_sum(int n, int arr[n]) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @computed_goto(%3 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 labels: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%1), index1 = label_addr<ptr<void>>(%2));
-// DEFAULT-NEXT:         goto %2;
-// DEFAULT-NEXT:         label %1 L0:
+// DEFAULT-NEXT:     fn %[[VALUE_computed_goto:[0-9]+]] @computed_goto(%[[VALUE_n:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_labels:[0-9]+]] labels: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%[[VALUE_L0:[0-9]+]]), index1 = label_addr<ptr<void>>(%[[VALUE_L1:[0-9]+]]));
+// DEFAULT-NEXT:         goto %[[VALUE_L1]];
+// DEFAULT-NEXT:         label %[[VALUE_L0]] L0:
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         label %2 L1:
+// DEFAULT-NEXT:         label %[[VALUE_L1]] L1:
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @vla_sum(%6 n: i32, %7 arr: ptr<i32> [array=%9]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%6)));
-// DEFAULT-NEXT:         let %10: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%6)));
-// DEFAULT-NEXT:         let %8 local: vla<i32, %10> [storage=automatic];
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%8), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%7), const<i32>(0)))));
+// DEFAULT-NEXT:     fn %[[VALUE_vla_sum:[0-9]+]] @vla_sum(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_arr:[0-9]+]] arr: ptr<i32> [array=%[[VALUE0:[0-9]+]]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
+// DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: vla<i32, %[[VALUE1]]> [storage=automatic];
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%[[VALUE_local]]), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_arr]]), const<i32>(0)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
@@ -86,19 +86,19 @@ int vla_sum(int n, int arr[n]) {
 // COMPUTED-NEXT:         storage d64 [size=8, align=8];
 // COMPUTED-NEXT:         storage d128 [size=16, align=16];
 // COMPUTED-NEXT:     }
-// COMPUTED-NEXT:     fn %0 @computed_goto(%3 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// COMPUTED-NEXT:         let %4 labels: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%1), index1 = label_addr<ptr<void>>(%2));
-// COMPUTED-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%4), read<i32>(%3))));
-// COMPUTED-NEXT:         label %1 L0:
+// COMPUTED-NEXT:     fn %[[VALUE_computed_goto:[0-9]+]] @computed_goto(%[[VALUE_n:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// COMPUTED-NEXT:         let %[[VALUE_labels:[0-9]+]] labels: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%[[VALUE_L0:[0-9]+]]), index1 = label_addr<ptr<void>>(%[[VALUE_L1:[0-9]+]]));
+// COMPUTED-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%[[VALUE_labels]]), read<i32>(%[[VALUE_n]]))));
+// COMPUTED-NEXT:         label %[[VALUE_L0]] L0:
 // COMPUTED-NEXT:             return const<i32>(0);
-// COMPUTED-NEXT:         label %2 L1:
+// COMPUTED-NEXT:         label %[[VALUE_L1]] L1:
 // COMPUTED-NEXT:             return const<i32>(1);
 // COMPUTED-NEXT:     }
-// COMPUTED-NEXT:     fn %5 @vla_sum(%6 n: i32, %7 arr: ptr<i32> [array=%9]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// COMPUTED-NEXT:         let %9: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%6)));
-// COMPUTED-NEXT:         let %10: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%6)));
-// COMPUTED-NEXT:         let %8 local: vla<i32, %10> [storage=automatic];
-// COMPUTED-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%8), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%7), const<i32>(0)))));
+// COMPUTED-NEXT:     fn %[[VALUE_vla_sum:[0-9]+]] @vla_sum(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_arr:[0-9]+]] arr: ptr<i32> [array=%[[VALUE0:[0-9]+]]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// COMPUTED-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
+// COMPUTED-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
+// COMPUTED-NEXT:         let %[[VALUE_local:[0-9]+]] local: vla<i32, %[[VALUE1]]> [storage=automatic];
+// COMPUTED-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%[[VALUE_local]]), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_arr]]), const<i32>(0)))));
 // COMPUTED-NEXT:     }
 // COMPUTED-NEXT: }
 // SLATE-FILECHECK-END COMPUTED
@@ -125,19 +125,19 @@ int vla_sum(int n, int arr[n]) {
 // DOUBLED-NEXT:         storage d64 [size=8, align=8];
 // DOUBLED-NEXT:         storage d128 [size=16, align=16];
 // DOUBLED-NEXT:     }
-// DOUBLED-NEXT:     fn %0 @computed_goto(%3 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DOUBLED-NEXT:         let %4 labels: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%1), index1 = label_addr<ptr<void>>(%2));
-// DOUBLED-NEXT:         goto %2;
-// DOUBLED-NEXT:         label %1 L0:
+// DOUBLED-NEXT:     fn %[[VALUE_computed_goto:[0-9]+]] @computed_goto(%[[VALUE_n:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DOUBLED-NEXT:         let %[[VALUE_labels:[0-9]+]] labels: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%[[VALUE_L0:[0-9]+]]), index1 = label_addr<ptr<void>>(%[[VALUE_L1:[0-9]+]]));
+// DOUBLED-NEXT:         goto %[[VALUE_L1]];
+// DOUBLED-NEXT:         label %[[VALUE_L0]] L0:
 // DOUBLED-NEXT:             return const<i32>(0);
-// DOUBLED-NEXT:         label %2 L1:
+// DOUBLED-NEXT:         label %[[VALUE_L1]] L1:
 // DOUBLED-NEXT:             return const<i32>(1);
 // DOUBLED-NEXT:     }
-// DOUBLED-NEXT:     fn %5 @vla_sum(%6 n: i32, %7 arr: ptr<i32> [array=%9]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DOUBLED-NEXT:         let %9: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%6)));
-// DOUBLED-NEXT:         let %10: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(read<i32>(%6), const<i32>(2))));
-// DOUBLED-NEXT:         let %8 local: vla<i32, %10> [storage=automatic];
-// DOUBLED-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%8), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%7), const<i32>(0)))));
+// DOUBLED-NEXT:     fn %[[VALUE_vla_sum:[0-9]+]] @vla_sum(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_arr:[0-9]+]] arr: ptr<i32> [array=%[[VALUE0:[0-9]+]]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DOUBLED-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_n_2]])));
+// DOUBLED-NEXT:         let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(read<i32>(%[[VALUE_n_2]]), const<i32>(2))));
+// DOUBLED-NEXT:         let %[[VALUE_local:[0-9]+]] local: vla<i32, %[[VALUE1]]> [storage=automatic];
+// DOUBLED-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%[[VALUE_local]]), const<i32>(0)))), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_arr]]), const<i32>(0)))));
 // DOUBLED-NEXT:     }
 // DOUBLED-NEXT: }
 // SLATE-FILECHECK-END DOUBLED

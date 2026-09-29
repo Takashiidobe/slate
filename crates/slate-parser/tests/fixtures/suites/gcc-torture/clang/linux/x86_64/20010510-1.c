@@ -27,7 +27,7 @@ ident i;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 ident = ptr<i8>;
-// DEFAULT-NEXT:     global %1 i: ptr<i8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_ident:[0-9]+]] ident = ptr<i8>;
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: ptr<i8> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

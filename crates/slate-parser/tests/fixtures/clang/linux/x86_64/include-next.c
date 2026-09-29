@@ -33,10 +33,10 @@ int use_greet(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 shout: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @greet() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @use_greet() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn() -> i32>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_shout:[0-9]+]] shout: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_greet:[0-9]+]] @greet() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_use_greet:[0-9]+]] @use_greet() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn() -> i32>(%[[VALUE_greet]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

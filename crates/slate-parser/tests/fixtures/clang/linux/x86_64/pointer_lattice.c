@@ -56,33 +56,33 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     global %23 .str23: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @printf(%20 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @malloc(%21 __size: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %6 @free(%22 __ptr: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @bump(%8 p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%8)), add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%8))), const<i32>(1)));
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_free:[0-9]+]] @free(%[[VALUE___ptr:[0-9]+]] __ptr: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bump:[0-9]+]] @bump(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_p]])), add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_p]]))), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @peek(%10 p: ptr<i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%10))), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_peek:[0-9]+]] @peek(%[[VALUE_p_2:[0-9]+]] p: ptr<i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_p_2]]))), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @use_and_free(%12 y: ptr<i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%12)), add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%12))), const<i32>(1)));
-// DEFAULT-NEXT:         let %13 v: i32 [storage=automatic] = read<i32>(deref(read<ptr<i32>>(%12)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%6, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%12)));
-// DEFAULT-NEXT:         return read<i32>(%13);
+// DEFAULT-NEXT:     fn %[[VALUE_use_and_free:[0-9]+]] @use_and_free(%[[VALUE_y:[0-9]+]] y: ptr<i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_y]])), add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_y]]))), const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: i32 [storage=automatic] = read<i32>(deref(read<ptr<i32>>(%[[VALUE_y]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%[[VALUE_y]])));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_v]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %15 a: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%7, addr_of<ptr<i32>>(%15));
-// DEFAULT-NEXT:         let %16 b: i32 [storage=automatic] = const<i32>(10);
-// DEFAULT-NEXT:         let %17 peeked: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>) -> i32>(%9, addr_of<ptr<i32>>(%16));
-// DEFAULT-NEXT:         let %18 c: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%4, const<u64>(4)));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%18)), const<i32>(100));
-// DEFAULT-NEXT:         let %19 v: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>) -> i32>(%11, read<ptr<i32>>(%18));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%23)), read<i32>(%15), read<i32>(%17), read<i32>(%19));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%15), read<i32>(%17)), read<i32>(%19));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>) -> void>(%[[VALUE_bump]], addr_of<ptr<i32>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = const<i32>(10);
+// DEFAULT-NEXT:         let %[[VALUE_peeked:[0-9]+]] peeked: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>) -> i32>(%[[VALUE_peek]], addr_of<ptr<i32>>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(4)));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_c]])), const<i32>(100));
+// DEFAULT-NEXT:         let %[[VALUE_v_2:[0-9]+]] v: i32 [storage=automatic] = call<i32, signature=fn(ptr<i32>) -> i32>(%[[VALUE_use_and_free]], read<ptr<i32>>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_peeked]]), read<i32>(%[[VALUE_v_2]]));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_peeked]])), read<i32>(%[[VALUE_v_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

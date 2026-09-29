@@ -37,13 +37,13 @@ void foo (int a, int b, int c, int d, int e)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @bar() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%2 a: i32, %3 b: i32, %4 c: i32, %5 d: i32, %6 e: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(read<i32>(%3), const<i32>(0)), ne<i32>(read<i32>(%4), const<i32>(0)))
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32, %[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_d:[0-9]+]] d: i32, %[[VALUE_e:[0-9]+]] e: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_bar]]);
+// DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0)), ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0)))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(read<i32>(%5), const<i32>(0)), ne<i32>(read<i32>(%6), const<i32>(0)))
+// DEFAULT-NEXT:         if logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0)), ne<i32>(read<i32>(%[[VALUE_e]]), const<i32>(0)))
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

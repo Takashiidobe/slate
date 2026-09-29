@@ -41,19 +41,19 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @abs(%9 j: i32) -> i32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @lisp_atan2(%4 dy: i64, %5 dx: i64) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if le<i64>(read<i64>(%5), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             if gt<i64>(read<i64>(%4), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:                 return from_bool<i32, reason=return>(le<i32>(call<i32, signature=fn(i32) -> i32>(%1, truncate<i32, reason=arg, fits=unknown>(read<i64>(%5))), call<i32, signature=fn(i32) -> i32>(%1, truncate<i32, reason=arg, fits=unknown>(read<i64>(%4)))));
+// DEFAULT-NEXT:     fn %[[VALUE_abs:[0-9]+]] @abs(%[[VALUE_j:[0-9]+]] j: i32) -> i32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_lisp_atan2:[0-9]+]] @lisp_atan2(%[[VALUE_dy:[0-9]+]] dy: i64, %[[VALUE_dx:[0-9]+]] dx: i64) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if le<i64>(read<i64>(%[[VALUE_dx]]), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             if gt<i64>(read<i64>(%[[VALUE_dy]]), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:                 return from_bool<i32, reason=return>(le<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_abs]], truncate<i32, reason=arg, fits=unknown>(read<i64>(%[[VALUE_dx]]))), call<i32, signature=fn(i32) -> i32>(%[[VALUE_abs]], truncate<i32, reason=arg, fits=unknown>(read<i64>(%[[VALUE_dy]])))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 dy: volatile i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(63));
-// DEFAULT-NEXT:         let %8 dx: volatile i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(77)));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64, i64) -> i32>(%3, read<i64, volatile>(%7), read<i64, volatile>(%8)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_dy_2:[0-9]+]] dy: volatile i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(63));
+// DEFAULT-NEXT:         let %[[VALUE_dx_2:[0-9]+]] dx: volatile i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(77)));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i64, i64) -> i32>(%[[VALUE_lisp_atan2]], read<i64, volatile>(%[[VALUE_dy_2]]), read<i64, volatile>(%[[VALUE_dx_2]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

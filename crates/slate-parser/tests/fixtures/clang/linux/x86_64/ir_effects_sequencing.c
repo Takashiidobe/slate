@@ -32,30 +32,30 @@ void sequencing(void *file, int x, int c) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @getc(%6 <unnamed>: ptr<void>) -> i32 [linkage=external];
-// IR-NEXT:     fn %1 @f(%7 <unnamed>: i32) -> i32 [linkage=external];
-// IR-NEXT:     fn %2 @sequencing(%3 file: ptr<void>, %4 x: i32, %5 c: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         do %8
-// IR-NEXT:             call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%5));
+// IR-NEXT:     fn %[[VALUE_getc:[0-9]+]] @getc(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE1:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_sequencing:[0-9]+]] @sequencing(%[[VALUE_file:[0-9]+]] file: ptr<void>, %[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_c:[0-9]+]] c: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         do %[[VALUE2:[0-9]+]]
+// IR-NEXT:             call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32>(%[[VALUE_c]]));
 // IR-NEXT:         while {
-// IR-NEXT:             write<i32>(%5, call<i32, signature=fn(ptr<void>) -> i32>(%0, read<ptr<void>>(%3)));
-// IR-NEXT:             yield ne<i32>(call<i32, signature=fn(ptr<void>) -> i32>(%0, read<ptr<void>>(%3)), neg<i32, overflow=ub>(const<i32>(1)));
+// IR-NEXT:             write<i32>(%[[VALUE_c]], call<i32, signature=fn(ptr<void>) -> i32>(%[[VALUE_getc]], read<ptr<void>>(%[[VALUE_file]])));
+// IR-NEXT:             yield ne<i32>(call<i32, signature=fn(ptr<void>) -> i32>(%[[VALUE_getc]], read<ptr<void>>(%[[VALUE_file]])), neg<i32, overflow=ub>(const<i32>(1)));
 // IR-NEXT:         };
-// IR-NEXT:         let %9: i32 [synthetic];
-// IR-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(0))
-// IR-NEXT:             let %10: i32 [synthetic] = read<i32>(%5);
-// IR-NEXT:             let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), const<i32>(1));
-// IR-NEXT:             write<i32>(%5, read<i32>(%11));
-// IR-NEXT:             write<i32>(%9, call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%10)));
+// IR-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic];
+// IR-NEXT:         if ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0))
+// IR-NEXT:             let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
+// IR-NEXT:             let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
+// IR-NEXT:             write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE5]]));
+// IR-NEXT:             write<i32>(%[[VALUE3]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32>(%[[VALUE4]])));
 // IR-NEXT:         else
-// IR-NEXT:             let %12: i32 [synthetic] = read<i32>(%5);
-// IR-NEXT:             let %13: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
-// IR-NEXT:             write<i32>(%5, read<i32>(%13));
-// IR-NEXT:             write<i32>(%9, read<i32>(%12));
-// IR-NEXT:         write<i32>(%4, read<i32>(%9));
-// IR-NEXT:         write<i32>(%4, call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%5)));
-// IR-NEXT:         call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%5));
-// IR-NEXT:         write<i32>(%5, const<i32>(0));
+// IR-NEXT:             let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
+// IR-NEXT:             let %[[VALUE7:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE6]]), const<i32>(1));
+// IR-NEXT:             write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE7]]));
+// IR-NEXT:             write<i32>(%[[VALUE3]], read<i32>(%[[VALUE6]]));
+// IR-NEXT:         write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE3]]));
+// IR-NEXT:         write<i32>(%[[VALUE_x]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32>(%[[VALUE_c]])));
+// IR-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32>(%[[VALUE_c]]));
+// IR-NEXT:         write<i32>(%[[VALUE_c]], const<i32>(0));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

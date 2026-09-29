@@ -37,12 +37,12 @@ struct outer {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 outer = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_outer:[0-9]+]] outer = struct {
 // DEFAULT-NEXT:         field0 bits: array<u64, 16>;
-// DEFAULT-NEXT:         field1 value: @type1;
+// DEFAULT-NEXT:         field1 value: @type[[TYPE0:[0-9]+]];
 // DEFAULT-NEXT:         field2 fallback: i32;
 // DEFAULT-NEXT:     } [size=136, align=8, offsets=[0, 128, 132]];
-// DEFAULT-NEXT:     type @type1 = union {
+// DEFAULT-NEXT:     type @type[[TYPE0]] = union {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:         field1 c: i8;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
@@ -71,12 +71,12 @@ struct outer {
 // EXTRA-NEXT:         storage d64 [size=8, align=8];
 // EXTRA-NEXT:         storage d128 [size=16, align=16];
 // EXTRA-NEXT:     }
-// EXTRA-NEXT:     type @type0 outer = struct {
+// EXTRA-NEXT:     type @type[[TYPE_outer:[0-9]+]] outer = struct {
 // EXTRA-NEXT:         field0 bits: array<u64, 16>;
-// EXTRA-NEXT:         field1 value: @type1;
+// EXTRA-NEXT:         field1 value: @type[[TYPE0:[0-9]+]];
 // EXTRA-NEXT:         field2 extra: i32;
 // EXTRA-NEXT:     } [size=136, align=8, offsets=[0, 128, 132]];
-// EXTRA-NEXT:     type @type1 = union {
+// EXTRA-NEXT:     type @type[[TYPE0]] = union {
 // EXTRA-NEXT:         field0 i: i32;
 // EXTRA-NEXT:         field1 c: i8;
 // EXTRA-NEXT:     } [size=4, align=4, offsets=[0, 0]];

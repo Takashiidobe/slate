@@ -28,7 +28,7 @@ unsigned long long freebsd_cap_read = CAP_READ;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 freebsd_release: i32 [storage=static] = const<i32>(1501000) [linkage=external];
-// IR-NEXT:     global %1 freebsd_cap_read: u64 [storage=static] = or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), add<i32, overflow=ub>(const<i32>(57), const<i32>(0))), const<u64>(1)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_freebsd_release:[0-9]+]] freebsd_release: i32 [storage=static] = const<i32>(1501000) [linkage=external];
+// IR-NEXT:     global %[[VALUE_freebsd_cap_read:[0-9]+]] freebsd_cap_read: u64 [storage=static] = or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(1), add<i32, overflow=ub>(const<i32>(57), const<i32>(0))), const<u64>(1)) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -67,21 +67,21 @@ int main(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 uns32_t = u64;
-// DEFAULT-NEXT:     type @type1 uns64_t = u64;
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @lo(%4 p: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<u64>(%4);
+// DEFAULT-NEXT:     type @type[[TYPE_uns32_t:[0-9]+]] uns32_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_uns64_t:[0-9]+]] uns64_t = u64;
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_lo:[0-9]+]] @lo(%[[VALUE_p:[0-9]+]] p: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<u64>(%[[VALUE_p]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @concat(%6 p1: u64, %7 p2: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%6), const<i32>(32)), read<u64>(%7));
+// DEFAULT-NEXT:     fn %[[VALUE_concat:[0-9]+]] @concat(%[[VALUE_p1:[0-9]+]] p1: u64, %[[VALUE_p2:[0-9]+]] p2: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(read<u64>(%[[VALUE_p1]]), const<i32>(32)), read<u64>(%[[VALUE_p2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @lshift32(%9 p1: u64, %10 p2: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u64, signature=fn(u64, u64) -> u64>(%5, call<u64, signature=fn(u64) -> u64>(%3, read<u64>(%9)), read<u64>(%10));
+// DEFAULT-NEXT:     fn %[[VALUE_lshift32:[0-9]+]] @lshift32(%[[VALUE_p1_2:[0-9]+]] p1: u64, %[[VALUE_p2_2:[0-9]+]] p2: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<u64, signature=fn(u64, u64) -> u64>(%[[VALUE_concat]], call<u64, signature=fn(u64) -> u64>(%[[VALUE_lo]], read<u64>(%[[VALUE_p1_2]])), read<u64>(%[[VALUE_p2_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64, u64) -> u64>(%8, const<u64>(18446744069720004216), const<u64>(2427178479)), const<u64>(1311768467294899695))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<u64>(call<u64, signature=fn(u64, u64) -> u64>(%[[VALUE_lshift32]], const<u64>(18446744069720004216), const<u64>(2427178479)), const<u64>(1311768467294899695))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

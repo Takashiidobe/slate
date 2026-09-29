@@ -45,15 +45,15 @@ int hidden_function(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 packed_record = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_packed_record:[0-9]+]] packed_record = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 i: i32;
 // DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     fn %1 @pragma_adjacent() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_pragma_adjacent:[0-9]+]] @pragma_adjacent() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @hidden_function() -> i32 [linkage=external] [visibility=hidden] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_hidden_function:[0-9]+]] @hidden_function() -> i32 [linkage=external] [visibility=hidden] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

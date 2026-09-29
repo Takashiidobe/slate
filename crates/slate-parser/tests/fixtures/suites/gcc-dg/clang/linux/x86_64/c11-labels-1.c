@@ -39,22 +39,22 @@ int f(int x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(%5 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         goto %2;
-// DEFAULT-NEXT:         label %1 a:
-// DEFAULT-NEXT:             let %6 i: i32 [storage=automatic] = mul<i32, overflow=ub>(const<i32>(2), read<i32>(%5));
-// DEFAULT-NEXT:         goto %3;
-// DEFAULT-NEXT:         label %2 b:
-// DEFAULT-NEXT:             goto %1;
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         goto %[[VALUE_b:[0-9]+]];
+// DEFAULT-NEXT:         label %[[VALUE_a:[0-9]+]] a:
+// DEFAULT-NEXT:             let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = mul<i32, overflow=ub>(const<i32>(2), read<i32>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         goto %[[VALUE_c:[0-9]+]];
+// DEFAULT-NEXT:         label %[[VALUE_b]] b:
+// DEFAULT-NEXT:             goto %[[VALUE_a]];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %7: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:             let %8: i32 [synthetic] = mul<i32, overflow=ub>(read<i32>(%7), const<i32>(3));
-// DEFAULT-NEXT:             write<i32>(%6, read<i32>(%8));
-// DEFAULT-NEXT:             label %3 c:
+// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = mul<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(3));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:             label %[[VALUE_c]] c:
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<i32>(%6);
-// DEFAULT-NEXT:         label %4 d:
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:         label %[[VALUE_d:[0-9]+]] d:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -74,40 +74,40 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: d128 [storage=static] = const<d128>(123456789135792468012345678900000000000.0) [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i128b [storage=static] = const<i128b>(123456789135792468012345678900000000000) [linkage=external];
-// DEFAULT-NEXT:     global %2 c: d64 [storage=static] = const<d64>(12345678913579000000000000000000000000.0) [linkage=external];
-// DEFAULT-NEXT:     global %3 d: i127b [storage=static] = widen<i127b, reason=assign>(const<i125b>(12345678913579000000000000000000000000)) [linkage=external];
-// DEFAULT-NEXT:     global %4 m: d128 [storage=static] = const<d128>(1234567891357924680123456789000000000000000000000000000000000000000000000000.0) [linkage=external];
-// DEFAULT-NEXT:     global %5 n: i256b [storage=static] = widen<i256b, reason=assign>(const<i251b>(1234567891357924680123456789000000000000000000000000000000000000000000000000)) [linkage=external];
-// DEFAULT-NEXT:     global %6 o: d64 [storage=static] = const<d64>(1234567891357900000000000000000000000000000000000000000000000000000000000000.0) [linkage=external];
-// DEFAULT-NEXT:     global %7 p: i255b [storage=static] = widen<i255b, reason=assign>(const<i251b>(1234567891357900000000000000000000000000000000000000000000000000000000000000)) [linkage=external];
-// DEFAULT-NEXT:     fn %25 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<d128, exceptions=observable>(read<d128>(%0), int_to_float<d128, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i128b>(%1))), ne<i128b>(float_to_int<i128b, reason=explicit, out_of_range=ub, exceptions=observable>(read<d128>(%0)), read<i128b>(%1))), ne<d64, exceptions=observable>(read<d64>(%2), int_to_float<d64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i127b>(%3)))), ne<i127b>(float_to_int<i127b, reason=explicit, out_of_range=ub, exceptions=observable>(read<d64>(%2)), read<i127b>(%3)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%25);
-// DEFAULT-NEXT:         let %9 e: d128 [storage=automatic] = const<d128>(123456789135792468012345678900000000000.0);
-// DEFAULT-NEXT:         let %10 f: i128b [storage=automatic] = const<i128b>(123456789135792468012345678900000000000);
-// DEFAULT-NEXT:         let %11 g: d128 [storage=automatic] = int_to_float<d128, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i128b>(123456789135792468012345678900000000000));
-// DEFAULT-NEXT:         let %12 h: i128b [storage=automatic] = float_to_int<i128b, reason=assign, out_of_range=ub, exceptions=observable>(const<d128>(123456789135792468012345678900000000000.0));
-// DEFAULT-NEXT:         let %13 i: d64 [storage=automatic] = const<d64>(12345678913579000000000000000000000000.0);
-// DEFAULT-NEXT:         let %14 j: i128b [storage=automatic] = widen<i128b, reason=assign>(const<i125b>(12345678913579000000000000000000000000));
-// DEFAULT-NEXT:         let %15 k: d64 [storage=automatic] = int_to_float<d64, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i125b>(12345678913579000000000000000000000000));
-// DEFAULT-NEXT:         let %16 l: i128b [storage=automatic] = float_to_int<i128b, reason=assign, out_of_range=ub, exceptions=observable>(const<d64>(12345678913579000000000000000000000000.0));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<d128, exceptions=observable>(read<d128>(%9), read<d128>(%11)), ne<i128b>(read<i128b>(%10), read<i128b>(%12))), ne<d64, exceptions=observable>(read<d64>(%13), read<d64>(%15))), ne<i128b>(read<i128b>(%14), read<i128b>(%16)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%25);
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<d128, exceptions=observable>(read<d128>(%4), int_to_float<d128, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i256b>(%5))), ne<i256b>(float_to_int<i256b, reason=explicit, out_of_range=ub, exceptions=observable>(read<d128>(%4)), read<i256b>(%5))), ne<d64, exceptions=observable>(read<d64>(%6), int_to_float<d64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i255b>(%7)))), ne<i255b>(float_to_int<i255b, reason=explicit, out_of_range=ub, exceptions=observable>(read<d64>(%6)), read<i255b>(%7)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%25);
-// DEFAULT-NEXT:         let %17 q: d128 [storage=automatic] = const<d128>(1234567891357924680123456789000000000000000000000000000000000000000000000000.0);
-// DEFAULT-NEXT:         let %18 r: i256b [storage=automatic] = widen<i256b, reason=assign>(const<i251b>(1234567891357924680123456789000000000000000000000000000000000000000000000000));
-// DEFAULT-NEXT:         let %19 s: d128 [storage=automatic] = int_to_float<d128, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i251b>(1234567891357924680123456789000000000000000000000000000000000000000000000000));
-// DEFAULT-NEXT:         let %20 t: i256b [storage=automatic] = float_to_int<i256b, reason=assign, out_of_range=ub, exceptions=observable>(const<d128>(1234567891357924680123456789000000000000000000000000000000000000000000000000.0));
-// DEFAULT-NEXT:         let %21 u: d64 [storage=automatic] = const<d64>(1234567891357900000000000000000000000000000000000000000000000000000000000000.0);
-// DEFAULT-NEXT:         let %22 v: i255b [storage=automatic] = widen<i255b, reason=assign>(const<i251b>(1234567891357900000000000000000000000000000000000000000000000000000000000000));
-// DEFAULT-NEXT:         let %23 w: d64 [storage=automatic] = int_to_float<d64, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i251b>(1234567891357900000000000000000000000000000000000000000000000000000000000000));
-// DEFAULT-NEXT:         let %24 x: i255b [storage=automatic] = float_to_int<i255b, reason=assign, out_of_range=ub, exceptions=observable>(const<d64>(1234567891357900000000000000000000000000000000000000000000000000000000000000.0));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<d128, exceptions=observable>(read<d128>(%17), read<d128>(%19)), ne<i256b>(read<i256b>(%18), read<i256b>(%20))), ne<d64, exceptions=observable>(read<d64>(%21), read<d64>(%23))), ne<i255b>(read<i255b>(%22), read<i255b>(%24)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%25);
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: d128 [storage=static] = const<d128>(123456789135792468012345678900000000000.0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i128b [storage=static] = const<i128b>(123456789135792468012345678900000000000) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: d64 [storage=static] = const<d64>(12345678913579000000000000000000000000.0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i127b [storage=static] = widen<i127b, reason=assign>(const<i125b>(12345678913579000000000000000000000000)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_m:[0-9]+]] m: d128 [storage=static] = const<d128>(1234567891357924680123456789000000000000000000000000000000000000000000000000.0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_n:[0-9]+]] n: i256b [storage=static] = widen<i256b, reason=assign>(const<i251b>(1234567891357924680123456789000000000000000000000000000000000000000000000000)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_o:[0-9]+]] o: d64 [storage=static] = const<d64>(1234567891357900000000000000000000000000000000000000000000000000000000000000.0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: i255b [storage=static] = widen<i255b, reason=assign>(const<i251b>(1234567891357900000000000000000000000000000000000000000000000000000000000000)) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<d128, exceptions=observable>(read<d128>(%[[VALUE_a]]), int_to_float<d128, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i128b>(%[[VALUE_b]]))), ne<i128b>(float_to_int<i128b, reason=explicit, out_of_range=ub, exceptions=observable>(read<d128>(%[[VALUE_a]])), read<i128b>(%[[VALUE_b]]))), ne<d64, exceptions=observable>(read<d64>(%[[VALUE_c]]), int_to_float<d64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i127b>(%[[VALUE_d]])))), ne<i127b>(float_to_int<i127b, reason=explicit, out_of_range=ub, exceptions=observable>(read<d64>(%[[VALUE_c]])), read<i127b>(%[[VALUE_d]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: d128 [storage=automatic] = const<d128>(123456789135792468012345678900000000000.0);
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: i128b [storage=automatic] = const<i128b>(123456789135792468012345678900000000000);
+// DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: d128 [storage=automatic] = int_to_float<d128, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i128b>(123456789135792468012345678900000000000));
+// DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: i128b [storage=automatic] = float_to_int<i128b, reason=assign, out_of_range=ub, exceptions=observable>(const<d128>(123456789135792468012345678900000000000.0));
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: d64 [storage=automatic] = const<d64>(12345678913579000000000000000000000000.0);
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i128b [storage=automatic] = widen<i128b, reason=assign>(const<i125b>(12345678913579000000000000000000000000));
+// DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: d64 [storage=automatic] = int_to_float<d64, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i125b>(12345678913579000000000000000000000000));
+// DEFAULT-NEXT:         let %[[VALUE_l:[0-9]+]] l: i128b [storage=automatic] = float_to_int<i128b, reason=assign, out_of_range=ub, exceptions=observable>(const<d64>(12345678913579000000000000000000000000.0));
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<d128, exceptions=observable>(read<d128>(%[[VALUE_e]]), read<d128>(%[[VALUE_g]])), ne<i128b>(read<i128b>(%[[VALUE_f]]), read<i128b>(%[[VALUE_h]]))), ne<d64, exceptions=observable>(read<d64>(%[[VALUE_i]]), read<d64>(%[[VALUE_k]]))), ne<i128b>(read<i128b>(%[[VALUE_j]]), read<i128b>(%[[VALUE_l]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<d128, exceptions=observable>(read<d128>(%[[VALUE_m]]), int_to_float<d128, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i256b>(%[[VALUE_n]]))), ne<i256b>(float_to_int<i256b, reason=explicit, out_of_range=ub, exceptions=observable>(read<d128>(%[[VALUE_m]])), read<i256b>(%[[VALUE_n]]))), ne<d64, exceptions=observable>(read<d64>(%[[VALUE_o]]), int_to_float<d64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(read<i255b>(%[[VALUE_p]])))), ne<i255b>(float_to_int<i255b, reason=explicit, out_of_range=ub, exceptions=observable>(read<d64>(%[[VALUE_o]])), read<i255b>(%[[VALUE_p]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: d128 [storage=automatic] = const<d128>(1234567891357924680123456789000000000000000000000000000000000000000000000000.0);
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i256b [storage=automatic] = widen<i256b, reason=assign>(const<i251b>(1234567891357924680123456789000000000000000000000000000000000000000000000000));
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: d128 [storage=automatic] = int_to_float<d128, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i251b>(1234567891357924680123456789000000000000000000000000000000000000000000000000));
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: i256b [storage=automatic] = float_to_int<i256b, reason=assign, out_of_range=ub, exceptions=observable>(const<d128>(1234567891357924680123456789000000000000000000000000000000000000000000000000.0));
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: d64 [storage=automatic] = const<d64>(1234567891357900000000000000000000000000000000000000000000000000000000000000.0);
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: i255b [storage=automatic] = widen<i255b, reason=assign>(const<i251b>(1234567891357900000000000000000000000000000000000000000000000000000000000000));
+// DEFAULT-NEXT:         let %[[VALUE_w:[0-9]+]] w: d64 [storage=automatic] = int_to_float<d64, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i251b>(1234567891357900000000000000000000000000000000000000000000000000000000000000));
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i255b [storage=automatic] = float_to_int<i255b, reason=assign, out_of_range=ub, exceptions=observable>(const<d64>(1234567891357900000000000000000000000000000000000000000000000000000000000000.0));
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<d128, exceptions=observable>(read<d128>(%[[VALUE_q]]), read<d128>(%[[VALUE_s]])), ne<i256b>(read<i256b>(%[[VALUE_r]]), read<i256b>(%[[VALUE_t]]))), ne<d64, exceptions=observable>(read<d64>(%[[VALUE_u]]), read<d64>(%[[VALUE_w]]))), ne<i255b>(read<i255b>(%[[VALUE_v]]), read<i255b>(%[[VALUE_x]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -62,42 +62,42 @@ foo (bufp)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     type @type1 reg_syntax_t = u64;
-// DEFAULT-NEXT:     type @type2 re_pattern_buffer = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_reg_syntax_t:[0-9]+]] reg_syntax_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_re_pattern_buffer:[0-9]+]] re_pattern_buffer = struct {
 // DEFAULT-NEXT:         field0 buffer: ptr<u8>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 = enum : u32 {
-// DEFAULT-NEXT:         %0 jump = const<i32>(0);
-// DEFAULT-NEXT:         %1 jump_n = const<i32>(1);
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_jump:[0-9]+]] jump = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_jump_n:[0-9]+]] jump_n = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type4 re_opcode_t = @type3;
-// DEFAULT-NEXT:     fn %7 @foo(%9 bufp: ptr<@type2>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 mcnt: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %11 p: ptr<u8> [storage=automatic] = read<ptr<u8>>(field0(deref(read<ptr<@type2>>(%9))));
-// DEFAULT-NEXT:         let %14: ptr<u8> [synthetic] = read<ptr<u8>>(%11);
-// DEFAULT-NEXT:         let %15: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%14), const<i32>(1));
-// DEFAULT-NEXT:         write<ptr<u8>>(%11, read<ptr<u8>>(%15));
-// DEFAULT-NEXT:         switch %12 enum_to_int<u32, reason=promotion>(int_to_enum<@type3, reason=explicit>(widen<u32, reason=explicit>(read<u8>(deref(read<ptr<u8>>(%14))))))
+// DEFAULT-NEXT:     type @type[[TYPE_re_opcode_t:[0-9]+]] re_opcode_t = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_bufp:[0-9]+]] bufp: ptr<@type[[TYPE_re_pattern_buffer]]>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_mcnt:[0-9]+]] mcnt: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<u8> [storage=automatic] = read<ptr<u8>>(field0(deref(read<ptr<@type[[TYPE_re_pattern_buffer]]>>(%[[VALUE_bufp]]))));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_p]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<u8>>(%[[VALUE_p]], read<ptr<u8>>(%[[VALUE1]]));
+// DEFAULT-NEXT:         switch %[[VALUE2:[0-9]+]] enum_to_int<u32, reason=promotion>(int_to_enum<@type[[TYPE0]], reason=explicit>(widen<u32, reason=explicit>(read<u8>(deref(read<ptr<u8>>(%[[VALUE0]]))))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 label %8 unconditional_jump:
+// DEFAULT-NEXT:                 label %[[VALUE_unconditional_jump:[0-9]+]] unconditional_jump:
 // DEFAULT-NEXT:                     ;
-// DEFAULT-NEXT:                 case %12 const<u32>(0):
-// DEFAULT-NEXT:                     do %13
+// DEFAULT-NEXT:                 case %[[VALUE2]] const<u32>(0):
+// DEFAULT-NEXT:                     do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             write<i32>(%10, and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(read<ptr<u8>>(%11))))), const<i32>(255)));
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_mcnt]], and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(read<ptr<u8>>(%[[VALUE_p]]))))), const<i32>(255)));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                 let %16: ptr<u8> [synthetic] = read<ptr<u8>>(%11);
-// DEFAULT-NEXT:                 let %17: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%16), const<i32>(2));
-// DEFAULT-NEXT:                 write<ptr<u8>>(%11, read<ptr<u8>>(%17));
-// DEFAULT-NEXT:                 let %18: ptr<u8> [synthetic] = read<ptr<u8>>(%11);
-// DEFAULT-NEXT:                 let %19: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%18), read<i32>(%10));
-// DEFAULT-NEXT:                 write<ptr<u8>>(%11, read<ptr<u8>>(%19));
-// DEFAULT-NEXT:                 case %12 const<u32>(1):
-// DEFAULT-NEXT:                     write<i32>(%10, and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%11), const<i32>(2)))))), const<i32>(255)));
-// DEFAULT-NEXT:                 if ne<i32>(read<i32>(%10), const<i32>(0))
-// DEFAULT-NEXT:                     goto %8;
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_p]]);
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE4]]), const<i32>(2));
+// DEFAULT-NEXT:                 write<ptr<u8>>(%[[VALUE_p]], read<ptr<u8>>(%[[VALUE5]]));
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: ptr<u8> [synthetic] = read<ptr<u8>>(%[[VALUE_p]]);
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE6]]), read<i32>(%[[VALUE_mcnt]]));
+// DEFAULT-NEXT:                 write<ptr<u8>>(%[[VALUE_p]], read<ptr<u8>>(%[[VALUE7]]));
+// DEFAULT-NEXT:                 case %[[VALUE2]] const<u32>(1):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_mcnt]], and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(%[[VALUE_p]]), const<i32>(2)))))), const<i32>(255)));
+// DEFAULT-NEXT:                 if ne<i32>(read<i32>(%[[VALUE_mcnt]]), const<i32>(0))
+// DEFAULT-NEXT:                     goto %[[VALUE_unconditional_jump]];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -53,19 +53,19 @@ fi (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct incomplete;
-// DEFAULT-NEXT:     global %0 a: i32 [storage=thread] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i64 [storage=thread] [linkage=internal];
-// DEFAULT-NEXT:     global %2 c: i32 [storage=thread] = const<i32>(2) [linkage=external];
-// DEFAULT-NEXT:     global %3 d: i32 [storage=thread] [linkage=internal];
-// DEFAULT-NEXT:     global %6 x: i32 [storage=thread] [linkage=internal];
-// DEFAULT-NEXT:     global %8 v: i32 [storage=thread] [const] [linkage=internal];
-// DEFAULT-NEXT:     global %9 p: ptr<vla<i32, %10>> [storage=thread] [const] [linkage=internal];
-// DEFAULT-NEXT:     fn %5 @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct incomplete;
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=thread] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i64 [storage=thread] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=thread] = const<i32>(2) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=thread] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=thread] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: i32 [storage=thread] [const] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<vla<i32, %[[VALUE0:[0-9]+]]>> [storage=thread] [const] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @fi() -> void [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         read<i32>(%0);
-// DEFAULT-NEXT:         let %10: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%0)));
+// DEFAULT-NEXT:     fn %[[VALUE_fi:[0-9]+]] @fi() -> void [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         read<i32>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_a]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

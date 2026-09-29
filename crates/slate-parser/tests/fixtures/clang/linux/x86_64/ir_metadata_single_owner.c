@@ -53,39 +53,39 @@ int fallthrough(int x) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 triple = array<i32, 3> [c="int[3]"];
-// IR-NEXT:     type @type1 result = struct {
+// IR-NEXT:     type @type[[TYPE_triple:[0-9]+]] triple = array<i32, 3> [c="int[3]"];
+// IR-NEXT:     type @type[[TYPE_result:[0-9]+]] result = struct {
 // IR-NEXT:         field0 value: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type2 pair = struct {
+// IR-NEXT:     type @type[[TYPE_pair:[0-9]+]] pair = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     fn %2 @make() -> @type1 [linkage=external] [abi=sysv64() -> native_c] [c="struct result(void)"];
-// IR-NEXT:     fn %5 @take(%14 p: ptr<@type2> [c="struct pair *"]) -> void [linkage=external] [c="void(struct pair *)"];
-// IR-NEXT:     fn %6 @conversions() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
-// IR-NEXT:         let %7 size: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(8) [size_of="i64"])) [c="int"];
-// IR-NEXT:         return read<i32>(%7);
+// IR-NEXT:     fn %[[VALUE_make:[0-9]+]] @make() -> @type[[TYPE_result]] [linkage=external] [abi=sysv64() -> native_c] [c="struct result(void)"];
+// IR-NEXT:     fn %[[VALUE_take:[0-9]+]] @take(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_pair]]> [c="struct pair *"]) -> void [linkage=external] [c="void(struct pair *)"];
+// IR-NEXT:     fn %[[VALUE_conversions:[0-9]+]] @conversions() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
+// IR-NEXT:         let %[[VALUE_size:[0-9]+]] size: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(8) [size_of="i64"])) [c="int"];
+// IR-NEXT:         return read<i32>(%[[VALUE_size]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %8 @initialized() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
-// IR-NEXT:         let %9 values: array<i32, 3> [storage=automatic] = aggregate<array<i32, 3>, zero_fill=true>() [c="triple"] [c_canon="int[3]"] [typedef_chain="triple"];
-// IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%9), const<i32>(0))));
+// IR-NEXT:     fn %[[VALUE_initialized:[0-9]+]] @initialized() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
+// IR-NEXT:         let %[[VALUE_values:[0-9]+]] values: array<i32, 3> [storage=automatic] = aggregate<array<i32, 3>, zero_fill=true>() [c="triple"] [c_canon="int[3]"] [typedef_chain="triple"];
+// IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_values]]), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %10 @hoisted(%11 p: ptr<atomic i32> [c="_Atomic int *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(_Atomic int *)"] {
-// IR-NEXT:         write<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%11)), const<i32>(1)) [c_builtin="__c11_atomic_store"];
-// IR-NEXT:         let %16: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%11)), add<i32, overflow=wrap>(old<i32>, const<i32>(1))) [c_builtin="__c11_atomic_fetch_add"];
-// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
+// IR-NEXT:     fn %[[VALUE_hoisted:[0-9]+]] @hoisted(%[[VALUE_p_2:[0-9]+]] p: ptr<atomic i32> [c="_Atomic int *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(_Atomic int *)"] {
+// IR-NEXT:         write<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p_2]])), const<i32>(1)) [c_builtin="__c11_atomic_store"];
+// IR-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p_2]])), add<i32, overflow=wrap>(old<i32>, const<i32>(1))) [c_builtin="__c11_atomic_fetch_add"];
+// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
 // IR-NEXT:     }
-// IR-NEXT:     fn %12 @fallthrough(%13 x: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int)"] {
-// IR-NEXT:         switch %15 read<i32>(%13)
+// IR-NEXT:     fn %[[VALUE_fallthrough:[0-9]+]] @fallthrough(%[[VALUE_x:[0-9]+]] x: i32 [c="int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(int)"] {
+// IR-NEXT:         switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_x]])
 // IR-NEXT:             {
-// IR-NEXT:                 case %15 const<i32>(0):
-// IR-NEXT:                     let %17: i32 [synthetic] = read<i32>(%13);
-// IR-NEXT:                     let %18: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%17), const<i32>(1));
-// IR-NEXT:                     write<i32>(%13, read<i32>(%18));
+// IR-NEXT:                 case %[[VALUE1]] const<i32>(0):
+// IR-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// IR-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// IR-NEXT:                     write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE3]]));
 // IR-NEXT:                  [c_attribute="fallthrough"];
-// IR-NEXT:                 default %15:
-// IR-NEXT:                     return read<i32>(%13);
+// IR-NEXT:                 default %[[VALUE1]]:
+// IR-NEXT:                     return read<i32>(%[[VALUE_x]]);
 // IR-NEXT:             }
 // IR-NEXT:     }
 // IR-NEXT: }

@@ -37,18 +37,18 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 U = union {
-// DEFAULT-NEXT:         field0 bits: @type1;
+// DEFAULT-NEXT:     type @type[[TYPE_U:[0-9]+]] U = union {
+// DEFAULT-NEXT:         field0 bits: @type[[TYPE0:[0-9]+]];
 // DEFAULT-NEXT:         field1 raw: u32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0]] = struct {
 // DEFAULT-NEXT:         field0 first: u32 : 1;
 // DEFAULT-NEXT:         field1 second: u32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0], bit_offsets=[Some(0), Some(1)], bit_units=[(0, 1)], field_units=[Some(0), Some(0)]];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 value: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = aggregate<@type1, zero_fill=true>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(field0(%3)), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(field0(%3)))), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: @type[[TYPE_U]] [storage=automatic] = aggregate<@type[[TYPE_U]], zero_fill=false>(field0 = aggregate<@type[[TYPE0]], zero_fill=true>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(field0(%[[VALUE_value]])), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..1, bits=1..2>(field0(%[[VALUE_value]])))), const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

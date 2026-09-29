@@ -51,19 +51,19 @@ bar (int x, int y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 a: u255b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @baz(%12 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo(%3 x: i32, %4 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 b: u255b [storage=automatic];
-// DEFAULT-NEXT:         let %6 t: i32 [storage=automatic] = from_bool<i32, reason=assign>(overflow_sub<bool>(read<i32>(%4), read<i32>(%3), deref(addr_of<ptr<u255b>>(%5))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, read<i32>(%6));
-// DEFAULT-NEXT:         write<u255b>(%1, read<u255b>(%5));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: u255b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u255b [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic] = from_bool<i32, reason=assign>(overflow_sub<bool>(read<i32>(%[[VALUE_y]]), read<i32>(%[[VALUE_x]]), deref(addr_of<ptr<u255b>>(%[[VALUE_b]]))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_baz]], read<i32>(%[[VALUE_t]]));
+// DEFAULT-NEXT:         write<u255b>(%[[VALUE_a]], read<u255b>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @bar(%8 x: i32, %9 y: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %10 b: u255b [storage=automatic];
-// DEFAULT-NEXT:         let %11 t: bool [storage=automatic] = overflow_sub<bool>(read<i32>(%9), read<i32>(%8), deref(addr_of<ptr<u255b>>(%10)));
-// DEFAULT-NEXT:         write<u255b>(%1, read<u255b>(%10));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, from_bool<i32, reason=arg>(read<bool>(%11)));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_2:[0-9]+]] x: i32, %[[VALUE_y_2:[0-9]+]] y: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: u255b [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_t_2:[0-9]+]] t: bool [storage=automatic] = overflow_sub<bool>(read<i32>(%[[VALUE_y_2]]), read<i32>(%[[VALUE_x_2]]), deref(addr_of<ptr<u255b>>(%[[VALUE_b_2]])));
+// DEFAULT-NEXT:         write<u255b>(%[[VALUE_a]], read<u255b>(%[[VALUE_b_2]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_baz]], from_bool<i32, reason=arg>(read<bool>(%[[VALUE_t_2]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

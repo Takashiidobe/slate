@@ -38,9 +38,9 @@ volatile void vvoid_fn2 (void) { } /* { dg-warning "qualified" "volatile defn" }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 vvoid_ptr: ptr<fn() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @vvoid_fn() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @vvoid_fn2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_vvoid_ptr:[0-9]+]] vvoid_ptr: ptr<fn() -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_vvoid_fn:[0-9]+]] @vvoid_fn() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_vvoid_fn2:[0-9]+]] @vvoid_fn2() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

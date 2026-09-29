@@ -131,7 +131,7 @@ int sizes(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Fields = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Fields:[0-9]+]] Fields = struct {
 // DEFAULT-NEXT:         field0 tag: i8;
 // DEFAULT-NEXT:         field1 packed_member: i32;
 // DEFAULT-NEXT:         field2 aligned_member: i32;
@@ -141,25 +141,25 @@ int sizes(void) {
 // DEFAULT-NEXT:         field6 second_cold: i32;
 // DEFAULT-NEXT:         field7 ms_member: i32;
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 1, 8, 12, 16, 20, 24, 28]];
-// DEFAULT-NEXT:     type @type1 Packed = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Packed:[0-9]+]] Packed = struct {
 // DEFAULT-NEXT:         field0 tag: i8;
 // DEFAULT-NEXT:         field1 value: i32;
 // DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     type @type2 NotAUnion = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_NotAUnion:[0-9]+]] NotAUnion = struct {
 // DEFAULT-NEXT:         field0 value: ptr<i32>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 Transparent = union {
+// DEFAULT-NEXT:     type @type[[TYPE_Transparent:[0-9]+]] Transparent = union {
 // DEFAULT-NEXT:         field0 signed_value: ptr<i32>;
 // DEFAULT-NEXT:         field1 unsigned_value: ptr<u32>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type4 Trailing = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Trailing:[0-9]+]] Trailing = struct {
 // DEFAULT-NEXT:         field0 value: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type5 Leading = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Leading:[0-9]+]] Leading = struct {
 // DEFAULT-NEXT:         field0 tag: i8;
 // DEFAULT-NEXT:         field1 value: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     fn %6 @sizes() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_sizes:[0-9]+]] @sizes() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<i32>(truncate<u32>(add<u64>(add<u64>(const<u64>(32), const<u64>(5)), const<u64>(8))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
@@ -187,7 +187,7 @@ int sizes(void) {
 // IR-WARN-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     type @type0 Fields = struct {
+// IR-WARN-NEXT:     type @type[[TYPE_Fields:[0-9]+]] Fields = struct {
 // IR-WARN-NEXT:         field0 tag: i8;
 // IR-WARN-NEXT:         field1 packed_member: i32;
 // IR-WARN-NEXT:         field2 aligned_member: i32;
@@ -197,25 +197,25 @@ int sizes(void) {
 // IR-WARN-NEXT:         field6 second_cold: i32;
 // IR-WARN-NEXT:         field7 ms_member: i32;
 // IR-WARN-NEXT:     } [size=32, align=8, offsets=[0, 1, 8, 12, 16, 20, 24, 28]];
-// IR-WARN-NEXT:     type @type1 Packed = struct {
+// IR-WARN-NEXT:     type @type[[TYPE_Packed:[0-9]+]] Packed = struct {
 // IR-WARN-NEXT:         field0 tag: i8;
 // IR-WARN-NEXT:         field1 value: i32;
 // IR-WARN-NEXT:     } [size=5, align=1, offsets=[0, 1]];
-// IR-WARN-NEXT:     type @type2 NotAUnion = struct {
+// IR-WARN-NEXT:     type @type[[TYPE_NotAUnion:[0-9]+]] NotAUnion = struct {
 // IR-WARN-NEXT:         field0 value: ptr<i32>;
 // IR-WARN-NEXT:     } [size=8, align=8, offsets=[0]];
-// IR-WARN-NEXT:     type @type3 Transparent = union {
+// IR-WARN-NEXT:     type @type[[TYPE_Transparent:[0-9]+]] Transparent = union {
 // IR-WARN-NEXT:         field0 signed_value: ptr<i32>;
 // IR-WARN-NEXT:         field1 unsigned_value: ptr<u32>;
 // IR-WARN-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// IR-WARN-NEXT:     type @type4 Trailing = struct {
+// IR-WARN-NEXT:     type @type[[TYPE_Trailing:[0-9]+]] Trailing = struct {
 // IR-WARN-NEXT:         field0 value: i32;
 // IR-WARN-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-WARN-NEXT:     type @type5 Leading = struct {
+// IR-WARN-NEXT:     type @type[[TYPE_Leading:[0-9]+]] Leading = struct {
 // IR-WARN-NEXT:         field0 tag: i8;
 // IR-WARN-NEXT:         field1 value: i32;
 // IR-WARN-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-WARN-NEXT:     fn %6 @sizes() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-WARN-NEXT:     fn %[[VALUE_sizes:[0-9]+]] @sizes() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-WARN-NEXT:         return reinterpret<i32>(truncate<u32>(add<u64>(add<u64>(const<u64>(32), const<u64>(5)), const<u64>(8))));
 // IR-WARN-NEXT:     }
 // IR-WARN-NEXT: }

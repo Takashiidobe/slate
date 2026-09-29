@@ -35,16 +35,16 @@ int local(int n) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 P = struct {
+// IR-NEXT:     type @type[[TYPE_P:[0-9]+]] P = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:         field1 y: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     global %1 global: ptr<i32> [storage=static] = array_decay<ptr<i32>, length=Some(3)>(compound_literal %7 [storage=static] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3))) [linkage=external];
-// IR-NEXT:     fn %2 @local(%3 n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %4 p: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(compound_literal %8 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = read<i32>(%3), field1 = const<i32>(2))));
-// IR-NEXT:         let %5 q: ptr<@type0> [storage=automatic] = addr_of<ptr<@type0>>(compound_literal %9 [storage=automatic] = aggregate<@type0, zero_fill=true>(field1 = read<i32>(%3)));
-// IR-NEXT:         let %6 first: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(compound_literal %10 [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(4), index1 = const<i32>(5))), const<i32>(1))));
-// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(%4)), read<i32>(field1(deref(read<ptr<@type0>>(%5))))), read<i32>(%6)), read<i32>(compound_literal %11 [storage=automatic] = read<i32>(%3)));
+// IR-NEXT:     global %[[VALUE_global:[0-9]+]] global: ptr<i32> [storage=static] = array_decay<ptr<i32>, length=Some(3)>(compound_literal %[[VALUE0:[0-9]+]] [storage=static] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3))) [linkage=external];
+// IR-NEXT:     fn %[[VALUE_local:[0-9]+]] @local(%[[VALUE_n:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_p:[0-9]+]] p: @type[[TYPE_P]] [storage=automatic] = copy<@type[[TYPE_P]], reason=assign>(read<@type[[TYPE_P]]>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_P]], zero_fill=false>(field0 = read<i32>(%[[VALUE_n]]), field1 = const<i32>(2))));
+// IR-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_P]]> [storage=automatic] = addr_of<ptr<@type[[TYPE_P]]>>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_P]], zero_fill=true>(field1 = read<i32>(%[[VALUE_n]])));
+// IR-NEXT:         let %[[VALUE_first:[0-9]+]] first: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(compound_literal %[[VALUE3:[0-9]+]] [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(4), index1 = const<i32>(5))), const<i32>(1))));
+// IR-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(field0(%[[VALUE_p]])), read<i32>(field1(deref(read<ptr<@type[[TYPE_P]]>>(%[[VALUE_q]]))))), read<i32>(%[[VALUE_first]])), read<i32>(compound_literal %[[VALUE4:[0-9]+]] [storage=automatic] = read<i32>(%[[VALUE_n]])));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

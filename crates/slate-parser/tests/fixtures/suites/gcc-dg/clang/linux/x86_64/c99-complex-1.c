@@ -58,17 +58,17 @@ foo (_Complex double z)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: complex<f32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 b: complex<f32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 c: complex<f64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 d: complex<f64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 e: complex<f80> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 f: complex<f80> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 g: complex<f64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 h: complex<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 i: complex<i64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %9 @foo(%10 z: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return not<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%10));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: complex<f32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: complex<f32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: complex<f64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: complex<f64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: complex<f80> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: complex<f80> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: complex<f64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_h:[0-9]+]] h: complex<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: complex<i64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_z:[0-9]+]] z: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return not<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%[[VALUE_z]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

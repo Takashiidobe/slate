@@ -34,18 +34,18 @@ void ConvertFor3dDriver (int requirePO2, int maxAspect)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 lwidth: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 lheight: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @FindNearestPowerOf2(%8 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @ConvertFor3dDriver(%4 requirePO2: i32, %5 maxAspect: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %6 oldw: i32 [storage=automatic] = read<i32>(%0);
-// DEFAULT-NEXT:         let %7 oldh: i32 [storage=automatic] = read<i32>(%1);
-// DEFAULT-NEXT:         write<i32>(%1, call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%1)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%1));
-// DEFAULT-NEXT:         while %9 gt<i32>(div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%0), read<i32>(%1)), read<i32>(%5))
-// DEFAULT-NEXT:             let %10: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:             let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), read<i32>(%1));
-// DEFAULT-NEXT:             write<i32>(%1, read<i32>(%11));
+// DEFAULT-NEXT:     global %[[VALUE_lwidth:[0-9]+]] lwidth: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_lheight:[0-9]+]] lheight: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_FindNearestPowerOf2:[0-9]+]] @FindNearestPowerOf2(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_ConvertFor3dDriver:[0-9]+]] @ConvertFor3dDriver(%[[VALUE_requirePO2:[0-9]+]] requirePO2: i32, %[[VALUE_maxAspect:[0-9]+]] maxAspect: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_oldw:[0-9]+]] oldw: i32 [storage=automatic] = read<i32>(%[[VALUE_lwidth]]);
+// DEFAULT-NEXT:         let %[[VALUE_oldh:[0-9]+]] oldh: i32 [storage=automatic] = read<i32>(%[[VALUE_lheight]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_lheight]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_FindNearestPowerOf2]], read<i32>(%[[VALUE_lheight]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_FindNearestPowerOf2]], read<i32>(%[[VALUE_lheight]]));
+// DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] gt<i32>(div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_lwidth]]), read<i32>(%[[VALUE_lheight]])), read<i32>(%[[VALUE_maxAspect]]))
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_lheight]]);
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), read<i32>(%[[VALUE_lheight]]));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_lheight]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

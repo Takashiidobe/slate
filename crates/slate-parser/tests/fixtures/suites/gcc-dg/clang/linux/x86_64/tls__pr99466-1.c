@@ -33,6 +33,6 @@ __thread int tlsvar = 3;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 tlsvar: i32 [storage=thread] = const<i32>(3) [linkage=external] [weak];
+// DEFAULT-NEXT:     global %[[VALUE_tlsvar:[0-9]+]] tlsvar: i32 [storage=thread] = const<i32>(3) [linkage=external] [weak];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

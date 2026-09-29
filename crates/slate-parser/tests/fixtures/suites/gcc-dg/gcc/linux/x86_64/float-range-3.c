@@ -67,34 +67,34 @@ void underflow(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @__builtin_inff() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %0 @overflow() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 f1: f32 [storage=automatic] = const<f32>(inf);
-// DEFAULT-NEXT:         let %2 f2: f32 [storage=automatic] = neg<f32>(const<f32>(inf));
-// DEFAULT-NEXT:         let %3 f3: f32 [storage=automatic] = call<f32, signature=fn() -> f32>(%26);
-// DEFAULT-NEXT:         let %4 f4: f32 [storage=automatic] = neg<f32>(call<f32, signature=fn() -> f32>(%26));
-// DEFAULT-NEXT:         let %5 d1: f64 [storage=automatic] = const<f64>(inf);
-// DEFAULT-NEXT:         let %6 d2: f64 [storage=automatic] = neg<f64>(const<f64>(inf));
-// DEFAULT-NEXT:         let %7 d3: f64 [storage=automatic] = float_widen<f64, reason=assign>(call<f32, signature=fn() -> f32>(%26));
-// DEFAULT-NEXT:         let %8 d4: f64 [storage=automatic] = float_widen<f64, reason=assign>(neg<f32>(call<f32, signature=fn() -> f32>(%26)));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff:[0-9]+]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_overflow:[0-9]+]] @overflow() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_f1:[0-9]+]] f1: f32 [storage=automatic] = const<f32>(inf);
+// DEFAULT-NEXT:         let %[[VALUE_f2:[0-9]+]] f2: f32 [storage=automatic] = neg<f32>(const<f32>(inf));
+// DEFAULT-NEXT:         let %[[VALUE_f3:[0-9]+]] f3: f32 [storage=automatic] = call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]);
+// DEFAULT-NEXT:         let %[[VALUE_f4:[0-9]+]] f4: f32 [storage=automatic] = neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]));
+// DEFAULT-NEXT:         let %[[VALUE_d1:[0-9]+]] d1: f64 [storage=automatic] = const<f64>(inf);
+// DEFAULT-NEXT:         let %[[VALUE_d2:[0-9]+]] d2: f64 [storage=automatic] = neg<f64>(const<f64>(inf));
+// DEFAULT-NEXT:         let %[[VALUE_d3:[0-9]+]] d3: f64 [storage=automatic] = float_widen<f64, reason=assign>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]));
+// DEFAULT-NEXT:         let %[[VALUE_d4:[0-9]+]] d4: f64 [storage=automatic] = float_widen<f64, reason=assign>(neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @underflow() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %10 f11: f32 [storage=automatic] = const<f32>(0.0);
-// DEFAULT-NEXT:         let %11 f22: f32 [storage=automatic] = neg<f32>(const<f32>(0.0));
-// DEFAULT-NEXT:         let %12 f1: f32 [storage=automatic] = const<f32>(0.0);
-// DEFAULT-NEXT:         let %13 f2: f32 [storage=automatic] = neg<f32>(const<f32>(0.0));
-// DEFAULT-NEXT:         let %14 f3: f32 [storage=automatic] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0));
-// DEFAULT-NEXT:         let %15 f4: f32 [storage=automatic] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(neg<i32, overflow=ub>(const<i32>(0)));
-// DEFAULT-NEXT:         let %16 f5: f32 [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(0.0));
-// DEFAULT-NEXT:         let %17 f6: f32 [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(neg<f64>(const<f64>(0.0)));
-// DEFAULT-NEXT:         let %18 d11: f64 [storage=automatic] = const<f64>(0.0);
-// DEFAULT-NEXT:         let %19 d22: f64 [storage=automatic] = neg<f64>(const<f64>(0.0));
-// DEFAULT-NEXT:         let %20 d1: f64 [storage=automatic] = const<f64>(0.0);
-// DEFAULT-NEXT:         let %21 d2: f64 [storage=automatic] = neg<f64>(const<f64>(0.0));
-// DEFAULT-NEXT:         let %22 d3: f64 [storage=automatic] = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(0));
-// DEFAULT-NEXT:         let %23 d4: f64 [storage=automatic] = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(neg<i32, overflow=ub>(const<i32>(0)));
-// DEFAULT-NEXT:         let %24 d5: f64 [storage=automatic] = const<f64>(0.0);
-// DEFAULT-NEXT:         let %25 d6: f64 [storage=automatic] = neg<f64>(const<f64>(0.0));
+// DEFAULT-NEXT:     fn %[[VALUE_underflow:[0-9]+]] @underflow() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_f11:[0-9]+]] f11: f32 [storage=automatic] = const<f32>(0.0);
+// DEFAULT-NEXT:         let %[[VALUE_f22:[0-9]+]] f22: f32 [storage=automatic] = neg<f32>(const<f32>(0.0));
+// DEFAULT-NEXT:         let %[[VALUE_f1_2:[0-9]+]] f1: f32 [storage=automatic] = const<f32>(0.0);
+// DEFAULT-NEXT:         let %[[VALUE_f2_2:[0-9]+]] f2: f32 [storage=automatic] = neg<f32>(const<f32>(0.0));
+// DEFAULT-NEXT:         let %[[VALUE_f3_2:[0-9]+]] f3: f32 [storage=automatic] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE_f4_2:[0-9]+]] f4: f32 [storage=automatic] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(neg<i32, overflow=ub>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE_f5:[0-9]+]] f5: f32 [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(const<f64>(0.0));
+// DEFAULT-NEXT:         let %[[VALUE_f6:[0-9]+]] f6: f32 [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=observable>(neg<f64>(const<f64>(0.0)));
+// DEFAULT-NEXT:         let %[[VALUE_d11:[0-9]+]] d11: f64 [storage=automatic] = const<f64>(0.0);
+// DEFAULT-NEXT:         let %[[VALUE_d22:[0-9]+]] d22: f64 [storage=automatic] = neg<f64>(const<f64>(0.0));
+// DEFAULT-NEXT:         let %[[VALUE_d1_2:[0-9]+]] d1: f64 [storage=automatic] = const<f64>(0.0);
+// DEFAULT-NEXT:         let %[[VALUE_d2_2:[0-9]+]] d2: f64 [storage=automatic] = neg<f64>(const<f64>(0.0));
+// DEFAULT-NEXT:         let %[[VALUE_d3_2:[0-9]+]] d3: f64 [storage=automatic] = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE_d4_2:[0-9]+]] d4: f64 [storage=automatic] = int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(neg<i32, overflow=ub>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE_d5:[0-9]+]] d5: f64 [storage=automatic] = const<f64>(0.0);
+// DEFAULT-NEXT:         let %[[VALUE_d6:[0-9]+]] d6: f64 [storage=automatic] = neg<f64>(const<f64>(0.0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

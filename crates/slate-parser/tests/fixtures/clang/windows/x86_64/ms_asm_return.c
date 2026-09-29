@@ -25,13 +25,13 @@ long long wide(void) { __asm { mov eax, 2 } }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @word() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_word:[0-9]+]] @word() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         asm volatile "mov eax, 1" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, 1";
 // DEFAULT-NEXT:             clobbers: "eax" as ax;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @wide() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_wide:[0-9]+]] @wide() -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         asm volatile "mov eax, 2" [dialect=intel] {
 // DEFAULT-NEXT:             template: "mov eax, 2";
 // DEFAULT-NEXT:             clobbers: "eax" as ax;

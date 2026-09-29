@@ -36,9 +36,9 @@ foo (_Complex float x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 B = i33b;
-// DEFAULT-NEXT:     fn %1 @foo(%2 x: complex<f32>) -> i33b [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i33b>(deref(pointer_cast<ptr<i33b>, reason=explicit>(addr_of<ptr<complex<f32>>>(%2))));
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = i33b;
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: complex<f32>) -> i33b [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i33b>(deref(pointer_cast<ptr<i33b>, reason=explicit>(addr_of<ptr<complex<f32>>>(%[[VALUE_x]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -47,29 +47,29 @@ int main(void) { return 0; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 i0: array<i32, 0> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 i1: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @vararg(%1 i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         read<i32>(%1);
+// DEFAULT-NEXT:     global %[[VALUE_i0:[0-9]+]] i0: array<i32, 0> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i1:[0-9]+]] i1: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_vararg:[0-9]+]] @vararg(%[[VALUE_i:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @__builtin_return_address(%11 <unnamed>: u32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @test1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 a: i32 [storage=automatic] = truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%12, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%0, const<i32>(0), read<i32>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_return_address:[0-9]+]] @__builtin_return_address(%[[VALUE0:[0-9]+]] <unnamed>: u32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE___builtin_return_address]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_vararg]], const<i32>(0), read<i32>(%[[VALUE_a]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @test2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(0)>(%2), const<i32>(0))), truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%12, reinterpret<u32, reason=arg, fits=always>(const<i32>(0))))));
-// DEFAULT-NEXT:         truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%12, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(0)>(%[[VALUE_i0]]), const<i32>(0))), truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE___builtin_return_address]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0))))));
+// DEFAULT-NEXT:         truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE___builtin_return_address]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @test3() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(%3, truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%12, reinterpret<u32, reason=arg, fits=always>(const<i32>(0))))));
-// DEFAULT-NEXT:         truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%12, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i1]], truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE___builtin_return_address]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0))))));
+// DEFAULT-NEXT:         truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE___builtin_return_address]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @test4() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %9 a: volatile i64 [storage=automatic] = ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%12, reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(0)>(%2), const<i32>(0))), truncate<i32, reason=explicit, fits=unknown>(read<i64, volatile>(%9)));
+// DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: volatile i64 [storage=automatic] = ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE___builtin_return_address]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(0)>(%[[VALUE_i0]]), const<i32>(0))), truncate<i32, reason=explicit, fits=unknown>(read<i64, volatile>(%[[VALUE_a_2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

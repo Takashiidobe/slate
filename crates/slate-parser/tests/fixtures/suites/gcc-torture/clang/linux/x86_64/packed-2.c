@@ -36,14 +36,14 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 a: u16;
 // DEFAULT-NEXT:         field1 b: u64;
 // DEFAULT-NEXT:     } [size=10, align=2, offsets=[0, 2]];
-// DEFAULT-NEXT:     type @type1 s = @type0;
-// DEFAULT-NEXT:     global %2 t: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<u64>(field1(%2), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
+// DEFAULT-NEXT:     type @type[[TYPE_s_2:[0-9]+]] s = @type[[TYPE_s]];
+// DEFAULT-NEXT:     global %[[VALUE_t:[0-9]+]] t: @type[[TYPE_s]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<u64>(field1(%[[VALUE_t]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

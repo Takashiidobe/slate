@@ -35,7 +35,7 @@ extern char z[sizeof __FILE__ == 1];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 x: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %1 z: array<i8, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_z:[0-9]+]] z: array<i8, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

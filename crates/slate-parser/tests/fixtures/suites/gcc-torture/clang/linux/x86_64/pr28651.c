@@ -39,14 +39,14 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @foo(%2 u: u32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<i32>(reinterpret<i32, reason=explicit, fits=unknown>(add<u32, overflow=wrap>(read<u32>(%2), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))), reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(%2))));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_u:[0-9]+]] u: u32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(lt<i32>(reinterpret<i32, reason=explicit, fits=unknown>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_u]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(4)))), reinterpret<i32, reason=explicit, fits=unknown>(read<u32>(%[[VALUE_u]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @main(%4 argc: i32, %5 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 u: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(2147483647));
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(u32) -> i32>(%1, read<u32>(%6)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_u_2:[0-9]+]] u: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(2147483647));
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(u32) -> i32>(%[[VALUE_foo]], read<u32>(%[[VALUE_u_2]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

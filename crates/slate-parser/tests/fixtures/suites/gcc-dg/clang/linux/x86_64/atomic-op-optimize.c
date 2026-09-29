@@ -45,14 +45,14 @@ int g()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 x: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3: i32 [synthetic] = update<i32, result=old, atomic=relaxed>(deref(addr_of<ptr<i32>>(%0)), and<i32>(old<i32>, const<i32>(0)));
-// DEFAULT-NEXT:         return read<i32>(%3);
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=relaxed>(deref(addr_of<ptr<i32>>(%[[VALUE_x]])), and<i32>(old<i32>, const<i32>(0)));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE0]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @g(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4: i32 [synthetic] = update<i32, result=old, atomic=relaxed>(deref(addr_of<ptr<i32>>(%0)), or<i32>(old<i32>, neg<i32, overflow=ub>(const<i32>(1))));
-// DEFAULT-NEXT:         return read<i32>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=relaxed>(deref(addr_of<ptr<i32>>(%[[VALUE_x]])), or<i32>(old<i32>, neg<i32, overflow=ub>(const<i32>(1))));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE1]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

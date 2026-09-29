@@ -49,38 +49,38 @@ void bar (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%4 <unnamed>: i32) -> i8 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 tmp: i8 [storage=automatic] = call<i8, signature=fn(i32) -> i8>(%0, const<i32>(0));
-// DEFAULT-NEXT:         let %3 t1: i32 [storage=automatic] = widen<i32, reason=assign>(read<i8>(%2));
-// DEFAULT-NEXT:         switch %5 read<i32>(%3)
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i8 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_tmp:[0-9]+]] tmp: i8 [storage=automatic] = call<i8, signature=fn(i32) -> i8>(%[[VALUE_foo]], const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE_t1:[0-9]+]] t1: i32 [storage=automatic] = widen<i32, reason=assign>(read<i8>(%[[VALUE_tmp]]));
+// DEFAULT-NEXT:         switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_t1]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %5 const<i32>(1):
-// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%0, const<i32>(1));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(2):
-// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%0, const<i32>(2));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(3):
-// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%0, const<i32>(3));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(4):
-// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%0, const<i32>(4));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(5):
-// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%0, const<i32>(5));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(6):
-// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%0, const<i32>(6));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(7):
-// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%0, const<i32>(7));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(255):
-// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%0, const<i32>(8));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 default %5:
-// DEFAULT-NEXT:                     break %5;
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(1):
+// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%[[VALUE_foo]], const<i32>(1));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(2):
+// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%[[VALUE_foo]], const<i32>(2));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(3):
+// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%[[VALUE_foo]], const<i32>(3));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(4):
+// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%[[VALUE_foo]], const<i32>(4));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(5):
+// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%[[VALUE_foo]], const<i32>(5));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(6):
+// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%[[VALUE_foo]], const<i32>(6));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(7):
+// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%[[VALUE_foo]], const<i32>(7));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(255):
+// DEFAULT-NEXT:                     call<i8, signature=fn(i32) -> i8>(%[[VALUE_foo]], const<i32>(8));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 default %[[VALUE1]]:
+// DEFAULT-NEXT:                     break %[[VALUE1]];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

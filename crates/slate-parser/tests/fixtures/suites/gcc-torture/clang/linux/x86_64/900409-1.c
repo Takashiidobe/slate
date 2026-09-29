@@ -44,56 +44,56 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%16 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @f1(%3 a: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(read<i64>(%3), const<i64>(4278190080));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_a:[0-9]+]] a: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(read<i64>(%[[VALUE_a]]), const<i64>(4278190080));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @f2(%5 a: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(read<i64>(%5), not<i64>(const<i64>(4278190080)));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_a_2:[0-9]+]] a: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(read<i64>(%[[VALUE_a_2]]), not<i64>(const<i64>(4278190080)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f3(%7 a: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(read<i64>(%7), const<i64>(255));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_a_3:[0-9]+]] a: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(read<i64>(%[[VALUE_a_3]]), const<i64>(255));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @f4(%9 a: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(read<i64>(%9), not<i64>(const<i64>(255)));
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_a_4:[0-9]+]] a: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(read<i64>(%[[VALUE_a_4]]), not<i64>(const<i64>(255)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @f5(%11 a: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(read<i64>(%11), const<i64>(65535));
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE_a_5:[0-9]+]] a: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(read<i64>(%[[VALUE_a_5]]), const<i64>(65535));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @f6(%13 a: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(read<i64>(%13), not<i64>(const<i64>(65535)));
+// DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(%[[VALUE_a_6:[0-9]+]] a: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(read<i64>(%[[VALUE_a_6]]), not<i64>(const<i64>(65535)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %15 a: i64 [storage=automatic] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2309737967)));
-// DEFAULT-NEXT:         let %17: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%2, read<i64>(%15)), const<i64>(2298478592))
-// DEFAULT-NEXT:             write<bool>(%17, const<bool>(true));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a_7:[0-9]+]] a: i64 [storage=automatic] = reinterpret<i64, reason=assign, fits=unknown>(widen<u64, reason=assign>(const<u32>(2309737967)));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64) -> i64>(%[[VALUE_f1]], read<i64>(%[[VALUE_a_7]])), const<i64>(2298478592))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%17, ne<i64>(call<i64, signature=fn(i64) -> i64>(%4, read<i64>(%15)), const<i64>(11259375)));
-// DEFAULT-NEXT:         let %18: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%17)
-// DEFAULT-NEXT:             write<bool>(%18, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], ne<i64>(call<i64, signature=fn(i64) -> i64>(%[[VALUE_f2]], read<i64>(%[[VALUE_a_7]])), const<i64>(11259375)));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE1]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%18, ne<i64>(call<i64, signature=fn(i64) -> i64>(%6, read<i64>(%15)), const<i64>(239)));
-// DEFAULT-NEXT:         let %19: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%18)
-// DEFAULT-NEXT:             write<bool>(%19, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], ne<i64>(call<i64, signature=fn(i64) -> i64>(%[[VALUE_f3]], read<i64>(%[[VALUE_a_7]])), const<i64>(239)));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE2]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE3]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%19, ne<i64>(call<i64, signature=fn(i64) -> i64>(%8, read<i64>(%15)), const<i64>(2309737728)));
-// DEFAULT-NEXT:         let %20: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%19)
-// DEFAULT-NEXT:             write<bool>(%20, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE3]], ne<i64>(call<i64, signature=fn(i64) -> i64>(%[[VALUE_f4]], read<i64>(%[[VALUE_a_7]])), const<i64>(2309737728)));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE3]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%20, ne<i64>(call<i64, signature=fn(i64) -> i64>(%10, read<i64>(%15)), const<i64>(52719)));
-// DEFAULT-NEXT:         let %21: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%20)
-// DEFAULT-NEXT:             write<bool>(%21, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], ne<i64>(call<i64, signature=fn(i64) -> i64>(%[[VALUE_f5]], read<i64>(%[[VALUE_a_7]])), const<i64>(52719)));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE4]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%21, ne<i64>(call<i64, signature=fn(i64) -> i64>(%12, read<i64>(%15)), const<i64>(2309685248)));
-// DEFAULT-NEXT:         if read<bool>(%21)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], ne<i64>(call<i64, signature=fn(i64) -> i64>(%[[VALUE_f6]], read<i64>(%[[VALUE_a_7]])), const<i64>(2309685248)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE5]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

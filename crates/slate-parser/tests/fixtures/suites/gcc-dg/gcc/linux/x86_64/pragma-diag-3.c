@@ -75,39 +75,39 @@ int f (enum EE e)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 EE = enum : u32 {
-// DEFAULT-NEXT:         %0 ONE = const<i32>(0);
-// DEFAULT-NEXT:         %1 TWO = const<i32>(1);
+// DEFAULT-NEXT:     type @type[[TYPE_EE:[0-9]+]] EE = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_ONE:[0-9]+]] ONE = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_TWO:[0-9]+]] TWO = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     fn %0 @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %1 x: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:         let %2 y: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         let %11: u32 [synthetic] = read<u32>(%1);
-// DEFAULT-NEXT:         let %12: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%11), reinterpret<u32, reason=usual_arith, fits=unknown>(conditional<i32>(lt<u32>(read<u32>(%1), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%2))), const<i32>(1), const<i32>(0))));
-// DEFAULT-NEXT:         write<u32>(%1, read<u32>(%12));
-// DEFAULT-NEXT:         let %13: u32 [synthetic] = read<u32>(%1);
-// DEFAULT-NEXT:         let %14: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%13), reinterpret<u32, reason=usual_arith, fits=unknown>(conditional<i32>(lt<u32>(read<u32>(%1), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%2))), const<i32>(1), const<i32>(0))));
-// DEFAULT-NEXT:         write<u32>(%1, read<u32>(%14));
-// DEFAULT-NEXT:         let %15: u32 [synthetic] = read<u32>(%1);
-// DEFAULT-NEXT:         let %16: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%15), reinterpret<u32, reason=usual_arith, fits=unknown>(conditional<i32>(lt<u32>(read<u32>(%1), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%2))), const<i32>(1), const<i32>(0))));
-// DEFAULT-NEXT:         write<u32>(%1, read<u32>(%16));
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(read<u32>(%1));
+// DEFAULT-NEXT:     fn %[[VALUE_ONE]] @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_TWO]] x: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_TWO]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE0]]), reinterpret<u32, reason=usual_arith, fits=unknown>(conditional<i32>(lt<u32>(read<u32>(%[[VALUE_TWO]]), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_y]]))), const<i32>(1), const<i32>(0))));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_TWO]], read<u32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_TWO]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE2]]), reinterpret<u32, reason=usual_arith, fits=unknown>(conditional<i32>(lt<u32>(read<u32>(%[[VALUE_TWO]]), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_y]]))), const<i32>(1), const<i32>(0))));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_TWO]], read<u32>(%[[VALUE3]]));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_TWO]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE4]]), reinterpret<u32, reason=usual_arith, fits=unknown>(conditional<i32>(lt<u32>(read<u32>(%[[VALUE_TWO]]), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_y]]))), const<i32>(1), const<i32>(0))));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_TWO]], read<u32>(%[[VALUE5]]));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE_TWO]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f(%7 e: @type0) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 r: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         switch %9 enum_to_int<u32, reason=promotion>(read<@type0>(%7))
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_e:[0-9]+]] e: @type[[TYPE_EE]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         switch %[[VALUE6:[0-9]+]] enum_to_int<u32, reason=promotion>(read<@type[[TYPE_EE]]>(%[[VALUE_e]]))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %9 const<u32>(0):
-// DEFAULT-NEXT:                     write<i32>(%8, const<i32>(1));
-// DEFAULT-NEXT:                 break %9;
+// DEFAULT-NEXT:                 case %[[VALUE6]] const<u32>(0):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_r]], const<i32>(1));
+// DEFAULT-NEXT:                 break %[[VALUE6]];
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         switch %10 enum_to_int<u32, reason=promotion>(read<@type0>(%7))
+// DEFAULT-NEXT:         switch %[[VALUE7:[0-9]+]] enum_to_int<u32, reason=promotion>(read<@type[[TYPE_EE]]>(%[[VALUE_e]]))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %10 const<u32>(0):
-// DEFAULT-NEXT:                     write<i32>(%8, const<i32>(1));
-// DEFAULT-NEXT:                 break %10;
+// DEFAULT-NEXT:                 case %[[VALUE7]] const<u32>(0):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_r]], const<i32>(1));
+// DEFAULT-NEXT:                 break %[[VALUE7]];
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<i32>(%8);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_r]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

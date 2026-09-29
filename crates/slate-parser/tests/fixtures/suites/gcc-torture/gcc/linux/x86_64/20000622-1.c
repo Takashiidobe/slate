@@ -43,24 +43,24 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%15 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @foo(%3 a: i64, %4 b: i64, %5 c: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i64>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(12))), ne<i64>(read<i64>(%4), widen<i64, reason=usual_arith>(const<i32>(1)))), ne<i64>(read<i64>(%5), widen<i64, reason=usual_arith>(const<i32>(11))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: i64, %[[VALUE_b:[0-9]+]] b: i64, %[[VALUE_c:[0-9]+]] c: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i64>(read<i64>(%[[VALUE_a]]), widen<i64, reason=usual_arith>(const<i32>(12))), ne<i64>(read<i64>(%[[VALUE_b]]), widen<i64, reason=usual_arith>(const<i32>(1)))), ne<i64>(read<i64>(%[[VALUE_c]]), widen<i64, reason=usual_arith>(const<i32>(11))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return widen<i64, reason=return>(const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @bar(%7 a: i64, %8 b: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i64>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_a_2:[0-9]+]] a: i64, %[[VALUE_b_2:[0-9]+]] b: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i64>(%[[VALUE_b_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @baz(%10 a: i64, %11 b: i64, %12 c: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %13 d: i64 [storage=automatic];
-// DEFAULT-NEXT:         write<i64>(%13, ptr_to_int<i64, reason=explicit>(read<ptr<void>>(%12)));
-// DEFAULT-NEXT:         call<i64, signature=fn(i64, i64, i64) -> i64>(%2, read<i64>(%13), call<i64, signature=fn(i64, i64) -> i64>(%6, read<i64>(%10), widen<i64, reason=arg>(const<i32>(1))), read<i64>(%11));
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_a_3:[0-9]+]] a: i64, %[[VALUE_b_3:[0-9]+]] b: i64, %[[VALUE_c_2:[0-9]+]] c: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i64 [storage=automatic];
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_d]], ptr_to_int<i64, reason=explicit>(read<ptr<void>>(%[[VALUE_c_2]])));
+// DEFAULT-NEXT:         call<i64, signature=fn(i64, i64, i64) -> i64>(%[[VALUE_foo]], read<i64>(%[[VALUE_d]]), call<i64, signature=fn(i64, i64) -> i64>(%[[VALUE_bar]], read<i64>(%[[VALUE_a_3]]), widen<i64, reason=arg>(const<i32>(1))), read<i64>(%[[VALUE_b_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i64, i64, ptr<void>) -> void>(%9, widen<i64, reason=arg>(const<i32>(10)), widen<i64, reason=arg>(const<i32>(11)), int_to_ptr<ptr<void>, reason=explicit>(const<i32>(12)));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i64, i64, ptr<void>) -> void>(%[[VALUE_baz]], widen<i64, reason=arg>(const<i32>(10)), widen<i64, reason=arg>(const<i32>(11)), int_to_ptr<ptr<void>, reason=explicit>(const<i32>(12)));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

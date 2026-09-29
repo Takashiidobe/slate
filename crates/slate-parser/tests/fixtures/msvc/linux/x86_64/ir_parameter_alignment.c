@@ -30,10 +30,10 @@ unsigned long below_natural(_Alignas(1) int p) { return _Alignof(p); }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @above_natural(%1 p: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_above_natural:[0-9]+]] @above_natural(%[[VALUE_p:[0-9]+]] p: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(32);
 // IR-NEXT:     }
-// IR-NEXT:     fn %2 @below_natural(%3 p: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_below_natural:[0-9]+]] @below_natural(%[[VALUE_p_2:[0-9]+]] p: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(4);
 // IR-NEXT:     }
 // IR-NEXT: }

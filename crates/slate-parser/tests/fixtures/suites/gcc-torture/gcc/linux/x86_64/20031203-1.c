@@ -42,32 +42,32 @@ void location_completer (char *text)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @make_file_symbol_completion_list(%5 <unnamed>: ptr<i8>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @location_completer(%2 text: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 p: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %4 symbol_start: ptr<i8> [storage=automatic] = read<ptr<i8>>(%2);
-// DEFAULT-NEXT:         for %6
+// DEFAULT-NEXT:     fn %[[VALUE_make_file_symbol_completion_list:[0-9]+]] @make_file_symbol_completion_list(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i8>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_location_completer:[0-9]+]] @location_completer(%[[VALUE_text:[0-9]+]] text: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_symbol_start:[0-9]+]] symbol_start: ptr<i8> [storage=automatic] = read<ptr<i8>>(%[[VALUE_text]]);
+// DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<ptr<i8>>(%3, read<ptr<i8>>(%2));
-// DEFAULT-NEXT:             condition: ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%3)))), const<i32>(0))
+// DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p]], read<ptr<i8>>(%[[VALUE_text]]));
+// DEFAULT-NEXT:             condition: ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_p]])))), const<i32>(0))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %7: ptr<i8> [synthetic] = read<ptr<i8>>(%3);
-// DEFAULT-NEXT:                 let %8: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%7), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<i8>>(%3, read<ptr<i8>>(%8));
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_p]]);
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p]], read<ptr<i8>>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if logical_and<bool>(eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%3)))), const<i32>(92)), eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%3), const<i32>(1))))), const<i32>(39)))
-// DEFAULT-NEXT:                         let %9: ptr<i8> [synthetic] = read<ptr<i8>>(%3);
-// DEFAULT-NEXT:                         let %10: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(1));
-// DEFAULT-NEXT:                         write<ptr<i8>>(%3, read<ptr<i8>>(%10));
+// DEFAULT-NEXT:                     if logical_and<bool>(eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_p]])))), const<i32>(92)), eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(1))))), const<i32>(39)))
+// DEFAULT-NEXT:                         let %[[VALUE4:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_p]]);
+// DEFAULT-NEXT:                         let %[[VALUE5:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE4]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<ptr<i8>>(%[[VALUE_p]], read<ptr<i8>>(%[[VALUE5]]));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         if eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%3)))), const<i32>(58))
-// DEFAULT-NEXT:                             write<ptr<i8>>(%4, ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%3), const<i32>(1)));
+// DEFAULT-NEXT:                         if eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_p]])))), const<i32>(58))
+// DEFAULT-NEXT:                             write<ptr<i8>>(%[[VALUE_symbol_start]], ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(1)));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             write<ptr<i8>>(%4, ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%3), const<i32>(1)));
-// DEFAULT-NEXT:                     call<void, signature=fn(ptr<i8>) -> void>(%0, read<ptr<i8>>(%4));
+// DEFAULT-NEXT:                             write<ptr<i8>>(%[[VALUE_symbol_start]], ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_p]]), const<i32>(1)));
+// DEFAULT-NEXT:                     call<void, signature=fn(ptr<i8>) -> void>(%[[VALUE_make_file_symbol_completion_list]], read<ptr<i8>>(%[[VALUE_symbol_start]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

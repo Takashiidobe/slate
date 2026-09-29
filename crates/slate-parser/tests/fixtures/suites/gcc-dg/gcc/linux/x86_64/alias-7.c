@@ -46,13 +46,13 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 foo: i32 [storage=static] [linkage=external] [asm_name="foo"];
-// DEFAULT-NEXT:     global %2 bar: i32 [storage=static] [linkage=external] [weak] [alias="foo"];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%1), addr_of<ptr<i32>>(%2)), ne<i32>(read<i32>(%1), const<i32>(0))), ne<i32>(read<i32>(%2), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         return read<i32>(%2);
+// DEFAULT-NEXT:     global %[[VALUE_foo:[0-9]+]] foo: i32 [storage=static] [linkage=external] [asm_name="foo"];
+// DEFAULT-NEXT:     global %[[VALUE_bar:[0-9]+]] bar: i32 [storage=static] [linkage=external] [weak] [alias="foo"];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_foo]]), addr_of<ptr<i32>>(%[[VALUE_bar]])), ne<i32>(read<i32>(%[[VALUE_foo]]), const<i32>(0))), ne<i32>(read<i32>(%[[VALUE_bar]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_bar]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

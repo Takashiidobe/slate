@@ -60,35 +60,35 @@ internal_insn_latency (int insn_code, int insn2_code)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @internal_insn_latency(%1 insn_code: i32, %2 insn2_code: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         switch %3 read<i32>(%1)
+// DEFAULT-NEXT:     fn %[[VALUE_internal_insn_latency:[0-9]+]] @internal_insn_latency(%[[VALUE_insn_code:[0-9]+]] insn_code: i32, %[[VALUE_insn2_code:[0-9]+]] insn2_code: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_insn_code]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %3 const<i32>(256):
-// DEFAULT-NEXT:                     switch %4 read<i32>(%2)
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(256):
+// DEFAULT-NEXT:                     switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_insn2_code]])
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             case %4 const<i32>(267):
+// DEFAULT-NEXT:                             case %[[VALUE1]] const<i32>(267):
 // DEFAULT-NEXT:                                 return const<i32>(8);
-// DEFAULT-NEXT:                             case %4 const<i32>(266):
+// DEFAULT-NEXT:                             case %[[VALUE1]] const<i32>(266):
 // DEFAULT-NEXT:                                 return const<i32>(8);
-// DEFAULT-NEXT:                             case %4 const<i32>(265):
+// DEFAULT-NEXT:                             case %[[VALUE1]] const<i32>(265):
 // DEFAULT-NEXT:                                 return const<i32>(8);
-// DEFAULT-NEXT:                             case %4 const<i32>(264):
+// DEFAULT-NEXT:                             case %[[VALUE1]] const<i32>(264):
 // DEFAULT-NEXT:                                 return const<i32>(8);
-// DEFAULT-NEXT:                             case %4 const<i32>(263):
+// DEFAULT-NEXT:                             case %[[VALUE1]] const<i32>(263):
 // DEFAULT-NEXT:                                 return const<i32>(8);
 // DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:                 break %3;
-// DEFAULT-NEXT:                 case %3 const<i32>(273):
-// DEFAULT-NEXT:                     switch %5 read<i32>(%2)
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(273):
+// DEFAULT-NEXT:                     switch %[[VALUE2:[0-9]+]] read<i32>(%[[VALUE_insn2_code]])
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             case %5 const<i32>(267):
+// DEFAULT-NEXT:                             case %[[VALUE2]] const<i32>(267):
 // DEFAULT-NEXT:                                 return const<i32>(5);
-// DEFAULT-NEXT:                             case %5 const<i32>(266):
+// DEFAULT-NEXT:                             case %[[VALUE2]] const<i32>(266):
 // DEFAULT-NEXT:                                 return const<i32>(5);
-// DEFAULT-NEXT:                             case %5 const<i32>(277):
+// DEFAULT-NEXT:                             case %[[VALUE2]] const<i32>(277):
 // DEFAULT-NEXT:                                 return const<i32>(3);
 // DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:                 break %3;
+// DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

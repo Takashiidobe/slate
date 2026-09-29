@@ -35,16 +35,16 @@ int xyzzy()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 x = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_x:[0-9]+]] x = struct {
 // DEFAULT-NEXT:         field0 bar: ptr<fn(i32) -> ptr<i8>>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 x = @type0;
-// DEFAULT-NEXT:     fn %2 @baz(%5 <unnamed>: ptr<i8>) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo() -> ptr<ptr<@type0>> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<ptr<@type0>>, reason=explicit>(call<ptr<void>, signature=fn(ptr<i8>) -> ptr<void>>(%2, null<ptr<i8>>));
+// DEFAULT-NEXT:     type @type[[TYPE_x_2:[0-9]+]] x = @type[[TYPE_x]];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i8>) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> ptr<ptr<@type[[TYPE_x]]>> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<ptr<@type[[TYPE_x]]>>, reason=explicit>(call<ptr<void>, signature=fn(ptr<i8>) -> ptr<void>>(%[[VALUE_baz]], null<ptr<i8>>));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @xyzzy() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<i8>) -> ptr<void>>(%2, call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(read<ptr<fn(i32) -> ptr<i8>>>(field0(deref(read<ptr<@type0>>(deref(call<ptr<ptr<@type0>>, signature=fn() -> ptr<ptr<@type0>>>(%3)))))), const<i32>(0)));
+// DEFAULT-NEXT:     fn %[[VALUE_xyzzy:[0-9]+]] @xyzzy() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<i8>) -> ptr<void>>(%[[VALUE_baz]], call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(read<ptr<fn(i32) -> ptr<i8>>>(field0(deref(read<ptr<@type[[TYPE_x]]>>(deref(call<ptr<ptr<@type[[TYPE_x]]>>, signature=fn() -> ptr<ptr<@type[[TYPE_x]]>>>(%[[VALUE_foo]])))))), const<i32>(0)));
 // DEFAULT-NEXT:         return const<i32>(3);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

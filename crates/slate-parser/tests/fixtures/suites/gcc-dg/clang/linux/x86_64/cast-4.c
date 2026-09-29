@@ -38,10 +38,10 @@ f (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 i: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 c: i8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i8>(%1, ptr_to_int<i8, reason=explicit>(addr_of<ptr<i32>>(%0)));
+// DEFAULT-NEXT:     extern %[[VALUE_i:[0-9]+]] i: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i8>(%[[VALUE_c]], ptr_to_int<i8, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_i]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

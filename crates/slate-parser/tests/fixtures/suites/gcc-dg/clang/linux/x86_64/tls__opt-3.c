@@ -37,12 +37,12 @@ void foo(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 i: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     extern %1 j: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     extern %2 k: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @bar(%5 <unnamed>: ptr<i32>, %6 <unnamed>: ptr<i32>, %7 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<i32>, ptr<i32>) -> void>(%3, addr_of<ptr<i32>>(%0), addr_of<ptr<i32>>(%1), addr_of<ptr<i32>>(%2));
+// DEFAULT-NEXT:     extern %[[VALUE_i:[0-9]+]] i: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_j:[0-9]+]] j: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_k:[0-9]+]] k: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, ptr<i32>, ptr<i32>) -> void>(%[[VALUE_bar]], addr_of<ptr<i32>>(%[[VALUE_i]]), addr_of<ptr<i32>>(%[[VALUE_j]]), addr_of<ptr<i32>>(%[[VALUE_k]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -27,6 +27,6 @@ int after_warning = 7;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 after_warning: i32 [storage=static] = const<i32>(7) [linkage=external];
+// IR-NEXT:     global %[[VALUE_after_warning:[0-9]+]] after_warning: i32 [storage=static] = const<i32>(7) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

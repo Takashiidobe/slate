@@ -38,17 +38,17 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %7 .str7: array<i8, 27> [storage=static] = code_units<array<i8, 27>>([37, 46, 50, 104, 104, 100, 32, 37, 46, 51, 104, 100, 32, 37, 35, 104, 104, 120, 32, 37, 48, 56, 104, 104, 120, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 20> [storage=static] = code_units<array<i8, 20>>([37, 46, 52, 104, 104, 111, 32, 37, 46, 50, 104, 104, 120, 32, 37, 104, 104, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 12> [storage=static] = code_units<array<i8, 12>>([37, 46, 53, 104, 100, 32, 37, 35, 104, 120, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%6 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 a: i32 [storage=automatic] = const<i32>(300);
-// DEFAULT-NEXT:         let %4 b: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(5));
-// DEFAULT-NEXT:         let %5 c: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(400));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(27)>(%7)), read<i32>(%3), read<i32>(%4), read<i32>(%3), read<i32>(%3));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(20)>(%8)), read<i32>(%3), read<i32>(%3), read<u32>(%5));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(12)>(%9)), read<i32>(%4), read<u32>(%5));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 27> [storage=static] = code_units<array<i8, 27>>([37, 46, 50, 104, 104, 100, 32, 37, 46, 51, 104, 100, 32, 37, 35, 104, 104, 120, 32, 37, 48, 56, 104, 104, 120, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 20> [storage=static] = code_units<array<i8, 20>>([37, 46, 52, 104, 104, 111, 32, 37, 46, 50, 104, 104, 120, 32, 37, 104, 104, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 12> [storage=static] = code_units<array<i8, 12>>([37, 46, 53, 104, 100, 32, 37, 35, 104, 120, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = const<i32>(300);
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(5));
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(400));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(27)>(%[[VALUE_str]])), read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]]), read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(20)>(%[[VALUE_str_2]])), read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_a]]), read<u32>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(12)>(%[[VALUE_str_3]])), read<i32>(%[[VALUE_b]]), read<u32>(%[[VALUE_c]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

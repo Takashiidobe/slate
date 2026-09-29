@@ -35,11 +35,11 @@ int main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 bar: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     extern %[[VALUE_bar:[0-9]+]] bar: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         asm "foo %0" [dialect=att] [options=pure,nomem,nostack] {
 // DEFAULT-NEXT:             template: "foo " %0;
-// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%0);
+// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_bar]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

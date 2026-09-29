@@ -86,13 +86,13 @@ int RW(1) WO(3) RW(5) WO(7) RW(9) WO(11) RW(13) RW(15) frw1_w3_rw5_w7_rw9_wr11_r
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 P = ptr<i32>;
-// DEFAULT-NEXT:     fn %0 @rdwr1_rdwr1(%8 <unnamed>: ptr<void>, %9 <unnamed>: ptr<void>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @frdwr1_wr1(%18 <unnamed>: ptr<void>, %19 <unnamed>: ptr<void>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @grdwr1_wr1(%22 <unnamed>: ptr<void>, %23 <unnamed>: ptr<void>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @frdwr1_rdwr1_1(%26 <unnamed>: ptr<void>, %27 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @frdwr1_1_rdwr1(%28 <unnamed>: ptr<void>, %29 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @grdwr1_rdwr1_1(%30 <unnamed>: ptr<void>, %31 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @frw1_w3_rw5_w7_rw9_wr11_rw13_w15(%34 <unnamed>: ptr<i32>, %35 <unnamed>: ptr<i32>, %36 <unnamed>: ptr<i32>, %37 <unnamed>: ptr<i32>, %38 <unnamed>: ptr<i32>, %39 <unnamed>: ptr<i32>, %40 <unnamed>: ptr<i32>, %41 <unnamed>: ptr<i32>, %42 <unnamed>: ptr<i32>, %43 <unnamed>: ptr<i32>, %44 <unnamed>: ptr<i32>, %45 <unnamed>: ptr<i32>, %46 <unnamed>: ptr<i32>, %47 <unnamed>: ptr<i32>, %48 <unnamed>: ptr<i32>, %49 <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_P:[0-9]+]] P = ptr<i32>;
+// DEFAULT-NEXT:     fn %[[VALUE_rdwr1_rdwr1:[0-9]+]] @rdwr1_rdwr1(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<void>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_frdwr1_wr1:[0-9]+]] @frdwr1_wr1(%[[VALUE2:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE3:[0-9]+]] <unnamed>: ptr<void>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_grdwr1_wr1:[0-9]+]] @grdwr1_wr1(%[[VALUE4:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE5:[0-9]+]] <unnamed>: ptr<void>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_frdwr1_rdwr1_1:[0-9]+]] @frdwr1_rdwr1_1(%[[VALUE6:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE7:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_frdwr1_1_rdwr1:[0-9]+]] @frdwr1_1_rdwr1(%[[VALUE8:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE9:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_grdwr1_rdwr1_1:[0-9]+]] @grdwr1_rdwr1_1(%[[VALUE10:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE11:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_frw1_w3_rw5_w7_rw9_wr11_rw13_w15:[0-9]+]] @frw1_w3_rw5_w7_rw9_wr11_rw13_w15(%[[VALUE12:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE13:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE14:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE15:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE16:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE17:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE18:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE19:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE20:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE21:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE22:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE23:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE24:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE25:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE26:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE27:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

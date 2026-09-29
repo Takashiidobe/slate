@@ -37,8 +37,8 @@ foo (int m)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 m: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(not<bool>(ne<i32>(and<i32>(read<i32>(%1), reinterpret<i32, reason=explicit, fits=unknown>(const<u32>(2147483648))), const<i32>(0))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_m:[0-9]+]] m: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(not<bool>(ne<i32>(and<i32>(read<i32>(%[[VALUE_m]]), reinterpret<i32, reason=explicit, fits=unknown>(const<u32>(2147483648))), const<i32>(0))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

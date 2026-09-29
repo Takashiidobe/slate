@@ -54,25 +54,25 @@ void *mismatched(void) { return flag ? ints : floats; }
 // IR-DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // IR-DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // IR-DEFAULT-NEXT:     }
-// IR-DEFAULT-NEXT:     global %0 ints: ptr<i32> [storage=static] [linkage=external];
-// IR-DEFAULT-NEXT:     global %1 floats: ptr<f32> [storage=static] [linkage=external];
-// IR-DEFAULT-NEXT:     global %2 flag: i32 [storage=static] [linkage=external];
-// IR-DEFAULT-NEXT:     fn %3 @ordered() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-DEFAULT-NEXT:         return add<i32, overflow=ub>(from_bool<i32, reason=promotion>(lt<ptr<i32>>(read<ptr<i32>>(%0), int_to_ptr<ptr<i32>, reason=usual_arith>(const<i32>(1)))), from_bool<i32, reason=promotion>(gt<ptr<i32>>(null<ptr<i32>>, read<ptr<i32>>(%0))));
+// IR-DEFAULT-NEXT:     global %[[VALUE_ints:[0-9]+]] ints: ptr<i32> [storage=static] [linkage=external];
+// IR-DEFAULT-NEXT:     global %[[VALUE_floats:[0-9]+]] floats: ptr<f32> [storage=static] [linkage=external];
+// IR-DEFAULT-NEXT:     global %[[VALUE_flag:[0-9]+]] flag: i32 [storage=static] [linkage=external];
+// IR-DEFAULT-NEXT:     fn %[[VALUE_ordered:[0-9]+]] @ordered() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-DEFAULT-NEXT:         return add<i32, overflow=ub>(from_bool<i32, reason=promotion>(lt<ptr<i32>>(read<ptr<i32>>(%[[VALUE_ints]]), int_to_ptr<ptr<i32>, reason=usual_arith>(const<i32>(1)))), from_bool<i32, reason=promotion>(gt<ptr<i32>>(null<ptr<i32>>, read<ptr<i32>>(%[[VALUE_ints]]))));
 // IR-DEFAULT-NEXT:     }
-// IR-DEFAULT-NEXT:     fn %4 @masked() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// IR-DEFAULT-NEXT:         let %8: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=seq_cst>(deref(addr_of<ptr<ptr<i32>>>(%0)), int_to_ptr<ptr<i32>, reason=explicit>(and<u64>(ptr_to_int<u64, reason=explicit>(old<ptr<i32>>), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))))));
-// IR-DEFAULT-NEXT:         return read<ptr<i32>>(%8);
+// IR-DEFAULT-NEXT:     fn %[[VALUE_masked:[0-9]+]] @masked() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// IR-DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=seq_cst>(deref(addr_of<ptr<ptr<i32>>>(%[[VALUE_ints]])), int_to_ptr<ptr<i32>, reason=explicit>(and<u64>(ptr_to_int<u64, reason=explicit>(old<ptr<i32>>), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))))));
+// IR-DEFAULT-NEXT:         return read<ptr<i32>>(%[[VALUE0]]);
 // IR-DEFAULT-NEXT:     }
-// IR-DEFAULT-NEXT:     fn %5 @inverted() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// IR-DEFAULT-NEXT:         let %9: ptr<i32> [synthetic] = update<ptr<i32>, result=new, atomic=seq_cst>(deref(addr_of<ptr<ptr<i32>>>(%0)), int_to_ptr<ptr<i32>, reason=explicit>(not<u64>(and<u64>(ptr_to_int<u64, reason=explicit>(old<ptr<i32>>), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))))));
-// IR-DEFAULT-NEXT:         return read<ptr<i32>>(%9);
+// IR-DEFAULT-NEXT:     fn %[[VALUE_inverted:[0-9]+]] @inverted() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// IR-DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<i32> [synthetic] = update<ptr<i32>, result=new, atomic=seq_cst>(deref(addr_of<ptr<ptr<i32>>>(%[[VALUE_ints]])), int_to_ptr<ptr<i32>, reason=explicit>(not<u64>(and<u64>(ptr_to_int<u64, reason=explicit>(old<ptr<i32>>), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))))));
+// IR-DEFAULT-NEXT:         return read<ptr<i32>>(%[[VALUE1]]);
 // IR-DEFAULT-NEXT:     }
-// IR-DEFAULT-NEXT:     fn %6 @toggled() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-DEFAULT-NEXT:         let %10: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=seq_cst>(deref(addr_of<ptr<ptr<i32>>>(%0)), int_to_ptr<ptr<i32>, reason=explicit>(xor<u64>(ptr_to_int<u64, reason=explicit>(old<ptr<i32>>), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))))));
+// IR-DEFAULT-NEXT:     fn %[[VALUE_toggled:[0-9]+]] @toggled() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=seq_cst>(deref(addr_of<ptr<ptr<i32>>>(%[[VALUE_ints]])), int_to_ptr<ptr<i32>, reason=explicit>(xor<u64>(ptr_to_int<u64, reason=explicit>(old<ptr<i32>>), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))))));
 // IR-DEFAULT-NEXT:     }
-// IR-DEFAULT-NEXT:     fn %7 @mismatched() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// IR-DEFAULT-NEXT:         return conditional<ptr<void>>(ne<i32>(read<i32>(%2), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<f32>>(%1)));
+// IR-DEFAULT-NEXT:     fn %[[VALUE_mismatched:[0-9]+]] @mismatched() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// IR-DEFAULT-NEXT:         return conditional<ptr<void>>(ne<i32>(read<i32>(%[[VALUE_flag]]), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%[[VALUE_ints]])), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<f32>>(%[[VALUE_floats]])));
 // IR-DEFAULT-NEXT:     }
 // IR-DEFAULT-NEXT: }
 // SLATE-FILECHECK-END IR-DEFAULT

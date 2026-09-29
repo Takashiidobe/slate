@@ -37,13 +37,13 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @foo(%2 x: u32) -> f64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return float_widen<f64, reason=explicit>(int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(or<u32>(read<u32>(%2), const<u32>(4294901760))));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: u32) -> f64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return float_widen<f64, reason=explicit>(int_to_float<f32, reason=explicit, exact=false, rounding=nearest_even, exceptions=observable>(or<u32>(read<u32>(%[[VALUE_x]]), const<u32>(4294901760))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(u32) -> f64>(%1, reinterpret<u32, reason=arg, fits=always>(const<i32>(1))), const<f64>(4294901760.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(u32) -> f64>(%[[VALUE_foo]], reinterpret<u32, reason=arg, fits=always>(const<i32>(1))), const<f64>(4294901760.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

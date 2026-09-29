@@ -40,18 +40,18 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 b4: u32 : 4;
 // DEFAULT-NEXT:         field1 b6: u32 : 6;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0], bit_offsets=[Some(0), Some(4)], bit_units=[(0, 2)], field_units=[Some(0), Some(0)]];
-// DEFAULT-NEXT:     global %2 s: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..2, bits=4..10>(%2), reinterpret<u32, reason=assign, fits=always>(const<i32>(31)));
-// DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..2, bits=0..4>(%2), reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=4..10>(%2)))));
-// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..2, bits=4..10>(%2), reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..2, bits=0..4>(%2)))));
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=4..10>(%2))), const<i32>(15))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..2, bits=4..10>(%[[VALUE_s]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(31)));
+// DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..2, bits=0..4>(%[[VALUE_s]]), reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=4..10>(%[[VALUE_s]])))));
+// DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..2, bits=4..10>(%[[VALUE_s]]), reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..2, bits=0..4>(%[[VALUE_s]])))));
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=4..10>(%[[VALUE_s]]))), const<i32>(15))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

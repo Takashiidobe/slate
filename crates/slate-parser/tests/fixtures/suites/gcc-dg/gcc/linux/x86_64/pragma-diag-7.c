@@ -47,8 +47,8 @@ unsigned long ok_again = 2UL; /* { dg-bogus "suffix" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 ok: u64 [storage=static] = const<u64>(0) [linkage=external];
-// DEFAULT-NEXT:     global %1 bad: u64 [storage=static] = const<u64>(1) [linkage=external];
-// DEFAULT-NEXT:     global %2 ok_again: u64 [storage=static] = const<u64>(2) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ok:[0-9]+]] ok: u64 [storage=static] = const<u64>(0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bad:[0-9]+]] bad: u64 [storage=static] = const<u64>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ok_again:[0-9]+]] ok_again: u64 [storage=static] = const<u64>(2) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

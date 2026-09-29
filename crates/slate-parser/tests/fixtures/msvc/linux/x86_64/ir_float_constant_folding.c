@@ -33,13 +33,13 @@ int out_of_range[] = {OVERFLOWED, NEGATIVE_OVERFLOW, INFINITE, NOT_A_NUMBER, WRA
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 = enum : i32 {
-// IR-NEXT:         %0 OVERFLOWED = const<i32>(1410065408);
-// IR-NEXT:         %1 NEGATIVE_OVERFLOW = const<i32>(-1410065408);
-// IR-NEXT:         %2 INFINITE = const<i32>(0);
-// IR-NEXT:         %3 NOT_A_NUMBER = const<i32>(0);
-// IR-NEXT:         %4 WRAPPED = const<i32>(56);
+// IR-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : i32 {
+// IR-NEXT:         %[[VALUE_OVERFLOWED:[0-9]+]] OVERFLOWED = const<i32>(1410065408);
+// IR-NEXT:         %[[VALUE_NEGATIVE_OVERFLOW:[0-9]+]] NEGATIVE_OVERFLOW = const<i32>(-1410065408);
+// IR-NEXT:         %[[VALUE_INFINITE:[0-9]+]] INFINITE = const<i32>(0);
+// IR-NEXT:         %[[VALUE_NOT_A_NUMBER:[0-9]+]] NOT_A_NUMBER = const<i32>(0);
+// IR-NEXT:         %[[VALUE_WRAPPED:[0-9]+]] WRAPPED = const<i32>(56);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     global %6 out_of_range: array<i32, 5> [storage=static] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1410065408), index1 = const<i32>(-1410065408), index2 = const<i32>(0), index3 = const<i32>(0), index4 = const<i32>(56)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_out_of_range:[0-9]+]] out_of_range: array<i32, 5> [storage=static] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1410065408), index1 = const<i32>(-1410065408), index2 = const<i32>(0), index3 = const<i32>(0), index4 = const<i32>(56)) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

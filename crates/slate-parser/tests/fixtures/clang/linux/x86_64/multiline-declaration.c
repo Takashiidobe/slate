@@ -26,6 +26,6 @@ int strfromd(char *s, int n, const char *format,
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @strfromd(%5 s: ptr<i8>, %6 n: i32, %7 format: ptr<const i8>, %8 fp: f64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strfromd:[0-9]+]] @strfromd(%[[VALUE_s:[0-9]+]] s: ptr<i8>, %[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_format:[0-9]+]] format: ptr<const i8>, %[[VALUE_fp:[0-9]+]] fp: f64) -> i32 [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

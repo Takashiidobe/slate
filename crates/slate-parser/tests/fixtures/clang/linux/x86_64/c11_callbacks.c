@@ -62,74 +62,74 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __tss_t = u32;
-// DEFAULT-NEXT:     type @type1 __thrd_t = u64;
-// DEFAULT-NEXT:     type @type2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___tss_t:[0-9]+]] __tss_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE___thrd_t:[0-9]+]] __thrd_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 __data: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 __once_flag = @type2;
-// DEFAULT-NEXT:     type @type4 once_flag = @type2;
-// DEFAULT-NEXT:     type @type5 tss_t = u32;
-// DEFAULT-NEXT:     type @type6 tss_dtor_t = ptr<fn(ptr<void>) -> void>;
-// DEFAULT-NEXT:     type @type7 thrd_t = u64;
-// DEFAULT-NEXT:     type @type8 thrd_start_t = ptr<fn(ptr<void>) -> i32>;
-// DEFAULT-NEXT:     type @type9 = enum : u32 {
-// DEFAULT-NEXT:         %0 thrd_success = const<i32>(0);
-// DEFAULT-NEXT:         %1 thrd_busy = const<i32>(1);
-// DEFAULT-NEXT:         %2 thrd_error = const<i32>(2);
-// DEFAULT-NEXT:         %3 thrd_nomem = const<i32>(3);
-// DEFAULT-NEXT:         %4 thrd_timedout = const<i32>(4);
+// DEFAULT-NEXT:     type @type[[TYPE___once_flag:[0-9]+]] __once_flag = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE_once_flag:[0-9]+]] once_flag = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE_tss_t:[0-9]+]] tss_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_tss_dtor_t:[0-9]+]] tss_dtor_t = ptr<fn(ptr<void>) -> void>;
+// DEFAULT-NEXT:     type @type[[TYPE_thrd_t:[0-9]+]] thrd_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_thrd_start_t:[0-9]+]] thrd_start_t = ptr<fn(ptr<void>) -> i32>;
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_thrd_success:[0-9]+]] thrd_success = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_thrd_busy:[0-9]+]] thrd_busy = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_thrd_error:[0-9]+]] thrd_error = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE_thrd_nomem:[0-9]+]] thrd_nomem = const<i32>(3);
+// DEFAULT-NEXT:         %[[VALUE_thrd_timedout:[0-9]+]] thrd_timedout = const<i32>(4);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %36 once_total: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %67 .str67: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%53 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @at_quick_exit(%54 __func: ptr<fn() -> void>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %11 @call_once(%55 __flag: ptr<@type2>, %56 __func: ptr<fn() -> void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %25 @thrd_create(%57 __thr: ptr<u64>, %58 __func: ptr<fn(ptr<void>) -> i32>, %59 __arg: ptr<void>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %28 @thrd_join(%60 __thr: u64, %61 __res: ptr<i32>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %33 @tss_create(%64 __tss_id: ptr<u32>, %65 __destructor: ptr<fn(ptr<void>) -> void>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %35 @tss_delete(%66 __tss_id: u32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %37 @thread_worker(%38 argument: ptr<void>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(pointer_cast<ptr<i32>, reason=explicit>(read<ptr<void>>(%38)))), const<i32>(1));
+// DEFAULT-NEXT:     global %[[VALUE_once_total:[0-9]+]] once_total: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_thrd_busy]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_at_quick_exit:[0-9]+]] @at_quick_exit(%[[VALUE___func:[0-9]+]] __func: ptr<fn() -> void>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_call_once:[0-9]+]] @call_once(%[[VALUE___flag:[0-9]+]] __flag: ptr<@type[[TYPE0]]>, %[[VALUE___func_2:[0-9]+]] __func: ptr<fn() -> void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_thrd_create:[0-9]+]] @thrd_create(%[[VALUE___thr:[0-9]+]] __thr: ptr<u64>, %[[VALUE___func_3:[0-9]+]] __func: ptr<fn(ptr<void>) -> i32>, %[[VALUE___arg:[0-9]+]] __arg: ptr<void>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_thrd_join:[0-9]+]] @thrd_join(%[[VALUE___thr_2:[0-9]+]] __thr: u64, %[[VALUE___res:[0-9]+]] __res: ptr<i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_tss_create:[0-9]+]] @tss_create(%[[VALUE___tss_id:[0-9]+]] __tss_id: ptr<u32>, %[[VALUE___destructor:[0-9]+]] __destructor: ptr<fn(ptr<void>) -> void>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_tss_delete:[0-9]+]] @tss_delete(%[[VALUE___tss_id_2:[0-9]+]] __tss_id: u32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_thread_worker:[0-9]+]] @thread_worker(%[[VALUE_argument:[0-9]+]] argument: ptr<void>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(pointer_cast<ptr<i32>, reason=explicit>(read<ptr<void>>(%[[VALUE_argument]])))), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %39 @once_handler() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %68: i32 [synthetic] = read<i32>(%36);
-// DEFAULT-NEXT:         let %69: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%68), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%36, read<i32>(%69));
+// DEFAULT-NEXT:     fn %[[VALUE_once_handler:[0-9]+]] @once_handler() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_once_total]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_once_total]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %40 @tss_destructor(%41 value: ptr<void>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %70: i32 [synthetic] = read<i32>(%36);
-// DEFAULT-NEXT:         let %71: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%70), from_bool<i32, reason=promotion>(ne<ptr<void>>(read<ptr<void>>(%41), null<ptr<void>>)));
-// DEFAULT-NEXT:         write<i32>(%36, read<i32>(%71));
+// DEFAULT-NEXT:     fn %[[VALUE_tss_destructor:[0-9]+]] @tss_destructor(%[[VALUE_value:[0-9]+]] value: ptr<void>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_once_total]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), from_bool<i32, reason=promotion>(ne<ptr<void>>(read<ptr<void>>(%[[VALUE_value]]), null<ptr<void>>)));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_once_total]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %42 @quick_handler() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %72: i32 [synthetic] = read<i32>(%36);
-// DEFAULT-NEXT:         let %73: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%72), const<i32>(100));
-// DEFAULT-NEXT:         write<i32>(%36, read<i32>(%73));
+// DEFAULT-NEXT:     fn %[[VALUE_quick_handler:[0-9]+]] @quick_handler() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_once_total]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(100));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_once_total]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %43 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %44 thread: u64 [storage=automatic];
-// DEFAULT-NEXT:         let %45 key: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %46 argument: i32 [storage=automatic] = const<i32>(40);
-// DEFAULT-NEXT:         let %47 thread_result: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %48 thread_created: i32 [storage=automatic] = call<i32, signature=fn(ptr<u64>, ptr<fn(ptr<void>) -> i32>, ptr<void>) -> i32>(%25, addr_of<ptr<u64>>(%44), function_decay<ptr<fn(ptr<void>) -> i32>>(%37), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%46)));
-// DEFAULT-NEXT:         let %49 thread_joined: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %74: i32 [synthetic];
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%48), const<i32>(0))
-// DEFAULT-NEXT:             write<i32>(%74, call<i32, signature=fn(u64, ptr<i32>) -> i32>(%28, read<u64>(%44), addr_of<ptr<i32>>(%47)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_thread:[0-9]+]] thread: u64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_key:[0-9]+]] key: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_argument_2:[0-9]+]] argument: i32 [storage=automatic] = const<i32>(40);
+// DEFAULT-NEXT:         let %[[VALUE_thread_result:[0-9]+]] thread_result: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_thread_created:[0-9]+]] thread_created: i32 [storage=automatic] = call<i32, signature=fn(ptr<u64>, ptr<fn(ptr<void>) -> i32>, ptr<void>) -> i32>(%[[VALUE_thrd_create]], addr_of<ptr<u64>>(%[[VALUE_thread]]), function_decay<ptr<fn(ptr<void>) -> i32>>(%[[VALUE_thread_worker]]), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_argument_2]])));
+// DEFAULT-NEXT:         let %[[VALUE_thread_joined:[0-9]+]] thread_joined: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i32 [synthetic];
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_thread_created]]), const<i32>(0))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE6]], call<i32, signature=fn(u64, ptr<i32>) -> i32>(%[[VALUE_thrd_join]], read<u64>(%[[VALUE_thread]]), addr_of<ptr<i32>>(%[[VALUE_thread_result]])));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i32>(%74, neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i32>(%49, read<i32>(%74));
-// DEFAULT-NEXT:         let %50 control: @type2 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type2>, ptr<fn() -> void>) -> void>(%11, addr_of<ptr<@type2>>(%50), function_decay<ptr<fn() -> void>>(%39));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type2>, ptr<fn() -> void>) -> void>(%11, addr_of<ptr<@type2>>(%50), function_decay<ptr<fn() -> void>>(%39));
-// DEFAULT-NEXT:         let %51 key_created: i32 [storage=automatic] = call<i32, signature=fn(ptr<u32>, ptr<fn(ptr<void>) -> void>) -> i32>(%33, addr_of<ptr<u32>>(%45), function_decay<ptr<fn(ptr<void>) -> void>>(%40));
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%51), const<i32>(0))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE6]], neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_thread_joined]], read<i32>(%[[VALUE6]]));
+// DEFAULT-NEXT:         let %[[VALUE_control:[0-9]+]] control: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE0]]>, ptr<fn() -> void>) -> void>(%[[VALUE_call_once]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_control]]), function_decay<ptr<fn() -> void>>(%[[VALUE_once_handler]]));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE0]]>, ptr<fn() -> void>) -> void>(%[[VALUE_call_once]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_control]]), function_decay<ptr<fn() -> void>>(%[[VALUE_once_handler]]));
+// DEFAULT-NEXT:         let %[[VALUE_key_created:[0-9]+]] key_created: i32 [storage=automatic] = call<i32, signature=fn(ptr<u32>, ptr<fn(ptr<void>) -> void>) -> i32>(%[[VALUE_tss_create]], addr_of<ptr<u32>>(%[[VALUE_key]]), function_decay<ptr<fn(ptr<void>) -> void>>(%[[VALUE_tss_destructor]]));
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_key_created]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(u32) -> void>(%35, read<u32>(%45));
+// DEFAULT-NEXT:                 call<void, signature=fn(u32) -> void>(%[[VALUE_tss_delete]], read<u32>(%[[VALUE_key]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         let %52 quick_registered: i32 [storage=automatic] = call<i32, signature=fn(ptr<fn() -> void>) -> i32>(%7, function_decay<ptr<fn() -> void>>(%42));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%67)), read<i32>(%48), read<i32>(%49), read<i32>(%47), read<i32>(%36), read<i32>(%51), read<i32>(%52));
+// DEFAULT-NEXT:         let %[[VALUE_quick_registered:[0-9]+]] quick_registered: i32 [storage=automatic] = call<i32, signature=fn(ptr<fn() -> void>) -> i32>(%[[VALUE_at_quick_exit]], function_decay<ptr<fn() -> void>>(%[[VALUE_quick_handler]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_thrd_busy]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%[[VALUE_str]])), read<i32>(%[[VALUE_thread_created]]), read<i32>(%[[VALUE_thread_joined]]), read<i32>(%[[VALUE_thread_result]]), read<i32>(%[[VALUE_once_total]]), read<i32>(%[[VALUE_key_created]]), read<i32>(%[[VALUE_quick_registered]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

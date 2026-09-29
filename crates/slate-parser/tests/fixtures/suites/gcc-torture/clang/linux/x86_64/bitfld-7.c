@@ -46,13 +46,13 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 a: const i32;
 // DEFAULT-NEXT:         field1 b: u32 : 24;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0], bit_offsets=[None, Some(0)], bit_units=[(0, 3)], field_units=[None, Some(0)]];
-// DEFAULT-NEXT:     global %1 u: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(305419896)) [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         return sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..3, bits=0..24>(%1))), const<i32>(3430008));
+// DEFAULT-NEXT:     global %[[VALUE_u:[0-9]+]] u: @type[[TYPE_U]] [storage=static] = aggregate<@type[[TYPE_U]], zero_fill=false>(field0 = const<i32>(305419896)) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         return sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..3, bits=0..24>(%[[VALUE_u]]))), const<i32>(3430008));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

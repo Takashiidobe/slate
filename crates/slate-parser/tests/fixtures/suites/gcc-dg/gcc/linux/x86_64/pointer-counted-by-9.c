@@ -110,76 +110,76 @@ int main(int argc, char *argv[])
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     type @type1 uintptr_t = u64;
-// DEFAULT-NEXT:     type @type2 annotated = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_uintptr_t:[0-9]+]] uintptr_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_annotated:[0-9]+]] annotated = struct {
 // DEFAULT-NEXT:         field0 b: i32;
 // DEFAULT-NEXT:         field1 c: ptr<i8>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type3 flex = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_flex:[0-9]+]] flex = struct {
 // DEFAULT-NEXT:         field0 b: i32;
 // DEFAULT-NEXT:         field1 c: ptr<i8>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type4 nested_annotated = struct {
-// DEFAULT-NEXT:         field0 <anonymous>: @type5;
+// DEFAULT-NEXT:     type @type[[TYPE_nested_annotated:[0-9]+]] nested_annotated = struct {
+// DEFAULT-NEXT:         field0 <anonymous>: @type[[TYPE0:[0-9]+]];
 // DEFAULT-NEXT:         field1 c: ptr<i8>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type5 = struct {
-// DEFAULT-NEXT:         field0 <anonymous>: @type6;
+// DEFAULT-NEXT:     type @type[[TYPE0]] = struct {
+// DEFAULT-NEXT:         field0 <anonymous>: @type[[TYPE1:[0-9]+]];
 // DEFAULT-NEXT:         field1 n: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type6 = union {
+// DEFAULT-NEXT:     type @type[[TYPE1]] = union {
 // DEFAULT-NEXT:         field0 b: i32;
 // DEFAULT-NEXT:         field1 f: f32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type7 nested_flex = struct {
-// DEFAULT-NEXT:         field0 <anonymous>: @type8;
+// DEFAULT-NEXT:     type @type[[TYPE_nested_flex:[0-9]+]] nested_flex = struct {
+// DEFAULT-NEXT:         field0 <anonymous>: @type[[TYPE2:[0-9]+]];
 // DEFAULT-NEXT:         field1 c: ptr<i8>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type8 = struct {
-// DEFAULT-NEXT:         field0 <anonymous>: @type9;
+// DEFAULT-NEXT:     type @type[[TYPE2]] = struct {
+// DEFAULT-NEXT:         field0 <anonymous>: @type[[TYPE3:[0-9]+]];
 // DEFAULT-NEXT:         field1 n: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type9 = union {
+// DEFAULT-NEXT:     type @type[[TYPE3]] = union {
 // DEFAULT-NEXT:         field0 b: i32;
 // DEFAULT-NEXT:         field1 f: f32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     global %6 p_annotated: ptr<@type2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 p_nested_annotated: ptr<@type4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @malloc(%24 __size: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %15 @setup(%16 normal_count: i32, %17 attr_count: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<@type2>>(%6, pointer_cast<ptr<@type2>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, const<u64>(16))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type2>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, const<u64>(16)));
-// DEFAULT-NEXT:         write<ptr<i8>>(field1(deref(read<ptr<@type2>>(%6))), pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%17)))))));
-// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%17))))));
-// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type2>>(%6))), read<i32>(%17));
-// DEFAULT-NEXT:         write<ptr<@type4>>(%11, pointer_cast<ptr<@type4>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, const<u64>(16))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type4>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, const<u64>(16)));
-// DEFAULT-NEXT:         write<ptr<i8>>(field1(deref(read<ptr<@type4>>(%11))), pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%17))), const<u64>(1)))));
-// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%2, mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%17))), const<u64>(1))));
-// DEFAULT-NEXT:         write<i32>(field0(field0(field0(deref(read<ptr<@type4>>(%11))))), read<i32>(%17));
+// DEFAULT-NEXT:     global %[[VALUE_p_annotated:[0-9]+]] p_annotated: ptr<@type[[TYPE_annotated]]> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p_nested_annotated:[0-9]+]] p_nested_annotated: ptr<@type[[TYPE_nested_annotated]]> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_setup:[0-9]+]] @setup(%[[VALUE_normal_count:[0-9]+]] normal_count: i32, %[[VALUE_attr_count:[0-9]+]] attr_count: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_annotated]]>>(%[[VALUE_p_annotated]], pointer_cast<ptr<@type[[TYPE_annotated]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(16))));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_annotated]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(16)));
+// DEFAULT-NEXT:         write<ptr<i8>>(field1(deref(read<ptr<@type[[TYPE_annotated]]>>(%[[VALUE_p_annotated]]))), pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_attr_count]])))))));
+// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_attr_count]]))))));
+// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_annotated]]>>(%[[VALUE_p_annotated]]))), read<i32>(%[[VALUE_attr_count]]));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_nested_annotated]]>>(%[[VALUE_p_nested_annotated]], pointer_cast<ptr<@type[[TYPE_nested_annotated]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(16))));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_nested_annotated]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(16)));
+// DEFAULT-NEXT:         write<ptr<i8>>(field1(deref(read<ptr<@type[[TYPE_nested_annotated]]>>(%[[VALUE_p_nested_annotated]]))), pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_attr_count]]))), const<u64>(1)))));
+// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_attr_count]]))), const<u64>(1))));
+// DEFAULT-NEXT:         write<i32>(field0(field0(field0(deref(read<ptr<@type[[TYPE_nested_annotated]]>>(%[[VALUE_p_nested_annotated]]))))), read<i32>(%[[VALUE_attr_count]]));
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @test(%19 a: i8, %20 b: i8) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_a:[0-9]+]] a: i8, %[[VALUE_b:[0-9]+]] b: i8) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(8), const<u64>(8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(8), const<u64>(8))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(1), const<u64>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(1), const<u64>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
-// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field1(deref(read<ptr<@type2>>(%6)))), const<i32>(2))), read<i8>(%19));
-// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field1(deref(read<ptr<@type4>>(%11)))), const<i32>(3))), read<i8>(%20));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field1(deref(read<ptr<@type[[TYPE_annotated]]>>(%[[VALUE_p_annotated]])))), const<i32>(2))), read<i8>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field1(deref(read<ptr<@type[[TYPE_nested_annotated]]>>(%[[VALUE_p_nested_annotated]])))), const<i32>(3))), read<i8>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @main(%22 argc: i32, %23 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%15, const<i32>(10), const<i32>(10));
-// DEFAULT-NEXT:         call<void, signature=fn(i8, i8) -> void>(%18, truncate<i8, reason=arg, fits=always>(const<i32>(65)), truncate<i8, reason=arg, fits=always>(const<i32>(66)));
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field1(deref(read<ptr<@type2>>(%6)))), const<i32>(2))))), const<i32>(65))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field1(deref(read<ptr<@type4>>(%11)))), const<i32>(3))))), const<i32>(66))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32) -> void>(%[[VALUE_setup]], const<i32>(10), const<i32>(10));
+// DEFAULT-NEXT:         call<void, signature=fn(i8, i8) -> void>(%[[VALUE_test]], truncate<i8, reason=arg, fits=always>(const<i32>(65)), truncate<i8, reason=arg, fits=always>(const<i32>(66)));
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field1(deref(read<ptr<@type[[TYPE_annotated]]>>(%[[VALUE_p_annotated]])))), const<i32>(2))))), const<i32>(65))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field1(deref(read<ptr<@type[[TYPE_nested_annotated]]>>(%[[VALUE_p_nested_annotated]])))), const<i32>(3))))), const<i32>(66))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

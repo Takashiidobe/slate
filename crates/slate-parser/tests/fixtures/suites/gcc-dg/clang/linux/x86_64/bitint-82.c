@@ -43,12 +43,12 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 i: i135b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 ret: ptr<void> [storage=automatic] = null<ptr<void>>;
-// DEFAULT-NEXT:         if ne<i135b>(and<i135b>(read<i135b>(%0), widen<i135b, reason=usual_arith>(const<i32>(1))), const<i135b>(0))
-// DEFAULT-NEXT:             write<ptr<void>>(%2, int_to_ptr<ptr<void>, reason=explicit>(const<i32>(1)));
-// DEFAULT-NEXT:         return read<ptr<void>>(%2);
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i135b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_ret:[0-9]+]] ret: ptr<void> [storage=automatic] = null<ptr<void>>;
+// DEFAULT-NEXT:         if ne<i135b>(and<i135b>(read<i135b>(%[[VALUE_i]]), widen<i135b, reason=usual_arith>(const<i32>(1))), const<i135b>(0))
+// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_ret]], int_to_ptr<ptr<void>, reason=explicit>(const<i32>(1)));
+// DEFAULT-NEXT:         return read<ptr<void>>(%[[VALUE_ret]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

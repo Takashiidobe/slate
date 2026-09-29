@@ -48,17 +48,17 @@ test2 (int len)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @my_alloc1(%12 len: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @my_alloc2(%13 len: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @test1(%5 len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %7 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(%1, read<i32>(%5));
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%7)), widen<i64, reason=usual_arith>(const<i32>(31))));
+// DEFAULT-NEXT:     fn %[[VALUE_my_alloc1:[0-9]+]] @my_alloc1(%[[VALUE_len:[0-9]+]] len: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_my_alloc2:[0-9]+]] @my_alloc2(%[[VALUE_len_2:[0-9]+]] len: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_len_3:[0-9]+]] len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(%[[VALUE_my_alloc1]], read<i32>(%[[VALUE_len_3]]));
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%[[VALUE_p]])), widen<i64, reason=usual_arith>(const<i32>(31))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @test2(%9 len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %11 p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(%3, read<i32>(%9));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i64>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%11)), widen<i64, reason=usual_arith>(const<i32>(31))), widen<i64, reason=usual_arith>(const<i32>(4))));
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_len_4:[0-9]+]] len: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<i8> [storage=automatic] = call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(%[[VALUE_my_alloc2]], read<i32>(%[[VALUE_len_4]]));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i64>(and<i64>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%[[VALUE_p_2]])), widen<i64, reason=usual_arith>(const<i32>(31))), widen<i64, reason=usual_arith>(const<i32>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

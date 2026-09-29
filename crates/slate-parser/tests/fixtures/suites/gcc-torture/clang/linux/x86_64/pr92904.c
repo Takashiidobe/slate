@@ -618,2483 +618,2483 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 va_list = va_list;
-// DEFAULT-NEXT:     type @type1 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 a: i64;
 // DEFAULT-NEXT:         field1 b: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type2 T = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = struct {
 // DEFAULT-NEXT:         field0 a: i64;
 // DEFAULT-NEXT:         field1 b: i64;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type3 U = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_U:[0-9]+]] U = struct {
 // DEFAULT-NEXT:         field0 a: f64;
 // DEFAULT-NEXT:         field1 b: f64;
 // DEFAULT-NEXT:         field2 c: f64;
 // DEFAULT-NEXT:         field3 d: f64;
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 16, 24]];
-// DEFAULT-NEXT:     type @type4 V = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_V:[0-9]+]] V = struct {
 // DEFAULT-NEXT:         field0 a: f64;
 // DEFAULT-NEXT:         field1 b: f64;
 // DEFAULT-NEXT:         field2 c: f64;
 // DEFAULT-NEXT:         field3 d: f64;
 // DEFAULT-NEXT:     } [size=32, align=32, offsets=[0, 8, 16, 24]];
-// DEFAULT-NEXT:     type @type5 W = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_W:[0-9]+]] W = struct {
 // DEFAULT-NEXT:         field0 a: f64;
 // DEFAULT-NEXT:         field1 b: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type6 X = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_X:[0-9]+]] X = struct {
 // DEFAULT-NEXT:         field0 a: f64;
 // DEFAULT-NEXT:         field1 b: i64;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type7 Y = union {
+// DEFAULT-NEXT:     type @type[[TYPE_Y:[0-9]+]] Y = union {
 // DEFAULT-NEXT:         field0 b: i128;
-// DEFAULT-NEXT:         field1 c: @type1;
-// DEFAULT-NEXT:         field2 d: @type2;
-// DEFAULT-NEXT:         field3 e: @type3;
-// DEFAULT-NEXT:         field4 f: @type4;
-// DEFAULT-NEXT:         field5 g: @type5;
-// DEFAULT-NEXT:         field6 h: @type6;
+// DEFAULT-NEXT:         field1 c: @type[[TYPE_S]];
+// DEFAULT-NEXT:         field2 d: @type[[TYPE_T]];
+// DEFAULT-NEXT:         field3 e: @type[[TYPE_U]];
+// DEFAULT-NEXT:         field4 f: @type[[TYPE_V]];
+// DEFAULT-NEXT:         field5 g: @type[[TYPE_W]];
+// DEFAULT-NEXT:         field6 h: @type[[TYPE_X]];
 // DEFAULT-NEXT:     } [size=32, align=32, offsets=[0, 0, 0, 0, 0, 0, 0]];
-// DEFAULT-NEXT:     global %7 b: i128 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 c: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 d: @type2 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 e: @type3 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 f: @type4 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %12 g: @type5 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %13 h: @type6 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %14 @f1(%15 x: i32, ...) -> i128 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %16 r: i128 [storage=automatic];
-// DEFAULT-NEXT:         let %17 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%17);
-// DEFAULT-NEXT:         while %67 {
-// DEFAULT-NEXT:             let %222: i32 [synthetic] = read<i32>(%15);
-// DEFAULT-NEXT:             let %223: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%222), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%15, read<i32>(%223));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%222), const<i32>(0));
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i128 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: @type[[TYPE_S]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: @type[[TYPE_T]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: @type[[TYPE_U]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: @type[[TYPE_V]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: @type[[TYPE_W]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_h:[0-9]+]] h: @type[[TYPE_X]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_x:[0-9]+]] x: i32, ...) -> i128 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i128 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE1]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             va_arg<i32>(%17);
-// DEFAULT-NEXT:         write<i128>(%16, va_arg<i128>(%17));
-// DEFAULT-NEXT:         va_arg<i128>(%17);
-// DEFAULT-NEXT:         va_end(%17);
-// DEFAULT-NEXT:         return read<i128>(%16);
+// DEFAULT-NEXT:             va_arg<i32>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         write<i128>(%[[VALUE_r]], va_arg<i128>(%[[VALUE_ap]]));
+// DEFAULT-NEXT:         va_arg<i128>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         return read<i128>(%[[VALUE_r]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @f2(%19 x: i32, ...) -> @type1 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %20 r: @type1 [storage=automatic];
-// DEFAULT-NEXT:         let %21 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%21);
-// DEFAULT-NEXT:         while %68 {
-// DEFAULT-NEXT:             let %224: i32 [synthetic] = read<i32>(%19);
-// DEFAULT-NEXT:             let %225: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%224), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%19, read<i32>(%225));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%224), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_x_2:[0-9]+]] x: i32, ...) -> @type[[TYPE_S]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: @type[[TYPE_S]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
+// DEFAULT-NEXT:         while %[[VALUE3:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_2]]);
+// DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_2]], read<i32>(%[[VALUE5]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE4]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             va_arg<i32>(%21);
-// DEFAULT-NEXT:         write<@type1>(%20, copy<@type1, reason=assign>(va_arg<@type1>(%21)));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(va_arg<@type1>(%21));
-// DEFAULT-NEXT:         va_end(%21);
-// DEFAULT-NEXT:         return copy<@type1, reason=return>(read<@type1>(%20));
+// DEFAULT-NEXT:             va_arg<i32>(%[[VALUE_ap_2]]);
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_r_2]], copy<@type[[TYPE_S]], reason=assign>(va_arg<@type[[TYPE_S]]>(%[[VALUE_ap_2]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_S]], reason=assign>(va_arg<@type[[TYPE_S]]>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
+// DEFAULT-NEXT:         return copy<@type[[TYPE_S]], reason=return>(read<@type[[TYPE_S]]>(%[[VALUE_r_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @f3(%23 x: i32, ...) -> @type2 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %24 r: @type2 [storage=automatic];
-// DEFAULT-NEXT:         let %25 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%25);
-// DEFAULT-NEXT:         while %69 {
-// DEFAULT-NEXT:             let %226: i32 [synthetic] = read<i32>(%23);
-// DEFAULT-NEXT:             let %227: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%226), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%23, read<i32>(%227));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%226), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_x_3:[0-9]+]] x: i32, ...) -> @type[[TYPE_T]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r_3:[0-9]+]] r: @type[[TYPE_T]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_3]]);
+// DEFAULT-NEXT:         while %[[VALUE6:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_3]]);
+// DEFAULT-NEXT:             let %[[VALUE8:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE7]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_3]], read<i32>(%[[VALUE8]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE7]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             va_arg<i32>(%25);
-// DEFAULT-NEXT:         write<@type2>(%24, copy<@type2, reason=assign>(va_arg<@type2>(%25)));
-// DEFAULT-NEXT:         copy<@type2, reason=assign>(va_arg<@type2>(%25));
-// DEFAULT-NEXT:         va_end(%25);
-// DEFAULT-NEXT:         return copy<@type2, reason=return>(read<@type2>(%24));
+// DEFAULT-NEXT:             va_arg<i32>(%[[VALUE_ap_3]]);
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(%[[VALUE_r_3]], copy<@type[[TYPE_T]], reason=assign>(va_arg<@type[[TYPE_T]]>(%[[VALUE_ap_3]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_T]], reason=assign>(va_arg<@type[[TYPE_T]]>(%[[VALUE_ap_3]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_3]]);
+// DEFAULT-NEXT:         return copy<@type[[TYPE_T]], reason=return>(read<@type[[TYPE_T]]>(%[[VALUE_r_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @f4(%27 x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %28 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%28);
-// DEFAULT-NEXT:         while %70 {
-// DEFAULT-NEXT:             let %228: i32 [synthetic] = read<i32>(%27);
-// DEFAULT-NEXT:             let %229: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%228), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%27, read<i32>(%229));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%228), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_x_4:[0-9]+]] x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_4]]);
+// DEFAULT-NEXT:         while %[[VALUE9:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE10:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_4]]);
+// DEFAULT-NEXT:             let %[[VALUE11:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE10]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_4]], read<i32>(%[[VALUE11]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE10]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             va_arg<i32>(%28);
-// DEFAULT-NEXT:         write<i128>(%7, va_arg<i128>(%28));
-// DEFAULT-NEXT:         va_arg<i128>(%28);
-// DEFAULT-NEXT:         va_end(%28);
+// DEFAULT-NEXT:             va_arg<i32>(%[[VALUE_ap_4]]);
+// DEFAULT-NEXT:         write<i128>(%[[VALUE_b]], va_arg<i128>(%[[VALUE_ap_4]]));
+// DEFAULT-NEXT:         va_arg<i128>(%[[VALUE_ap_4]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @f5(%30 x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %31 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%31);
-// DEFAULT-NEXT:         while %71 {
-// DEFAULT-NEXT:             let %230: i32 [synthetic] = read<i32>(%30);
-// DEFAULT-NEXT:             let %231: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%230), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%30, read<i32>(%231));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%230), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE_x_5:[0-9]+]] x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_5:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_5]]);
+// DEFAULT-NEXT:         while %[[VALUE12:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE13:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_5]]);
+// DEFAULT-NEXT:             let %[[VALUE14:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE13]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_5]], read<i32>(%[[VALUE14]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE13]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             va_arg<i32>(%31);
-// DEFAULT-NEXT:         write<@type1>(%8, copy<@type1, reason=assign>(va_arg<@type1>(%31)));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(va_arg<@type1>(%31));
-// DEFAULT-NEXT:         va_end(%31);
+// DEFAULT-NEXT:             va_arg<i32>(%[[VALUE_ap_5]]);
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_c]], copy<@type[[TYPE_S]], reason=assign>(va_arg<@type[[TYPE_S]]>(%[[VALUE_ap_5]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_S]], reason=assign>(va_arg<@type[[TYPE_S]]>(%[[VALUE_ap_5]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @f6(%33 x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %34 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%34);
-// DEFAULT-NEXT:         while %72 {
-// DEFAULT-NEXT:             let %232: i32 [synthetic] = read<i32>(%33);
-// DEFAULT-NEXT:             let %233: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%232), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%33, read<i32>(%233));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%232), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(%[[VALUE_x_6:[0-9]+]] x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_6:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_6]]);
+// DEFAULT-NEXT:         while %[[VALUE15:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE16:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_6]]);
+// DEFAULT-NEXT:             let %[[VALUE17:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE16]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_6]], read<i32>(%[[VALUE17]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE16]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             va_arg<i32>(%34);
-// DEFAULT-NEXT:         write<@type2>(%9, copy<@type2, reason=assign>(va_arg<@type2>(%34)));
-// DEFAULT-NEXT:         copy<@type2, reason=assign>(va_arg<@type2>(%34));
-// DEFAULT-NEXT:         va_end(%34);
+// DEFAULT-NEXT:             va_arg<i32>(%[[VALUE_ap_6]]);
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(%[[VALUE_d]], copy<@type[[TYPE_T]], reason=assign>(va_arg<@type[[TYPE_T]]>(%[[VALUE_ap_6]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_T]], reason=assign>(va_arg<@type[[TYPE_T]]>(%[[VALUE_ap_6]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_6]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %35 @f7(%36 x: i32, ...) -> @type3 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %37 r: @type3 [storage=automatic];
-// DEFAULT-NEXT:         let %38 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%38);
-// DEFAULT-NEXT:         while %73 {
-// DEFAULT-NEXT:             let %234: i32 [synthetic] = read<i32>(%36);
-// DEFAULT-NEXT:             let %235: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%234), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%36, read<i32>(%235));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%234), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_x_7:[0-9]+]] x: i32, ...) -> @type[[TYPE_U]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r_4:[0-9]+]] r: @type[[TYPE_U]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_7:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_7]]);
+// DEFAULT-NEXT:         while %[[VALUE18:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE19:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_7]]);
+// DEFAULT-NEXT:             let %[[VALUE20:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE19]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_7]], read<i32>(%[[VALUE20]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE19]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             va_arg<f64>(%38);
-// DEFAULT-NEXT:         write<@type3>(%37, copy<@type3, reason=assign>(va_arg<@type3>(%38)));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(va_arg<@type3>(%38));
-// DEFAULT-NEXT:         va_end(%38);
-// DEFAULT-NEXT:         return copy<@type3, reason=return>(read<@type3>(%37));
+// DEFAULT-NEXT:             va_arg<f64>(%[[VALUE_ap_7]]);
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(%[[VALUE_r_4]], copy<@type[[TYPE_U]], reason=assign>(va_arg<@type[[TYPE_U]]>(%[[VALUE_ap_7]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_U]], reason=assign>(va_arg<@type[[TYPE_U]]>(%[[VALUE_ap_7]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_7]]);
+// DEFAULT-NEXT:         return copy<@type[[TYPE_U]], reason=return>(read<@type[[TYPE_U]]>(%[[VALUE_r_4]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %39 @f8(%40 x: i32, ...) -> @type4 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %41 r: @type4 [storage=automatic];
-// DEFAULT-NEXT:         let %42 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%42);
-// DEFAULT-NEXT:         while %74 {
-// DEFAULT-NEXT:             let %236: i32 [synthetic] = read<i32>(%40);
-// DEFAULT-NEXT:             let %237: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%236), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%40, read<i32>(%237));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%236), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_x_8:[0-9]+]] x: i32, ...) -> @type[[TYPE_V]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r_5:[0-9]+]] r: @type[[TYPE_V]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_8:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_8]]);
+// DEFAULT-NEXT:         while %[[VALUE21:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE22:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_8]]);
+// DEFAULT-NEXT:             let %[[VALUE23:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE22]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_8]], read<i32>(%[[VALUE23]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE22]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             va_arg<f64>(%42);
-// DEFAULT-NEXT:         write<@type4>(%41, copy<@type4, reason=assign>(va_arg<@type4>(%42)));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(va_arg<@type4>(%42));
-// DEFAULT-NEXT:         va_end(%42);
-// DEFAULT-NEXT:         return copy<@type4, reason=return>(read<@type4>(%41));
+// DEFAULT-NEXT:             va_arg<f64>(%[[VALUE_ap_8]]);
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(%[[VALUE_r_5]], copy<@type[[TYPE_V]], reason=assign>(va_arg<@type[[TYPE_V]]>(%[[VALUE_ap_8]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_V]], reason=assign>(va_arg<@type[[TYPE_V]]>(%[[VALUE_ap_8]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_8]]);
+// DEFAULT-NEXT:         return copy<@type[[TYPE_V]], reason=return>(read<@type[[TYPE_V]]>(%[[VALUE_r_5]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %43 @f9(%44 x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %45 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%45);
-// DEFAULT-NEXT:         while %75 {
-// DEFAULT-NEXT:             let %238: i32 [synthetic] = read<i32>(%44);
-// DEFAULT-NEXT:             let %239: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%238), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%44, read<i32>(%239));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%238), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f9:[0-9]+]] @f9(%[[VALUE_x_9:[0-9]+]] x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_9:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_9]]);
+// DEFAULT-NEXT:         while %[[VALUE24:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE25:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_9]]);
+// DEFAULT-NEXT:             let %[[VALUE26:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE25]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_9]], read<i32>(%[[VALUE26]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE25]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             va_arg<f64>(%45);
-// DEFAULT-NEXT:         write<@type3>(%10, copy<@type3, reason=assign>(va_arg<@type3>(%45)));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(va_arg<@type3>(%45));
-// DEFAULT-NEXT:         va_end(%45);
+// DEFAULT-NEXT:             va_arg<f64>(%[[VALUE_ap_9]]);
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(%[[VALUE_e]], copy<@type[[TYPE_U]], reason=assign>(va_arg<@type[[TYPE_U]]>(%[[VALUE_ap_9]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_U]], reason=assign>(va_arg<@type[[TYPE_U]]>(%[[VALUE_ap_9]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_9]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %46 @f10(%47 x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %48 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%48);
-// DEFAULT-NEXT:         while %76 {
-// DEFAULT-NEXT:             let %240: i32 [synthetic] = read<i32>(%47);
-// DEFAULT-NEXT:             let %241: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%240), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%47, read<i32>(%241));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%240), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f10:[0-9]+]] @f10(%[[VALUE_x_10:[0-9]+]] x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_10:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_10]]);
+// DEFAULT-NEXT:         while %[[VALUE27:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE28:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_10]]);
+// DEFAULT-NEXT:             let %[[VALUE29:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE28]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_10]], read<i32>(%[[VALUE29]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE28]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             va_arg<f64>(%48);
-// DEFAULT-NEXT:         write<@type4>(%11, copy<@type4, reason=assign>(va_arg<@type4>(%48)));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(va_arg<@type4>(%48));
-// DEFAULT-NEXT:         va_end(%48);
+// DEFAULT-NEXT:             va_arg<f64>(%[[VALUE_ap_10]]);
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(%[[VALUE_f]], copy<@type[[TYPE_V]], reason=assign>(va_arg<@type[[TYPE_V]]>(%[[VALUE_ap_10]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_V]], reason=assign>(va_arg<@type[[TYPE_V]]>(%[[VALUE_ap_10]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_10]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %49 @f11(%50 x: i32, ...) -> @type5 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %51 r: @type5 [storage=automatic];
-// DEFAULT-NEXT:         let %52 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%52);
-// DEFAULT-NEXT:         while %77 {
-// DEFAULT-NEXT:             let %242: i32 [synthetic] = read<i32>(%50);
-// DEFAULT-NEXT:             let %243: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%242), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%50, read<i32>(%243));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%242), const<i32>(0));
-// DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 va_arg<i32>(%52);
-// DEFAULT-NEXT:                 va_arg<f64>(%52);
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<@type5>(%51, copy<@type5, reason=assign>(va_arg<@type5>(%52)));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(va_arg<@type5>(%52));
-// DEFAULT-NEXT:         va_end(%52);
-// DEFAULT-NEXT:         return copy<@type5, reason=return>(read<@type5>(%51));
-// DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %53 @f12(%54 x: i32, ...) -> @type6 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %55 r: @type6 [storage=automatic];
-// DEFAULT-NEXT:         let %56 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%56);
-// DEFAULT-NEXT:         while %78 {
-// DEFAULT-NEXT:             let %244: i32 [synthetic] = read<i32>(%54);
-// DEFAULT-NEXT:             let %245: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%244), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%54, read<i32>(%245));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%244), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f11:[0-9]+]] @f11(%[[VALUE_x_11:[0-9]+]] x: i32, ...) -> @type[[TYPE_W]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r_6:[0-9]+]] r: @type[[TYPE_W]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_11:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_11]]);
+// DEFAULT-NEXT:         while %[[VALUE30:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE31:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_11]]);
+// DEFAULT-NEXT:             let %[[VALUE32:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE31]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_11]], read<i32>(%[[VALUE32]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE31]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 va_arg<i32>(%56);
-// DEFAULT-NEXT:                 va_arg<f64>(%56);
+// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_11]]);
+// DEFAULT-NEXT:                 va_arg<f64>(%[[VALUE_ap_11]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<@type6>(%55, copy<@type6, reason=assign>(va_arg<@type6>(%56)));
-// DEFAULT-NEXT:         copy<@type6, reason=assign>(va_arg<@type6>(%56));
-// DEFAULT-NEXT:         va_end(%56);
-// DEFAULT-NEXT:         return copy<@type6, reason=return>(read<@type6>(%55));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(%[[VALUE_r_6]], copy<@type[[TYPE_W]], reason=assign>(va_arg<@type[[TYPE_W]]>(%[[VALUE_ap_11]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_W]], reason=assign>(va_arg<@type[[TYPE_W]]>(%[[VALUE_ap_11]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_11]]);
+// DEFAULT-NEXT:         return copy<@type[[TYPE_W]], reason=return>(read<@type[[TYPE_W]]>(%[[VALUE_r_6]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %57 @f13(%58 x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %59 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%59);
-// DEFAULT-NEXT:         while %79 {
-// DEFAULT-NEXT:             let %246: i32 [synthetic] = read<i32>(%58);
-// DEFAULT-NEXT:             let %247: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%246), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%58, read<i32>(%247));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%246), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f12:[0-9]+]] @f12(%[[VALUE_x_12:[0-9]+]] x: i32, ...) -> @type[[TYPE_X]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r_7:[0-9]+]] r: @type[[TYPE_X]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ap_12:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_12]]);
+// DEFAULT-NEXT:         while %[[VALUE33:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE34:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_12]]);
+// DEFAULT-NEXT:             let %[[VALUE35:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE34]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_12]], read<i32>(%[[VALUE35]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE34]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 va_arg<i32>(%59);
-// DEFAULT-NEXT:                 va_arg<f64>(%59);
+// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_12]]);
+// DEFAULT-NEXT:                 va_arg<f64>(%[[VALUE_ap_12]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<@type5>(%12, copy<@type5, reason=assign>(va_arg<@type5>(%59)));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(va_arg<@type5>(%59));
-// DEFAULT-NEXT:         va_end(%59);
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(%[[VALUE_r_7]], copy<@type[[TYPE_X]], reason=assign>(va_arg<@type[[TYPE_X]]>(%[[VALUE_ap_12]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_X]], reason=assign>(va_arg<@type[[TYPE_X]]>(%[[VALUE_ap_12]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_12]]);
+// DEFAULT-NEXT:         return copy<@type[[TYPE_X]], reason=return>(read<@type[[TYPE_X]]>(%[[VALUE_r_7]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %60 @f14(%61 x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %62 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%62);
-// DEFAULT-NEXT:         while %80 {
-// DEFAULT-NEXT:             let %248: i32 [synthetic] = read<i32>(%61);
-// DEFAULT-NEXT:             let %249: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%248), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%61, read<i32>(%249));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%248), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_f13:[0-9]+]] @f13(%[[VALUE_x_13:[0-9]+]] x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_13:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_13]]);
+// DEFAULT-NEXT:         while %[[VALUE36:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE37:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_13]]);
+// DEFAULT-NEXT:             let %[[VALUE38:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE37]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_13]], read<i32>(%[[VALUE38]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE37]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 va_arg<i32>(%62);
-// DEFAULT-NEXT:                 va_arg<f64>(%62);
+// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_13]]);
+// DEFAULT-NEXT:                 va_arg<f64>(%[[VALUE_ap_13]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<@type6>(%13, copy<@type6, reason=assign>(va_arg<@type6>(%62)));
-// DEFAULT-NEXT:         copy<@type6, reason=assign>(va_arg<@type6>(%62));
-// DEFAULT-NEXT:         va_end(%62);
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(%[[VALUE_g]], copy<@type[[TYPE_W]], reason=assign>(va_arg<@type[[TYPE_W]]>(%[[VALUE_ap_13]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_W]], reason=assign>(va_arg<@type[[TYPE_W]]>(%[[VALUE_ap_13]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_13]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %82 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %63 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %65 u: @type7 [storage=automatic];
-// DEFAULT-NEXT:         let %66 v: @type7 [storage=automatic];
-// DEFAULT-NEXT:         write<i64>(field0(field1(%65)), reinterpret<i64, reason=assign, fits=always>(const<u64>(6148914691236517205)));
-// DEFAULT-NEXT:         write<i64>(field1(field1(%65)), reinterpret<i64, reason=assign, fits=unknown>(const<u64>(12297829382473034410)));
-// DEFAULT-NEXT:         write<i128>(field0(%66), call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(0), read<i128>(field0(%65))));
-// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         do %81
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %250: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %251: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%250), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%251));
-// DEFAULT-NEXT:                 let %252: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %253: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%252), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%253));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<i128>(field0(%66), call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(1), const<i32>(0), read<i128>(field0(%65))));
-// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(1), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         do %83
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %254: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %255: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%254), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%255));
-// DEFAULT-NEXT:                 let %256: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %257: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%256), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%257));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<i128>(field0(%66), call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(2), const<i32>(0), const<i32>(0), read<i128>(field0(%65))));
-// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(2), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         do %84
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %258: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %259: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%258), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%259));
-// DEFAULT-NEXT:                 let %260: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %261: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%260), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%261));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<i128>(field0(%66), call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65))));
-// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         do %85
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %262: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %263: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%262), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%263));
-// DEFAULT-NEXT:                 let %264: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %265: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%264), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%265));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<i128>(field0(%66), call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65))));
-// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         do %86
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %266: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %267: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%266), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%267));
-// DEFAULT-NEXT:                 let %268: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %269: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%268), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%269));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<i128>(field0(%66), call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65))));
-// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         do %87
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %270: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %271: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%270), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%271));
-// DEFAULT-NEXT:                 let %272: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %273: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%272), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%273));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<i128>(field0(%66), call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65))));
-// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         do %88
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %274: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %275: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%274), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%275));
-// DEFAULT-NEXT:                 let %276: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %277: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%276), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%277));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<i128>(field0(%66), call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65))));
-// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         do %89
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %278: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %279: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%278), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%279));
-// DEFAULT-NEXT:                 let %280: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %281: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%280), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%281));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<i128>(field0(%66), call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65))));
-// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         do %90
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %282: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %283: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%282), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%283));
-// DEFAULT-NEXT:                 let %284: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %285: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%284), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%285));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<i128>(field0(%66), call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65))));
-// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%14, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         do %91
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %286: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %287: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%286), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%287));
-// DEFAULT-NEXT:                 let %288: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %289: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%288), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%289));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, native_c) -> native_c>(%18, const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, native_c) -> native_c>(%18, const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
-// DEFAULT-NEXT:         do %92
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %290: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %291: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%290), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%291));
-// DEFAULT-NEXT:                 let %292: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %293: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%292), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%293));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, native_c) -> native_c>(%18, const<i32>(1), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, native_c) -> native_c>(%18, const<i32>(1), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
-// DEFAULT-NEXT:         do %93
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %294: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %295: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%294), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%295));
-// DEFAULT-NEXT:                 let %296: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %297: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%296), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%297));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(2), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(2), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
-// DEFAULT-NEXT:         do %94
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %298: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %299: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%298), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%299));
-// DEFAULT-NEXT:                 let %300: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %301: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%300), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%301));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
-// DEFAULT-NEXT:         do %95
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %302: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %303: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%302), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%303));
-// DEFAULT-NEXT:                 let %304: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %305: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%304), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%305));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
-// DEFAULT-NEXT:         do %96
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %306: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %307: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%306), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%307));
-// DEFAULT-NEXT:                 let %308: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %309: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%308), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%309));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
-// DEFAULT-NEXT:         do %97
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %310: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %311: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%310), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%311));
-// DEFAULT-NEXT:                 let %312: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %313: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%312), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%313));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
-// DEFAULT-NEXT:         do %98
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %314: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %315: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%314), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%315));
-// DEFAULT-NEXT:                 let %316: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %317: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%316), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%317));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
-// DEFAULT-NEXT:         do %99
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %318: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %319: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%318), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%319));
-// DEFAULT-NEXT:                 let %320: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %321: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%320), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%321));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
-// DEFAULT-NEXT:         do %100
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %322: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %323: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%322), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%323));
-// DEFAULT-NEXT:                 let %324: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %325: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%324), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%325));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))))));
-// DEFAULT-NEXT:         copy<@type1, reason=assign>(call<@type1, signature=fn(i32, ...) -> @type1, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%18, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65)))));
-// DEFAULT-NEXT:         do %101
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %326: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %327: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%326), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%327));
-// DEFAULT-NEXT:                 let %328: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %329: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%328), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%329));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, native_c) -> native_c>(%22, const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))))));
-// DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, native_c) -> native_c>(%22, const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65)))));
-// DEFAULT-NEXT:         do %102
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %330: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %331: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%330), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%331));
-// DEFAULT-NEXT:                 let %332: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %333: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%332), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%333));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, native_c) -> native_c>(%22, const<i32>(1), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))))));
-// DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, native_c) -> native_c>(%22, const<i32>(1), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65)))));
-// DEFAULT-NEXT:         do %103
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %334: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %335: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%334), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%335));
-// DEFAULT-NEXT:                 let %336: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %337: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%336), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%337));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(2), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))))));
-// DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(2), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65)))));
-// DEFAULT-NEXT:         do %104
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %338: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %339: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%338), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%339));
-// DEFAULT-NEXT:                 let %340: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %341: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%340), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%341));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))))));
-// DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65)))));
-// DEFAULT-NEXT:         do %105
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %342: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %343: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%342), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%343));
-// DEFAULT-NEXT:                 let %344: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %345: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%344), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%345));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))))));
-// DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65)))));
-// DEFAULT-NEXT:         do %106
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %346: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %347: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%346), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%347));
-// DEFAULT-NEXT:                 let %348: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %349: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%348), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%349));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))))));
-// DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65)))));
-// DEFAULT-NEXT:         do %107
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %350: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %351: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%350), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%351));
-// DEFAULT-NEXT:                 let %352: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %353: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%352), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%353));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))))));
-// DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65)))));
-// DEFAULT-NEXT:         do %108
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %354: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %355: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%354), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%355));
-// DEFAULT-NEXT:                 let %356: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %357: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%356), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%357));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))))));
-// DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65)))));
-// DEFAULT-NEXT:         do %109
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %358: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %359: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%358), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%359));
-// DEFAULT-NEXT:                 let %360: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %361: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%360), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%361));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))))));
-// DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65)))));
-// DEFAULT-NEXT:         do %110
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %362: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %363: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%362), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%363));
-// DEFAULT-NEXT:                 let %364: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %365: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%364), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%365));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))))));
-// DEFAULT-NEXT:         copy<@type2, reason=assign>(call<@type2, signature=fn(i32, ...) -> @type2, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%22, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65)))));
-// DEFAULT-NEXT:         do %111
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %366: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %367: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%366), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%367));
-// DEFAULT-NEXT:                 let %368: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %369: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%368), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%369));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%26, const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         write<i128>(field0(%66), read<i128>(%7));
-// DEFAULT-NEXT:         do %112
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %370: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %371: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%370), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%371));
-// DEFAULT-NEXT:                 let %372: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %373: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%372), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%373));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%26, const<i32>(1), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         write<i128>(field0(%66), read<i128>(%7));
-// DEFAULT-NEXT:         do %113
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %374: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %375: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%374), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%375));
-// DEFAULT-NEXT:                 let %376: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %377: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%376), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%377));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%26, const<i32>(2), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         write<i128>(field0(%66), read<i128>(%7));
-// DEFAULT-NEXT:         do %114
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %378: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %379: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%378), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%379));
-// DEFAULT-NEXT:                 let %380: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %381: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%380), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%381));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%26, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         write<i128>(field0(%66), read<i128>(%7));
-// DEFAULT-NEXT:         do %115
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %382: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %383: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%382), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%383));
-// DEFAULT-NEXT:                 let %384: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %385: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%384), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%385));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%26, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         write<i128>(field0(%66), read<i128>(%7));
-// DEFAULT-NEXT:         do %116
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %386: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %387: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%386), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%387));
-// DEFAULT-NEXT:                 let %388: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %389: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%388), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%389));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%26, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         write<i128>(field0(%66), read<i128>(%7));
-// DEFAULT-NEXT:         do %117
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %390: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %391: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%390), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%391));
-// DEFAULT-NEXT:                 let %392: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %393: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%392), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%393));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%26, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         write<i128>(field0(%66), read<i128>(%7));
-// DEFAULT-NEXT:         do %118
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %394: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %395: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%394), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%395));
-// DEFAULT-NEXT:                 let %396: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %397: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%396), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%397));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%26, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         write<i128>(field0(%66), read<i128>(%7));
-// DEFAULT-NEXT:         do %119
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %398: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %399: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%398), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%399));
-// DEFAULT-NEXT:                 let %400: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %401: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%400), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%401));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%26, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         write<i128>(field0(%66), read<i128>(%7));
-// DEFAULT-NEXT:         do %120
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %402: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %403: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%402), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%403));
-// DEFAULT-NEXT:                 let %404: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %405: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%404), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%405));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%26, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%65)));
-// DEFAULT-NEXT:         write<i128>(field0(%66), read<i128>(%7));
-// DEFAULT-NEXT:         do %121
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %406: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %407: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%406), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%407));
-// DEFAULT-NEXT:                 let %408: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %409: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%408), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%409));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%29, const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
-// DEFAULT-NEXT:         do %122
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %410: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %411: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%410), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%411));
-// DEFAULT-NEXT:                 let %412: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %413: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%412), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%413));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, native_c) -> void>(%29, const<i32>(1), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
-// DEFAULT-NEXT:         do %123
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %414: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %415: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%414), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%415));
-// DEFAULT-NEXT:                 let %416: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %417: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%416), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%417));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(2), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
-// DEFAULT-NEXT:         do %124
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %418: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %419: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%418), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%419));
-// DEFAULT-NEXT:                 let %420: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %421: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%420), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%421));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
-// DEFAULT-NEXT:         do %125
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %422: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %423: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%422), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%423));
-// DEFAULT-NEXT:                 let %424: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %425: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%424), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%425));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
-// DEFAULT-NEXT:         do %126
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %426: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %427: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%426), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%427));
-// DEFAULT-NEXT:                 let %428: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %429: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%428), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%429));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
-// DEFAULT-NEXT:         do %127
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %430: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %431: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%430), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%431));
-// DEFAULT-NEXT:                 let %432: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %433: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%432), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%433));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
-// DEFAULT-NEXT:         do %128
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %434: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %435: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%434), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%435));
-// DEFAULT-NEXT:                 let %436: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %437: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%436), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%437));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
-// DEFAULT-NEXT:         do %129
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %438: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %439: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%438), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%439));
-// DEFAULT-NEXT:                 let %440: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %441: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%440), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%441));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
-// DEFAULT-NEXT:         do %130
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %442: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %443: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%442), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%443));
-// DEFAULT-NEXT:                 let %444: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %445: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%444), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%445));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%29, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type1, reason=vararg>(read<@type1>(field1(%65))));
-// DEFAULT-NEXT:         write<@type1>(field1(%66), copy<@type1, reason=assign>(read<@type1>(%8)));
-// DEFAULT-NEXT:         do %131
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %446: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %447: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%446), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%447));
-// DEFAULT-NEXT:                 let %448: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %449: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%448), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%449));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%32, const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(read<@type2>(%9)));
-// DEFAULT-NEXT:         do %132
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %450: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %451: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%450), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%451));
-// DEFAULT-NEXT:                 let %452: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %453: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%452), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%453));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, native_c) -> void>(%32, const<i32>(1), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(read<@type2>(%9)));
-// DEFAULT-NEXT:         do %133
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %454: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %455: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%454), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%455));
-// DEFAULT-NEXT:                 let %456: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %457: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%456), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%457));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%32, const<i32>(2), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(read<@type2>(%9)));
-// DEFAULT-NEXT:         do %134
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %458: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %459: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%458), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%459));
-// DEFAULT-NEXT:                 let %460: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %461: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%460), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%461));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> void>(%32, const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(read<@type2>(%9)));
-// DEFAULT-NEXT:         do %135
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %462: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %463: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%462), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%463));
-// DEFAULT-NEXT:                 let %464: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %465: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%464), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%465));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%32, const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(read<@type2>(%9)));
-// DEFAULT-NEXT:         do %136
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %466: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %467: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%466), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%467));
-// DEFAULT-NEXT:                 let %468: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %469: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%468), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%469));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%32, const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(read<@type2>(%9)));
-// DEFAULT-NEXT:         do %137
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %470: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %471: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%470), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%471));
-// DEFAULT-NEXT:                 let %472: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %473: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%472), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%473));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%32, const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(read<@type2>(%9)));
-// DEFAULT-NEXT:         do %138
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %474: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %475: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%474), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%475));
-// DEFAULT-NEXT:                 let %476: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %477: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%476), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%477));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%32, const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(read<@type2>(%9)));
-// DEFAULT-NEXT:         do %139
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %478: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %479: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%478), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%479));
-// DEFAULT-NEXT:                 let %480: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %481: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%480), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%481));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%32, const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(read<@type2>(%9)));
-// DEFAULT-NEXT:         do %140
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %482: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %483: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%482), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%483));
-// DEFAULT-NEXT:                 let %484: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %485: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%484), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%485));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%32, const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type2, reason=vararg>(read<@type2>(field2(%65))));
-// DEFAULT-NEXT:         write<@type2>(field2(%66), copy<@type2, reason=assign>(read<@type2>(%9)));
-// DEFAULT-NEXT:         do %141
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%65))), read<i64>(field0(field1(%66)))), ne<i64>(read<i64>(field1(field1(%65))), read<i64>(field1(field1(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %486: i64 [synthetic] = read<i64>(field0(field1(%65)));
-// DEFAULT-NEXT:                 let %487: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%486), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field0(field1(%65)), read<i64>(%487));
-// DEFAULT-NEXT:                 let %488: i64 [synthetic] = read<i64>(field1(field1(%65)));
-// DEFAULT-NEXT:                 let %489: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%488), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(field1(field1(%65)), read<i64>(%489));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<f64>(field0(field3(%65)), const<f64>(1.25));
-// DEFAULT-NEXT:         write<f64>(field1(field3(%65)), const<f64>(2.75));
-// DEFAULT-NEXT:         write<f64>(field2(field3(%65)), neg<f64>(const<f64>(3.5)));
-// DEFAULT-NEXT:         write<f64>(field3(field3(%65)), neg<f64>(const<f64>(2.0)));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, native_c) -> native_c>(%35, const<i32>(0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, native_c) -> native_c>(%35, const<i32>(0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
-// DEFAULT-NEXT:         do %142
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %490: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %491: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%490), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%491));
-// DEFAULT-NEXT:                 let %492: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %493: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%492), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%493));
-// DEFAULT-NEXT:                 let %494: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %495: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%494), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%495));
-// DEFAULT-NEXT:                 let %496: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %497: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%496), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%497));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, native_c) -> native_c>(%35, const<i32>(1), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, native_c) -> native_c>(%35, const<i32>(1), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
-// DEFAULT-NEXT:         do %143
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %498: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %499: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%498), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%499));
-// DEFAULT-NEXT:                 let %500: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %501: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%500), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%501));
-// DEFAULT-NEXT:                 let %502: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %503: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%502), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%503));
-// DEFAULT-NEXT:                 let %504: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %505: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%504), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%505));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
-// DEFAULT-NEXT:         do %144
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %506: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %507: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%506), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%507));
-// DEFAULT-NEXT:                 let %508: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %509: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%508), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%509));
-// DEFAULT-NEXT:                 let %510: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %511: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%510), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%511));
-// DEFAULT-NEXT:                 let %512: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %513: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%512), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%513));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
-// DEFAULT-NEXT:         do %145
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %514: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %515: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%514), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%515));
-// DEFAULT-NEXT:                 let %516: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %517: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%516), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%517));
-// DEFAULT-NEXT:                 let %518: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %519: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%518), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%519));
-// DEFAULT-NEXT:                 let %520: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %521: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%520), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%521));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
-// DEFAULT-NEXT:         do %146
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %522: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %523: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%522), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%523));
-// DEFAULT-NEXT:                 let %524: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %525: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%524), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%525));
-// DEFAULT-NEXT:                 let %526: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %527: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%526), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%527));
-// DEFAULT-NEXT:                 let %528: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %529: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%528), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%529));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
-// DEFAULT-NEXT:         do %147
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %530: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %531: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%530), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%531));
-// DEFAULT-NEXT:                 let %532: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %533: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%532), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%533));
-// DEFAULT-NEXT:                 let %534: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %535: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%534), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%535));
-// DEFAULT-NEXT:                 let %536: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %537: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%536), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%537));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
-// DEFAULT-NEXT:         do %148
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %538: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %539: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%538), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%539));
-// DEFAULT-NEXT:                 let %540: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %541: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%540), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%541));
-// DEFAULT-NEXT:                 let %542: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %543: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%542), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%543));
-// DEFAULT-NEXT:                 let %544: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %545: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%544), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%545));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
-// DEFAULT-NEXT:         do %149
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %546: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %547: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%546), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%547));
-// DEFAULT-NEXT:                 let %548: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %549: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%548), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%549));
-// DEFAULT-NEXT:                 let %550: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %551: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%550), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%551));
-// DEFAULT-NEXT:                 let %552: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %553: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%552), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%553));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
-// DEFAULT-NEXT:         do %150
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %554: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %555: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%554), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%555));
-// DEFAULT-NEXT:                 let %556: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %557: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%556), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%557));
-// DEFAULT-NEXT:                 let %558: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %559: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%558), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%559));
-// DEFAULT-NEXT:                 let %560: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %561: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%560), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%561));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))))));
-// DEFAULT-NEXT:         copy<@type3, reason=assign>(call<@type3, signature=fn(i32, ...) -> @type3, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%35, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65)))));
-// DEFAULT-NEXT:         do %151
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %562: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %563: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%562), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%563));
-// DEFAULT-NEXT:                 let %564: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %565: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%564), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%565));
-// DEFAULT-NEXT:                 let %566: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %567: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%566), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%567));
-// DEFAULT-NEXT:                 let %568: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %569: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%568), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%569));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, native_c) -> native_c>(%39, const<i32>(0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, native_c) -> native_c>(%39, const<i32>(0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
-// DEFAULT-NEXT:         do %152
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %570: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %571: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%570), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%571));
-// DEFAULT-NEXT:                 let %572: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %573: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%572), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%573));
-// DEFAULT-NEXT:                 let %574: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %575: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%574), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%575));
-// DEFAULT-NEXT:                 let %576: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %577: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%576), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%577));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, native_c) -> native_c>(%39, const<i32>(1), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, native_c) -> native_c>(%39, const<i32>(1), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
-// DEFAULT-NEXT:         do %153
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %578: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %579: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%578), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%579));
-// DEFAULT-NEXT:                 let %580: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %581: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%580), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%581));
-// DEFAULT-NEXT:                 let %582: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %583: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%582), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%583));
-// DEFAULT-NEXT:                 let %584: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %585: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%584), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%585));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
-// DEFAULT-NEXT:         do %154
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %586: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %587: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%586), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%587));
-// DEFAULT-NEXT:                 let %588: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %589: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%588), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%589));
-// DEFAULT-NEXT:                 let %590: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %591: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%590), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%591));
-// DEFAULT-NEXT:                 let %592: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %593: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%592), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%593));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
-// DEFAULT-NEXT:         do %155
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %594: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %595: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%594), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%595));
-// DEFAULT-NEXT:                 let %596: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %597: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%596), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%597));
-// DEFAULT-NEXT:                 let %598: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %599: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%598), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%599));
-// DEFAULT-NEXT:                 let %600: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %601: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%600), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%601));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
-// DEFAULT-NEXT:         do %156
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %602: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %603: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%602), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%603));
-// DEFAULT-NEXT:                 let %604: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %605: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%604), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%605));
-// DEFAULT-NEXT:                 let %606: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %607: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%606), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%607));
-// DEFAULT-NEXT:                 let %608: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %609: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%608), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%609));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
-// DEFAULT-NEXT:         do %157
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %610: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %611: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%610), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%611));
-// DEFAULT-NEXT:                 let %612: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %613: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%612), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%613));
-// DEFAULT-NEXT:                 let %614: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %615: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%614), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%615));
-// DEFAULT-NEXT:                 let %616: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %617: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%616), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%617));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
-// DEFAULT-NEXT:         do %158
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %618: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %619: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%618), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%619));
-// DEFAULT-NEXT:                 let %620: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %621: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%620), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%621));
-// DEFAULT-NEXT:                 let %622: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %623: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%622), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%623));
-// DEFAULT-NEXT:                 let %624: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %625: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%624), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%625));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
-// DEFAULT-NEXT:         do %159
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %626: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %627: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%626), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%627));
-// DEFAULT-NEXT:                 let %628: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %629: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%628), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%629));
-// DEFAULT-NEXT:                 let %630: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %631: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%630), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%631));
-// DEFAULT-NEXT:                 let %632: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %633: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%632), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%633));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
-// DEFAULT-NEXT:         do %160
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %634: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %635: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%634), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%635));
-// DEFAULT-NEXT:                 let %636: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %637: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%636), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%637));
-// DEFAULT-NEXT:                 let %638: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %639: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%638), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%639));
-// DEFAULT-NEXT:                 let %640: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %641: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%640), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%641));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))))));
-// DEFAULT-NEXT:         copy<@type4, reason=assign>(call<@type4, signature=fn(i32, ...) -> @type4, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%39, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65)))));
-// DEFAULT-NEXT:         do %161
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %642: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %643: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%642), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%643));
-// DEFAULT-NEXT:                 let %644: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %645: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%644), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%645));
-// DEFAULT-NEXT:                 let %646: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %647: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%646), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%647));
-// DEFAULT-NEXT:                 let %648: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %649: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%648), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%649));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%43, const<i32>(0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
-// DEFAULT-NEXT:         do %162
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %650: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %651: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%650), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%651));
-// DEFAULT-NEXT:                 let %652: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %653: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%652), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%653));
-// DEFAULT-NEXT:                 let %654: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %655: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%654), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%655));
-// DEFAULT-NEXT:                 let %656: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %657: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%656), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%657));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, native_c) -> void>(%43, const<i32>(1), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
-// DEFAULT-NEXT:         do %163
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %658: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %659: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%658), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%659));
-// DEFAULT-NEXT:                 let %660: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %661: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%660), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%661));
-// DEFAULT-NEXT:                 let %662: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %663: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%662), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%663));
-// DEFAULT-NEXT:                 let %664: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %665: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%664), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%665));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
-// DEFAULT-NEXT:         do %164
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %666: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %667: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%666), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%667));
-// DEFAULT-NEXT:                 let %668: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %669: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%668), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%669));
-// DEFAULT-NEXT:                 let %670: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %671: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%670), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%671));
-// DEFAULT-NEXT:                 let %672: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %673: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%672), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%673));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
-// DEFAULT-NEXT:         do %165
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %674: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %675: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%674), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%675));
-// DEFAULT-NEXT:                 let %676: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %677: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%676), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%677));
-// DEFAULT-NEXT:                 let %678: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %679: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%678), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%679));
-// DEFAULT-NEXT:                 let %680: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %681: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%680), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%681));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
-// DEFAULT-NEXT:         do %166
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %682: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %683: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%682), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%683));
-// DEFAULT-NEXT:                 let %684: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %685: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%684), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%685));
-// DEFAULT-NEXT:                 let %686: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %687: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%686), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%687));
-// DEFAULT-NEXT:                 let %688: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %689: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%688), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%689));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
-// DEFAULT-NEXT:         do %167
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %690: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %691: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%690), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%691));
-// DEFAULT-NEXT:                 let %692: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %693: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%692), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%693));
-// DEFAULT-NEXT:                 let %694: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %695: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%694), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%695));
-// DEFAULT-NEXT:                 let %696: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %697: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%696), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%697));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
-// DEFAULT-NEXT:         do %168
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %698: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %699: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%698), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%699));
-// DEFAULT-NEXT:                 let %700: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %701: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%700), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%701));
-// DEFAULT-NEXT:                 let %702: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %703: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%702), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%703));
-// DEFAULT-NEXT:                 let %704: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %705: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%704), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%705));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
-// DEFAULT-NEXT:         do %169
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %706: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %707: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%706), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%707));
-// DEFAULT-NEXT:                 let %708: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %709: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%708), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%709));
-// DEFAULT-NEXT:                 let %710: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %711: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%710), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%711));
-// DEFAULT-NEXT:                 let %712: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %713: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%712), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%713));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
-// DEFAULT-NEXT:         do %170
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %714: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %715: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%714), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%715));
-// DEFAULT-NEXT:                 let %716: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %717: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%716), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%717));
-// DEFAULT-NEXT:                 let %718: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %719: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%718), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%719));
-// DEFAULT-NEXT:                 let %720: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %721: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%720), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%721));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%43, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type3, reason=vararg>(read<@type3>(field3(%65))));
-// DEFAULT-NEXT:         write<@type3>(field3(%66), copy<@type3, reason=assign>(read<@type3>(%10)));
-// DEFAULT-NEXT:         do %171
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %722: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %723: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%722), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%723));
-// DEFAULT-NEXT:                 let %724: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %725: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%724), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%725));
-// DEFAULT-NEXT:                 let %726: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %727: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%726), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%727));
-// DEFAULT-NEXT:                 let %728: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %729: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%728), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%729));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%46, const<i32>(0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
-// DEFAULT-NEXT:         do %172
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %730: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %731: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%730), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%731));
-// DEFAULT-NEXT:                 let %732: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %733: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%732), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%733));
-// DEFAULT-NEXT:                 let %734: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %735: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%734), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%735));
-// DEFAULT-NEXT:                 let %736: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %737: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%736), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%737));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, native_c) -> void>(%46, const<i32>(1), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
-// DEFAULT-NEXT:         do %173
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %738: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %739: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%738), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%739));
-// DEFAULT-NEXT:                 let %740: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %741: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%740), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%741));
-// DEFAULT-NEXT:                 let %742: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %743: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%742), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%743));
-// DEFAULT-NEXT:                 let %744: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %745: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%744), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%745));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
-// DEFAULT-NEXT:         do %174
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %746: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %747: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%746), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%747));
-// DEFAULT-NEXT:                 let %748: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %749: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%748), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%749));
-// DEFAULT-NEXT:                 let %750: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %751: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%750), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%751));
-// DEFAULT-NEXT:                 let %752: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %753: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%752), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%753));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
-// DEFAULT-NEXT:         do %175
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %754: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %755: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%754), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%755));
-// DEFAULT-NEXT:                 let %756: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %757: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%756), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%757));
-// DEFAULT-NEXT:                 let %758: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %759: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%758), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%759));
-// DEFAULT-NEXT:                 let %760: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %761: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%760), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%761));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
-// DEFAULT-NEXT:         do %176
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %762: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %763: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%762), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%763));
-// DEFAULT-NEXT:                 let %764: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %765: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%764), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%765));
-// DEFAULT-NEXT:                 let %766: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %767: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%766), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%767));
-// DEFAULT-NEXT:                 let %768: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %769: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%768), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%769));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
-// DEFAULT-NEXT:         do %177
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %770: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %771: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%770), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%771));
-// DEFAULT-NEXT:                 let %772: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %773: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%772), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%773));
-// DEFAULT-NEXT:                 let %774: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %775: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%774), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%775));
-// DEFAULT-NEXT:                 let %776: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %777: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%776), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%777));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
-// DEFAULT-NEXT:         do %178
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %778: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %779: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%778), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%779));
-// DEFAULT-NEXT:                 let %780: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %781: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%780), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%781));
-// DEFAULT-NEXT:                 let %782: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %783: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%782), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%783));
-// DEFAULT-NEXT:                 let %784: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %785: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%784), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%785));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
-// DEFAULT-NEXT:         do %179
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %786: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %787: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%786), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%787));
-// DEFAULT-NEXT:                 let %788: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %789: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%788), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%789));
-// DEFAULT-NEXT:                 let %790: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %791: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%790), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%791));
-// DEFAULT-NEXT:                 let %792: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %793: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%792), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%793));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
-// DEFAULT-NEXT:         do %180
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %794: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %795: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%794), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%795));
-// DEFAULT-NEXT:                 let %796: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %797: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%796), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%797));
-// DEFAULT-NEXT:                 let %798: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %799: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%798), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%799));
-// DEFAULT-NEXT:                 let %800: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %801: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%800), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%801));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%46, const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type4, reason=vararg>(read<@type4>(field4(%65))));
-// DEFAULT-NEXT:         write<@type4>(field4(%66), copy<@type4, reason=assign>(read<@type4>(%11)));
-// DEFAULT-NEXT:         do %181
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%65))), read<f64>(field2(field3(%66))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%65))), read<f64>(field3(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %802: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %803: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%802), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%803));
-// DEFAULT-NEXT:                 let %804: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %805: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%804), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%805));
-// DEFAULT-NEXT:                 let %806: f64 [synthetic] = read<f64>(field2(field3(%65)));
-// DEFAULT-NEXT:                 let %807: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%806), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field2(field3(%65)), read<f64>(%807));
-// DEFAULT-NEXT:                 let %808: f64 [synthetic] = read<f64>(field3(field3(%65)));
-// DEFAULT-NEXT:                 let %809: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%808), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field3(field3(%65)), read<f64>(%809));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<f64>(field0(field5(%65)), const<f64>(9.5));
-// DEFAULT-NEXT:         write<i64>(field1(field5(%65)), reinterpret<i64, reason=assign, fits=always>(const<u64>(6148914691236517205)));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, native_c) -> native_c>(%49, const<i32>(0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, native_c) -> native_c>(%49, const<i32>(0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
-// DEFAULT-NEXT:         do %182
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %810: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %811: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%810), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%811));
-// DEFAULT-NEXT:                 let %812: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %813: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%812), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%813));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
-// DEFAULT-NEXT:         do %183
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %814: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %815: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%814), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%815));
-// DEFAULT-NEXT:                 let %816: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %817: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%816), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%817));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
-// DEFAULT-NEXT:         do %184
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %818: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %819: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%818), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%819));
-// DEFAULT-NEXT:                 let %820: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %821: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%820), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%821));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
-// DEFAULT-NEXT:         do %185
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %822: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %823: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%822), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%823));
-// DEFAULT-NEXT:                 let %824: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %825: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%824), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%825));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
-// DEFAULT-NEXT:         do %186
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %826: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %827: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%826), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%827));
-// DEFAULT-NEXT:                 let %828: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %829: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%828), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%829));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
-// DEFAULT-NEXT:         do %187
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %830: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %831: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%830), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%831));
-// DEFAULT-NEXT:                 let %832: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %833: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%832), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%833));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
-// DEFAULT-NEXT:         do %188
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %834: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %835: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%834), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%835));
-// DEFAULT-NEXT:                 let %836: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %837: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%836), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%837));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
-// DEFAULT-NEXT:         do %189
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %838: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %839: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%838), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%839));
-// DEFAULT-NEXT:                 let %840: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %841: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%840), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%841));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
-// DEFAULT-NEXT:         do %190
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %842: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %843: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%842), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%843));
-// DEFAULT-NEXT:                 let %844: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %845: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%844), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%845));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))))));
-// DEFAULT-NEXT:         copy<@type5, reason=assign>(call<@type5, signature=fn(i32, ...) -> @type5, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%49, const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65)))));
-// DEFAULT-NEXT:         do %191
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %846: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %847: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%846), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%847));
-// DEFAULT-NEXT:                 let %848: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %849: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%848), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%849));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, native_c) -> native_c>(%53, const<i32>(0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))))));
-// DEFAULT-NEXT:         copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, native_c) -> native_c>(%53, const<i32>(0), copy<@type6, reason=vararg>(read<@type6>(field6(%65)))));
-// DEFAULT-NEXT:         do %192
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %850: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %851: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%850), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%851));
-// DEFAULT-NEXT:                 let %852: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %853: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%852), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%853));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))))));
-// DEFAULT-NEXT:         copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65)))));
-// DEFAULT-NEXT:         do %193
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %854: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %855: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%854), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%855));
-// DEFAULT-NEXT:                 let %856: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %857: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%856), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%857));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))))));
-// DEFAULT-NEXT:         copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65)))));
-// DEFAULT-NEXT:         do %194
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %858: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %859: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%858), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%859));
-// DEFAULT-NEXT:                 let %860: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %861: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%860), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%861));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))))));
-// DEFAULT-NEXT:         copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65)))));
-// DEFAULT-NEXT:         do %195
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %862: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %863: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%862), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%863));
-// DEFAULT-NEXT:                 let %864: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %865: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%864), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%865));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))))));
-// DEFAULT-NEXT:         copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65)))));
-// DEFAULT-NEXT:         do %196
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %866: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %867: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%866), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%867));
-// DEFAULT-NEXT:                 let %868: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %869: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%868), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%869));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))))));
-// DEFAULT-NEXT:         copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65)))));
-// DEFAULT-NEXT:         do %197
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %870: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %871: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%870), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%871));
-// DEFAULT-NEXT:                 let %872: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %873: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%872), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%873));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))))));
-// DEFAULT-NEXT:         copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65)))));
-// DEFAULT-NEXT:         do %198
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %874: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %875: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%874), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%875));
-// DEFAULT-NEXT:                 let %876: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %877: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%876), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%877));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))))));
-// DEFAULT-NEXT:         copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65)))));
-// DEFAULT-NEXT:         do %199
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %878: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %879: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%878), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%879));
-// DEFAULT-NEXT:                 let %880: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %881: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%880), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%881));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))))));
-// DEFAULT-NEXT:         copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65)))));
-// DEFAULT-NEXT:         do %200
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %882: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %883: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%882), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%883));
-// DEFAULT-NEXT:                 let %884: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %885: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%884), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%885));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))))));
-// DEFAULT-NEXT:         copy<@type6, reason=assign>(call<@type6, signature=fn(i32, ...) -> @type6, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%53, const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65)))));
-// DEFAULT-NEXT:         do %201
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %886: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %887: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%886), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%887));
-// DEFAULT-NEXT:                 let %888: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %889: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%888), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%889));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%57, const<i32>(0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
-// DEFAULT-NEXT:         do %202
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %890: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %891: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%890), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%891));
-// DEFAULT-NEXT:                 let %892: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %893: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%892), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%893));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
-// DEFAULT-NEXT:         do %203
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %894: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %895: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%894), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%895));
-// DEFAULT-NEXT:                 let %896: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %897: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%896), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%897));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
-// DEFAULT-NEXT:         do %204
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %898: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %899: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%898), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%899));
-// DEFAULT-NEXT:                 let %900: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %901: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%900), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%901));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
-// DEFAULT-NEXT:         do %205
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %902: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %903: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%902), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%903));
-// DEFAULT-NEXT:                 let %904: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %905: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%904), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%905));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
-// DEFAULT-NEXT:         do %206
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %906: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %907: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%906), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%907));
-// DEFAULT-NEXT:                 let %908: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %909: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%908), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%909));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
-// DEFAULT-NEXT:         do %207
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %910: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %911: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%910), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%911));
-// DEFAULT-NEXT:                 let %912: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %913: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%912), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%913));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
-// DEFAULT-NEXT:         do %208
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %914: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %915: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%914), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%915));
-// DEFAULT-NEXT:                 let %916: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %917: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%916), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%917));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
-// DEFAULT-NEXT:         do %209
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %918: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %919: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%918), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%919));
-// DEFAULT-NEXT:                 let %920: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %921: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%920), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%921));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
-// DEFAULT-NEXT:         do %210
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %922: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %923: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%922), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%923));
-// DEFAULT-NEXT:                 let %924: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %925: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%924), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%925));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%57, const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type5, reason=vararg>(read<@type5>(field5(%65))));
-// DEFAULT-NEXT:         write<@type5>(field5(%66), copy<@type5, reason=assign>(read<@type5>(%12)));
-// DEFAULT-NEXT:         do %211
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %926: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %927: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%926), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%927));
-// DEFAULT-NEXT:                 let %928: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %929: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%928), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%929));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%60, const<i32>(0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(read<@type6>(%13)));
-// DEFAULT-NEXT:         do %212
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %930: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %931: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%930), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%931));
-// DEFAULT-NEXT:                 let %932: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %933: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%932), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%933));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%60, const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(read<@type6>(%13)));
-// DEFAULT-NEXT:         do %213
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %934: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %935: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%934), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%935));
-// DEFAULT-NEXT:                 let %936: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %937: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%936), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%937));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%60, const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(read<@type6>(%13)));
-// DEFAULT-NEXT:         do %214
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %938: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %939: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%938), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%939));
-// DEFAULT-NEXT:                 let %940: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %941: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%940), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%941));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%60, const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(read<@type6>(%13)));
-// DEFAULT-NEXT:         do %215
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %942: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %943: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%942), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%943));
-// DEFAULT-NEXT:                 let %944: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %945: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%944), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%945));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%60, const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(read<@type6>(%13)));
-// DEFAULT-NEXT:         do %216
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %946: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %947: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%946), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%947));
-// DEFAULT-NEXT:                 let %948: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %949: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%948), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%949));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%60, const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(read<@type6>(%13)));
-// DEFAULT-NEXT:         do %217
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %950: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %951: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%950), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%951));
-// DEFAULT-NEXT:                 let %952: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %953: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%952), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%953));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%60, const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(read<@type6>(%13)));
-// DEFAULT-NEXT:         do %218
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %954: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %955: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%954), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%955));
-// DEFAULT-NEXT:                 let %956: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %957: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%956), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%957));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%60, const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(read<@type6>(%13)));
-// DEFAULT-NEXT:         do %219
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %958: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %959: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%958), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%959));
-// DEFAULT-NEXT:                 let %960: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %961: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%960), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%961));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%60, const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(read<@type6>(%13)));
-// DEFAULT-NEXT:         do %220
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %962: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %963: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%962), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%963));
-// DEFAULT-NEXT:                 let %964: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %965: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%964), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%965));
-// DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%60, const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type6, reason=vararg>(read<@type6>(field6(%65))));
-// DEFAULT-NEXT:         write<@type6>(field6(%66), copy<@type6, reason=assign>(read<@type6>(%13)));
-// DEFAULT-NEXT:         do %221
-// DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%65))), read<f64>(field0(field3(%66)))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%65))), read<f64>(field1(field3(%66)))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%82);
-// DEFAULT-NEXT:                 let %966: f64 [synthetic] = read<f64>(field0(field3(%65)));
-// DEFAULT-NEXT:                 let %967: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%966), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field0(field3(%65)), read<f64>(%967));
-// DEFAULT-NEXT:                 let %968: f64 [synthetic] = read<f64>(field1(field3(%65)));
-// DEFAULT-NEXT:                 let %969: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%968), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<f64>(field1(field3(%65)), read<f64>(%969));
+// DEFAULT-NEXT:     fn %[[VALUE_f14:[0-9]+]] @f14(%[[VALUE_x_14:[0-9]+]] x: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_14:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_14]]);
+// DEFAULT-NEXT:         while %[[VALUE39:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE40:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_14]]);
+// DEFAULT-NEXT:             let %[[VALUE41:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE40]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_14]], read<i32>(%[[VALUE41]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE40]]), const<i32>(0));
+// DEFAULT-NEXT:         }
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_14]]);
+// DEFAULT-NEXT:                 va_arg<f64>(%[[VALUE_ap_14]]);
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(%[[VALUE_h]], copy<@type[[TYPE_X]], reason=assign>(va_arg<@type[[TYPE_X]]>(%[[VALUE_ap_14]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE_X]], reason=assign>(va_arg<@type[[TYPE_X]]>(%[[VALUE_ap_14]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_14]]);
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE_Y]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: @type[[TYPE_Y]] [storage=automatic];
+// DEFAULT-NEXT:         write<i64>(field0(field1(%[[VALUE_u]])), reinterpret<i64, reason=assign, fits=always>(const<u64>(6148914691236517205)));
+// DEFAULT-NEXT:         write<i64>(field1(field1(%[[VALUE_u]])), reinterpret<i64, reason=assign, fits=unknown>(const<u64>(12297829382473034410)));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(0), read<i128>(field0(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         do %[[VALUE42:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE43:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE44:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE43]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE44]]));
+// DEFAULT-NEXT:                 let %[[VALUE45:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE46:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE45]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE46]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(1), const<i32>(0), read<i128>(field0(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(1), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         do %[[VALUE47:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE48:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE49:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE48]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE49]]));
+// DEFAULT-NEXT:                 let %[[VALUE50:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE51:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE50]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE51]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(2), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(2), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         do %[[VALUE52:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE53:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE54:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE53]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE54]]));
+// DEFAULT-NEXT:                 let %[[VALUE55:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE56:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE55]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE56]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         do %[[VALUE57:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE58:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE59:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE58]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE59]]));
+// DEFAULT-NEXT:                 let %[[VALUE60:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE61:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE60]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE61]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         do %[[VALUE62:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE63:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE64:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE63]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE64]]));
+// DEFAULT-NEXT:                 let %[[VALUE65:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE66:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE65]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE66]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         do %[[VALUE67:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE68:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE69:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE68]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE69]]));
+// DEFAULT-NEXT:                 let %[[VALUE70:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE71:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE70]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE71]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         do %[[VALUE72:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE73:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE74:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE73]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE74]]));
+// DEFAULT-NEXT:                 let %[[VALUE75:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE76:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE75]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE76]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         do %[[VALUE77:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE78:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE79:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE78]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE79]]));
+// DEFAULT-NEXT:                 let %[[VALUE80:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE81:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE80]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE81]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         do %[[VALUE82:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE83:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE84:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE83]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE84]]));
+// DEFAULT-NEXT:                 let %[[VALUE85:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE86:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE85]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE86]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         call<i128, signature=fn(i32, ...) -> i128>(%[[VALUE_f1]], const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         do %[[VALUE87:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE88:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE89:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE88]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE89]]));
+// DEFAULT-NEXT:                 let %[[VALUE90:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE91:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE90]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE91]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE92:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE93:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE94:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE93]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE94]]));
+// DEFAULT-NEXT:                 let %[[VALUE95:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE96:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE95]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE96]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(1), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(1), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE97:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE98:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE99:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE98]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE99]]));
+// DEFAULT-NEXT:                 let %[[VALUE100:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE101:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE100]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE101]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(2), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(2), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE102:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE103:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE104:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE103]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE104]]));
+// DEFAULT-NEXT:                 let %[[VALUE105:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE106:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE105]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE106]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE107:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE108:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE109:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE108]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE109]]));
+// DEFAULT-NEXT:                 let %[[VALUE110:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE111:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE110]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE111]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE112:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE113:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE114:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE113]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE114]]));
+// DEFAULT-NEXT:                 let %[[VALUE115:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE116:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE115]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE116]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE117:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE118:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE119:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE118]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE119]]));
+// DEFAULT-NEXT:                 let %[[VALUE120:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE121:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE120]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE121]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE122:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE123:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE124:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE123]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE124]]));
+// DEFAULT-NEXT:                 let %[[VALUE125:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE126:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE125]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE126]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE127:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE128:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE129:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE128]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE129]]));
+// DEFAULT-NEXT:                 let %[[VALUE130:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE131:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE130]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE131]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE132:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE133:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE134:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE133]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE134]]));
+// DEFAULT-NEXT:                 let %[[VALUE135:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE136:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE135]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE136]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(i32, ...) -> @type[[TYPE_S]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f2]], const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE137:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE138:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE139:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE138]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE139]]));
+// DEFAULT-NEXT:                 let %[[VALUE140:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE141:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE140]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE141]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE142:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE143:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE144:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE143]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE144]]));
+// DEFAULT-NEXT:                 let %[[VALUE145:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE146:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE145]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE146]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(1), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(1), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE147:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE148:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE149:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE148]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE149]]));
+// DEFAULT-NEXT:                 let %[[VALUE150:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE151:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE150]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE151]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(2), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(2), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE152:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE153:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE154:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE153]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE154]]));
+// DEFAULT-NEXT:                 let %[[VALUE155:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE156:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE155]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE156]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE157:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE158:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE159:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE158]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE159]]));
+// DEFAULT-NEXT:                 let %[[VALUE160:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE161:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE160]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE161]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE162:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE163:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE164:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE163]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE164]]));
+// DEFAULT-NEXT:                 let %[[VALUE165:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE166:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE165]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE166]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE167:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE168:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE169:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE168]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE169]]));
+// DEFAULT-NEXT:                 let %[[VALUE170:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE171:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE170]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE171]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE172:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE173:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE174:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE173]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE174]]));
+// DEFAULT-NEXT:                 let %[[VALUE175:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE176:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE175]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE176]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE177:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE178:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE179:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE178]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE179]]));
+// DEFAULT-NEXT:                 let %[[VALUE180:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE181:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE180]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE181]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE182:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE183:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE184:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE183]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE184]]));
+// DEFAULT-NEXT:                 let %[[VALUE185:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE186:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE185]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE186]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(i32, ...) -> @type[[TYPE_T]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f3]], const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE187:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE188:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE189:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE188]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE189]]));
+// DEFAULT-NEXT:                 let %[[VALUE190:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE191:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE190]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE191]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_f4]], const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), read<i128>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         do %[[VALUE192:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE193:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE194:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE193]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE194]]));
+// DEFAULT-NEXT:                 let %[[VALUE195:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE196:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE195]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE196]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_f4]], const<i32>(1), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), read<i128>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         do %[[VALUE197:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE198:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE199:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE198]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE199]]));
+// DEFAULT-NEXT:                 let %[[VALUE200:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE201:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE200]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE201]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_f4]], const<i32>(2), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), read<i128>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         do %[[VALUE202:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE203:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE204:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE203]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE204]]));
+// DEFAULT-NEXT:                 let %[[VALUE205:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE206:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE205]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE206]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_f4]], const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), read<i128>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         do %[[VALUE207:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE208:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE209:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE208]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE209]]));
+// DEFAULT-NEXT:                 let %[[VALUE210:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE211:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE210]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE211]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_f4]], const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), read<i128>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         do %[[VALUE212:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE213:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE214:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE213]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE214]]));
+// DEFAULT-NEXT:                 let %[[VALUE215:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE216:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE215]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE216]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_f4]], const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), read<i128>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         do %[[VALUE217:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE218:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE219:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE218]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE219]]));
+// DEFAULT-NEXT:                 let %[[VALUE220:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE221:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE220]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE221]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_f4]], const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), read<i128>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         do %[[VALUE222:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE223:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE224:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE223]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE224]]));
+// DEFAULT-NEXT:                 let %[[VALUE225:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE226:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE225]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE226]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_f4]], const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), read<i128>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         do %[[VALUE227:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE228:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE229:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE228]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE229]]));
+// DEFAULT-NEXT:                 let %[[VALUE230:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE231:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE230]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE231]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_f4]], const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), read<i128>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         do %[[VALUE232:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE233:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE234:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE233]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE234]]));
+// DEFAULT-NEXT:                 let %[[VALUE235:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE236:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE235]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE236]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_f4]], const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), read<i128>(field0(%[[VALUE_u]])));
+// DEFAULT-NEXT:         write<i128>(field0(%[[VALUE_v]]), read<i128>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         do %[[VALUE237:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE238:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE239:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE238]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE239]]));
+// DEFAULT-NEXT:                 let %[[VALUE240:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE241:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE240]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE241]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%[[VALUE_f5]], const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         do %[[VALUE242:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE243:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE244:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE243]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE244]]));
+// DEFAULT-NEXT:                 let %[[VALUE245:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE246:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE245]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE246]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, native_c) -> void>(%[[VALUE_f5]], const<i32>(1), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         do %[[VALUE247:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE248:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE249:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE248]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE249]]));
+// DEFAULT-NEXT:                 let %[[VALUE250:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE251:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE250]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE251]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f5]], const<i32>(2), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         do %[[VALUE252:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE253:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE254:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE253]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE254]]));
+// DEFAULT-NEXT:                 let %[[VALUE255:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE256:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE255]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE256]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f5]], const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         do %[[VALUE257:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE258:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE259:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE258]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE259]]));
+// DEFAULT-NEXT:                 let %[[VALUE260:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE261:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE260]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE261]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f5]], const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         do %[[VALUE262:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE263:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE264:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE263]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE264]]));
+// DEFAULT-NEXT:                 let %[[VALUE265:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE266:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE265]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE266]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f5]], const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         do %[[VALUE267:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE268:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE269:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE268]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE269]]));
+// DEFAULT-NEXT:                 let %[[VALUE270:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE271:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE270]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE271]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f5]], const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         do %[[VALUE272:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE273:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE274:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE273]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE274]]));
+// DEFAULT-NEXT:                 let %[[VALUE275:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE276:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE275]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE276]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f5]], const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         do %[[VALUE277:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE278:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE279:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE278]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE279]]));
+// DEFAULT-NEXT:                 let %[[VALUE280:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE281:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE280]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE281]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f5]], const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         do %[[VALUE282:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE283:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE284:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE283]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE284]]));
+// DEFAULT-NEXT:                 let %[[VALUE285:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE286:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE285]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE286]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f5]], const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_S]], reason=vararg>(read<@type[[TYPE_S]]>(field1(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(field1(%[[VALUE_v]]), copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         do %[[VALUE287:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE288:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE289:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE288]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE289]]));
+// DEFAULT-NEXT:                 let %[[VALUE290:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE291:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE290]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE291]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%[[VALUE_f6]], const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         do %[[VALUE292:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE293:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE294:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE293]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE294]]));
+// DEFAULT-NEXT:                 let %[[VALUE295:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE296:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE295]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE296]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, native_c) -> void>(%[[VALUE_f6]], const<i32>(1), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         do %[[VALUE297:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE298:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE299:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE298]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE299]]));
+// DEFAULT-NEXT:                 let %[[VALUE300:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE301:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE300]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE301]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f6]], const<i32>(2), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         do %[[VALUE302:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE303:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE304:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE303]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE304]]));
+// DEFAULT-NEXT:                 let %[[VALUE305:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE306:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE305]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE306]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f6]], const<i32>(3), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         do %[[VALUE307:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE308:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE309:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE308]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE309]]));
+// DEFAULT-NEXT:                 let %[[VALUE310:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE311:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE310]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE311]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f6]], const<i32>(4), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         do %[[VALUE312:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE313:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE314:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE313]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE314]]));
+// DEFAULT-NEXT:                 let %[[VALUE315:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE316:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE315]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE316]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f6]], const<i32>(5), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         do %[[VALUE317:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE318:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE319:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE318]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE319]]));
+// DEFAULT-NEXT:                 let %[[VALUE320:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE321:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE320]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE321]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f6]], const<i32>(6), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         do %[[VALUE322:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE323:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE324:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE323]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE324]]));
+// DEFAULT-NEXT:                 let %[[VALUE325:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE326:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE325]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE326]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f6]], const<i32>(7), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         do %[[VALUE327:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE328:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE329:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE328]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE329]]));
+// DEFAULT-NEXT:                 let %[[VALUE330:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE331:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE330]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE331]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f6]], const<i32>(8), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         do %[[VALUE332:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE333:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE334:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE333]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE334]]));
+// DEFAULT-NEXT:                 let %[[VALUE335:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE336:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE335]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE336]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f6]], const<i32>(9), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), copy<@type[[TYPE_T]], reason=vararg>(read<@type[[TYPE_T]]>(field2(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field2(%[[VALUE_v]]), copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         do %[[VALUE337:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<i64>(read<i64>(field0(field1(%[[VALUE_u]]))), read<i64>(field0(field1(%[[VALUE_v]])))), ne<i64>(read<i64>(field1(field1(%[[VALUE_u]]))), read<i64>(field1(field1(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE338:[0-9]+]]: i64 [synthetic] = read<i64>(field0(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE339:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE338]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field0(field1(%[[VALUE_u]])), read<i64>(%[[VALUE339]]));
+// DEFAULT-NEXT:                 let %[[VALUE340:[0-9]+]]: i64 [synthetic] = read<i64>(field1(field1(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE341:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE340]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(field1(field1(%[[VALUE_u]])), read<i64>(%[[VALUE341]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<f64>(field0(field3(%[[VALUE_u]])), const<f64>(1.25));
+// DEFAULT-NEXT:         write<f64>(field1(field3(%[[VALUE_u]])), const<f64>(2.75));
+// DEFAULT-NEXT:         write<f64>(field2(field3(%[[VALUE_u]])), neg<f64>(const<f64>(3.5)));
+// DEFAULT-NEXT:         write<f64>(field3(field3(%[[VALUE_u]])), neg<f64>(const<f64>(2.0)));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE342:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE343:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE344:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE343]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE344]]));
+// DEFAULT-NEXT:                 let %[[VALUE345:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE346:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE345]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE346]]));
+// DEFAULT-NEXT:                 let %[[VALUE347:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE348:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE347]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE348]]));
+// DEFAULT-NEXT:                 let %[[VALUE349:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE350:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE349]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE350]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(1), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(1), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE351:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE352:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE353:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE352]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE353]]));
+// DEFAULT-NEXT:                 let %[[VALUE354:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE355:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE354]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE355]]));
+// DEFAULT-NEXT:                 let %[[VALUE356:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE357:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE356]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE357]]));
+// DEFAULT-NEXT:                 let %[[VALUE358:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE359:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE358]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE359]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE360:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE361:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE362:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE361]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE362]]));
+// DEFAULT-NEXT:                 let %[[VALUE363:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE364:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE363]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE364]]));
+// DEFAULT-NEXT:                 let %[[VALUE365:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE366:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE365]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE366]]));
+// DEFAULT-NEXT:                 let %[[VALUE367:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE368:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE367]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE368]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE369:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE370:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE371:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE370]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE371]]));
+// DEFAULT-NEXT:                 let %[[VALUE372:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE373:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE372]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE373]]));
+// DEFAULT-NEXT:                 let %[[VALUE374:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE375:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE374]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE375]]));
+// DEFAULT-NEXT:                 let %[[VALUE376:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE377:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE376]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE377]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE378:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE379:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE380:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE379]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE380]]));
+// DEFAULT-NEXT:                 let %[[VALUE381:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE382:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE381]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE382]]));
+// DEFAULT-NEXT:                 let %[[VALUE383:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE384:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE383]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE384]]));
+// DEFAULT-NEXT:                 let %[[VALUE385:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE386:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE385]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE386]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE387:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE388:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE389:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE388]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE389]]));
+// DEFAULT-NEXT:                 let %[[VALUE390:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE391:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE390]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE391]]));
+// DEFAULT-NEXT:                 let %[[VALUE392:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE393:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE392]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE393]]));
+// DEFAULT-NEXT:                 let %[[VALUE394:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE395:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE394]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE395]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE396:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE397:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE398:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE397]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE398]]));
+// DEFAULT-NEXT:                 let %[[VALUE399:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE400:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE399]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE400]]));
+// DEFAULT-NEXT:                 let %[[VALUE401:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE402:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE401]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE402]]));
+// DEFAULT-NEXT:                 let %[[VALUE403:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE404:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE403]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE404]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE405:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE406:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE407:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE406]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE407]]));
+// DEFAULT-NEXT:                 let %[[VALUE408:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE409:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE408]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE409]]));
+// DEFAULT-NEXT:                 let %[[VALUE410:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE411:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE410]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE411]]));
+// DEFAULT-NEXT:                 let %[[VALUE412:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE413:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE412]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE413]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE414:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE415:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE416:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE415]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE416]]));
+// DEFAULT-NEXT:                 let %[[VALUE417:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE418:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE417]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE418]]));
+// DEFAULT-NEXT:                 let %[[VALUE419:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE420:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE419]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE420]]));
+// DEFAULT-NEXT:                 let %[[VALUE421:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE422:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE421]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE422]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(i32, ...) -> @type[[TYPE_U]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f7]], const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE423:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE424:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE425:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE424]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE425]]));
+// DEFAULT-NEXT:                 let %[[VALUE426:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE427:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE426]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE427]]));
+// DEFAULT-NEXT:                 let %[[VALUE428:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE429:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE428]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE429]]));
+// DEFAULT-NEXT:                 let %[[VALUE430:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE431:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE430]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE431]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE432:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE433:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE434:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE433]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE434]]));
+// DEFAULT-NEXT:                 let %[[VALUE435:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE436:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE435]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE436]]));
+// DEFAULT-NEXT:                 let %[[VALUE437:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE438:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE437]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE438]]));
+// DEFAULT-NEXT:                 let %[[VALUE439:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE440:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE439]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE440]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(1), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(1), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE441:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE442:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE443:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE442]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE443]]));
+// DEFAULT-NEXT:                 let %[[VALUE444:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE445:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE444]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE445]]));
+// DEFAULT-NEXT:                 let %[[VALUE446:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE447:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE446]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE447]]));
+// DEFAULT-NEXT:                 let %[[VALUE448:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE449:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE448]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE449]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE450:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE451:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE452:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE451]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE452]]));
+// DEFAULT-NEXT:                 let %[[VALUE453:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE454:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE453]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE454]]));
+// DEFAULT-NEXT:                 let %[[VALUE455:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE456:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE455]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE456]]));
+// DEFAULT-NEXT:                 let %[[VALUE457:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE458:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE457]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE458]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE459:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE460:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE461:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE460]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE461]]));
+// DEFAULT-NEXT:                 let %[[VALUE462:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE463:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE462]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE463]]));
+// DEFAULT-NEXT:                 let %[[VALUE464:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE465:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE464]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE465]]));
+// DEFAULT-NEXT:                 let %[[VALUE466:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE467:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE466]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE467]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE468:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE469:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE470:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE469]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE470]]));
+// DEFAULT-NEXT:                 let %[[VALUE471:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE472:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE471]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE472]]));
+// DEFAULT-NEXT:                 let %[[VALUE473:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE474:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE473]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE474]]));
+// DEFAULT-NEXT:                 let %[[VALUE475:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE476:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE475]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE476]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE477:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE478:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE479:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE478]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE479]]));
+// DEFAULT-NEXT:                 let %[[VALUE480:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE481:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE480]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE481]]));
+// DEFAULT-NEXT:                 let %[[VALUE482:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE483:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE482]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE483]]));
+// DEFAULT-NEXT:                 let %[[VALUE484:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE485:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE484]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE485]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE486:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE487:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE488:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE487]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE488]]));
+// DEFAULT-NEXT:                 let %[[VALUE489:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE490:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE489]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE490]]));
+// DEFAULT-NEXT:                 let %[[VALUE491:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE492:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE491]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE492]]));
+// DEFAULT-NEXT:                 let %[[VALUE493:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE494:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE493]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE494]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE495:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE496:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE497:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE496]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE497]]));
+// DEFAULT-NEXT:                 let %[[VALUE498:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE499:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE498]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE499]]));
+// DEFAULT-NEXT:                 let %[[VALUE500:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE501:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE500]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE501]]));
+// DEFAULT-NEXT:                 let %[[VALUE502:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE503:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE502]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE503]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE504:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE505:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE506:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE505]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE506]]));
+// DEFAULT-NEXT:                 let %[[VALUE507:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE508:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE507]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE508]]));
+// DEFAULT-NEXT:                 let %[[VALUE509:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE510:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE509]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE510]]));
+// DEFAULT-NEXT:                 let %[[VALUE511:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE512:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE511]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE512]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(i32, ...) -> @type[[TYPE_V]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f8]], const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE513:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE514:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE515:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE514]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE515]]));
+// DEFAULT-NEXT:                 let %[[VALUE516:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE517:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE516]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE517]]));
+// DEFAULT-NEXT:                 let %[[VALUE518:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE519:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE518]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE519]]));
+// DEFAULT-NEXT:                 let %[[VALUE520:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE521:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE520]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE521]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%[[VALUE_f9]], const<i32>(0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(read<@type[[TYPE_U]]>(%[[VALUE_e]])));
+// DEFAULT-NEXT:         do %[[VALUE522:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE523:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE524:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE523]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE524]]));
+// DEFAULT-NEXT:                 let %[[VALUE525:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE526:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE525]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE526]]));
+// DEFAULT-NEXT:                 let %[[VALUE527:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE528:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE527]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE528]]));
+// DEFAULT-NEXT:                 let %[[VALUE529:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE530:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE529]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE530]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, native_c) -> void>(%[[VALUE_f9]], const<i32>(1), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(read<@type[[TYPE_U]]>(%[[VALUE_e]])));
+// DEFAULT-NEXT:         do %[[VALUE531:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE532:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE533:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE532]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE533]]));
+// DEFAULT-NEXT:                 let %[[VALUE534:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE535:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE534]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE535]]));
+// DEFAULT-NEXT:                 let %[[VALUE536:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE537:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE536]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE537]]));
+// DEFAULT-NEXT:                 let %[[VALUE538:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE539:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE538]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE539]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f9]], const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(read<@type[[TYPE_U]]>(%[[VALUE_e]])));
+// DEFAULT-NEXT:         do %[[VALUE540:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE541:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE542:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE541]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE542]]));
+// DEFAULT-NEXT:                 let %[[VALUE543:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE544:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE543]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE544]]));
+// DEFAULT-NEXT:                 let %[[VALUE545:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE546:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE545]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE546]]));
+// DEFAULT-NEXT:                 let %[[VALUE547:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE548:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE547]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE548]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f9]], const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(read<@type[[TYPE_U]]>(%[[VALUE_e]])));
+// DEFAULT-NEXT:         do %[[VALUE549:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE550:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE551:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE550]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE551]]));
+// DEFAULT-NEXT:                 let %[[VALUE552:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE553:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE552]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE553]]));
+// DEFAULT-NEXT:                 let %[[VALUE554:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE555:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE554]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE555]]));
+// DEFAULT-NEXT:                 let %[[VALUE556:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE557:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE556]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE557]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f9]], const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(read<@type[[TYPE_U]]>(%[[VALUE_e]])));
+// DEFAULT-NEXT:         do %[[VALUE558:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE559:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE560:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE559]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE560]]));
+// DEFAULT-NEXT:                 let %[[VALUE561:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE562:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE561]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE562]]));
+// DEFAULT-NEXT:                 let %[[VALUE563:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE564:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE563]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE564]]));
+// DEFAULT-NEXT:                 let %[[VALUE565:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE566:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE565]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE566]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f9]], const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(read<@type[[TYPE_U]]>(%[[VALUE_e]])));
+// DEFAULT-NEXT:         do %[[VALUE567:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE568:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE569:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE568]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE569]]));
+// DEFAULT-NEXT:                 let %[[VALUE570:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE571:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE570]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE571]]));
+// DEFAULT-NEXT:                 let %[[VALUE572:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE573:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE572]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE573]]));
+// DEFAULT-NEXT:                 let %[[VALUE574:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE575:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE574]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE575]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f9]], const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(read<@type[[TYPE_U]]>(%[[VALUE_e]])));
+// DEFAULT-NEXT:         do %[[VALUE576:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE577:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE578:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE577]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE578]]));
+// DEFAULT-NEXT:                 let %[[VALUE579:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE580:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE579]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE580]]));
+// DEFAULT-NEXT:                 let %[[VALUE581:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE582:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE581]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE582]]));
+// DEFAULT-NEXT:                 let %[[VALUE583:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE584:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE583]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE584]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f9]], const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(read<@type[[TYPE_U]]>(%[[VALUE_e]])));
+// DEFAULT-NEXT:         do %[[VALUE585:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE586:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE587:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE586]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE587]]));
+// DEFAULT-NEXT:                 let %[[VALUE588:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE589:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE588]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE589]]));
+// DEFAULT-NEXT:                 let %[[VALUE590:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE591:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE590]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE591]]));
+// DEFAULT-NEXT:                 let %[[VALUE592:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE593:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE592]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE593]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f9]], const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(read<@type[[TYPE_U]]>(%[[VALUE_e]])));
+// DEFAULT-NEXT:         do %[[VALUE594:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE595:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE596:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE595]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE596]]));
+// DEFAULT-NEXT:                 let %[[VALUE597:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE598:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE597]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE598]]));
+// DEFAULT-NEXT:                 let %[[VALUE599:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE600:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE599]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE600]]));
+// DEFAULT-NEXT:                 let %[[VALUE601:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE602:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE601]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE602]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f9]], const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_U]], reason=vararg>(read<@type[[TYPE_U]]>(field3(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_U]]>(field3(%[[VALUE_v]]), copy<@type[[TYPE_U]], reason=assign>(read<@type[[TYPE_U]]>(%[[VALUE_e]])));
+// DEFAULT-NEXT:         do %[[VALUE603:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE604:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE605:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE604]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE605]]));
+// DEFAULT-NEXT:                 let %[[VALUE606:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE607:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE606]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE607]]));
+// DEFAULT-NEXT:                 let %[[VALUE608:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE609:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE608]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE609]]));
+// DEFAULT-NEXT:                 let %[[VALUE610:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE611:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE610]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE611]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%[[VALUE_f10]], const<i32>(0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(read<@type[[TYPE_V]]>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         do %[[VALUE612:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE613:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE614:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE613]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE614]]));
+// DEFAULT-NEXT:                 let %[[VALUE615:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE616:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE615]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE616]]));
+// DEFAULT-NEXT:                 let %[[VALUE617:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE618:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE617]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE618]]));
+// DEFAULT-NEXT:                 let %[[VALUE619:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE620:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE619]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE620]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, native_c) -> void>(%[[VALUE_f10]], const<i32>(1), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(read<@type[[TYPE_V]]>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         do %[[VALUE621:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE622:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE623:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE622]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE623]]));
+// DEFAULT-NEXT:                 let %[[VALUE624:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE625:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE624]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE625]]));
+// DEFAULT-NEXT:                 let %[[VALUE626:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE627:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE626]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE627]]));
+// DEFAULT-NEXT:                 let %[[VALUE628:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE629:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE628]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE629]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f10]], const<i32>(2), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(read<@type[[TYPE_V]]>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         do %[[VALUE630:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE631:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE632:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE631]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE632]]));
+// DEFAULT-NEXT:                 let %[[VALUE633:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE634:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE633]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE634]]));
+// DEFAULT-NEXT:                 let %[[VALUE635:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE636:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE635]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE636]]));
+// DEFAULT-NEXT:                 let %[[VALUE637:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE638:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE637]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE638]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f10]], const<i32>(3), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(read<@type[[TYPE_V]]>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         do %[[VALUE639:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE640:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE641:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE640]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE641]]));
+// DEFAULT-NEXT:                 let %[[VALUE642:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE643:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE642]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE643]]));
+// DEFAULT-NEXT:                 let %[[VALUE644:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE645:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE644]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE645]]));
+// DEFAULT-NEXT:                 let %[[VALUE646:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE647:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE646]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE647]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f10]], const<i32>(4), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(read<@type[[TYPE_V]]>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         do %[[VALUE648:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE649:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE650:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE649]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE650]]));
+// DEFAULT-NEXT:                 let %[[VALUE651:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE652:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE651]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE652]]));
+// DEFAULT-NEXT:                 let %[[VALUE653:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE654:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE653]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE654]]));
+// DEFAULT-NEXT:                 let %[[VALUE655:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE656:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE655]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE656]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f10]], const<i32>(5), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(read<@type[[TYPE_V]]>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         do %[[VALUE657:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE658:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE659:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE658]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE659]]));
+// DEFAULT-NEXT:                 let %[[VALUE660:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE661:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE660]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE661]]));
+// DEFAULT-NEXT:                 let %[[VALUE662:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE663:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE662]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE663]]));
+// DEFAULT-NEXT:                 let %[[VALUE664:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE665:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE664]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE665]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f10]], const<i32>(6), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(read<@type[[TYPE_V]]>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         do %[[VALUE666:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE667:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE668:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE667]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE668]]));
+// DEFAULT-NEXT:                 let %[[VALUE669:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE670:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE669]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE670]]));
+// DEFAULT-NEXT:                 let %[[VALUE671:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE672:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE671]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE672]]));
+// DEFAULT-NEXT:                 let %[[VALUE673:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE674:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE673]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE674]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f10]], const<i32>(7), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(read<@type[[TYPE_V]]>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         do %[[VALUE675:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE676:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE677:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE676]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE677]]));
+// DEFAULT-NEXT:                 let %[[VALUE678:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE679:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE678]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE679]]));
+// DEFAULT-NEXT:                 let %[[VALUE680:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE681:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE680]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE681]]));
+// DEFAULT-NEXT:                 let %[[VALUE682:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE683:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE682]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE683]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f10]], const<i32>(8), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(read<@type[[TYPE_V]]>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         do %[[VALUE684:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE685:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE686:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE685]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE686]]));
+// DEFAULT-NEXT:                 let %[[VALUE687:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE688:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE687]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE688]]));
+// DEFAULT-NEXT:                 let %[[VALUE689:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE690:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE689]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE690]]));
+// DEFAULT-NEXT:                 let %[[VALUE691:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE692:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE691]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE692]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f10]], const<i32>(9), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), const<f64>(0.0), copy<@type[[TYPE_V]], reason=vararg>(read<@type[[TYPE_V]]>(field4(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_V]]>(field4(%[[VALUE_v]]), copy<@type[[TYPE_V]], reason=assign>(read<@type[[TYPE_V]]>(%[[VALUE_f]])));
+// DEFAULT-NEXT:         do %[[VALUE693:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field2(field3(%[[VALUE_u]]))), read<f64>(field2(field3(%[[VALUE_v]]))))), ne<f64, exceptions=ignore>(read<f64>(field3(field3(%[[VALUE_u]]))), read<f64>(field3(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE694:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE695:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE694]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE695]]));
+// DEFAULT-NEXT:                 let %[[VALUE696:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE697:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE696]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE697]]));
+// DEFAULT-NEXT:                 let %[[VALUE698:[0-9]+]]: f64 [synthetic] = read<f64>(field2(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE699:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE698]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field2(field3(%[[VALUE_u]])), read<f64>(%[[VALUE699]]));
+// DEFAULT-NEXT:                 let %[[VALUE700:[0-9]+]]: f64 [synthetic] = read<f64>(field3(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE701:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE700]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field3(field3(%[[VALUE_u]])), read<f64>(%[[VALUE701]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<f64>(field0(field5(%[[VALUE_u]])), const<f64>(9.5));
+// DEFAULT-NEXT:         write<i64>(field1(field5(%[[VALUE_u]])), reinterpret<i64, reason=assign, fits=always>(const<u64>(6148914691236517205)));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE702:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE703:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE704:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE703]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE704]]));
+// DEFAULT-NEXT:                 let %[[VALUE705:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE706:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE705]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE706]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE707:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE708:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE709:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE708]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE709]]));
+// DEFAULT-NEXT:                 let %[[VALUE710:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE711:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE710]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE711]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE712:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE713:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE714:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE713]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE714]]));
+// DEFAULT-NEXT:                 let %[[VALUE715:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE716:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE715]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE716]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE717:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE718:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE719:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE718]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE719]]));
+// DEFAULT-NEXT:                 let %[[VALUE720:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE721:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE720]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE721]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE722:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE723:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE724:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE723]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE724]]));
+// DEFAULT-NEXT:                 let %[[VALUE725:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE726:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE725]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE726]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE727:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE728:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE729:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE728]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE729]]));
+// DEFAULT-NEXT:                 let %[[VALUE730:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE731:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE730]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE731]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE732:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE733:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE734:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE733]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE734]]));
+// DEFAULT-NEXT:                 let %[[VALUE735:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE736:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE735]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE736]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE737:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE738:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE739:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE738]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE739]]));
+// DEFAULT-NEXT:                 let %[[VALUE740:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE741:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE740]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE741]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE742:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE743:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE744:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE743]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE744]]));
+// DEFAULT-NEXT:                 let %[[VALUE745:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE746:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE745]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE746]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(i32, ...) -> @type[[TYPE_W]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f11]], const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE747:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE748:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE749:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE748]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE749]]));
+// DEFAULT-NEXT:                 let %[[VALUE750:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE751:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE750]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE751]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE752:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE753:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE754:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE753]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE754]]));
+// DEFAULT-NEXT:                 let %[[VALUE755:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE756:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE755]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE756]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE757:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE758:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE759:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE758]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE759]]));
+// DEFAULT-NEXT:                 let %[[VALUE760:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE761:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE760]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE761]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE762:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE763:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE764:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE763]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE764]]));
+// DEFAULT-NEXT:                 let %[[VALUE765:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE766:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE765]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE766]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE767:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE768:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE769:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE768]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE769]]));
+// DEFAULT-NEXT:                 let %[[VALUE770:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE771:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE770]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE771]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE772:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE773:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE774:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE773]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE774]]));
+// DEFAULT-NEXT:                 let %[[VALUE775:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE776:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE775]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE776]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE777:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE778:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE779:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE778]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE779]]));
+// DEFAULT-NEXT:                 let %[[VALUE780:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE781:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE780]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE781]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE782:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE783:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE784:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE783]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE784]]));
+// DEFAULT-NEXT:                 let %[[VALUE785:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE786:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE785]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE786]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE787:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE788:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE789:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE788]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE789]]));
+// DEFAULT-NEXT:                 let %[[VALUE790:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE791:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE790]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE791]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE792:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE793:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE794:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE793]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE794]]));
+// DEFAULT-NEXT:                 let %[[VALUE795:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE796:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE795]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE796]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(i32, ...) -> @type[[TYPE_X]], abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> native_c>(%[[VALUE_f12]], const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]])))));
+// DEFAULT-NEXT:         do %[[VALUE797:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE798:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE799:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE798]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE799]]));
+// DEFAULT-NEXT:                 let %[[VALUE800:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE801:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE800]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE801]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%[[VALUE_f13]], const<i32>(0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(read<@type[[TYPE_W]]>(%[[VALUE_g]])));
+// DEFAULT-NEXT:         do %[[VALUE802:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE803:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE804:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE803]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE804]]));
+// DEFAULT-NEXT:                 let %[[VALUE805:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE806:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE805]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE806]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f13]], const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(read<@type[[TYPE_W]]>(%[[VALUE_g]])));
+// DEFAULT-NEXT:         do %[[VALUE807:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE808:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE809:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE808]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE809]]));
+// DEFAULT-NEXT:                 let %[[VALUE810:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE811:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE810]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE811]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f13]], const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(read<@type[[TYPE_W]]>(%[[VALUE_g]])));
+// DEFAULT-NEXT:         do %[[VALUE812:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE813:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE814:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE813]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE814]]));
+// DEFAULT-NEXT:                 let %[[VALUE815:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE816:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE815]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE816]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f13]], const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(read<@type[[TYPE_W]]>(%[[VALUE_g]])));
+// DEFAULT-NEXT:         do %[[VALUE817:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE818:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE819:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE818]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE819]]));
+// DEFAULT-NEXT:                 let %[[VALUE820:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE821:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE820]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE821]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f13]], const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(read<@type[[TYPE_W]]>(%[[VALUE_g]])));
+// DEFAULT-NEXT:         do %[[VALUE822:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE823:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE824:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE823]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE824]]));
+// DEFAULT-NEXT:                 let %[[VALUE825:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE826:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE825]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE826]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f13]], const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(read<@type[[TYPE_W]]>(%[[VALUE_g]])));
+// DEFAULT-NEXT:         do %[[VALUE827:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE828:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE829:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE828]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE829]]));
+// DEFAULT-NEXT:                 let %[[VALUE830:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE831:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE830]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE831]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f13]], const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(read<@type[[TYPE_W]]>(%[[VALUE_g]])));
+// DEFAULT-NEXT:         do %[[VALUE832:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE833:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE834:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE833]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE834]]));
+// DEFAULT-NEXT:                 let %[[VALUE835:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE836:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE835]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE836]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f13]], const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(read<@type[[TYPE_W]]>(%[[VALUE_g]])));
+// DEFAULT-NEXT:         do %[[VALUE837:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE838:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE839:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE838]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE839]]));
+// DEFAULT-NEXT:                 let %[[VALUE840:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE841:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE840]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE841]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f13]], const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(read<@type[[TYPE_W]]>(%[[VALUE_g]])));
+// DEFAULT-NEXT:         do %[[VALUE842:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE843:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE844:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE843]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE844]]));
+// DEFAULT-NEXT:                 let %[[VALUE845:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE846:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE845]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE846]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f13]], const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_W]], reason=vararg>(read<@type[[TYPE_W]]>(field5(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_W]]>(field5(%[[VALUE_v]]), copy<@type[[TYPE_W]], reason=assign>(read<@type[[TYPE_W]]>(%[[VALUE_g]])));
+// DEFAULT-NEXT:         do %[[VALUE847:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE848:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE849:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE848]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE849]]));
+// DEFAULT-NEXT:                 let %[[VALUE850:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE851:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE850]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE851]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, native_c) -> void>(%[[VALUE_f14]], const<i32>(0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(read<@type[[TYPE_X]]>(%[[VALUE_h]])));
+// DEFAULT-NEXT:         do %[[VALUE852:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE853:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE854:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE853]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE854]]));
+// DEFAULT-NEXT:                 let %[[VALUE855:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE856:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE855]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE856]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f14]], const<i32>(1), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(read<@type[[TYPE_X]]>(%[[VALUE_h]])));
+// DEFAULT-NEXT:         do %[[VALUE857:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE858:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE859:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE858]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE859]]));
+// DEFAULT-NEXT:                 let %[[VALUE860:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE861:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE860]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE861]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f14]], const<i32>(2), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(read<@type[[TYPE_X]]>(%[[VALUE_h]])));
+// DEFAULT-NEXT:         do %[[VALUE862:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE863:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE864:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE863]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE864]]));
+// DEFAULT-NEXT:                 let %[[VALUE865:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE866:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE865]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE866]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f14]], const<i32>(3), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(read<@type[[TYPE_X]]>(%[[VALUE_h]])));
+// DEFAULT-NEXT:         do %[[VALUE867:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE868:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE869:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE868]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE869]]));
+// DEFAULT-NEXT:                 let %[[VALUE870:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE871:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE870]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE871]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f14]], const<i32>(4), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(read<@type[[TYPE_X]]>(%[[VALUE_h]])));
+// DEFAULT-NEXT:         do %[[VALUE872:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE873:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE874:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE873]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE874]]));
+// DEFAULT-NEXT:                 let %[[VALUE875:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE876:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE875]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE876]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f14]], const<i32>(5), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(read<@type[[TYPE_X]]>(%[[VALUE_h]])));
+// DEFAULT-NEXT:         do %[[VALUE877:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE878:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE879:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE878]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE879]]));
+// DEFAULT-NEXT:                 let %[[VALUE880:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE881:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE880]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE881]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f14]], const<i32>(6), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(read<@type[[TYPE_X]]>(%[[VALUE_h]])));
+// DEFAULT-NEXT:         do %[[VALUE882:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE883:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE884:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE883]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE884]]));
+// DEFAULT-NEXT:                 let %[[VALUE885:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE886:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE885]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE886]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f14]], const<i32>(7), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(read<@type[[TYPE_X]]>(%[[VALUE_h]])));
+// DEFAULT-NEXT:         do %[[VALUE887:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE888:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE889:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE888]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE889]]));
+// DEFAULT-NEXT:                 let %[[VALUE890:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE891:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE890]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE891]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f14]], const<i32>(8), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(read<@type[[TYPE_X]]>(%[[VALUE_h]])));
+// DEFAULT-NEXT:         do %[[VALUE892:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE893:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE894:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE893]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE894]]));
+// DEFAULT-NEXT:                 let %[[VALUE895:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE896:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE895]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE896]]));
+// DEFAULT-NEXT:             }
+// DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_f14]], const<i32>(9), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), const<i32>(0), const<f64>(0.0), copy<@type[[TYPE_X]], reason=vararg>(read<@type[[TYPE_X]]>(field6(%[[VALUE_u]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_X]]>(field6(%[[VALUE_v]]), copy<@type[[TYPE_X]], reason=assign>(read<@type[[TYPE_X]]>(%[[VALUE_h]])));
+// DEFAULT-NEXT:         do %[[VALUE897:[0-9]+]]
+// DEFAULT-NEXT:             {
+// DEFAULT-NEXT:                 if logical_or<bool>(ne<f64, exceptions=ignore>(read<f64>(field0(field3(%[[VALUE_u]]))), read<f64>(field0(field3(%[[VALUE_v]])))), ne<f64, exceptions=ignore>(read<f64>(field1(field3(%[[VALUE_u]]))), read<f64>(field1(field3(%[[VALUE_v]])))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:                 let %[[VALUE898:[0-9]+]]: f64 [synthetic] = read<f64>(field0(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE899:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE898]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field0(field3(%[[VALUE_u]])), read<f64>(%[[VALUE899]]));
+// DEFAULT-NEXT:                 let %[[VALUE900:[0-9]+]]: f64 [synthetic] = read<f64>(field1(field3(%[[VALUE_u]])));
+// DEFAULT-NEXT:                 let %[[VALUE901:[0-9]+]]: f64 [synthetic] = sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE900]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<f64>(field1(field3(%[[VALUE_u]])), read<f64>(%[[VALUE901]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         return const<i32>(0);

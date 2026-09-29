@@ -54,17 +54,17 @@ void h(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 u: ptr<const array<i32, 1>> [storage=automatic];
-// DEFAULT-NEXT:         let %2 v: ptr<void> [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: ptr<const array<i32, 1>> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @g() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 x: ptr<array<i32, 3>> [storage=automatic];
-// DEFAULT-NEXT:         let %5 p: ptr<const array<i32, 3>> [storage=automatic] = pointer_cast<ptr<const array<i32, 3>>, reason=assign>(read<ptr<array<i32, 3>>>(%4));
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: ptr<array<i32, 3>> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<const array<i32, 3>> [storage=automatic] = pointer_cast<ptr<const array<i32, 3>>, reason=assign>(read<ptr<array<i32, 3>>>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @h() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 x: ptr<const void> [storage=automatic];
-// DEFAULT-NEXT:         let %8 p: ptr<const array<i32, 3>> [storage=automatic] = pointer_cast<ptr<const array<i32, 3>>, reason=assign>(read<ptr<const void>>(%7));
+// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: ptr<const void> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<const array<i32, 3>> [storage=automatic] = pointer_cast<ptr<const array<i32, 3>>, reason=assign>(read<ptr<const void>>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -32,9 +32,9 @@ int d = &a != &b;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 a: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %1 b: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 c: i32 [storage=static] = from_bool<i32, reason=assign>(eq<ptr<i32>>(addr_of<ptr<i32>>(%0), addr_of<ptr<i32>>(%0))) [linkage=external];
-// DEFAULT-NEXT:     global %3 d: i32 [storage=static] = from_bool<i32, reason=assign>(ne<ptr<i32>>(addr_of<ptr<i32>>(%0), addr_of<ptr<i32>>(%1))) [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] = from_bool<i32, reason=assign>(eq<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_a]]), addr_of<ptr<i32>>(%[[VALUE_a]]))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] = from_bool<i32, reason=assign>(ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_a]]), addr_of<ptr<i32>>(%[[VALUE_b]]))) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

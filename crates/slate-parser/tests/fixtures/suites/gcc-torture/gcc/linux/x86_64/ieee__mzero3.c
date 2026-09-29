@@ -67,43 +67,43 @@ float negf(float v) { return -v; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 nzerod: f64 [storage=static] = neg<f64>(const<f64>(0.0)) [linkage=external];
-// DEFAULT-NEXT:     global %3 nzerof: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(0.0))) [linkage=external];
-// DEFAULT-NEXT:     global %4 zerod: f64 [storage=static] = const<f64>(0.0) [linkage=external];
-// DEFAULT-NEXT:     global %5 zerof: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%17 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @expectd(%11 value: f64, %12 expected: f64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %28: bool [synthetic];
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%11), read<f64>(%12))
-// DEFAULT-NEXT:             write<bool>(%28, const<bool>(true));
+// DEFAULT-NEXT:     global %[[VALUE_nzerod:[0-9]+]] nzerod: f64 [storage=static] = neg<f64>(const<f64>(0.0)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_nzerof:[0-9]+]] nzerof: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(neg<f64>(const<f64>(0.0))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_zerod:[0-9]+]] zerod: f64 [storage=static] = const<f64>(0.0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_zerof:[0-9]+]] zerof: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_expectd:[0-9]+]] @expectd(%[[VALUE_value:[0-9]+]] value: f64, %[[VALUE_expected:[0-9]+]] expected: f64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_value]]), read<f64>(%[[VALUE_expected]]))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%28, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%27, pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%11))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%12))), const<u64>(8)), const<i32>(0)));
-// DEFAULT-NEXT:         if read<bool>(%28)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp:[0-9]+]], pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%[[VALUE_value]]))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%[[VALUE_expected]]))), const<u64>(8)), const<i32>(0)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE1]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @expectf(%13 value: f32, %14 expected: f32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %29: bool [synthetic];
-// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(read<f32>(%13), read<f32>(%14))
-// DEFAULT-NEXT:             write<bool>(%29, const<bool>(true));
+// DEFAULT-NEXT:     fn %[[VALUE_expectf:[0-9]+]] @expectf(%[[VALUE_value_2:[0-9]+]] value: f32, %[[VALUE_expected_2:[0-9]+]] expected: f32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(read<f32>(%[[VALUE_value_2]]), read<f32>(%[[VALUE_expected_2]]))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%29, ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%27, pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f32>>(%13))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f32>>(%14))), const<u64>(4)), const<i32>(0)));
-// DEFAULT-NEXT:         if read<bool>(%29)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f32>>(%[[VALUE_value_2]]))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f32>>(%[[VALUE_expected_2]]))), const<u64>(4)), const<i32>(0)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE2]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @negd(%15 v: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return neg<f64>(read<f64>(%15));
+// DEFAULT-NEXT:     fn %[[VALUE_negd:[0-9]+]] @negd(%[[VALUE_v:[0-9]+]] v: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return neg<f64>(read<f64>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @negf(%16 v: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return neg<f32>(read<f32>(%16));
+// DEFAULT-NEXT:     fn %[[VALUE_negf:[0-9]+]] @negf(%[[VALUE_v_2:[0-9]+]] v: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return neg<f32>(read<f32>(%[[VALUE_v_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%6, call<f64, signature=fn(f64) -> f64>(%8, read<f64>(%4)), read<f64>(%2));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%7, call<f32, signature=fn(f32) -> f32>(%9, read<f32>(%5)), read<f32>(%3));
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%6, call<f64, signature=fn(f64) -> f64>(%8, read<f64>(%2)), read<f64>(%4));
-// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%7, call<f32, signature=fn(f32) -> f32>(%9, read<f32>(%3)), read<f32>(%5));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%[[VALUE_expectd]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_negd]], read<f64>(%[[VALUE_zerod]])), read<f64>(%[[VALUE_nzerod]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_expectf]], call<f32, signature=fn(f32) -> f32>(%[[VALUE_negf]], read<f32>(%[[VALUE_zerof]])), read<f32>(%[[VALUE_nzerof]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64) -> void>(%[[VALUE_expectd]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_negd]], read<f64>(%[[VALUE_nzerod]])), read<f64>(%[[VALUE_zerod]]));
+// DEFAULT-NEXT:         call<void, signature=fn(f32, f32) -> void>(%[[VALUE_expectf]], call<f32, signature=fn(f32) -> f32>(%[[VALUE_negf]], read<f32>(%[[VALUE_nzerof]])), read<f32>(%[[VALUE_zerof]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @__builtin_memcmp(%24 <unnamed>: ptr<const void>, %25 <unnamed>: ptr<const void>, %26 <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcmp]] @__builtin_memcmp(%[[VALUE3:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE4:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE5:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

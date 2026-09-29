@@ -43,19 +43,19 @@ void* call_memcpy(void* p, long long size) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Obj = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Obj:[0-9]+]] Obj = struct {
 // DEFAULT-NEXT:         field0 value: i32;
 // DEFAULT-NEXT:         field1 extra: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     fn %1 @process(%2 p: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 v: i32 [storage=automatic] = read<i32>(field0(deref(read<ptr<@type0>>(%2))));
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<@type0>>(read<ptr<@type0>>(%2), null<ptr<@type0>>))
+// DEFAULT-NEXT:     fn %[[VALUE_process:[0-9]+]] @process(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_Obj]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: i32 [storage=automatic] = read<i32>(field0(deref(read<ptr<@type[[TYPE_Obj]]>>(%[[VALUE_p]]))));
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<@type[[TYPE_Obj]]>>(read<ptr<@type[[TYPE_Obj]]>>(%[[VALUE_p]]), null<ptr<@type[[TYPE_Obj]]>>))
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(1));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%3), read<i32>(field1(deref(read<ptr<@type0>>(%2)))));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_v]]), read<i32>(field1(deref(read<ptr<@type[[TYPE_Obj]]>>(%[[VALUE_p]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @__builtin_memcpy(%7 <unnamed>: ptr<void>, %8 <unnamed>: ptr<const void>, %9 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @call_memcpy(%5 p: ptr<void>, %6 size: i64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%10, null<ptr<void>>, pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%5)), reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%6)));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_call_memcpy:[0-9]+]] @call_memcpy(%[[VALUE_p_2:[0-9]+]] p: ptr<void>, %[[VALUE_size:[0-9]+]] size: i64) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], null<ptr<void>>, pointer_cast<ptr<const void>, reason=arg>(read<ptr<void>>(%[[VALUE_p_2]])), reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_size]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

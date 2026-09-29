@@ -46,28 +46,28 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: u8;
 // DEFAULT-NEXT:         field1 b: u16;
 // DEFAULT-NEXT:     } [size=3, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     type @type1 three_char_t = @type0;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @my_set_a() -> u8 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     type @type[[TYPE_three_char_t:[0-9]+]] three_char_t = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_my_set_a:[0-9]+]] @my_set_a() -> u8 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<u8, reason=return, fits=unknown>(truncate<i8, reason=return, fits=unknown>(const<i32>(171)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @my_set_b() -> u16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_my_set_b:[0-9]+]] @my_set_b() -> u16 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=always>(const<i32>(4660)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 three_char: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<u8>(field0(%7), call<u8, signature=fn() -> u8>(%4));
-// DEFAULT-NEXT:         call<u8, signature=fn() -> u8>(%4);
-// DEFAULT-NEXT:         write<u16>(field1(%7), call<u16, signature=fn() -> u16>(%5));
-// DEFAULT-NEXT:         call<u16, signature=fn() -> u16>(%5);
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(%7)))), const<i32>(171)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field1(%7)))), const<i32>(4660)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_three_char:[0-9]+]] three_char: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         write<u8>(field0(%[[VALUE_three_char]]), call<u8, signature=fn() -> u8>(%[[VALUE_my_set_a]]));
+// DEFAULT-NEXT:         call<u8, signature=fn() -> u8>(%[[VALUE_my_set_a]]);
+// DEFAULT-NEXT:         write<u16>(field1(%[[VALUE_three_char]]), call<u16, signature=fn() -> u16>(%[[VALUE_my_set_b]]));
+// DEFAULT-NEXT:         call<u16, signature=fn() -> u16>(%[[VALUE_my_set_b]]);
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(%[[VALUE_three_char]])))), const<i32>(171)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field1(%[[VALUE_three_char]])))), const<i32>(4660)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

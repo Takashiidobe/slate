@@ -34,11 +34,11 @@ bug: return 0;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         goto %1;
-// DEFAULT-NEXT:         switch %2 const<i32>(0)
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         goto %[[VALUE_bug:[0-9]+]];
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] const<i32>(0)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 label %1 bug:
+// DEFAULT-NEXT:                 label %[[VALUE_bug]] bug:
 // DEFAULT-NEXT:                     return const<i32>(0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }

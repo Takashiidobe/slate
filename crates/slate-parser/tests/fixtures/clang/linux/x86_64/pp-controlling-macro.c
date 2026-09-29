@@ -34,10 +34,10 @@ trailing_t trailing;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 guarded_t = i32;
-// DEFAULT-NEXT:     type @type1 trailing_t = i32;
-// DEFAULT-NEXT:     global %2 value: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 trailing: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_guarded_t:[0-9]+]] guarded_t = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_trailing_t:[0-9]+]] trailing_t = i32;
+// DEFAULT-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_trailing:[0-9]+]] trailing: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
@@ -63,10 +63,10 @@ trailing_t trailing;
 // A-NEXT:         storage d64 [size=8, align=8];
 // A-NEXT:         storage d128 [size=16, align=16];
 // A-NEXT:     }
-// A-NEXT:     type @type0 guarded_t = i32;
-// A-NEXT:     type @type1 trailing_t = i32;
-// A-NEXT:     global %2 value: i32 [storage=static] [linkage=external];
-// A-NEXT:     global %3 trailing: i32 [storage=static] [linkage=external];
+// A-NEXT:     type @type[[TYPE_guarded_t:[0-9]+]] guarded_t = i32;
+// A-NEXT:     type @type[[TYPE_trailing_t:[0-9]+]] trailing_t = i32;
+// A-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external];
+// A-NEXT:     global %[[VALUE_trailing:[0-9]+]] trailing: i32 [storage=static] [linkage=external];
 // A-NEXT: }
 // SLATE-FILECHECK-END A
 // SLATE-FILECHECK-BEGIN SKIP
@@ -92,9 +92,9 @@ trailing_t trailing;
 // SKIP-NEXT:         storage d64 [size=8, align=8];
 // SKIP-NEXT:         storage d128 [size=16, align=16];
 // SKIP-NEXT:     }
-// SKIP-NEXT:     type @type0 guarded_t = i32;
-// SKIP-NEXT:     type @type1 trailing_t = i32;
-// SKIP-NEXT:     global %2 value: i32 [storage=static] [linkage=external];
-// SKIP-NEXT:     global %3 trailing: i32 [storage=static] [linkage=external];
+// SKIP-NEXT:     type @type[[TYPE_guarded_t:[0-9]+]] guarded_t = i32;
+// SKIP-NEXT:     type @type[[TYPE_trailing_t:[0-9]+]] trailing_t = i32;
+// SKIP-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] [linkage=external];
+// SKIP-NEXT:     global %[[VALUE_trailing:[0-9]+]] trailing: i32 [storage=static] [linkage=external];
 // SKIP-NEXT: }
 // SLATE-FILECHECK-END SKIP

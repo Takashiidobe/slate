@@ -100,82 +100,82 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 ggc_root_tab = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_ggc_root_tab:[0-9]+]] ggc_root_tab = struct {
 // DEFAULT-NEXT:         field0 base: ptr<void>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 deferred_access_check = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_deferred_access_check:[0-9]+]] deferred_access_check = struct {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
-// DEFAULT-NEXT:     type @type2 VEC_deferred_access_check_gc = @type1;
-// DEFAULT-NEXT:     type @type3 deferred_access = struct {
-// DEFAULT-NEXT:         field0 deferred_access_checks: ptr<@type1>;
+// DEFAULT-NEXT:     type @type[[TYPE_VEC_deferred_access_check_gc:[0-9]+]] VEC_deferred_access_check_gc = @type[[TYPE_deferred_access_check]];
+// DEFAULT-NEXT:     type @type[[TYPE_deferred_access:[0-9]+]] deferred_access = struct {
+// DEFAULT-NEXT:         field0 deferred_access_checks: ptr<@type[[TYPE_deferred_access_check]]>;
 // DEFAULT-NEXT:         field1 deferring_access_checks_kind: i32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type4 deferred_access = @type3;
-// DEFAULT-NEXT:     type @type5 VEC_deferred_access_base = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_deferred_access_2:[0-9]+]] deferred_access = @type[[TYPE_deferred_access]];
+// DEFAULT-NEXT:     type @type[[TYPE_VEC_deferred_access_base:[0-9]+]] VEC_deferred_access_base = struct {
 // DEFAULT-NEXT:         field0 num: u32;
-// DEFAULT-NEXT:         field1 vec: array<@type3, 1>;
+// DEFAULT-NEXT:         field1 vec: array<@type[[TYPE_deferred_access]], 1>;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type6 VEC_deferred_access_base = @type5;
-// DEFAULT-NEXT:     type @type7 VEC_deferred_access_gc = struct {
-// DEFAULT-NEXT:         field0 base: @type5;
+// DEFAULT-NEXT:     type @type[[TYPE_VEC_deferred_access_base_2:[0-9]+]] VEC_deferred_access_base = @type[[TYPE_VEC_deferred_access_base]];
+// DEFAULT-NEXT:     type @type[[TYPE_VEC_deferred_access_gc:[0-9]+]] VEC_deferred_access_gc = struct {
+// DEFAULT-NEXT:         field0 base: @type[[TYPE_VEC_deferred_access_base]];
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type8 VEC_deferred_access_gc = @type7;
-// DEFAULT-NEXT:     global %17 deferred_access_stack: ptr<@type7> [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %18 deferred_access_no_check: u32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %19 gt_pch_rs_gt_cp_semantics_h: array<@type0, 1> [storage=static] [const] = aggregate<array<@type0, 1>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<void>, reason=assign>(addr_of<ptr<u32>>(%18)))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @vec_assert_fail() -> void [linkage=external] [inline=never] [definition=emitted] [noreturn] [fallthrough=ub] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     type @type[[TYPE_VEC_deferred_access_gc_2:[0-9]+]] VEC_deferred_access_gc = @type[[TYPE_VEC_deferred_access_gc]];
+// DEFAULT-NEXT:     global %[[VALUE_deferred_access_stack:[0-9]+]] deferred_access_stack: ptr<@type[[TYPE_VEC_deferred_access_gc]]> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_deferred_access_no_check:[0-9]+]] deferred_access_no_check: u32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_gt_pch_rs_gt_cp_semantics_h:[0-9]+]] gt_pch_rs_gt_cp_semantics_h: array<@type[[TYPE_ggc_root_tab]], 1> [storage=static] [const] = aggregate<array<@type[[TYPE_ggc_root_tab]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE_ggc_root_tab]], zero_fill=false>(field0 = pointer_cast<ptr<void>, reason=assign>(addr_of<ptr<u32>>(%[[VALUE_deferred_access_no_check]])))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_vec_assert_fail:[0-9]+]] @vec_assert_fail() -> void [linkage=external] [inline=never] [definition=emitted] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @VEC_deferred_access_base_last(%10 vec_: ptr<@type5>) -> ptr<@type3> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %26: i32 [synthetic];
-// DEFAULT-NEXT:         if logical_and<bool>(ne<ptr<@type5>>(read<ptr<@type5>>(%10), null<ptr<@type5>>), ne<u32>(read<u32>(field0(deref(read<ptr<@type5>>(%10)))), const<u32>(0)))
-// DEFAULT-NEXT:             write<i32>(%26, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_VEC_deferred_access_base_last:[0-9]+]] @VEC_deferred_access_base_last(%[[VALUE_vec_:[0-9]+]] vec_: ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> ptr<@type[[TYPE_deferred_access]]> [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic];
+// DEFAULT-NEXT:         if logical_and<bool>(ne<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec_]]), null<ptr<@type[[TYPE_VEC_deferred_access_base]]>>), ne<u32>(read<u32>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec_]])))), const<u32>(0)))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE0]], const<i32>(0));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:             write<i32>(%26, const<i32>(0));
-// DEFAULT-NEXT:         return addr_of<ptr<@type3>>(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(1)>(field1(deref(read<ptr<@type5>>(%10)))), sub<u32, overflow=wrap>(read<u32>(field0(deref(read<ptr<@type5>>(%10)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))))));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_vec_assert_fail]]);
+// DEFAULT-NEXT:             write<i32>(%[[VALUE0]], const<i32>(0));
+// DEFAULT-NEXT:         return addr_of<ptr<@type[[TYPE_deferred_access]]>>(deref(ptr_offset<ptr<@type[[TYPE_deferred_access]]>, subtract=false, element=@type[[TYPE_deferred_access]], overflow=ub>(array_decay<ptr<@type[[TYPE_deferred_access]]>, length=Some(1)>(field1(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec_]])))), sub<u32, overflow=wrap>(read<u32>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec_]])))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @VEC_deferred_access_base_pop(%12 vec_: ptr<@type5>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %27: i32 [synthetic];
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(field0(deref(read<ptr<@type5>>(%12)))), const<u32>(0))
-// DEFAULT-NEXT:             write<i32>(%27, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_VEC_deferred_access_base_pop:[0-9]+]] @VEC_deferred_access_base_pop(%[[VALUE_vec__2:[0-9]+]] vec_: ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic];
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec__2]])))), const<u32>(0))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE1]], const<i32>(0));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:             write<i32>(%27, const<i32>(0));
-// DEFAULT-NEXT:         let %28: ptr<@type5> [synthetic] = read<ptr<@type5>>(%12);
-// DEFAULT-NEXT:         let %29: u32 [synthetic] = read<u32>(field0(deref(read<ptr<@type5>>(%28))));
-// DEFAULT-NEXT:         let %30: u32 [synthetic] = sub<u32, overflow=wrap>(read<u32>(%29), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<u32>(field0(deref(read<ptr<@type5>>(%28))), read<u32>(%30));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_vec_assert_fail]]);
+// DEFAULT-NEXT:             write<i32>(%[[VALUE1]], const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: ptr<@type[[TYPE_VEC_deferred_access_base]]> [synthetic] = read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE_vec__2]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u32 [synthetic] = read<u32>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE2]]))));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u32 [synthetic] = sub<u32, overflow=wrap>(read<u32>(%[[VALUE3]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         write<u32>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(%[[VALUE2]]))), read<u32>(%[[VALUE4]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @perform_access_checks(%14 p: ptr<@type1>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_perform_access_checks:[0-9]+]] @perform_access_checks(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_deferred_access_check]]>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @pop_to_parent_deferring_access_checks() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%18), const<u32>(0))
-// DEFAULT-NEXT:             let %31: u32 [synthetic] = read<u32>(%18);
-// DEFAULT-NEXT:             let %32: u32 [synthetic] = sub<u32, overflow=wrap>(read<u32>(%31), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:             write<u32>(%18, read<u32>(%32));
+// DEFAULT-NEXT:     fn %[[VALUE_pop_to_parent_deferring_access_checks:[0-9]+]] @pop_to_parent_deferring_access_checks() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_deferred_access_no_check]]), const<u32>(0))
+// DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_deferred_access_no_check]]);
+// DEFAULT-NEXT:             let %[[VALUE6:[0-9]+]]: u32 [synthetic] = sub<u32, overflow=wrap>(read<u32>(%[[VALUE5]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:             write<u32>(%[[VALUE_deferred_access_no_check]], read<u32>(%[[VALUE6]]));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %21 checks: ptr<@type1> [storage=automatic];
-// DEFAULT-NEXT:                 let %22 ptr: ptr<@type3> [storage=automatic];
-// DEFAULT-NEXT:                 write<ptr<@type1>>(%21, read<ptr<@type1>>(field0(deref(call<ptr<@type3>, signature=fn(ptr<@type5>) -> ptr<@type3>>(%9, conditional<ptr<@type5>>(ne<ptr<@type7>>(read<ptr<@type7>>(%17), null<ptr<@type7>>), addr_of<ptr<@type5>>(field0(deref(read<ptr<@type7>>(%17)))), null<ptr<@type5>>))))));
-// DEFAULT-NEXT:                 read<ptr<@type1>>(field0(deref(call<ptr<@type3>, signature=fn(ptr<@type5>) -> ptr<@type3>>(%9, conditional<ptr<@type5>>(ne<ptr<@type7>>(read<ptr<@type7>>(%17), null<ptr<@type7>>), addr_of<ptr<@type5>>(field0(deref(read<ptr<@type7>>(%17)))), null<ptr<@type5>>)))));
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type5>) -> void>(%11, conditional<ptr<@type5>>(ne<ptr<@type7>>(read<ptr<@type7>>(%17), null<ptr<@type7>>), addr_of<ptr<@type5>>(field0(deref(read<ptr<@type7>>(%17)))), null<ptr<@type5>>));
-// DEFAULT-NEXT:                 write<ptr<@type3>>(%22, call<ptr<@type3>, signature=fn(ptr<@type5>) -> ptr<@type3>>(%9, conditional<ptr<@type5>>(ne<ptr<@type7>>(read<ptr<@type7>>(%17), null<ptr<@type7>>), addr_of<ptr<@type5>>(field0(deref(read<ptr<@type7>>(%17)))), null<ptr<@type5>>)));
-// DEFAULT-NEXT:                 call<ptr<@type3>, signature=fn(ptr<@type5>) -> ptr<@type3>>(%9, conditional<ptr<@type5>>(ne<ptr<@type7>>(read<ptr<@type7>>(%17), null<ptr<@type7>>), addr_of<ptr<@type5>>(field0(deref(read<ptr<@type7>>(%17)))), null<ptr<@type5>>));
-// DEFAULT-NEXT:                 if eq<i32>(read<i32>(field1(deref(read<ptr<@type3>>(%22)))), const<i32>(0))
-// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type1>) -> void>(%13, read<ptr<@type1>>(%21));
+// DEFAULT-NEXT:                 let %[[VALUE_checks:[0-9]+]] checks: ptr<@type[[TYPE_deferred_access_check]]> [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_ptr:[0-9]+]] ptr: ptr<@type[[TYPE_deferred_access]]> [storage=automatic];
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_deferred_access_check]]>>(%[[VALUE_checks]], read<ptr<@type[[TYPE_deferred_access_check]]>>(field0(deref(call<ptr<@type[[TYPE_deferred_access]]>, signature=fn(ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> ptr<@type[[TYPE_deferred_access]]>>(%[[VALUE_VEC_deferred_access_base_last]], conditional<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(ne<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]]), null<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>), addr_of<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]])))), null<ptr<@type[[TYPE_VEC_deferred_access_base]]>>))))));
+// DEFAULT-NEXT:                 read<ptr<@type[[TYPE_deferred_access_check]]>>(field0(deref(call<ptr<@type[[TYPE_deferred_access]]>, signature=fn(ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> ptr<@type[[TYPE_deferred_access]]>>(%[[VALUE_VEC_deferred_access_base_last]], conditional<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(ne<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]]), null<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>), addr_of<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]])))), null<ptr<@type[[TYPE_VEC_deferred_access_base]]>>)))));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> void>(%[[VALUE_VEC_deferred_access_base_pop]], conditional<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(ne<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]]), null<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>), addr_of<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]])))), null<ptr<@type[[TYPE_VEC_deferred_access_base]]>>));
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_deferred_access]]>>(%[[VALUE_ptr]], call<ptr<@type[[TYPE_deferred_access]]>, signature=fn(ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> ptr<@type[[TYPE_deferred_access]]>>(%[[VALUE_VEC_deferred_access_base_last]], conditional<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(ne<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]]), null<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>), addr_of<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]])))), null<ptr<@type[[TYPE_VEC_deferred_access_base]]>>)));
+// DEFAULT-NEXT:                 call<ptr<@type[[TYPE_deferred_access]]>, signature=fn(ptr<@type[[TYPE_VEC_deferred_access_base]]>) -> ptr<@type[[TYPE_deferred_access]]>>(%[[VALUE_VEC_deferred_access_base_last]], conditional<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(ne<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]]), null<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>), addr_of<ptr<@type[[TYPE_VEC_deferred_access_base]]>>(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]])))), null<ptr<@type[[TYPE_VEC_deferred_access_base]]>>));
+// DEFAULT-NEXT:                 if eq<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_deferred_access]]>>(%[[VALUE_ptr]])))), const<i32>(0))
+// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type[[TYPE_deferred_access_check]]>) -> void>(%[[VALUE_perform_access_checks]], read<ptr<@type[[TYPE_deferred_access_check]]>>(%[[VALUE_checks]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @__builtin_malloc(%24 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<ptr<@type7>>(%17, pointer_cast<ptr<@type7>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%25, add<u64, overflow=wrap>(const<u64>(24), mul<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type7>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%25, add<u64, overflow=wrap>(const<u64>(24), mul<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))));
-// DEFAULT-NEXT:         write<u32>(field0(field0(deref(read<ptr<@type7>>(%17)))), reinterpret<u32, reason=assign, fits=always>(const<i32>(2)));
-// DEFAULT-NEXT:         write<i32>(field1(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(1)>(field1(field0(deref(read<ptr<@type7>>(%17))))), const<i32>(0)))), const<i32>(1));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%20);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE7:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]], pointer_cast<ptr<@type[[TYPE_VEC_deferred_access_gc]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], add<u64, overflow=wrap>(const<u64>(24), mul<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))))));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_VEC_deferred_access_gc]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], add<u64, overflow=wrap>(const<u64>(24), mul<u64, overflow=wrap>(const<u64>(16), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8)))))));
+// DEFAULT-NEXT:         write<u32>(field0(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]])))), reinterpret<u32, reason=assign, fits=always>(const<i32>(2)));
+// DEFAULT-NEXT:         write<i32>(field1(deref(ptr_offset<ptr<@type[[TYPE_deferred_access]]>, subtract=false, element=@type[[TYPE_deferred_access]], overflow=ub>(array_decay<ptr<@type[[TYPE_deferred_access]]>, length=Some(1)>(field1(field0(deref(read<ptr<@type[[TYPE_VEC_deferred_access_gc]]>>(%[[VALUE_deferred_access_stack]]))))), const<i32>(0)))), const<i32>(1));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_pop_to_parent_deferring_access_checks]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

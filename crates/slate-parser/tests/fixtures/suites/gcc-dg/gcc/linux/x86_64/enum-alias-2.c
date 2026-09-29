@@ -50,28 +50,28 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = i32;
-// DEFAULT-NEXT:     type @type1 E = enum : i32 {
-// DEFAULT-NEXT:         %0 E1 = const<i32>(-1);
-// DEFAULT-NEXT:         %1 E2 = const<i32>(0);
-// DEFAULT-NEXT:         %2 E3 = const<i32>(1);
-// DEFAULT-NEXT:         %3 MAX = const<i32>(2147483647);
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_E:[0-9]+]] E = enum : i32 {
+// DEFAULT-NEXT:         %[[VALUE_E1:[0-9]+]] E1 = const<i32>(-1);
+// DEFAULT-NEXT:         %[[VALUE_E2:[0-9]+]] E2 = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_E3:[0-9]+]] E3 = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_MAX:[0-9]+]] MAX = const<i32>(2147483647);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type2 B = @type1;
-// DEFAULT-NEXT:     fn %1 @foo(%2 a: ptr<void>, %3 b: ptr<void>, %4 c: ptr<void>, %5 d: ptr<void>) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<ptr<i32>>(deref(pointer_cast<ptr<ptr<i32>>, reason=explicit>(read<ptr<void>>(%2))), pointer_cast<ptr<i32>, reason=assign>(read<ptr<void>>(%4)));
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = @type[[TYPE_E]];
+// DEFAULT-NEXT:     fn %[[VALUE_E2]] @foo(%[[VALUE_E3]] a: ptr<void>, %[[VALUE_MAX]] b: ptr<void>, %[[VALUE_c:[0-9]+]] c: ptr<void>, %[[VALUE_d:[0-9]+]] d: ptr<void>) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<ptr<i32>>(deref(pointer_cast<ptr<ptr<i32>>, reason=explicit>(read<ptr<void>>(%[[VALUE_E3]]))), pointer_cast<ptr<i32>, reason=assign>(read<ptr<void>>(%[[VALUE_c]])));
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             write<ptr<@type1>>(deref(pointer_cast<ptr<ptr<@type1>>, reason=explicit>(read<ptr<void>>(%3))), pointer_cast<ptr<@type1>, reason=assign>(read<ptr<void>>(%5)));
+// DEFAULT-NEXT:             write<ptr<@type[[TYPE_E]]>>(deref(pointer_cast<ptr<ptr<@type[[TYPE_E]]>>, reason=explicit>(read<ptr<void>>(%[[VALUE_MAX]]))), pointer_cast<ptr<@type[[TYPE_E]]>, reason=assign>(read<ptr<void>>(%[[VALUE_d]])));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(read<ptr<i32>>(deref(pointer_cast<ptr<ptr<i32>>, reason=explicit>(read<ptr<void>>(%2)))));
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(read<ptr<i32>>(deref(pointer_cast<ptr<ptr<i32>>, reason=explicit>(read<ptr<void>>(%[[VALUE_E3]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %13 a: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         let %14 b: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %15 c: i32 [storage=automatic];
-// DEFAULT-NEXT:         if ne<ptr<i32>>(addr_of<ptr<i32>>(%15), pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, ptr<void>, ptr<void>, ptr<void>) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<i32>>>(%13)), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<i32>>>(%13)), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%14)), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%15)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%16);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: i32 [storage=automatic];
+// DEFAULT-NEXT:         if ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_c_2]]), pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(ptr<void>, ptr<void>, ptr<void>, ptr<void>) -> ptr<void>>(%[[VALUE_E2]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<i32>>>(%[[VALUE_a]])), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<i32>>>(%[[VALUE_a]])), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_b]])), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_c_2]])))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

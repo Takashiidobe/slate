@@ -35,15 +35,15 @@ int        main(void) { return foo(gb, 0) + foo(gb, 1); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 big = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_big:[0-9]+]] big = struct {
 // DEFAULT-NEXT:         field0 i: array<i32, 16384>;
 // DEFAULT-NEXT:     } [size=65536, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %1 gb: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo(%3 b: @type0, %4 x: i32) -> i32 [linkage=external] [abi=sysv64(native_c, scalar) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16384)>(field0(%3)), read<i32>(%4))));
+// DEFAULT-NEXT:     global %[[VALUE_gb:[0-9]+]] gb: @type[[TYPE_big]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_b:[0-9]+]] b: @type[[TYPE_big]], %[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [abi=sysv64(native_c, scalar) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(16384)>(field0(%[[VALUE_b]])), read<i32>(%[[VALUE_x]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn(@type0, i32) -> i32, abi=sysv64(native_c, scalar) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%1)), const<i32>(0)), call<i32, signature=fn(@type0, i32) -> i32, abi=sysv64(native_c, scalar) -> scalar>(%2, copy<@type0, reason=arg>(read<@type0>(%1)), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn(@type[[TYPE_big]], i32) -> i32, abi=sysv64(native_c, scalar) -> scalar>(%[[VALUE_foo]], copy<@type[[TYPE_big]], reason=arg>(read<@type[[TYPE_big]]>(%[[VALUE_gb]])), const<i32>(0)), call<i32, signature=fn(@type[[TYPE_big]], i32) -> i32, abi=sysv64(native_c, scalar) -> scalar>(%[[VALUE_foo]], copy<@type[[TYPE_big]], reason=arg>(read<@type[[TYPE_big]]>(%[[VALUE_gb]])), const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

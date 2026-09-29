@@ -43,24 +43,24 @@ int        main(int argc) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external] [alias="a"];
-// DEFAULT-NEXT:     global %2 c: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     global %3 d: i32 [storage=static] [linkage=external] [alias="c"];
-// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @main(%5 argc: i32) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 p: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         let %7 q: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(0))
-// DEFAULT-NEXT:             write<ptr<i32>>(%6, addr_of<ptr<i32>>(%0));
-// DEFAULT-NEXT:             write<ptr<i32>>(%7, addr_of<ptr<i32>>(%1));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external] [alias="a"];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] [linkage=external] [alias="c"];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_argc]]), const<i32>(0))
+// DEFAULT-NEXT:             write<ptr<i32>>(%[[VALUE_p]], addr_of<ptr<i32>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:             write<ptr<i32>>(%[[VALUE_q]], addr_of<ptr<i32>>(%[[VALUE_b]]));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<ptr<i32>>(%6, addr_of<ptr<i32>>(%2));
-// DEFAULT-NEXT:             write<ptr<i32>>(%7, addr_of<ptr<i32>>(%3));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%6)), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%7)), const<i32>(2));
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(deref(read<ptr<i32>>(%6))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:             write<ptr<i32>>(%[[VALUE_p]], addr_of<ptr<i32>>(%[[VALUE_c]]));
+// DEFAULT-NEXT:             write<ptr<i32>>(%[[VALUE_q]], addr_of<ptr<i32>>(%[[VALUE_d]]));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_p]])), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_q]])), const<i32>(2));
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_p]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

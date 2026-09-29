@@ -32,8 +32,8 @@ int *_Atomic p; /* { dg-error "_Atomic" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 i: atomic i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 j: atomic i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 p: atomic ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: atomic i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: atomic i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: atomic ptr<i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -64,42 +64,42 @@ reset_lists ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 node_type = enum : u32 {
-// DEFAULT-NEXT:         %0 INITIAL = const<i32>(0);
-// DEFAULT-NEXT:         %1 FREE = const<i32>(1);
-// DEFAULT-NEXT:         %2 PRECOLORED = const<i32>(2);
-// DEFAULT-NEXT:         %3 SIMPLIFY = const<i32>(3);
-// DEFAULT-NEXT:         %4 SIMPLIFY_SPILL = const<i32>(4);
-// DEFAULT-NEXT:         %5 SIMPLIFY_FAT = const<i32>(5);
-// DEFAULT-NEXT:         %6 FREEZE = const<i32>(6);
-// DEFAULT-NEXT:         %7 SPILL = const<i32>(7);
-// DEFAULT-NEXT:         %8 SELECT = const<i32>(8);
-// DEFAULT-NEXT:         %9 SPILLED = const<i32>(9);
-// DEFAULT-NEXT:         %10 COALESCED = const<i32>(10);
-// DEFAULT-NEXT:         %11 COLORED = const<i32>(11);
-// DEFAULT-NEXT:         %12 LAST_NODE_TYPE = const<i32>(12);
+// DEFAULT-NEXT:     type @type[[TYPE_node_type:[0-9]+]] node_type = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_INITIAL:[0-9]+]] INITIAL = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_FREE:[0-9]+]] FREE = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_PRECOLORED:[0-9]+]] PRECOLORED = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE_SIMPLIFY:[0-9]+]] SIMPLIFY = const<i32>(3);
+// DEFAULT-NEXT:         %[[VALUE_SIMPLIFY_SPILL:[0-9]+]] SIMPLIFY_SPILL = const<i32>(4);
+// DEFAULT-NEXT:         %[[VALUE_SIMPLIFY_FAT:[0-9]+]] SIMPLIFY_FAT = const<i32>(5);
+// DEFAULT-NEXT:         %[[VALUE_FREEZE:[0-9]+]] FREEZE = const<i32>(6);
+// DEFAULT-NEXT:         %[[VALUE_SPILL:[0-9]+]] SPILL = const<i32>(7);
+// DEFAULT-NEXT:         %[[VALUE_SELECT:[0-9]+]] SELECT = const<i32>(8);
+// DEFAULT-NEXT:         %[[VALUE_SPILLED:[0-9]+]] SPILLED = const<i32>(9);
+// DEFAULT-NEXT:         %[[VALUE_COALESCED:[0-9]+]] COALESCED = const<i32>(10);
+// DEFAULT-NEXT:         %[[VALUE_COLORED:[0-9]+]] COLORED = const<i32>(11);
+// DEFAULT-NEXT:         %[[VALUE_LAST_NODE_TYPE:[0-9]+]] LAST_NODE_TYPE = const<i32>(12);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @bar() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @baz() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %17 @put_web(%18 type: @type0) -> void [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         switch %20 enum_to_int<u32, reason=promotion>(read<@type0>(%18))
+// DEFAULT-NEXT:     fn %[[VALUE_INITIAL]] @foo() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_FREE]] @bar() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_PRECOLORED]] @baz() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_put_web:[0-9]+]] @put_web(%[[VALUE_type:[0-9]+]] type: @type[[TYPE_node_type]]) -> void [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] enum_to_int<u32, reason=promotion>(read<@type[[TYPE_node_type]]>(%[[VALUE_type]]))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %20 const<u32>(0):
-// DEFAULT-NEXT:                     case %20 const<u32>(1):
-// DEFAULT-NEXT:                         case %20 const<u32>(6):
-// DEFAULT-NEXT:                             case %20 const<u32>(7):
-// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:                 break %20;
-// DEFAULT-NEXT:                 case %20 const<u32>(2):
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:                 break %20;
-// DEFAULT-NEXT:                 default %20:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<u32>(0):
+// DEFAULT-NEXT:                     case %[[VALUE0]] const<u32>(1):
+// DEFAULT-NEXT:                         case %[[VALUE0]] const<u32>(6):
+// DEFAULT-NEXT:                             case %[[VALUE0]] const<u32>(7):
+// DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE_INITIAL]]);
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<u32>(2):
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_FREE]]);
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 default %[[VALUE0]]:
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_PRECOLORED]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @reset_lists() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%17, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:     fn %[[VALUE_reset_lists:[0-9]+]] @reset_lists() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_node_type]]) -> void>(%[[VALUE_put_web]], int_to_enum<@type[[TYPE_node_type]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

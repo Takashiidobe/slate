@@ -59,32 +59,32 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:         field0 a: i8;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo_2:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: f64;
 // DEFAULT-NEXT:         field2 c: ptr<i8>;
 // DEFAULT-NEXT:         field3 d: ptr<void>;
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 16, 24]];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @sfoo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_sfoo:[0-9]+]] @sfoo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<u64>(const<u64>(32), const<u64>(0))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(32)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 t: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %7 u: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%6, call<i32, signature=fn() -> i32>(%3));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%3);
-// DEFAULT-NEXT:         write<i32>(%7, reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(1))));
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%6), read<i32>(%7))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_t]], call<i32, signature=fn() -> i32>(%[[VALUE_sfoo]]));
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_sfoo]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_u]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(1))));
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_t]]), read<i32>(%[[VALUE_u]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

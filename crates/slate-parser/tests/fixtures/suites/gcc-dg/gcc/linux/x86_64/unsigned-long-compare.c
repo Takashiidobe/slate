@@ -49,15 +49,15 @@ int main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @exit(%6 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 OneULL: u64 [storage=automatic] = const<u64>(1);
-// DEFAULT-NEXT:         let %5 result: u64 [storage=automatic];
-// DEFAULT-NEXT:         write<u64>(%5, div<u64, by_zero=ub>(read<u64>(%4), const<u64>(18446744071562067968)));
-// DEFAULT-NEXT:         if ne<u64>(read<u64>(%5), const<u64>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_OneULL:[0-9]+]] OneULL: u64 [storage=automatic] = const<u64>(1);
+// DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: u64 [storage=automatic];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_result]], div<u64, by_zero=ub>(read<u64>(%[[VALUE_OneULL]]), const<u64>(18446744071562067968)));
+// DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_result]]), const<u64>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

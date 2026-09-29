@@ -47,19 +47,19 @@ int foo2 (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 g: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @bar() -> void [linkage=external] [inline=always] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4: i32 [synthetic] = read<i32>(%0);
-// DEFAULT-NEXT:         let %5: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%4), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%0, read<i32>(%5));
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [inline=always] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_g]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_g]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         return read<i32>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_bar]]);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_g]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @foo2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%0), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_foo2:[0-9]+]] @foo2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_bar]]);
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_g]]), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

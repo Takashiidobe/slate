@@ -48,20 +48,20 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @link_error() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @__builtin_powi(%5 <unnamed>: f64, %6 <unnamed>: i32) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %1 @test(%2 x: f64, %3 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, i32) -> f64>(%7, read<f64>(%2), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(neg<f64>(const<f64>(1.0)))), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(1.0), read<f64>(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, i32) -> f64>(%7, read<f64>(%2), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(const<f64>(0.0))), const<f64>(1.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, i32) -> f64>(%7, read<f64>(%2), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(const<f64>(1.0))), read<f64>(%2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, i32) -> f64>(%7, const<f64>(1.0), read<i32>(%3)), const<f64>(1.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_link_error:[0-9]+]] @link_error() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_powi:[0-9]+]] @__builtin_powi(%[[VALUE0:[0-9]+]] <unnamed>: f64, %[[VALUE1:[0-9]+]] <unnamed>: i32) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_x:[0-9]+]] x: f64, %[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, i32) -> f64>(%[[VALUE___builtin_powi]], read<f64>(%[[VALUE_x]]), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(neg<f64>(const<f64>(1.0)))), div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(1.0), read<f64>(%[[VALUE_x]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, i32) -> f64>(%[[VALUE___builtin_powi]], read<f64>(%[[VALUE_x]]), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(const<f64>(0.0))), const<f64>(1.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, i32) -> f64>(%[[VALUE___builtin_powi]], read<f64>(%[[VALUE_x]]), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(const<f64>(1.0))), read<f64>(%[[VALUE_x]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, i32) -> f64>(%[[VALUE___builtin_powi]], const<f64>(1.0), read<i32>(%[[VALUE_n]])), const<f64>(1.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(f64, i32) -> void>(%1, const<f64>(7.3), const<i32>(2));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(f64, i32) -> void>(%[[VALUE_test]], const<f64>(7.3), const<i32>(2));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

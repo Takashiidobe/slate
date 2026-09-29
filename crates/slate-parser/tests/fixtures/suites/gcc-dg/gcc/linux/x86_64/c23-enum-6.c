@@ -192,151 +192,151 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 e1 = enum : i16 {
-// DEFAULT-NEXT:         %0 e1a = const<@type0>(32767);
-// DEFAULT-NEXT:         %1 e1a_type_check = const<@type0>(8);
-// DEFAULT-NEXT:         %2 e1z = const<@type0>(0);
-// DEFAULT-NEXT:         %3 e1z_type_check = const<@type0>(8);
-// DEFAULT-NEXT:         %4 e1b = const<@type0>(-32768);
-// DEFAULT-NEXT:         %5 e1c = const<@type0>(-32767);
-// DEFAULT-NEXT:         %6 e1c_type_check = const<@type0>(8);
+// DEFAULT-NEXT:     type @type[[TYPE_e1:[0-9]+]] e1 = enum : i16 {
+// DEFAULT-NEXT:         %[[VALUE_e1a:[0-9]+]] e1a = const<@type[[TYPE_e1]]>(32767);
+// DEFAULT-NEXT:         %[[VALUE_e1a_type_check:[0-9]+]] e1a_type_check = const<@type[[TYPE_e1]]>(8);
+// DEFAULT-NEXT:         %[[VALUE_e1z:[0-9]+]] e1z = const<@type[[TYPE_e1]]>(0);
+// DEFAULT-NEXT:         %[[VALUE_e1z_type_check:[0-9]+]] e1z_type_check = const<@type[[TYPE_e1]]>(8);
+// DEFAULT-NEXT:         %[[VALUE_e1b:[0-9]+]] e1b = const<@type[[TYPE_e1]]>(-32768);
+// DEFAULT-NEXT:         %[[VALUE_e1c:[0-9]+]] e1c = const<@type[[TYPE_e1]]>(-32767);
+// DEFAULT-NEXT:         %[[VALUE_e1c_type_check:[0-9]+]] e1c_type_check = const<@type[[TYPE_e1]]>(8);
 // DEFAULT-NEXT:     } [size=2, align=2];
-// DEFAULT-NEXT:     type @type1 e2 = enum : bool {
-// DEFAULT-NEXT:         %0 b0 = const<@type1>(0);
-// DEFAULT-NEXT:         %1 b1 = const<@type1>(1);
-// DEFAULT-NEXT:         %2 b0a = const<@type1>(0);
-// DEFAULT-NEXT:         %3 b1a = const<@type1>(1);
+// DEFAULT-NEXT:     type @type[[TYPE_e2:[0-9]+]] e2 = enum : bool {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] b0 = const<@type[[TYPE_e2]]>(0);
+// DEFAULT-NEXT:         %[[VALUE_e1a_type_check]] b1 = const<@type[[TYPE_e2]]>(1);
+// DEFAULT-NEXT:         %[[VALUE_e1z]] b0a = const<@type[[TYPE_e2]]>(0);
+// DEFAULT-NEXT:         %[[VALUE_e1z_type_check]] b1a = const<@type[[TYPE_e2]]>(1);
 // DEFAULT-NEXT:     } [size=1, align=1];
-// DEFAULT-NEXT:     type @type2 e3 = enum : u16 {
-// DEFAULT-NEXT:         %0 e3a = const<@type2>(0);
-// DEFAULT-NEXT:         %1 e3b = const<@type2>(1);
+// DEFAULT-NEXT:     type @type[[TYPE_e3:[0-9]+]] e3 = enum : u16 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] e3a = const<@type[[TYPE_e3]]>(0);
+// DEFAULT-NEXT:         %[[VALUE_e1a_type_check]] e3b = const<@type[[TYPE_e3]]>(1);
 // DEFAULT-NEXT:     } [size=2, align=2];
-// DEFAULT-NEXT:     type @type3 e4 = enum : i64 {
-// DEFAULT-NEXT:         %0 e4a = const<@type3>(8);
+// DEFAULT-NEXT:     type @type[[TYPE_e4:[0-9]+]] e4 = enum : i64 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] e4a = const<@type[[TYPE_e4]]>(8);
 // DEFAULT-NEXT:     } [size=8, align=8];
-// DEFAULT-NEXT:     type @type4 e5 = enum : u32 incomplete [size=4, align=4];
-// DEFAULT-NEXT:     type @type5 = enum : u16 {
-// DEFAULT-NEXT:         %0 e6a = const<@type5>(0);
-// DEFAULT-NEXT:         %1 e6b = const<@type5>(1);
-// DEFAULT-NEXT:         %2 e6a_type_check = const<@type5>(8);
+// DEFAULT-NEXT:     type @type[[TYPE_e5:[0-9]+]] e5 = enum : u32 incomplete [size=4, align=4];
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u16 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] e6a = const<@type[[TYPE0]]>(0);
+// DEFAULT-NEXT:         %[[VALUE_e1a_type_check]] e6b = const<@type[[TYPE0]]>(1);
+// DEFAULT-NEXT:         %[[VALUE_e1z]] e6a_type_check = const<@type[[TYPE0]]>(8);
 // DEFAULT-NEXT:     } [size=2, align=2];
-// DEFAULT-NEXT:     type @type6 s1 = struct incomplete;
-// DEFAULT-NEXT:     type @type7 s2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s1:[0-9]+]] s1 = struct incomplete;
+// DEFAULT-NEXT:     type @type[[TYPE_s2:[0-9]+]] s2 = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type8 u1 = union incomplete;
-// DEFAULT-NEXT:     type @type9 u2 = union {
+// DEFAULT-NEXT:     type @type[[TYPE_u1:[0-9]+]] u1 = union incomplete;
+// DEFAULT-NEXT:     type @type[[TYPE_u2:[0-9]+]] u2 = union {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type10 xe1 = enum : u32 {
-// DEFAULT-NEXT:         %0 XE1 = const<i32>(0);
+// DEFAULT-NEXT:     type @type[[TYPE_xe1:[0-9]+]] xe1 = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] XE1 = const<i32>(0);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type11 xe2 = enum : i64 {
-// DEFAULT-NEXT:         %0 XE2 = const<@type11>(0);
+// DEFAULT-NEXT:     type @type[[TYPE_xe2:[0-9]+]] xe2 = enum : i64 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] XE2 = const<@type[[TYPE_xe2]]>(0);
 // DEFAULT-NEXT:     } [size=8, align=8];
-// DEFAULT-NEXT:     type @type12 xe3 = enum : u64 incomplete [size=8, align=8];
-// DEFAULT-NEXT:     type @type13 s1 = enum : i8 incomplete [size=1, align=1];
-// DEFAULT-NEXT:     type @type14 s2 = enum : i32 {
-// DEFAULT-NEXT:         %0 S2 = const<@type14>(0);
+// DEFAULT-NEXT:     type @type[[TYPE_xe3:[0-9]+]] xe3 = enum : u64 incomplete [size=8, align=8];
+// DEFAULT-NEXT:     type @type[[TYPE_s1_2:[0-9]+]] s1 = enum : i8 incomplete [size=1, align=1];
+// DEFAULT-NEXT:     type @type[[TYPE_s2_2:[0-9]+]] s2 = enum : i32 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] S2 = const<@type[[TYPE_s2_2]]>(0);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type15 u1 = enum : i64 {
-// DEFAULT-NEXT:         %0 U1 = const<@type15>(0);
+// DEFAULT-NEXT:     type @type[[TYPE_u1_2:[0-9]+]] u1 = enum : i64 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] U1 = const<@type[[TYPE_u1_2]]>(0);
 // DEFAULT-NEXT:     } [size=8, align=8];
-// DEFAULT-NEXT:     type @type16 u2 = enum : u8 incomplete [size=1, align=1];
-// DEFAULT-NEXT:     type @type17 xe1 = enum : i64 incomplete [size=8, align=8];
-// DEFAULT-NEXT:     type @type18 xe2 = enum : i16 incomplete [size=2, align=2];
-// DEFAULT-NEXT:     type @type19 xe3 = enum : i8 {
-// DEFAULT-NEXT:         %0 XE3 = const<@type19>(0);
+// DEFAULT-NEXT:     type @type[[TYPE_u2_2:[0-9]+]] u2 = enum : u8 incomplete [size=1, align=1];
+// DEFAULT-NEXT:     type @type[[TYPE_xe1_2:[0-9]+]] xe1 = enum : i64 incomplete [size=8, align=8];
+// DEFAULT-NEXT:     type @type[[TYPE_xe2_2:[0-9]+]] xe2 = enum : i16 incomplete [size=2, align=2];
+// DEFAULT-NEXT:     type @type[[TYPE_xe3_2:[0-9]+]] xe3 = enum : i8 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] XE3 = const<@type[[TYPE_xe3_2]]>(0);
 // DEFAULT-NEXT:     } [size=1, align=1];
-// DEFAULT-NEXT:     extern %0 i: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %9 e1v: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %15 e2v: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %19 e3v: @type2 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %22 e4v: @type3 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %24 e5v: @type4 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %29 e6v: @type5 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %50 p: ptr<void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %51 np: ptr<void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %39 @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     extern %[[VALUE_e1a]] i: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_e1v:[0-9]+]] e1v: @type[[TYPE_e1]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_e2v:[0-9]+]] e2v: @type[[TYPE_e2]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_e3v:[0-9]+]] e3v: @type[[TYPE_e3]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_e4v:[0-9]+]] e4v: @type[[TYPE_e4]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_e5v:[0-9]+]] e5v: @type[[TYPE_e5]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e6v:[0-9]+]] e6v: @type[[TYPE0]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_np:[0-9]+]] np: ptr<void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %52 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %53 @exit(%57 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %54 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %55 e1vm: volatile @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %56 e2vm: volatile @type1 [storage=automatic];
-// DEFAULT-NEXT:         write<@type0, volatile>(%55, int_to_enum<@type0, reason=assign>(truncate<i16, reason=assign, fits=unknown>(const<i64>(9223372036854775807))));
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(enum_to_int<i16, reason=promotion>(read<@type0, volatile>(%55))), widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(const<i64>(9223372036854775807))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, int_to_enum<@type1, reason=assign>(ne<i32, reason=assign>(const<i32>(10), const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1, volatile>(%56))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, int_to_enum<@type1, reason=assign>(ne<i32, reason=assign>(const<i32>(0), const<i32>(0))));
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1, volatile>(%56))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         let %58: @type1 [synthetic] = read<@type1, volatile>(%56);
-// DEFAULT-NEXT:         let %59: @type1 [synthetic] = int_to_enum<@type1, reason=assign>(ne<i32, reason=assign>(add<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%58))), const<i32>(1)), const<i32>(0)));
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, read<@type1>(%59));
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%58))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1, volatile>(%56))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         let %60: @type1 [synthetic] = read<@type1, volatile>(%56);
-// DEFAULT-NEXT:         let %61: @type1 [synthetic] = int_to_enum<@type1, reason=assign>(ne<i32, reason=assign>(add<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%60))), const<i32>(1)), const<i32>(0)));
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, read<@type1>(%61));
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%60))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1, volatile>(%56))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         let %62: @type1 [synthetic] = read<@type1, volatile>(%56);
-// DEFAULT-NEXT:         let %63: @type1 [synthetic] = int_to_enum<@type1, reason=assign>(ne<i32, reason=assign>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%62))), const<i32>(1)), const<i32>(0)));
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, read<@type1>(%63));
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%62))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1, volatile>(%56))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         let %64: @type1 [synthetic] = read<@type1, volatile>(%56);
-// DEFAULT-NEXT:         let %65: @type1 [synthetic] = int_to_enum<@type1, reason=assign>(ne<i32, reason=assign>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%64))), const<i32>(1)), const<i32>(0)));
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, read<@type1>(%65));
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%64))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1, volatile>(%56))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         let %66: @type1 [synthetic] = read<@type1, volatile>(%56);
-// DEFAULT-NEXT:         let %67: @type1 [synthetic] = int_to_enum<@type1, reason=assign>(ne<i32, reason=assign>(add<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%66))), const<i32>(1)), const<i32>(0)));
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, read<@type1>(%67));
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%67))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1, volatile>(%56))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, int_to_enum<@type1, reason=assign>(ne<i32, reason=assign>(const<i32>(0), const<i32>(0))));
-// DEFAULT-NEXT:         let %68: @type1 [synthetic] = read<@type1, volatile>(%56);
-// DEFAULT-NEXT:         let %69: @type1 [synthetic] = int_to_enum<@type1, reason=assign>(ne<i32, reason=assign>(add<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%68))), const<i32>(1)), const<i32>(0)));
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, read<@type1>(%69));
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%69))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1, volatile>(%56))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         let %70: @type1 [synthetic] = read<@type1, volatile>(%56);
-// DEFAULT-NEXT:         let %71: @type1 [synthetic] = int_to_enum<@type1, reason=assign>(ne<i32, reason=assign>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%70))), const<i32>(1)), const<i32>(0)));
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, read<@type1>(%71));
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%71))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1, volatile>(%56))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         let %72: @type1 [synthetic] = read<@type1, volatile>(%56);
-// DEFAULT-NEXT:         let %73: @type1 [synthetic] = int_to_enum<@type1, reason=assign>(ne<i32, reason=assign>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%72))), const<i32>(1)), const<i32>(0)));
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, read<@type1>(%73));
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1>(%73))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1, volatile>(%56))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, int_to_enum<@type1, reason=assign>(ne<ptr<void>, reason=assign>(read<ptr<void>>(%50), null<ptr<void>>)));
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, int_to_enum<@type1, reason=assign>(ne<ptr<void>, reason=assign>(read<ptr<void>>(%51), null<ptr<void>>)));
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, int_to_enum<@type1, reason=assign>(ne<ptr<void>, reason=explicit>(read<ptr<void>>(%50), null<ptr<void>>)));
-// DEFAULT-NEXT:         write<@type1, volatile>(%56, int_to_enum<@type1, reason=assign>(ne<ptr<void>, reason=explicit>(read<ptr<void>>(%51), null<ptr<void>>)));
-// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type1, volatile>(%56))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%52);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%53, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_e1vm:[0-9]+]] e1vm: volatile @type[[TYPE_e1]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_e2vm:[0-9]+]] e2vm: volatile @type[[TYPE_e2]] [storage=automatic];
+// DEFAULT-NEXT:         write<@type[[TYPE_e1]], volatile>(%[[VALUE_e1vm]], int_to_enum<@type[[TYPE_e1]], reason=assign>(truncate<i16, reason=assign, fits=unknown>(const<i64>(9223372036854775807))));
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(enum_to_int<i16, reason=promotion>(read<@type[[TYPE_e1]], volatile>(%[[VALUE_e1vm]]))), widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(const<i64>(9223372036854775807))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<i32, reason=assign>(const<i32>(10), const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<i32, reason=assign>(const<i32>(0), const<i32>(0))));
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<i32, reason=assign>(add<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE1]]))), const<i32>(1)), const<i32>(0)));
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], read<@type[[TYPE_e2]]>(%[[VALUE2]]));
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE1]]))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]);
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<i32, reason=assign>(add<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE3]]))), const<i32>(1)), const<i32>(0)));
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], read<@type[[TYPE_e2]]>(%[[VALUE4]]));
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE3]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]);
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<i32, reason=assign>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE5]]))), const<i32>(1)), const<i32>(0)));
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], read<@type[[TYPE_e2]]>(%[[VALUE6]]));
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE5]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]);
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<i32, reason=assign>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE7]]))), const<i32>(1)), const<i32>(0)));
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], read<@type[[TYPE_e2]]>(%[[VALUE8]]));
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE7]]))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]);
+// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<i32, reason=assign>(add<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE9]]))), const<i32>(1)), const<i32>(0)));
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], read<@type[[TYPE_e2]]>(%[[VALUE10]]));
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE10]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<i32, reason=assign>(const<i32>(0), const<i32>(0))));
+// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]);
+// DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<i32, reason=assign>(add<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE11]]))), const<i32>(1)), const<i32>(0)));
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], read<@type[[TYPE_e2]]>(%[[VALUE12]]));
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE12]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]);
+// DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<i32, reason=assign>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE13]]))), const<i32>(1)), const<i32>(0)));
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], read<@type[[TYPE_e2]]>(%[[VALUE14]]));
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE14]]))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]);
+// DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: @type[[TYPE_e2]] [synthetic] = int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<i32, reason=assign>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE15]]))), const<i32>(1)), const<i32>(0)));
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], read<@type[[TYPE_e2]]>(%[[VALUE16]]));
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]]>(%[[VALUE16]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<ptr<void>, reason=assign>(read<ptr<void>>(%[[VALUE_p]]), null<ptr<void>>)));
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<ptr<void>, reason=assign>(read<ptr<void>>(%[[VALUE_np]]), null<ptr<void>>)));
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<ptr<void>, reason=explicit>(read<ptr<void>>(%[[VALUE_p]]), null<ptr<void>>)));
+// DEFAULT-NEXT:         write<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]], int_to_enum<@type[[TYPE_e2]], reason=assign>(ne<ptr<void>, reason=explicit>(read<ptr<void>>(%[[VALUE_np]]), null<ptr<void>>)));
+// DEFAULT-NEXT:         if ne<i32>(from_bool<i32, reason=promotion>(enum_to_int<bool, reason=promotion>(read<@type[[TYPE_e2]], volatile>(%[[VALUE_e2vm]]))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

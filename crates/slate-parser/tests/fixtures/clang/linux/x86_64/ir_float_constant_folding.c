@@ -64,36 +64,36 @@ int out_of_range[] = {OVERFLOWED, NEGATIVE_OVERFLOW, INFINITE, NOT_A_NUMBER, WRA
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 = enum : i32 {
-// IR-NEXT:         %0 ARITHMETIC = const<i32>(1);
-// IR-NEXT:         %1 NARROWED = const<i32>(2);
-// IR-NEXT:         %2 SINGLE = const<i32>(4);
-// IR-NEXT:         %3 NEGATED = const<i32>(-2);
-// IR-NEXT:         %4 COMPARED = const<i32>(1);
-// IR-NEXT:         %5 SELECTED = const<i32>(2);
-// IR-NEXT:         %6 EXTENDED = const<i32>(7);
-// IR-NEXT:         %7 NOT_ZERO = const<i32>(1);
-// IR-NEXT:         %8 SINGLE_ROUNDING = const<i32>(1);
-// IR-NEXT:         %9 DOUBLE_ROUNDING = const<i32>(0);
-// IR-NEXT:         %10 EXTENDED_PRODUCT = const<i32>(55);
+// IR-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : i32 {
+// IR-NEXT:         %[[VALUE_ARITHMETIC:[0-9]+]] ARITHMETIC = const<i32>(1);
+// IR-NEXT:         %[[VALUE_NARROWED:[0-9]+]] NARROWED = const<i32>(2);
+// IR-NEXT:         %[[VALUE_SINGLE:[0-9]+]] SINGLE = const<i32>(4);
+// IR-NEXT:         %[[VALUE_NEGATED:[0-9]+]] NEGATED = const<i32>(-2);
+// IR-NEXT:         %[[VALUE_COMPARED:[0-9]+]] COMPARED = const<i32>(1);
+// IR-NEXT:         %[[VALUE_SELECTED:[0-9]+]] SELECTED = const<i32>(2);
+// IR-NEXT:         %[[VALUE_EXTENDED:[0-9]+]] EXTENDED = const<i32>(7);
+// IR-NEXT:         %[[VALUE_NOT_ZERO:[0-9]+]] NOT_ZERO = const<i32>(1);
+// IR-NEXT:         %[[VALUE_SINGLE_ROUNDING:[0-9]+]] SINGLE_ROUNDING = const<i32>(1);
+// IR-NEXT:         %[[VALUE_DOUBLE_ROUNDING:[0-9]+]] DOUBLE_ROUNDING = const<i32>(0);
+// IR-NEXT:         %[[VALUE_EXTENDED_PRODUCT:[0-9]+]] EXTENDED_PRODUCT = const<i32>(55);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     type @type1 Bits = struct {
+// IR-NEXT:     type @type[[TYPE_Bits:[0-9]+]] Bits = struct {
 // IR-NEXT:         field0 field: i32 : 3;
 // IR-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// IR-NEXT:     type @type2 = enum : i32 {
-// IR-NEXT:         %0 OVERFLOWED = const<i32>(2147483647);
-// IR-NEXT:         %1 NEGATIVE_OVERFLOW = const<i32>(-2147483648);
-// IR-NEXT:         %2 INFINITE = const<i32>(2147483647);
-// IR-NEXT:         %3 NOT_A_NUMBER = const<i32>(0);
-// IR-NEXT:         %4 WRAPPED = const<i32>(-128);
+// IR-NEXT:     type @type[[TYPE1:[0-9]+]] = enum : i32 {
+// IR-NEXT:         %[[VALUE_ARITHMETIC]] OVERFLOWED = const<i32>(2147483647);
+// IR-NEXT:         %[[VALUE_NARROWED]] NEGATIVE_OVERFLOW = const<i32>(-2147483648);
+// IR-NEXT:         %[[VALUE_SINGLE]] INFINITE = const<i32>(2147483647);
+// IR-NEXT:         %[[VALUE_NEGATED]] NOT_A_NUMBER = const<i32>(0);
+// IR-NEXT:         %[[VALUE_COMPARED]] WRAPPED = const<i32>(-128);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     global %12 bound: array<i8, 5> [storage=static] [linkage=external];
-// IR-NEXT:     global %14 values: array<i32, 11> [storage=static] [align=16] = aggregate<array<i32, 11>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(4), index3 = const<i32>(-2), index4 = const<i32>(1), index5 = const<i32>(2), index6 = const<i32>(7), index7 = const<i32>(1), index8 = const<i32>(1), index9 = const<i32>(0), index10 = const<i32>(55)) [linkage=external];
-// IR-NEXT:     global %23 out_of_range: array<i32, 5> [storage=static] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(2147483647), index1 = const<i32>(-2147483648), index2 = const<i32>(2147483647), index3 = const<i32>(0), index4 = const<i32>(-128)) [linkage=external];
-// IR-NEXT:     fn %15 @select(%16 c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         switch %24 read<i32>(%16)
+// IR-NEXT:     global %[[VALUE_bound:[0-9]+]] bound: array<i8, 5> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_values:[0-9]+]] values: array<i32, 11> [storage=static] [align=16] = aggregate<array<i32, 11>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(4), index3 = const<i32>(-2), index4 = const<i32>(1), index5 = const<i32>(2), index6 = const<i32>(7), index7 = const<i32>(1), index8 = const<i32>(1), index9 = const<i32>(0), index10 = const<i32>(55)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_out_of_range:[0-9]+]] out_of_range: array<i32, 5> [storage=static] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(2147483647), index1 = const<i32>(-2147483648), index2 = const<i32>(2147483647), index3 = const<i32>(0), index4 = const<i32>(-128)) [linkage=external];
+// IR-NEXT:     fn %[[VALUE_select:[0-9]+]] @select(%[[VALUE_c:[0-9]+]] c: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_c]])
 // IR-NEXT:             {
-// IR-NEXT:                 case %24 const<i32>(5):
+// IR-NEXT:                 case %[[VALUE0]] const<i32>(5):
 // IR-NEXT:                     return const<i32>(1);
 // IR-NEXT:             }
 // IR-NEXT:         return const<i32>(0);

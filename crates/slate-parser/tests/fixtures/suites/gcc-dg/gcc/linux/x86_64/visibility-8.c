@@ -41,7 +41,7 @@ fputs_unlocked (str, fp)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @fputs_unlocked(%1 str: ptr<const i8>, %2 fp: ptr<i32>) -> i32 [linkage=external] [asm_name="__GI_fputs_unlocked"] [visibility=hidden] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_fputs_unlocked:[0-9]+]] @fputs_unlocked(%[[VALUE_str:[0-9]+]] str: ptr<const i8>, %[[VALUE_fp:[0-9]+]] fp: ptr<i32>) -> i32 [linkage=external] [asm_name="__GI_fputs_unlocked"] [visibility=hidden] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -44,11 +44,11 @@ _Static_assert (_Generic (f3,
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f1(unprototyped) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f1a() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%0, const<i32>(1), const<i32>(2));
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(unprototyped) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f1a:[0-9]+]] @f1a() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_f1]], const<i32>(1), const<i32>(2));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @f2(%4 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @f3(unprototyped) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(unprototyped) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

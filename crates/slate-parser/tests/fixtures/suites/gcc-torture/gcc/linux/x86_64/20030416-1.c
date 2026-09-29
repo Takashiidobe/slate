@@ -43,20 +43,20 @@ main(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @bar() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%2 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if gt<i32>(read<i32>(%2), const<i32>(3))
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_x]]), const<i32>(3))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         write<i32>(%2, const<i32>(9));
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_bar]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_x]], const<i32>(9));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 j: i32 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, read<i32>(%4));
-// DEFAULT-NEXT:         return read<i32>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_j]]));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_j]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

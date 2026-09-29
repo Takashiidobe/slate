@@ -68,24 +68,24 @@ CHECK (offsetof (struct test_s4, d) == 12);
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 test_sp1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_test_sp1:[0-9]+]] test_sp1 = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i16;
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:         field3 d: i8;
 // DEFAULT-NEXT:     } [size=11, align=1, offsets=[0, 4, 6, 10]];
-// DEFAULT-NEXT:     type @type1 test_sp3 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_test_sp3:[0-9]+]] test_sp3 = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i16;
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:         field3 d: i8;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8, 10, 14]];
-// DEFAULT-NEXT:     type @type2 test_s4 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_test_s4:[0-9]+]] test_s4 = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i16;
 // DEFAULT-NEXT:         field2 c: i32 : 15;
 // DEFAULT-NEXT:         field3 d: i8;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 4, 8, 12], bit_offsets=[None, None, Some(64), None], bit_units=[(8, 4)], field_units=[None, None, Some(0), None]];
-// DEFAULT-NEXT:     extern %1 c: array<i8, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_c:[0-9]+]] c: array<i8, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

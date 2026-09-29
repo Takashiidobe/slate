@@ -102,365 +102,365 @@ f (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         do %145
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %1 a: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:                 let %2 b: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:                 let %3 c: ptr<i32> [storage=automatic] = null<ptr<i32>>;
-// DEFAULT-NEXT:                 let %4 d: ptr<i32> [storage=automatic] = null<ptr<i32>>;
-// DEFAULT-NEXT:                 write<ptr<i32>>(%3, read<ptr<i32>>(%4));
-// DEFAULT-NEXT:                 write<ptr<i32>>(%4, read<ptr<i32>>(%3));
+// DEFAULT-NEXT:                 let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:                 let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:                 let %[[VALUE_c:[0-9]+]] c: ptr<i32> [storage=automatic] = null<ptr<i32>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d:[0-9]+]] d: ptr<i32> [storage=automatic] = null<ptr<i32>>;
+// DEFAULT-NEXT:                 write<ptr<i32>>(%[[VALUE_c]], read<ptr<i32>>(%[[VALUE_d]]));
+// DEFAULT-NEXT:                 write<ptr<i32>>(%[[VALUE_d]], read<ptr<i32>>(%[[VALUE_c]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %146
+// DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %5 a: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:                 let %6 b: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:                 let %7 c: ptr<u32> [storage=automatic] = null<ptr<u32>>;
-// DEFAULT-NEXT:                 let %8 d: ptr<u32> [storage=automatic] = null<ptr<u32>>;
-// DEFAULT-NEXT:                 write<ptr<u32>>(%7, read<ptr<u32>>(%8));
-// DEFAULT-NEXT:                 write<ptr<u32>>(%8, read<ptr<u32>>(%7));
+// DEFAULT-NEXT:                 let %[[VALUE_a_2:[0-9]+]] a: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_2:[0-9]+]] b: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_2:[0-9]+]] c: ptr<u32> [storage=automatic] = null<ptr<u32>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_2:[0-9]+]] d: ptr<u32> [storage=automatic] = null<ptr<u32>>;
+// DEFAULT-NEXT:                 write<ptr<u32>>(%[[VALUE_c_2]], read<ptr<u32>>(%[[VALUE_d_2]]));
+// DEFAULT-NEXT:                 write<ptr<u32>>(%[[VALUE_d_2]], read<ptr<u32>>(%[[VALUE_c_2]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %147
+// DEFAULT-NEXT:         do %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %9 a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %10 b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %11 c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 let %12 d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 write<ptr<i64>>(%11, read<ptr<i64>>(%12));
-// DEFAULT-NEXT:                 write<ptr<i64>>(%12, read<ptr<i64>>(%11));
+// DEFAULT-NEXT:                 let %[[VALUE_a_3:[0-9]+]] a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_3:[0-9]+]] b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_3:[0-9]+]] c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_3:[0-9]+]] d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_c_3]], read<ptr<i64>>(%[[VALUE_d_3]]));
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_d_3]], read<ptr<i64>>(%[[VALUE_c_3]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %148
+// DEFAULT-NEXT:         do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %13 a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %14 b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %15 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %16 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%15, read<ptr<u64>>(%16));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%16, read<ptr<u64>>(%15));
+// DEFAULT-NEXT:                 let %[[VALUE_a_4:[0-9]+]] a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_b_4:[0-9]+]] b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_c_4:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_4:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_4]], read<ptr<u64>>(%[[VALUE_d_4]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_4]], read<ptr<u64>>(%[[VALUE_c_4]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %149
+// DEFAULT-NEXT:         do %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %17 a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %18 b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %19 c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 let %20 d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 write<ptr<i64>>(%19, read<ptr<i64>>(%20));
-// DEFAULT-NEXT:                 write<ptr<i64>>(%20, read<ptr<i64>>(%19));
+// DEFAULT-NEXT:                 let %[[VALUE_a_5:[0-9]+]] a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_5:[0-9]+]] b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_5:[0-9]+]] c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_5:[0-9]+]] d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_c_5]], read<ptr<i64>>(%[[VALUE_d_5]]));
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_d_5]], read<ptr<i64>>(%[[VALUE_c_5]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %150
+// DEFAULT-NEXT:         do %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %21 a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %22 b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %23 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %24 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%23, read<ptr<u64>>(%24));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%24, read<ptr<u64>>(%23));
+// DEFAULT-NEXT:                 let %[[VALUE_a_6:[0-9]+]] a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_b_6:[0-9]+]] b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_c_6:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_6:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_6]], read<ptr<u64>>(%[[VALUE_d_6]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_6]], read<ptr<u64>>(%[[VALUE_c_6]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %151
+// DEFAULT-NEXT:         do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %25 a: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:                 let %26 b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %27 c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 let %28 d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 write<ptr<i64>>(%27, read<ptr<i64>>(%28));
-// DEFAULT-NEXT:                 write<ptr<i64>>(%28, read<ptr<i64>>(%27));
+// DEFAULT-NEXT:                 let %[[VALUE_a_7:[0-9]+]] a: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:                 let %[[VALUE_b_7:[0-9]+]] b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_7:[0-9]+]] c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_7:[0-9]+]] d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_c_7]], read<ptr<i64>>(%[[VALUE_d_7]]));
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_d_7]], read<ptr<i64>>(%[[VALUE_c_7]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %152
+// DEFAULT-NEXT:         do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %29 a: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:                 let %30 b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %31 c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 let %32 d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 write<ptr<i64>>(%31, read<ptr<i64>>(%32));
-// DEFAULT-NEXT:                 write<ptr<i64>>(%32, read<ptr<i64>>(%31));
+// DEFAULT-NEXT:                 let %[[VALUE_a_8:[0-9]+]] a: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:                 let %[[VALUE_b_8:[0-9]+]] b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_8:[0-9]+]] c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_8:[0-9]+]] d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_c_8]], read<ptr<i64>>(%[[VALUE_d_8]]));
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_d_8]], read<ptr<i64>>(%[[VALUE_c_8]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %153
+// DEFAULT-NEXT:         do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %33 a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %34 b: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:                 let %35 c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 let %36 d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 write<ptr<i64>>(%35, read<ptr<i64>>(%36));
-// DEFAULT-NEXT:                 write<ptr<i64>>(%36, read<ptr<i64>>(%35));
+// DEFAULT-NEXT:                 let %[[VALUE_a_9:[0-9]+]] a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_9:[0-9]+]] b: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:                 let %[[VALUE_c_9:[0-9]+]] c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_9:[0-9]+]] d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_c_9]], read<ptr<i64>>(%[[VALUE_d_9]]));
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_d_9]], read<ptr<i64>>(%[[VALUE_c_9]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %154
+// DEFAULT-NEXT:         do %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %37 a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %38 b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %39 c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 let %40 d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 write<ptr<i64>>(%39, read<ptr<i64>>(%40));
-// DEFAULT-NEXT:                 write<ptr<i64>>(%40, read<ptr<i64>>(%39));
+// DEFAULT-NEXT:                 let %[[VALUE_a_10:[0-9]+]] a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_10:[0-9]+]] b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_10:[0-9]+]] c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_10:[0-9]+]] d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_c_10]], read<ptr<i64>>(%[[VALUE_d_10]]));
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_d_10]], read<ptr<i64>>(%[[VALUE_c_10]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %155
+// DEFAULT-NEXT:         do %[[VALUE10:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %41 a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %42 b: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:                 let %43 c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 let %44 d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 write<ptr<i64>>(%43, read<ptr<i64>>(%44));
-// DEFAULT-NEXT:                 write<ptr<i64>>(%44, read<ptr<i64>>(%43));
+// DEFAULT-NEXT:                 let %[[VALUE_a_11:[0-9]+]] a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_11:[0-9]+]] b: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:                 let %[[VALUE_c_11:[0-9]+]] c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_11:[0-9]+]] d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_c_11]], read<ptr<i64>>(%[[VALUE_d_11]]));
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_d_11]], read<ptr<i64>>(%[[VALUE_c_11]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %156
+// DEFAULT-NEXT:         do %[[VALUE11:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %45 a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %46 b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %47 c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 let %48 d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 write<ptr<i64>>(%47, read<ptr<i64>>(%48));
-// DEFAULT-NEXT:                 write<ptr<i64>>(%48, read<ptr<i64>>(%47));
+// DEFAULT-NEXT:                 let %[[VALUE_a_12:[0-9]+]] a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_12:[0-9]+]] b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_12:[0-9]+]] c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_12:[0-9]+]] d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_c_12]], read<ptr<i64>>(%[[VALUE_d_12]]));
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_d_12]], read<ptr<i64>>(%[[VALUE_c_12]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %157
+// DEFAULT-NEXT:         do %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %49 a: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:                 let %50 b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %51 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %52 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%51, read<ptr<u64>>(%52));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%52, read<ptr<u64>>(%51));
+// DEFAULT-NEXT:                 let %[[VALUE_a_13:[0-9]+]] a: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_13:[0-9]+]] b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_c_13:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_13:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_13]], read<ptr<u64>>(%[[VALUE_d_13]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_13]], read<ptr<u64>>(%[[VALUE_c_13]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %158
+// DEFAULT-NEXT:         do %[[VALUE13:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %53 a: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:                 let %54 b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %55 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %56 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%55, read<ptr<u64>>(%56));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%56, read<ptr<u64>>(%55));
+// DEFAULT-NEXT:                 let %[[VALUE_a_14:[0-9]+]] a: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_14:[0-9]+]] b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_c_14:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_14:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_14]], read<ptr<u64>>(%[[VALUE_d_14]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_14]], read<ptr<u64>>(%[[VALUE_c_14]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %159
+// DEFAULT-NEXT:         do %[[VALUE14:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %57 a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %58 b: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:                 let %59 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %60 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%59, read<ptr<u64>>(%60));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%60, read<ptr<u64>>(%59));
+// DEFAULT-NEXT:                 let %[[VALUE_a_15:[0-9]+]] a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_b_15:[0-9]+]] b: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_15:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_15:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_15]], read<ptr<u64>>(%[[VALUE_d_15]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_15]], read<ptr<u64>>(%[[VALUE_c_15]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %160
+// DEFAULT-NEXT:         do %[[VALUE15:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %61 a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %62 b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %63 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %64 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%63, read<ptr<u64>>(%64));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%64, read<ptr<u64>>(%63));
+// DEFAULT-NEXT:                 let %[[VALUE_a_16:[0-9]+]] a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_b_16:[0-9]+]] b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_c_16:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_16:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_16]], read<ptr<u64>>(%[[VALUE_d_16]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_16]], read<ptr<u64>>(%[[VALUE_c_16]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %161
+// DEFAULT-NEXT:         do %[[VALUE16:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %65 a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %66 b: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:                 let %67 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %68 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%67, read<ptr<u64>>(%68));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%68, read<ptr<u64>>(%67));
+// DEFAULT-NEXT:                 let %[[VALUE_a_17:[0-9]+]] a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_b_17:[0-9]+]] b: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_17:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_17:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_17]], read<ptr<u64>>(%[[VALUE_d_17]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_17]], read<ptr<u64>>(%[[VALUE_c_17]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %162
+// DEFAULT-NEXT:         do %[[VALUE17:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %69 a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %70 b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %71 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %72 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%71, read<ptr<u64>>(%72));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%72, read<ptr<u64>>(%71));
+// DEFAULT-NEXT:                 let %[[VALUE_a_18:[0-9]+]] a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_b_18:[0-9]+]] b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_c_18:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_18:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_18]], read<ptr<u64>>(%[[VALUE_d_18]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_18]], read<ptr<u64>>(%[[VALUE_c_18]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %163
+// DEFAULT-NEXT:         do %[[VALUE18:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %73 a: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:                 let %74 b: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:                 let %75 c: ptr<u32> [storage=automatic] = null<ptr<u32>>;
-// DEFAULT-NEXT:                 let %76 d: ptr<u32> [storage=automatic] = null<ptr<u32>>;
-// DEFAULT-NEXT:                 write<ptr<u32>>(%75, read<ptr<u32>>(%76));
-// DEFAULT-NEXT:                 write<ptr<u32>>(%76, read<ptr<u32>>(%75));
+// DEFAULT-NEXT:                 let %[[VALUE_a_19:[0-9]+]] a: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:                 let %[[VALUE_b_19:[0-9]+]] b: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_19:[0-9]+]] c: ptr<u32> [storage=automatic] = null<ptr<u32>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_19:[0-9]+]] d: ptr<u32> [storage=automatic] = null<ptr<u32>>;
+// DEFAULT-NEXT:                 write<ptr<u32>>(%[[VALUE_c_19]], read<ptr<u32>>(%[[VALUE_d_19]]));
+// DEFAULT-NEXT:                 write<ptr<u32>>(%[[VALUE_d_19]], read<ptr<u32>>(%[[VALUE_c_19]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %164
+// DEFAULT-NEXT:         do %[[VALUE19:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %77 a: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:                 let %78 b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %79 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %80 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%79, read<ptr<u64>>(%80));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%80, read<ptr<u64>>(%79));
+// DEFAULT-NEXT:                 let %[[VALUE_a_20:[0-9]+]] a: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:                 let %[[VALUE_b_20:[0-9]+]] b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_c_20:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_20:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_20]], read<ptr<u64>>(%[[VALUE_d_20]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_20]], read<ptr<u64>>(%[[VALUE_c_20]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %165
+// DEFAULT-NEXT:         do %[[VALUE20:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %81 a: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:                 let %82 b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %83 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %84 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%83, read<ptr<u64>>(%84));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%84, read<ptr<u64>>(%83));
+// DEFAULT-NEXT:                 let %[[VALUE_a_21:[0-9]+]] a: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:                 let %[[VALUE_b_21:[0-9]+]] b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_c_21:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_21:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_21]], read<ptr<u64>>(%[[VALUE_d_21]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_21]], read<ptr<u64>>(%[[VALUE_c_21]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %166
+// DEFAULT-NEXT:         do %[[VALUE21:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %85 a: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:                 let %86 b: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:                 let %87 c: ptr<u32> [storage=automatic] = null<ptr<u32>>;
-// DEFAULT-NEXT:                 let %88 d: ptr<u32> [storage=automatic] = null<ptr<u32>>;
-// DEFAULT-NEXT:                 write<ptr<u32>>(%87, read<ptr<u32>>(%88));
-// DEFAULT-NEXT:                 write<ptr<u32>>(%88, read<ptr<u32>>(%87));
+// DEFAULT-NEXT:                 let %[[VALUE_a_22:[0-9]+]] a: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_22:[0-9]+]] b: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:                 let %[[VALUE_c_22:[0-9]+]] c: ptr<u32> [storage=automatic] = null<ptr<u32>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_22:[0-9]+]] d: ptr<u32> [storage=automatic] = null<ptr<u32>>;
+// DEFAULT-NEXT:                 write<ptr<u32>>(%[[VALUE_c_22]], read<ptr<u32>>(%[[VALUE_d_22]]));
+// DEFAULT-NEXT:                 write<ptr<u32>>(%[[VALUE_d_22]], read<ptr<u32>>(%[[VALUE_c_22]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %167
+// DEFAULT-NEXT:         do %[[VALUE22:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %89 a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %90 b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %91 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %92 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%91, read<ptr<u64>>(%92));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%92, read<ptr<u64>>(%91));
+// DEFAULT-NEXT:                 let %[[VALUE_a_23:[0-9]+]] a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_23:[0-9]+]] b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_c_23:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_23:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_23]], read<ptr<u64>>(%[[VALUE_d_23]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_23]], read<ptr<u64>>(%[[VALUE_c_23]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %168
+// DEFAULT-NEXT:         do %[[VALUE23:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %93 a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %94 b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %95 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %96 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%95, read<ptr<u64>>(%96));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%96, read<ptr<u64>>(%95));
+// DEFAULT-NEXT:                 let %[[VALUE_a_24:[0-9]+]] a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_24:[0-9]+]] b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_c_24:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_24:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_24]], read<ptr<u64>>(%[[VALUE_d_24]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_24]], read<ptr<u64>>(%[[VALUE_c_24]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %169
+// DEFAULT-NEXT:         do %[[VALUE24:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %97 a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %98 b: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:                 let %99 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %100 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%99, read<ptr<u64>>(%100));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%100, read<ptr<u64>>(%99));
+// DEFAULT-NEXT:                 let %[[VALUE_a_25:[0-9]+]] a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_b_25:[0-9]+]] b: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:                 let %[[VALUE_c_25:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_25:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_25]], read<ptr<u64>>(%[[VALUE_d_25]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_25]], read<ptr<u64>>(%[[VALUE_c_25]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %170
+// DEFAULT-NEXT:         do %[[VALUE25:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %101 a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %102 b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %103 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %104 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%103, read<ptr<u64>>(%104));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%104, read<ptr<u64>>(%103));
+// DEFAULT-NEXT:                 let %[[VALUE_a_26:[0-9]+]] a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_b_26:[0-9]+]] b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_26:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_26:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_26]], read<ptr<u64>>(%[[VALUE_d_26]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_26]], read<ptr<u64>>(%[[VALUE_c_26]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %171
+// DEFAULT-NEXT:         do %[[VALUE26:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %105 a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %106 b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %107 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %108 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%107, read<ptr<u64>>(%108));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%108, read<ptr<u64>>(%107));
+// DEFAULT-NEXT:                 let %[[VALUE_a_27:[0-9]+]] a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_27:[0-9]+]] b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_c_27:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_27:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_27]], read<ptr<u64>>(%[[VALUE_d_27]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_27]], read<ptr<u64>>(%[[VALUE_c_27]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %172
+// DEFAULT-NEXT:         do %[[VALUE27:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %109 a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %110 b: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:                 let %111 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %112 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%111, read<ptr<u64>>(%112));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%112, read<ptr<u64>>(%111));
+// DEFAULT-NEXT:                 let %[[VALUE_a_28:[0-9]+]] a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_b_28:[0-9]+]] b: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:                 let %[[VALUE_c_28:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_28:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_28]], read<ptr<u64>>(%[[VALUE_d_28]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_28]], read<ptr<u64>>(%[[VALUE_c_28]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %173
+// DEFAULT-NEXT:         do %[[VALUE28:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %113 a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %114 b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %115 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %116 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%115, read<ptr<u64>>(%116));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%116, read<ptr<u64>>(%115));
+// DEFAULT-NEXT:                 let %[[VALUE_a_29:[0-9]+]] a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_b_29:[0-9]+]] b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_29:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_29:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_29]], read<ptr<u64>>(%[[VALUE_d_29]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_29]], read<ptr<u64>>(%[[VALUE_c_29]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %174
+// DEFAULT-NEXT:         do %[[VALUE29:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %117 a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %118 b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %119 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %120 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%119, read<ptr<u64>>(%120));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%120, read<ptr<u64>>(%119));
+// DEFAULT-NEXT:                 let %[[VALUE_a_30:[0-9]+]] a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_b_30:[0-9]+]] b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_30:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_30:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_30]], read<ptr<u64>>(%[[VALUE_d_30]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_30]], read<ptr<u64>>(%[[VALUE_c_30]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %175
+// DEFAULT-NEXT:         do %[[VALUE30:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %121 a: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:                 let %122 b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %123 c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 let %124 d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 write<ptr<i64>>(%123, read<ptr<i64>>(%124));
-// DEFAULT-NEXT:                 write<ptr<i64>>(%124, read<ptr<i64>>(%123));
+// DEFAULT-NEXT:                 let %[[VALUE_a_31:[0-9]+]] a: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_31:[0-9]+]] b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_31:[0-9]+]] c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_31:[0-9]+]] d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_c_31]], read<ptr<i64>>(%[[VALUE_d_31]]));
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_d_31]], read<ptr<i64>>(%[[VALUE_c_31]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %176
+// DEFAULT-NEXT:         do %[[VALUE31:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %125 a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %126 b: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:                 let %127 c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 let %128 d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 write<ptr<i64>>(%127, read<ptr<i64>>(%128));
-// DEFAULT-NEXT:                 write<ptr<i64>>(%128, read<ptr<i64>>(%127));
+// DEFAULT-NEXT:                 let %[[VALUE_a_32:[0-9]+]] a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_32:[0-9]+]] b: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_32:[0-9]+]] c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_32:[0-9]+]] d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_c_32]], read<ptr<i64>>(%[[VALUE_d_32]]));
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_d_32]], read<ptr<i64>>(%[[VALUE_c_32]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %177
+// DEFAULT-NEXT:         do %[[VALUE32:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %129 a: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:                 let %130 b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %131 c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 let %132 d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 write<ptr<i64>>(%131, read<ptr<i64>>(%132));
-// DEFAULT-NEXT:                 write<ptr<i64>>(%132, read<ptr<i64>>(%131));
+// DEFAULT-NEXT:                 let %[[VALUE_a_33:[0-9]+]] a: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_33:[0-9]+]] b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_33:[0-9]+]] c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_33:[0-9]+]] d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_c_33]], read<ptr<i64>>(%[[VALUE_d_33]]));
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_d_33]], read<ptr<i64>>(%[[VALUE_c_33]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %178
+// DEFAULT-NEXT:         do %[[VALUE33:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %133 a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %134 b: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:                 let %135 c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 let %136 d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
-// DEFAULT-NEXT:                 write<ptr<i64>>(%135, read<ptr<i64>>(%136));
-// DEFAULT-NEXT:                 write<ptr<i64>>(%136, read<ptr<i64>>(%135));
+// DEFAULT-NEXT:                 let %[[VALUE_a_34:[0-9]+]] a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_34:[0-9]+]] b: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_34:[0-9]+]] c: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_34:[0-9]+]] d: ptr<i64> [storage=automatic] = null<ptr<i64>>;
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_c_34]], read<ptr<i64>>(%[[VALUE_d_34]]));
+// DEFAULT-NEXT:                 write<ptr<i64>>(%[[VALUE_d_34]], read<ptr<i64>>(%[[VALUE_c_34]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %179
+// DEFAULT-NEXT:         do %[[VALUE34:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %137 a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %138 b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %139 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %140 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%139, read<ptr<u64>>(%140));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%140, read<ptr<u64>>(%139));
+// DEFAULT-NEXT:                 let %[[VALUE_a_35:[0-9]+]] a: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_b_35:[0-9]+]] b: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_c_35:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_35:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_35]], read<ptr<u64>>(%[[VALUE_d_35]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_35]], read<ptr<u64>>(%[[VALUE_c_35]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %180
+// DEFAULT-NEXT:         do %[[VALUE35:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %141 a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:                 let %142 b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %143 c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 let %144 d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
-// DEFAULT-NEXT:                 write<ptr<u64>>(%143, read<ptr<u64>>(%144));
-// DEFAULT-NEXT:                 write<ptr<u64>>(%144, read<ptr<u64>>(%143));
+// DEFAULT-NEXT:                 let %[[VALUE_a_36:[0-9]+]] a: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:                 let %[[VALUE_b_36:[0-9]+]] b: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE_c_36:[0-9]+]] c: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 let %[[VALUE_d_36:[0-9]+]] d: ptr<u64> [storage=automatic] = null<ptr<u64>>;
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_c_36]], read<ptr<u64>>(%[[VALUE_d_36]]));
+// DEFAULT-NEXT:                 write<ptr<u64>>(%[[VALUE_d_36]], read<ptr<u64>>(%[[VALUE_c_36]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }

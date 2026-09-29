@@ -33,11 +33,11 @@ void f(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         goto %1;
-// DEFAULT-NEXT:         label %1 A:
-// DEFAULT-NEXT:             goto %2;
-// DEFAULT-NEXT:         label %2 B:
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         goto %[[VALUE_A:[0-9]+]];
+// DEFAULT-NEXT:         label %[[VALUE_A]] A:
+// DEFAULT-NEXT:             goto %[[VALUE_B:[0-9]+]];
+// DEFAULT-NEXT:         label %[[VALUE_B]] B:
 // DEFAULT-NEXT:             return;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

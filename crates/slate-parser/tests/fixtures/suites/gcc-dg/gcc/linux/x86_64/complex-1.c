@@ -56,23 +56,23 @@ int main(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @foo(%2 arg1: i64, %3 arg2: i64, %4 arg3: i64, %5 arg4: i64, %6 arg5: i64, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %8 cf: complex<f32> [storage=automatic];
-// DEFAULT-NEXT:         va_start(%7);
-// DEFAULT-NEXT:         write<complex<f32>>(%8, va_arg<complex<f32>>(%7));
-// DEFAULT-NEXT:         va_arg<complex<f32>>(%7);
-// DEFAULT-NEXT:         va_end(%7);
-// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(read<f32>(imag(%8)), const<f32>(2.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_arg1:[0-9]+]] arg1: i64, %[[VALUE_arg2:[0-9]+]] arg2: i64, %[[VALUE_arg3:[0-9]+]] arg3: i64, %[[VALUE_arg4:[0-9]+]] arg4: i64, %[[VALUE_arg5:[0-9]+]] arg5: i64, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_cf:[0-9]+]] cf: complex<f32> [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         write<complex<f32>>(%[[VALUE_cf]], va_arg<complex<f32>>(%[[VALUE_ap]]));
+// DEFAULT-NEXT:         va_arg<complex<f32>>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         if ne<f32, exceptions=observable>(read<f32>(imag(%[[VALUE_cf]])), const<f32>(2.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @bar(%10 arg1: i64, %11 arg2: i64, %12 arg3: i64, %13 arg4: i64, %14 arg5: i64, %15 arg6: complex<f32>) -> i32 [linkage=external] [abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(i64, i64, i64, i64, i64, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%1, read<i64>(%10), read<i64>(%11), read<i64>(%12), read<i64>(%13), read<i64>(%14), read<complex<f32>>(%15));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_arg1_2:[0-9]+]] arg1: i64, %[[VALUE_arg2_2:[0-9]+]] arg2: i64, %[[VALUE_arg3_2:[0-9]+]] arg3: i64, %[[VALUE_arg4_2:[0-9]+]] arg4: i64, %[[VALUE_arg5_2:[0-9]+]] arg5: i64, %[[VALUE_arg6:[0-9]+]] arg6: complex<f32>) -> i32 [linkage=external] [abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn(i64, i64, i64, i64, i64, ...) -> void, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> void>(%[[VALUE_foo]], read<i64>(%[[VALUE_arg1_2]]), read<i64>(%[[VALUE_arg2_2]]), read<i64>(%[[VALUE_arg3_2]]), read<i64>(%[[VALUE_arg4_2]]), read<i64>(%[[VALUE_arg5_2]]), read<complex<f32>>(%[[VALUE_arg6]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i64, i64, i64, i64, i64, complex<f32>) -> i32, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> scalar>(%9, widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(2.0)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i64, i64, i64, i64, i64, complex<f32>) -> i32, abi=sysv64(scalar, scalar, scalar, scalar, scalar, native_c) -> scalar>(%[[VALUE_bar]], widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(2.0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

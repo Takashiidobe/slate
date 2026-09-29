@@ -37,13 +37,13 @@ double d1 = -1ULL;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 f1: f32 [storage=static] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(neg<u64, overflow=wrap>(const<u64>(1))) [linkage=external];
-// DEFAULT-NEXT:     global %1 f2: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f80>(1.79769313486231570815E+308))) [linkage=external];
-// DEFAULT-NEXT:     global %2 f3: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f80>(2.22507385850720138309E-308))) [linkage=external];
-// DEFAULT-NEXT:     global %3 f4: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.1)) [linkage=external];
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %4 f5: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(ptr<const i8>) -> f64>(%7, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%8)))) [linkage=external];
-// DEFAULT-NEXT:     global %5 d1: f64 [storage=static] = int_to_float<f64, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(neg<u64, overflow=wrap>(const<u64>(1))) [linkage=external];
-// DEFAULT-NEXT:     fn %7 @__builtin_nans(%6 <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     global %[[VALUE_f1:[0-9]+]] f1: f32 [storage=static] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(neg<u64, overflow=wrap>(const<u64>(1))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f2:[0-9]+]] f2: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f80>(1.79769313486231570815E+308))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f3:[0-9]+]] f3: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f80>(2.22507385850720138309E-308))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f4:[0-9]+]] f4: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_f5:[0-9]+]] f5: f32 [storage=static] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(ptr<const i8>) -> f64>(%[[VALUE___builtin_nans:[0-9]+]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]])))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d1:[0-9]+]] d1: f64 [storage=static] = int_to_float<f64, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(neg<u64, overflow=wrap>(const<u64>(1))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_nans]] @__builtin_nans(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

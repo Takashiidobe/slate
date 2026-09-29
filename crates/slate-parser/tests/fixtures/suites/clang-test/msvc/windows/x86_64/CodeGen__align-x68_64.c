@@ -36,11 +36,11 @@ void test1_g(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 arr: array<i8, 16> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @test1_f(%4 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @test1_g() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 x: array<f32, 4> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%1, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<f32>, length=Some(4)>(%3)));
+// DEFAULT-NEXT:     global %[[VALUE_arr:[0-9]+]] arr: array<i8, 16> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test1_f:[0-9]+]] @test1_f(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test1_g:[0-9]+]] @test1_g() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: array<f32, 4> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_test1_f]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<f32>, length=Some(4)>(%[[VALUE_x]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

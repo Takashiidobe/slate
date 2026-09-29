@@ -48,25 +48,25 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %1 l1: volatile i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(1));
-// DEFAULT-NEXT:         let %2 l2: volatile i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:         let %3 l3: volatile i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_l1:[0-9]+]] l1: volatile i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE_l2:[0-9]+]] l2: volatile i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE_l3:[0-9]+]] l3: volatile i64 [storage=automatic] = widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         if ne<i64>(rem<i64, by_zero=ub, min_by_neg_one=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), const<i64>(1)), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         if ne<i64>(rem<i64, by_zero=ub, min_by_neg_one=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), read<i64, volatile>(%1)), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         if eq<i64>(read<i64, volatile>(%2), widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i64>(rem<i64, by_zero=ub, min_by_neg_one=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), read<i64, volatile>(%[[VALUE_l1]])), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if eq<i64>(read<i64, volatile>(%[[VALUE_l2]]), widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if ne<i64>(rem<i64, by_zero=ub, min_by_neg_one=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), const<i64>(1)), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             if ne<i64>(rem<i64, by_zero=ub, min_by_neg_one=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), neg<i64, overflow=ub>(read<i64, volatile>(%2))), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         if ne<i64>(rem<i64, by_zero=ub, min_by_neg_one=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), neg<i64, overflow=ub>(read<i64, volatile>(%3))), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:             if ne<i64>(rem<i64, by_zero=ub, min_by_neg_one=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), neg<i64, overflow=ub>(read<i64, volatile>(%[[VALUE_l2]]))), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i64>(rem<i64, by_zero=ub, min_by_neg_one=ub>(sub<i64, overflow=ub>(neg<i64, overflow=ub>(const<i64>(9223372036854775807)), widen<i64, reason=usual_arith>(const<i32>(1))), neg<i64, overflow=ub>(read<i64, volatile>(%[[VALUE_l3]]))), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

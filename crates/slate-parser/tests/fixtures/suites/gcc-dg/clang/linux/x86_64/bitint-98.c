@@ -75,32 +75,32 @@ corge (long __attribute__((vector_size (1024))) s)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 d: i256b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 e: i255b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %19 @__builtin_memmove(%16 <unnamed>: ptr<void>, %17 <unnamed>: ptr<const void>, %18 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo(%3 s: vector<i64, 8>) -> void [linkage=external] [abi=sysv64(byval<align=64>) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%19, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i256b>>(%0)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i64, 8>>>(%3)), const<u64>(32));
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i256b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i255b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memmove:[0-9]+]] @__builtin_memmove(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_s:[0-9]+]] s: vector<i64, 8>) -> void [linkage=external] [abi=sysv64(byval<align=64>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memmove]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i256b>>(%[[VALUE_d]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i64, 8>>>(%[[VALUE_s]])), const<u64>(32));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @__builtin_memcpy(%20 <unnamed>: ptr<void>, %21 <unnamed>: ptr<const void>, %22 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @bar(%5 x: i512b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %6 s: vector<i64, 8> [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%23, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<vector<i64, 8>>>(%6)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i512b>>(%5)), const<u64>(64));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%23, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i256b>>(%0)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i64, 8>>>(%6)), const<u64>(32));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE3:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE4:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE5:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: i512b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_s_2:[0-9]+]] s: vector<i64, 8> [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<vector<i64, 8>>>(%[[VALUE_s_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i512b>>(%[[VALUE_x]])), const<u64>(64));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i256b>>(%[[VALUE_d]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i64, 8>>>(%[[VALUE_s_2]])), const<u64>(32));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @baz(%8 s: vector<i64, 8>) -> void [linkage=external] [abi=sysv64(byval<align=64>) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %9 d: i256b [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%19, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i256b>>(%9)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i64, 8>>>(%8)), const<u64>(32));
-// DEFAULT-NEXT:         write<i255b>(%1, truncate<i255b, reason=assign, fits=unknown>(read<i256b>(%9)));
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_s_3:[0-9]+]] s: vector<i64, 8>) -> void [linkage=external] [abi=sysv64(byval<align=64>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_d_2:[0-9]+]] d: i256b [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memmove]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i256b>>(%[[VALUE_d_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i64, 8>>>(%[[VALUE_s_3]])), const<u64>(32));
+// DEFAULT-NEXT:         write<i255b>(%[[VALUE_e]], truncate<i255b, reason=assign, fits=unknown>(read<i256b>(%[[VALUE_d_2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @qux(%11 s: vector<i64, 8>) -> void [linkage=external] [abi=sysv64(byval<align=64>) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %12 d: i192b [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%19, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i192b>>(%12)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i64, 8>>>(%11)), const<u64>(24));
-// DEFAULT-NEXT:         write<i255b>(%1, widen<i255b, reason=assign>(read<i192b>(%12)));
+// DEFAULT-NEXT:     fn %[[VALUE_qux:[0-9]+]] @qux(%[[VALUE_s_4:[0-9]+]] s: vector<i64, 8>) -> void [linkage=external] [abi=sysv64(byval<align=64>) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_d_3:[0-9]+]] d: i192b [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memmove]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i192b>>(%[[VALUE_d_3]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i64, 8>>>(%[[VALUE_s_4]])), const<u64>(24));
+// DEFAULT-NEXT:         write<i255b>(%[[VALUE_e]], widen<i255b, reason=assign>(read<i192b>(%[[VALUE_d_3]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @corge(%14 s: vector<i64, 128>) -> i512b [linkage=external] [abi=sysv64(byval<align=1024>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %15 d: i512b [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%23, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i512b>>(%15)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i64, 128>>>(%14)), const<u64>(64));
-// DEFAULT-NEXT:         return read<i512b>(%15);
+// DEFAULT-NEXT:     fn %[[VALUE_corge:[0-9]+]] @corge(%[[VALUE_s_5:[0-9]+]] s: vector<i64, 128>) -> i512b [linkage=external] [abi=sysv64(byval<align=1024>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_d_4:[0-9]+]] d: i512b [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i512b>>(%[[VALUE_d_4]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i64, 128>>>(%[[VALUE_s_5]])), const<u64>(64));
+// DEFAULT-NEXT:         return read<i512b>(%[[VALUE_d_4]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

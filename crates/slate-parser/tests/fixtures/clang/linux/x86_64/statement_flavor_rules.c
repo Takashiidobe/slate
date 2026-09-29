@@ -111,23 +111,23 @@ int outer(int x) {
 // VALID-NEXT:         storage d64 [size=8, align=8];
 // VALID-NEXT:         storage d128 [size=16, align=16];
 // VALID-NEXT:     }
-// VALID-NEXT:     fn %0 @g(%4 <unnamed>: i32) -> i32 [linkage=external];
-// VALID-NEXT:     fn %1 @attributed(%3 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// VALID-NEXT:         switch %5 read<i32>(%3)
+// VALID-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// VALID-NEXT:     fn %[[VALUE_attributed:[0-9]+]] @attributed(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// VALID-NEXT:         switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_x]])
 // VALID-NEXT:             {
-// VALID-NEXT:                 case %5 const<i32>(1):
-// VALID-NEXT:                     let %6: i32 [synthetic] = read<i32>(%3);
-// VALID-NEXT:                     let %7: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%6), const<i32>(1));
-// VALID-NEXT:                     write<i32>(%3, read<i32>(%7));
+// VALID-NEXT:                 case %[[VALUE1]] const<i32>(1):
+// VALID-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// VALID-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// VALID-NEXT:                     write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE3]]));
 // VALID-NEXT:                 ;
-// VALID-NEXT:                 default %5:
-// VALID-NEXT:                     break %5;
+// VALID-NEXT:                 default %[[VALUE1]]:
+// VALID-NEXT:                     break %[[VALUE1]];
 // VALID-NEXT:             }
-// VALID-NEXT:         label %2 done:
+// VALID-NEXT:         label %[[VALUE_done:[0-9]+]] done:
 // VALID-NEXT:             ;
-// VALID-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(0))
-// VALID-NEXT:             goto %2;
-// VALID-NEXT:         return read<i32>(%3);
+// VALID-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
+// VALID-NEXT:             goto %[[VALUE_done]];
+// VALID-NEXT:         return read<i32>(%[[VALUE_x]]);
 // VALID-NEXT:     }
 // VALID-NEXT: }
 // SLATE-FILECHECK-END VALID

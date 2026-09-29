@@ -41,17 +41,17 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 u = union {
+// DEFAULT-NEXT:     type @type[[TYPE_u:[0-9]+]] u = union {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 uu = @type0;
-// DEFAULT-NEXT:     global %2 a: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 b: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<@type0>(%2, copy<@type0, reason=assign>(read<@type0>(%3)));
-// DEFAULT-NEXT:         write<@type0>(%2, copy<@type0, reason=assign>(read<@type0>(%3)));
-// DEFAULT-NEXT:         write<@type0>(%3, copy<@type0, reason=assign>(read<@type0>(%2)));
-// DEFAULT-NEXT:         write<@type0>(%3, copy<@type0, reason=assign>(read<@type0>(%2)));
+// DEFAULT-NEXT:     type @type[[TYPE_uu:[0-9]+]] uu = @type[[TYPE_u]];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_u]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE_u]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<@type[[TYPE_u]]>(%[[VALUE_a]], copy<@type[[TYPE_u]], reason=assign>(read<@type[[TYPE_u]]>(%[[VALUE_b]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_u]]>(%[[VALUE_a]], copy<@type[[TYPE_u]], reason=assign>(read<@type[[TYPE_u]]>(%[[VALUE_b]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_u]]>(%[[VALUE_b]], copy<@type[[TYPE_u]], reason=assign>(read<@type[[TYPE_u]]>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         write<@type[[TYPE_u]]>(%[[VALUE_b]], copy<@type[[TYPE_u]], reason=assign>(read<@type[[TYPE_u]]>(%[[VALUE_a]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -45,20 +45,20 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 delay_block = struct {
-// DEFAULT-NEXT:         field0 succ: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_delay_block:[0-9]+]] delay_block = struct {
+// DEFAULT-NEXT:         field0 succ: ptr<@type[[TYPE_delay_block]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %2 Timer_Queue: @type0 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @time_enqueue(%4 d: ptr<@type0>) -> ptr<@type0> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 q: ptr<@type0> [storage=automatic] = read<ptr<@type0>>(field0(%2));
-// DEFAULT-NEXT:         write<ptr<@type0>>(field0(deref(read<ptr<@type0>>(%4))), null<ptr<@type0>>);
-// DEFAULT-NEXT:         return read<ptr<@type0>>(field0(%2));
+// DEFAULT-NEXT:     global %[[VALUE_Timer_Queue:[0-9]+]] Timer_Queue: @type[[TYPE_delay_block]] [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_time_enqueue:[0-9]+]] @time_enqueue(%[[VALUE_d:[0-9]+]] d: ptr<@type[[TYPE_delay_block]]>) -> ptr<@type[[TYPE_delay_block]]> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_delay_block]]> [storage=automatic] = read<ptr<@type[[TYPE_delay_block]]>>(field0(%[[VALUE_Timer_Queue]]));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_delay_block]]>>(field0(deref(read<ptr<@type[[TYPE_delay_block]]>>(%[[VALUE_d]]))), null<ptr<@type[[TYPE_delay_block]]>>);
+// DEFAULT-NEXT:         return read<ptr<@type[[TYPE_delay_block]]>>(field0(%[[VALUE_Timer_Queue]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<ptr<@type0>>(field0(%2), addr_of<ptr<@type0>>(%2));
-// DEFAULT-NEXT:         if ne<ptr<@type0>>(call<ptr<@type0>, signature=fn(ptr<@type0>) -> ptr<@type0>>(%3, addr_of<ptr<@type0>>(%2)), null<ptr<@type0>>)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_delay_block]]>>(field0(%[[VALUE_Timer_Queue]]), addr_of<ptr<@type[[TYPE_delay_block]]>>(%[[VALUE_Timer_Queue]]));
+// DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_delay_block]]>>(call<ptr<@type[[TYPE_delay_block]]>, signature=fn(ptr<@type[[TYPE_delay_block]]>) -> ptr<@type[[TYPE_delay_block]]>>(%[[VALUE_time_enqueue]], addr_of<ptr<@type[[TYPE_delay_block]]>>(%[[VALUE_Timer_Queue]])), null<ptr<@type[[TYPE_delay_block]]>>)
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

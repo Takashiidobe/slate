@@ -60,7 +60,7 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S0:[0-9]+]] S0 = struct {
 // DEFAULT-NEXT:         field0 f0: i32;
 // DEFAULT-NEXT:         field1 f1: i32;
 // DEFAULT-NEXT:         field2 f2: i32;
@@ -71,32 +71,32 @@ int main() {
 // DEFAULT-NEXT:         field7 f7: i32 : 2;
 // DEFAULT-NEXT:         field8 f8: i32 : 30;
 // DEFAULT-NEXT:     } [size=28, align=4, offsets=[0, 4, 8, 12, 16, 20, 21, 24, 24], bit_offsets=[None, None, None, None, None, Some(160), Some(175), Some(192), Some(194)], bit_units=[(20, 8)], field_units=[None, None, None, None, None, Some(0), Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 d: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 c: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %5 @fn1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(%1, const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%2, const<i32>(1));
-// DEFAULT-NEXT:         for %8
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: @type[[TYPE_S0]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_d]], const<i32>(1));
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:             condition: ne<i32>(read<i32>(%1), const<i32>(0))
+// DEFAULT-NEXT:             condition: ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 write<i32>(%1, read<i32>(%0));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_b]], read<i32>(%[[VALUE_a]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %6 e: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0), field2 = const<i32>(0), field3 = const<i32>(0), field4 = const<i32>(0), field5 = const<i32>(0), field6 = const<i32>(1), field7 = const<i32>(0), field8 = const<i32>(1));
-// DEFAULT-NEXT:                     write<@type0>(%4, copy<@type0, reason=assign>(read<@type0>(%6)));
-// DEFAULT-NEXT:                     write<i32>(bitfield6<unit=0, bytes=20..28, bits=15..32>(%4), neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:                     let %[[VALUE_e:[0-9]+]] e: @type[[TYPE_S0]] [storage=automatic] = aggregate<@type[[TYPE_S0]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0), field2 = const<i32>(0), field3 = const<i32>(0), field4 = const<i32>(0), field5 = const<i32>(0), field6 = const<i32>(1), field7 = const<i32>(0), field8 = const<i32>(1));
+// DEFAULT-NEXT:                     write<@type[[TYPE_S0]]>(%[[VALUE_c]], copy<@type[[TYPE_S0]], reason=assign>(read<@type[[TYPE_S0]]>(%[[VALUE_e]])));
+// DEFAULT-NEXT:                     write<i32>(bitfield6<unit=0, bytes=20..28, bits=15..32>(%[[VALUE_c]]), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield7<unit=0, bytes=20..28, bits=32..34>(%4)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fn1]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(bitfield7<unit=0, bytes=20..28, bits=32..34>(%[[VALUE_c]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -40,15 +40,15 @@ int main(void) { return 0; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 _beginthread: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %1 _cwait: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %2 _execv: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %3 _get_initial_narrow_environment: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %4 _getpid: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %5 _spawnv: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %6 _wexecv: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %7 _wspawnv: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     extern %[[VALUE__beginthread:[0-9]+]] _beginthread: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE__cwait:[0-9]+]] _cwait: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE__execv:[0-9]+]] _execv: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE__get_initial_narrow_environment:[0-9]+]] _get_initial_narrow_environment: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE__getpid:[0-9]+]] _getpid: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE__spawnv:[0-9]+]] _spawnv: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE__wexecv:[0-9]+]] _wexecv: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE__wspawnv:[0-9]+]] _wspawnv: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

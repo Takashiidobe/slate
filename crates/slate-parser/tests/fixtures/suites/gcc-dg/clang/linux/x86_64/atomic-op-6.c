@@ -36,9 +36,9 @@ foo (int *p, int a)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 p: ptr<i32>, %2 a: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=relaxed>(deref(addr_of<ptr<ptr<i32>>>(%1)), ptr_offset<ptr<i32>, subtract=false, element=u8, overflow=wrap>(old<ptr<i32>>, read<i32>(%2)));
-// DEFAULT-NEXT:         let %4: ptr<i32> [synthetic] = update<ptr<i32>, result=new, atomic=relaxed>(deref(addr_of<ptr<ptr<i32>>>(%1)), ptr_offset<ptr<i32>, subtract=false, element=u8, overflow=wrap>(old<ptr<i32>>, read<i32>(%2)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<i32>, %[[VALUE_a:[0-9]+]] a: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=relaxed>(deref(addr_of<ptr<ptr<i32>>>(%[[VALUE_p]])), ptr_offset<ptr<i32>, subtract=false, element=u8, overflow=wrap>(old<ptr<i32>>, read<i32>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<i32> [synthetic] = update<ptr<i32>, result=new, atomic=relaxed>(deref(addr_of<ptr<ptr<i32>>>(%[[VALUE_p]])), ptr_offset<ptr<i32>, subtract=false, element=u8, overflow=wrap>(old<ptr<i32>>, read<i32>(%[[VALUE_a]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

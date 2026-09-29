@@ -29,6 +29,6 @@ volatile extern int xxx (void);  /* { dg-error "not compatible" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @xxx() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_xxx:[0-9]+]] @xxx() -> i32 [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

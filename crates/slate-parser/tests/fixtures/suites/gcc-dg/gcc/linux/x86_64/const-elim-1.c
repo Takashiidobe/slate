@@ -73,35 +73,35 @@ test2(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: array<f64, 2>;
 // DEFAULT-NEXT:         field2 c: ptr<void>;
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 24]];
-// DEFAULT-NEXT:     global %13 .str13: array<i8, 37> [storage=static] = code_units<array<i8, 37>>([119, 97, 108, 116, 122, 44, 32, 110, 121, 109, 112, 104, 44, 32, 102, 111, 114, 32, 113, 117, 105, 99, 107, 32, 106, 105, 103, 115, 32, 118, 101, 120, 32, 98, 117, 100, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %15 .str15: array<i8, 40> [storage=static] = code_units<array<i8, 40>>([112, 97, 99, 107, 32, 109, 121, 32, 98, 111, 120, 32, 119, 105, 116, 104, 32, 102, 105, 118, 101, 32, 100, 111, 122, 101, 110, 32, 108, 105, 113, 117, 111, 114, 32, 106, 117, 103, 115, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @use_str(%10 <unnamed>: ptr<const i8>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @use_S(%11 <unnamed>: ptr<const @type0>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @use_cplx(%12 <unnamed>: complex<f64>) -> void [linkage=external] [abi=sysv64(native_c) -> void];
-// DEFAULT-NEXT:     fn %4 @returns_23() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 37> [storage=static] = code_units<array<i8, 37>>([119, 97, 108, 116, 122, 44, 32, 110, 121, 109, 112, 104, 44, 32, 102, 111, 114, 32, 113, 117, 105, 99, 107, 32, 106, 105, 103, 115, 32, 118, 101, 120, 32, 98, 117, 100, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 40> [storage=static] = code_units<array<i8, 40>>([112, 97, 99, 107, 32, 109, 121, 32, 98, 111, 120, 32, 119, 105, 116, 104, 32, 102, 105, 118, 101, 32, 100, 111, 122, 101, 110, 32, 108, 105, 113, 117, 111, 114, 32, 106, 117, 103, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_use_str:[0-9]+]] @use_str(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_use_S:[0-9]+]] @use_S(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const @type[[TYPE_S]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_use_cplx:[0-9]+]] @use_cplx(%[[VALUE2:[0-9]+]] <unnamed>: complex<f64>) -> void [linkage=external] [abi=sysv64(native_c) -> void];
+// DEFAULT-NEXT:     fn %[[VALUE_returns_23:[0-9]+]] @returns_23() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(23);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @test1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn() -> i32>(%4), const<i32>(23))
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_returns_23]]), const<i32>(23))
 // DEFAULT-NEXT:             return;
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>) -> void>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(37)>(%13)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const @type0>) -> void>(%2, addr_of<ptr<const @type0>>(compound_literal %14 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(12), field1 = aggregate<array<f64, 2>, zero_fill=false>(index0 = const<f64>(3.1415), index1 = const<f64>(2.1828)), field2 = null<ptr<void>>)));
-// DEFAULT-NEXT:         call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%3, add<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f64>(3.1415), mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f64>(2.1828), complex_convert<complex<f64>, reason=usual_arith>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0))))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>) -> void>(%[[VALUE_use_str]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(37)>(%[[VALUE_str]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const @type[[TYPE_S]]>) -> void>(%[[VALUE_use_S]], addr_of<ptr<const @type[[TYPE_S]]>>(compound_literal %[[VALUE3:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(12), field1 = aggregate<array<f64, 2>, zero_fill=false>(index0 = const<f64>(3.1415), index1 = const<f64>(2.1828)), field2 = null<ptr<void>>)));
+// DEFAULT-NEXT:         call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_use_cplx]], add<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f64>(3.1415), mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f64>(2.1828), complex_convert<complex<f64>, reason=usual_arith>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @test2() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 str: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(40)>(%15));
-// DEFAULT-NEXT:         let %8 S: @type0 [storage=automatic] [const] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(23), field1 = aggregate<array<f64, 2>, zero_fill=false>(index0 = const<f64>(1.414), index1 = const<f64>(1.618)), field2 = null<ptr<void>>);
-// DEFAULT-NEXT:         let %9 cplx: complex<f64> [storage=automatic] [const] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f64>(1.414), mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f64>(1.618), complex_convert<complex<f64>, reason=usual_arith>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0)))));
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn() -> i32>(%4), const<i32>(23))
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_str_3:[0-9]+]] str: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(40)>(%[[VALUE_str_2]]));
+// DEFAULT-NEXT:         let %[[VALUE_S:[0-9]+]] S: @type[[TYPE_S]] [storage=automatic] [const] = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(23), field1 = aggregate<array<f64, 2>, zero_fill=false>(index0 = const<f64>(1.414), index1 = const<f64>(1.618)), field2 = null<ptr<void>>);
+// DEFAULT-NEXT:         let %[[VALUE_cplx:[0-9]+]] cplx: complex<f64> [storage=automatic] [const] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f64>(1.414), mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f64>(1.618), complex_convert<complex<f64>, reason=usual_arith>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0)))));
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_returns_23]]), const<i32>(23))
 // DEFAULT-NEXT:             return;
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>) -> void>(%1, read<ptr<const i8>>(%7));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const @type0>) -> void>(%2, addr_of<ptr<const @type0>>(%8));
-// DEFAULT-NEXT:         call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%3, read<complex<f64>>(%9));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>) -> void>(%[[VALUE_use_str]], read<ptr<const i8>>(%[[VALUE_str_3]]));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const @type[[TYPE_S]]>) -> void>(%[[VALUE_use_S]], addr_of<ptr<const @type[[TYPE_S]]>>(%[[VALUE_S]]));
+// DEFAULT-NEXT:         call<void, signature=fn(complex<f64>) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_use_cplx]], read<complex<f64>>(%[[VALUE_cplx]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

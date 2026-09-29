@@ -171,46 +171,46 @@ ignore_3(void (*)(int*), int*); /* { dg-warning "ignored" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 not_used_on_fn_2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_not_used_on_fn_2:[0-9]+]] not_used_on_fn_2 = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %22 placeholder: @type1 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %23 one: i32 [storage=static] = const<i32>(1) [linkage=internal];
-// DEFAULT-NEXT:     global %24 const_one: i32 [storage=static] [const] = const<i32>(1) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @correct_1(%36 <unnamed>: ptr<fn(ptr<i32>) -> void>, %37 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @correct_2(%38 <unnamed>: ptr<fn(ptr<i32>, ptr<f64>) -> void>, %39 <unnamed>: ptr<i32>, %40 <unnamed>: ptr<f64>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @correct_3(%41 <unnamed>: ptr<fn(ptr<i32>, ptr<f64>) -> void>, %42 <unnamed>: ptr<i32>, %43 <unnamed>: ptr<f64>, %44 <unnamed>: ptr<fn(ptr<void>) -> i32>, %45 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @unknown_1(%46 <unnamed>: ptr<fn(ptr<i32>) -> void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @unknown_2(%47 <unnamed>: ptr<fn(ptr<i32>, ptr<f64>) -> void>, %48 <unnamed>: ptr<i32>, %49 <unnamed>: ptr<f64>, %50 <unnamed>: ptr<i8>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %5 @too_many(%51 <unnamed>: ptr<fn(ptr<i32>, ptr<f64>) -> void>, %52 <unnamed>: ptr<i32>, %53 <unnamed>: ptr<f64>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %6 @too_few_1(%54 <unnamed>: ptr<fn(ptr<i32>, ptr<f64>) -> void>, %55 <unnamed>: ptr<i32>, %56 <unnamed>: ptr<f64>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @too_few_2(%57 <unnamed>: ptr<fn(ptr<i32>, ptr<f64>) -> void>, %58 <unnamed>: ptr<i32>, %59 <unnamed>: ptr<f64>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %8 @promotion(%60 <unnamed>: ptr<i8>, %61 <unnamed>: f32, %62 <unnamed>: ptr<fn(ptr<i32>) -> i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %9 @downcast(%63 <unnamed>: ptr<i8>, %64 <unnamed>: ptr<fn(ptr<f32>) -> ptr<void>>, %65 <unnamed>: ptr<f64>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %10 @out_of_range_1(%66 <unnamed>: ptr<fn(ptr<f32>, ptr<f64>) -> i8>, %67 <unnamed>: ptr<f32>, %68 <unnamed>: ptr<f64>, %69 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %11 @out_of_range_2(%70 <unnamed>: ptr<fn(ptr<f32>, ptr<f64>) -> i8>, %71 <unnamed>: ptr<f32>, %72 <unnamed>: ptr<f64>, %73 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %12 @out_of_range_3(%74 <unnamed>: ptr<fn(ptr<f32>, ptr<f64>) -> i8>, %75 <unnamed>: ptr<f32>, %76 <unnamed>: ptr<f64>, %77 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %13 @out_of_range_4(%78 <unnamed>: ptr<fn(ptr<f32>, ptr<f64>) -> i8>, %79 <unnamed>: ptr<f32>, %80 <unnamed>: ptr<f64>, %81 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %14 @unknown_fn(%82 <unnamed>: ptr<fn(ptr<f32>, ptr<f64>) -> i8>, %83 <unnamed>: ptr<f32>, %84 <unnamed>: ptr<f64>, %85 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %15 @not_a_fn(%86 <unnamed>: i32, %87 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %16 @vararg_1(%88 <unnamed>: ptr<fn(ptr<i32>) -> void>, %89 <unnamed>: ptr<i32>, ...) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %17 @vararg_2(%90 <unnamed>: ptr<fn(ptr<i32>, ...) -> void>, %91 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %18 @not_used_on_fn_1(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %19 a: i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:     global %[[VALUE_placeholder:[0-9]+]] placeholder: @type[[TYPE_S]] [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_one:[0-9]+]] one: i32 [storage=static] = const<i32>(1) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_const_one:[0-9]+]] const_one: i32 [storage=static] [const] = const<i32>(1) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_correct_1:[0-9]+]] @correct_1(%[[VALUE0:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>) -> void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_correct_2:[0-9]+]] @correct_2(%[[VALUE2:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>, ptr<f64>) -> void>, %[[VALUE3:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE4:[0-9]+]] <unnamed>: ptr<f64>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_correct_3:[0-9]+]] @correct_3(%[[VALUE5:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>, ptr<f64>) -> void>, %[[VALUE6:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE7:[0-9]+]] <unnamed>: ptr<f64>, %[[VALUE8:[0-9]+]] <unnamed>: ptr<fn(ptr<void>) -> i32>, %[[VALUE9:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_unknown_1:[0-9]+]] @unknown_1(%[[VALUE10:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>) -> void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_unknown_2:[0-9]+]] @unknown_2(%[[VALUE11:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>, ptr<f64>) -> void>, %[[VALUE12:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE13:[0-9]+]] <unnamed>: ptr<f64>, %[[VALUE14:[0-9]+]] <unnamed>: ptr<i8>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_too_many:[0-9]+]] @too_many(%[[VALUE15:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>, ptr<f64>) -> void>, %[[VALUE16:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE17:[0-9]+]] <unnamed>: ptr<f64>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_too_few_1:[0-9]+]] @too_few_1(%[[VALUE18:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>, ptr<f64>) -> void>, %[[VALUE19:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE20:[0-9]+]] <unnamed>: ptr<f64>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_too_few_2:[0-9]+]] @too_few_2(%[[VALUE21:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>, ptr<f64>) -> void>, %[[VALUE22:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE23:[0-9]+]] <unnamed>: ptr<f64>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_promotion:[0-9]+]] @promotion(%[[VALUE24:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE25:[0-9]+]] <unnamed>: f32, %[[VALUE26:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>) -> i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_downcast:[0-9]+]] @downcast(%[[VALUE27:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE28:[0-9]+]] <unnamed>: ptr<fn(ptr<f32>) -> ptr<void>>, %[[VALUE29:[0-9]+]] <unnamed>: ptr<f64>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_out_of_range_1:[0-9]+]] @out_of_range_1(%[[VALUE30:[0-9]+]] <unnamed>: ptr<fn(ptr<f32>, ptr<f64>) -> i8>, %[[VALUE31:[0-9]+]] <unnamed>: ptr<f32>, %[[VALUE32:[0-9]+]] <unnamed>: ptr<f64>, %[[VALUE33:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_out_of_range_2:[0-9]+]] @out_of_range_2(%[[VALUE34:[0-9]+]] <unnamed>: ptr<fn(ptr<f32>, ptr<f64>) -> i8>, %[[VALUE35:[0-9]+]] <unnamed>: ptr<f32>, %[[VALUE36:[0-9]+]] <unnamed>: ptr<f64>, %[[VALUE37:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_out_of_range_3:[0-9]+]] @out_of_range_3(%[[VALUE38:[0-9]+]] <unnamed>: ptr<fn(ptr<f32>, ptr<f64>) -> i8>, %[[VALUE39:[0-9]+]] <unnamed>: ptr<f32>, %[[VALUE40:[0-9]+]] <unnamed>: ptr<f64>, %[[VALUE41:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_out_of_range_4:[0-9]+]] @out_of_range_4(%[[VALUE42:[0-9]+]] <unnamed>: ptr<fn(ptr<f32>, ptr<f64>) -> i8>, %[[VALUE43:[0-9]+]] <unnamed>: ptr<f32>, %[[VALUE44:[0-9]+]] <unnamed>: ptr<f64>, %[[VALUE45:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_unknown_fn:[0-9]+]] @unknown_fn(%[[VALUE46:[0-9]+]] <unnamed>: ptr<fn(ptr<f32>, ptr<f64>) -> i8>, %[[VALUE47:[0-9]+]] <unnamed>: ptr<f32>, %[[VALUE48:[0-9]+]] <unnamed>: ptr<f64>, %[[VALUE49:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_not_a_fn:[0-9]+]] @not_a_fn(%[[VALUE50:[0-9]+]] <unnamed>: i32, %[[VALUE51:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_vararg_1:[0-9]+]] @vararg_1(%[[VALUE52:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>) -> void>, %[[VALUE53:[0-9]+]] <unnamed>: ptr<i32>, ...) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_vararg_2:[0-9]+]] @vararg_2(%[[VALUE54:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>, ...) -> void>, %[[VALUE55:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_not_used_on_fn_1:[0-9]+]] @not_used_on_fn_1(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @incompatible_types_1(%92 <unnamed>: ptr<fn(ptr<@type1>) -> void>, %93 <unnamed>: @type1) -> void [linkage=external] [abi=sysv64(scalar, native_c) -> void];
-// DEFAULT-NEXT:     fn %26 @incompatible_types_2(%94 <unnamed>: ptr<fn(ptr<@type1>, ptr<i32>) -> void>, %95 <unnamed>: ptr<i32>, %96 <unnamed>: f64) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %27 @wrong_arg_type_1(%97 <unnamed>: ptr<fn(ptr<void>) -> void>, %98 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %28 @wrong_arg_type_2(%99 <unnamed>: ptr<fn(ptr<void>, ptr<void>) -> void>, %100 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %29 @wrong_arg_type_3(%101 <unnamed>: ptr<fn(ptr<void>, ptr<void>) -> void>, %102 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %30 @int_identifier(%103 <unnamed>: ptr<fn(ptr<void>, ptr<void>) -> void>, %104 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %31 @int_identifier_1(%105 <unnamed>: ptr<fn(ptr<void>, ptr<void>) -> void>, %106 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %32 @multiple_single_fn(%107 <unnamed>: ptr<fn(ptr<i32>) -> void>, %108 <unnamed>: ptr<i32>, %109 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %33 @ignore_1(%110 <unnamed>: ptr<fn(ptr<i32>) -> void>, %111 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %34 @ignore_2(%112 <unnamed>: ptr<fn(ptr<i32>) -> void>, %113 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %35 @ignore_3(%114 <unnamed>: ptr<fn(ptr<i32>) -> void>, %115 <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_incompatible_types_1:[0-9]+]] @incompatible_types_1(%[[VALUE56:[0-9]+]] <unnamed>: ptr<fn(ptr<@type[[TYPE_S]]>) -> void>, %[[VALUE57:[0-9]+]] <unnamed>: @type[[TYPE_S]]) -> void [linkage=external] [abi=sysv64(scalar, native_c) -> void];
+// DEFAULT-NEXT:     fn %[[VALUE_incompatible_types_2:[0-9]+]] @incompatible_types_2(%[[VALUE58:[0-9]+]] <unnamed>: ptr<fn(ptr<@type[[TYPE_S]]>, ptr<i32>) -> void>, %[[VALUE59:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE60:[0-9]+]] <unnamed>: f64) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_wrong_arg_type_1:[0-9]+]] @wrong_arg_type_1(%[[VALUE61:[0-9]+]] <unnamed>: ptr<fn(ptr<void>) -> void>, %[[VALUE62:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_wrong_arg_type_2:[0-9]+]] @wrong_arg_type_2(%[[VALUE63:[0-9]+]] <unnamed>: ptr<fn(ptr<void>, ptr<void>) -> void>, %[[VALUE64:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_wrong_arg_type_3:[0-9]+]] @wrong_arg_type_3(%[[VALUE65:[0-9]+]] <unnamed>: ptr<fn(ptr<void>, ptr<void>) -> void>, %[[VALUE66:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_int_identifier:[0-9]+]] @int_identifier(%[[VALUE67:[0-9]+]] <unnamed>: ptr<fn(ptr<void>, ptr<void>) -> void>, %[[VALUE68:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_int_identifier_1:[0-9]+]] @int_identifier_1(%[[VALUE69:[0-9]+]] <unnamed>: ptr<fn(ptr<void>, ptr<void>) -> void>, %[[VALUE70:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_multiple_single_fn:[0-9]+]] @multiple_single_fn(%[[VALUE71:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>) -> void>, %[[VALUE72:[0-9]+]] <unnamed>: ptr<i32>, %[[VALUE73:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_ignore_1:[0-9]+]] @ignore_1(%[[VALUE74:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>) -> void>, %[[VALUE75:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_ignore_2:[0-9]+]] @ignore_2(%[[VALUE76:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>) -> void>, %[[VALUE77:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_ignore_3:[0-9]+]] @ignore_3(%[[VALUE78:[0-9]+]] <unnamed>: ptr<fn(ptr<i32>) -> void>, %[[VALUE79:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

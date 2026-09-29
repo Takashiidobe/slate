@@ -55,33 +55,33 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 o: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 T = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = struct {
 // DEFAULT-NEXT:         field0 o: i64;
-// DEFAULT-NEXT:         field1 m: array<@type0, 82>;
+// DEFAULT-NEXT:         field1 m: array<@type[[TYPE_S]], 82>;
 // DEFAULT-NEXT:     } [size=664, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %3 t: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 p: ptr<@type0> [storage=automatic];
-// DEFAULT-NEXT:         let %6 q: ptr<@type0> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type0>>(%5, pointer_cast<ptr<@type0>, reason=explicit>(addr_of<ptr<@type1>>(%3)));
-// DEFAULT-NEXT:         write<ptr<@type0>>(%5, addr_of<ptr<@type0>>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(82)>(field1(deref(pointer_cast<ptr<@type1>, reason=explicit>(read<ptr<@type0>>(%5))))), const<i32>(0)))));
-// DEFAULT-NEXT:         write<ptr<@type0>>(%6, ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(read<ptr<@type0>>(%5), const<i32>(82)));
-// DEFAULT-NEXT:         while %7 {
-// DEFAULT-NEXT:             let %8: ptr<@type0> [synthetic] = read<ptr<@type0>>(%6);
-// DEFAULT-NEXT:             let %9: ptr<@type0> [synthetic] = ptr_offset<ptr<@type0>, subtract=true, element=@type0, overflow=ub>(read<ptr<@type0>>(%8), const<i32>(1));
-// DEFAULT-NEXT:             write<ptr<@type0>>(%6, read<ptr<@type0>>(%9));
-// DEFAULT-NEXT:             yield gt<ptr<@type0>>(read<ptr<@type0>>(%9), read<ptr<@type0>>(%5));
+// DEFAULT-NEXT:     global %[[VALUE_t:[0-9]+]] t: @type[[TYPE_T]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_S]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_S]]> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]], pointer_cast<ptr<@type[[TYPE_S]]>, reason=explicit>(addr_of<ptr<@type[[TYPE_T]]>>(%[[VALUE_t]])));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]], addr_of<ptr<@type[[TYPE_S]]>>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(82)>(field1(deref(pointer_cast<ptr<@type[[TYPE_T]]>, reason=explicit>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]]))))), const<i32>(0)))));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]], ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]]), const<i32>(82)));
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] {
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: ptr<@type[[TYPE_S]]> [synthetic] = read<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]]);
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: ptr<@type[[TYPE_S]]> [synthetic] = ptr_offset<ptr<@type[[TYPE_S]]>, subtract=true, element=@type[[TYPE_S]], overflow=ub>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:             write<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]], read<ptr<@type[[TYPE_S]]>>(%[[VALUE2]]));
+// DEFAULT-NEXT:             yield gt<ptr<@type[[TYPE_S]]>>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE2]]), read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             write<i64>(field0(deref(read<ptr<@type0>>(%6))), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1))));
-// DEFAULT-NEXT:         write<i64>(field0(deref(read<ptr<@type0>>(%6))), widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         if gt<ptr<@type0>>(read<ptr<@type0>>(%6), read<ptr<@type0>>(%5))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if gt<i64>(ptr_diff<i64, element=@type0, same_array=required, overflow=ub>(read<ptr<@type0>>(%6), read<ptr<@type0>>(%5)), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             write<i64>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]]))), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1))));
+// DEFAULT-NEXT:         write<i64>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]]))), widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:         if gt<ptr<@type[[TYPE_S]]>>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]]), read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if gt<i64>(ptr_diff<i64, element=@type[[TYPE_S]], same_array=required, overflow=ub>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]]), read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]])), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -48,13 +48,13 @@ bar ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 b: i255b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 c: i8192b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo() -> i255b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return div<i255b, by_zero=ub, min_by_neg_one=ub>(shl<i255b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i255b>(%0), const<i32>(10)), widen<i255b, reason=usual_arith>(const<i32>(2)));
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i255b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i8192b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i255b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return div<i255b, by_zero=ub, min_by_neg_one=ub>(shl<i255b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i255b>(%[[VALUE_b]]), const<i32>(10)), widen<i255b, reason=usual_arith>(const<i32>(2)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @bar() -> i8192b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return div<i8192b, by_zero=ub, min_by_neg_one=ub>(shl<i8192b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i8192b>(%2), const<i32>(1039)), widen<i8192b, reason=usual_arith>(const<i1039b>(1472670216079209191611846812294369061779846741149537544383939224844146080198663889983147846225162535085015972903906454385940805786127700971461406151798572026902674582936498055383467782973408003026559655543480367258322130389749455925034296201550456726842167383528130955181647838728025835969211239052281644132073472)));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i8192b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return div<i8192b, by_zero=ub, min_by_neg_one=ub>(shl<i8192b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i8192b>(%[[VALUE_c]]), const<i32>(1039)), widen<i8192b, reason=usual_arith>(const<i1039b>(1472670216079209191611846812294369061779846741149537544383939224844146080198663889983147846225162535085015972903906454385940805786127700971461406151798572026902674582936498055383467782973408003026559655543480367258322130389749455925034296201550456726842167383528130955181647838728025835969211239052281644132073472)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -36,10 +36,10 @@ void test(int x) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @test(%1 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 t0: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=unknown>(read<i32>(%1));
-// DEFAULT-NEXT:         let %3 t1: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(eq<u32>(read<u32>(%2), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5))), read<i32>(%1), const<i32>(0)));
-// DEFAULT-NEXT:         let %4 t2: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i64>(1), read<i32>(%1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_x:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_t0:[0-9]+]] t0: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=unknown>(read<i32>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         let %[[VALUE_t1:[0-9]+]] t1: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(eq<u32>(read<u32>(%[[VALUE_t0]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(5))), read<i32>(%[[VALUE_x]]), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE_t2:[0-9]+]] t2: i32 [storage=automatic] = truncate<i32, reason=assign, fits=unknown>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i64>(1), read<i32>(%[[VALUE_x]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

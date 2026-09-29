@@ -35,13 +35,13 @@ int main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: array<i8, 5>;
 // DEFAULT-NEXT:     } [size=5, align=1, offsets=[0]];
-// DEFAULT-NEXT:     global %1 p: ptr<@type0> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 i: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
-// DEFAULT-NEXT:         if ne<i8>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(5)>(field0(deref(read<ptr<@type0>>(%1)))), neg<i32, overflow=ub>(read<i32>(%3))))), const<i8>(0))
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE0]]> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
+// DEFAULT-NEXT:         if ne<i8>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(5)>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_p]])))), neg<i32, overflow=ub>(read<i32>(%[[VALUE_i]]))))), const<i8>(0))
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -43,19 +43,19 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @pow(%8 __x: f64, %9 __y: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @exit(%10 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 a: volatile f64 [storage=automatic];
-// DEFAULT-NEXT:         let %7 c: f64 [storage=automatic];
-// DEFAULT-NEXT:         write<f64, volatile>(%6, const<f64>(32.0));
-// DEFAULT-NEXT:         write<f64>(%7, call<f64, signature=fn(f64, f64) -> f64>(%2, read<f64, volatile>(%6), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), const<f64>(3.0))));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64, f64) -> f64>(%2, read<f64, volatile>(%6), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), const<f64>(3.0)));
-// DEFAULT-NEXT:         if logical_and<bool>(gt<f64, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%7), const<f64>(0.1)), const<f64>(3.174802)), lt<f64, exceptions=ignore>(sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%7), const<f64>(0.1)), const<f64>(3.174802)))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%4, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_pow:[0-9]+]] @pow(%[[VALUE___x:[0-9]+]] __x: f64, %[[VALUE___y:[0-9]+]] __y: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: volatile f64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: f64 [storage=automatic];
+// DEFAULT-NEXT:         write<f64, volatile>(%[[VALUE_a]], const<f64>(32.0));
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_c]], call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_pow]], read<f64, volatile>(%[[VALUE_a]]), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), const<f64>(3.0))));
+// DEFAULT-NEXT:         call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_pow]], read<f64, volatile>(%[[VALUE_a]]), div<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), const<f64>(3.0)));
+// DEFAULT-NEXT:         if logical_and<bool>(gt<f64, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_c]]), const<f64>(0.1)), const<f64>(3.174802)), lt<f64, exceptions=ignore>(sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_c]]), const<f64>(0.1)), const<f64>(3.174802)))
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

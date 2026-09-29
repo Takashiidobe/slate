@@ -32,12 +32,12 @@ foo ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %1 Y: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2: i64 [synthetic] = read<i64>(%1);
-// DEFAULT-NEXT:         let %3: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%2), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i64>(%1, read<i64>(%3));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<i64>(widen<i64, reason=usual_arith>(const<i32>(0)), read<i64>(%2)));
+// DEFAULT-NEXT:     extern %[[VALUE_Y:[0-9]+]] Y: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_Y]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE0]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_Y]], read<i64>(%[[VALUE1]]));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<i64>(widen<i64, reason=usual_arith>(const<i32>(0)), read<i64>(%[[VALUE0]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

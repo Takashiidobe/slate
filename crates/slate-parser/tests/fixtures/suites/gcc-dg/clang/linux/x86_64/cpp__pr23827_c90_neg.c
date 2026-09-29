@@ -29,6 +29,6 @@ double x = 0x3.1415babep0; /* { dg-error "use of C99 hexadecimal floating consta
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 x: f64 [storage=static] = const<f64>(3.078456565272063) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: f64 [storage=static] = const<f64>(3.078456565272063) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

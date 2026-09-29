@@ -93,44 +93,44 @@ void f () {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @t() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @function_definition() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_t:[0-9]+]] @t() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_function_definition:[0-9]+]] @function_definition() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_t]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @function_declaration_both_before() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_function_declaration_both_before:[0-9]+]] @function_declaration_both_before() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_t]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @function_declaration_both_after() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_function_declaration_both_after:[0-9]+]] @function_declaration_both_after() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_t]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @function_declaration_noinline_before() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_function_declaration_noinline_before:[0-9]+]] @function_declaration_noinline_before() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_t]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @function_declaration_noinline_after() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_function_declaration_noinline_after:[0-9]+]] @function_declaration_noinline_after() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_t]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @function_declaration_inline_before() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_function_declaration_inline_before:[0-9]+]] @function_declaration_inline_before() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_t]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @function_declaration_inline_noinline_before() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_function_declaration_inline_noinline_before:[0-9]+]] @function_declaration_inline_noinline_before() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_t]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @function_declaration_inline_noinline_after() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_function_declaration_inline_noinline_after:[0-9]+]] @function_declaration_inline_noinline_after() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_t]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @function_declaration_noinline_inline_before() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_function_declaration_noinline_inline_before:[0-9]+]] @function_declaration_noinline_inline_before() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_t]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%3);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%9);
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_function_definition]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_function_declaration_both_before]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_function_declaration_both_after]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_function_declaration_noinline_before]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_function_declaration_noinline_after]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_function_declaration_inline_before]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_function_declaration_inline_noinline_before]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_function_declaration_inline_noinline_after]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_function_declaration_noinline_inline_before]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

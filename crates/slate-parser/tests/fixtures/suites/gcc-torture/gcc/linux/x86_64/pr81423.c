@@ -59,25 +59,25 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 ll: u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [linkage=external];
-// DEFAULT-NEXT:     global %2 ull1: u64 [storage=static] = const<u64>(1) [linkage=external];
-// DEFAULT-NEXT:     global %3 ull2: u64 [storage=static] = const<u64>(12008284144813806346) [linkage=external];
-// DEFAULT-NEXT:     global %4 ull3: u64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @foo() -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<u64>(%1, reinterpret<u64, reason=assign, fits=unknown>(neg<i64, overflow=ub>(const<i64>(5597998501375493990))));
-// DEFAULT-NEXT:         write<u64>(%1, widen<u64, reason=assign>(sub<u32, overflow=wrap>(truncate<u32, reason=explicit, fits=unknown>(sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(5677365550390624949)), read<u64>(%1))), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(gt<u64>(read<u64>(%2), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0)))))))));
-// DEFAULT-NEXT:         let %6 ull3: u64 [storage=automatic];
-// DEFAULT-NEXT:         write<u64>(%6, widen<u64, reason=assign>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit, fits=unknown>(truncate<i32, reason=explicit, fits=unknown>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i64>(2067854353), sub<u64, overflow=wrap>(xor<u64>(add<u64, overflow=wrap>(read<u64>(%1), reinterpret<u64, reason=usual_arith, fits=unknown>(neg<i64, overflow=ub>(const<i64>(2129105131)))), const<u64>(10280750144413668236)), const<u64>(10280750143997242009))))), sub<u64, overflow=wrap>(or<u64>(const<u64>(2873442921854271231), read<u64>(%3)), const<u64>(12098357307243495419)))));
-// DEFAULT-NEXT:         return read<u64>(%6);
+// DEFAULT-NEXT:     global %[[VALUE_ll:[0-9]+]] ll: u64 [storage=static] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ull1:[0-9]+]] ull1: u64 [storage=static] = const<u64>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ull2:[0-9]+]] ull2: u64 [storage=static] = const<u64>(12008284144813806346) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ull3:[0-9]+]] ull3: u64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> u64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_ll]], reinterpret<u64, reason=assign, fits=unknown>(neg<i64, overflow=ub>(const<i64>(5597998501375493990))));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_ll]], widen<u64, reason=assign>(sub<u32, overflow=wrap>(truncate<u32, reason=explicit, fits=unknown>(sub<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(5677365550390624949)), read<u64>(%[[VALUE_ll]]))), reinterpret<u32, reason=usual_arith, fits=always>(from_bool<i32, reason=promotion>(gt<u64>(read<u64>(%[[VALUE_ull1]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0)))))))));
+// DEFAULT-NEXT:         let %[[VALUE_ull3_2:[0-9]+]] ull3: u64 [storage=automatic];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_ull3_2]], widen<u64, reason=assign>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(reinterpret<u32, reason=explicit, fits=unknown>(truncate<i32, reason=explicit, fits=unknown>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i64>(2067854353), sub<u64, overflow=wrap>(xor<u64>(add<u64, overflow=wrap>(read<u64>(%[[VALUE_ll]]), reinterpret<u64, reason=usual_arith, fits=unknown>(neg<i64, overflow=ub>(const<i64>(2129105131)))), const<u64>(10280750144413668236)), const<u64>(10280750143997242009))))), sub<u64, overflow=wrap>(or<u64>(const<u64>(2873442921854271231), read<u64>(%[[VALUE_ull2]])), const<u64>(12098357307243495419)))));
+// DEFAULT-NEXT:         return read<u64>(%[[VALUE_ull3_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8)), const<i32>(64)), ne<i32>(mul<i32, overflow=ub>(const<i32>(4), const<i32>(8)), const<i32>(32)))
 // DEFAULT-NEXT:             return const<i32>(0);
-// DEFAULT-NEXT:         write<u64>(%4, call<u64, signature=fn() -> u64>(%5));
-// DEFAULT-NEXT:         call<u64, signature=fn() -> u64>(%5);
-// DEFAULT-NEXT:         if ne<u64>(read<u64>(%4), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3998784))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_ull3]], call<u64, signature=fn() -> u64>(%[[VALUE_foo]]));
+// DEFAULT-NEXT:         call<u64, signature=fn() -> u64>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_ull3]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3998784))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

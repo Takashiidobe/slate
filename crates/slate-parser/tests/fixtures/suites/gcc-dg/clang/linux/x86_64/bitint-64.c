@@ -42,12 +42,12 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 out: i128b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 q: array<i8b, 1> [storage=automatic];
-// DEFAULT-NEXT:         let %3: i128b [synthetic] = read<i128b>(%0);
-// DEFAULT-NEXT:         let %4: i128b [synthetic] = sub<i128b, overflow=trap>(read<i128b>(%3), widen<i128b, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i128b>(%0, read<i128b>(%4));
+// DEFAULT-NEXT:     global %[[VALUE_out:[0-9]+]] out: i128b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: array<i8b, 1> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i128b [synthetic] = read<i128b>(%[[VALUE_out]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i128b [synthetic] = sub<i128b, overflow=trap>(read<i128b>(%[[VALUE0]]), widen<i128b, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i128b>(%[[VALUE_out]], read<i128b>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

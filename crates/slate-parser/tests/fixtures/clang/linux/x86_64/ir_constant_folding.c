@@ -42,7 +42,7 @@ unsigned long constants(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @constants() -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(void)"] {
+// IR-NEXT:     fn %[[VALUE_constants:[0-9]+]] @constants() -> u64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(void)"] {
 // IR-NEXT:         add<i32, overflow=ub>(const<i32>(2), mul<i32, overflow=ub>(const<i32>(3), const<i32>(4)));
 // IR-NEXT:         add<u32, overflow=wrap>(const<u32>(4294967295), const<u32>(1));
 // IR-NEXT:         div<i32, by_zero=ub, min_by_neg_one=ub>(neg<i32, overflow=ub>(const<i32>(7)), const<i32>(3));

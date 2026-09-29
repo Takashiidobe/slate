@@ -44,12 +44,12 @@ int foo(unsigned int *x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 buf: array<u64, 100>;
 // DEFAULT-NEXT:     } [size=800, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @foo(%2 x: ptr<u32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 a: u32 [storage=automatic];
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<u32>>(read<ptr<u32>>(%2), null<ptr<u32>>))
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<u32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: u32 [storage=automatic];
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<u32>>(read<ptr<u32>>(%[[VALUE_x]]), null<ptr<u32>>))
 // DEFAULT-NEXT:             return neg<i32, overflow=ub>(const<i32>(22));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

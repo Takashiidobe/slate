@@ -56,36 +56,36 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     type @type1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: u16;
 // DEFAULT-NEXT:         field1 b: u16;
 // DEFAULT-NEXT:     } [size=4, align=2, offsets=[0, 2]];
-// DEFAULT-NEXT:     type @type2 foo_t = @type1;
-// DEFAULT-NEXT:     global %19 .str19: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @printf(%16 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @malloc(%17 __size: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %5 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @exit(%18 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %10 @a1(%11 offset: u64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     type @type[[TYPE_foo_t:[0-9]+]] foo_t = @type[[TYPE0]];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_a1:[0-9]+]] @a1(%[[VALUE_offset:[0-9]+]] offset: u64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @f() -> ptr<volatile @type1> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %13 foo_p: ptr<volatile @type1> [storage=automatic] = pointer_cast<ptr<volatile @type1>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%4, const<u64>(4)));
-// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%10, sub<u64, overflow=wrap>(ptr_to_int<u64, reason=explicit>(read<ptr<volatile @type1>>(%13)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(30)))));
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16, volatile>(field0(deref(read<ptr<volatile @type1>>(%13)))))), const<i32>(61440)), const<i32>(0))
-// DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%2, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%19)), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u16, volatile>(field0(deref(read<ptr<volatile @type1>>(%13)))))));
-// DEFAULT-NEXT:         write<u16, volatile>(field1(deref(read<ptr<volatile @type1>>(%13))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(256))));
-// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%10, add<u64, overflow=wrap>(ptr_to_int<u64, reason=explicit>(read<ptr<volatile @type1>>(%13)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
-// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%10, sub<u64, overflow=wrap>(ptr_to_int<u64, reason=explicit>(read<ptr<volatile @type1>>(%13)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(30)))));
-// DEFAULT-NEXT:         return read<ptr<volatile @type1>>(%13);
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> ptr<volatile @type[[TYPE0]]> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_foo_p:[0-9]+]] foo_p: ptr<volatile @type[[TYPE0]]> [storage=automatic] = pointer_cast<ptr<volatile @type[[TYPE0]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(4)));
+// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_a1]], sub<u64, overflow=wrap>(ptr_to_int<u64, reason=explicit>(read<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(30)))));
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16, volatile>(field0(deref(read<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p]])))))), const<i32>(61440)), const<i32>(0))
+// DEFAULT-NEXT:             call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u16, volatile>(field0(deref(read<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p]])))))));
+// DEFAULT-NEXT:         write<u16, volatile>(field1(deref(read<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p]]))), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(256))));
+// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_a1]], add<u64, overflow=wrap>(ptr_to_int<u64, reason=explicit>(read<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
+// DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_a1]], sub<u64, overflow=wrap>(ptr_to_int<u64, reason=explicit>(read<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(30)))));
+// DEFAULT-NEXT:         return read<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %15 foo_p: ptr<volatile @type1> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<volatile @type1>>(%15, call<ptr<volatile @type1>, signature=fn() -> ptr<volatile @type1>>(%12));
-// DEFAULT-NEXT:         call<ptr<volatile @type1>, signature=fn() -> ptr<volatile @type1>>(%12);
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16, volatile>(field1(deref(read<ptr<volatile @type1>>(%15)))))), const<i32>(256))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%7, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_foo_p_2:[0-9]+]] foo_p: ptr<volatile @type[[TYPE0]]> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p_2]], call<ptr<volatile @type[[TYPE0]]>, signature=fn() -> ptr<volatile @type[[TYPE0]]>>(%[[VALUE_f]]));
+// DEFAULT-NEXT:         call<ptr<volatile @type[[TYPE0]]>, signature=fn() -> ptr<volatile @type[[TYPE0]]>>(%[[VALUE_f]]);
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16, volatile>(field1(deref(read<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p_2]])))))), const<i32>(256))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

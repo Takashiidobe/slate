@@ -52,26 +52,26 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 a: i8 [storage=static] = truncate<i8, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(div<i64, by_zero=ub, min_by_neg_one=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i8>(%2))))), const<i64>(2)));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i8 [storage=static] = truncate<i8, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(div<i64, by_zero=ub, min_by_neg_one=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i8>(%[[VALUE_a]]))))), const<i64>(2)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(rem<i64, by_zero=ub, min_by_neg_one=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i8>(%2))))), const<i64>(5)));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i32, reason=return, fits=unknown>(rem<i64, by_zero=ub, min_by_neg_one=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i8>(%[[VALUE_a]]))))), const<i64>(5)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 r: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%6, call<i32, signature=fn() -> i32>(%3));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%3);
-// DEFAULT-NEXT:         if ne<i64>(widen<i64, reason=usual_arith>(read<i32>(%6)), div<i64, by_zero=ub, min_by_neg_one=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))))), const<i64>(2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         write<i32>(%6, call<i32, signature=fn() -> i32>(%4));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%4);
-// DEFAULT-NEXT:         if ne<i64>(widen<i64, reason=usual_arith>(read<i32>(%6)), rem<i64, by_zero=ub, min_by_neg_one=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))))), const<i64>(5)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], call<i32, signature=fn() -> i32>(%[[VALUE_foo]]));
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:         if ne<i64>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_r]])), div<i64, by_zero=ub, min_by_neg_one=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))))), const<i64>(2)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], call<i32, signature=fn() -> i32>(%[[VALUE_bar]]));
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_bar]]);
+// DEFAULT-NEXT:         if ne<i64>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_r]])), rem<i64, by_zero=ub, min_by_neg_one=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))))), const<i64>(5)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -37,44 +37,44 @@ int effectful_argument(int a, int b) { return a && square(b++); }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @square(%25 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
-// IR-NEXT:     fn %1 @length(%26 <unnamed>: ptr<const i8>) -> i32 [linkage=external] [memory=read];
-// IR-NEXT:     fn %2 @both_attributes(%27 <unnamed>: i32) -> i32 [linkage=external] [memory=none];
-// IR-NEXT:     fn %3 @plain(%28 <unnamed>: i32) -> i32 [linkage=external];
-// IR-NEXT:     fn %4 @and_const(%5 a: i32, %6 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return from_bool<i32>(logical_and<bool>(ne<i32>(read<i32>(%5), const<i32>(0)), ne<i32>(call<i32>(%0, read<i32>(%6)), const<i32>(0))));
+// IR-NEXT:     fn %[[VALUE_square:[0-9]+]] @square(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [memory=none];
+// IR-NEXT:     fn %[[VALUE_length:[0-9]+]] @length(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external] [memory=read];
+// IR-NEXT:     fn %[[VALUE_both_attributes:[0-9]+]] @both_attributes(%[[VALUE2:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [memory=none];
+// IR-NEXT:     fn %[[VALUE_plain:[0-9]+]] @plain(%[[VALUE3:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_and_const:[0-9]+]] @and_const(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return from_bool<i32>(logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)), ne<i32>(call<i32>(%[[VALUE_square]], read<i32>(%[[VALUE_b]])), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %7 @or_pure(%8 s: ptr<const i8>, %9 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return from_bool<i32>(logical_or<bool>(ne<i32>(read<i32>(%9), const<i32>(0)), ne<i32>(call<i32>(%1, read<ptr<const i8>>(%8)), const<i32>(0))));
+// IR-NEXT:     fn %[[VALUE_or_pure:[0-9]+]] @or_pure(%[[VALUE_s:[0-9]+]] s: ptr<const i8>, %[[VALUE_b_2:[0-9]+]] b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return from_bool<i32>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_b_2]]), const<i32>(0)), ne<i32>(call<i32>(%[[VALUE_length]], read<ptr<const i8>>(%[[VALUE_s]])), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %10 @conditional_const(%11 a: i32, %12 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return conditional<i32>(ne<i32>(read<i32>(%11), const<i32>(0)), call<i32>(%0, read<i32>(%12)), read<i32>(%12));
+// IR-NEXT:     fn %[[VALUE_conditional_const:[0-9]+]] @conditional_const(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b_3:[0-9]+]] b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return conditional<i32>(ne<i32>(read<i32>(%[[VALUE_a_2]]), const<i32>(0)), call<i32>(%[[VALUE_square]], read<i32>(%[[VALUE_b_3]])), read<i32>(%[[VALUE_b_3]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %30 @__builtin_popcount(%29 <unnamed>: u32) -> i32 [linkage=external] [memory=none];
-// IR-NEXT:     fn %13 @builtin_const(%14 a: i32, %15 b: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return from_bool<i32>(logical_and<bool>(ne<i32>(read<i32>(%14), const<i32>(0)), ne<i32>(call<i32>(%30, read<u32>(%15)), const<i32>(0))));
+// IR-NEXT:     fn %[[VALUE___builtin_popcount:[0-9]+]] @__builtin_popcount(%[[VALUE4:[0-9]+]] <unnamed>: u32) -> i32 [linkage=external] [memory=none];
+// IR-NEXT:     fn %[[VALUE_builtin_const:[0-9]+]] @builtin_const(%[[VALUE_a_3:[0-9]+]] a: i32, %[[VALUE_b_4:[0-9]+]] b: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return from_bool<i32>(logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_a_3]]), const<i32>(0)), ne<i32>(call<i32>(%[[VALUE___builtin_popcount]], read<u32>(%[[VALUE_b_4]])), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %16 @strongest(%17 a: i32, %18 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return from_bool<i32>(logical_and<bool>(ne<i32>(read<i32>(%17), const<i32>(0)), ne<i32>(call<i32>(%2, read<i32>(%18)), const<i32>(0))));
+// IR-NEXT:     fn %[[VALUE_strongest:[0-9]+]] @strongest(%[[VALUE_a_4:[0-9]+]] a: i32, %[[VALUE_b_5:[0-9]+]] b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return from_bool<i32>(logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_a_4]]), const<i32>(0)), ne<i32>(call<i32>(%[[VALUE_both_attributes]], read<i32>(%[[VALUE_b_5]])), const<i32>(0))));
 // IR-NEXT:     }
-// IR-NEXT:     fn %19 @plain_call(%20 a: i32, %21 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %31: bool [synthetic];
-// IR-NEXT:         if ne<i32>(read<i32>(%20), const<i32>(0))
-// IR-NEXT:             write<bool>(%31, ne<i32>(call<i32>(%3, read<i32>(%21)), const<i32>(0)));
+// IR-NEXT:     fn %[[VALUE_plain_call:[0-9]+]] @plain_call(%[[VALUE_a_5:[0-9]+]] a: i32, %[[VALUE_b_6:[0-9]+]] b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE5:[0-9]+]]: bool [synthetic];
+// IR-NEXT:         if ne<i32>(read<i32>(%[[VALUE_a_5]]), const<i32>(0))
+// IR-NEXT:             write<bool>(%[[VALUE5]], ne<i32>(call<i32>(%[[VALUE_plain]], read<i32>(%[[VALUE_b_6]])), const<i32>(0)));
 // IR-NEXT:         else
-// IR-NEXT:             write<bool>(%31, const<bool>(false));
-// IR-NEXT:         return from_bool<i32>(read<bool>(%31));
+// IR-NEXT:             write<bool>(%[[VALUE5]], const<bool>(false));
+// IR-NEXT:         return from_bool<i32>(read<bool>(%[[VALUE5]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %22 @effectful_argument(%23 a: i32, %24 b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %32: bool [synthetic];
-// IR-NEXT:         if ne<i32>(read<i32>(%23), const<i32>(0))
-// IR-NEXT:             let %33: i32 [synthetic] = read<i32>(%24);
-// IR-NEXT:             let %34: i32 [synthetic] = add<i32>(read<i32>(%33), const<i32>(1));
-// IR-NEXT:             write<i32>(%24, read<i32>(%34));
-// IR-NEXT:             write<bool>(%32, ne<i32>(call<i32>(%0, read<i32>(%33)), const<i32>(0)));
+// IR-NEXT:     fn %[[VALUE_effectful_argument:[0-9]+]] @effectful_argument(%[[VALUE_a_6:[0-9]+]] a: i32, %[[VALUE_b_7:[0-9]+]] b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
+// IR-NEXT:         if ne<i32>(read<i32>(%[[VALUE_a_6]]), const<i32>(0))
+// IR-NEXT:             let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_b_7]]);
+// IR-NEXT:             let %[[VALUE8:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE7]]), const<i32>(1));
+// IR-NEXT:             write<i32>(%[[VALUE_b_7]], read<i32>(%[[VALUE8]]));
+// IR-NEXT:             write<bool>(%[[VALUE6]], ne<i32>(call<i32>(%[[VALUE_square]], read<i32>(%[[VALUE7]])), const<i32>(0)));
 // IR-NEXT:         else
-// IR-NEXT:             write<bool>(%32, const<bool>(false));
-// IR-NEXT:         return from_bool<i32>(read<bool>(%32));
+// IR-NEXT:             write<bool>(%[[VALUE6]], const<bool>(false));
+// IR-NEXT:         return from_bool<i32>(read<bool>(%[[VALUE6]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

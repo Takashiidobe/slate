@@ -48,19 +48,19 @@ test (uint8_t ch)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __uint8_t = u8;
-// DEFAULT-NEXT:     type @type1 uint8_t = u8;
-// DEFAULT-NEXT:     fn %2 @foo() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @bar() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @test(%5 ch: u8) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         switch %6 reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%5)))
+// DEFAULT-NEXT:     type @type[[TYPE___uint8_t:[0-9]+]] __uint8_t = u8;
+// DEFAULT-NEXT:     type @type[[TYPE_uint8_t:[0-9]+]] uint8_t = u8;
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_ch:[0-9]+]] ch: u8) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_ch]])))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %6 const<i32>(0):
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                 break %6;
-// DEFAULT-NEXT:                 case %6 const<i32>(1) ... const<i32>(255):
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%3);
-// DEFAULT-NEXT:                 break %6;
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(0):
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(1) ... const<i32>(255):
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_bar]]);
+// DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -32,6 +32,6 @@ int not_empty;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 not_empty: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_not_empty:[0-9]+]] not_empty: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

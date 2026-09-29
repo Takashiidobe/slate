@@ -34,14 +34,14 @@ float expm1f(float x) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = union {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 value: f32;
 // DEFAULT-NEXT:         field1 word: u32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     fn %0 @expm1f(%1 x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 sf_u: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<u32>(field1(%3), mul<u32, overflow=wrap>(float_to_int<u32, reason=explicit, out_of_range=ub, exceptions=observable>(read<f32>(%1)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))));
-// DEFAULT-NEXT:         return add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(read<f32>(%1), read<f32>(field0(%3)));
+// DEFAULT-NEXT:     fn %[[VALUE_expm1f:[0-9]+]] @expm1f(%[[VALUE_x:[0-9]+]] x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_sf_u:[0-9]+]] sf_u: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         write<u32>(field1(%[[VALUE_sf_u]]), mul<u32, overflow=wrap>(float_to_int<u32, reason=explicit, out_of_range=ub, exceptions=observable>(read<f32>(%[[VALUE_x]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))));
+// DEFAULT-NEXT:         return add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(read<f32>(%[[VALUE_x]]), read<f32>(field0(%[[VALUE_sf_u]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

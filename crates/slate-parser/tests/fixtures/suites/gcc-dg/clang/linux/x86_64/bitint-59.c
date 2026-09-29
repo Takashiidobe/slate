@@ -39,10 +39,10 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 x: u32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 b: u191b [storage=automatic] = widen<u191b, reason=assign>(read<u32>(%0));
-// DEFAULT-NEXT:         rem<u191b, by_zero=ub>(not<u191b>(shr<u191b, amount_out_of_range=ub, fill=zero_extend>(read<u191b>(%2), read<u32>(%0))), reinterpret<u191b, reason=usual_arith, fits=unknown>(widen<i191b, reason=usual_arith>(const<i32>(3))));
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: u32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u191b [storage=automatic] = widen<u191b, reason=assign>(read<u32>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         rem<u191b, by_zero=ub>(not<u191b>(shr<u191b, amount_out_of_range=ub, fill=zero_extend>(read<u191b>(%[[VALUE_b]]), read<u32>(%[[VALUE_x]]))), reinterpret<u191b, reason=usual_arith, fits=unknown>(widen<i191b, reason=usual_arith>(const<i32>(3))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

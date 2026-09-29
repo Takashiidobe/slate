@@ -32,11 +32,11 @@ float c;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @knr(%5 a: i32, %6 b: i32, %7 c: f64, %4 d: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %1 a: i8 [storage=automatic] = truncate<i8, reason=arg, fits=unknown>(read<i32>(%5));
-// DEFAULT-NEXT:         let %2 b: i16 [storage=automatic] = truncate<i16, reason=arg, fits=unknown>(read<i32>(%6));
-// DEFAULT-NEXT:         let %3 c: f32 [storage=automatic] = float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(read<f64>(%7));
-// DEFAULT-NEXT:         return float_to_int<i32, reason=return, out_of_range=ub, exceptions=ignore>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%1)), widen<i32, reason=promotion>(read<i16>(%2)))), read<f32>(%3)), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%4))));
+// DEFAULT-NEXT:     fn %[[VALUE_knr:[0-9]+]] @knr(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32, %[[VALUE_c:[0-9]+]] c: f64, %[[VALUE_d:[0-9]+]] d: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: i8 [storage=automatic] = truncate<i8, reason=arg, fits=unknown>(read<i32>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: i16 [storage=automatic] = truncate<i16, reason=arg, fits=unknown>(read<i32>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: f32 [storage=automatic] = float_narrow<f32, reason=arg, rounding=nearest_even, exceptions=ignore>(read<f64>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         return float_to_int<i32, reason=return, out_of_range=ub, exceptions=ignore>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_a_2]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_b_2]])))), read<f32>(%[[VALUE_c_2]])), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i32>(%[[VALUE_d]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

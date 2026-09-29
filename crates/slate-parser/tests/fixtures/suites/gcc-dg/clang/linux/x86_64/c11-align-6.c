@@ -65,208 +65,208 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: bool;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     type @type1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: i8;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     type @type2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: i8;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     type @type3 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE3:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: u8;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     type @type4 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE4:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: i16;
 // DEFAULT-NEXT:     } [size=4, align=2, offsets=[0, 2]];
-// DEFAULT-NEXT:     type @type5 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE5:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: u16;
 // DEFAULT-NEXT:     } [size=4, align=2, offsets=[0, 2]];
-// DEFAULT-NEXT:     type @type6 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE6:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type7 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE7:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: u32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type8 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE8:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type9 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE9:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: u64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type10 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE10:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type11 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE11:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: u64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type12 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE12:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: f32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type13 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE13:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: f64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type14 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE14:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: f80;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16]];
-// DEFAULT-NEXT:     type @type15 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE15:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: complex<f32>;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type16 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE16:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: complex<f64>;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type17 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE17:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 v: complex<f80>;
 // DEFAULT-NEXT:     } [size=48, align=16, offsets=[0, 16]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%39 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         do %40
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %4 x: @type0 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x:[0-9]+]] x: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(1), const<u64>(1))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %41
+// DEFAULT-NEXT:         do %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %6 x: @type1 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_2:[0-9]+]] x: @type[[TYPE1]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(1), const<u64>(1))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %42
+// DEFAULT-NEXT:         do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %8 x: @type2 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_3:[0-9]+]] x: @type[[TYPE2]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(1), const<u64>(1))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %43
+// DEFAULT-NEXT:         do %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %10 x: @type3 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_4:[0-9]+]] x: @type[[TYPE3]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(1), const<u64>(1))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %44
+// DEFAULT-NEXT:         do %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %12 x: @type4 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_5:[0-9]+]] x: @type[[TYPE4]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(2), const<u64>(2))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %45
+// DEFAULT-NEXT:         do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %14 x: @type5 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_6:[0-9]+]] x: @type[[TYPE5]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(2), const<u64>(2))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %46
+// DEFAULT-NEXT:         do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %16 x: @type6 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_7:[0-9]+]] x: @type[[TYPE6]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(4), const<u64>(4))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %47
+// DEFAULT-NEXT:         do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %18 x: @type7 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_8:[0-9]+]] x: @type[[TYPE7]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(4), const<u64>(4))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %48
+// DEFAULT-NEXT:         do %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %20 x: @type8 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_9:[0-9]+]] x: @type[[TYPE8]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(8), const<u64>(8))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %49
+// DEFAULT-NEXT:         do %[[VALUE10:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %22 x: @type9 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_10:[0-9]+]] x: @type[[TYPE9]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(8), const<u64>(8))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %50
+// DEFAULT-NEXT:         do %[[VALUE11:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %24 x: @type10 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_11:[0-9]+]] x: @type[[TYPE10]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(8), const<u64>(8))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %51
+// DEFAULT-NEXT:         do %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %26 x: @type11 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_12:[0-9]+]] x: @type[[TYPE11]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(8), const<u64>(8))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %52
+// DEFAULT-NEXT:         do %[[VALUE13:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %28 x: @type12 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_13:[0-9]+]] x: @type[[TYPE12]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(4), const<u64>(4))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %53
+// DEFAULT-NEXT:         do %[[VALUE14:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %30 x: @type13 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_14:[0-9]+]] x: @type[[TYPE13]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(8), const<u64>(8))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %54
+// DEFAULT-NEXT:         do %[[VALUE15:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %32 x: @type14 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_15:[0-9]+]] x: @type[[TYPE14]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(16), const<u64>(16))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %55
+// DEFAULT-NEXT:         do %[[VALUE16:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %34 x: @type15 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_16:[0-9]+]] x: @type[[TYPE15]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(4), const<u64>(4))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %56
+// DEFAULT-NEXT:         do %[[VALUE17:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %36 x: @type16 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_17:[0-9]+]] x: @type[[TYPE16]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(8), const<u64>(8))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %57
+// DEFAULT-NEXT:         do %[[VALUE18:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %38 x: @type17 [storage=automatic];
+// DEFAULT-NEXT:                 let %[[VALUE_x_18:[0-9]+]] x: @type[[TYPE17]] [storage=automatic];
 // DEFAULT-NEXT:                 if gt<u64>(const<u64>(16), const<u64>(16))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

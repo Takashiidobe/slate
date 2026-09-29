@@ -53,38 +53,38 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @link_error() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @exp(%4 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @atan(%5 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%1, const<f64>(1.0)), const<f64>(2.71))
-// DEFAULT-NEXT:             write<bool>(%6, const<bool>(true));
+// DEFAULT-NEXT:     fn %[[VALUE_link_error:[0-9]+]] @link_error() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_exp:[0-9]+]] @exp(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_atan:[0-9]+]] @atan(%[[VALUE1:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_exp]], const<f64>(1.0)), const<f64>(2.71))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%6, gt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%1, const<f64>(1.0)), const<f64>(2.72)));
-// DEFAULT-NEXT:         if read<bool>(%6)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %7: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%1, const<f64>(2.0)), const<f64>(7.38))
-// DEFAULT-NEXT:             write<bool>(%7, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], gt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_exp]], const<f64>(1.0)), const<f64>(2.72)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE2]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_exp]], const<f64>(2.0)), const<f64>(7.38))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE3]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%7, gt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%1, const<f64>(2.0)), const<f64>(7.39)));
-// DEFAULT-NEXT:         if read<bool>(%7)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %8: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%1, neg<f64>(const<f64>(2.0))), const<f64>(0.13))
-// DEFAULT-NEXT:             write<bool>(%8, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE3]], gt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_exp]], const<f64>(2.0)), const<f64>(7.39)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE3]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_exp]], neg<f64>(const<f64>(2.0))), const<f64>(0.13))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%8, gt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%1, neg<f64>(const<f64>(2.0))), const<f64>(0.14)));
-// DEFAULT-NEXT:         if read<bool>(%8)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %9: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%2, const<f64>(1.0)), const<f64>(0.78))
-// DEFAULT-NEXT:             write<bool>(%9, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], gt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_exp]], neg<f64>(const<f64>(2.0))), const<f64>(0.14)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE4]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_atan]], const<f64>(1.0)), const<f64>(0.78))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%9, gt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%2, const<f64>(1.0)), const<f64>(0.79)));
-// DEFAULT-NEXT:         if read<bool>(%9)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], gt<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_atan]], const<f64>(1.0)), const<f64>(0.79)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE5]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

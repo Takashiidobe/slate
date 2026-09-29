@@ -38,10 +38,10 @@ __typeof_unqual(subject) always_typeof_unqual_derived;
 // C17-NEXT:         storage d64 [size=8, align=8];
 // C17-NEXT:         storage d128 [size=16, align=16];
 // C17-NEXT:     }
-// C17-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
-// C17-NEXT:     global %1 constexpr: i32 [storage=static] = const<i32>(5) [linkage=external];
-// C17-NEXT:     global %2 typeof_unqual: i32 [storage=static] [linkage=external];
-// C17-NEXT:     global %3 always_typeof_unqual_derived: i32 [storage=static] [linkage=external];
+// C17-NEXT:     global %[[VALUE_subject:[0-9]+]] subject: i32 [storage=static] [linkage=external];
+// C17-NEXT:     global %[[VALUE_constexpr:[0-9]+]] constexpr: i32 [storage=static] = const<i32>(5) [linkage=external];
+// C17-NEXT:     global %[[VALUE_typeof_unqual:[0-9]+]] typeof_unqual: i32 [storage=static] [linkage=external];
+// C17-NEXT:     global %[[VALUE_always_typeof_unqual_derived:[0-9]+]] always_typeof_unqual_derived: i32 [storage=static] [linkage=external];
 // C17-NEXT: }
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN GNU17
@@ -67,10 +67,10 @@ __typeof_unqual(subject) always_typeof_unqual_derived;
 // GNU17-NEXT:         storage d64 [size=8, align=8];
 // GNU17-NEXT:         storage d128 [size=16, align=16];
 // GNU17-NEXT:     }
-// GNU17-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
-// GNU17-NEXT:     global %1 constexpr: i32 [storage=static] = const<i32>(5) [linkage=external];
-// GNU17-NEXT:     global %2 typeof_unqual: i32 [storage=static] [linkage=external];
-// GNU17-NEXT:     global %3 always_typeof_unqual_derived: i32 [storage=static] [linkage=external];
+// GNU17-NEXT:     global %[[VALUE_subject:[0-9]+]] subject: i32 [storage=static] [linkage=external];
+// GNU17-NEXT:     global %[[VALUE_constexpr:[0-9]+]] constexpr: i32 [storage=static] = const<i32>(5) [linkage=external];
+// GNU17-NEXT:     global %[[VALUE_typeof_unqual:[0-9]+]] typeof_unqual: i32 [storage=static] [linkage=external];
+// GNU17-NEXT:     global %[[VALUE_always_typeof_unqual_derived:[0-9]+]] always_typeof_unqual_derived: i32 [storage=static] [linkage=external];
 // GNU17-NEXT: }
 // SLATE-FILECHECK-END GNU17
 // SLATE-FILECHECK-BEGIN C23
@@ -96,9 +96,9 @@ __typeof_unqual(subject) always_typeof_unqual_derived;
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
-// C23-NEXT:     global %1 constexpr_value: i32 [storage=static] [const] [constexpr] = const<i32>(5) [linkage=internal];
-// C23-NEXT:     global %2 typeof_unqual_derived: i32 [storage=static] [linkage=external];
-// C23-NEXT:     global %3 always_typeof_unqual_derived: i32 [storage=static] [linkage=external];
+// C23-NEXT:     global %[[VALUE_subject:[0-9]+]] subject: i32 [storage=static] [linkage=external];
+// C23-NEXT:     global %[[VALUE_constexpr_value:[0-9]+]] constexpr_value: i32 [storage=static] [const] [constexpr] = const<i32>(5) [linkage=internal];
+// C23-NEXT:     global %[[VALUE_typeof_unqual_derived:[0-9]+]] typeof_unqual_derived: i32 [storage=static] [linkage=external];
+// C23-NEXT:     global %[[VALUE_always_typeof_unqual_derived:[0-9]+]] always_typeof_unqual_derived: i32 [storage=static] [linkage=external];
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

@@ -28,8 +28,8 @@ int identity(int value) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @identity(%1 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<i32>(%1);
+// IR-NEXT:     fn %[[VALUE_identity:[0-9]+]] @identity(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<i32>(%[[VALUE_value]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

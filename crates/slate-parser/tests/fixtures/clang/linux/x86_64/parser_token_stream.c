@@ -77,22 +77,22 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // COMPACT-NEXT:         storage d64 [size=8, align=8];
 // COMPACT-NEXT:         storage d128 [size=16, align=16];
 // COMPACT-NEXT:     }
-// COMPACT-NEXT:     type @type0 Payload = struct {
+// COMPACT-NEXT:     type @type[[TYPE_Payload:[0-9]+]] Payload = struct {
 // COMPACT-NEXT:         field0 value: i32;
 // COMPACT-NEXT:         field1 callback: ptr<fn(i32) -> i32>;
 // COMPACT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// COMPACT-NEXT:     type @type1 Payload = @type0;
-// COMPACT-NEXT:     type @type2 Mode = enum : u32 {
-// COMPACT-NEXT:         %0 FIRST = const<@type2>(1);
-// COMPACT-NEXT:         %1 LAST = const<@type2>(3);
+// COMPACT-NEXT:     type @type[[TYPE_Payload_2:[0-9]+]] Payload = @type[[TYPE_Payload]];
+// COMPACT-NEXT:     type @type[[TYPE_Mode:[0-9]+]] Mode = enum : u32 {
+// COMPACT-NEXT:         %[[VALUE_FIRST:[0-9]+]] FIRST = const<@type[[TYPE_Mode]]>(1);
+// COMPACT-NEXT:         %[[VALUE_LAST:[0-9]+]] LAST = const<@type[[TYPE_Mode]]>(3);
 // COMPACT-NEXT:     } [size=4, align=4];
-// COMPACT-NEXT:     global %7 after: i32 [storage=static] [linkage=external];
-// COMPACT-NEXT:     fn %5 @read_value(%6 p: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// COMPACT-NEXT:         if ne<ptr<@type0>>(read<ptr<@type0>>(%6), null<ptr<@type0>>)
+// COMPACT-NEXT:     global %[[VALUE_after:[0-9]+]] after: i32 [storage=static] [linkage=external];
+// COMPACT-NEXT:     fn %[[VALUE_read_value:[0-9]+]] @read_value(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_Payload]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// COMPACT-NEXT:         if ne<ptr<@type[[TYPE_Payload]]>>(read<ptr<@type[[TYPE_Payload]]>>(%[[VALUE_p]]), null<ptr<@type[[TYPE_Payload]]>>)
 // COMPACT-NEXT:             {
-// COMPACT-NEXT:                 return call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field1(deref(read<ptr<@type0>>(%6)))), read<i32>(field0(deref(read<ptr<@type0>>(%6)))));
+// COMPACT-NEXT:                 return call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field1(deref(read<ptr<@type[[TYPE_Payload]]>>(%[[VALUE_p]])))), read<i32>(field0(deref(read<ptr<@type[[TYPE_Payload]]>>(%[[VALUE_p]])))));
 // COMPACT-NEXT:             }
-// COMPACT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(enum_to_int<u32, reason=promotion>(const<@type2>(3)));
+// COMPACT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(enum_to_int<u32, reason=promotion>(const<@type[[TYPE_Mode]]>(3)));
 // COMPACT-NEXT:     }
 // COMPACT-NEXT: }
 // SLATE-FILECHECK-END COMPACT
@@ -119,22 +119,22 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // SPLIT-NEXT:         storage d64 [size=8, align=8];
 // SPLIT-NEXT:         storage d128 [size=16, align=16];
 // SPLIT-NEXT:     }
-// SPLIT-NEXT:     type @type0 Payload = struct {
+// SPLIT-NEXT:     type @type[[TYPE_Payload:[0-9]+]] Payload = struct {
 // SPLIT-NEXT:         field0 value: i32;
 // SPLIT-NEXT:         field1 callback: ptr<fn(i32) -> i32>;
 // SPLIT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// SPLIT-NEXT:     type @type1 Payload = @type0;
-// SPLIT-NEXT:     type @type2 Mode = enum : u32 {
-// SPLIT-NEXT:         %0 FIRST = const<@type2>(1);
-// SPLIT-NEXT:         %1 LAST = const<@type2>(3);
+// SPLIT-NEXT:     type @type[[TYPE_Payload_2:[0-9]+]] Payload = @type[[TYPE_Payload]];
+// SPLIT-NEXT:     type @type[[TYPE_Mode:[0-9]+]] Mode = enum : u32 {
+// SPLIT-NEXT:         %[[VALUE_FIRST:[0-9]+]] FIRST = const<@type[[TYPE_Mode]]>(1);
+// SPLIT-NEXT:         %[[VALUE_LAST:[0-9]+]] LAST = const<@type[[TYPE_Mode]]>(3);
 // SPLIT-NEXT:     } [size=4, align=4];
-// SPLIT-NEXT:     global %7 after: i32 [storage=static] [linkage=external];
-// SPLIT-NEXT:     fn %5 @read_value(%6 p: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// SPLIT-NEXT:         if ne<ptr<@type0>>(read<ptr<@type0>>(%6), null<ptr<@type0>>)
+// SPLIT-NEXT:     global %[[VALUE_after:[0-9]+]] after: i32 [storage=static] [linkage=external];
+// SPLIT-NEXT:     fn %[[VALUE_read_value:[0-9]+]] @read_value(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_Payload]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// SPLIT-NEXT:         if ne<ptr<@type[[TYPE_Payload]]>>(read<ptr<@type[[TYPE_Payload]]>>(%[[VALUE_p]]), null<ptr<@type[[TYPE_Payload]]>>)
 // SPLIT-NEXT:             {
-// SPLIT-NEXT:                 return call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field1(deref(read<ptr<@type0>>(%6)))), read<i32>(field0(deref(read<ptr<@type0>>(%6)))));
+// SPLIT-NEXT:                 return call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field1(deref(read<ptr<@type[[TYPE_Payload]]>>(%[[VALUE_p]])))), read<i32>(field0(deref(read<ptr<@type[[TYPE_Payload]]>>(%[[VALUE_p]])))));
 // SPLIT-NEXT:             }
-// SPLIT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(enum_to_int<u32, reason=promotion>(const<@type2>(3)));
+// SPLIT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(enum_to_int<u32, reason=promotion>(const<@type[[TYPE_Mode]]>(3)));
 // SPLIT-NEXT:     }
 // SPLIT-NEXT: }
 // SLATE-FILECHECK-END SPLIT
@@ -161,22 +161,22 @@ typedef struct Payload { int value; int (*callback)(int); } Payload; enum Mode :
 // MACRO-NEXT:         storage d64 [size=8, align=8];
 // MACRO-NEXT:         storage d128 [size=16, align=16];
 // MACRO-NEXT:     }
-// MACRO-NEXT:     type @type0 Payload = struct {
+// MACRO-NEXT:     type @type[[TYPE_Payload:[0-9]+]] Payload = struct {
 // MACRO-NEXT:         field0 value: i32;
 // MACRO-NEXT:         field1 callback: ptr<fn(i32) -> i32>;
 // MACRO-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// MACRO-NEXT:     type @type1 Payload = @type0;
-// MACRO-NEXT:     type @type2 Mode = enum : u32 {
-// MACRO-NEXT:         %0 FIRST = const<@type2>(1);
-// MACRO-NEXT:         %1 LAST = const<@type2>(3);
+// MACRO-NEXT:     type @type[[TYPE_Payload_2:[0-9]+]] Payload = @type[[TYPE_Payload]];
+// MACRO-NEXT:     type @type[[TYPE_Mode:[0-9]+]] Mode = enum : u32 {
+// MACRO-NEXT:         %[[VALUE_FIRST:[0-9]+]] FIRST = const<@type[[TYPE_Mode]]>(1);
+// MACRO-NEXT:         %[[VALUE_LAST:[0-9]+]] LAST = const<@type[[TYPE_Mode]]>(3);
 // MACRO-NEXT:     } [size=4, align=4];
-// MACRO-NEXT:     global %7 after: i32 [storage=static] [linkage=external];
-// MACRO-NEXT:     fn %5 @read_value(%6 p: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// MACRO-NEXT:         if ne<ptr<@type0>>(read<ptr<@type0>>(%6), null<ptr<@type0>>)
+// MACRO-NEXT:     global %[[VALUE_after:[0-9]+]] after: i32 [storage=static] [linkage=external];
+// MACRO-NEXT:     fn %[[VALUE_read_value:[0-9]+]] @read_value(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_Payload]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// MACRO-NEXT:         if ne<ptr<@type[[TYPE_Payload]]>>(read<ptr<@type[[TYPE_Payload]]>>(%[[VALUE_p]]), null<ptr<@type[[TYPE_Payload]]>>)
 // MACRO-NEXT:             {
-// MACRO-NEXT:                 return call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field1(deref(read<ptr<@type0>>(%6)))), read<i32>(field0(deref(read<ptr<@type0>>(%6)))));
+// MACRO-NEXT:                 return call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(field1(deref(read<ptr<@type[[TYPE_Payload]]>>(%[[VALUE_p]])))), read<i32>(field0(deref(read<ptr<@type[[TYPE_Payload]]>>(%[[VALUE_p]])))));
 // MACRO-NEXT:             }
-// MACRO-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(enum_to_int<u32, reason=promotion>(const<@type2>(3)));
+// MACRO-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(enum_to_int<u32, reason=promotion>(const<@type[[TYPE_Mode]]>(3)));
 // MACRO-NEXT:     }
 // MACRO-NEXT: }
 // SLATE-FILECHECK-END MACRO

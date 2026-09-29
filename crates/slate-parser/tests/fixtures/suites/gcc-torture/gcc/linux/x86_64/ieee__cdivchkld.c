@@ -182,130 +182,130 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%31 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @ilogbl(%32 <unnamed>: f80) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @match(%4 c: complex<f80>, %5 z: complex<f80>) -> i32 [linkage=external] [abi=sysv64(byval<align=16>, byval<align=16>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 rz: f80 [storage=automatic];
-// DEFAULT-NEXT:         let %7 iz: f80 [storage=automatic];
-// DEFAULT-NEXT:         let %8 rc: f80 [storage=automatic];
-// DEFAULT-NEXT:         let %9 ic: f80 [storage=automatic];
-// DEFAULT-NEXT:         let %10 rerr: f80 [storage=automatic];
-// DEFAULT-NEXT:         let %11 ierr: f80 [storage=automatic];
-// DEFAULT-NEXT:         let %12 rmax: f80 [storage=automatic];
-// DEFAULT-NEXT:         let %13 biterr: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<f80>(%6, read<f80>(real(%5)));
-// DEFAULT-NEXT:         write<f80>(%7, read<f80>(imag(%5)));
-// DEFAULT-NEXT:         write<f80>(%8, read<f80>(real(%4)));
-// DEFAULT-NEXT:         write<f80>(%9, read<f80>(imag(%4)));
-// DEFAULT-NEXT:         if gt<f80, exceptions=observable>(call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%6)), const<f80>(3.36210314311209350626E-4932))
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_ilogbl:[0-9]+]] @ilogbl(%[[VALUE1:[0-9]+]] <unnamed>: f80) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_match:[0-9]+]] @match(%[[VALUE_c:[0-9]+]] c: complex<f80>, %[[VALUE_z:[0-9]+]] z: complex<f80>) -> i32 [linkage=external] [abi=sysv64(byval<align=16>, byval<align=16>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_rz:[0-9]+]] rz: f80 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_iz:[0-9]+]] iz: f80 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_rc:[0-9]+]] rc: f80 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ic:[0-9]+]] ic: f80 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_rerr:[0-9]+]] rerr: f80 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ierr:[0-9]+]] ierr: f80 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_rmax:[0-9]+]] rmax: f80 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_biterr:[0-9]+]] biterr: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<f80>(%[[VALUE_rz]], read<f80>(real(%[[VALUE_z]])));
+// DEFAULT-NEXT:         write<f80>(%[[VALUE_iz]], read<f80>(imag(%[[VALUE_z]])));
+// DEFAULT-NEXT:         write<f80>(%[[VALUE_rc]], read<f80>(real(%[[VALUE_c]])));
+// DEFAULT-NEXT:         write<f80>(%[[VALUE_ic]], read<f80>(imag(%[[VALUE_c]])));
+// DEFAULT-NEXT:         if gt<f80, exceptions=observable>(call<f80, signature=fn(f80) -> f80>(%[[VALUE___builtin_fabsl:[0-9]+]], read<f80>(%[[VALUE_rz]])), const<f80>(3.36210314311209350626E-4932))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<f80>(%10, div<f80, rounding=nearest_even, exceptions=observable, contract=fast>(call<f80, signature=fn(f80) -> f80>(%36, sub<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%6), read<f80>(%8))), call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%6))));
+// DEFAULT-NEXT:                 write<f80>(%[[VALUE_rerr]], div<f80, rounding=nearest_even, exceptions=observable, contract=fast>(call<f80, signature=fn(f80) -> f80>(%[[VALUE___builtin_fabsl]], sub<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%[[VALUE_rz]]), read<f80>(%[[VALUE_rc]]))), call<f80, signature=fn(f80) -> f80>(%[[VALUE___builtin_fabsl]], read<f80>(%[[VALUE_rz]]))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             if eq<f80, exceptions=observable>(call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%6)), float_widen<f80, reason=usual_arith>(const<f64>(0.0)))
+// DEFAULT-NEXT:             if eq<f80, exceptions=observable>(call<f80, signature=fn(f80) -> f80>(%[[VALUE___builtin_fabsl]], read<f80>(%[[VALUE_rz]])), float_widen<f80, reason=usual_arith>(const<f64>(0.0)))
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<f80>(%10, call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%8)));
+// DEFAULT-NEXT:                     write<f80>(%[[VALUE_rerr]], call<f80, signature=fn(f80) -> f80>(%[[VALUE___builtin_fabsl]], read<f80>(%[[VALUE_rc]])));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             else
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<f80>(%10, div<f80, rounding=nearest_even, exceptions=observable, contract=fast>(call<f80, signature=fn(f80) -> f80>(%36, sub<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%6), read<f80>(%8))), const<f80>(3.36210314311209350626E-4932)));
+// DEFAULT-NEXT:                     write<f80>(%[[VALUE_rerr]], div<f80, rounding=nearest_even, exceptions=observable, contract=fast>(call<f80, signature=fn(f80) -> f80>(%[[VALUE___builtin_fabsl]], sub<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%[[VALUE_rz]]), read<f80>(%[[VALUE_rc]]))), const<f80>(3.36210314311209350626E-4932)));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         if gt<f80, exceptions=observable>(call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%7)), const<f80>(3.36210314311209350626E-4932))
+// DEFAULT-NEXT:         if gt<f80, exceptions=observable>(call<f80, signature=fn(f80) -> f80>(%[[VALUE___builtin_fabsl]], read<f80>(%[[VALUE_iz]])), const<f80>(3.36210314311209350626E-4932))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<f80>(%11, div<f80, rounding=nearest_even, exceptions=observable, contract=fast>(call<f80, signature=fn(f80) -> f80>(%36, sub<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%7), read<f80>(%9))), call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%7))));
+// DEFAULT-NEXT:                 write<f80>(%[[VALUE_ierr]], div<f80, rounding=nearest_even, exceptions=observable, contract=fast>(call<f80, signature=fn(f80) -> f80>(%[[VALUE___builtin_fabsl]], sub<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%[[VALUE_iz]]), read<f80>(%[[VALUE_ic]]))), call<f80, signature=fn(f80) -> f80>(%[[VALUE___builtin_fabsl]], read<f80>(%[[VALUE_iz]]))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             if eq<f80, exceptions=observable>(call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%7)), float_widen<f80, reason=usual_arith>(const<f64>(0.0)))
+// DEFAULT-NEXT:             if eq<f80, exceptions=observable>(call<f80, signature=fn(f80) -> f80>(%[[VALUE___builtin_fabsl]], read<f80>(%[[VALUE_iz]])), float_widen<f80, reason=usual_arith>(const<f64>(0.0)))
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<f80>(%11, call<f80, signature=fn(f80) -> f80>(%36, read<f80>(%9)));
+// DEFAULT-NEXT:                     write<f80>(%[[VALUE_ierr]], call<f80, signature=fn(f80) -> f80>(%[[VALUE___builtin_fabsl]], read<f80>(%[[VALUE_ic]])));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             else
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<f80>(%11, div<f80, rounding=nearest_even, exceptions=observable, contract=fast>(call<f80, signature=fn(f80) -> f80>(%36, sub<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%7), read<f80>(%9))), const<f80>(3.36210314311209350626E-4932)));
+// DEFAULT-NEXT:                     write<f80>(%[[VALUE_ierr]], div<f80, rounding=nearest_even, exceptions=observable, contract=fast>(call<f80, signature=fn(f80) -> f80>(%[[VALUE___builtin_fabsl]], sub<f80, rounding=nearest_even, exceptions=observable, contract=fast>(read<f80>(%[[VALUE_iz]]), read<f80>(%[[VALUE_ic]]))), const<f80>(3.36210314311209350626E-4932)));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         write<f80>(%12, call<f80, signature=fn(f80, f80) -> f80>(%39, read<f80>(%10), read<f80>(%11)));
-// DEFAULT-NEXT:         write<i32>(%13, const<i32>(0));
-// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(%12), float_widen<f80, reason=usual_arith>(const<f64>(0.0)))
+// DEFAULT-NEXT:         write<f80>(%[[VALUE_rmax]], call<f80, signature=fn(f80, f80) -> f80>(%[[VALUE___builtin_fmaxl:[0-9]+]], read<f80>(%[[VALUE_rerr]]), read<f80>(%[[VALUE_ierr]])));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_biterr]], const<i32>(0));
+// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(%[[VALUE_rmax]]), float_widen<f80, reason=usual_arith>(const<f64>(0.0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%13, add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(f80) -> i32>(%2, read<f80>(%12)), const<i32>(64)), const<i32>(1)));
-// DEFAULT-NEXT:                 add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(f80) -> i32>(%2, read<f80>(%12)), const<i32>(64)), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_biterr]], add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(f80) -> i32>(%[[VALUE_ilogbl]], read<f80>(%[[VALUE_rmax]])), const<i32>(64)), const<i32>(1)));
+// DEFAULT-NEXT:                 add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(f80) -> i32>(%[[VALUE_ilogbl]], read<f80>(%[[VALUE_rmax]])), const<i32>(64)), const<i32>(1));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ge<i32>(read<i32>(%13), const<i32>(6))
+// DEFAULT-NEXT:         if ge<i32>(read<i32>(%[[VALUE_biterr]]), const<i32>(6))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %36 @__builtin_fabsl(%35 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %39 @__builtin_fmaxl(%37 <unnamed>: f80, %38 <unnamed>: f80) -> f80 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %14 @main(%15 argc: i32, %16 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %17 a: complex<f80> [storage=automatic];
-// DEFAULT-NEXT:         let %18 b: complex<f80> [storage=automatic];
-// DEFAULT-NEXT:         let %19 c: complex<f80> [storage=automatic];
-// DEFAULT-NEXT:         let %20 z: complex<f80> [storage=automatic];
-// DEFAULT-NEXT:         let %21 xr: array<f80, 4> [storage=automatic];
-// DEFAULT-NEXT:         let %22 xi: array<f80, 4> [storage=automatic];
-// DEFAULT-NEXT:         let %23 yr: array<f80, 4> [storage=automatic];
-// DEFAULT-NEXT:         let %24 yi: array<f80, 4> [storage=automatic];
-// DEFAULT-NEXT:         let %25 zr: array<f80, 4> [storage=automatic];
-// DEFAULT-NEXT:         let %26 zi: array<f80, 4> [storage=automatic];
-// DEFAULT-NEXT:         let %27 cr: f80 [storage=automatic];
-// DEFAULT-NEXT:         let %28 ci: f80 [storage=automatic];
-// DEFAULT-NEXT:         let %29 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %30 ok: i32 [storage=automatic] = const<i32>(1);
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%21), const<i32>(0))), neg<f80>(const<f80>(1.80284204551487856924E-2552)));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%22), const<i32>(0))), const<f80>(2.64370611144962632511E+4916));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%23), const<i32>(0))), neg<f80>(const<f80>(2.53736858833639415543E-4695)));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%24), const<i32>(0))), neg<f80>(const<f80>(4.15224402656888868824E+262)));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%25), const<i32>(0))), neg<f80>(const<f80>(6.3669333847755379659E+4653)));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%26), const<i32>(0))), neg<f80>(const<f80>(3.89072912651265618456E-304)));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%21), const<i32>(1))), const<f80>(2.31199032499427573017E+4825));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%22), const<i32>(1))), const<f80>(5.02223035999083336654E-4286));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%23), const<i32>(1))), const<f80>(1.23459631818840338799E-4921));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%24), const<i32>(1))), neg<f80>(const<f80>(2.88043748281638274857E+105)));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%25), const<i32>(1))), const<f80>(3.44028231094461896128E-307));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%26), const<i32>(1))), const<f80>(8.0265249247267088655E+4719));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%21), const<i32>(2))), neg<f80>(const<f80>(2.282752288459431994E+4812)));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%22), const<i32>(2))), const<f80>(1.49505288698142573183E-854));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%23), const<i32>(2))), neg<f80>(const<f80>(2270.85721751211820685)));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%24), const<i32>(2))), const<f80>(4.47288407618369521217E-4932));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%25), const<i32>(2))), const<f80>(1.00523814128672768937E+4809));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%26), const<i32>(2))), const<f80>(1.98000721501104493297E-126));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%21), const<i32>(3))), const<f80>(1.07363508404356840197E-1185));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%22), const<i32>(3))), neg<f80>(const<f80>(4.27982174853080997604E+4696)));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%23), const<i32>(3))), const<f80>(1.32092738562856559194E-4919));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%24), const<i32>(3))), neg<f80>(const<f80>(3.1506997743185376413E+24)));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%25), const<i32>(3))), const<f80>(1.35837180788083473681E+4672));
-// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%26), const<i32>(3))), neg<f80>(const<f80>(5.69495873748767192994E-272)));
-// DEFAULT-NEXT:         for %40
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_fabsl]] @__builtin_fabsl(%[[VALUE2:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_fmaxl]] @__builtin_fmaxl(%[[VALUE3:[0-9]+]] <unnamed>: f80, %[[VALUE4:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: complex<f80> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: complex<f80> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: complex<f80> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_z_2:[0-9]+]] z: complex<f80> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_xr:[0-9]+]] xr: array<f80, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_xi:[0-9]+]] xi: array<f80, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_yr:[0-9]+]] yr: array<f80, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_yi:[0-9]+]] yi: array<f80, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_zr:[0-9]+]] zr: array<f80, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_zi:[0-9]+]] zi: array<f80, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_cr:[0-9]+]] cr: f80 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ci:[0-9]+]] ci: f80 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ok:[0-9]+]] ok: i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_xr]]), const<i32>(0))), neg<f80>(const<f80>(1.80284204551487856924E-2552)));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_xi]]), const<i32>(0))), const<f80>(2.64370611144962632511E+4916));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_yr]]), const<i32>(0))), neg<f80>(const<f80>(2.53736858833639415543E-4695)));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_yi]]), const<i32>(0))), neg<f80>(const<f80>(4.15224402656888868824E+262)));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_zr]]), const<i32>(0))), neg<f80>(const<f80>(6.3669333847755379659E+4653)));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_zi]]), const<i32>(0))), neg<f80>(const<f80>(3.89072912651265618456E-304)));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_xr]]), const<i32>(1))), const<f80>(2.31199032499427573017E+4825));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_xi]]), const<i32>(1))), const<f80>(5.02223035999083336654E-4286));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_yr]]), const<i32>(1))), const<f80>(1.23459631818840338799E-4921));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_yi]]), const<i32>(1))), neg<f80>(const<f80>(2.88043748281638274857E+105)));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_zr]]), const<i32>(1))), const<f80>(3.44028231094461896128E-307));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_zi]]), const<i32>(1))), const<f80>(8.0265249247267088655E+4719));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_xr]]), const<i32>(2))), neg<f80>(const<f80>(2.282752288459431994E+4812)));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_xi]]), const<i32>(2))), const<f80>(1.49505288698142573183E-854));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_yr]]), const<i32>(2))), neg<f80>(const<f80>(2270.85721751211820685)));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_yi]]), const<i32>(2))), const<f80>(4.47288407618369521217E-4932));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_zr]]), const<i32>(2))), const<f80>(1.00523814128672768937E+4809));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_zi]]), const<i32>(2))), const<f80>(1.98000721501104493297E-126));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_xr]]), const<i32>(3))), const<f80>(1.07363508404356840197E-1185));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_xi]]), const<i32>(3))), neg<f80>(const<f80>(4.27982174853080997604E+4696)));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_yr]]), const<i32>(3))), const<f80>(1.32092738562856559194E-4919));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_yi]]), const<i32>(3))), neg<f80>(const<f80>(3.1506997743185376413E+24)));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_zr]]), const<i32>(3))), const<f80>(1.35837180788083473681E+4672));
+// DEFAULT-NEXT:         write<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_zi]]), const<i32>(3))), neg<f80>(const<f80>(5.69495873748767192994E-272)));
+// DEFAULT-NEXT:         for %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%29, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%29), const<i32>(4))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(4))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %41: i32 [synthetic] = read<i32>(%29);
-// DEFAULT-NEXT:                 let %42: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%41), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%29, read<i32>(%42));
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE7]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<f80>(real(%17), read<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%21), read<i32>(%29)))));
-// DEFAULT-NEXT:                     write<f80>(imag(%17), read<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%22), read<i32>(%29)))));
-// DEFAULT-NEXT:                     write<f80>(real(%18), read<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%23), read<i32>(%29)))));
-// DEFAULT-NEXT:                     write<f80>(imag(%18), read<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%24), read<i32>(%29)))));
-// DEFAULT-NEXT:                     write<f80>(real(%20), read<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%25), read<i32>(%29)))));
-// DEFAULT-NEXT:                     write<f80>(imag(%20), read<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%26), read<i32>(%29)))));
-// DEFAULT-NEXT:                     write<complex<f80>>(%19, div<complex<f80>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f80>>(%17), read<complex<f80>>(%18)));
-// DEFAULT-NEXT:                     write<f80>(%27, read<f80>(real(%19)));
-// DEFAULT-NEXT:                     write<f80>(%28, read<f80>(imag(%19)));
-// DEFAULT-NEXT:                     if not<bool>(ne<i32>(call<i32, signature=fn(complex<f80>, complex<f80>) -> i32, abi=sysv64(byval<align=16>, byval<align=16>) -> scalar>(%3, read<complex<f80>>(%19), read<complex<f80>>(%20)), const<i32>(0)))
+// DEFAULT-NEXT:                     write<f80>(real(%[[VALUE_a]]), read<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_xr]]), read<i32>(%[[VALUE_i]])))));
+// DEFAULT-NEXT:                     write<f80>(imag(%[[VALUE_a]]), read<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_xi]]), read<i32>(%[[VALUE_i]])))));
+// DEFAULT-NEXT:                     write<f80>(real(%[[VALUE_b]]), read<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_yr]]), read<i32>(%[[VALUE_i]])))));
+// DEFAULT-NEXT:                     write<f80>(imag(%[[VALUE_b]]), read<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_yi]]), read<i32>(%[[VALUE_i]])))));
+// DEFAULT-NEXT:                     write<f80>(real(%[[VALUE_z_2]]), read<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_zr]]), read<i32>(%[[VALUE_i]])))));
+// DEFAULT-NEXT:                     write<f80>(imag(%[[VALUE_z_2]]), read<f80>(deref(ptr_offset<ptr<f80>, subtract=false, element=f80, overflow=ub>(array_decay<ptr<f80>, length=Some(4)>(%[[VALUE_zi]]), read<i32>(%[[VALUE_i]])))));
+// DEFAULT-NEXT:                     write<complex<f80>>(%[[VALUE_c_2]], div<complex<f80>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(read<complex<f80>>(%[[VALUE_a]]), read<complex<f80>>(%[[VALUE_b]])));
+// DEFAULT-NEXT:                     write<f80>(%[[VALUE_cr]], read<f80>(real(%[[VALUE_c_2]])));
+// DEFAULT-NEXT:                     write<f80>(%[[VALUE_ci]], read<f80>(imag(%[[VALUE_c_2]])));
+// DEFAULT-NEXT:                     if not<bool>(ne<i32>(call<i32, signature=fn(complex<f80>, complex<f80>) -> i32, abi=sysv64(byval<align=16>, byval<align=16>) -> scalar>(%[[VALUE_match]], read<complex<f80>>(%[[VALUE_c_2]]), read<complex<f80>>(%[[VALUE_z_2]])), const<i32>(0)))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             write<i32>(%30, const<i32>(0));
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_ok]], const<i32>(0));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%30), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%[[VALUE_ok]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

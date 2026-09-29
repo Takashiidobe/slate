@@ -50,21 +50,21 @@ void foo(int a)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 a: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         switch %2 read<i32>(%1)
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_a]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %2 const<i32>(0) ... const<i32>(-1):
-// DEFAULT-NEXT:                     write<i32>(%1, add<i32, overflow=ub>(read<i32>(%1), const<i32>(2)));
-// DEFAULT-NEXT:                 break %2;
-// DEFAULT-NEXT:                 case %2 const<i32>(1) ... const<i32>(2):
-// DEFAULT-NEXT:                     write<i32>(%1, const<i32>(0));
-// DEFAULT-NEXT:                 break %2;
-// DEFAULT-NEXT:                 case %2 const<i32>(3) ... const<i32>(4):
-// DEFAULT-NEXT:                     write<i32>(%1, const<i32>(1));
-// DEFAULT-NEXT:                 break %2;
-// DEFAULT-NEXT:                 case %2 const<i32>(5) ... const<i32>(6):
-// DEFAULT-NEXT:                     write<i32>(%1, const<i32>(0));
-// DEFAULT-NEXT:                 break %2;
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(0) ... const<i32>(-1):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_a]], add<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), const<i32>(2)));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(1) ... const<i32>(2):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_a]], const<i32>(0));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(3) ... const<i32>(4):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_a]], const<i32>(1));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(5) ... const<i32>(6):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_a]], const<i32>(0));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

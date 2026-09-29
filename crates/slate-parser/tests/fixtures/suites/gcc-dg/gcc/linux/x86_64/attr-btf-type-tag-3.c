@@ -33,8 +33,8 @@ int *c (int z) __attribute__((btf_type_tag ("C"))); /* { dg-warning "does not ap
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @a(%6 x: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @b(%7 y: i32) -> ptr<i32> [linkage=external];
-// DEFAULT-NEXT:     fn %5 @c(%8 z: i32) -> ptr<i32> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_a:[0-9]+]] @a(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_b:[0-9]+]] @b(%[[VALUE_y:[0-9]+]] y: i32) -> ptr<i32> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_c:[0-9]+]] @c(%[[VALUE_z:[0-9]+]] z: i32) -> ptr<i32> [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

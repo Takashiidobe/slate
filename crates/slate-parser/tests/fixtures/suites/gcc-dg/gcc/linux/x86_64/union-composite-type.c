@@ -33,9 +33,9 @@ int f(int a);			/* { dg-warning "not truly compatible" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = union {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @f(%3 <unnamed>: @type0) -> i32 [linkage=external] [abi=sysv64(native_c) -> scalar];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE0:[0-9]+]] <unnamed>: @type[[TYPE0]]) -> i32 [linkage=external] [abi=sysv64(native_c) -> scalar];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

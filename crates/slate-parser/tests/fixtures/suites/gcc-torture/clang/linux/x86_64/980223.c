@@ -55,34 +55,34 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 addr: ptr<i8>;
 // DEFAULT-NEXT:         field1 type: i64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type1 object = @type0;
-// DEFAULT-NEXT:     global %9 nil: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 cons1: array<@type0, 2> [storage=static] [align=16] = aggregate<array<@type0, 2>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%9)), field1 = widen<i64, reason=assign>(const<i32>(0))), index1 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%9)), field1 = widen<i64, reason=assign>(const<i32>(0)))) [linkage=external];
-// DEFAULT-NEXT:     global %11 cons2: array<@type0, 2> [storage=static] [align=16] = aggregate<array<@type0, 2>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<array<@type0, 2>>>(%10)), field1 = widen<i64, reason=assign>(const<i32>(64))), index1 = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%9)), field1 = widen<i64, reason=assign>(const<i32>(0)))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @bar(%4 blah: @type0) -> @type0 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     type @type[[TYPE_object:[0-9]+]] object = @type[[TYPE0]];
+// DEFAULT-NEXT:     global %[[VALUE_nil:[0-9]+]] nil: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_cons1:[0-9]+]] cons1: array<@type[[TYPE0]], 2> [storage=static] [align=16] = aggregate<array<@type[[TYPE0]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_nil]])), field1 = widen<i64, reason=assign>(const<i32>(0))), index1 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_nil]])), field1 = widen<i64, reason=assign>(const<i32>(0)))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_cons2:[0-9]+]] cons2: array<@type[[TYPE0]], 2> [storage=static] [align=16] = aggregate<array<@type[[TYPE0]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<array<@type[[TYPE0]], 2>>>(%[[VALUE_cons1]])), field1 = widen<i64, reason=assign>(const<i32>(64))), index1 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_nil]])), field1 = widen<i64, reason=assign>(const<i32>(0)))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_blah:[0-9]+]] blah: @type[[TYPE0]]) -> @type[[TYPE0]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @foo(%6 x: @type0, %7 y: @type0) -> @type0 [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 z: @type0 [storage=automatic] = copy<@type0, reason=assign>(read<@type0>(deref(pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<i8>>(field0(%6))))));
-// DEFAULT-NEXT:         if ne<i64>(and<i64>(read<i64>(field1(%8)), widen<i64, reason=usual_arith>(const<i32>(64))), const<i64>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: @type[[TYPE0]], %[[VALUE_y:[0-9]+]] y: @type[[TYPE0]]) -> @type[[TYPE0]] [linkage=external] [abi=sysv64(native_c, native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: @type[[TYPE0]] [storage=automatic] = copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(deref(pointer_cast<ptr<@type[[TYPE0]]>, reason=explicit>(read<ptr<i8>>(field0(%[[VALUE_x]]))))));
+// DEFAULT-NEXT:         if ne<i64>(and<i64>(read<i64>(field1(%[[VALUE_z]])), widen<i64, reason=usual_arith>(const<i32>(64))), const<i64>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<@type0>(%7, copy<@type0, reason=assign>(read<@type0>(deref(pointer_cast<ptr<@type0>, reason=explicit>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field0(%8)), const<u64>(16)))))));
-// DEFAULT-NEXT:                 write<@type0>(%8, copy<@type0, reason=assign>(read<@type0>(deref(pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<i8>>(field0(%8)))))));
-// DEFAULT-NEXT:                 if ne<i64>(and<i64>(read<i64>(field1(%8)), widen<i64, reason=usual_arith>(const<i32>(64))), const<i64>(0))
-// DEFAULT-NEXT:                     write<@type0>(%7, copy<@type0, reason=assign>(call<@type0, signature=fn(@type0) -> @type0, abi=sysv64(native_c) -> native_c>(%3, copy<@type0, reason=arg>(read<@type0>(%7)))));
-// DEFAULT-NEXT:                     copy<@type0, reason=assign>(call<@type0, signature=fn(@type0) -> @type0, abi=sysv64(native_c) -> native_c>(%3, copy<@type0, reason=arg>(read<@type0>(%7))));
+// DEFAULT-NEXT:                 write<@type[[TYPE0]]>(%[[VALUE_y]], copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(deref(pointer_cast<ptr<@type[[TYPE0]]>, reason=explicit>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(field0(%[[VALUE_z]])), const<u64>(16)))))));
+// DEFAULT-NEXT:                 write<@type[[TYPE0]]>(%[[VALUE_z]], copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(deref(pointer_cast<ptr<@type[[TYPE0]]>, reason=explicit>(read<ptr<i8>>(field0(%[[VALUE_z]])))))));
+// DEFAULT-NEXT:                 if ne<i64>(and<i64>(read<i64>(field1(%[[VALUE_z]])), widen<i64, reason=usual_arith>(const<i32>(64))), const<i64>(0))
+// DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_y]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(@type[[TYPE0]]) -> @type[[TYPE0]], abi=sysv64(native_c) -> native_c>(%[[VALUE_bar]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_y]])))));
+// DEFAULT-NEXT:                     copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(@type[[TYPE0]]) -> @type[[TYPE0]], abi=sysv64(native_c) -> native_c>(%[[VALUE_bar]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_y]]))));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%7));
+// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_y]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %13 x: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<array<@type0, 2>>>(%11)), field1 = widen<i64, reason=assign>(const<i32>(64)));
-// DEFAULT-NEXT:         let %14 y: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%9)), field1 = widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         let %15 three: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn(@type0, @type0) -> @type0, abi=sysv64(native_c, native_c) -> native_c>(%5, copy<@type0, reason=arg>(read<@type0>(%13)), copy<@type0, reason=arg>(read<@type0>(%14))));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<array<@type[[TYPE0]], 2>>>(%[[VALUE_cons2]])), field1 = widen<i64, reason=assign>(const<i32>(64)));
+// DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_nil]])), field1 = widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE_three:[0-9]+]] three: @type[[TYPE0]] [storage=automatic] = copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(@type[[TYPE0]], @type[[TYPE0]]) -> @type[[TYPE0]], abi=sysv64(native_c, native_c) -> native_c>(%[[VALUE_foo]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_x_2]])), copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_y_2]]))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

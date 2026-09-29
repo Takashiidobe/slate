@@ -47,22 +47,22 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @Sub(%1 a: i32, %2 b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return sub<i32, overflow=ub>(read<i32>(%2), read<i32>(%1));
+// DEFAULT-NEXT:     fn %[[VALUE_Sub:[0-9]+]] @Sub(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return sub<i32, overflow=ub>(read<i32>(%[[VALUE_b]]), read<i32>(%[[VALUE_a]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @Select(%4 a: u32, %5 b: u32, %6 c: u32) -> u32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 pa_minus_pb: i32 [storage=automatic] [const] = add<i32, overflow=ub>(call<i32, signature=fn(i32, i32) -> i32>(%0, reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%4), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255)))), reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%5), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))))), call<i32, signature=fn(i32, i32) -> i32>(%0, reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%4), const<i32>(0)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255)))), reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%5), const<i32>(0)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))))));
-// DEFAULT-NEXT:         return conditional<u32>(le<i32>(read<i32>(%7), const<i32>(0)), read<u32>(%4), read<u32>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE_Select:[0-9]+]] @Select(%[[VALUE_a_2:[0-9]+]] a: u32, %[[VALUE_b_2:[0-9]+]] b: u32, %[[VALUE_c:[0-9]+]] c: u32) -> u32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_pa_minus_pb:[0-9]+]] pa_minus_pb: i32 [storage=automatic] [const] = add<i32, overflow=ub>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_Sub]], reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_a_2]]), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255)))), reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_b_2]]), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))))), call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_Sub]], reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_a_2]]), const<i32>(0)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255)))), reinterpret<i32, reason=arg, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_b_2]]), const<i32>(0)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))))));
+// DEFAULT-NEXT:         return conditional<u32>(le<i32>(read<i32>(%[[VALUE_pa_minus_pb]]), const<i32>(0)), read<u32>(%[[VALUE_a_2]]), read<u32>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @Predictor(%9 left: u32, %10 top: ptr<const u32> [const]) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 pred: u32 [storage=automatic] [const] = call<u32, signature=fn(u32, u32, u32) -> u32>(%3, read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(read<ptr<const u32>>(%10), const<i32>(1)))), read<u32>(%9), read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(read<ptr<const u32>>(%10), const<i32>(0)))));
-// DEFAULT-NEXT:         return read<u32>(%11);
+// DEFAULT-NEXT:     fn %[[VALUE_Predictor:[0-9]+]] @Predictor(%[[VALUE_left:[0-9]+]] left: u32, %[[VALUE_top:[0-9]+]] top: ptr<const u32> [const]) -> u32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_pred:[0-9]+]] pred: u32 [storage=automatic] [const] = call<u32, signature=fn(u32, u32, u32) -> u32>(%[[VALUE_Select]], read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(read<ptr<const u32>>(%[[VALUE_top]]), const<i32>(1)))), read<u32>(%[[VALUE_left]]), read<u32>(deref(ptr_offset<ptr<const u32>, subtract=false, element=u32, overflow=ub>(read<ptr<const u32>>(%[[VALUE_top]]), const<i32>(0)))));
+// DEFAULT-NEXT:         return read<u32>(%[[VALUE_pred]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %13 top: array<u32, 2> [storage=automatic] [const] = aggregate<array<u32, 2>, zero_fill=false>(index0 = const<u32>(4286216826), index1 = const<u32>(4286216826));
-// DEFAULT-NEXT:         let %14 left: u32 [storage=automatic] [const] = const<u32>(4286282619);
-// DEFAULT-NEXT:         let %15 pred: u32 [storage=automatic] [const] = call<u32, signature=fn(u32, ptr<const u32>) -> u32>(%8, read<u32>(%14), array_decay<ptr<const u32>, length=Some(2)>(%13));
-// DEFAULT-NEXT:         if eq<u32>(read<u32>(%15), read<u32>(%14))
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_top_2:[0-9]+]] top: array<u32, 2> [storage=automatic] [const] = aggregate<array<u32, 2>, zero_fill=false>(index0 = const<u32>(4286216826), index1 = const<u32>(4286216826));
+// DEFAULT-NEXT:         let %[[VALUE_left_2:[0-9]+]] left: u32 [storage=automatic] [const] = const<u32>(4286282619);
+// DEFAULT-NEXT:         let %[[VALUE_pred_2:[0-9]+]] pred: u32 [storage=automatic] [const] = call<u32, signature=fn(u32, ptr<const u32>) -> u32>(%[[VALUE_Predictor]], read<u32>(%[[VALUE_left_2]]), array_decay<ptr<const u32>, length=Some(2)>(%[[VALUE_top_2]]));
+// DEFAULT-NEXT:         if eq<u32>(read<u32>(%[[VALUE_pred_2]]), read<u32>(%[[VALUE_left_2]]))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }

@@ -31,7 +31,7 @@ extern char compile_time_assert[__alignof__(v4) == sizeof(float)*4 ? 1 : -1];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 v4 = vector<f32, 4>;
-// DEFAULT-NEXT:     extern %1 compile_time_assert: array<i8, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_v4:[0-9]+]] v4 = vector<f32, 4>;
+// DEFAULT-NEXT:     extern %[[VALUE_compile_time_assert:[0-9]+]] compile_time_assert: array<i8, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

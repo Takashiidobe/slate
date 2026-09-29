@@ -62,37 +62,37 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 field0: u64 : 29;
 // DEFAULT-NEXT:         field1 field1: u64 : 4;
 // DEFAULT-NEXT:         field2 field2: u64 : 31;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 3, 4], bit_offsets=[Some(0), Some(29), Some(33)], bit_units=[(0, 8)], field_units=[Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     type @type1 struct1 = @type0;
-// DEFAULT-NEXT:     fn %8 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 value1: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %4 value2: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %5 value3: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %6 flag: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %7 var1: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..8, bits=0..29>(%7), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(23))));
-// DEFAULT-NEXT:         write<u32>(%6, reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..29>(%7))))));
-// DEFAULT-NEXT:         write<i32>(%3, conditional<i32>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..29>(%7)))), const<i32>(0)), const<i32>(10), const<i32>(20)));
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..29>(%7)))), const<i32>(0))
+// DEFAULT-NEXT:     type @type[[TYPE_struct1:[0-9]+]] struct1 = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_value1:[0-9]+]] value1: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_value2:[0-9]+]] value2: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_value3:[0-9]+]] value3: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_flag:[0-9]+]] flag: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_var1:[0-9]+]] var1: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..8, bits=0..29>(%[[VALUE_var1]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(23))));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_flag]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..29>(%[[VALUE_var1]]))))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_value1]], conditional<i32>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..29>(%[[VALUE_var1]])))), const<i32>(0)), const<i32>(10), const<i32>(20)));
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..29>(%[[VALUE_var1]])))), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%4, const<i32>(10));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_value2]], const<i32>(10));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%4, const<i32>(20));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_value2]], const<i32>(20));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<i32>(%5, conditional<i32>(ne<u32>(read<u32>(%6), const<u32>(0)), const<i32>(10), const<i32>(20)));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%5), const<i32>(10))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_value3]], conditional<i32>(ne<u32>(read<u32>(%[[VALUE_flag]]), const<u32>(0)), const<i32>(10), const<i32>(20)));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_value1]]), const<i32>(10))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_value2]]), const<i32>(10))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_value3]]), const<i32>(10))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

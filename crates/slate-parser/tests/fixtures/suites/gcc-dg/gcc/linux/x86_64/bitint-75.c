@@ -36,10 +36,10 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 i: i65532b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i65532b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] [alternative=none] {
-// DEFAULT-NEXT:             inlateout 0 "r" [reg] width 65536 place<i65532b>(%0);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] width 65536 place<i65532b>(%[[VALUE_i]]);
 // DEFAULT-NEXT:             rejected: 0 (operand 0: width);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }

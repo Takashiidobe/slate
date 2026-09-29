@@ -33,8 +33,8 @@ int wchar_is_unsigned = 1;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 plain_char_is_unsigned: i32 [storage=static] = const<i32>(1) [linkage=external];
-// IR-NEXT:     global %1 plain_arithmetic_is_unsigned: i32 [storage=static] = const<i32>(1) [linkage=external];
-// IR-NEXT:     global %2 wchar_is_unsigned: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-NEXT:     global %[[VALUE_plain_char_is_unsigned:[0-9]+]] plain_char_is_unsigned: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-NEXT:     global %[[VALUE_plain_arithmetic_is_unsigned:[0-9]+]] plain_arithmetic_is_unsigned: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-NEXT:     global %[[VALUE_wchar_is_unsigned:[0-9]+]] wchar_is_unsigned: i32 [storage=static] = const<i32>(1) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

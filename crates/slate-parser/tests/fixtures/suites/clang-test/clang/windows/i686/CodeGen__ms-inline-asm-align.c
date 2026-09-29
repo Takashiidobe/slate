@@ -35,7 +35,7 @@ void align_test(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @align_test() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_align_test:[0-9]+]] @align_test() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm volatile "align 8\nalign 16\nalign 128\nALIGN 256" [dialect=intel] {
 // DEFAULT-NEXT:             template: "align 8\nalign 16\nalign 128\nALIGN 256";
 // DEFAULT-NEXT:         }

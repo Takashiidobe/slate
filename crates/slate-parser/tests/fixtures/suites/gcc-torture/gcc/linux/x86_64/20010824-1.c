@@ -31,10 +31,10 @@ bugcauser:
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(%2 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         label %1 bugcauser:
-// DEFAULT-NEXT:             if ne<i32>(read<i32>(%2), const<i32>(0))
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%0, sub<i32, overflow=ub>(read<i32>(%2), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         label %[[VALUE_bugcauser:[0-9]+]] bugcauser:
+// DEFAULT-NEXT:             if ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0))
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_f]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_n]]), const<i32>(1)));
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

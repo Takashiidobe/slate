@@ -43,11 +43,11 @@ main(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %1 arr: array<bool, 1> [storage=automatic];
-// DEFAULT-NEXT:         switch %2 from_bool<i32, reason=promotion>(read<bool>(deref(ptr_offset<ptr<bool>, subtract=false, element=bool, overflow=ub>(array_decay<ptr<bool>, length=Some(1)>(%1), const<i32>(0)))))
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_arr:[0-9]+]] arr: array<bool, 1> [storage=automatic];
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] from_bool<i32, reason=promotion>(read<bool>(deref(ptr_offset<ptr<bool>, subtract=false, element=bool, overflow=ub>(array_decay<ptr<bool>, length=Some(1)>(%[[VALUE_arr]]), const<i32>(0)))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 default %2:
+// DEFAULT-NEXT:                 default %[[VALUE0]]:
 // DEFAULT-NEXT:                     ;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);

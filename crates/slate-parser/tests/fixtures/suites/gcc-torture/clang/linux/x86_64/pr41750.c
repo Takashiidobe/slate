@@ -82,48 +82,48 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 bfd_link_hash_table = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_bfd_link_hash_table:[0-9]+]] bfd_link_hash_table = struct {
 // DEFAULT-NEXT:         field0 hash: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 foo_link_hash_table = struct {
-// DEFAULT-NEXT:         field0 root: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_foo_link_hash_table:[0-9]+]] foo_link_hash_table = struct {
+// DEFAULT-NEXT:         field0 root: @type[[TYPE_bfd_link_hash_table]];
 // DEFAULT-NEXT:         field1 dynobj: ptr<i32>;
 // DEFAULT-NEXT:         field2 sgot: ptr<i32>;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     type @type2 foo_link_info = struct {
-// DEFAULT-NEXT:         field0 hash: ptr<@type1>;
+// DEFAULT-NEXT:     type @type[[TYPE_foo_link_info:[0-9]+]] foo_link_info = struct {
+// DEFAULT-NEXT:         field0 hash: ptr<@type[[TYPE_foo_link_hash_table]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %16 link_info: @type2 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %17 hash: @type1 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %18 abfd: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @foo_create_got_section(%5 abfd: ptr<i32>, %6 info: ptr<@type2>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<ptr<i32>>(field2(deref(read<ptr<@type1>>(field0(deref(read<ptr<@type2>>(%6)))))), read<ptr<i32>>(%5));
+// DEFAULT-NEXT:     global %[[VALUE_link_info:[0-9]+]] link_info: @type[[TYPE_foo_link_info]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_hash:[0-9]+]] hash: @type[[TYPE_foo_link_hash_table]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_abfd:[0-9]+]] abfd: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo_create_got_section:[0-9]+]] @foo_create_got_section(%[[VALUE_abfd_2:[0-9]+]] abfd: ptr<i32>, %[[VALUE_info:[0-9]+]] info: ptr<@type[[TYPE_foo_link_info]]>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<ptr<i32>>(field2(deref(read<ptr<@type[[TYPE_foo_link_hash_table]]>>(field0(deref(read<ptr<@type[[TYPE_foo_link_info]]>>(%[[VALUE_info]])))))), read<ptr<i32>>(%[[VALUE_abfd_2]]));
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @get_got(%8 abfd: ptr<i32>, %9 info: ptr<@type2>, %10 hash: ptr<@type1>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 got: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         let %12 dynobj: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<i32>>(%11, read<ptr<i32>>(field2(deref(read<ptr<@type1>>(%10)))));
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%11), null<ptr<i32>>))
+// DEFAULT-NEXT:     fn %[[VALUE_get_got:[0-9]+]] @get_got(%[[VALUE_abfd_3:[0-9]+]] abfd: ptr<i32>, %[[VALUE_info_2:[0-9]+]] info: ptr<@type[[TYPE_foo_link_info]]>, %[[VALUE_hash_2:[0-9]+]] hash: ptr<@type[[TYPE_foo_link_hash_table]]>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_got:[0-9]+]] got: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_dynobj:[0-9]+]] dynobj: ptr<i32> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_got]], read<ptr<i32>>(field2(deref(read<ptr<@type[[TYPE_foo_link_hash_table]]>>(%[[VALUE_hash_2]])))));
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_got]]), null<ptr<i32>>))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<ptr<i32>>(%12, read<ptr<i32>>(field1(deref(read<ptr<@type1>>(%10)))));
-// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%12), null<ptr<i32>>))
-// DEFAULT-NEXT:                     write<ptr<i32>>(%12, read<ptr<i32>>(%8));
-// DEFAULT-NEXT:                     write<ptr<i32>>(field1(deref(read<ptr<@type1>>(%10))), read<ptr<i32>>(%8));
-// DEFAULT-NEXT:                 if not<bool>(ne<i32>(call<i32, signature=fn(ptr<i32>, ptr<@type2>) -> i32>(%4, read<ptr<i32>>(%12), read<ptr<@type2>>(%9)), const<i32>(0)))
+// DEFAULT-NEXT:                 write<ptr<i32>>(%[[VALUE_dynobj]], read<ptr<i32>>(field1(deref(read<ptr<@type[[TYPE_foo_link_hash_table]]>>(%[[VALUE_hash_2]])))));
+// DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_dynobj]]), null<ptr<i32>>))
+// DEFAULT-NEXT:                     write<ptr<i32>>(%[[VALUE_dynobj]], read<ptr<i32>>(%[[VALUE_abfd_3]]));
+// DEFAULT-NEXT:                     write<ptr<i32>>(field1(deref(read<ptr<@type[[TYPE_foo_link_hash_table]]>>(%[[VALUE_hash_2]]))), read<ptr<i32>>(%[[VALUE_abfd_3]]));
+// DEFAULT-NEXT:                 if not<bool>(ne<i32>(call<i32, signature=fn(ptr<i32>, ptr<@type[[TYPE_foo_link_info]]>) -> i32>(%[[VALUE_foo_create_got_section]], read<ptr<i32>>(%[[VALUE_dynobj]]), read<ptr<@type[[TYPE_foo_link_info]]>>(%[[VALUE_info_2]])), const<i32>(0)))
 // DEFAULT-NEXT:                     return null<ptr<i32>>;
-// DEFAULT-NEXT:                 write<ptr<i32>>(%11, read<ptr<i32>>(field2(deref(read<ptr<@type1>>(%10)))));
+// DEFAULT-NEXT:                 write<ptr<i32>>(%[[VALUE_got]], read<ptr<i32>>(field2(deref(read<ptr<@type[[TYPE_foo_link_hash_table]]>>(%[[VALUE_hash_2]])))));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<ptr<i32>>(%11);
+// DEFAULT-NEXT:         return read<ptr<i32>>(%[[VALUE_got]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @elf64_ia64_check_relocs(%14 abfd: ptr<i32>, %15 info: ptr<@type2>) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i32>, signature=fn(ptr<i32>, ptr<@type2>, ptr<@type1>) -> ptr<i32>>(%7, read<ptr<i32>>(%14), read<ptr<@type2>>(%15), read<ptr<@type1>>(field0(deref(read<ptr<@type2>>(%15)))));
+// DEFAULT-NEXT:     fn %[[VALUE_elf64_ia64_check_relocs:[0-9]+]] @elf64_ia64_check_relocs(%[[VALUE_abfd_4:[0-9]+]] abfd: ptr<i32>, %[[VALUE_info_3:[0-9]+]] info: ptr<@type[[TYPE_foo_link_info]]>) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i32>, signature=fn(ptr<i32>, ptr<@type[[TYPE_foo_link_info]]>, ptr<@type[[TYPE_foo_link_hash_table]]>) -> ptr<i32>>(%[[VALUE_get_got]], read<ptr<i32>>(%[[VALUE_abfd_4]]), read<ptr<@type[[TYPE_foo_link_info]]>>(%[[VALUE_info_3]]), read<ptr<@type[[TYPE_foo_link_hash_table]]>>(field0(deref(read<ptr<@type[[TYPE_foo_link_info]]>>(%[[VALUE_info_3]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<ptr<@type1>>(field0(%16), addr_of<ptr<@type1>>(%17));
-// DEFAULT-NEXT:         if ne<ptr<i32>>(call<ptr<i32>, signature=fn(ptr<i32>, ptr<@type2>) -> ptr<i32>>(%13, addr_of<ptr<i32>>(%18), addr_of<ptr<@type2>>(%16)), addr_of<ptr<i32>>(%18))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_foo_link_hash_table]]>>(field0(%[[VALUE_link_info]]), addr_of<ptr<@type[[TYPE_foo_link_hash_table]]>>(%[[VALUE_hash]]));
+// DEFAULT-NEXT:         if ne<ptr<i32>>(call<ptr<i32>, signature=fn(ptr<i32>, ptr<@type[[TYPE_foo_link_info]]>) -> ptr<i32>>(%[[VALUE_elf64_ia64_check_relocs]], addr_of<ptr<i32>>(%[[VALUE_abfd]]), addr_of<ptr<@type[[TYPE_foo_link_info]]>>(%[[VALUE_link_info]])), addr_of<ptr<i32>>(%[[VALUE_abfd]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

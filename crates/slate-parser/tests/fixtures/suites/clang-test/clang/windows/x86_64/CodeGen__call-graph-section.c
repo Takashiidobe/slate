@@ -74,41 +74,41 @@ void stf(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 st1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_st1:[0-9]+]] st1 = struct {
 // DEFAULT-NEXT:         field0 fp: ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 st2 = struct {
-// DEFAULT-NEXT:         field0 m: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_st2:[0-9]+]] st2 = struct {
+// DEFAULT-NEXT:         field0 m: @type[[TYPE_st1]];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 fp: ptr<fn() -> void> [storage=automatic] = function_decay<ptr<fn() -> void>>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%2));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_fp:[0-9]+]] fp: ptr<fn() -> void> [storage=automatic] = function_decay<ptr<fn() -> void>>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%[[VALUE_fp]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @baz(%4 a: i8, %5 b: f32, %6 c: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_a:[0-9]+]] a: i8, %[[VALUE_b:[0-9]+]] b: f32, %[[VALUE_c:[0-9]+]] c: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @qux(%8 a: ptr<i8>, %9 b: ptr<f32>, %10 c: ptr<f64>) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_qux:[0-9]+]] @qux(%[[VALUE_a_2:[0-9]+]] a: ptr<i8>, %[[VALUE_b_2:[0-9]+]] b: ptr<f32>, %[[VALUE_c_2:[0-9]+]] c: ptr<f64>) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return null<ptr<i32>>;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @corge() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %12 fp_baz: ptr<fn(i8, f32, f64) -> i32> [storage=automatic] = function_decay<ptr<fn(i8, f32, f64) -> i32>>(%3);
-// DEFAULT-NEXT:         call<i32, signature=fn(i8, f32, f64) -> i32>(read<ptr<fn(i8, f32, f64) -> i32>>(%12), truncate<i8, reason=arg, fits=always>(const<i32>(97)), const<f32>(0.0), const<f64>(0.0));
-// DEFAULT-NEXT:         let %13 fp_qux: ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>> [storage=automatic] = function_decay<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(%7);
-// DEFAULT-NEXT:         call<ptr<i32>, signature=fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>(read<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(%13), null<ptr<i8>>, null<ptr<f32>>, null<ptr<f64>>);
+// DEFAULT-NEXT:     fn %[[VALUE_corge:[0-9]+]] @corge() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_fp_baz:[0-9]+]] fp_baz: ptr<fn(i8, f32, f64) -> i32> [storage=automatic] = function_decay<ptr<fn(i8, f32, f64) -> i32>>(%[[VALUE_baz]]);
+// DEFAULT-NEXT:         call<i32, signature=fn(i8, f32, f64) -> i32>(read<ptr<fn(i8, f32, f64) -> i32>>(%[[VALUE_fp_baz]]), truncate<i8, reason=arg, fits=always>(const<i32>(97)), const<f32>(0.0), const<f64>(0.0));
+// DEFAULT-NEXT:         let %[[VALUE_fp_qux:[0-9]+]] fp_qux: ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>> [storage=automatic] = function_decay<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(%[[VALUE_qux]]);
+// DEFAULT-NEXT:         call<ptr<i32>, signature=fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>(read<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(%[[VALUE_fp_qux]]), null<ptr<i8>>, null<ptr<f32>>, null<ptr<f64>>);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @stparam(%17 a: @type1, %18 b: ptr<@type1>) -> void [linkage=external] [abi=win64(native_c, scalar) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_stparam:[0-9]+]] @stparam(%[[VALUE_a_3:[0-9]+]] a: @type[[TYPE_st2]], %[[VALUE_b_3:[0-9]+]] b: ptr<@type[[TYPE_st2]]>) -> void [linkage=external] [abi=win64(native_c, scalar) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @stf() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %20 St1: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(field0(%20), function_decay<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(%7));
-// DEFAULT-NEXT:         call<ptr<i32>, signature=fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>(read<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(field0(%20)), null<ptr<i8>>, null<ptr<f32>>, null<ptr<f64>>);
-// DEFAULT-NEXT:         let %21 St2: @type1 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(field0(field0(%21)), function_decay<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(%7));
-// DEFAULT-NEXT:         call<ptr<i32>, signature=fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>(read<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(field0(field0(%21))), null<ptr<i8>>, null<ptr<f32>>, null<ptr<f64>>);
-// DEFAULT-NEXT:         let %22 fp_stparam: ptr<fn(@type1, ptr<@type1>) -> void> [storage=automatic] = function_decay<ptr<fn(@type1, ptr<@type1>) -> void>>(%16);
-// DEFAULT-NEXT:         call<void, signature=fn(@type1, ptr<@type1>) -> void, abi=win64(native_c, scalar) -> void>(read<ptr<fn(@type1, ptr<@type1>) -> void>>(%22), copy<@type1, reason=arg>(read<@type1>(%21)), addr_of<ptr<@type1>>(%21));
+// DEFAULT-NEXT:     fn %[[VALUE_stf:[0-9]+]] @stf() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_St1:[0-9]+]] St1: @type[[TYPE_st1]] [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(field0(%[[VALUE_St1]]), function_decay<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(%[[VALUE_qux]]));
+// DEFAULT-NEXT:         call<ptr<i32>, signature=fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>(read<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(field0(%[[VALUE_St1]])), null<ptr<i8>>, null<ptr<f32>>, null<ptr<f64>>);
+// DEFAULT-NEXT:         let %[[VALUE_St2:[0-9]+]] St2: @type[[TYPE_st2]] [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(field0(field0(%[[VALUE_St2]])), function_decay<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(%[[VALUE_qux]]));
+// DEFAULT-NEXT:         call<ptr<i32>, signature=fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>(read<ptr<fn(ptr<i8>, ptr<f32>, ptr<f64>) -> ptr<i32>>>(field0(field0(%[[VALUE_St2]]))), null<ptr<i8>>, null<ptr<f32>>, null<ptr<f64>>);
+// DEFAULT-NEXT:         let %[[VALUE_fp_stparam:[0-9]+]] fp_stparam: ptr<fn(@type[[TYPE_st2]], ptr<@type[[TYPE_st2]]>) -> void> [storage=automatic] = function_decay<ptr<fn(@type[[TYPE_st2]], ptr<@type[[TYPE_st2]]>) -> void>>(%[[VALUE_stparam]]);
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_st2]], ptr<@type[[TYPE_st2]]>) -> void, abi=win64(native_c, scalar) -> void>(read<ptr<fn(@type[[TYPE_st2]], ptr<@type[[TYPE_st2]]>) -> void>>(%[[VALUE_fp_stparam]]), copy<@type[[TYPE_st2]], reason=arg>(read<@type[[TYPE_st2]]>(%[[VALUE_St2]])), addr_of<ptr<@type[[TYPE_st2]]>>(%[[VALUE_St2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

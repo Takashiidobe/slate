@@ -47,21 +47,21 @@ int t () { return f () + f (1) + f (1, 2) + h () + h (1.5, 2, f1) + g (f); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = array<i32, incomplete>;
-// DEFAULT-NEXT:     type @type1 A2 = array<i32, 2>;
-// DEFAULT-NEXT:     fn %0 @f(...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @g(%8 <unnamed>: ptr<fn(...) -> i32>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @h(...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = array<i32, incomplete>;
+// DEFAULT-NEXT:     type @type[[TYPE_A2:[0-9]+]] A2 = array<i32, 2>;
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: ptr<fn(...) -> i32>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(...) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @f1(...) -> ptr<array<i32, incomplete>> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(...) -> ptr<array<i32, incomplete>> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return null<ptr<array<i32, incomplete>>>;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f2(...) -> ptr<array<i32, 2>> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(...) -> ptr<array<i32, 2>> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return null<ptr<array<i32, 2>>>;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @t() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(...) -> i32>(%0), call<i32, signature=fn(...) -> i32>(%0, const<i32>(1))), call<i32, signature=fn(...) -> i32>(%0, const<i32>(1), const<i32>(2))), call<i32, signature=fn(...) -> i32>(%2)), call<i32, signature=fn(...) -> i32>(%2, const<f64>(1.5), const<i32>(2), function_decay<ptr<fn(...) -> ptr<array<i32, 2>>>>(%5))), call<i32, signature=fn(ptr<fn(...) -> i32>) -> i32>(%1, function_decay<ptr<fn(...) -> i32>>(%0)));
+// DEFAULT-NEXT:     fn %[[VALUE_t:[0-9]+]] @t() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(...) -> i32>(%[[VALUE_f]]), call<i32, signature=fn(...) -> i32>(%[[VALUE_f]], const<i32>(1))), call<i32, signature=fn(...) -> i32>(%[[VALUE_f]], const<i32>(1), const<i32>(2))), call<i32, signature=fn(...) -> i32>(%[[VALUE_h]])), call<i32, signature=fn(...) -> i32>(%[[VALUE_h]], const<f64>(1.5), const<i32>(2), function_decay<ptr<fn(...) -> ptr<array<i32, 2>>>>(%[[VALUE_f1]]))), call<i32, signature=fn(ptr<fn(...) -> i32>) -> i32>(%[[VALUE_g]], function_decay<ptr<fn(...) -> i32>>(%[[VALUE_f]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

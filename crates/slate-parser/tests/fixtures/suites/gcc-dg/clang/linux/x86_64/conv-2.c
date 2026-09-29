@@ -51,24 +51,24 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f1(%8 <unnamed>: ptr<i64>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f2(%9 <unnamed>: ptr<u64>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 lp: ptr<i64> [storage=automatic];
-// DEFAULT-NEXT:         let %4 ulp: ptr<u64> [storage=automatic];
-// DEFAULT-NEXT:         let %5 cp: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %6 ucp: ptr<u8> [storage=automatic];
-// DEFAULT-NEXT:         let %7 scp: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<u64>>(%4, pointer_cast<ptr<u64>, reason=assign>(read<ptr<i64>>(%3)));
-// DEFAULT-NEXT:         write<ptr<i64>>(%3, pointer_cast<ptr<i64>, reason=assign>(read<ptr<u64>>(%4)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i64>) -> void>(%0, pointer_cast<ptr<i64>, reason=arg>(read<ptr<u64>>(%4)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<u64>) -> void>(%1, pointer_cast<ptr<u64>, reason=arg>(read<ptr<i64>>(%3)));
-// DEFAULT-NEXT:         write<ptr<i8>>(%5, pointer_cast<ptr<i8>, reason=assign>(read<ptr<u8>>(%6)));
-// DEFAULT-NEXT:         write<ptr<i8>>(%5, pointer_cast<ptr<i8>, reason=assign>(read<ptr<i8>>(%7)));
-// DEFAULT-NEXT:         write<ptr<u8>>(%6, pointer_cast<ptr<u8>, reason=assign>(read<ptr<i8>>(%7)));
-// DEFAULT-NEXT:         write<ptr<u8>>(%6, pointer_cast<ptr<u8>, reason=assign>(read<ptr<i8>>(%5)));
-// DEFAULT-NEXT:         write<ptr<i8>>(%7, pointer_cast<ptr<i8>, reason=assign>(read<ptr<u8>>(%6)));
-// DEFAULT-NEXT:         write<ptr<i8>>(%7, pointer_cast<ptr<i8>, reason=assign>(read<ptr<i8>>(%5)));
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i64>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE1:[0-9]+]] <unnamed>: ptr<u64>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_lp:[0-9]+]] lp: ptr<i64> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ulp:[0-9]+]] ulp: ptr<u64> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_cp:[0-9]+]] cp: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ucp:[0-9]+]] ucp: ptr<u8> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_scp:[0-9]+]] scp: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_ulp]], pointer_cast<ptr<u64>, reason=assign>(read<ptr<i64>>(%[[VALUE_lp]])));
+// DEFAULT-NEXT:         write<ptr<i64>>(%[[VALUE_lp]], pointer_cast<ptr<i64>, reason=assign>(read<ptr<u64>>(%[[VALUE_ulp]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i64>) -> void>(%[[VALUE_f1]], pointer_cast<ptr<i64>, reason=arg>(read<ptr<u64>>(%[[VALUE_ulp]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<u64>) -> void>(%[[VALUE_f2]], pointer_cast<ptr<u64>, reason=arg>(read<ptr<i64>>(%[[VALUE_lp]])));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_cp]], pointer_cast<ptr<i8>, reason=assign>(read<ptr<u8>>(%[[VALUE_ucp]])));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_cp]], pointer_cast<ptr<i8>, reason=assign>(read<ptr<i8>>(%[[VALUE_scp]])));
+// DEFAULT-NEXT:         write<ptr<u8>>(%[[VALUE_ucp]], pointer_cast<ptr<u8>, reason=assign>(read<ptr<i8>>(%[[VALUE_scp]])));
+// DEFAULT-NEXT:         write<ptr<u8>>(%[[VALUE_ucp]], pointer_cast<ptr<u8>, reason=assign>(read<ptr<i8>>(%[[VALUE_cp]])));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_scp]], pointer_cast<ptr<i8>, reason=assign>(read<ptr<u8>>(%[[VALUE_ucp]])));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_scp]], pointer_cast<ptr<i8>, reason=assign>(read<ptr<i8>>(%[[VALUE_cp]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

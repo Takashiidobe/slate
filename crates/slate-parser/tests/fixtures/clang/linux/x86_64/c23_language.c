@@ -237,126 +237,126 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type1 va_list = va_list;
-// DEFAULT-NEXT:     type @type2 nullptr_t = ptr<void>;
-// DEFAULT-NEXT:     type @type3 va_list = va_list;
-// DEFAULT-NEXT:     type @type4 char8_t = u8;
-// DEFAULT-NEXT:     type @type5 C23Fixed = enum : u16 {
-// DEFAULT-NEXT:         %0 C23_FIXED_FIRST = const<@type5>(31);
-// DEFAULT-NEXT:         %1 C23_FIXED_SECOND = const<@type5>(37);
+// DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_nullptr_t:[0-9]+]] nullptr_t = ptr<void>;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list_2:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_char8_t:[0-9]+]] char8_t = u8;
+// DEFAULT-NEXT:     type @type[[TYPE_C23Fixed:[0-9]+]] C23Fixed = enum : u16 {
+// DEFAULT-NEXT:         %[[VALUE_C23_FIXED_FIRST:[0-9]+]] C23_FIXED_FIRST = const<@type[[TYPE_C23Fixed]]>(31);
+// DEFAULT-NEXT:         %[[VALUE_C23_FIXED_SECOND:[0-9]+]] C23_FIXED_SECOND = const<@type[[TYPE_C23Fixed]]>(37);
 // DEFAULT-NEXT:     } [size=2, align=2];
-// DEFAULT-NEXT:     type @type6 C23Wide = enum : u64 {
-// DEFAULT-NEXT:         %0 C23_WIDE_VALUE = const<@type6>(8589934591);
+// DEFAULT-NEXT:     type @type[[TYPE_C23Wide:[0-9]+]] C23Wide = enum : u64 {
+// DEFAULT-NEXT:         %[[VALUE_C23_FIXED_FIRST]] C23_WIDE_VALUE = const<@type[[TYPE_C23Wide]]>(8589934591);
 // DEFAULT-NEXT:     } [size=8, align=8];
-// DEFAULT-NEXT:     type @type7 C23Empty = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_C23Empty:[0-9]+]] C23Empty = struct {
 // DEFAULT-NEXT:         field0 first: i32;
 // DEFAULT-NEXT:         field1 second: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type8 C23Array = array<i32, 3>;
-// DEFAULT-NEXT:     global %8 c23_embedded: array<u8, 3> [storage=static] [const] = aggregate<array<u8, 3>, zero_fill=false>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(67))), index1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(50))), index2 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(51)))) [linkage=internal];
-// DEFAULT-NEXT:     global %16 c23_deprecated_value: i32 [storage=static] = const<i32>(41) [linkage=internal];
-// DEFAULT-NEXT:     global %17 c23_maybe_unused_value: i32 [storage=static] = const<i32>(43) [linkage=internal];
-// DEFAULT-NEXT:     global %20 c23_thread_value: i32 [storage=thread] = const<i32>(53) [linkage=internal];
-// DEFAULT-NEXT:     global %21 c23_never_flag: volatile i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %22 c23_file_constant: i32 [storage=static] [const] [constexpr] = const<i32>(59) [linkage=internal];
-// DEFAULT-NEXT:     global %50 utf8_text: array<u8, 3> [storage=static] [const] = code_units<array<u8, 3>>([206, 169, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %71 .str71: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %4 @printf(%67 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %6 @exit(%68 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %18 @c23_nodiscard_value() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     type @type[[TYPE_C23Array:[0-9]+]] C23Array = array<i32, 3>;
+// DEFAULT-NEXT:     global %[[VALUE_c23_embedded:[0-9]+]] c23_embedded: array<u8, 3> [storage=static] [const] = aggregate<array<u8, 3>, zero_fill=false>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(67))), index1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(50))), index2 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(51)))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_c23_deprecated_value:[0-9]+]] c23_deprecated_value: i32 [storage=static] = const<i32>(41) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_c23_maybe_unused_value:[0-9]+]] c23_maybe_unused_value: i32 [storage=static] = const<i32>(43) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_c23_thread_value:[0-9]+]] c23_thread_value: i32 [storage=thread] = const<i32>(53) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_c23_never_flag:[0-9]+]] c23_never_flag: volatile i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_c23_file_constant:[0-9]+]] c23_file_constant: i32 [storage=static] [const] [constexpr] = const<i32>(59) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_utf8_text:[0-9]+]] utf8_text: array<u8, 3> [storage=static] [const] = code_units<array<u8, 3>>([206, 169, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 19> [storage=static] = code_units<array<i8, 19>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_c23_nodiscard_value:[0-9]+]] @c23_nodiscard_value() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(47);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @c23_never_return() -> void [linkage=internal] [noreturn] [fallthrough=ub] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%6, const<i32>(99));
+// DEFAULT-NEXT:     fn %[[VALUE_c23_never_return:[0-9]+]] @c23_never_return() -> void [linkage=internal] [noreturn] [fallthrough=ub] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(99));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @c23_unnamed_parameter(%69 <unnamed>: i32, %24 value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%24);
+// DEFAULT-NEXT:     fn %[[VALUE_c23_unnamed_parameter:[0-9]+]] @c23_unnamed_parameter(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_value]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @c23_label_declaration(%27 value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         goto %26;
-// DEFAULT-NEXT:         label %26 c23_label:
-// DEFAULT-NEXT:             let %28 result: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%27), const<i32>(1));
-// DEFAULT-NEXT:         return read<i32>(%28);
+// DEFAULT-NEXT:     fn %[[VALUE_c23_label_declaration:[0-9]+]] @c23_label_declaration(%[[VALUE_value_2:[0-9]+]] value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         goto %[[VALUE_c23_label:[0-9]+]];
+// DEFAULT-NEXT:         label %[[VALUE_c23_label]] c23_label:
+// DEFAULT-NEXT:             let %[[VALUE_result:[0-9]+]] result: i32 [storage=automatic] = add<i32, overflow=ub>(read<i32>(%[[VALUE_value_2]]), const<i32>(1));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_result]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @c23_label_before_brace() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         goto %30;
-// DEFAULT-NEXT:         label %30 c23_end:
+// DEFAULT-NEXT:     fn %[[VALUE_c23_label_before_brace:[0-9]+]] @c23_label_before_brace() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         goto %[[VALUE_c23_end:[0-9]+]];
+// DEFAULT-NEXT:         label %[[VALUE_c23_end]] c23_end:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @c23_switch_fallthrough(%32 value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %33 result: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         switch %70 read<i32>(%32)
+// DEFAULT-NEXT:     fn %[[VALUE_c23_switch_fallthrough:[0-9]+]] @c23_switch_fallthrough(%[[VALUE_value_3:[0-9]+]] value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_result_2:[0-9]+]] result: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_value_3]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %70 const<i32>(1):
-// DEFAULT-NEXT:                     let %72: i32 [synthetic] = read<i32>(%33);
-// DEFAULT-NEXT:                     let %73: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%72), const<i32>(3));
-// DEFAULT-NEXT:                     write<i32>(%33, read<i32>(%73));
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(1):
+// DEFAULT-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_result_2]]);
+// DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(3));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_result_2]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:                 case %70 const<i32>(2):
-// DEFAULT-NEXT:                     let %74: i32 [synthetic] = read<i32>(%33);
-// DEFAULT-NEXT:                     let %75: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%74), const<i32>(5));
-// DEFAULT-NEXT:                     write<i32>(%33, read<i32>(%75));
-// DEFAULT-NEXT:                 break %70;
-// DEFAULT-NEXT:                 default %70:
-// DEFAULT-NEXT:                     break %70;
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(2):
+// DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_result_2]]);
+// DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(5));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_result_2]], read<i32>(%[[VALUE5]]));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 default %[[VALUE1]]:
+// DEFAULT-NEXT:                     break %[[VALUE1]];
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<i32>(%33);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_result_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %34 @c23_relaxed_variadic(...) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %35 arguments: va_list [storage=automatic];
-// DEFAULT-NEXT:         let %36 first: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %37 second: i32 [storage=automatic];
-// DEFAULT-NEXT:         va_start(%35);
-// DEFAULT-NEXT:         write<i32>(%36, va_arg<i32>(%35));
-// DEFAULT-NEXT:         va_arg<i32>(%35);
-// DEFAULT-NEXT:         write<i32>(%37, va_arg<i32>(%35));
-// DEFAULT-NEXT:         va_arg<i32>(%35);
-// DEFAULT-NEXT:         va_end(%35);
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%36), read<i32>(%37));
+// DEFAULT-NEXT:     fn %[[VALUE_c23_relaxed_variadic:[0-9]+]] @c23_relaxed_variadic(...) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_arguments:[0-9]+]] arguments: va_list [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_first:[0-9]+]] first: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_second:[0-9]+]] second: i32 [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_arguments]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_first]], va_arg<i32>(%[[VALUE_arguments]]));
+// DEFAULT-NEXT:         va_arg<i32>(%[[VALUE_arguments]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_second]], va_arg<i32>(%[[VALUE_arguments]]));
+// DEFAULT-NEXT:         va_arg<i32>(%[[VALUE_arguments]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_arguments]]);
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_first]]), read<i32>(%[[VALUE_second]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %38 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %39 local_constant: i32 [storage=automatic] [const] [constexpr] = const<i32>(61);
-// DEFAULT-NEXT:         let %40 aligned_value: i32 [storage=automatic] [align=32] = const<i32>(3);
-// DEFAULT-NEXT:         let %41 inferred_value: i32 [storage=automatic] = const<i32>(67);
-// DEFAULT-NEXT:         let %42 same_type_value: i32 [storage=automatic] = const<i32>(71);
-// DEFAULT-NEXT:         let %43 qualified_value: i32 [storage=automatic] [const] = const<i32>(73);
-// DEFAULT-NEXT:         let %44 unqualified_value: i32 [storage=automatic] = const<i32>(79);
-// DEFAULT-NEXT:         let %45 \u03b1: i32 [storage=automatic] = const<i32>(5);
-// DEFAULT-NEXT:         let %46 signed_precise: i17b [storage=automatic] = truncate<i17b, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(12345)));
-// DEFAULT-NEXT:         let %47 unsigned_precise: u17b [storage=automatic] = const<u17b>(100000);
-// DEFAULT-NEXT:         let %48 binary_value: i32 [storage=automatic] = const<i32>(165);
-// DEFAULT-NEXT:         let %49 utf8_character: u8 [storage=automatic] = const<u8>(90);
-// DEFAULT-NEXT:         let %51 empty_struct: @type7 [storage=automatic] = aggregate<@type7, zero_fill=true>();
-// DEFAULT-NEXT:         let %52 empty_array: array<i32, 3> [storage=automatic] = aggregate<array<i32, 3>, zero_fill=true>();
-// DEFAULT-NEXT:         let %53 qualified_array: array<i32, 3> [storage=automatic] [const] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(3), index2 = const<i32>(5));
-// DEFAULT-NEXT:         let %54 fixed_value: @type5 [storage=automatic] = const<@type5>(37);
-// DEFAULT-NEXT:         let %55 wide_value: @type6 [storage=automatic] = const<@type6>(8589934591);
-// DEFAULT-NEXT:         let %56 null_value: ptr<void> [storage=automatic] = null<ptr<void>>;
-// DEFAULT-NEXT:         let %57 null_pointer: ptr<i32> [storage=automatic] = null<ptr<i32>>;
-// DEFAULT-NEXT:         let %58 boolean_value: bool [storage=automatic] = const<bool>(true);
-// DEFAULT-NEXT:         let %59 false_value: bool [storage=automatic] = const<bool>(false);
-// DEFAULT-NEXT:         let %60 static_compound_value: i32 [storage=automatic] = const<i32>(83);
-// DEFAULT-NEXT:         let %61 language_total: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %62 attribute_total: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %63 preprocessor_total: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %64 type_total: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %65 control_total: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %66 removal_total: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%61, reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%22), read<i32>(%39)), read<i32>(%41)), read<i32>(%42)), read<i32>(%44)), widen<i32, reason=explicit>(read<i17b>(%46))), reinterpret<i32, reason=explicit, fits=unknown>(widen<u32, reason=explicit>(read<u17b>(%47)))), read<i32>(%48)), read<i32>(%40)))), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%45)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%49)))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=Some(3)>(%50), const<i32>(0))))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=Some(3)>(%50), const<i32>(1))))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(field0(%51))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%52), const<i32>(0))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(3)>(%53), const<i32>(0))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(3)>(%53), const<i32>(2))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(enum_to_int<u16, reason=promotion>(read<@type5>(%54))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(from_bool<i32, reason=explicit>(eq<u64>(enum_to_int<u64, reason=promotion>(read<@type6>(%55)), enum_to_int<u64, reason=promotion>(const<@type6>(8589934591))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%60)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(7)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(11), const<i32>(13))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))));
-// DEFAULT-NEXT:         write<i32>(%62, call<i32, signature=fn() -> i32>(%18));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%18);
-// DEFAULT-NEXT:         write<i32>(%63, add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(23), const<i32>(29)), const<i32>(1)), const<i32>(1)), const<i32>(0)), const<i32>(0)), const<i32>(0)), const<i32>(0)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=Some(3)>(%8), const<i32>(0))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=Some(3)>(%8), const<i32>(1))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=Some(3)>(%8), const<i32>(2))))))));
-// DEFAULT-NEXT:         write<i32>(%64, add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(from_bool<i32, reason=promotion>(eq<ptr<void>>(read<ptr<void>>(%56), null<ptr<void>>)), from_bool<i32, reason=promotion>(eq<ptr<i32>>(read<ptr<i32>>(%57), null<ptr<i32>>))), from_bool<i32, reason=promotion>(read<bool>(%58))), from_bool<i32, reason=promotion>(not<bool>(read<bool>(%59)))), read<i32>(%20)));
-// DEFAULT-NEXT:         write<i32>(%65, add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(i32, i32) -> i32>(%23, const<i32>(89), const<i32>(97)), call<i32, signature=fn(i32) -> i32>(%25, const<i32>(101))), call<i32, signature=fn(i32) -> i32>(%31, const<i32>(1))), call<i32, signature=fn(...) -> i32>(%34, const<i32>(103), const<i32>(107))));
-// DEFAULT-NEXT:         add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(i32, i32) -> i32>(%23, const<i32>(89), const<i32>(97)), call<i32, signature=fn(i32) -> i32>(%25, const<i32>(101))), call<i32, signature=fn(i32) -> i32>(%31, const<i32>(1))), call<i32, signature=fn(...) -> i32>(%34, const<i32>(103), const<i32>(107)));
-// DEFAULT-NEXT:         write<i32>(%66, from_bool<i32, reason=assign>(eq<i64>(const<i64>(202311), const<i64>(202311))));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%21), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_local_constant:[0-9]+]] local_constant: i32 [storage=automatic] [const] [constexpr] = const<i32>(61);
+// DEFAULT-NEXT:         let %[[VALUE_aligned_value:[0-9]+]] aligned_value: i32 [storage=automatic] [align=32] = const<i32>(3);
+// DEFAULT-NEXT:         let %[[VALUE_inferred_value:[0-9]+]] inferred_value: i32 [storage=automatic] = const<i32>(67);
+// DEFAULT-NEXT:         let %[[VALUE_same_type_value:[0-9]+]] same_type_value: i32 [storage=automatic] = const<i32>(71);
+// DEFAULT-NEXT:         let %[[VALUE_qualified_value:[0-9]+]] qualified_value: i32 [storage=automatic] [const] = const<i32>(73);
+// DEFAULT-NEXT:         let %[[VALUE_unqualified_value:[0-9]+]] unqualified_value: i32 [storage=automatic] = const<i32>(79);
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]] \u03b1: i32 [storage=automatic] = const<i32>(5);
+// DEFAULT-NEXT:         let %[[VALUE_signed_precise:[0-9]+]] signed_precise: i17b [storage=automatic] = truncate<i17b, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(12345)));
+// DEFAULT-NEXT:         let %[[VALUE_unsigned_precise:[0-9]+]] unsigned_precise: u17b [storage=automatic] = const<u17b>(100000);
+// DEFAULT-NEXT:         let %[[VALUE_binary_value:[0-9]+]] binary_value: i32 [storage=automatic] = const<i32>(165);
+// DEFAULT-NEXT:         let %[[VALUE_utf8_character:[0-9]+]] utf8_character: u8 [storage=automatic] = const<u8>(90);
+// DEFAULT-NEXT:         let %[[VALUE_empty_struct:[0-9]+]] empty_struct: @type[[TYPE_C23Empty]] [storage=automatic] = aggregate<@type[[TYPE_C23Empty]], zero_fill=true>();
+// DEFAULT-NEXT:         let %[[VALUE_empty_array:[0-9]+]] empty_array: array<i32, 3> [storage=automatic] = aggregate<array<i32, 3>, zero_fill=true>();
+// DEFAULT-NEXT:         let %[[VALUE_qualified_array:[0-9]+]] qualified_array: array<i32, 3> [storage=automatic] [const] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(3), index2 = const<i32>(5));
+// DEFAULT-NEXT:         let %[[VALUE_fixed_value:[0-9]+]] fixed_value: @type[[TYPE_C23Fixed]] [storage=automatic] = const<@type[[TYPE_C23Fixed]]>(37);
+// DEFAULT-NEXT:         let %[[VALUE_wide_value:[0-9]+]] wide_value: @type[[TYPE_C23Wide]] [storage=automatic] = const<@type[[TYPE_C23Wide]]>(8589934591);
+// DEFAULT-NEXT:         let %[[VALUE_null_value:[0-9]+]] null_value: ptr<void> [storage=automatic] = null<ptr<void>>;
+// DEFAULT-NEXT:         let %[[VALUE_null_pointer:[0-9]+]] null_pointer: ptr<i32> [storage=automatic] = null<ptr<i32>>;
+// DEFAULT-NEXT:         let %[[VALUE_boolean_value:[0-9]+]] boolean_value: bool [storage=automatic] = const<bool>(true);
+// DEFAULT-NEXT:         let %[[VALUE_false_value:[0-9]+]] false_value: bool [storage=automatic] = const<bool>(false);
+// DEFAULT-NEXT:         let %[[VALUE_static_compound_value:[0-9]+]] static_compound_value: i32 [storage=automatic] = const<i32>(83);
+// DEFAULT-NEXT:         let %[[VALUE_language_total:[0-9]+]] language_total: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_attribute_total:[0-9]+]] attribute_total: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_preprocessor_total:[0-9]+]] preprocessor_total: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_type_total:[0-9]+]] type_total: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_control_total:[0-9]+]] control_total: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_removal_total:[0-9]+]] removal_total: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_language_total]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_c23_file_constant]]), read<i32>(%[[VALUE_local_constant]])), read<i32>(%[[VALUE_inferred_value]])), read<i32>(%[[VALUE_same_type_value]])), read<i32>(%[[VALUE_unqualified_value]])), widen<i32, reason=explicit>(read<i17b>(%[[VALUE_signed_precise]]))), reinterpret<i32, reason=explicit, fits=unknown>(widen<u32, reason=explicit>(read<u17b>(%[[VALUE_unsigned_precise]])))), read<i32>(%[[VALUE_binary_value]])), read<i32>(%[[VALUE_aligned_value]])))), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE6]])))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_utf8_character]])))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=Some(3)>(%[[VALUE_utf8_text]]), const<i32>(0))))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=Some(3)>(%[[VALUE_utf8_text]]), const<i32>(1))))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(field0(%[[VALUE_empty_struct]]))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_empty_array]]), const<i32>(0))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(3)>(%[[VALUE_qualified_array]]), const<i32>(0))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(3)>(%[[VALUE_qualified_array]]), const<i32>(2))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(enum_to_int<u16, reason=promotion>(read<@type[[TYPE_C23Fixed]]>(%[[VALUE_fixed_value]]))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(from_bool<i32, reason=explicit>(eq<u64>(enum_to_int<u64, reason=promotion>(read<@type[[TYPE_C23Wide]]>(%[[VALUE_wide_value]])), enum_to_int<u64, reason=promotion>(const<@type[[TYPE_C23Wide]]>(8589934591))))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_static_compound_value]])))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(7)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(11), const<i32>(13))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4)))))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_attribute_total]], call<i32, signature=fn() -> i32>(%[[VALUE_c23_nodiscard_value]]));
+// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_c23_nodiscard_value]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_preprocessor_total]], add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(23), const<i32>(29)), const<i32>(1)), const<i32>(1)), const<i32>(0)), const<i32>(0)), const<i32>(0)), const<i32>(0)), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=Some(3)>(%[[VALUE_c23_embedded]]), const<i32>(0))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=Some(3)>(%[[VALUE_c23_embedded]]), const<i32>(1))))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<const u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<const u8>, length=Some(3)>(%[[VALUE_c23_embedded]]), const<i32>(2))))))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_type_total]], add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(from_bool<i32, reason=promotion>(eq<ptr<void>>(read<ptr<void>>(%[[VALUE_null_value]]), null<ptr<void>>)), from_bool<i32, reason=promotion>(eq<ptr<i32>>(read<ptr<i32>>(%[[VALUE_null_pointer]]), null<ptr<i32>>))), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_boolean_value]]))), from_bool<i32, reason=promotion>(not<bool>(read<bool>(%[[VALUE_false_value]])))), read<i32>(%[[VALUE_c23_thread_value]])));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_control_total]], add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_c23_unnamed_parameter]], const<i32>(89), const<i32>(97)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_c23_label_declaration]], const<i32>(101))), call<i32, signature=fn(i32) -> i32>(%[[VALUE_c23_switch_fallthrough]], const<i32>(1))), call<i32, signature=fn(...) -> i32>(%[[VALUE_c23_relaxed_variadic]], const<i32>(103), const<i32>(107))));
+// DEFAULT-NEXT:         add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_c23_unnamed_parameter]], const<i32>(89), const<i32>(97)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_c23_label_declaration]], const<i32>(101))), call<i32, signature=fn(i32) -> i32>(%[[VALUE_c23_switch_fallthrough]], const<i32>(1))), call<i32, signature=fn(...) -> i32>(%[[VALUE_c23_relaxed_variadic]], const<i32>(103), const<i32>(107)));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_removal_total]], from_bool<i32, reason=assign>(eq<i64>(const<i64>(202311), const<i64>(202311))));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%[[VALUE_c23_never_flag]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%19);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_c23_never_return]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%29);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%4, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%71)), read<i32>(%61), read<i32>(%62), read<i32>(%63), read<i32>(%64), read<i32>(%65), read<i32>(%66));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_c23_label_before_brace]]);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(19)>(%[[VALUE_str]])), read<i32>(%[[VALUE_language_total]]), read<i32>(%[[VALUE_attribute_total]]), read<i32>(%[[VALUE_preprocessor_total]]), read<i32>(%[[VALUE_type_total]]), read<i32>(%[[VALUE_control_total]]), read<i32>(%[[VALUE_removal_total]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

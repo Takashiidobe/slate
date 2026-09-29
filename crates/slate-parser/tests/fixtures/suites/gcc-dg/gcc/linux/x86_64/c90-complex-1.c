@@ -32,6 +32,6 @@ _Complex double foo; /* { dg-bogus "warning" "warning in place of error" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 foo: complex<f64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_foo:[0-9]+]] foo: complex<f64> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

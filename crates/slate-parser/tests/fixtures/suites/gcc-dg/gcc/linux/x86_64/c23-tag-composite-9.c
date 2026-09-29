@@ -44,27 +44,27 @@ void foo ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 e = enum : u32 {
-// DEFAULT-NEXT:         %0 A = const<i32>(0);
-// DEFAULT-NEXT:         %1 B = const<i32>(1);
-// DEFAULT-NEXT:         %2 C = const<i32>(2);
+// DEFAULT-NEXT:     type @type[[TYPE_e:[0-9]+]] e = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_B:[0-9]+]] B = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_C:[0-9]+]] C = const<i32>(2);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 s = struct {
-// DEFAULT-NEXT:         field0 m: @type0 : 3;
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
+// DEFAULT-NEXT:         field0 m: @type[[TYPE_e]] : 3;
 // DEFAULT-NEXT:         field1 y: ptr<array<i8, incomplete>>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8], bit_offsets=[Some(0), None], bit_units=[(0, 1)], field_units=[Some(0), None]];
-// DEFAULT-NEXT:     type @type2 s = struct {
-// DEFAULT-NEXT:         field0 m: @type0 : 3;
+// DEFAULT-NEXT:     type @type[[TYPE_s_2:[0-9]+]] s = struct {
+// DEFAULT-NEXT:         field0 m: @type[[TYPE_e]] : 3;
 // DEFAULT-NEXT:         field1 y: ptr<array<i8, 1>>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8], bit_offsets=[Some(0), None], bit_units=[(0, 1)], field_units=[Some(0), None]];
-// DEFAULT-NEXT:     global %5 s: @type1 [storage=static] = aggregate<@type1, zero_fill=true>() [linkage=external];
-// DEFAULT-NEXT:     fn %6 @f(%11 <unnamed>: @type0) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %9 t: @type2 [storage=automatic] = aggregate<@type2, zero_fill=true>();
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%6, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type0>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%5)))))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%6, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type0>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%9)))))));
-// DEFAULT-NEXT:         let %10 u: @type1 [storage=automatic] = aggregate<@type1, zero_fill=true>();
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%6, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type0>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%10)))))));
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_s]] [storage=static] = aggregate<@type[[TYPE_s]], zero_fill=true>() [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE0:[0-9]+]] <unnamed>: @type[[TYPE_e]]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE_s_2]] [storage=automatic] = aggregate<@type[[TYPE_s_2]], zero_fill=true>();
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_e]]) -> void>(%[[VALUE_f]], int_to_enum<@type[[TYPE_e]], reason=arg>(reinterpret<u32, reason=arg, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_e]]>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%[[VALUE_s]])))))));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_e]]) -> void>(%[[VALUE_f]], int_to_enum<@type[[TYPE_e]], reason=arg>(reinterpret<u32, reason=arg, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_e]]>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%[[VALUE_t]])))))));
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE_s]] [storage=automatic] = aggregate<@type[[TYPE_s]], zero_fill=true>();
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_e]]) -> void>(%[[VALUE_f]], int_to_enum<@type[[TYPE_e]], reason=arg>(reinterpret<u32, reason=arg, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_e]]>(bitfield0<unit=0, bytes=0..1, bits=0..3>(%[[VALUE_u]])))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

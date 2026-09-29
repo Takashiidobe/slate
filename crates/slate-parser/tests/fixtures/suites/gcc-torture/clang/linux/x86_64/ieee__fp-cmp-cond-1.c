@@ -98,55 +98,55 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 v4si = vector<i32, 1>;
-// DEFAULT-NEXT:     type @type1 v4sf = vector<f32, 1>;
-// DEFAULT-NEXT:     global %30 .str30: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @f(%1 a: i32, %2 b: i32, %3 fa: f32, %4 fb: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 c: bool [storage=automatic] [const] = lt<f32, exceptions=ignore>(read<f32>(%3), read<f32>(%4));
-// DEFAULT-NEXT:         let %6 c1: bool [storage=automatic] [const] = ge<f32, exceptions=ignore>(read<f32>(%3), read<f32>(%4));
-// DEFAULT-NEXT:         return or<i32>(mul<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%5)), read<i32>(%1)), mul<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%6)), read<i32>(%2)));
+// DEFAULT-NEXT:     type @type[[TYPE_v4si:[0-9]+]] v4si = vector<i32, 1>;
+// DEFAULT-NEXT:     type @type[[TYPE_v4sf:[0-9]+]] v4sf = vector<f32, 1>;
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32, %[[VALUE_fa:[0-9]+]] fa: f32, %[[VALUE_fb:[0-9]+]] fb: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: bool [storage=automatic] [const] = lt<f32, exceptions=ignore>(read<f32>(%[[VALUE_fa]]), read<f32>(%[[VALUE_fb]]));
+// DEFAULT-NEXT:         let %[[VALUE_c1:[0-9]+]] c1: bool [storage=automatic] [const] = ge<f32, exceptions=ignore>(read<f32>(%[[VALUE_fa]]), read<f32>(%[[VALUE_fb]]));
+// DEFAULT-NEXT:         return or<i32>(mul<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_c]])), read<i32>(%[[VALUE_a]])), mul<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_c1]])), read<i32>(%[[VALUE_b]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @f1(%8 a: i32, %9 b: i32, %10 fa: f32, %11 fb: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %12 c: bool [storage=automatic] [const] = lt<f32, exceptions=ignore>(read<f32>(%10), read<f32>(%11));
-// DEFAULT-NEXT:         let %13 c1: bool [storage=automatic] [const] = ge<f32, exceptions=ignore>(read<f32>(%10), read<f32>(%11));
-// DEFAULT-NEXT:         return or<i32>(and<i32>(from_bool<i32, reason=promotion>(read<bool>(%12)), read<i32>(%8)), and<i32>(from_bool<i32, reason=promotion>(read<bool>(%13)), read<i32>(%9)));
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b_2:[0-9]+]] b: i32, %[[VALUE_fa_2:[0-9]+]] fa: f32, %[[VALUE_fb_2:[0-9]+]] fb: f32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: bool [storage=automatic] [const] = lt<f32, exceptions=ignore>(read<f32>(%[[VALUE_fa_2]]), read<f32>(%[[VALUE_fb_2]]));
+// DEFAULT-NEXT:         let %[[VALUE_c1_2:[0-9]+]] c1: bool [storage=automatic] [const] = ge<f32, exceptions=ignore>(read<f32>(%[[VALUE_fa_2]]), read<f32>(%[[VALUE_fb_2]]));
+// DEFAULT-NEXT:         return or<i32>(and<i32>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_c_2]])), read<i32>(%[[VALUE_a_2]])), and<i32>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_c1_2]])), read<i32>(%[[VALUE_b_2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @vf0(%17 a: vector<i32, 1>, %18 b: vector<i32, 1>, %19 fa: vector<f32, 1>, %20 fb: vector<f32, 1>) -> vector<i32, 1> [linkage=external] [abi=sysv64(coerce<i32>, coerce<i32>, coerce<i32>, coerce<i32>) -> coerce<i32>] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %21 c: vector<i32, 1> [storage=automatic] [const] = lt<vector<f32, 1>, result=vector<i32, 1>, exceptions=ignore>(read<vector<f32, 1>>(%19), read<vector<f32, 1>>(%20));
-// DEFAULT-NEXT:         let %22 c1: vector<i32, 1> [storage=automatic] [const] = ge<vector<f32, 1>, result=vector<i32, 1>, exceptions=ignore>(read<vector<f32, 1>>(%19), read<vector<f32, 1>>(%20));
-// DEFAULT-NEXT:         return or<vector<i32, 1>, elementwise=true>(and<vector<i32, 1>, elementwise=true>(read<vector<i32, 1>>(%21), read<vector<i32, 1>>(%17)), and<vector<i32, 1>, elementwise=true>(read<vector<i32, 1>>(%22), read<vector<i32, 1>>(%18)));
+// DEFAULT-NEXT:     fn %[[VALUE_vf0:[0-9]+]] @vf0(%[[VALUE_a_3:[0-9]+]] a: vector<i32, 1>, %[[VALUE_b_3:[0-9]+]] b: vector<i32, 1>, %[[VALUE_fa_3:[0-9]+]] fa: vector<f32, 1>, %[[VALUE_fb_3:[0-9]+]] fb: vector<f32, 1>) -> vector<i32, 1> [linkage=external] [abi=sysv64(coerce<i32>, coerce<i32>, coerce<i32>, coerce<i32>) -> coerce<i32>] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c_3:[0-9]+]] c: vector<i32, 1> [storage=automatic] [const] = lt<vector<f32, 1>, result=vector<i32, 1>, exceptions=ignore>(read<vector<f32, 1>>(%[[VALUE_fa_3]]), read<vector<f32, 1>>(%[[VALUE_fb_3]]));
+// DEFAULT-NEXT:         let %[[VALUE_c1_3:[0-9]+]] c1: vector<i32, 1> [storage=automatic] [const] = ge<vector<f32, 1>, result=vector<i32, 1>, exceptions=ignore>(read<vector<f32, 1>>(%[[VALUE_fa_3]]), read<vector<f32, 1>>(%[[VALUE_fb_3]]));
+// DEFAULT-NEXT:         return or<vector<i32, 1>, elementwise=true>(and<vector<i32, 1>, elementwise=true>(read<vector<i32, 1>>(%[[VALUE_c_3]]), read<vector<i32, 1>>(%[[VALUE_a_3]])), and<vector<i32, 1>, elementwise=true>(read<vector<i32, 1>>(%[[VALUE_c1_3]]), read<vector<i32, 1>>(%[[VALUE_b_3]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @__builtin_nan(%28 <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %31 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %23 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %24 a: f32 [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(ptr<const i8>) -> f64>(%29, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%30))));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%0, neg<i32, overflow=ub>(const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1)), read<f32>(%24), read<f32>(%24)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%0, neg<i32, overflow=ub>(const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1)), read<f32>(%24), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%0, neg<i32, overflow=ub>(const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), read<f32>(%24)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%0, neg<i32, overflow=ub>(const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), neg<i32, overflow=ub>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%7, const<i32>(1), const<i32>(1), read<f32>(%24), read<f32>(%24)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%7, const<i32>(1), const<i32>(1), read<f32>(%24), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%7, const<i32>(1), const<i32>(1), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), read<f32>(%24)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%7, const<i32>(1), const<i32>(1), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
-// DEFAULT-NEXT:         let %25 b: vector<i32, 1> [storage=automatic] = aggregate<vector<i32, 1>, zero_fill=false>(index0 = neg<i32, overflow=ub>(const<i32>(1)));
-// DEFAULT-NEXT:         let %26 c: vector<f32, 1> [storage=automatic] = aggregate<vector<f32, 1>, zero_fill=false>(index0 = read<f32>(%24));
-// DEFAULT-NEXT:         let %27 d: vector<f32, 1> [storage=automatic] = aggregate<vector<f32, 1>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)));
-// DEFAULT-NEXT:         if ne<i32>(lane<i32>(call<vector<i32, 1>, signature=fn(vector<i32, 1>, vector<i32, 1>, vector<f32, 1>, vector<f32, 1>) -> vector<i32, 1>, abi=sysv64(coerce<i32>, coerce<i32>, coerce<i32>, coerce<i32>) -> coerce<i32>>(%16, read<vector<i32, 1>>(%25), read<vector<i32, 1>>(%25), read<vector<f32, 1>>(%26), read<vector<f32, 1>>(%26)), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
-// DEFAULT-NEXT:         if ne<i32>(lane<i32>(call<vector<i32, 1>, signature=fn(vector<i32, 1>, vector<i32, 1>, vector<f32, 1>, vector<f32, 1>) -> vector<i32, 1>, abi=sysv64(coerce<i32>, coerce<i32>, coerce<i32>, coerce<i32>) -> coerce<i32>>(%16, read<vector<i32, 1>>(%25), read<vector<i32, 1>>(%25), read<vector<f32, 1>>(%26), read<vector<f32, 1>>(%27)), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
-// DEFAULT-NEXT:         if ne<i32>(lane<i32>(call<vector<i32, 1>, signature=fn(vector<i32, 1>, vector<i32, 1>, vector<f32, 1>, vector<f32, 1>) -> vector<i32, 1>, abi=sysv64(coerce<i32>, coerce<i32>, coerce<i32>, coerce<i32>) -> coerce<i32>>(%16, read<vector<i32, 1>>(%25), read<vector<i32, 1>>(%25), read<vector<f32, 1>>(%27), read<vector<f32, 1>>(%26)), const<i32>(0)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
-// DEFAULT-NEXT:         if ne<i32>(lane<i32>(call<vector<i32, 1>, signature=fn(vector<i32, 1>, vector<i32, 1>, vector<f32, 1>, vector<f32, 1>) -> vector<i32, 1>, abi=sysv64(coerce<i32>, coerce<i32>, coerce<i32>, coerce<i32>) -> coerce<i32>>(%16, read<vector<i32, 1>>(%25), read<vector<i32, 1>>(%25), read<vector<f32, 1>>(%27), read<vector<f32, 1>>(%27)), const<i32>(0)), read<i32>(lane(%25, const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%31);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_nan:[0-9]+]] @__builtin_nan(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>) -> f64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a_4:[0-9]+]] a: f32 [storage=automatic] = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(ptr<const i8>) -> f64>(%[[VALUE___builtin_nan]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]]))));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%[[VALUE_f]], neg<i32, overflow=ub>(const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1)), read<f32>(%[[VALUE_a_4]]), read<f32>(%[[VALUE_a_4]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%[[VALUE_f]], neg<i32, overflow=ub>(const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1)), read<f32>(%[[VALUE_a_4]]), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%[[VALUE_f]], neg<i32, overflow=ub>(const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), read<f32>(%[[VALUE_a_4]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%[[VALUE_f]], neg<i32, overflow=ub>(const<i32>(1)), neg<i32, overflow=ub>(const<i32>(1)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%[[VALUE_f1]], const<i32>(1), const<i32>(1), read<f32>(%[[VALUE_a_4]]), read<f32>(%[[VALUE_a_4]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%[[VALUE_f1]], const<i32>(1), const<i32>(1), read<f32>(%[[VALUE_a_4]]), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%[[VALUE_f1]], const<i32>(1), const<i32>(1), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), read<f32>(%[[VALUE_a_4]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32, f32, f32) -> i32>(%[[VALUE_f1]], const<i32>(1), const<i32>(1), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), int_to_float<f32, reason=arg, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE_b_4:[0-9]+]] b: vector<i32, 1> [storage=automatic] = aggregate<vector<i32, 1>, zero_fill=false>(index0 = neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE_c_4:[0-9]+]] c: vector<f32, 1> [storage=automatic] = aggregate<vector<f32, 1>, zero_fill=false>(index0 = read<f32>(%[[VALUE_a_4]]));
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: vector<f32, 1> [storage=automatic] = aggregate<vector<f32, 1>, zero_fill=false>(index0 = float_narrow<f32, reason=assign, rounding=nearest_even, exceptions=ignore>(const<f64>(0.0)));
+// DEFAULT-NEXT:         if ne<i32>(lane<i32>(call<vector<i32, 1>, signature=fn(vector<i32, 1>, vector<i32, 1>, vector<f32, 1>, vector<f32, 1>) -> vector<i32, 1>, abi=sysv64(coerce<i32>, coerce<i32>, coerce<i32>, coerce<i32>) -> coerce<i32>>(%[[VALUE_vf0]], read<vector<i32, 1>>(%[[VALUE_b_4]]), read<vector<i32, 1>>(%[[VALUE_b_4]]), read<vector<f32, 1>>(%[[VALUE_c_4]]), read<vector<f32, 1>>(%[[VALUE_c_4]])), const<i32>(0)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(lane<i32>(call<vector<i32, 1>, signature=fn(vector<i32, 1>, vector<i32, 1>, vector<f32, 1>, vector<f32, 1>) -> vector<i32, 1>, abi=sysv64(coerce<i32>, coerce<i32>, coerce<i32>, coerce<i32>) -> coerce<i32>>(%[[VALUE_vf0]], read<vector<i32, 1>>(%[[VALUE_b_4]]), read<vector<i32, 1>>(%[[VALUE_b_4]]), read<vector<f32, 1>>(%[[VALUE_c_4]]), read<vector<f32, 1>>(%[[VALUE_d]])), const<i32>(0)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(lane<i32>(call<vector<i32, 1>, signature=fn(vector<i32, 1>, vector<i32, 1>, vector<f32, 1>, vector<f32, 1>) -> vector<i32, 1>, abi=sysv64(coerce<i32>, coerce<i32>, coerce<i32>, coerce<i32>) -> coerce<i32>>(%[[VALUE_vf0]], read<vector<i32, 1>>(%[[VALUE_b_4]]), read<vector<i32, 1>>(%[[VALUE_b_4]]), read<vector<f32, 1>>(%[[VALUE_d]]), read<vector<f32, 1>>(%[[VALUE_c_4]])), const<i32>(0)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(lane<i32>(call<vector<i32, 1>, signature=fn(vector<i32, 1>, vector<i32, 1>, vector<f32, 1>, vector<f32, 1>) -> vector<i32, 1>, abi=sysv64(coerce<i32>, coerce<i32>, coerce<i32>, coerce<i32>) -> coerce<i32>>(%[[VALUE_vf0]], read<vector<i32, 1>>(%[[VALUE_b_4]]), read<vector<i32, 1>>(%[[VALUE_b_4]]), read<vector<f32, 1>>(%[[VALUE_d]]), read<vector<f32, 1>>(%[[VALUE_d]])), const<i32>(0)), read<i32>(lane(%[[VALUE_b_4]], const<i32>(0))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -36,12 +36,12 @@ void g(int b) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @xf(unprototyped) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @g(%3 b: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 fp: ptr<fn(unprototyped) -> void> [storage=automatic] = conditional<ptr<fn(unprototyped) -> void>>(ne<i32>(read<i32>(%3), const<i32>(0)), function_decay<ptr<fn(unprototyped) -> void>>(%0), function_decay<ptr<fn(unprototyped) -> void>>(%1));
-// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(read<ptr<fn(unprototyped) -> void>>(%4));
+// DEFAULT-NEXT:     fn %[[VALUE_xf:[0-9]+]] @xf(unprototyped) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_b:[0-9]+]] b: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_fp:[0-9]+]] fp: ptr<fn(unprototyped) -> void> [storage=automatic] = conditional<ptr<fn(unprototyped) -> void>>(ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0)), function_decay<ptr<fn(unprototyped) -> void>>(%[[VALUE_f]]), function_decay<ptr<fn(unprototyped) -> void>>(%[[VALUE_xf]]));
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(read<ptr<fn(unprototyped) -> void>>(%[[VALUE_fp]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

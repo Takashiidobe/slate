@@ -46,21 +46,21 @@ void scale(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(%6 <unnamed>: i8) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @g() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @scale() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 width: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %4 bytes: i8 [storage=automatic];
-// DEFAULT-NEXT:         let %5 src: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%3), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE0:[0-9]+]] <unnamed>: i8) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_scale:[0-9]+]] @scale() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_width:[0-9]+]] width: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_bytes:[0-9]+]] bytes: i8 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_src:[0-9]+]] src: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_width]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i8>(%4, read<i8>(deref(read<ptr<i8>>(%5))));
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:                 let %7: i32 [synthetic] = read<i32>(%3);
-// DEFAULT-NEXT:                 let %8: i32 [synthetic] = mul<i32, overflow=ub>(read<i32>(%7), widen<i32, reason=promotion>(read<i8>(%4)));
-// DEFAULT-NEXT:                 write<i32>(%3, read<i32>(%8));
+// DEFAULT-NEXT:                 write<i8>(%[[VALUE_bytes]], read<i8>(deref(read<ptr<i8>>(%[[VALUE_src]]))));
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_g]]);
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_width]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = mul<i32, overflow=ub>(read<i32>(%[[VALUE1]]), widen<i32, reason=promotion>(read<i8>(%[[VALUE_bytes]])));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_width]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn(i8) -> void>(%0, read<i8>(%4));
+// DEFAULT-NEXT:         call<void, signature=fn(i8) -> void>(%[[VALUE_f]], read<i8>(%[[VALUE_bytes]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

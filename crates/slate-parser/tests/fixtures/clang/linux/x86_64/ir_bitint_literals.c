@@ -33,13 +33,13 @@ int widened(void) { return (int)(3wb + 4wb); }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 narrow_signed: i2b [storage=static] = const<i2b>(1) [linkage=external] [c="_BitInt(2)"];
-// IR-NEXT:     global %1 narrow_unsigned: u1b [storage=static] = const<u1b>(0) [linkage=external] [c="unsigned _BitInt(1)"];
-// IR-NEXT:     global %2 hex_signed: i9b [storage=static] = const<i9b>(255) [linkage=external] [c="_BitInt(9)"];
-// IR-NEXT:     global %3 hex_unsigned: u8b [storage=static] = const<u8b>(255) [linkage=external] [c="unsigned _BitInt(8)"];
-// IR-NEXT:     global %4 wide: i200b [storage=static] = widen<i200b, reason=assign>(const<i129b>(170141183460469231731687303715884105728)) [linkage=external] [c="_BitInt(200)"];
-// IR-NEXT:     global %5 suffix_order: u4b [storage=static] = const<u4b>(12) [linkage=external] [c="unsigned _BitInt(4)"];
-// IR-NEXT:     fn %6 @widened() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
+// IR-NEXT:     global %[[VALUE_narrow_signed:[0-9]+]] narrow_signed: i2b [storage=static] = const<i2b>(1) [linkage=external] [c="_BitInt(2)"];
+// IR-NEXT:     global %[[VALUE_narrow_unsigned:[0-9]+]] narrow_unsigned: u1b [storage=static] = const<u1b>(0) [linkage=external] [c="unsigned _BitInt(1)"];
+// IR-NEXT:     global %[[VALUE_hex_signed:[0-9]+]] hex_signed: i9b [storage=static] = const<i9b>(255) [linkage=external] [c="_BitInt(9)"];
+// IR-NEXT:     global %[[VALUE_hex_unsigned:[0-9]+]] hex_unsigned: u8b [storage=static] = const<u8b>(255) [linkage=external] [c="unsigned _BitInt(8)"];
+// IR-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: i200b [storage=static] = widen<i200b, reason=assign>(const<i129b>(170141183460469231731687303715884105728)) [linkage=external] [c="_BitInt(200)"];
+// IR-NEXT:     global %[[VALUE_suffix_order:[0-9]+]] suffix_order: u4b [storage=static] = const<u4b>(12) [linkage=external] [c="unsigned _BitInt(4)"];
+// IR-NEXT:     fn %[[VALUE_widened:[0-9]+]] @widened() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // IR-NEXT:         return widen<i32, reason=explicit>(add<i4b, overflow=ub>(widen<i4b, reason=usual_arith>(const<i3b>(3)), const<i4b>(4)));
 // IR-NEXT:     }
 // IR-NEXT: }

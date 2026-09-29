@@ -44,18 +44,18 @@ static int mmap_mem (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 p: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 pt = @type0;
-// DEFAULT-NEXT:     fn %2 @f(%3 _p: @type0) -> @type0 [linkage=external] [inline=hint] [definition=inline_only] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 p: i64 [storage=automatic] = read<i64>(field0(%3));
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(compound_literal %7 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = read<i64>(%4))));
+// DEFAULT-NEXT:     type @type[[TYPE_pt:[0-9]+]] pt = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE__p:[0-9]+]] _p: @type[[TYPE0]]) -> @type[[TYPE0]] [linkage=external] [inline=hint] [definition=inline_only] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: i64 [storage=automatic] = read<i64>(field0(%[[VALUE__p]]));
+// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = read<i64>(%[[VALUE_p]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @mmap_mem() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 p: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<@type0>(%6, copy<@type0, reason=assign>(call<@type0, signature=fn(@type0) -> @type0, abi=sysv64(native_c) -> native_c>(%2, copy<@type0, reason=arg>(read<@type0>(%6)))));
-// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn(@type0) -> @type0, abi=sysv64(native_c) -> native_c>(%2, copy<@type0, reason=arg>(read<@type0>(%6))));
+// DEFAULT-NEXT:     fn %[[VALUE_mmap_mem:[0-9]+]] @mmap_mem() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_p_2]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(@type[[TYPE0]]) -> @type[[TYPE0]], abi=sysv64(native_c) -> native_c>(%[[VALUE_f]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_p_2]])))));
+// DEFAULT-NEXT:         copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(@type[[TYPE0]]) -> @type[[TYPE0]], abi=sysv64(native_c) -> native_c>(%[[VALUE_f]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_p_2]]))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

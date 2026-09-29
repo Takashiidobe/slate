@@ -84,33 +84,33 @@ void gnr_global_local (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @frnn1() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %1 @frnn_local_local() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(call<ptr<void>, signature=fn() -> ptr<void>>(%2), null<ptr<void>>))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_frnn1:[0-9]+]] @frnn1() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_frnn_local_local:[0-9]+]] @frnn_local_local() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_frnn1]]), null<ptr<void>>))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @gnr_local_local() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(call<ptr<void>, signature=fn() -> ptr<void>>(%2), null<ptr<void>>))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_gnr_local_local:[0-9]+]] @gnr_local_local() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_frnn1]]), null<ptr<void>>))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @frnn2() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @frnn_local_global() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(call<ptr<void>, signature=fn() -> ptr<void>>(%5), null<ptr<void>>))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_frnn2:[0-9]+]] @frnn2() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_frnn_local_global:[0-9]+]] @frnn_local_global() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_frnn2]]), null<ptr<void>>))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @gnr_local_global() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(call<ptr<void>, signature=fn() -> ptr<void>>(%5), null<ptr<void>>))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_gnr_local_global:[0-9]+]] @gnr_local_global() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_frnn2]]), null<ptr<void>>))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @frnn3() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %8 @frnn_global_local() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(call<ptr<void>, signature=fn() -> ptr<void>>(%7), null<ptr<void>>))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_frnn3:[0-9]+]] @frnn3() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_frnn_global_local:[0-9]+]] @frnn_global_local() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_frnn3]]), null<ptr<void>>))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @gnr_global_local() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(call<ptr<void>, signature=fn() -> ptr<void>>(%7), null<ptr<void>>))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_gnr_global_local:[0-9]+]] @gnr_global_local() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_frnn3]]), null<ptr<void>>))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

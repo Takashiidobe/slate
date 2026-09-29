@@ -45,21 +45,21 @@ lab:;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 p: volatile ptr<void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 n: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         label %2 lab:
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: volatile ptr<void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         label %[[VALUE_lab:[0-9]+]] lab:
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         let %5: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(add<i32, overflow=ub>(rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%3), const<i32>(1000)), const<i32>(1))));
-// DEFAULT-NEXT:         let %4 x: vla<i32, %5> [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%4), const<i32>(0))), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%4), rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%3), const<i32>(1000)))), const<i32>(2));
-// DEFAULT-NEXT:         write<ptr<void>, volatile>(%0, pointer_cast<ptr<void>, reason=assign>(array_decay<ptr<i32>, length=None>(%4)));
-// DEFAULT-NEXT:         let %6: i32 [synthetic] = read<i32>(%3);
-// DEFAULT-NEXT:         let %7: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%6), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%3, read<i32>(%7));
-// DEFAULT-NEXT:         if lt<i32>(read<i32>(%3), const<i32>(1000000))
-// DEFAULT-NEXT:             goto %2;
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(add<i32, overflow=ub>(rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_n]]), const<i32>(1000)), const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: vla<i32, %[[VALUE0]]> [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%[[VALUE_x]]), const<i32>(0))), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%[[VALUE_x]]), rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_n]]), const<i32>(1000)))), const<i32>(2));
+// DEFAULT-NEXT:         write<ptr<void>, volatile>(%[[VALUE_p]], pointer_cast<ptr<void>, reason=assign>(array_decay<ptr<i32>, length=None>(%[[VALUE_x]])));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_n]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_n]]), const<i32>(1000000))
+// DEFAULT-NEXT:             goto %[[VALUE_lab]];
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

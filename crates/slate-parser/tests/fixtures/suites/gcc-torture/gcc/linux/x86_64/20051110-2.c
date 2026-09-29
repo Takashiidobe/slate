@@ -59,40 +59,40 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 bytes: array<u8, 5> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 flag: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @add_unwind_adjustsp(%5 offset: i64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %6 n: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %7 o: u64 [storage=automatic];
-// DEFAULT-NEXT:         write<u64>(%7, reinterpret<u64, reason=assign, fits=unknown>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(sub<i64, overflow=ub>(read<i64>(%5), widen<i64, reason=usual_arith>(const<i32>(516))), const<i32>(2))));
-// DEFAULT-NEXT:         write<i32>(%6, const<i32>(0));
-// DEFAULT-NEXT:         do %10
+// DEFAULT-NEXT:     global %[[VALUE_bytes:[0-9]+]] bytes: array<u8, 5> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_flag:[0-9]+]] flag: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_add_unwind_adjustsp:[0-9]+]] @add_unwind_adjustsp(%[[VALUE_offset:[0-9]+]] offset: i64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_o:[0-9]+]] o: u64 [storage=automatic];
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_o]], reinterpret<u64, reason=assign, fits=unknown>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(sub<i64, overflow=ub>(read<i64>(%[[VALUE_offset]]), widen<i64, reason=usual_arith>(const<i32>(516))), const<i32>(2))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_n]], const<i32>(0));
+// DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 label %4 a:
-// DEFAULT-NEXT:                     write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(5)>(%2), read<i32>(%6))), truncate<u8, reason=assign, fits=unknown>(and<u64>(read<u64>(%7), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(127))))));
-// DEFAULT-NEXT:                 let %11: u64 [synthetic] = read<u64>(%7);
-// DEFAULT-NEXT:                 let %12: u64 [synthetic] = shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%11), const<i32>(7));
-// DEFAULT-NEXT:                 write<u64>(%7, read<u64>(%12));
-// DEFAULT-NEXT:                 if ne<u64>(read<u64>(%7), const<u64>(0))
+// DEFAULT-NEXT:                 label %[[VALUE_a:[0-9]+]] a:
+// DEFAULT-NEXT:                     write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(5)>(%[[VALUE_bytes]]), read<i32>(%[[VALUE_n]]))), truncate<u8, reason=assign, fits=unknown>(and<u64>(read<u64>(%[[VALUE_o]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(127))))));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_o]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u64 [synthetic] = shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE1]]), const<i32>(7));
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_o]], read<u64>(%[[VALUE2]]));
+// DEFAULT-NEXT:                 if ne<u64>(read<u64>(%[[VALUE_o]]), const<u64>(0))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %13: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(5)>(%2), read<i32>(%6));
-// DEFAULT-NEXT:                         let %14: u8 [synthetic] = read<u8>(deref(read<ptr<u8>>(%13)));
-// DEFAULT-NEXT:                         let %15: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(or<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%14))), const<i32>(128))));
-// DEFAULT-NEXT:                         write<u8>(deref(read<ptr<u8>>(%13)), read<u8>(%15));
-// DEFAULT-NEXT:                         if ne<i32>(read<i32>(%3), const<i32>(0))
-// DEFAULT-NEXT:                             goto %4;
+// DEFAULT-NEXT:                         let %[[VALUE3:[0-9]+]]: ptr<u8> [synthetic] = ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(5)>(%[[VALUE_bytes]]), read<i32>(%[[VALUE_n]]));
+// DEFAULT-NEXT:                         let %[[VALUE4:[0-9]+]]: u8 [synthetic] = read<u8>(deref(read<ptr<u8>>(%[[VALUE3]])));
+// DEFAULT-NEXT:                         let %[[VALUE5:[0-9]+]]: u8 [synthetic] = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(or<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE4]]))), const<i32>(128))));
+// DEFAULT-NEXT:                         write<u8>(deref(read<ptr<u8>>(%[[VALUE3]])), read<u8>(%[[VALUE5]]));
+// DEFAULT-NEXT:                         if ne<i32>(read<i32>(%[[VALUE_flag]]), const<i32>(0))
+// DEFAULT-NEXT:                             goto %[[VALUE_a]];
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                 let %16: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:                 let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%6, read<i32>(%17));
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n]]);
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_n]], read<i32>(%[[VALUE7]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<u64>(read<u64>(%7), const<u64>(0));
+// DEFAULT-NEXT:         while ne<u64>(read<u64>(%[[VALUE_o]]), const<u64>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%0, widen<i64, reason=arg>(const<i32>(4132)));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(5)>(%2), const<i32>(0)))))), const<i32>(136)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(5)>(%2), const<i32>(1)))))), const<i32>(7)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_add_unwind_adjustsp]], widen<i64, reason=arg>(const<i32>(4132)));
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(5)>(%[[VALUE_bytes]]), const<i32>(0)))))), const<i32>(136)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(5)>(%[[VALUE_bytes]]), const<i32>(1)))))), const<i32>(7)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

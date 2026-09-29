@@ -32,9 +32,9 @@ typedef enum x {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 x = enum : u32 {
-// DEFAULT-NEXT:         %0 a = const<i32>(1);
+// DEFAULT-NEXT:     type @type[[TYPE_x:[0-9]+]] x = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_a:[0-9]+]] a = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 x = @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_x_2:[0-9]+]] x = @type[[TYPE_x]];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

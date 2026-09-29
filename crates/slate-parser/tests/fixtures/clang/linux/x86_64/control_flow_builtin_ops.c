@@ -66,45 +66,45 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %24 .str24: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%16 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %19 @__builtin_expect(%17 <unnamed>: i64, %18 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %21 @__builtin_assume(%20 <unnamed>: bool) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @likely_nonzero(%3 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%19, from_bool<i64, reason=arg>(ne<i32>(read<i32>(%3), const<i32>(0))), widen<i64, reason=arg>(const<i32>(1))), const<i64>(0))
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_expect:[0-9]+]] @__builtin_expect(%[[VALUE0:[0-9]+]] <unnamed>: i64, %[[VALUE1:[0-9]+]] <unnamed>: i64) -> i64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_assume:[0-9]+]] @__builtin_assume(%[[VALUE2:[0-9]+]] <unnamed>: bool) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_likely_nonzero:[0-9]+]] @likely_nonzero(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%[[VALUE___builtin_expect]], from_bool<i64, reason=arg>(ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))), widen<i64, reason=arg>(const<i32>(1))), const<i64>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(bool) -> void>(%21, ne<i32>(read<i32>(%3), const<i32>(0)));
-// DEFAULT-NEXT:                 return add<i32, overflow=ub>(read<i32>(%3), const<i32>(10));
+// DEFAULT-NEXT:                 call<void, signature=fn(bool) -> void>(%[[VALUE___builtin_assume]], ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0)));
+// DEFAULT-NEXT:                 return add<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), const<i32>(10));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @assume_true(%5 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(bool) -> void>(%21, ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%5), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_assume_true:[0-9]+]] @assume_true(%[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn(bool) -> void>(%[[VALUE___builtin_assume]], ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_x_2]]), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @__builtin_trap() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @guarded_trap(%7 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if lt<i32>(read<i32>(%7), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_trap:[0-9]+]] @__builtin_trap() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_guarded_trap:[0-9]+]] @guarded_trap(%[[VALUE_x_3:[0-9]+]] x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_x_3]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%22);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE___builtin_trap]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<i32>(%7);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @__builtin_unreachable() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @guarded_unreachable(%9 x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if lt<i32>(read<i32>(%9), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_unreachable:[0-9]+]] @__builtin_unreachable() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_guarded_unreachable:[0-9]+]] @guarded_unreachable(%[[VALUE_x_4:[0-9]+]] x: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_x_4]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%23);
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE___builtin_unreachable]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return mul<i32, overflow=ub>(read<i32>(%9), const<i32>(2));
+// DEFAULT-NEXT:         return mul<i32, overflow=ub>(read<i32>(%[[VALUE_x_4]]), const<i32>(2));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %11 input: volatile i32 [storage=automatic] = const<i32>(5);
-// DEFAULT-NEXT:         let %12 a: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%2, read<i32, volatile>(%11));
-// DEFAULT-NEXT:         let %13 b: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%4, read<i32, volatile>(%11));
-// DEFAULT-NEXT:         let %14 c: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%6, read<i32, volatile>(%11));
-// DEFAULT-NEXT:         let %15 d: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%8, read<i32, volatile>(%11));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%24)), read<i32>(%12), read<i32>(%13), read<i32>(%14), read<i32>(%15));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_input:[0-9]+]] input: volatile i32 [storage=automatic] = const<i32>(5);
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_likely_nonzero]], read<i32, volatile>(%[[VALUE_input]]));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_assume_true]], read<i32, volatile>(%[[VALUE_input]]));
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_guarded_trap]], read<i32, volatile>(%[[VALUE_input]]));
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_guarded_unreachable]], read<i32, volatile>(%[[VALUE_input]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str]])), read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]]), read<i32>(%[[VALUE_c]]), read<i32>(%[[VALUE_d]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

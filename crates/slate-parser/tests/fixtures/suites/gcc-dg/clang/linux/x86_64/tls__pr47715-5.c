@@ -36,9 +36,9 @@ __errno_location (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 __libc_errno: i32 [storage=thread] [linkage=external] [tls_model=initial-exec];
-// DEFAULT-NEXT:     fn %1 @__errno_location() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%0);
+// DEFAULT-NEXT:     extern %[[VALUE___libc_errno:[0-9]+]] __libc_errno: i32 [storage=thread] [linkage=external] [tls_model=initial-exec];
+// DEFAULT-NEXT:     fn %[[VALUE___errno_location:[0-9]+]] @__errno_location() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE___libc_errno]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

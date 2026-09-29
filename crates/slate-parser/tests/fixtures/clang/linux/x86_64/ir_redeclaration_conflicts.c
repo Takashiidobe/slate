@@ -220,7 +220,7 @@ enum E { B };
 // IR-RETURN_SIGN-NEXT:         storage d64 [size=8, align=8];
 // IR-RETURN_SIGN-NEXT:         storage d128 [size=16, align=16];
 // IR-RETURN_SIGN-NEXT:     }
-// IR-RETURN_SIGN-NEXT:     fn %0 @f(%1 <unnamed>: i32) -> i32 [linkage=external];
+// IR-RETURN_SIGN-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
 // IR-RETURN_SIGN-NEXT: }
 // SLATE-FILECHECK-END IR-RETURN_SIGN
 // SLATE-FILECHECK-BEGIN IR-PARAMETERS
@@ -246,9 +246,9 @@ enum E { B };
 // IR-PARAMETERS-NEXT:         storage d64 [size=8, align=8];
 // IR-PARAMETERS-NEXT:         storage d128 [size=16, align=16];
 // IR-PARAMETERS-NEXT:     }
-// IR-PARAMETERS-NEXT:     fn %0 @f(%3 <unnamed>: i32) -> i32 [linkage=external];
-// IR-PARAMETERS-NEXT:     fn %1 @g(%5 <unnamed>: i32, %6 <unnamed>: i32) -> i32 [linkage=external];
-// IR-PARAMETERS-NEXT:     fn %2 @h(%8 <unnamed>: i32) -> i32 [linkage=external];
+// IR-PARAMETERS-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// IR-PARAMETERS-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// IR-PARAMETERS-NEXT:     fn %[[VALUE_h:[0-9]+]] @h(%[[VALUE3:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
 // IR-PARAMETERS-NEXT: }
 // SLATE-FILECHECK-END IR-PARAMETERS
 // SLATE-FILECHECK-BEGIN IR-GLOBAL_SIGN
@@ -274,6 +274,6 @@ enum E { B };
 // IR-GLOBAL_SIGN-NEXT:         storage d64 [size=8, align=8];
 // IR-GLOBAL_SIGN-NEXT:         storage d128 [size=16, align=16];
 // IR-GLOBAL_SIGN-NEXT:     }
-// IR-GLOBAL_SIGN-NEXT:     global %0 x: i32 [storage=static] [linkage=external];
+// IR-GLOBAL_SIGN-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
 // IR-GLOBAL_SIGN-NEXT: }
 // SLATE-FILECHECK-END IR-GLOBAL_SIGN

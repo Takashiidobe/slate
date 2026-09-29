@@ -29,6 +29,6 @@ typedef int i __attribute__((alias("j"))); /* { dg-warning "ignored" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 i = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_i:[0-9]+]] i = i32;
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

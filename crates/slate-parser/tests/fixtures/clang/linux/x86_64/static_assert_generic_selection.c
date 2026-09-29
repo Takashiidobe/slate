@@ -59,11 +59,11 @@ void selected(int n) {
 // VALID-NEXT:         storage d64 [size=8, align=8];
 // VALID-NEXT:         storage d128 [size=16, align=16];
 // VALID-NEXT:     }
-// VALID-NEXT:     type @type0 byte = u8;
-// VALID-NEXT:     extern %1 table: array<i32, 4> [storage=static] [align=16] [linkage=external];
-// VALID-NEXT:     fn %2 @routine() -> void [linkage=external];
-// VALID-NEXT:     fn %3 @selected(%4 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// VALID-NEXT:         let %5 a: u32 [storage=automatic];
+// VALID-NEXT:     type @type[[TYPE_byte:[0-9]+]] byte = u8;
+// VALID-NEXT:     extern %[[VALUE_table:[0-9]+]] table: array<i32, 4> [storage=static] [align=16] [linkage=external];
+// VALID-NEXT:     fn %[[VALUE_routine:[0-9]+]] @routine() -> void [linkage=external];
+// VALID-NEXT:     fn %[[VALUE_selected:[0-9]+]] @selected(%[[VALUE_n:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// VALID-NEXT:         let %[[VALUE_a:[0-9]+]] a: u32 [storage=automatic];
 // VALID-NEXT:     }
 // VALID-NEXT: }
 // SLATE-FILECHECK-END VALID

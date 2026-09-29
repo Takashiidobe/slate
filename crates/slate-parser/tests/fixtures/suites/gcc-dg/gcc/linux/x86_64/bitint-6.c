@@ -40,15 +40,15 @@ foo (int *p)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 q: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 r: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 s: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo(%4 p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%4), const<i4b>(4))), const<i32>(0));
-// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%4), const<i4b>(6))), const<i32>(0));
-// DEFAULT-NEXT:         write<ptr<i32>>(%0, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%4), const<i5b>(8)));
-// DEFAULT-NEXT:         write<ptr<i32>>(%1, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%0), const<u4b>(10)));
-// DEFAULT-NEXT:         write<ptr<i32>>(%2, ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%1), const<i3b>(2)));
+// DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_r:[0-9]+]] r: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p]]), const<i4b>(4))), const<i32>(0));
+// DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p]]), const<i4b>(6))), const<i32>(0));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_q]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p]]), const<i5b>(8)));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_r]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_q]]), const<u4b>(10)));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_s]], ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_r]]), const<i3b>(2)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

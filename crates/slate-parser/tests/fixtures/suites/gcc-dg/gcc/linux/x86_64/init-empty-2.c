@@ -34,10 +34,10 @@ struct s *p = &(struct s){ }; /* { dg-warning "ISO C forbids empty initializer b
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %1 x: @type0 [storage=static] = aggregate<@type0, zero_fill=true>() [linkage=external];
-// DEFAULT-NEXT:     global %2 p: ptr<@type0> [storage=static] = addr_of<ptr<@type0>>(compound_literal %3 [storage=static] = aggregate<@type0, zero_fill=true>()) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE_s]] [storage=static] = aggregate<@type[[TYPE_s]], zero_fill=true>() [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_s]]> [storage=static] = addr_of<ptr<@type[[TYPE_s]]>>(compound_literal %[[VALUE0:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_s]], zero_fill=true>()) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

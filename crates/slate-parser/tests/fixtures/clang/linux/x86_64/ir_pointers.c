@@ -41,33 +41,33 @@ int roundtrip(int *p) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @fill(%1 cursor: ptr<i8>, %2 end: ptr<i8>, %3 value: i8) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         while %14 lt<ptr<i8>>(read<ptr<i8>>(%1), read<ptr<i8>>(%2))
-// IR-NEXT:             let %16: ptr<i8> [synthetic] = read<ptr<i8>>(%1);
-// IR-NEXT:             let %17: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%16), const<i32>(1));
-// IR-NEXT:             write<ptr<i8>>(%1, read<ptr<i8>>(%17));
-// IR-NEXT:             write<i8>(deref(read<ptr<i8>>(%16)), read<i8>(%3));
+// IR-NEXT:     fn %[[VALUE_fill:[0-9]+]] @fill(%[[VALUE_cursor:[0-9]+]] cursor: ptr<i8>, %[[VALUE_end:[0-9]+]] end: ptr<i8>, %[[VALUE_value:[0-9]+]] value: i8) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         while %[[VALUE0:[0-9]+]] lt<ptr<i8>>(read<ptr<i8>>(%[[VALUE_cursor]]), read<ptr<i8>>(%[[VALUE_end]]))
+// IR-NEXT:             let %[[VALUE1:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_cursor]]);
+// IR-NEXT:             let %[[VALUE2:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE1]]), const<i32>(1));
+// IR-NEXT:             write<ptr<i8>>(%[[VALUE_cursor]], read<ptr<i8>>(%[[VALUE2]]));
+// IR-NEXT:             write<i8>(deref(read<ptr<i8>>(%[[VALUE1]])), read<i8>(%[[VALUE_value]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %4 @walk(%5 s: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %6 n: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// IR-NEXT:         while %15 ne<i8>(read<i8>(deref(read<ptr<const i8>>(%5))), const<i8>(0))
+// IR-NEXT:     fn %[[VALUE_walk:[0-9]+]] @walk(%[[VALUE_s:[0-9]+]] s: ptr<const i8>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_n:[0-9]+]] n: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// IR-NEXT:         while %[[VALUE3:[0-9]+]] ne<i8>(read<i8>(deref(read<ptr<const i8>>(%[[VALUE_s]]))), const<i8>(0))
 // IR-NEXT:             {
-// IR-NEXT:                 let %18: u64 [synthetic] = read<u64>(%6);
-// IR-NEXT:                 let %19: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%18), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// IR-NEXT:                 write<u64>(%6, read<u64>(%19));
-// IR-NEXT:                 let %20: ptr<const i8> [synthetic] = read<ptr<const i8>>(%5);
-// IR-NEXT:                 let %21: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%20), const<i32>(1));
-// IR-NEXT:                 write<ptr<const i8>>(%5, read<ptr<const i8>>(%21));
+// IR-NEXT:                 let %[[VALUE4:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_n]]);
+// IR-NEXT:                 let %[[VALUE5:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE4]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// IR-NEXT:                 write<u64>(%[[VALUE_n]], read<u64>(%[[VALUE5]]));
+// IR-NEXT:                 let %[[VALUE6:[0-9]+]]: ptr<const i8> [synthetic] = read<ptr<const i8>>(%[[VALUE_s]]);
+// IR-NEXT:                 let %[[VALUE7:[0-9]+]]: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE6]]), const<i32>(1));
+// IR-NEXT:                 write<ptr<const i8>>(%[[VALUE_s]], read<ptr<const i8>>(%[[VALUE7]]));
 // IR-NEXT:             }
-// IR-NEXT:         return read<u64>(%6);
+// IR-NEXT:         return read<u64>(%[[VALUE_n]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %7 @acquire(%8 out: ptr<ptr<i32>>, %9 stored: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         write<ptr<i32>>(deref(read<ptr<ptr<i32>>>(%8)), read<ptr<i32>>(%9));
+// IR-NEXT:     fn %[[VALUE_acquire:[0-9]+]] @acquire(%[[VALUE_out:[0-9]+]] out: ptr<ptr<i32>>, %[[VALUE_stored:[0-9]+]] stored: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         write<ptr<i32>>(deref(read<ptr<ptr<i32>>>(%[[VALUE_out]])), read<ptr<i32>>(%[[VALUE_stored]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %10 @roundtrip(%11 p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %12 address: u64 [storage=automatic] = ptr_to_int<u64, reason=explicit>(read<ptr<i32>>(%11));
-// IR-NEXT:         let %13 again: ptr<i32> [storage=automatic] = int_to_ptr<ptr<i32>, reason=explicit>(read<u64>(%12));
-// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%13))), from_bool<i32, reason=promotion>(eq<ptr<i32>>(read<ptr<i32>>(%11), null<ptr<i32>>)));
+// IR-NEXT:     fn %[[VALUE_roundtrip:[0-9]+]] @roundtrip(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_address:[0-9]+]] address: u64 [storage=automatic] = ptr_to_int<u64, reason=explicit>(read<ptr<i32>>(%[[VALUE_p]]));
+// IR-NEXT:         let %[[VALUE_again:[0-9]+]] again: ptr<i32> [storage=automatic] = int_to_ptr<ptr<i32>, reason=explicit>(read<u64>(%[[VALUE_address]]));
+// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_again]]))), from_bool<i32, reason=promotion>(eq<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), null<ptr<i32>>)));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

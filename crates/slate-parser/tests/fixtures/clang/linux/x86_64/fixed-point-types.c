@@ -35,16 +35,16 @@ _Sat unsigned long _Accum saturated_unsigned_long_accum_value;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 fract_value: fixed<i16, 15> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 short_fract_value: fixed<i8, 7> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 long_fract_value: fixed<i32, 31> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 accum_value: fixed<i32, 15> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 long_accum_value: fixed<i64, 31> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 saturated_fract_value: sat_fixed<i16, 15> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 saturated_long_accum_value: sat_fixed<i64, 31> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 unsigned_fract_value: fixed<u16, 16> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 unsigned_short_accum_value: fixed<u16, 8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 signed_long_long_fract_value: fixed<i64, 63> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 saturated_unsigned_long_accum_value: sat_fixed<u64, 32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_fract_value:[0-9]+]] fract_value: fixed<i16, 15> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_short_fract_value:[0-9]+]] short_fract_value: fixed<i8, 7> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_long_fract_value:[0-9]+]] long_fract_value: fixed<i32, 31> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_accum_value:[0-9]+]] accum_value: fixed<i32, 15> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_long_accum_value:[0-9]+]] long_accum_value: fixed<i64, 31> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_saturated_fract_value:[0-9]+]] saturated_fract_value: sat_fixed<i16, 15> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_saturated_long_accum_value:[0-9]+]] saturated_long_accum_value: sat_fixed<i64, 31> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unsigned_fract_value:[0-9]+]] unsigned_fract_value: fixed<u16, 16> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unsigned_short_accum_value:[0-9]+]] unsigned_short_accum_value: fixed<u16, 8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_signed_long_long_fract_value:[0-9]+]] signed_long_long_fract_value: fixed<i64, 63> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_saturated_unsigned_long_accum_value:[0-9]+]] saturated_unsigned_long_accum_value: sat_fixed<u64, 32> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

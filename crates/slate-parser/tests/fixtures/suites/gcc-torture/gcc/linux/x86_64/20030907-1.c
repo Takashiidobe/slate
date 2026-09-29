@@ -48,7 +48,7 @@ struct gdt gdt_table[2]=
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 gdt = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_gdt:[0-9]+]] gdt = struct {
 // DEFAULT-NEXT:         field0 a: u32;
 // DEFAULT-NEXT:         field1 b: u32;
 // DEFAULT-NEXT:         field2 c: u32;
@@ -56,9 +56,9 @@ struct gdt gdt_table[2]=
 // DEFAULT-NEXT:         field4 e: u32;
 // DEFAULT-NEXT:         field5 f: u32;
 // DEFAULT-NEXT:     } [size=24, align=4, offsets=[0, 4, 8, 12, 16, 20]];
-// DEFAULT-NEXT:     global %0 x: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 gdt_table: array<@type0, 2> [storage=automatic] [align=16] = aggregate<array<@type0, 2>, zero_fill=true>(index0 = aggregate<@type0, zero_fill=true>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), field1 = and<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(ptr_to_int<u32, reason=explicit>(addr_of<ptr<i32>>(%0)), const<i32>(24)), reinterpret<u32, reason=usual_arith, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(neg<i32, overflow=ub>(const<i32>(1)), const<i32>(8))))));
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_gdt_table:[0-9]+]] gdt_table: array<@type[[TYPE_gdt]], 2> [storage=automatic] [align=16] = aggregate<array<@type[[TYPE_gdt]], 2>, zero_fill=true>(index0 = aggregate<@type[[TYPE_gdt]], zero_fill=true>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)), field1 = and<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(ptr_to_int<u32, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_x]])), const<i32>(24)), reinterpret<u32, reason=usual_arith, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(neg<i32, overflow=ub>(const<i32>(1)), const<i32>(8))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 stuff = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_stuff:[0-9]+]] stuff = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:         field2 c: i32;
@@ -60,17 +60,17 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         field5 f: ptr<i8>;
 // DEFAULT-NEXT:         field6 g: i32;
 // DEFAULT-NEXT:     } [size=40, align=8, offsets=[0, 4, 8, 12, 16, 24, 32]];
-// DEFAULT-NEXT:     fn %7 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @bar(%2 x: ptr<@type0>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(field6(deref(read<ptr<@type0>>(%2)))), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE_stuff]]>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(field6(deref(read<ptr<@type[[TYPE_stuff]]>>(%[[VALUE_x]])))), const<i32>(2))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @main(%4 argc: i32, %5 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 x: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0), field2 = const<i32>(0), field3 = const<i32>(0), field4 = const<i32>(0), field5 = null<ptr<i8>>, field6 = const<i32>(0));
-// DEFAULT-NEXT:         write<i32>(field0(%6), const<i32>(100));
-// DEFAULT-NEXT:         write<i32>(field3(%6), const<i32>(100));
-// DEFAULT-NEXT:         write<i32>(field6(%6), const<i32>(2));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%1, addr_of<ptr<@type0>>(%6));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: @type[[TYPE_stuff]] [storage=automatic] = aggregate<@type[[TYPE_stuff]], zero_fill=false>(field0 = const<i32>(0), field1 = const<i32>(0), field2 = const<i32>(0), field3 = const<i32>(0), field4 = const<i32>(0), field5 = null<ptr<i8>>, field6 = const<i32>(0));
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_x_2]]), const<i32>(100));
+// DEFAULT-NEXT:         write<i32>(field3(%[[VALUE_x_2]]), const<i32>(100));
+// DEFAULT-NEXT:         write<i32>(field6(%[[VALUE_x_2]]), const<i32>(2));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_stuff]]>) -> void>(%[[VALUE_bar]], addr_of<ptr<@type[[TYPE_stuff]]>>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

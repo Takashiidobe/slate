@@ -50,10 +50,10 @@ void c_foo(int n, double *y);
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 omp_interop_t = ptr<void>;
-// DEFAULT-NEXT:     fn %4 @win_foov(%15 n: i32, %16 y: ptr<f64>, %17 interop_obj: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @win_foo(%18 n: i32, %19 y: ptr<f64>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %11 @c_foov(%20 n: i32, %21 y: ptr<f64>, %22 interop_obj: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %14 @c_foo(%23 n: i32, %24 y: ptr<f64>) -> void [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_omp_interop_t:[0-9]+]] omp_interop_t = ptr<void>;
+// DEFAULT-NEXT:     fn %[[VALUE_win_foov:[0-9]+]] @win_foov(%[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_y:[0-9]+]] y: ptr<f64>, %[[VALUE_interop_obj:[0-9]+]] interop_obj: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_win_foo:[0-9]+]] @win_foo(%[[VALUE_n_2:[0-9]+]] n: i32, %[[VALUE_y_2:[0-9]+]] y: ptr<f64>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_c_foov:[0-9]+]] @c_foov(%[[VALUE_n_3:[0-9]+]] n: i32, %[[VALUE_y_3:[0-9]+]] y: ptr<f64>, %[[VALUE_interop_obj_2:[0-9]+]] interop_obj: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_c_foo:[0-9]+]] @c_foo(%[[VALUE_n_4:[0-9]+]] n: i32, %[[VALUE_y_4:[0-9]+]] y: ptr<f64>) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

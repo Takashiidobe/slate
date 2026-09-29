@@ -72,82 +72,82 @@ struct Reset v12;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 AfterIgnoredPack = struct {
+// IR-NEXT:     type @type[[TYPE_AfterIgnoredPack:[0-9]+]] AfterIgnoredPack = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=5, align=1, offsets=[0, 1]];
-// IR-NEXT:     type @type1 AfterZeroPack = struct {
+// IR-NEXT:     type @type[[TYPE_AfterZeroPack:[0-9]+]] AfterZeroPack = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type2 FieldAligned = struct {
+// IR-NEXT:     type @type[[TYPE_FieldAligned:[0-9]+]] FieldAligned = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:         field2 c: i8;
 // IR-NEXT:     } [size=6, align=1, offsets=[0, 1, 5]];
-// IR-NEXT:     type @type3 PackedButAligned = struct {
+// IR-NEXT:     type @type[[TYPE_PackedButAligned:[0-9]+]] PackedButAligned = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:         field2 c: i8;
 // IR-NEXT:     } [size=16, align=16, offsets=[0, 1, 5]];
-// IR-NEXT:     type @type4 NamedPushed = struct {
+// IR-NEXT:     type @type[[TYPE_NamedPushed:[0-9]+]] NamedPushed = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=6, align=2, offsets=[0, 2]];
-// IR-NEXT:     type @type5 AfterNamedPop = struct {
+// IR-NEXT:     type @type[[TYPE_AfterNamedPop:[0-9]+]] AfterNamedPop = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type6 FieldPacked = struct {
+// IR-NEXT:     type @type[[TYPE_FieldPacked:[0-9]+]] FieldPacked = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=5, align=1, offsets=[0, 1]];
-// IR-NEXT:     type @type7 Bitfields = struct {
+// IR-NEXT:     type @type[[TYPE_Bitfields:[0-9]+]] Bitfields = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: u32 : 20;
 // IR-NEXT:         field2 c: u32 : 20;
 // IR-NEXT:     } [size=6, align=2, offsets=[0, 1, 3], bit_offsets=[None, Some(8), Some(28)], bit_units=[(1, 5)], field_units=[None, Some(0), Some(0)]];
-// IR-NEXT:     type @type8 ZeroWidth = struct {
+// IR-NEXT:     type @type[[TYPE_ZeroWidth:[0-9]+]] ZeroWidth = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 <anonymous>: u32 : 0;
 // IR-NEXT:         field2 b: i8;
 // IR-NEXT:     } [size=5, align=1, offsets=[0, 4, 4], bit_offsets=[None, Some(32), None]];
-// IR-NEXT:     type @type9 Straddle = struct {
+// IR-NEXT:     type @type[[TYPE_Straddle:[0-9]+]] Straddle = struct {
 // IR-NEXT:         field0 a: u32 : 30;
 // IR-NEXT:         field1 b: u32 : 20;
 // IR-NEXT:     } [size=8, align=2, offsets=[0, 3], bit_offsets=[Some(0), Some(30)], bit_units=[(0, 7)], field_units=[Some(0), Some(0)]];
-// IR-NEXT:     type @type10 Plain = union {
+// IR-NEXT:     type @type[[TYPE_Plain:[0-9]+]] Plain = union {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=4, align=2, offsets=[0, 0]];
-// IR-NEXT:     type @type11 Bits = union {
+// IR-NEXT:     type @type[[TYPE_Bits:[0-9]+]] Bits = union {
 // IR-NEXT:         field0 a: u32 : 20;
 // IR-NEXT:         field1 c: i8;
 // IR-NEXT:     } [size=4, align=2, offsets=[0, 0], bit_offsets=[Some(0), None], bit_units=[(0, 3)], field_units=[Some(0), None]];
-// IR-NEXT:     type @type12 Reset = struct {
+// IR-NEXT:     type @type[[TYPE_Reset:[0-9]+]] Reset = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type13 InFunction = struct {
+// IR-NEXT:     type @type[[TYPE_InFunction:[0-9]+]] InFunction = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=5, align=1, offsets=[0, 1]];
-// IR-NEXT:     global %16 v0: @type0 [storage=static] [linkage=external];
-// IR-NEXT:     global %17 v1: @type1 [storage=static] [linkage=external];
-// IR-NEXT:     global %18 v2: @type2 [storage=static] [linkage=external];
-// IR-NEXT:     global %19 v3: @type3 [storage=static] [linkage=external];
-// IR-NEXT:     global %20 v4: @type4 [storage=static] [linkage=external];
-// IR-NEXT:     global %21 v5: @type5 [storage=static] [linkage=external];
-// IR-NEXT:     global %22 v6: @type6 [storage=static] [linkage=external];
-// IR-NEXT:     global %23 v7: @type7 [storage=static] [linkage=external];
-// IR-NEXT:     global %24 v8: @type8 [storage=static] [linkage=external];
-// IR-NEXT:     global %25 v9: @type9 [storage=static] [linkage=external];
-// IR-NEXT:     global %26 v10: @type10 [storage=static] [linkage=external];
-// IR-NEXT:     global %27 v11: @type11 [storage=static] [linkage=external];
-// IR-NEXT:     global %28 v12: @type12 [storage=static] [linkage=external];
-// IR-NEXT:     fn %13 @local() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %15 value: @type13 [storage=automatic];
-// IR-NEXT:         read<@type13>(%15);
+// IR-NEXT:     global %[[VALUE_v0:[0-9]+]] v0: @type[[TYPE_AfterIgnoredPack]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_v1:[0-9]+]] v1: @type[[TYPE_AfterZeroPack]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_v2:[0-9]+]] v2: @type[[TYPE_FieldAligned]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_v3:[0-9]+]] v3: @type[[TYPE_PackedButAligned]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_v4:[0-9]+]] v4: @type[[TYPE_NamedPushed]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_v5:[0-9]+]] v5: @type[[TYPE_AfterNamedPop]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_v6:[0-9]+]] v6: @type[[TYPE_FieldPacked]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_v7:[0-9]+]] v7: @type[[TYPE_Bitfields]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_v8:[0-9]+]] v8: @type[[TYPE_ZeroWidth]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_v9:[0-9]+]] v9: @type[[TYPE_Straddle]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_v10:[0-9]+]] v10: @type[[TYPE_Plain]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_v11:[0-9]+]] v11: @type[[TYPE_Bits]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_v12:[0-9]+]] v12: @type[[TYPE_Reset]] [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_local:[0-9]+]] @local() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_value:[0-9]+]] value: @type[[TYPE_InFunction]] [storage=automatic];
+// IR-NEXT:         read<@type[[TYPE_InFunction]]>(%[[VALUE_value]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

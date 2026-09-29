@@ -37,26 +37,26 @@ void foo (D *y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 c: i32;
 // DEFAULT-NEXT:         field1 d: i32;
 // DEFAULT-NEXT:         field2 e: i32;
 // DEFAULT-NEXT:         field3 f: i32;
 // DEFAULT-NEXT:         field4 g: i32;
 // DEFAULT-NEXT:     } [size=20, align=4, offsets=[0, 4, 8, 12, 16]];
-// DEFAULT-NEXT:     type @type1 D = @type0;
-// DEFAULT-NEXT:     fn %2 @bar(%6 <unnamed>: u64, %7 <unnamed>: u64) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo(%4 y: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 x: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(field3(deref(read<ptr<@type0>>(%4)))), const<i32>(0))
-// DEFAULT-NEXT:             let %8: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:             let %9: i32 [synthetic] = or<i32>(read<i32>(%8), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%5, read<i32>(%9));
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(field4(deref(read<ptr<@type0>>(%4)))), const<i32>(0))
-// DEFAULT-NEXT:             let %10: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:             let %11: i32 [synthetic] = or<i32>(read<i32>(%10), const<i32>(2));
-// DEFAULT-NEXT:             write<i32>(%5, read<i32>(%11));
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u64) -> void>(%2, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%5), const<i32>(16)), and<i32>(read<i32>(field0(deref(read<ptr<@type0>>(%4)))), const<i32>(65535))))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(field1(deref(read<ptr<@type0>>(%4)))), const<i32>(16)), and<i32>(read<i32>(field2(deref(read<ptr<@type0>>(%4)))), const<i32>(65535))))));
+// DEFAULT-NEXT:     type @type[[TYPE_D:[0-9]+]] D = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: u64, %[[VALUE1:[0-9]+]] <unnamed>: u64) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_y:[0-9]+]] y: ptr<@type[[TYPE0]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(field3(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_y]])))), const<i32>(0))
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: i32 [synthetic] = or<i32>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE3]]));
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(field4(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_y]])))), const<i32>(0))
+// DEFAULT-NEXT:             let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: i32 [synthetic] = or<i32>(read<i32>(%[[VALUE4]]), const<i32>(2));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE5]]));
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u64) -> void>(%[[VALUE_bar]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%[[VALUE_x]]), const<i32>(16)), and<i32>(read<i32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_y]])))), const<i32>(65535))))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(or<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_y]])))), const<i32>(16)), and<i32>(read<i32>(field2(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_y]])))), const<i32>(65535))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

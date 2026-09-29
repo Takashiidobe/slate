@@ -53,30 +53,30 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 c: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 b: array<i32, 2> [storage=static] = aggregate<array<i32, 2>, zero_fill=false>(index0 = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%2), label_addr<ptr<void>>(%4))), index1 = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%3), label_addr<ptr<void>>(%4)))) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @foo(%5 x: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 a: ptr<void> [storage=automatic] = ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(label_addr<ptr<void>>(%4), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%6), read<i32>(%5)))));
-// DEFAULT-NEXT:         goto *read<ptr<void>>(%7);
-// DEFAULT-NEXT:         label %2 lab1:
-// DEFAULT-NEXT:             let %10: i32 [synthetic] = read<i32>(%0);
-// DEFAULT-NEXT:             let %11: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%10), const<i32>(2));
-// DEFAULT-NEXT:             write<i32>(%0, read<i32>(%11));
-// DEFAULT-NEXT:         label %3 lab2:
-// DEFAULT-NEXT:             let %12: i32 [synthetic] = read<i32>(%0);
-// DEFAULT-NEXT:             let %13: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%12), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%0, read<i32>(%13));
-// DEFAULT-NEXT:         label %4 lab0:
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: array<i32, 2> [storage=static] = aggregate<array<i32, 2>, zero_fill=false>(index0 = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%[[VALUE_lab1:[0-9]+]]), label_addr<ptr<void>>(%[[VALUE_lab0:[0-9]+]]))), index1 = truncate<i32, reason=assign, fits=unknown>(ptr_diff<i64, element=void, same_array=required, overflow=ub>(label_addr<ptr<void>>(%[[VALUE_lab2:[0-9]+]]), label_addr<ptr<void>>(%[[VALUE_lab0]])))) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: ptr<void> [storage=automatic] = ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(label_addr<ptr<void>>(%[[VALUE_lab0]]), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_b]]), read<i32>(%[[VALUE_x]])))));
+// DEFAULT-NEXT:         goto *read<ptr<void>>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         label %[[VALUE_lab1]] lab1:
+// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(2));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         label %[[VALUE_lab2]] lab2:
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE3]]));
+// DEFAULT-NEXT:         label %[[VALUE_lab0]] lab0:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%0), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(1));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%0), const<i32>(4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%9);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(3))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], const<i32>(1));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(4))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

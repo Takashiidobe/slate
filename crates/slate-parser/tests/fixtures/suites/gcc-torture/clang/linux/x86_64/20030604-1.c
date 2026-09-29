@@ -42,30 +42,30 @@ void f(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 butterfly: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %2 block: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %3 offset: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %4 Z: ptr<f64> [storage=automatic];
-// DEFAULT-NEXT:         for %7
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_butterfly:[0-9]+]] butterfly: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_block:[0-9]+]] block: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_offset:[0-9]+]] offset: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_Z:[0-9]+]] Z: ptr<f64> [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<u32>(%2, reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:             condition: lt<u32>(read<u32>(%2), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(512)))
+// DEFAULT-NEXT:                 write<u32>(%[[VALUE_block]], reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:             condition: lt<u32>(read<u32>(%[[VALUE_block]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(512)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %8: u32 [synthetic] = read<u32>(%2);
-// DEFAULT-NEXT:                 let %9: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%8), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(512)));
-// DEFAULT-NEXT:                 write<u32>(%2, read<u32>(%9));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_block]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE1]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(512)));
+// DEFAULT-NEXT:                 write<u32>(%[[VALUE_block]], read<u32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %5 T1re: f64 [storage=automatic];
-// DEFAULT-NEXT:                     let %6 T2re: f64 [storage=automatic];
-// DEFAULT-NEXT:                     write<u32>(%3, add<u32, overflow=wrap>(read<u32>(%1), read<u32>(%2)));
-// DEFAULT-NEXT:                     let %10: f64 [synthetic] = read<f64>(%5);
-// DEFAULT-NEXT:                     let %11: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%10), read<f64>(%6));
-// DEFAULT-NEXT:                     write<f64>(%5, read<f64>(%11));
-// DEFAULT-NEXT:                     write<f64>(%6, add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%4), read<u32>(%3)))), read<f64>(%5)));
+// DEFAULT-NEXT:                     let %[[VALUE_T1re:[0-9]+]] T1re: f64 [storage=automatic];
+// DEFAULT-NEXT:                     let %[[VALUE_T2re:[0-9]+]] T2re: f64 [storage=automatic];
+// DEFAULT-NEXT:                     write<u32>(%[[VALUE_offset]], add<u32, overflow=wrap>(read<u32>(%[[VALUE_butterfly]]), read<u32>(%[[VALUE_block]])));
+// DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: f64 [synthetic] = read<f64>(%[[VALUE_T1re]]);
+// DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE3]]), read<f64>(%[[VALUE_T2re]]));
+// DEFAULT-NEXT:                     write<f64>(%[[VALUE_T1re]], read<f64>(%[[VALUE4]]));
+// DEFAULT-NEXT:                     write<f64>(%[[VALUE_T2re]], add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(deref(ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE_Z]]), read<u32>(%[[VALUE_offset]])))), read<f64>(%[[VALUE_T1re]])));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -110,70 +110,70 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo_2:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:         field1 y: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type2 fox = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_fox:[0-9]+]] fox = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 bar = enum : u32 {
-// DEFAULT-NEXT:         %0 A = const<i32>(1);
-// DEFAULT-NEXT:         %1 B = const<i32>(3);
-// DEFAULT-NEXT:         %2 C = const<i32>(5);
-// DEFAULT-NEXT:         %3 D = const<i32>(9);
+// DEFAULT-NEXT:     type @type[[TYPE_bar:[0-9]+]] bar = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_B:[0-9]+]] B = const<i32>(3);
+// DEFAULT-NEXT:         %[[VALUE_C:[0-9]+]] C = const<i32>(5);
+// DEFAULT-NEXT:         %[[VALUE_D:[0-9]+]] D = const<i32>(9);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type4 bar = enum : u32 {
-// DEFAULT-NEXT:         %0 A = const<i32>(1);
-// DEFAULT-NEXT:         %1 B = const<i32>(3);
-// DEFAULT-NEXT:         %2 C = const<i32>(6);
-// DEFAULT-NEXT:         %3 D = const<i32>(9);
+// DEFAULT-NEXT:     type @type[[TYPE_bar_2:[0-9]+]] bar = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_A]] A = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_B]] B = const<i32>(3);
+// DEFAULT-NEXT:         %[[VALUE_C]] C = const<i32>(6);
+// DEFAULT-NEXT:         %[[VALUE_D]] D = const<i32>(9);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type5 baX = enum : u32 {
-// DEFAULT-NEXT:         %0 A = const<i32>(1);
-// DEFAULT-NEXT:         %1 B = const<i32>(3);
-// DEFAULT-NEXT:         %2 C = const<i32>(5);
-// DEFAULT-NEXT:         %3 D = const<i32>(9);
+// DEFAULT-NEXT:     type @type[[TYPE_baX:[0-9]+]] baX = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_A]] A = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_B]] B = const<i32>(3);
+// DEFAULT-NEXT:         %[[VALUE_C]] C = const<i32>(5);
+// DEFAULT-NEXT:         %[[VALUE_D]] D = const<i32>(9);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     fn %1 @test_foo1(%2 a: ptr<@type0>, %3 b: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type0>>(%2))), const<i32>(1));
-// DEFAULT-NEXT:         let %5 p: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=assign>(read<ptr<void>>(%3));
-// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type1>>(%5))), const<i32>(2));
-// DEFAULT-NEXT:         return read<i32>(field0(deref(read<ptr<@type0>>(%2))));
+// DEFAULT-NEXT:     fn %[[VALUE_B]] @test_foo1(%[[VALUE_C]] a: ptr<@type[[TYPE_foo]]>, %[[VALUE_D]] b: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_C]]))), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_foo_2]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_foo_2]]>, reason=assign>(read<ptr<void>>(%[[VALUE_D]]));
+// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_foo_2]]>>(%[[VALUE_p]]))), const<i32>(2));
+// DEFAULT-NEXT:         return read<i32>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_C]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @test_foo2(%7 a: ptr<@type0>, %8 b: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type0>>(%7))), const<i32>(1));
-// DEFAULT-NEXT:         let %10 p: ptr<@type2> [storage=automatic] = pointer_cast<ptr<@type2>, reason=assign>(read<ptr<void>>(%8));
-// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type2>>(%10))), const<i32>(2));
-// DEFAULT-NEXT:         return read<i32>(field0(deref(read<ptr<@type0>>(%7))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_foo2:[0-9]+]] @test_foo2(%[[VALUE_a:[0-9]+]] a: ptr<@type[[TYPE_foo]]>, %[[VALUE_b:[0-9]+]] b: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_a]]))), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<@type[[TYPE_fox]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_fox]]>, reason=assign>(read<ptr<void>>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_fox]]>>(%[[VALUE_p_2]]))), const<i32>(2));
+// DEFAULT-NEXT:         return read<i32>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_a]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @test_bar1(%17 a: ptr<@type3>, %18 b: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<@type3>(deref(read<ptr<@type3>>(%17)), int_to_enum<@type3, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         let %24 p: ptr<@type4> [storage=automatic] = pointer_cast<ptr<@type4>, reason=assign>(read<ptr<void>>(%18));
-// DEFAULT-NEXT:         write<@type4>(deref(read<ptr<@type4>>(%24)), int_to_enum<@type4, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(3))));
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type3>(deref(read<ptr<@type3>>(%17)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_bar1:[0-9]+]] @test_bar1(%[[VALUE_a_2:[0-9]+]] a: ptr<@type[[TYPE_bar]]>, %[[VALUE_b_2:[0-9]+]] b: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<@type[[TYPE_bar]]>(deref(read<ptr<@type[[TYPE_bar]]>>(%[[VALUE_a_2]])), int_to_enum<@type[[TYPE_bar]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE_p_3:[0-9]+]] p: ptr<@type[[TYPE_bar_2]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_bar_2]]>, reason=assign>(read<ptr<void>>(%[[VALUE_b_2]]));
+// DEFAULT-NEXT:         write<@type[[TYPE_bar_2]]>(deref(read<ptr<@type[[TYPE_bar_2]]>>(%[[VALUE_p_3]])), int_to_enum<@type[[TYPE_bar_2]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(3))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_bar]]>(deref(read<ptr<@type[[TYPE_bar]]>>(%[[VALUE_a_2]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @test_bar2(%26 a: ptr<@type3>, %27 b: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<@type3>(deref(read<ptr<@type3>>(%26)), int_to_enum<@type3, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         let %33 p: ptr<@type5> [storage=automatic] = pointer_cast<ptr<@type5>, reason=assign>(read<ptr<void>>(%27));
-// DEFAULT-NEXT:         write<@type5>(deref(read<ptr<@type5>>(%33)), int_to_enum<@type5, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(3))));
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type3>(deref(read<ptr<@type3>>(%26)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_bar2:[0-9]+]] @test_bar2(%[[VALUE_a_3:[0-9]+]] a: ptr<@type[[TYPE_bar]]>, %[[VALUE_b_3:[0-9]+]] b: ptr<void>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<@type[[TYPE_bar]]>(deref(read<ptr<@type[[TYPE_bar]]>>(%[[VALUE_a_3]])), int_to_enum<@type[[TYPE_bar]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE_p_4:[0-9]+]] p: ptr<@type[[TYPE_baX]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_baX]]>, reason=assign>(read<ptr<void>>(%[[VALUE_b_3]]));
+// DEFAULT-NEXT:         write<@type[[TYPE_baX]]>(deref(read<ptr<@type[[TYPE_baX]]>>(%[[VALUE_p_4]])), int_to_enum<@type[[TYPE_baX]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(3))));
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_bar]]>(deref(read<ptr<@type[[TYPE_bar]]>>(%[[VALUE_a_3]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %37 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %34 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %35 y: @type0 [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), call<i32, signature=fn(ptr<@type0>, ptr<void>) -> i32>(%1, addr_of<ptr<@type0>>(%35), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%35))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%37);
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), call<i32, signature=fn(ptr<@type0>, ptr<void>) -> i32>(%6, addr_of<ptr<@type0>>(%35), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type0>>(%35))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%37);
-// DEFAULT-NEXT:         let %36 z: @type3 [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(3), call<i32, signature=fn(ptr<@type3>, ptr<void>) -> i32>(%16, addr_of<ptr<@type3>>(%36), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%36))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%37);
-// DEFAULT-NEXT:         if ne<i32>(const<i32>(3), call<i32, signature=fn(ptr<@type3>, ptr<void>) -> i32>(%25, addr_of<ptr<@type3>>(%36), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%36))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%37);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: @type[[TYPE_foo]] [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), call<i32, signature=fn(ptr<@type[[TYPE_foo]]>, ptr<void>) -> i32>(%[[VALUE_B]], addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_y]]), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_y]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(1), call<i32, signature=fn(ptr<@type[[TYPE_foo]]>, ptr<void>) -> i32>(%[[VALUE_test_foo2]], addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_y]]), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_y]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: @type[[TYPE_bar]] [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(3), call<i32, signature=fn(ptr<@type[[TYPE_bar]]>, ptr<void>) -> i32>(%[[VALUE_test_bar1]], addr_of<ptr<@type[[TYPE_bar]]>>(%[[VALUE_z]]), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_bar]]>>(%[[VALUE_z]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(const<i32>(3), call<i32, signature=fn(ptr<@type[[TYPE_bar]]>, ptr<void>) -> i32>(%[[VALUE_test_bar2]], addr_of<ptr<@type[[TYPE_bar]]>>(%[[VALUE_z]]), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_bar]]>>(%[[VALUE_z]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

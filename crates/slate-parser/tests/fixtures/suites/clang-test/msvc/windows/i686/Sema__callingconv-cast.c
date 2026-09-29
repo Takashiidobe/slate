@@ -90,30 +90,30 @@ int main(void) {
 // CFG0-NEXT:         storage d64 [size=8, align=8];
 // CFG0-NEXT:         storage d128 [size=16, align=16];
 // CFG0-NEXT:     }
-// CFG0-NEXT:     type @type0 callback_t = ptr<fn stdcall(i32) -> void>;
-// CFG0-NEXT:     fn %0 @mismatched_before_winapi(%1 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// CFG0-NEXT:     type @type[[TYPE_callback_t:[0-9]+]] callback_t = ptr<fn stdcall(i32) -> void>;
+// CFG0-NEXT:     fn %[[VALUE_mismatched_before_winapi:[0-9]+]] @mismatched_before_winapi(%[[VALUE_x:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // CFG0-NEXT:     }
-// CFG0-NEXT:     fn %2 @mismatched(%3 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// CFG0-NEXT:     fn %[[VALUE_mismatched:[0-9]+]] @mismatched(%[[VALUE_x_2:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // CFG0-NEXT:     }
-// CFG0-NEXT:     fn %5 @mismatched_declaration(%19 x: i32) -> void [linkage=external];
-// CFG0-NEXT:     fn %7 @suggest_fix_first_redecl(%20 x: i32) -> void [linkage=external];
-// CFG0-NEXT:     fn %11 @take_callback(%22 callback: ptr<fn stdcall(i32) -> void>) -> void [linkage=external];
-// CFG0-NEXT:     fn %12 @mismatched_stdcall(%13 x: i32) -> void [linkage=external] [abi=x86_win32 stdcall(scalar) -> void] [fallthrough=ret_void] {
+// CFG0-NEXT:     fn %[[VALUE_mismatched_declaration:[0-9]+]] @mismatched_declaration(%[[VALUE_x_3:[0-9]+]] x: i32) -> void [linkage=external];
+// CFG0-NEXT:     fn %[[VALUE_suggest_fix_first_redecl:[0-9]+]] @suggest_fix_first_redecl(%[[VALUE_x_4:[0-9]+]] x: i32) -> void [linkage=external];
+// CFG0-NEXT:     fn %[[VALUE_take_callback:[0-9]+]] @take_callback(%[[VALUE_callback:[0-9]+]] callback: ptr<fn stdcall(i32) -> void>) -> void [linkage=external];
+// CFG0-NEXT:     fn %[[VALUE_mismatched_stdcall:[0-9]+]] @mismatched_stdcall(%[[VALUE_x_5:[0-9]+]] x: i32) -> void [linkage=external] [abi=x86_win32 stdcall(scalar) -> void] [fallthrough=ret_void] {
 // CFG0-NEXT:     }
-// CFG0-NEXT:     fn %15 @take_opaque_fn(%23 callback: ptr<fn(i32) -> void>) -> void [linkage=external];
-// CFG0-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// CFG0-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%11, pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%2)));
-// CFG0-NEXT:         let %17 callback: ptr<fn stdcall(i32) -> void> [storage=automatic] = pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%2));
-// CFG0-NEXT:         read<ptr<fn stdcall(i32) -> void>>(%17);
-// CFG0-NEXT:         write<ptr<fn stdcall(i32) -> void>>(%17, pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(addr_of<ptr<fn(i32) -> void>>(%2)));
-// CFG0-NEXT:         write<ptr<fn stdcall(i32) -> void>>(%17, int_to_ptr<ptr<fn stdcall(i32) -> void>, reason=explicit>(not<bool>(ne<ptr<fn(i32) -> void>>(function_decay<ptr<fn(i32) -> void>>(%2), null<ptr<fn(i32) -> void>>))));
-// CFG0-NEXT:         write<ptr<fn stdcall(i32) -> void>>(%17, pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(addr_of<ptr<fn(i32) -> void>>(%0)));
-// CFG0-NEXT:         let %18 callback2: ptr<fn(i32) -> void> [storage=automatic] = function_decay<ptr<fn(i32) -> void>>(%2);
-// CFG0-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%11, pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(read<ptr<fn(i32) -> void>>(%18)));
-// CFG0-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%11, pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(pointer_cast<ptr<void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%2))));
-// CFG0-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%11, pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%5)));
-// CFG0-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%11, pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%7)));
-// CFG0-NEXT:         call<void, signature=fn(ptr<fn(i32) -> void>) -> void>(%15, pointer_cast<ptr<fn(i32) -> void>, reason=explicit>(function_decay<ptr<fn stdcall(i32) -> void>>(%12)));
+// CFG0-NEXT:     fn %[[VALUE_take_opaque_fn:[0-9]+]] @take_opaque_fn(%[[VALUE_callback_2:[0-9]+]] callback: ptr<fn(i32) -> void>) -> void [linkage=external];
+// CFG0-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// CFG0-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%[[VALUE_take_callback]], pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%[[VALUE_mismatched]])));
+// CFG0-NEXT:         let %[[VALUE_callback_3:[0-9]+]] callback: ptr<fn stdcall(i32) -> void> [storage=automatic] = pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%[[VALUE_mismatched]]));
+// CFG0-NEXT:         read<ptr<fn stdcall(i32) -> void>>(%[[VALUE_callback_3]]);
+// CFG0-NEXT:         write<ptr<fn stdcall(i32) -> void>>(%[[VALUE_callback_3]], pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(addr_of<ptr<fn(i32) -> void>>(%[[VALUE_mismatched]])));
+// CFG0-NEXT:         write<ptr<fn stdcall(i32) -> void>>(%[[VALUE_callback_3]], int_to_ptr<ptr<fn stdcall(i32) -> void>, reason=explicit>(not<bool>(ne<ptr<fn(i32) -> void>>(function_decay<ptr<fn(i32) -> void>>(%[[VALUE_mismatched]]), null<ptr<fn(i32) -> void>>))));
+// CFG0-NEXT:         write<ptr<fn stdcall(i32) -> void>>(%[[VALUE_callback_3]], pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(addr_of<ptr<fn(i32) -> void>>(%[[VALUE_mismatched_before_winapi]])));
+// CFG0-NEXT:         let %[[VALUE_callback2:[0-9]+]] callback2: ptr<fn(i32) -> void> [storage=automatic] = function_decay<ptr<fn(i32) -> void>>(%[[VALUE_mismatched]]);
+// CFG0-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%[[VALUE_take_callback]], pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(read<ptr<fn(i32) -> void>>(%[[VALUE_callback2]])));
+// CFG0-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%[[VALUE_take_callback]], pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(pointer_cast<ptr<void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%[[VALUE_mismatched]]))));
+// CFG0-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%[[VALUE_take_callback]], pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%[[VALUE_mismatched_declaration]])));
+// CFG0-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%[[VALUE_take_callback]], pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%[[VALUE_suggest_fix_first_redecl]])));
+// CFG0-NEXT:         call<void, signature=fn(ptr<fn(i32) -> void>) -> void>(%[[VALUE_take_opaque_fn]], pointer_cast<ptr<fn(i32) -> void>, reason=explicit>(function_decay<ptr<fn stdcall(i32) -> void>>(%[[VALUE_mismatched_stdcall]])));
 // CFG0-NEXT:     }
 // CFG0-NEXT: }
 // SLATE-FILECHECK-END CFG0
@@ -139,30 +139,30 @@ int main(void) {
 // CFG1-NEXT:         storage d64 [size=8, align=8];
 // CFG1-NEXT:         storage d128 [size=16, align=16];
 // CFG1-NEXT:     }
-// CFG1-NEXT:     type @type0 callback_t = ptr<fn stdcall(i32) -> void>;
-// CFG1-NEXT:     fn %0 @mismatched_before_winapi(%1 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// CFG1-NEXT:     type @type[[TYPE_callback_t:[0-9]+]] callback_t = ptr<fn stdcall(i32) -> void>;
+// CFG1-NEXT:     fn %[[VALUE_mismatched_before_winapi:[0-9]+]] @mismatched_before_winapi(%[[VALUE_x:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // CFG1-NEXT:     }
-// CFG1-NEXT:     fn %2 @mismatched(%3 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// CFG1-NEXT:     fn %[[VALUE_mismatched:[0-9]+]] @mismatched(%[[VALUE_x_2:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // CFG1-NEXT:     }
-// CFG1-NEXT:     fn %5 @mismatched_declaration(%19 x: i32) -> void [linkage=external];
-// CFG1-NEXT:     fn %7 @suggest_fix_first_redecl(%20 x: i32) -> void [linkage=external];
-// CFG1-NEXT:     fn %11 @take_callback(%22 callback: ptr<fn stdcall(i32) -> void>) -> void [linkage=external];
-// CFG1-NEXT:     fn %12 @mismatched_stdcall(%13 x: i32) -> void [linkage=external] [abi=x86_win32 stdcall(scalar) -> void] [fallthrough=ret_void] {
+// CFG1-NEXT:     fn %[[VALUE_mismatched_declaration:[0-9]+]] @mismatched_declaration(%[[VALUE_x_3:[0-9]+]] x: i32) -> void [linkage=external];
+// CFG1-NEXT:     fn %[[VALUE_suggest_fix_first_redecl:[0-9]+]] @suggest_fix_first_redecl(%[[VALUE_x_4:[0-9]+]] x: i32) -> void [linkage=external];
+// CFG1-NEXT:     fn %[[VALUE_take_callback:[0-9]+]] @take_callback(%[[VALUE_callback:[0-9]+]] callback: ptr<fn stdcall(i32) -> void>) -> void [linkage=external];
+// CFG1-NEXT:     fn %[[VALUE_mismatched_stdcall:[0-9]+]] @mismatched_stdcall(%[[VALUE_x_5:[0-9]+]] x: i32) -> void [linkage=external] [abi=x86_win32 stdcall(scalar) -> void] [fallthrough=ret_void] {
 // CFG1-NEXT:     }
-// CFG1-NEXT:     fn %15 @take_opaque_fn(%23 callback: ptr<fn(i32) -> void>) -> void [linkage=external];
-// CFG1-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// CFG1-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%11, pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%2)));
-// CFG1-NEXT:         let %17 callback: ptr<fn stdcall(i32) -> void> [storage=automatic] = pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%2));
-// CFG1-NEXT:         read<ptr<fn stdcall(i32) -> void>>(%17);
-// CFG1-NEXT:         write<ptr<fn stdcall(i32) -> void>>(%17, pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(addr_of<ptr<fn(i32) -> void>>(%2)));
-// CFG1-NEXT:         write<ptr<fn stdcall(i32) -> void>>(%17, int_to_ptr<ptr<fn stdcall(i32) -> void>, reason=explicit>(not<bool>(ne<ptr<fn(i32) -> void>>(function_decay<ptr<fn(i32) -> void>>(%2), null<ptr<fn(i32) -> void>>))));
-// CFG1-NEXT:         write<ptr<fn stdcall(i32) -> void>>(%17, pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(addr_of<ptr<fn(i32) -> void>>(%0)));
-// CFG1-NEXT:         let %18 callback2: ptr<fn(i32) -> void> [storage=automatic] = function_decay<ptr<fn(i32) -> void>>(%2);
-// CFG1-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%11, pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(read<ptr<fn(i32) -> void>>(%18)));
-// CFG1-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%11, pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(pointer_cast<ptr<void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%2))));
-// CFG1-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%11, pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%5)));
-// CFG1-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%11, pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%7)));
-// CFG1-NEXT:         call<void, signature=fn(ptr<fn(i32) -> void>) -> void>(%15, pointer_cast<ptr<fn(i32) -> void>, reason=explicit>(function_decay<ptr<fn stdcall(i32) -> void>>(%12)));
+// CFG1-NEXT:     fn %[[VALUE_take_opaque_fn:[0-9]+]] @take_opaque_fn(%[[VALUE_callback_2:[0-9]+]] callback: ptr<fn(i32) -> void>) -> void [linkage=external];
+// CFG1-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// CFG1-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%[[VALUE_take_callback]], pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%[[VALUE_mismatched]])));
+// CFG1-NEXT:         let %[[VALUE_callback_3:[0-9]+]] callback: ptr<fn stdcall(i32) -> void> [storage=automatic] = pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%[[VALUE_mismatched]]));
+// CFG1-NEXT:         read<ptr<fn stdcall(i32) -> void>>(%[[VALUE_callback_3]]);
+// CFG1-NEXT:         write<ptr<fn stdcall(i32) -> void>>(%[[VALUE_callback_3]], pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(addr_of<ptr<fn(i32) -> void>>(%[[VALUE_mismatched]])));
+// CFG1-NEXT:         write<ptr<fn stdcall(i32) -> void>>(%[[VALUE_callback_3]], int_to_ptr<ptr<fn stdcall(i32) -> void>, reason=explicit>(not<bool>(ne<ptr<fn(i32) -> void>>(function_decay<ptr<fn(i32) -> void>>(%[[VALUE_mismatched]]), null<ptr<fn(i32) -> void>>))));
+// CFG1-NEXT:         write<ptr<fn stdcall(i32) -> void>>(%[[VALUE_callback_3]], pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(addr_of<ptr<fn(i32) -> void>>(%[[VALUE_mismatched_before_winapi]])));
+// CFG1-NEXT:         let %[[VALUE_callback2:[0-9]+]] callback2: ptr<fn(i32) -> void> [storage=automatic] = function_decay<ptr<fn(i32) -> void>>(%[[VALUE_mismatched]]);
+// CFG1-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%[[VALUE_take_callback]], pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(read<ptr<fn(i32) -> void>>(%[[VALUE_callback2]])));
+// CFG1-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%[[VALUE_take_callback]], pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(pointer_cast<ptr<void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%[[VALUE_mismatched]]))));
+// CFG1-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%[[VALUE_take_callback]], pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%[[VALUE_mismatched_declaration]])));
+// CFG1-NEXT:         call<void, signature=fn(ptr<fn stdcall(i32) -> void>) -> void>(%[[VALUE_take_callback]], pointer_cast<ptr<fn stdcall(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> void>>(%[[VALUE_suggest_fix_first_redecl]])));
+// CFG1-NEXT:         call<void, signature=fn(ptr<fn(i32) -> void>) -> void>(%[[VALUE_take_opaque_fn]], pointer_cast<ptr<fn(i32) -> void>, reason=explicit>(function_decay<ptr<fn stdcall(i32) -> void>>(%[[VALUE_mismatched_stdcall]])));
 // CFG1-NEXT:     }
 // CFG1-NEXT: }
 // SLATE-FILECHECK-END CFG1

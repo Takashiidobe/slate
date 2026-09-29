@@ -35,12 +35,12 @@ int main(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 align_g: array<i32, 5> [storage=static] [const] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(4), index3 = const<i32>(8), index4 = const<i32>(16)) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 buf: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %3 i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %4 val: volatile f80 [storage=automatic] = int_to_float<f80, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(0));
-// DEFAULT-NEXT:         write<f80, volatile>(%4, read<f80>(deref(pointer_cast<ptr<f80>, reason=explicit>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%2), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(5)>(%1), read<i32>(%3)))))))));
+// DEFAULT-NEXT:     global %[[VALUE_align_g:[0-9]+]] align_g: array<i32, 5> [storage=static] [const] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(4), index3 = const<i32>(8), index4 = const<i32>(16)) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_val:[0-9]+]] val: volatile f80 [storage=automatic] = int_to_float<f80, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(0));
+// DEFAULT-NEXT:         write<f80, volatile>(%[[VALUE_val]], read<f80>(deref(pointer_cast<ptr<f80>, reason=explicit>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_buf]]), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<const i32>, length=Some(5)>(%[[VALUE_align_g]]), read<i32>(%[[VALUE_i]])))))))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

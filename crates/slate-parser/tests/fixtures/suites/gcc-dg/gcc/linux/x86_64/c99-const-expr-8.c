@@ -54,15 +54,15 @@ enum e {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 e = enum : u32 {
-// DEFAULT-NEXT:         %0 E0 = const<i32>(0);
-// DEFAULT-NEXT:         %1 E1 = const<i32>(0);
-// DEFAULT-NEXT:         %2 E2 = const<i32>(0);
-// DEFAULT-NEXT:         %3 E3 = const<i32>(0);
-// DEFAULT-NEXT:         %4 E4 = const<i32>(0);
-// DEFAULT-NEXT:         %5 E5 = const<i32>(0);
-// DEFAULT-NEXT:         %6 E6 = const<i32>(0);
-// DEFAULT-NEXT:         %7 E7 = const<i32>(0);
+// DEFAULT-NEXT:     type @type[[TYPE_e:[0-9]+]] e = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_E0:[0-9]+]] E0 = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_E1:[0-9]+]] E1 = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_E2:[0-9]+]] E2 = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_E3:[0-9]+]] E3 = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_E4:[0-9]+]] E4 = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_E5:[0-9]+]] E5 = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_E6:[0-9]+]] E6 = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_E7:[0-9]+]] E7 = const<i32>(0);
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

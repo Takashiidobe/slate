@@ -35,7 +35,7 @@ _Static_assert (sizeof a == sizeof b, "checking trigraph conversions");
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: array<i8, 31> [storage=static] [const] [align=16] = code_units<array<i8, 31>>([63, 63, 61, 63, 63, 40, 63, 63, 47, 63, 63, 47, 63, 63, 41, 63, 63, 39, 63, 63, 60, 63, 63, 33, 63, 63, 62, 63, 63, 45, 0]) [linkage=external];
-// DEFAULT-NEXT:     global %1 b: array<i8, 31> [storage=static] [const] [align=16] = code_units<array<i8, 31>>([63, 63, 61, 63, 63, 40, 63, 63, 47, 63, 63, 47, 63, 63, 41, 63, 63, 39, 63, 63, 60, 63, 63, 33, 63, 63, 62, 63, 63, 45, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: array<i8, 31> [storage=static] [const] [align=16] = code_units<array<i8, 31>>([63, 63, 61, 63, 63, 40, 63, 63, 47, 63, 63, 47, 63, 63, 41, 63, 63, 39, 63, 63, 60, 63, 63, 33, 63, 63, 62, 63, 63, 45, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: array<i8, 31> [storage=static] [const] [align=16] = code_units<array<i8, 31>>([63, 63, 61, 63, 63, 40, 63, 63, 47, 63, 63, 47, 63, 63, 41, 63, 63, 39, 63, 63, 60, 63, 63, 33, 63, 63, 62, 63, 63, 45, 0]) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

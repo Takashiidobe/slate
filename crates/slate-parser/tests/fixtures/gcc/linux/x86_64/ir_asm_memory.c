@@ -32,18 +32,18 @@ void unaddressable(struct Pair *s, v4 v) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 v4 = vector<i32, 4>;
-// IR-NEXT:     type @type1 Pair = struct {
+// IR-NEXT:     type @type[[TYPE_v4:[0-9]+]] v4 = vector<i32, 4>;
+// IR-NEXT:     type @type[[TYPE_Pair:[0-9]+]] Pair = struct {
 // IR-NEXT:         field0 b: i32 : 3;
 // IR-NEXT:         field1 w: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4], bit_offsets=[Some(0), None], bit_units=[(0, 1)], field_units=[Some(0), None]];
-// IR-NEXT:     fn %2 @unaddressable(%3 s: ptr<@type1>, %4 v: vector<i32, 4>) -> void [linkage=external] [abi=sysv64(scalar, direct) -> void] [fallthrough=ret_void] {
-// IR-NEXT:         let %5 r: i32 [storage=automatic] = const<i32>(1);
+// IR-NEXT:     fn %[[VALUE_unaddressable:[0-9]+]] @unaddressable(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_Pair]]>, %[[VALUE_v:[0-9]+]] v: vector<i32, 4>) -> void [linkage=external] [abi=sysv64(scalar, direct) -> void] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] = const<i32>(1);
 // IR-NEXT:         asm "# %0 %1 %2" [dialect=att] [options=readonly,nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2;
-// IR-NEXT:             in 0 "rm" [reg | mem] -> reg width 32 read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..3>(deref(read<ptr<@type1>>(%3))));
-// IR-NEXT:             in 1 "m" [mem] width 32 read<i32>(lane(%4, const<i32>(1)));
-// IR-NEXT:             in 2 "rm" [reg | mem] -> reg width 32 read<i32>(%5);
+// IR-NEXT:             in 0 "rm" [reg | mem] -> reg width 32 read<i32>(bitfield0<unit=0, bytes=0..1, bits=0..3>(deref(read<ptr<@type[[TYPE_Pair]]>>(%[[VALUE_s]]))));
+// IR-NEXT:             in 1 "m" [mem] width 32 read<i32>(lane(%[[VALUE_v]], const<i32>(1)));
+// IR-NEXT:             in 2 "rm" [reg | mem] -> reg width 32 read<i32>(%[[VALUE_r]]);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

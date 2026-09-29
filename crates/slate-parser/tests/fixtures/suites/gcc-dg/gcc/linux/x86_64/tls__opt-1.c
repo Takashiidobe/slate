@@ -55,16 +55,16 @@ test (const char *x, void *y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 thr: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     global %1 x: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %2 @bar() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(%1, const<i32>(1));
+// DEFAULT-NEXT:     extern %[[VALUE_thr:[0-9]+]] thr: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_x]], const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @foo(%4 x: ptr<const i8>, %5 y: ptr<void>, %6 z: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x_2:[0-9]+]] x: ptr<const i8>, %[[VALUE_y:[0-9]+]] y: ptr<void>, %[[VALUE_z:[0-9]+]] z: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_bar]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @test(%8 x: ptr<const i8>, %9 y: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<void>, ptr<i32>) -> void>(%3, read<ptr<const i8>>(%8), read<ptr<void>>(%9), addr_of<ptr<i32>>(%0));
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_x_3:[0-9]+]] x: ptr<const i8>, %[[VALUE_y_2:[0-9]+]] y: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<void>, ptr<i32>) -> void>(%[[VALUE_foo]], read<ptr<const i8>>(%[[VALUE_x_3]]), read<ptr<void>>(%[[VALUE_y_2]]), addr_of<ptr<i32>>(%[[VALUE_thr]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -31,9 +31,9 @@ int f (void *ptr)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %2 stop: array<i8, incomplete> [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @f(%1 ptr: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<ptr<void>>(read<ptr<void>>(%1), pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<const array<i8, incomplete>>>(%2))));
+// DEFAULT-NEXT:     extern %[[VALUE_stop:[0-9]+]] stop: array<i8, incomplete> [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_ptr:[0-9]+]] ptr: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<ptr<void>>(read<ptr<void>>(%[[VALUE_ptr]]), pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<const array<i8, incomplete>>>(%[[VALUE_stop]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

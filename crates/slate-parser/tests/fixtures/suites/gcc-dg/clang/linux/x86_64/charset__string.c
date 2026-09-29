@@ -30,7 +30,7 @@ char *foo = "string foobar";
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 .str1: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([115, 116, 114, 105, 110, 103, 32, 102, 111, 111, 98, 97, 114, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %0 foo: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(14)>(%1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([115, 116, 114, 105, 110, 103, 32, 102, 111, 111, 98, 97, 114, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_foo:[0-9]+]] foo: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str]]) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

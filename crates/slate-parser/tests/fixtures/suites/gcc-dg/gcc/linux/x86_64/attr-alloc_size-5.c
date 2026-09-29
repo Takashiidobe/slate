@@ -259,145 +259,145 @@ test_alloca (size_t n)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     fn %1 @f_uchar_1(%49 <unnamed>: u8) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @f_uchar_2(%50 <unnamed>: u8, %51 <unnamed>: u8) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @f_schar_1(%52 <unnamed>: i8) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @f_schar_2(%53 <unnamed>: i8, %54 <unnamed>: i8) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %5 @f_ushrt_1(%55 <unnamed>: u16) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %6 @f_ushrt_2(%56 <unnamed>: u16, %57 <unnamed>: u16) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %7 @f_shrt_1(%58 <unnamed>: i16) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %8 @f_shrt_2(%59 <unnamed>: i16, %60 <unnamed>: i16) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %9 @f_uint_1(%61 <unnamed>: u32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %10 @f_uint_2(%62 <unnamed>: u32, %63 <unnamed>: u32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %11 @f_int_1(%64 <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %12 @f_int_2(%65 <unnamed>: i32, %66 <unnamed>: i32) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %13 @f_ulong_1(%67 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %14 @f_ulong_2(%68 <unnamed>: u64, %69 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %15 @f_long_1(%70 <unnamed>: i64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %16 @f_long_2(%71 <unnamed>: i64, %72 <unnamed>: i64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %17 @f_ullong_1(%73 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %18 @f_ullong_2(%74 <unnamed>: u64, %75 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %19 @f_llong_1(%76 <unnamed>: i64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %20 @f_llong_2(%77 <unnamed>: i64, %78 <unnamed>: i64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %21 @f_size_1(%79 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %22 @f_size_2(%80 <unnamed>: u64, %81 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %23 @f_size_1_nonnull(%82 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %24 @f_size_2_nonnull(%83 <unnamed>: u64, %84 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %25 @sink(%85 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %26 @test_uchar(%27 n: u8) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u8) -> ptr<void>>(%1, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u8, u8) -> ptr<void>>(%2, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0))), reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(1)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u8, u8) -> ptr<void>>(%2, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(1))), reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u8, u8) -> ptr<void>>(%2, read<u8>(%27), reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u8, u8) -> ptr<void>>(%2, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0))), read<u8>(%27)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u8) -> ptr<void>>(%1, read<u8>(%27)));
-// DEFAULT-NEXT:         write<u8>(%27, reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u8) -> ptr<void>>(%1, read<u8>(%27)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u8, u8) -> ptr<void>>(%2, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(1))), read<u8>(%27)));
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     fn %[[VALUE_f_uchar_1:[0-9]+]] @f_uchar_1(%[[VALUE0:[0-9]+]] <unnamed>: u8) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_uchar_2:[0-9]+]] @f_uchar_2(%[[VALUE1:[0-9]+]] <unnamed>: u8, %[[VALUE2:[0-9]+]] <unnamed>: u8) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_schar_1:[0-9]+]] @f_schar_1(%[[VALUE3:[0-9]+]] <unnamed>: i8) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_schar_2:[0-9]+]] @f_schar_2(%[[VALUE4:[0-9]+]] <unnamed>: i8, %[[VALUE5:[0-9]+]] <unnamed>: i8) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_ushrt_1:[0-9]+]] @f_ushrt_1(%[[VALUE6:[0-9]+]] <unnamed>: u16) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_ushrt_2:[0-9]+]] @f_ushrt_2(%[[VALUE7:[0-9]+]] <unnamed>: u16, %[[VALUE8:[0-9]+]] <unnamed>: u16) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_shrt_1:[0-9]+]] @f_shrt_1(%[[VALUE9:[0-9]+]] <unnamed>: i16) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_shrt_2:[0-9]+]] @f_shrt_2(%[[VALUE10:[0-9]+]] <unnamed>: i16, %[[VALUE11:[0-9]+]] <unnamed>: i16) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_uint_1:[0-9]+]] @f_uint_1(%[[VALUE12:[0-9]+]] <unnamed>: u32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_uint_2:[0-9]+]] @f_uint_2(%[[VALUE13:[0-9]+]] <unnamed>: u32, %[[VALUE14:[0-9]+]] <unnamed>: u32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_int_1:[0-9]+]] @f_int_1(%[[VALUE15:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_int_2:[0-9]+]] @f_int_2(%[[VALUE16:[0-9]+]] <unnamed>: i32, %[[VALUE17:[0-9]+]] <unnamed>: i32) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_ulong_1:[0-9]+]] @f_ulong_1(%[[VALUE18:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_ulong_2:[0-9]+]] @f_ulong_2(%[[VALUE19:[0-9]+]] <unnamed>: u64, %[[VALUE20:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_long_1:[0-9]+]] @f_long_1(%[[VALUE21:[0-9]+]] <unnamed>: i64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_long_2:[0-9]+]] @f_long_2(%[[VALUE22:[0-9]+]] <unnamed>: i64, %[[VALUE23:[0-9]+]] <unnamed>: i64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_ullong_1:[0-9]+]] @f_ullong_1(%[[VALUE24:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_ullong_2:[0-9]+]] @f_ullong_2(%[[VALUE25:[0-9]+]] <unnamed>: u64, %[[VALUE26:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_llong_1:[0-9]+]] @f_llong_1(%[[VALUE27:[0-9]+]] <unnamed>: i64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_llong_2:[0-9]+]] @f_llong_2(%[[VALUE28:[0-9]+]] <unnamed>: i64, %[[VALUE29:[0-9]+]] <unnamed>: i64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_size_1:[0-9]+]] @f_size_1(%[[VALUE30:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_size_2:[0-9]+]] @f_size_2(%[[VALUE31:[0-9]+]] <unnamed>: u64, %[[VALUE32:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_size_1_nonnull:[0-9]+]] @f_size_1_nonnull(%[[VALUE33:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f_size_2_nonnull:[0-9]+]] @f_size_2_nonnull(%[[VALUE34:[0-9]+]] <unnamed>: u64, %[[VALUE35:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_sink:[0-9]+]] @sink(%[[VALUE36:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_uchar:[0-9]+]] @test_uchar(%[[VALUE_n:[0-9]+]] n: u8) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u8) -> ptr<void>>(%[[VALUE_f_uchar_1]], reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u8, u8) -> ptr<void>>(%[[VALUE_f_uchar_2]], reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0))), reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(1)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u8, u8) -> ptr<void>>(%[[VALUE_f_uchar_2]], reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(1))), reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u8, u8) -> ptr<void>>(%[[VALUE_f_uchar_2]], read<u8>(%[[VALUE_n]]), reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u8, u8) -> ptr<void>>(%[[VALUE_f_uchar_2]], reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0))), read<u8>(%[[VALUE_n]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u8) -> ptr<void>>(%[[VALUE_f_uchar_1]], read<u8>(%[[VALUE_n]])));
+// DEFAULT-NEXT:         write<u8>(%[[VALUE_n]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u8) -> ptr<void>>(%[[VALUE_f_uchar_1]], read<u8>(%[[VALUE_n]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u8, u8) -> ptr<void>>(%[[VALUE_f_uchar_2]], reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(1))), read<u8>(%[[VALUE_n]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %28 @test_schar(%29 n: i8) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i8) -> ptr<void>>(%3, truncate<i8, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i8, i8) -> ptr<void>>(%4, truncate<i8, reason=arg, fits=always>(const<i32>(0)), truncate<i8, reason=arg, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i8, i8) -> ptr<void>>(%4, truncate<i8, reason=arg, fits=always>(const<i32>(1)), truncate<i8, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i8, i8) -> ptr<void>>(%4, read<i8>(%29), truncate<i8, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i8, i8) -> ptr<void>>(%4, truncate<i8, reason=arg, fits=always>(const<i32>(0)), read<i8>(%29)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i8) -> ptr<void>>(%3, read<i8>(%29)));
-// DEFAULT-NEXT:         write<i8>(%29, truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i8) -> ptr<void>>(%3, read<i8>(%29)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i8, i8) -> ptr<void>>(%4, truncate<i8, reason=arg, fits=always>(const<i32>(1)), read<i8>(%29)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_schar:[0-9]+]] @test_schar(%[[VALUE_n_2:[0-9]+]] n: i8) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i8) -> ptr<void>>(%[[VALUE_f_schar_1]], truncate<i8, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i8, i8) -> ptr<void>>(%[[VALUE_f_schar_2]], truncate<i8, reason=arg, fits=always>(const<i32>(0)), truncate<i8, reason=arg, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i8, i8) -> ptr<void>>(%[[VALUE_f_schar_2]], truncate<i8, reason=arg, fits=always>(const<i32>(1)), truncate<i8, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i8, i8) -> ptr<void>>(%[[VALUE_f_schar_2]], read<i8>(%[[VALUE_n_2]]), truncate<i8, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i8, i8) -> ptr<void>>(%[[VALUE_f_schar_2]], truncate<i8, reason=arg, fits=always>(const<i32>(0)), read<i8>(%[[VALUE_n_2]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i8) -> ptr<void>>(%[[VALUE_f_schar_1]], read<i8>(%[[VALUE_n_2]])));
+// DEFAULT-NEXT:         write<i8>(%[[VALUE_n_2]], truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i8) -> ptr<void>>(%[[VALUE_f_schar_1]], read<i8>(%[[VALUE_n_2]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i8, i8) -> ptr<void>>(%[[VALUE_f_schar_2]], truncate<i8, reason=arg, fits=always>(const<i32>(1)), read<i8>(%[[VALUE_n_2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @test_ushrt(%31 n: u16) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u16) -> ptr<void>>(%5, reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u16, u16) -> ptr<void>>(%6, reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0))), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(1)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u16, u16) -> ptr<void>>(%6, reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(1))), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u16, u16) -> ptr<void>>(%6, read<u16>(%31), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u16, u16) -> ptr<void>>(%6, reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0))), read<u16>(%31)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u16) -> ptr<void>>(%5, read<u16>(%31)));
-// DEFAULT-NEXT:         write<u16>(%31, reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u16) -> ptr<void>>(%5, read<u16>(%31)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u16, u16) -> ptr<void>>(%6, reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(1))), read<u16>(%31)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_ushrt:[0-9]+]] @test_ushrt(%[[VALUE_n_3:[0-9]+]] n: u16) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u16) -> ptr<void>>(%[[VALUE_f_ushrt_1]], reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u16, u16) -> ptr<void>>(%[[VALUE_f_ushrt_2]], reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0))), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(1)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u16, u16) -> ptr<void>>(%[[VALUE_f_ushrt_2]], reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(1))), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u16, u16) -> ptr<void>>(%[[VALUE_f_ushrt_2]], read<u16>(%[[VALUE_n_3]]), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u16, u16) -> ptr<void>>(%[[VALUE_f_ushrt_2]], reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0))), read<u16>(%[[VALUE_n_3]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u16) -> ptr<void>>(%[[VALUE_f_ushrt_1]], read<u16>(%[[VALUE_n_3]])));
+// DEFAULT-NEXT:         write<u16>(%[[VALUE_n_3]], reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u16) -> ptr<void>>(%[[VALUE_f_ushrt_1]], read<u16>(%[[VALUE_n_3]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u16, u16) -> ptr<void>>(%[[VALUE_f_ushrt_2]], reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(1))), read<u16>(%[[VALUE_n_3]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @test_shrt(%33 n: i16) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i16) -> ptr<void>>(%7, truncate<i16, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i16, i16) -> ptr<void>>(%8, truncate<i16, reason=arg, fits=always>(const<i32>(0)), truncate<i16, reason=arg, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i16, i16) -> ptr<void>>(%8, truncate<i16, reason=arg, fits=always>(const<i32>(1)), truncate<i16, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i16, i16) -> ptr<void>>(%8, read<i16>(%33), truncate<i16, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i16, i16) -> ptr<void>>(%8, truncate<i16, reason=arg, fits=always>(const<i32>(0)), read<i16>(%33)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i16) -> ptr<void>>(%7, read<i16>(%33)));
-// DEFAULT-NEXT:         write<i16>(%33, truncate<i16, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i16) -> ptr<void>>(%7, read<i16>(%33)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i16, i16) -> ptr<void>>(%8, truncate<i16, reason=arg, fits=always>(const<i32>(1)), read<i16>(%33)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_shrt:[0-9]+]] @test_shrt(%[[VALUE_n_4:[0-9]+]] n: i16) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i16) -> ptr<void>>(%[[VALUE_f_shrt_1]], truncate<i16, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i16, i16) -> ptr<void>>(%[[VALUE_f_shrt_2]], truncate<i16, reason=arg, fits=always>(const<i32>(0)), truncate<i16, reason=arg, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i16, i16) -> ptr<void>>(%[[VALUE_f_shrt_2]], truncate<i16, reason=arg, fits=always>(const<i32>(1)), truncate<i16, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i16, i16) -> ptr<void>>(%[[VALUE_f_shrt_2]], read<i16>(%[[VALUE_n_4]]), truncate<i16, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i16, i16) -> ptr<void>>(%[[VALUE_f_shrt_2]], truncate<i16, reason=arg, fits=always>(const<i32>(0)), read<i16>(%[[VALUE_n_4]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i16) -> ptr<void>>(%[[VALUE_f_shrt_1]], read<i16>(%[[VALUE_n_4]])));
+// DEFAULT-NEXT:         write<i16>(%[[VALUE_n_4]], truncate<i16, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i16) -> ptr<void>>(%[[VALUE_f_shrt_1]], read<i16>(%[[VALUE_n_4]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i16, i16) -> ptr<void>>(%[[VALUE_f_shrt_2]], truncate<i16, reason=arg, fits=always>(const<i32>(1)), read<i16>(%[[VALUE_n_4]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %34 @test_uint(%35 n: u32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u32) -> ptr<void>>(%9, reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u32, u32) -> ptr<void>>(%10, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u32, u32) -> ptr<void>>(%10, reinterpret<u32, reason=arg, fits=always>(const<i32>(1)), reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u32, u32) -> ptr<void>>(%10, read<u32>(%35), reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u32, u32) -> ptr<void>>(%10, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), read<u32>(%35)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u32) -> ptr<void>>(%9, read<u32>(%35)));
-// DEFAULT-NEXT:         write<u32>(%35, reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u32) -> ptr<void>>(%9, read<u32>(%35)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u32, u32) -> ptr<void>>(%10, reinterpret<u32, reason=arg, fits=always>(const<i32>(1)), read<u32>(%35)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_uint:[0-9]+]] @test_uint(%[[VALUE_n_5:[0-9]+]] n: u32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE_f_uint_1]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u32, u32) -> ptr<void>>(%[[VALUE_f_uint_2]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u32, u32) -> ptr<void>>(%[[VALUE_f_uint_2]], reinterpret<u32, reason=arg, fits=always>(const<i32>(1)), reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u32, u32) -> ptr<void>>(%[[VALUE_f_uint_2]], read<u32>(%[[VALUE_n_5]]), reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u32, u32) -> ptr<void>>(%[[VALUE_f_uint_2]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), read<u32>(%[[VALUE_n_5]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE_f_uint_1]], read<u32>(%[[VALUE_n_5]])));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_n_5]], reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE_f_uint_1]], read<u32>(%[[VALUE_n_5]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u32, u32) -> ptr<void>>(%[[VALUE_f_uint_2]], reinterpret<u32, reason=arg, fits=always>(const<i32>(1)), read<u32>(%[[VALUE_n_5]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %36 @test_int(%37 n: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i32) -> ptr<void>>(%11, const<i32>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i32, i32) -> ptr<void>>(%12, const<i32>(0), const<i32>(1)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i32, i32) -> ptr<void>>(%12, const<i32>(1), const<i32>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i32, i32) -> ptr<void>>(%12, read<i32>(%37), const<i32>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i32, i32) -> ptr<void>>(%12, const<i32>(0), read<i32>(%37)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i32) -> ptr<void>>(%11, read<i32>(%37)));
-// DEFAULT-NEXT:         write<i32>(%37, const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i32) -> ptr<void>>(%11, read<i32>(%37)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i32, i32) -> ptr<void>>(%12, const<i32>(1), read<i32>(%37)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_int:[0-9]+]] @test_int(%[[VALUE_n_6:[0-9]+]] n: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_f_int_1]], const<i32>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i32, i32) -> ptr<void>>(%[[VALUE_f_int_2]], const<i32>(0), const<i32>(1)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i32, i32) -> ptr<void>>(%[[VALUE_f_int_2]], const<i32>(1), const<i32>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i32, i32) -> ptr<void>>(%[[VALUE_f_int_2]], read<i32>(%[[VALUE_n_6]]), const<i32>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i32, i32) -> ptr<void>>(%[[VALUE_f_int_2]], const<i32>(0), read<i32>(%[[VALUE_n_6]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_f_int_1]], read<i32>(%[[VALUE_n_6]])));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_n_6]], const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_f_int_1]], read<i32>(%[[VALUE_n_6]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i32, i32) -> ptr<void>>(%[[VALUE_f_int_2]], const<i32>(1), read<i32>(%[[VALUE_n_6]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %38 @test_ulong(%39 n: u64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64) -> ptr<void>>(%13, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%14, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%14, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%14, read<u64>(%39), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%14, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))), read<u64>(%39)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64) -> ptr<void>>(%13, read<u64>(%39)));
-// DEFAULT-NEXT:         write<u64>(%39, reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64) -> ptr<void>>(%13, read<u64>(%39)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%14, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), read<u64>(%39)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_ulong:[0-9]+]] @test_ulong(%[[VALUE_n_7:[0-9]+]] n: u64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_f_ulong_1]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_ulong_2]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_ulong_2]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_ulong_2]], read<u64>(%[[VALUE_n_7]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_ulong_2]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))), read<u64>(%[[VALUE_n_7]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_f_ulong_1]], read<u64>(%[[VALUE_n_7]])));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_n_7]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_f_ulong_1]], read<u64>(%[[VALUE_n_7]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_ulong_2]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), read<u64>(%[[VALUE_n_7]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %40 @test_long(%41 n: i64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i64) -> ptr<void>>(%15, widen<i64, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i64, i64) -> ptr<void>>(%16, widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(1))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i64, i64) -> ptr<void>>(%16, widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i64, i64) -> ptr<void>>(%16, read<i64>(%41), widen<i64, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i64, i64) -> ptr<void>>(%16, widen<i64, reason=arg>(const<i32>(0)), read<i64>(%41)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i64) -> ptr<void>>(%15, read<i64>(%41)));
-// DEFAULT-NEXT:         write<i64>(%41, widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i64) -> ptr<void>>(%15, read<i64>(%41)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(i64, i64) -> ptr<void>>(%16, widen<i64, reason=arg>(const<i32>(1)), read<i64>(%41)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_long:[0-9]+]] @test_long(%[[VALUE_n_8:[0-9]+]] n: i64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i64) -> ptr<void>>(%[[VALUE_f_long_1]], widen<i64, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i64, i64) -> ptr<void>>(%[[VALUE_f_long_2]], widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(1))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i64, i64) -> ptr<void>>(%[[VALUE_f_long_2]], widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i64, i64) -> ptr<void>>(%[[VALUE_f_long_2]], read<i64>(%[[VALUE_n_8]]), widen<i64, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i64, i64) -> ptr<void>>(%[[VALUE_f_long_2]], widen<i64, reason=arg>(const<i32>(0)), read<i64>(%[[VALUE_n_8]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i64) -> ptr<void>>(%[[VALUE_f_long_1]], read<i64>(%[[VALUE_n_8]])));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_n_8]], widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i64) -> ptr<void>>(%[[VALUE_f_long_1]], read<i64>(%[[VALUE_n_8]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(i64, i64) -> ptr<void>>(%[[VALUE_f_long_2]], widen<i64, reason=arg>(const<i32>(1)), read<i64>(%[[VALUE_n_8]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %42 @test_size(%43 n: u64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64) -> ptr<void>>(%21, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%22, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%22, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%22, read<u64>(%43), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%22, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))), read<u64>(%43)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64) -> ptr<void>>(%21, read<u64>(%43)));
-// DEFAULT-NEXT:         write<u64>(%43, reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64) -> ptr<void>>(%21, read<u64>(%43)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%22, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), read<u64>(%43)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_size:[0-9]+]] @test_size(%[[VALUE_n_9:[0-9]+]] n: u64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_f_size_1]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_size_2]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_size_2]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_size_2]], read<u64>(%[[VALUE_n_9]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_size_2]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))), read<u64>(%[[VALUE_n_9]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_f_size_1]], read<u64>(%[[VALUE_n_9]])));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_n_9]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_f_size_1]], read<u64>(%[[VALUE_n_9]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_size_2]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), read<u64>(%[[VALUE_n_9]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %44 @test_size_nonnull(%45 n: u64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64) -> ptr<void>>(%23, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%24, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%24, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%24, read<u64>(%45), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%24, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))), read<u64>(%45)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64) -> ptr<void>>(%23, read<u64>(%45)));
-// DEFAULT-NEXT:         write<u64>(%45, reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64) -> ptr<void>>(%23, read<u64>(%45)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%25, call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%24, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), read<u64>(%45)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_size_nonnull:[0-9]+]] @test_size_nonnull(%[[VALUE_n_10:[0-9]+]] n: u64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_f_size_1_nonnull]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_size_2_nonnull]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_size_2_nonnull]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_size_2_nonnull]], read<u64>(%[[VALUE_n_10]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0)))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_size_2_nonnull]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))), read<u64>(%[[VALUE_n_10]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_f_size_1_nonnull]], read<u64>(%[[VALUE_n_10]])));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_n_10]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_f_size_1_nonnull]], read<u64>(%[[VALUE_n_10]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_f_size_2_nonnull]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), read<u64>(%[[VALUE_n_10]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %48 @alloca(%86 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %46 @test_alloca(%47 n: u64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(%48, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:     fn %[[VALUE_alloca:[0-9]+]] @alloca(%[[VALUE37:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_alloca:[0-9]+]] @test_alloca(%[[VALUE_n_11:[0-9]+]] n: u64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_alloca]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

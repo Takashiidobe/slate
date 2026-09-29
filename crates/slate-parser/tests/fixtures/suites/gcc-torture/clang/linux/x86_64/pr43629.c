@@ -37,18 +37,18 @@ int         main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 flag: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 x: i32 [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%0), const<i32>(0))
-// DEFAULT-NEXT:             write<i32>(%3, neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:     global %[[VALUE_flag:[0-9]+]] flag: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_flag]]), const<i32>(0))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x]], neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             let %4: i32 [synthetic] = read<i32>(%3);
-// DEFAULT-NEXT:             let %5: i32 [synthetic] = and<i32>(read<i32>(%4), const<i32>(255));
-// DEFAULT-NEXT:             write<i32>(%3, read<i32>(%5));
-// DEFAULT-NEXT:         if ne<i32>(and<i32>(read<i32>(%3), not<i32>(const<i32>(255))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = and<i32>(read<i32>(%[[VALUE0]]), const<i32>(255));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         if ne<i32>(and<i32>(read<i32>(%[[VALUE_x]]), not<i32>(const<i32>(255))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

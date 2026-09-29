@@ -34,10 +34,10 @@ extern struct S t __attribute__((__alias__("s")));
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 p: ptr<void>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %1 s: array<@type0, 1> [storage=static] = aggregate<array<@type0, 1>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = null<ptr<void>>)) [linkage=external];
-// DEFAULT-NEXT:     global %2 t: @type0 [storage=static] [linkage=external] [alias="s"];
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: array<@type[[TYPE_S]], 1> [storage=static] = aggregate<array<@type[[TYPE_S]], 1>, zero_fill=false>(index0 = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = null<ptr<void>>)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_t:[0-9]+]] t: @type[[TYPE_S]] [storage=static] [linkage=external] [alias="s"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

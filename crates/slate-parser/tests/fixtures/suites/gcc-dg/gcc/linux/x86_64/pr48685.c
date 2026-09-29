@@ -36,13 +36,13 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %1 v: i32 [storage=automatic] = const<i32>(1);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: i32 [storage=automatic] = const<i32>(1);
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(2))
 // DEFAULT-NEXT:             const<i32>(0);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i32>(%1, const<i32>(0));
-// DEFAULT-NEXT:         return read<i32>(%1);
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_v]], const<i32>(0));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_v]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

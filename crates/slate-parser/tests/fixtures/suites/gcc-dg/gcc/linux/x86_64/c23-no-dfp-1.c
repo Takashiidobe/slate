@@ -37,11 +37,11 @@ _Bool d128b = 1.0DL; /* { dg-error "not supported" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 d32a: d32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 d64a: d64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 d128a: d128 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 d32b: bool [storage=static] = ne<d32, reason=assign, exceptions=ignore>(const<d32>(1.0), const<d32>(0)) [linkage=external];
-// DEFAULT-NEXT:     global %4 d64b: bool [storage=static] = ne<d64, reason=assign, exceptions=ignore>(const<d64>(1.0), const<d64>(0)) [linkage=external];
-// DEFAULT-NEXT:     global %5 d128b: bool [storage=static] = ne<d128, reason=assign, exceptions=ignore>(const<d128>(1.0), const<d128>(0)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d32a:[0-9]+]] d32a: d32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d64a:[0-9]+]] d64a: d64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d128a:[0-9]+]] d128a: d128 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d32b:[0-9]+]] d32b: bool [storage=static] = ne<d32, reason=assign, exceptions=ignore>(const<d32>(1.0), const<d32>(0)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d64b:[0-9]+]] d64b: bool [storage=static] = ne<d64, reason=assign, exceptions=ignore>(const<d64>(1.0), const<d64>(0)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d128b:[0-9]+]] d128b: bool [storage=static] = ne<d128, reason=assign, exceptions=ignore>(const<d128>(1.0), const<d128>(0)) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -99,17 +99,17 @@ int uses(hidden_alias value) { return value + not_a_union + not_a_local; }
 // IR-WARN-NEXT:         storage d64 [size=8, align=8];
 // IR-WARN-NEXT:         storage d128 [size=16, align=16];
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     type @type0 hidden_alias = i32;
-// IR-WARN-NEXT:     global %0 not_a_union: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %1 not_a_record: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %2 not_a_function: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %3 not_allocating: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     global %7 not_a_local: i32 [storage=static] [linkage=external];
-// IR-WARN-NEXT:     fn %4 @not_a_variable() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-WARN-NEXT:     type @type[[TYPE_hidden_alias:[0-9]+]] hidden_alias = i32;
+// IR-WARN-NEXT:     global %[[VALUE_not_a_union:[0-9]+]] not_a_union: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_not_a_record:[0-9]+]] not_a_record: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_not_a_function:[0-9]+]] not_a_function: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_not_allocating:[0-9]+]] not_allocating: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_not_a_local:[0-9]+]] not_a_local: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     fn %[[VALUE_not_a_variable:[0-9]+]] @not_a_variable() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-WARN-NEXT:     }
-// IR-WARN-NEXT:     fn %6 @cleanup_target(%11 p: ptr<void>) -> void [linkage=external];
-// IR-WARN-NEXT:     fn %9 @uses(%10 value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-WARN-NEXT:         return add<i32>(add<i32>(read<i32>(%10), read<i32>(%0)), read<i32>(%7));
+// IR-WARN-NEXT:     fn %[[VALUE_cleanup_target:[0-9]+]] @cleanup_target(%[[VALUE_p:[0-9]+]] p: ptr<void>) -> void [linkage=external];
+// IR-WARN-NEXT:     fn %[[VALUE_uses:[0-9]+]] @uses(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-WARN-NEXT:         return add<i32>(add<i32>(read<i32>(%[[VALUE_value]]), read<i32>(%[[VALUE_not_a_union]])), read<i32>(%[[VALUE_not_a_local]]));
 // IR-WARN-NEXT:     }
 // IR-WARN-NEXT: }
 // SLATE-FILECHECK-END IR-WARN

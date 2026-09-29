@@ -35,8 +35,8 @@ unsigned _BitInt(32) narrow;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 wide: i128 [storage=static] [linkage=external];
-// IR-NEXT:     global %1 precise: i128b [storage=static] [linkage=external];
-// IR-NEXT:     global %2 narrow: u32b [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: i128 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_precise:[0-9]+]] precise: i128b [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_narrow:[0-9]+]] narrow: u32b [storage=static] [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

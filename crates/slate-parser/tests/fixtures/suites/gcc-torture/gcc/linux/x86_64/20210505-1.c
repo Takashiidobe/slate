@@ -52,32 +52,32 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __jmp_buf = array<i64, 8>;
-// DEFAULT-NEXT:     type @type1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___jmp_buf:[0-9]+]] __jmp_buf = array<i64, 8>;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 __val: array<u64, 16>;
 // DEFAULT-NEXT:     } [size=128, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 __sigset_t = @type1;
-// DEFAULT-NEXT:     type @type3 __jmp_buf_tag = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___sigset_t:[0-9]+]] __sigset_t = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE___jmp_buf_tag:[0-9]+]] __jmp_buf_tag = struct {
 // DEFAULT-NEXT:         field0 __jmpbuf: array<i64, 8>;
 // DEFAULT-NEXT:         field1 __mask_was_saved: i32;
-// DEFAULT-NEXT:         field2 __saved_mask: @type1;
+// DEFAULT-NEXT:         field2 __saved_mask: @type[[TYPE0]];
 // DEFAULT-NEXT:     } [size=200, align=8, offsets=[0, 64, 72]];
-// DEFAULT-NEXT:     type @type4 jmp_buf = array<@type3, 1>;
-// DEFAULT-NEXT:     global %10 buf: array<@type3, 1> [storage=static] [align=16] [linkage=internal];
-// DEFAULT-NEXT:     global %11 stop: bool [storage=static] = const<bool>(false) [linkage=internal];
-// DEFAULT-NEXT:     fn %6 @_setjmp(%16 __env: ptr<@type3> [array=1]) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %9 @longjmp(%17 __env: ptr<@type3> [array=1], %18 __val: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %12 @call_func(%13 func: ptr<fn() -> void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%13));
+// DEFAULT-NEXT:     type @type[[TYPE_jmp_buf:[0-9]+]] jmp_buf = array<@type[[TYPE___jmp_buf_tag]], 1>;
+// DEFAULT-NEXT:     global %[[VALUE_buf:[0-9]+]] buf: array<@type[[TYPE___jmp_buf_tag]], 1> [storage=static] [align=16] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_stop:[0-9]+]] stop: bool [storage=static] = const<bool>(false) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE__setjmp:[0-9]+]] @_setjmp(%[[VALUE___env:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1]) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_longjmp:[0-9]+]] @longjmp(%[[VALUE___env_2:[0-9]+]] __env: ptr<@type[[TYPE___jmp_buf_tag]]> [array=1], %[[VALUE___val:[0-9]+]] __val: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_call_func:[0-9]+]] @call_func(%[[VALUE_func:[0-9]+]] func: ptr<fn() -> void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%[[VALUE_func]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @func() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<bool>(%11, const<bool>(true));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type3>, i32) -> void>(%9, array_decay<ptr<@type3>, length=Some(1)>(%10), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_func_2:[0-9]+]] @func() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<bool>(%[[VALUE_stop]], const<bool>(true));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE___jmp_buf_tag]]>, i32) -> void>(%[[VALUE_longjmp]], array_decay<ptr<@type[[TYPE___jmp_buf_tag]]>, length=Some(1)>(%[[VALUE_buf]]), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type3>) -> i32>(%6, array_decay<ptr<@type3>, length=Some(1)>(%10));
-// DEFAULT-NEXT:         while %19 not<bool>(read<bool>(%11))
-// DEFAULT-NEXT:             call<void, signature=fn(ptr<fn() -> void>) -> void>(%12, function_decay<ptr<fn() -> void>>(%14));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE___jmp_buf_tag]]>) -> i32>(%[[VALUE__setjmp]], array_decay<ptr<@type[[TYPE___jmp_buf_tag]]>, length=Some(1)>(%[[VALUE_buf]]));
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] not<bool>(read<bool>(%[[VALUE_stop]]))
+// DEFAULT-NEXT:             call<void, signature=fn(ptr<fn() -> void>) -> void>(%[[VALUE_call_func]], function_decay<ptr<fn() -> void>>(%[[VALUE_func_2]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

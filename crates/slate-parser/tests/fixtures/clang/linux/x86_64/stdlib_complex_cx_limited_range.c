@@ -55,25 +55,25 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %16 .str16: array<i8, 21> [storage=static] = code_units<array<i8, 21>>([37, 46, 52, 102, 32, 37, 46, 52, 102, 32, 37, 46, 52, 102, 32, 37, 46, 52, 102, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @cimag(%13 __z: complex<f64>) -> f64 [linkage=external] [memory=none] [abi=sysv64(native_c) -> scalar];
-// DEFAULT-NEXT:     fn %3 @creal(%14 __z: complex<f64>) -> f64 [linkage=external] [memory=none] [abi=sysv64(native_c) -> scalar];
-// DEFAULT-NEXT:     fn %5 @printf(%15 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 real: volatile f64 [storage=automatic] = const<f64>(0.5);
-// DEFAULT-NEXT:         let %8 imaginary: volatile f64 [storage=automatic] = neg<f64>(const<f64>(0.25));
-// DEFAULT-NEXT:         let %9 a: complex<f64> [storage=automatic] = aggregate<complex<f64>, zero_fill=false>(index0 = read<f64, volatile>(%7), index1 = read<f64, volatile>(%8));
-// DEFAULT-NEXT:         let %10 b: complex<f64> [storage=automatic] = aggregate<complex<f64>, zero_fill=false>(index0 = read<f64, volatile>(%7), index1 = neg<f64>(read<f64, volatile>(%8)));
-// DEFAULT-NEXT:         let %11 product: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         let %12 quotient: complex<f64> [storage=automatic];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 21> [storage=static] = code_units<array<i8, 21>>([37, 46, 52, 102, 32, 37, 46, 52, 102, 32, 37, 46, 52, 102, 32, 37, 46, 52, 102, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_cimag:[0-9]+]] @cimag(%[[VALUE___z:[0-9]+]] __z: complex<f64>) -> f64 [linkage=external] [memory=none] [abi=sysv64(native_c) -> scalar];
+// DEFAULT-NEXT:     fn %[[VALUE_creal:[0-9]+]] @creal(%[[VALUE___z_2:[0-9]+]] __z: complex<f64>) -> f64 [linkage=external] [memory=none] [abi=sysv64(native_c) -> scalar];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_real:[0-9]+]] real: volatile f64 [storage=automatic] = const<f64>(0.5);
+// DEFAULT-NEXT:         let %[[VALUE_imaginary:[0-9]+]] imaginary: volatile f64 [storage=automatic] = neg<f64>(const<f64>(0.25));
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: complex<f64> [storage=automatic] = aggregate<complex<f64>, zero_fill=false>(index0 = read<f64, volatile>(%[[VALUE_real]]), index1 = read<f64, volatile>(%[[VALUE_imaginary]]));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: complex<f64> [storage=automatic] = aggregate<complex<f64>, zero_fill=false>(index0 = read<f64, volatile>(%[[VALUE_real]]), index1 = neg<f64>(read<f64, volatile>(%[[VALUE_imaginary]])));
+// DEFAULT-NEXT:         let %[[VALUE_product:[0-9]+]] product: complex<f64> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_quotient:[0-9]+]] quotient: complex<f64> [storage=automatic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             write<complex<f64>>(%11, mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=basic>(read<complex<f64>>(%9), read<complex<f64>>(%10)));
+// DEFAULT-NEXT:             write<complex<f64>>(%[[VALUE_product]], mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=basic>(read<complex<f64>>(%[[VALUE_a]]), read<complex<f64>>(%[[VALUE_b]])));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             write<complex<f64>>(%12, div<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%9), read<complex<f64>>(%10)));
+// DEFAULT-NEXT:             write<complex<f64>>(%[[VALUE_quotient]], div<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%[[VALUE_a]]), read<complex<f64>>(%[[VALUE_b]])));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%5, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(21)>(%16)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%3, read<complex<f64>>(%11)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%1, read<complex<f64>>(%11)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%3, read<complex<f64>>(%12)), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%1, read<complex<f64>>(%12)));
-// DEFAULT-NEXT:         return conditional<i32>(logical_and<bool>(logical_and<bool>(logical_and<bool>(eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%3, read<complex<f64>>(%11)), const<f64>(0.3125)), eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%1, read<complex<f64>>(%11)), const<f64>(0.0))), eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%3, read<complex<f64>>(%12)), const<f64>(0.6))), eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%1, read<complex<f64>>(%12)), neg<f64>(const<f64>(0.8)))), const<i32>(0), const<i32>(1));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(21)>(%[[VALUE_str]])), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%[[VALUE_creal]], read<complex<f64>>(%[[VALUE_product]])), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%[[VALUE_cimag]], read<complex<f64>>(%[[VALUE_product]])), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%[[VALUE_creal]], read<complex<f64>>(%[[VALUE_quotient]])), call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%[[VALUE_cimag]], read<complex<f64>>(%[[VALUE_quotient]])));
+// DEFAULT-NEXT:         return conditional<i32>(logical_and<bool>(logical_and<bool>(logical_and<bool>(eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%[[VALUE_creal]], read<complex<f64>>(%[[VALUE_product]])), const<f64>(0.3125)), eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%[[VALUE_cimag]], read<complex<f64>>(%[[VALUE_product]])), const<f64>(0.0))), eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%[[VALUE_creal]], read<complex<f64>>(%[[VALUE_quotient]])), const<f64>(0.6))), eq<f64, exceptions=ignore>(call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%[[VALUE_cimag]], read<complex<f64>>(%[[VALUE_quotient]])), neg<f64>(const<f64>(0.8)))), const<i32>(0), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

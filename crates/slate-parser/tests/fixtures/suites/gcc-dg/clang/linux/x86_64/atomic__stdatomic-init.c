@@ -146,21 +146,21 @@ void atomic_init_lval (struct Atomic *pa, const struct Value *pv)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     type @type1 atomic_bool = bool;
-// DEFAULT-NEXT:     type @type2 atomic_char = i8;
-// DEFAULT-NEXT:     type @type3 atomic_schar = i8;
-// DEFAULT-NEXT:     type @type4 atomic_uchar = u8;
-// DEFAULT-NEXT:     type @type5 atomic_short = i16;
-// DEFAULT-NEXT:     type @type6 atomic_ushort = u16;
-// DEFAULT-NEXT:     type @type7 atomic_int = i32;
-// DEFAULT-NEXT:     type @type8 atomic_uint = u32;
-// DEFAULT-NEXT:     type @type9 atomic_long = i64;
-// DEFAULT-NEXT:     type @type10 atomic_ulong = u64;
-// DEFAULT-NEXT:     type @type11 atomic_llong = i64;
-// DEFAULT-NEXT:     type @type12 atomic_ullong = u64;
-// DEFAULT-NEXT:     type @type13 atomic_size_t = u64;
-// DEFAULT-NEXT:     type @type14 Atomic = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_bool:[0-9]+]] atomic_bool = bool;
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_char:[0-9]+]] atomic_char = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_schar:[0-9]+]] atomic_schar = i8;
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_uchar:[0-9]+]] atomic_uchar = u8;
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_short:[0-9]+]] atomic_short = i16;
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_ushort:[0-9]+]] atomic_ushort = u16;
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_int:[0-9]+]] atomic_int = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_uint:[0-9]+]] atomic_uint = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_long:[0-9]+]] atomic_long = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_ulong:[0-9]+]] atomic_ulong = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_llong:[0-9]+]] atomic_llong = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_ullong:[0-9]+]] atomic_ullong = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_size_t:[0-9]+]] atomic_size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_Atomic:[0-9]+]] Atomic = struct {
 // DEFAULT-NEXT:         field0 b: volatile atomic bool;
 // DEFAULT-NEXT:         field1 c: volatile atomic i8;
 // DEFAULT-NEXT:         field2 sc: volatile atomic i8;
@@ -175,7 +175,7 @@ void atomic_init_lval (struct Atomic *pa, const struct Value *pv)
 // DEFAULT-NEXT:         field11 ull: volatile atomic u64;
 // DEFAULT-NEXT:         field12 sz: volatile atomic u64;
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 40, 48]];
-// DEFAULT-NEXT:     type @type15 Value = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Value:[0-9]+]] Value = struct {
 // DEFAULT-NEXT:         field0 b: bool;
 // DEFAULT-NEXT:         field1 c: i8;
 // DEFAULT-NEXT:         field2 sc: i8;
@@ -190,63 +190,63 @@ void atomic_init_lval (struct Atomic *pa, const struct Value *pv)
 // DEFAULT-NEXT:         field11 ull: u64;
 // DEFAULT-NEXT:         field12 sz: u64;
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 40, 48]];
-// DEFAULT-NEXT:     fn %16 @atomic_init_lit(%17 pa: ptr<@type14>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<bool, volatile>(deref(addr_of<ptr<volatile atomic bool>>(field0(deref(read<ptr<@type14>>(%17))))), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));
-// DEFAULT-NEXT:         write<bool, volatile>(deref(addr_of<ptr<volatile atomic bool>>(field0(deref(read<ptr<@type14>>(%17))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
-// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type14>>(%17))))), truncate<i8, reason=arg, fits=always>(const<i32>(120)));
-// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type14>>(%17))))), truncate<i8, reason=arg, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type14>>(%17))))), truncate<i8, reason=arg, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type14>>(%17))))), truncate<i8, reason=arg, fits=unknown>(const<i32>(255)));
-// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type14>>(%17))))), truncate<i8, reason=explicit, fits=always>(const<i32>(120)));
-// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type14>>(%17))))), truncate<i8, reason=explicit, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type14>>(%17))))), truncate<i8, reason=explicit, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type14>>(%17))))), truncate<i8, reason=explicit, fits=always>(const<i32>(127)));
-// DEFAULT-NEXT:         write<u8, volatile>(deref(addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type14>>(%17))))), reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(120))));
-// DEFAULT-NEXT:         write<u8, volatile>(deref(addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type14>>(%17))))), reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u8, volatile>(deref(addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type14>>(%17))))), reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type14>>(%17))))), reinterpret<i8, reason=arg, fits=unknown>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(127)))));
-// DEFAULT-NEXT:         write<i16, volatile>(deref(addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type14>>(%17))))), truncate<i16, reason=explicit, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<i16, volatile>(deref(addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type14>>(%17))))), truncate<i16, reason=explicit, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i16, volatile>(deref(addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type14>>(%17))))), truncate<i16, reason=explicit, fits=always>(const<i32>(32767)));
-// DEFAULT-NEXT:         write<u16, volatile>(deref(addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type14>>(%17))))), reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u16, volatile>(deref(addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type14>>(%17))))), reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u16, volatile>(deref(addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type14>>(%17))))), reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(32767))));
-// DEFAULT-NEXT:         write<i32, volatile>(deref(addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type14>>(%17))))), const<i32>(0));
-// DEFAULT-NEXT:         write<i32, volatile>(deref(addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type14>>(%17))))), const<i32>(1));
-// DEFAULT-NEXT:         write<i32, volatile>(deref(addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type14>>(%17))))), const<i32>(2147483647));
-// DEFAULT-NEXT:         write<u32, volatile>(deref(addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type14>>(%17))))), reinterpret<u32, reason=explicit, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<u32, volatile>(deref(addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type14>>(%17))))), reinterpret<u32, reason=explicit, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<u32, volatile>(deref(addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type14>>(%17))))), reinterpret<u32, reason=explicit, fits=always>(const<i32>(2147483647)));
-// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type14>>(%17))))), widen<i64, reason=explicit>(const<i32>(0)));
-// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type14>>(%17))))), widen<i64, reason=explicit>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type14>>(%17))))), const<i64>(9223372036854775807));
-// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type14>>(%17))))), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type14>>(%17))))), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type14>>(%17))))), reinterpret<u64, reason=explicit, fits=always>(const<i64>(9223372036854775807)));
-// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type14>>(%17))))), widen<i64, reason=explicit>(const<i32>(0)));
-// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type14>>(%17))))), widen<i64, reason=explicit>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type14>>(%17))))), const<i64>(9223372036854775807));
-// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type14>>(%17))))), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type14>>(%17))))), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type14>>(%17))))), reinterpret<u64, reason=explicit, fits=always>(const<i64>(9223372036854775807)));
-// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type14>>(%17))))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type14>>(%17))))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
-// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type14>>(%17))))), const<u64>(18446744073709551615));
+// DEFAULT-NEXT:     fn %[[VALUE_atomic_init_lit:[0-9]+]] @atomic_init_lit(%[[VALUE_pa:[0-9]+]] pa: ptr<@type[[TYPE_Atomic]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<bool, volatile>(deref(addr_of<ptr<volatile atomic bool>>(field0(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));
+// DEFAULT-NEXT:         write<bool, volatile>(deref(addr_of<ptr<volatile atomic bool>>(field0(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
+// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), truncate<i8, reason=arg, fits=always>(const<i32>(120)));
+// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), truncate<i8, reason=arg, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), truncate<i8, reason=arg, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), truncate<i8, reason=arg, fits=unknown>(const<i32>(255)));
+// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), truncate<i8, reason=explicit, fits=always>(const<i32>(120)));
+// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), truncate<i8, reason=explicit, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), truncate<i8, reason=explicit, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), truncate<i8, reason=explicit, fits=always>(const<i32>(127)));
+// DEFAULT-NEXT:         write<u8, volatile>(deref(addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(120))));
+// DEFAULT-NEXT:         write<u8, volatile>(deref(addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u8, volatile>(deref(addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<i8, reason=arg, fits=unknown>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(127)))));
+// DEFAULT-NEXT:         write<i16, volatile>(deref(addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), truncate<i16, reason=explicit, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         write<i16, volatile>(deref(addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), truncate<i16, reason=explicit, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i16, volatile>(deref(addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), truncate<i16, reason=explicit, fits=always>(const<i32>(32767)));
+// DEFAULT-NEXT:         write<u16, volatile>(deref(addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u16, volatile>(deref(addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u16, volatile>(deref(addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u16, reason=explicit, fits=unknown>(truncate<i16, reason=explicit, fits=always>(const<i32>(32767))));
+// DEFAULT-NEXT:         write<i32, volatile>(deref(addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), const<i32>(0));
+// DEFAULT-NEXT:         write<i32, volatile>(deref(addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), const<i32>(1));
+// DEFAULT-NEXT:         write<i32, volatile>(deref(addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), const<i32>(2147483647));
+// DEFAULT-NEXT:         write<u32, volatile>(deref(addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u32, reason=explicit, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         write<u32, volatile>(deref(addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u32, reason=explicit, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         write<u32, volatile>(deref(addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u32, reason=explicit, fits=always>(const<i32>(2147483647)));
+// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), widen<i64, reason=explicit>(const<i32>(0)));
+// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), widen<i64, reason=explicit>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), const<i64>(9223372036854775807));
+// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u64, reason=explicit, fits=always>(const<i64>(9223372036854775807)));
+// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), widen<i64, reason=explicit>(const<i32>(0)));
+// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), widen<i64, reason=explicit>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), const<i64>(9223372036854775807));
+// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u64, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u64, reason=explicit, fits=always>(const<i64>(9223372036854775807)));
+// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(0))));
+// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
+// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa]]))))), const<u64>(18446744073709551615));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @atomic_init_lval(%19 pa: ptr<@type14>, %20 pv: ptr<const @type15>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<bool, volatile>(deref(addr_of<ptr<volatile atomic bool>>(field0(deref(read<ptr<@type14>>(%19))))), read<bool>(field0(deref(read<ptr<const @type15>>(%20)))));
-// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type14>>(%19))))), read<i8>(field1(deref(read<ptr<const @type15>>(%20)))));
-// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type14>>(%19))))), read<i8>(field2(deref(read<ptr<const @type15>>(%20)))));
-// DEFAULT-NEXT:         write<u8, volatile>(deref(addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type14>>(%19))))), read<u8>(field3(deref(read<ptr<const @type15>>(%20)))));
-// DEFAULT-NEXT:         write<i16, volatile>(deref(addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type14>>(%19))))), read<i16>(field4(deref(read<ptr<const @type15>>(%20)))));
-// DEFAULT-NEXT:         write<u16, volatile>(deref(addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type14>>(%19))))), read<u16>(field5(deref(read<ptr<const @type15>>(%20)))));
-// DEFAULT-NEXT:         write<i32, volatile>(deref(addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type14>>(%19))))), read<i32>(field6(deref(read<ptr<const @type15>>(%20)))));
-// DEFAULT-NEXT:         write<u32, volatile>(deref(addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type14>>(%19))))), read<u32>(field7(deref(read<ptr<const @type15>>(%20)))));
-// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type14>>(%19))))), read<i64>(field8(deref(read<ptr<const @type15>>(%20)))));
-// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type14>>(%19))))), read<u64>(field9(deref(read<ptr<const @type15>>(%20)))));
-// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type14>>(%19))))), read<i64>(field10(deref(read<ptr<const @type15>>(%20)))));
-// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type14>>(%19))))), read<u64>(field11(deref(read<ptr<const @type15>>(%20)))));
-// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type14>>(%19))))), read<u64>(field12(deref(read<ptr<const @type15>>(%20)))));
+// DEFAULT-NEXT:     fn %[[VALUE_atomic_init_lval:[0-9]+]] @atomic_init_lval(%[[VALUE_pa_2:[0-9]+]] pa: ptr<@type[[TYPE_Atomic]]>, %[[VALUE_pv:[0-9]+]] pv: ptr<const @type[[TYPE_Value]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<bool, volatile>(deref(addr_of<ptr<volatile atomic bool>>(field0(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))))), read<bool>(field0(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))));
+// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field1(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))))), read<i8>(field1(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))));
+// DEFAULT-NEXT:         write<i8, volatile>(deref(addr_of<ptr<volatile atomic i8>>(field2(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))))), read<i8>(field2(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))));
+// DEFAULT-NEXT:         write<u8, volatile>(deref(addr_of<ptr<volatile atomic u8>>(field3(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))))), read<u8>(field3(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))));
+// DEFAULT-NEXT:         write<i16, volatile>(deref(addr_of<ptr<volatile atomic i16>>(field4(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))))), read<i16>(field4(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))));
+// DEFAULT-NEXT:         write<u16, volatile>(deref(addr_of<ptr<volatile atomic u16>>(field5(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))))), read<u16>(field5(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))));
+// DEFAULT-NEXT:         write<i32, volatile>(deref(addr_of<ptr<volatile atomic i32>>(field6(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))))), read<i32>(field6(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))));
+// DEFAULT-NEXT:         write<u32, volatile>(deref(addr_of<ptr<volatile atomic u32>>(field7(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))))), read<u32>(field7(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))));
+// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field8(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))))), read<i64>(field8(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))));
+// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field9(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))))), read<u64>(field9(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))));
+// DEFAULT-NEXT:         write<i64, volatile>(deref(addr_of<ptr<volatile atomic i64>>(field10(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))))), read<i64>(field10(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))));
+// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field11(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))))), read<u64>(field11(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))));
+// DEFAULT-NEXT:         write<u64, volatile>(deref(addr_of<ptr<volatile atomic u64>>(field12(deref(read<ptr<@type[[TYPE_Atomic]]>>(%[[VALUE_pa_2]]))))), read<u64>(field12(deref(read<ptr<const @type[[TYPE_Value]]>>(%[[VALUE_pv]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

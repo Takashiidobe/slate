@@ -29,6 +29,6 @@ int asm_value = 1;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     asm "top_basic" [dialect=att];
 // DEFAULT-NEXT:     asm "concat" [dialect=att];
-// DEFAULT-NEXT:     global %0 asm_value: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_asm_value:[0-9]+]] asm_value: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

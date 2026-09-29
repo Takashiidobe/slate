@@ -88,39 +88,39 @@ bar (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 va_list = va_list;
-// DEFAULT-NEXT:     global %2 b: u128b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 c: u128b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 d: i575b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 e: i575b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @foo(%7 a: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 ap: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%8);
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%7), const<i32>(1))
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: u128b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: u128b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i575b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i575b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_a]]), const<i32>(1))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if ne<i2b>(va_arg<i2b>(%8), const<i2b>(1))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:                 if ne<i3b>(va_arg<i3b>(%8), const<i3b>(3))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:                 if ne<i15b>(va_arg<i15b>(%8), const<i15b>(16383))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:                 if ne<u32b>(va_arg<u32b>(%8), const<u32b>(4294967295))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:                 if ne<i64b>(va_arg<i64b>(%8), const<i64b>(9223372036854775807))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:                 if ne<i2b>(va_arg<i2b>(%[[VALUE_ap]]), const<i2b>(1))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:                 if ne<i3b>(va_arg<i3b>(%[[VALUE_ap]]), const<i3b>(3))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:                 if ne<i15b>(va_arg<i15b>(%[[VALUE_ap]]), const<i15b>(16383))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:                 if ne<u32b>(va_arg<u32b>(%[[VALUE_ap]]), const<u32b>(4294967295))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:                 if ne<i64b>(va_arg<i64b>(%[[VALUE_ap]]), const<i64b>(9223372036854775807))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<u128b>(%2, va_arg<u128b>(%8));
-// DEFAULT-NEXT:         va_arg<u128b>(%8);
-// DEFAULT-NEXT:         write<i575b>(%4, va_arg<i575b>(%8));
-// DEFAULT-NEXT:         va_arg<i575b>(%8);
-// DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%8), const<i32>(42))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         va_end(%8);
+// DEFAULT-NEXT:         write<u128b>(%[[VALUE_b]], va_arg<u128b>(%[[VALUE_ap]]));
+// DEFAULT-NEXT:         va_arg<u128b>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_d]], va_arg<i575b>(%[[VALUE_ap]]));
+// DEFAULT-NEXT:         va_arg<i575b>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(42))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%6, const<i32>(1), const<i2b>(1), const<i3b>(3), const<i15b>(16383), const<u32b>(4294967295), const<i64b>(9223372036854775807), read<u128b>(%3), read<i575b>(%5), const<i32>(42));
-// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%6, const<i32>(2), read<u128b>(%3), read<i575b>(%5), const<i32>(42));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_foo]], const<i32>(1), const<i2b>(1), const<i3b>(3), const<i15b>(16383), const<u32b>(4294967295), const<i64b>(9223372036854775807), read<u128b>(%[[VALUE_c]]), read<i575b>(%[[VALUE_e]]), const<i32>(42));
+// DEFAULT-NEXT:         call<void, signature=fn(i32, ...) -> void>(%[[VALUE_foo]], const<i32>(2), read<u128b>(%[[VALUE_c]]), read<i575b>(%[[VALUE_e]]), const<i32>(42));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -61,21 +61,21 @@ A (2) void* gpv_4_3 (void);
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @fv_1() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @fi_1() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @fpv_m1() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @fpv_0() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @fpv_1() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %5 @fpv_3() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %6 @fpv_16km1() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %7 @fpv_16k() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %8 @fpv_16kp1() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %9 @fpv_32km1() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %10 @fpv_4_m1() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %11 @fpv_4_0() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %12 @fpv_4_1() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %13 @fpv_4_2() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %14 @fpv_4_3() -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %15 @gpv_4_3() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fv_1:[0-9]+]] @fv_1() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fi_1:[0-9]+]] @fi_1() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fpv_m1:[0-9]+]] @fpv_m1() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fpv_0:[0-9]+]] @fpv_0() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fpv_1:[0-9]+]] @fpv_1() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fpv_3:[0-9]+]] @fpv_3() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fpv_16km1:[0-9]+]] @fpv_16km1() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fpv_16k:[0-9]+]] @fpv_16k() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fpv_16kp1:[0-9]+]] @fpv_16kp1() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fpv_32km1:[0-9]+]] @fpv_32km1() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fpv_4_m1:[0-9]+]] @fpv_4_m1() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fpv_4_0:[0-9]+]] @fpv_4_0() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fpv_4_1:[0-9]+]] @fpv_4_1() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fpv_4_2:[0-9]+]] @fpv_4_2() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fpv_4_3:[0-9]+]] @fpv_4_3() -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_gpv_4_3:[0-9]+]] @gpv_4_3() -> ptr<void> [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

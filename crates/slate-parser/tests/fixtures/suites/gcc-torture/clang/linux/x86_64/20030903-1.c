@@ -58,37 +58,37 @@ carg_test (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %5 minus_zero: f64 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @check_complex(%11 <unnamed>: complex<f64>, %12 <unnamed>: complex<f64>, %13 <unnamed>: complex<f64>, %14 <unnamed>: complex<i32>) -> void [linkage=external] [abi=sysv64(native_c, native_c, native_c, native_c) -> void];
-// DEFAULT-NEXT:     fn %1 @check_float(%15 <unnamed>: f64, %16 <unnamed>: f64, %17 <unnamed>: f64, %18 <unnamed>: i32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @conj(%19 <unnamed>: complex<f64>) -> complex<f64> [linkage=external] [memory=none] [abi=sysv64(native_c) -> native_c];
-// DEFAULT-NEXT:     fn %4 @carg(%20 __z: complex<f64>) -> f64 [linkage=external] [abi=sysv64(native_c) -> scalar];
-// DEFAULT-NEXT:     fn %6 @conj_test() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %21: complex<f64> [synthetic];
+// DEFAULT-NEXT:     global %[[VALUE_minus_zero:[0-9]+]] minus_zero: f64 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_check_complex:[0-9]+]] @check_complex(%[[VALUE0:[0-9]+]] <unnamed>: complex<f64>, %[[VALUE1:[0-9]+]] <unnamed>: complex<f64>, %[[VALUE2:[0-9]+]] <unnamed>: complex<f64>, %[[VALUE3:[0-9]+]] <unnamed>: complex<i32>) -> void [linkage=external] [abi=sysv64(native_c, native_c, native_c, native_c) -> void];
+// DEFAULT-NEXT:     fn %[[VALUE_check_float:[0-9]+]] @check_float(%[[VALUE4:[0-9]+]] <unnamed>: f64, %[[VALUE5:[0-9]+]] <unnamed>: f64, %[[VALUE6:[0-9]+]] <unnamed>: f64, %[[VALUE7:[0-9]+]] <unnamed>: i32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_conj:[0-9]+]] @conj(%[[VALUE8:[0-9]+]] <unnamed>: complex<f64>) -> complex<f64> [linkage=external] [memory=none] [abi=sysv64(native_c) -> native_c];
+// DEFAULT-NEXT:     fn %[[VALUE_carg:[0-9]+]] @carg(%[[VALUE___z:[0-9]+]] __z: complex<f64>) -> f64 [linkage=external] [abi=sysv64(native_c) -> scalar];
+// DEFAULT-NEXT:     fn %[[VALUE_conj_test:[0-9]+]] @conj_test() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: complex<f64> [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %7 __retval: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:             write<f64>(real(%7), const<f64>(0.0));
-// DEFAULT-NEXT:             write<f64>(imag(%7), const<f64>(0.0));
-// DEFAULT-NEXT:             write<complex<f64>>(%21, read<complex<f64>>(%7));
+// DEFAULT-NEXT:             let %[[VALUE___retval:[0-9]+]] __retval: complex<f64> [storage=automatic];
+// DEFAULT-NEXT:             write<f64>(real(%[[VALUE___retval]]), const<f64>(0.0));
+// DEFAULT-NEXT:             write<f64>(imag(%[[VALUE___retval]]), const<f64>(0.0));
+// DEFAULT-NEXT:             write<complex<f64>>(%[[VALUE9]], read<complex<f64>>(%[[VALUE___retval]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %22: complex<f64> [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: complex<f64> [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %8 __retval: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:             write<f64>(real(%8), const<f64>(0.0));
-// DEFAULT-NEXT:             write<f64>(imag(%8), read<f64>(%5));
-// DEFAULT-NEXT:             write<complex<f64>>(%22, read<complex<f64>>(%8));
+// DEFAULT-NEXT:             let %[[VALUE___retval_2:[0-9]+]] __retval: complex<f64> [storage=automatic];
+// DEFAULT-NEXT:             write<f64>(real(%[[VALUE___retval_2]]), const<f64>(0.0));
+// DEFAULT-NEXT:             write<f64>(imag(%[[VALUE___retval_2]]), read<f64>(%[[VALUE_minus_zero]]));
+// DEFAULT-NEXT:             write<complex<f64>>(%[[VALUE10]], read<complex<f64>>(%[[VALUE___retval_2]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         call<void, signature=fn(complex<f64>, complex<f64>, complex<f64>, complex<i32>) -> void, abi=sysv64(native_c, native_c, native_c, native_c) -> void>(%0, call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%2, read<complex<f64>>(%21)), read<complex<f64>>(%22), real_to_complex<complex<f64>, reason=arg>(int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), real_to_complex<complex<i32>, reason=arg>(const<i32>(0)));
+// DEFAULT-NEXT:         call<void, signature=fn(complex<f64>, complex<f64>, complex<f64>, complex<i32>) -> void, abi=sysv64(native_c, native_c, native_c, native_c) -> void>(%[[VALUE_check_complex]], call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%[[VALUE_conj]], read<complex<f64>>(%[[VALUE9]])), read<complex<f64>>(%[[VALUE10]]), real_to_complex<complex<f64>, reason=arg>(int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), real_to_complex<complex<i32>, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @carg_test() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %23: complex<f64> [synthetic];
+// DEFAULT-NEXT:     fn %[[VALUE_carg_test:[0-9]+]] @carg_test() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: complex<f64> [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %10 __retval: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:             write<f64>(real(%10), const<f64>(2.0));
-// DEFAULT-NEXT:             write<f64>(imag(%10), int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)));
-// DEFAULT-NEXT:             write<complex<f64>>(%23, read<complex<f64>>(%10));
+// DEFAULT-NEXT:             let %[[VALUE___retval_3:[0-9]+]] __retval: complex<f64> [storage=automatic];
+// DEFAULT-NEXT:             write<f64>(real(%[[VALUE___retval_3]]), const<f64>(2.0));
+// DEFAULT-NEXT:             write<f64>(imag(%[[VALUE___retval_3]]), int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)));
+// DEFAULT-NEXT:             write<complex<f64>>(%[[VALUE11]], read<complex<f64>>(%[[VALUE___retval_3]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         call<void, signature=fn(f64, f64, f64, i32) -> void>(%1, call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%4, read<complex<f64>>(%23)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(f64, f64, f64, i32) -> void>(%[[VALUE_check_float]], call<f64, signature=fn(complex<f64>) -> f64, abi=sysv64(native_c) -> scalar>(%[[VALUE_carg]], read<complex<f64>>(%[[VALUE11]])), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

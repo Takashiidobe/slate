@@ -40,10 +40,10 @@ fn (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 x: bool [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 y: u8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @fn() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<bool>(%0, ne<i32, reason=assign>(conditional<i32>(ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%1))), const<i32>(1)), const<i32>(0)), const<i32>(1), const<i32>(0)), const<i32>(0)));
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: bool [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: u8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fn:[0-9]+]] @fn() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<bool>(%[[VALUE_x]], ne<i32, reason=assign>(conditional<i32>(ne<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_y]]))), const<i32>(1)), const<i32>(0)), const<i32>(1), const<i32>(0)), const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

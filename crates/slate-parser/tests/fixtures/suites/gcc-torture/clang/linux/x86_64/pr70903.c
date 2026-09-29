@@ -42,18 +42,18 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 V8 = vector<u8, 32>;
-// DEFAULT-NEXT:     type @type1 V32 = vector<u32, 8>;
-// DEFAULT-NEXT:     type @type2 V64 = vector<u64, 4>;
-// DEFAULT-NEXT:     fn %3 @foo(%4 x: vector<u64, 4>) -> vector<u32, 8> [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64(byval<align=32>) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 y: vector<u64, 4> [storage=automatic] = vector_bit_cast<vector<u64, 4>, reason=explicit>(read<vector<u8, 32>>(compound_literal %9 [storage=automatic] = aggregate<vector<u8, 32>, zero_fill=true>(index0 = lane<u8>(vector_bit_cast<vector<u8, 32>, reason=explicit>(read<vector<u64, 4>>(compound_literal %8 [storage=automatic] = aggregate<vector<u64, 4>, zero_fill=true>(index0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(65535))), index1 = read<u64>(lane(%4, const<i32>(0)))))), const<i32>(1)))));
-// DEFAULT-NEXT:         return read<vector<u32, 8>>(compound_literal %10 [storage=automatic] = aggregate<vector<u32, 8>, zero_fill=true>(index0 = truncate<u32, reason=assign, fits=unknown>(read<u64>(lane(%5, const<i32>(0)))), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(255))));
+// DEFAULT-NEXT:     type @type[[TYPE_V8:[0-9]+]] V8 = vector<u8, 32>;
+// DEFAULT-NEXT:     type @type[[TYPE_V32:[0-9]+]] V32 = vector<u32, 8>;
+// DEFAULT-NEXT:     type @type[[TYPE_V64:[0-9]+]] V64 = vector<u64, 4>;
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: vector<u64, 4>) -> vector<u32, 8> [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64(byval<align=32>) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: vector<u64, 4> [storage=automatic] = vector_bit_cast<vector<u64, 4>, reason=explicit>(read<vector<u8, 32>>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<vector<u8, 32>, zero_fill=true>(index0 = lane<u8>(vector_bit_cast<vector<u8, 32>, reason=explicit>(read<vector<u64, 4>>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<vector<u64, 4>, zero_fill=true>(index0 = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(65535))), index1 = read<u64>(lane(%[[VALUE_x]], const<i32>(0)))))), const<i32>(1)))));
+// DEFAULT-NEXT:         return read<vector<u32, 8>>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<vector<u32, 8>, zero_fill=true>(index0 = truncate<u32, reason=assign, fits=unknown>(read<u64>(lane(%[[VALUE_y]], const<i32>(0)))), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(255))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 x: vector<u32, 8> [storage=automatic] = call<vector<u32, 8>, signature=fn(vector<u64, 4>) -> vector<u32, 8>, abi=sysv64(byval<align=32>) -> direct>(%3, read<vector<u64, 4>>(compound_literal %11 [storage=automatic] = aggregate<vector<u64, 4>, zero_fill=true>()));
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(lane(%7, const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%12);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: vector<u32, 8> [storage=automatic] = call<vector<u32, 8>, signature=fn(vector<u64, 4>) -> vector<u32, 8>, abi=sysv64(byval<align=32>) -> direct>(%[[VALUE_foo]], read<vector<u64, 4>>(compound_literal %[[VALUE3:[0-9]+]] [storage=automatic] = aggregate<vector<u64, 4>, zero_fill=true>()));
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(lane(%[[VALUE_x_2]], const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

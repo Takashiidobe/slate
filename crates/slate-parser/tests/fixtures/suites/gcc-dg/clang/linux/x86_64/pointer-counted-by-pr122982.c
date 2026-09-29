@@ -44,18 +44,18 @@ void h1 (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __bounded_ptr = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___bounded_ptr:[0-9]+]] __bounded_ptr = struct {
 // DEFAULT-NEXT:         field0 k: i32;
 // DEFAULT-NEXT:         field1 buf: ptr<i32>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     fn %0 @f(%6 <unnamed>: i32) -> ptr<i32> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @f1(%3 n: i32) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i32>, signature=fn(i32) -> ptr<i32>>(%0, read<i32>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> ptr<i32> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_n:[0-9]+]] n: i32) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i32>, signature=fn(i32) -> ptr<i32>>(%[[VALUE_f]], read<i32>(%[[VALUE_n]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @__builtin_memset(%8 <unnamed>: ptr<void>, %9 <unnamed>: i32, %10 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @h1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 p: ptr<i32> [storage=automatic] = read<ptr<i32>>(field1(compound_literal %7 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(3), field1 = call<ptr<i32>, signature=fn(i32) -> ptr<i32>>(%2, const<i32>(3)))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%11, pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%5)), const<i32>(0), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3))), const<u64>(8)));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memset:[0-9]+]] @__builtin_memset(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: i32, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_h1:[0-9]+]] @h1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=automatic] = read<ptr<i32>>(field1(compound_literal %[[VALUE4:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE___bounded_ptr]], zero_fill=false>(field0 = const<i32>(3), field1 = call<ptr<i32>, signature=fn(i32) -> ptr<i32>>(%[[VALUE_f1]], const<i32>(3)))));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i32>>(%[[VALUE_p]])), const<i32>(0), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3))), const<u64>(8)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

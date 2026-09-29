@@ -33,11 +33,11 @@ int foo (struct foo *ptr, int idx, void *pointer)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:         field0 entry: array<ptr<void>, 40>;
 // DEFAULT-NEXT:     } [size=320, align=32, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @foo(%2 ptr: ptr<@type0>, %3 idx: i32, %4 pointer: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(40)>(field0(deref(read<ptr<@type0>>(%2)))), read<i32>(%3))), read<ptr<void>>(%4));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_ptr:[0-9]+]] ptr: ptr<@type[[TYPE_foo]]>, %[[VALUE_idx:[0-9]+]] idx: i32, %[[VALUE_pointer:[0-9]+]] pointer: ptr<void>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(40)>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_ptr]])))), read<i32>(%[[VALUE_idx]]))), read<ptr<void>>(%[[VALUE_pointer]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

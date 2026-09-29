@@ -39,19 +39,19 @@ int func(struct foo *foo, int a)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     fn %1 @func(%2 foo: ptr<@type0>, %3 a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(field1(deref(read<ptr<@type0>>(%2)))), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_func:[0-9]+]] @func(%[[VALUE_foo:[0-9]+]] foo: ptr<@type[[TYPE_foo]]>, %[[VALUE_a:[0-9]+]] a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_foo]])))), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %4 ret: i32 [storage=automatic];
-// DEFAULT-NEXT:                 write<i32>(field0(deref(read<ptr<@type0>>(%2))), read<i32>(%3));
-// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%3));
-// DEFAULT-NEXT:                 if ge<i32>(read<i32>(%3), const<i32>(0))
-// DEFAULT-NEXT:                     write<i32>(field0(deref(read<ptr<@type0>>(%2))), read<i32>(%3));
-// DEFAULT-NEXT:                 return read<i32>(%4);
+// DEFAULT-NEXT:                 let %[[VALUE_ret:[0-9]+]] ret: i32 [storage=automatic];
+// DEFAULT-NEXT:                 write<i32>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_foo]]))), read<i32>(%[[VALUE_a]]));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_ret]], read<i32>(%[[VALUE_a]]));
+// DEFAULT-NEXT:                 if ge<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))
+// DEFAULT-NEXT:                     write<i32>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_foo]]))), read<i32>(%[[VALUE_a]]));
+// DEFAULT-NEXT:                 return read<i32>(%[[VALUE_ret]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -39,45 +39,45 @@ int attributed(int x) {
 // AST-NEXT:         storage d64 [size=8, align=8];
 // AST-NEXT:         storage d128 [size=16, align=16];
 // AST-NEXT:     }
-// AST-NEXT:     fn %0 @attributed(%2 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// AST-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
+// AST-NEXT:     fn %[[VALUE_attributed:[0-9]+]] @attributed(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// AST-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
 // AST-NEXT:             return const<i32>(1);
 // AST-NEXT:         else
 // AST-NEXT:             return const<i32>(2);
-// AST-NEXT:         while %4 ne<i32>(read<i32>(%2), const<i32>(0))
+// AST-NEXT:         while %[[VALUE0:[0-9]+]] ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
 // AST-NEXT:             {
-// AST-NEXT:                 let %7: i32 [synthetic] = read<i32>(%2);
-// AST-NEXT:                 let %8: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%7), const<i32>(1));
-// AST-NEXT:                 write<i32>(%2, read<i32>(%8));
+// AST-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// AST-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// AST-NEXT:                 write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE2]]));
 // AST-NEXT:             }
-// AST-NEXT:         for %5
+// AST-NEXT:         for %[[VALUE3:[0-9]+]]
 // AST-NEXT:             init:
-// AST-NEXT:             condition: ne<i32>(read<i32>(%2), const<i32>(0))
+// AST-NEXT:             condition: ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
 // AST-NEXT:             increment: {
-// AST-NEXT:                 let %9: i32 [synthetic] = read<i32>(%2);
-// AST-NEXT:                 let %10: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%9), const<i32>(1));
-// AST-NEXT:                 write<i32>(%2, read<i32>(%10));
+// AST-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// AST-NEXT:                 let %[[VALUE5:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
+// AST-NEXT:                 write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE5]]));
 // AST-NEXT:                 yield void;
 // AST-NEXT:             }
 // AST-NEXT:             body:
 // AST-NEXT:                 ;
-// AST-NEXT:         goto %1;
-// AST-NEXT:         label %1 done:
-// AST-NEXT:             let %11: i32 [synthetic] = read<i32>(%2);
-// AST-NEXT:             let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
-// AST-NEXT:             write<i32>(%2, read<i32>(%12));
-// AST-NEXT:         switch %6 read<i32>(%2)
+// AST-NEXT:         goto %[[VALUE_done:[0-9]+]];
+// AST-NEXT:         label %[[VALUE_done]] done:
+// AST-NEXT:             let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// AST-NEXT:             let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), const<i32>(1));
+// AST-NEXT:             write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE7]]));
+// AST-NEXT:         switch %[[VALUE8:[0-9]+]] read<i32>(%[[VALUE_x]])
 // AST-NEXT:             {
-// AST-NEXT:                 case %6 const<i32>(1):
-// AST-NEXT:                     let %13: i32 [synthetic] = read<i32>(%2);
-// AST-NEXT:                     let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
-// AST-NEXT:                     write<i32>(%2, read<i32>(%14));
+// AST-NEXT:                 case %[[VALUE8]] const<i32>(1):
+// AST-NEXT:                     let %[[VALUE9:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// AST-NEXT:                     let %[[VALUE10:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE9]]), const<i32>(1));
+// AST-NEXT:                     write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE10]]));
 // AST-NEXT:                 ;
-// AST-NEXT:                 default %6:
-// AST-NEXT:                     break %6;
+// AST-NEXT:                 default %[[VALUE8]]:
+// AST-NEXT:                     break %[[VALUE8]];
 // AST-NEXT:             }
-// AST-NEXT:         let %3 local: i32 [storage=automatic] = read<i32>(%2);
-// AST-NEXT:         return read<i32>(%3);
+// AST-NEXT:         let %[[VALUE_local:[0-9]+]] local: i32 [storage=automatic] = read<i32>(%[[VALUE_x]]);
+// AST-NEXT:         return read<i32>(%[[VALUE_local]]);
 // AST-NEXT:     }
 // AST-NEXT: }
 // SLATE-FILECHECK-END AST

@@ -50,22 +50,22 @@ foo (int x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 a0: ptr<u8>;
 // DEFAULT-NEXT:         field1 a1: ptr<u8>;
 // DEFAULT-NEXT:         field2 a2: i32;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     fn %1 @bar(%6 <unnamed>: ptr<@type0>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo(%3 x: i32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %5 b: u32 [storage=automatic];
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(lt<i32>(read<i32>(%3), neg<i32, overflow=ub>(const<i32>(128))), gt<i32>(read<i32>(%3), const<i32>(255))), eq<i32>(read<i32>(%3), neg<i32, overflow=ub>(const<i32>(1))))
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_A]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_A]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u32 [storage=automatic];
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(lt<i32>(read<i32>(%[[VALUE_x]]), neg<i32, overflow=ub>(const<i32>(128))), gt<i32>(read<i32>(%[[VALUE_x]]), const<i32>(255))), eq<i32>(read<i32>(%[[VALUE_x]]), neg<i32, overflow=ub>(const<i32>(1))))
 // DEFAULT-NEXT:             return reinterpret<u32, reason=return, fits=always>(const<i32>(26));
-// DEFAULT-NEXT:         write<ptr<u8>>(field0(%4), pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%5)));
-// DEFAULT-NEXT:         write<ptr<u8>>(field1(%4), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(field0(%4)), const<u64>(4)));
-// DEFAULT-NEXT:         write<i32>(field2(%4), const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%1, addr_of<ptr<@type0>>(%4));
-// DEFAULT-NEXT:         return read<u32>(%5);
+// DEFAULT-NEXT:         write<ptr<u8>>(field0(%[[VALUE_a]]), pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_b]])));
+// DEFAULT-NEXT:         write<ptr<u8>>(field1(%[[VALUE_a]]), ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(read<ptr<u8>>(field0(%[[VALUE_a]])), const<u64>(4)));
+// DEFAULT-NEXT:         write<i32>(field2(%[[VALUE_a]]), const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_bar]], addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         return read<u32>(%[[VALUE_b]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

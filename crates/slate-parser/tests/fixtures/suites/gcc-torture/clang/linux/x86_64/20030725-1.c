@@ -33,12 +33,12 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 x: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 y: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 z: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 p: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<i32>>(%3, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%1), add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(8), from_bool<i32, reason=promotion>(logical_or<bool>(eq<i32>(read<i32>(%0), const<i32>(1)), eq<i32>(read<i32>(%0), const<i32>(3))))), read<i32>(%2))));
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_z:[0-9]+]] z: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_p]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_y]]), add<i32, overflow=ub>(mul<i32, overflow=ub>(const<i32>(8), from_bool<i32, reason=promotion>(logical_or<bool>(eq<i32>(read<i32>(%[[VALUE_x]]), const<i32>(1)), eq<i32>(read<i32>(%[[VALUE_x]]), const<i32>(3))))), read<i32>(%[[VALUE_z]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

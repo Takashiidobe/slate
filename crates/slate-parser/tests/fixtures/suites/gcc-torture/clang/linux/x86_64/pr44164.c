@@ -46,29 +46,29 @@ int         main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 X = struct {
-// DEFAULT-NEXT:         field0 b: @type1;
+// DEFAULT-NEXT:     type @type[[TYPE_X:[0-9]+]] X = struct {
+// DEFAULT-NEXT:         field0 b: @type[[TYPE_Y:[0-9]+]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 Y = struct {
-// DEFAULT-NEXT:         field0 bb: @type2;
+// DEFAULT-NEXT:     type @type[[TYPE_Y]] Y = struct {
+// DEFAULT-NEXT:         field0 bb: @type[[TYPE_YY:[0-9]+]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 YY = struct {
-// DEFAULT-NEXT:         field0 c: @type3;
+// DEFAULT-NEXT:     type @type[[TYPE_YY]] YY = struct {
+// DEFAULT-NEXT:         field0 c: @type[[TYPE_Z:[0-9]+]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 Z = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Z]] Z = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %4 a: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %5 @foo(%6 p: ptr<@type3>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 i: i32 [storage=automatic] = read<i32>(field0(deref(read<ptr<@type3>>(%6))));
-// DEFAULT-NEXT:         write<@type1>(field0(%4), copy<@type1, reason=assign>(read<@type1>(compound_literal %10 [storage=automatic] = aggregate<@type1, zero_fill=true>())));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<@type3>>(%6)))), read<i32>(%7));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_X]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_Z]]>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = read<i32>(field0(deref(read<ptr<@type[[TYPE_Z]]>>(%[[VALUE_p]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_Y]]>(field0(%[[VALUE_a]]), copy<@type[[TYPE_Y]], reason=assign>(read<@type[[TYPE_Y]]>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_Y]], zero_fill=true>())));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<@type[[TYPE_Z]]>>(%[[VALUE_p]])))), read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<i32>(field0(field0(field0(field0(%4)))), const<i32>(1));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type3>) -> i32>(%5, addr_of<ptr<@type3>>(field0(field0(field0(%4))))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<i32>(field0(field0(field0(field0(%[[VALUE_a]])))), const<i32>(1));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE_Z]]>) -> i32>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_Z]]>>(field0(field0(field0(%[[VALUE_a]]))))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

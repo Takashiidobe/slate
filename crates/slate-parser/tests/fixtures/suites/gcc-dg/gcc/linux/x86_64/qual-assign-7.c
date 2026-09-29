@@ -43,10 +43,10 @@ extern typeof(pa = 0) p;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 jv: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %1 j: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 ja: atomic i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 pa: ptr<i32> [storage=static] [restrict] [linkage=external];
-// DEFAULT-NEXT:     extern %4 p: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_jv:[0-9]+]] jv: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_j:[0-9]+]] j: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ja:[0-9]+]] ja: atomic i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_pa:[0-9]+]] pa: ptr<i32> [storage=static] [restrict] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

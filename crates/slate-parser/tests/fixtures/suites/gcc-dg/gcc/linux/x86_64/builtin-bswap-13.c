@@ -358,383 +358,383 @@ unsigned short test_u16_15(unsigned short x) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %251 @__builtin_bswap32(%250 <unnamed>: u32) -> u32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %0 @test_s32_0_1(%1 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_bswap32:[0-9]+]] @__builtin_bswap32(%[[VALUE0:[0-9]+]] <unnamed>: u32) -> u32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_0_1:[0-9]+]] @test_s32_0_1(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @test_s32_0_2(%3 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%3))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_0_2:[0-9]+]] @test_s32_0_2(%[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_2]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(2))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @test_s32_0_240(%5 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%5))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(240))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_0_240:[0-9]+]] @test_s32_0_240(%[[VALUE_x_3:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_3]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(240))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @test_s32_0_255(%7 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%7))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_0_255:[0-9]+]] @test_s32_0_255(%[[VALUE_x_4:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_4]]))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @test_s32_1_1(%9 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%9))), const<i32>(1)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_1_1:[0-9]+]] @test_s32_1_1(%[[VALUE_x_5:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_5]]))), const<i32>(1)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @test_s32_7_1(%11 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%11))), const<i32>(7)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_7_1:[0-9]+]] @test_s32_7_1(%[[VALUE_x_6:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_6]]))), const<i32>(7)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @test_s32_8_1(%13 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%13))), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_8_1:[0-9]+]] @test_s32_8_1(%[[VALUE_x_7:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_7]]))), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @test_s32_8_240(%15 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%15))), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(240))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_8_240:[0-9]+]] @test_s32_8_240(%[[VALUE_x_8:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_8]]))), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(240))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @test_s32_8_255(%17 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%17))), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_8_255:[0-9]+]] @test_s32_8_255(%[[VALUE_x_9:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_9]]))), const<i32>(8)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @test_s32_15_1(%19 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%19))), const<i32>(15)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_15_1:[0-9]+]] @test_s32_15_1(%[[VALUE_x_10:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_10]]))), const<i32>(15)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @test_s32_16_1(%21 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%21))), const<i32>(16)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_16_1:[0-9]+]] @test_s32_16_1(%[[VALUE_x_11:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_11]]))), const<i32>(16)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @test_s32_16_240(%23 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%23))), const<i32>(16)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(240))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_16_240:[0-9]+]] @test_s32_16_240(%[[VALUE_x_12:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_12]]))), const<i32>(16)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(240))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @test_s32_16_255(%25 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%25))), const<i32>(16)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_16_255:[0-9]+]] @test_s32_16_255(%[[VALUE_x_13:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_13]]))), const<i32>(16)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @test_s32_24_1(%27 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%27))), const<i32>(24)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_24_1:[0-9]+]] @test_s32_24_1(%[[VALUE_x_14:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_14]]))), const<i32>(24)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %28 @test_s32_24_240(%29 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%29))), const<i32>(24)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(240))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_24_240:[0-9]+]] @test_s32_24_240(%[[VALUE_x_15:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_15]]))), const<i32>(24)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(240))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @test_s32_24_255(%31 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%31))), const<i32>(24)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_24_255:[0-9]+]] @test_s32_24_255(%[[VALUE_x_16:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_16]]))), const<i32>(24)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @test_s32_31_1(%33 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%33))), const<i32>(31)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_31_1:[0-9]+]] @test_s32_31_1(%[[VALUE_x_17:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_17]]))), const<i32>(31)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %34 @test_S32_0_1(%35 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%35)))), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_0_1:[0-9]+]] @test_S32_0_1(%[[VALUE_x_18:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_18]])))), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %36 @test_S32_0_2(%37 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%37)))), const<i32>(2));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_0_2:[0-9]+]] @test_S32_0_2(%[[VALUE_x_19:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_19]])))), const<i32>(2));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %38 @test_S32_0_240(%39 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%39)))), const<i32>(240));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_0_240:[0-9]+]] @test_S32_0_240(%[[VALUE_x_20:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_20]])))), const<i32>(240));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %40 @test_S32_0_255(%41 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%41)))), const<i32>(255));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_0_255:[0-9]+]] @test_S32_0_255(%[[VALUE_x_21:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_21]])))), const<i32>(255));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %42 @test_S32_1_1(%43 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%43)))), const<i32>(1)), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_1_1:[0-9]+]] @test_S32_1_1(%[[VALUE_x_22:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_22]])))), const<i32>(1)), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %44 @test_S32_7_1(%45 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%45)))), const<i32>(7)), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_7_1:[0-9]+]] @test_S32_7_1(%[[VALUE_x_23:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_23]])))), const<i32>(7)), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %46 @test_S32_8_1(%47 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%47)))), const<i32>(8)), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_8_1:[0-9]+]] @test_S32_8_1(%[[VALUE_x_24:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_24]])))), const<i32>(8)), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %48 @test_S32_8_240(%49 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%49)))), const<i32>(8)), const<i32>(240));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_8_240:[0-9]+]] @test_S32_8_240(%[[VALUE_x_25:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_25]])))), const<i32>(8)), const<i32>(240));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %50 @test_S32_8_255(%51 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%51)))), const<i32>(8)), const<i32>(255));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_8_255:[0-9]+]] @test_S32_8_255(%[[VALUE_x_26:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_26]])))), const<i32>(8)), const<i32>(255));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %52 @test_S32_15_1(%53 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%53)))), const<i32>(15)), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_15_1:[0-9]+]] @test_S32_15_1(%[[VALUE_x_27:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_27]])))), const<i32>(15)), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %54 @test_S32_16_1(%55 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%55)))), const<i32>(16)), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_16_1:[0-9]+]] @test_S32_16_1(%[[VALUE_x_28:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_28]])))), const<i32>(16)), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %56 @test_S32_16_240(%57 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%57)))), const<i32>(16)), const<i32>(240));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_16_240:[0-9]+]] @test_S32_16_240(%[[VALUE_x_29:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_29]])))), const<i32>(16)), const<i32>(240));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %58 @test_S32_16_255(%59 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%59)))), const<i32>(16)), const<i32>(255));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_16_255:[0-9]+]] @test_S32_16_255(%[[VALUE_x_30:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_30]])))), const<i32>(16)), const<i32>(255));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %60 @test_S32_24_1(%61 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%61)))), const<i32>(24)), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_24_1:[0-9]+]] @test_S32_24_1(%[[VALUE_x_31:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_31]])))), const<i32>(24)), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %62 @test_S32_24_240(%63 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%63)))), const<i32>(24)), const<i32>(240));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_24_240:[0-9]+]] @test_S32_24_240(%[[VALUE_x_32:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_32]])))), const<i32>(24)), const<i32>(240));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %64 @test_S32_24_255(%65 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%65)))), const<i32>(24)), const<i32>(255));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_24_255:[0-9]+]] @test_S32_24_255(%[[VALUE_x_33:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_33]])))), const<i32>(24)), const<i32>(255));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %66 @test_S32_31_1(%67 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%67)))), const<i32>(31)), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S32_31_1:[0-9]+]] @test_S32_31_1(%[[VALUE_x_34:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=explicit, fits=unknown>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_34]])))), const<i32>(31)), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %68 @test_u32_24_255(%69 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, read<u32>(%69)), const<i32>(24)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u32_24_255:[0-9]+]] @test_u32_24_255(%[[VALUE_x_35:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], read<u32>(%[[VALUE_x_35]])), const<i32>(24)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(255)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %253 @__builtin_bswap64(%252 <unnamed>: u64) -> u64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %70 @test_s64_0_1(%71 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%71))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_bswap64:[0-9]+]] @__builtin_bswap64(%[[VALUE1:[0-9]+]] <unnamed>: u64) -> u64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_0_1:[0-9]+]] @test_s64_0_1(%[[VALUE_x_36:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_36]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %72 @test_s64_0_2(%73 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%73))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_0_2:[0-9]+]] @test_s64_0_2(%[[VALUE_x_37:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_37]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %74 @test_s64_0_240(%75 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%75))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(240)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_0_240:[0-9]+]] @test_s64_0_240(%[[VALUE_x_38:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_38]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(240)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %76 @test_s64_0_255(%77 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%77))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(255)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_0_255:[0-9]+]] @test_s64_0_255(%[[VALUE_x_39:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_39]]))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(255)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %78 @test_s64_7_1(%79 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%79))), const<i32>(7)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_7_1:[0-9]+]] @test_s64_7_1(%[[VALUE_x_40:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_40]]))), const<i32>(7)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %80 @test_s64_8_1(%81 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%81))), const<i32>(8)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_8_1:[0-9]+]] @test_s64_8_1(%[[VALUE_x_41:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_41]]))), const<i32>(8)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %82 @test_s64_8_240(%83 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%83))), const<i32>(56)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(240)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_8_240:[0-9]+]] @test_s64_8_240(%[[VALUE_x_42:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_42]]))), const<i32>(56)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(240)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %84 @test_s64_8_255(%85 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%85))), const<i32>(8)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(255)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_8_255:[0-9]+]] @test_s64_8_255(%[[VALUE_x_43:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_43]]))), const<i32>(8)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(255)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %86 @test_s64_9_1(%87 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%87))), const<i32>(9)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_9_1:[0-9]+]] @test_s64_9_1(%[[VALUE_x_44:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_44]]))), const<i32>(9)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %88 @test_s64_31_1(%89 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%89))), const<i32>(31)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_31_1:[0-9]+]] @test_s64_31_1(%[[VALUE_x_45:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_45]]))), const<i32>(31)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %90 @test_s64_32_1(%91 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%91))), const<i32>(32)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_32_1:[0-9]+]] @test_s64_32_1(%[[VALUE_x_46:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_46]]))), const<i32>(32)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %92 @test_s64_32_240(%93 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%93))), const<i32>(32)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(240)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_32_240:[0-9]+]] @test_s64_32_240(%[[VALUE_x_47:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_47]]))), const<i32>(32)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(240)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %94 @test_s64_32_255(%95 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%95))), const<i32>(32)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(255)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_32_255:[0-9]+]] @test_s64_32_255(%[[VALUE_x_48:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_48]]))), const<i32>(32)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(255)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %96 @test_s64_33_1(%97 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%97))), const<i32>(33)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_33_1:[0-9]+]] @test_s64_33_1(%[[VALUE_x_49:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_49]]))), const<i32>(33)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %98 @test_s64_48_1(%99 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%99))), const<i32>(48)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_48_1:[0-9]+]] @test_s64_48_1(%[[VALUE_x_50:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_50]]))), const<i32>(48)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %100 @test_s64_48_240(%101 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%101))), const<i32>(48)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(240)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_48_240:[0-9]+]] @test_s64_48_240(%[[VALUE_x_51:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_51]]))), const<i32>(48)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(240)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %102 @test_s64_48_255(%103 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%103))), const<i32>(48)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(255)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_48_255:[0-9]+]] @test_s64_48_255(%[[VALUE_x_52:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_52]]))), const<i32>(48)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(255)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %104 @test_s64_56_1(%105 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%105))), const<i32>(56)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_56_1:[0-9]+]] @test_s64_56_1(%[[VALUE_x_53:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_53]]))), const<i32>(56)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %106 @test_s64_56_240(%107 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%107))), const<i32>(56)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(240)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_56_240:[0-9]+]] @test_s64_56_240(%[[VALUE_x_54:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_54]]))), const<i32>(56)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(240)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %108 @test_s64_56_255(%109 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%109))), const<i32>(56)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(255)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_56_255:[0-9]+]] @test_s64_56_255(%[[VALUE_x_55:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_55]]))), const<i32>(56)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(255)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %110 @test_s64_57_1(%111 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%111))), const<i32>(57)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_57_1:[0-9]+]] @test_s64_57_1(%[[VALUE_x_56:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_56]]))), const<i32>(57)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %112 @test_s64_63_1(%113 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%113))), const<i32>(63)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_63_1:[0-9]+]] @test_s64_63_1(%[[VALUE_x_57:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_57]]))), const<i32>(63)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %114 @test_S64_0_1(%115 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%115)))), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_0_1:[0-9]+]] @test_S64_0_1(%[[VALUE_x_58:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_58]])))), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %116 @test_S64_0_2(%117 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%117)))), widen<i64, reason=usual_arith>(const<i32>(2)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_0_2:[0-9]+]] @test_S64_0_2(%[[VALUE_x_59:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_59]])))), widen<i64, reason=usual_arith>(const<i32>(2)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %118 @test_S64_0_240(%119 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%119)))), widen<i64, reason=usual_arith>(const<i32>(240)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_0_240:[0-9]+]] @test_S64_0_240(%[[VALUE_x_60:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_60]])))), widen<i64, reason=usual_arith>(const<i32>(240)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %120 @test_S64_0_255(%121 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%121)))), widen<i64, reason=usual_arith>(const<i32>(255)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_0_255:[0-9]+]] @test_S64_0_255(%[[VALUE_x_61:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_61]])))), widen<i64, reason=usual_arith>(const<i32>(255)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %122 @test_S64_7_1(%123 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%123)))), const<i32>(7)), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_7_1:[0-9]+]] @test_S64_7_1(%[[VALUE_x_62:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_62]])))), const<i32>(7)), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %124 @test_S64_8_1(%125 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%125)))), const<i32>(8)), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_8_1:[0-9]+]] @test_S64_8_1(%[[VALUE_x_63:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_63]])))), const<i32>(8)), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %126 @test_S64_8_240(%127 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%127)))), const<i32>(56)), widen<i64, reason=usual_arith>(const<i32>(240)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_8_240:[0-9]+]] @test_S64_8_240(%[[VALUE_x_64:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_64]])))), const<i32>(56)), widen<i64, reason=usual_arith>(const<i32>(240)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %128 @test_S64_8_255(%129 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%129)))), const<i32>(8)), widen<i64, reason=usual_arith>(const<i32>(255)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_8_255:[0-9]+]] @test_S64_8_255(%[[VALUE_x_65:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_65]])))), const<i32>(8)), widen<i64, reason=usual_arith>(const<i32>(255)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %130 @test_S64_9_1(%131 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%131)))), const<i32>(9)), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_9_1:[0-9]+]] @test_S64_9_1(%[[VALUE_x_66:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_66]])))), const<i32>(9)), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %132 @test_S64_31_1(%133 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%133)))), const<i32>(31)), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_31_1:[0-9]+]] @test_S64_31_1(%[[VALUE_x_67:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_67]])))), const<i32>(31)), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %134 @test_S64_32_1(%135 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%135)))), const<i32>(32)), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_32_1:[0-9]+]] @test_S64_32_1(%[[VALUE_x_68:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_68]])))), const<i32>(32)), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %136 @test_S64_32_240(%137 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%137)))), const<i32>(32)), widen<i64, reason=usual_arith>(const<i32>(240)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_32_240:[0-9]+]] @test_S64_32_240(%[[VALUE_x_69:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_69]])))), const<i32>(32)), widen<i64, reason=usual_arith>(const<i32>(240)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %138 @test_S64_32_255(%139 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%139)))), const<i32>(32)), widen<i64, reason=usual_arith>(const<i32>(255)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_32_255:[0-9]+]] @test_S64_32_255(%[[VALUE_x_70:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_70]])))), const<i32>(32)), widen<i64, reason=usual_arith>(const<i32>(255)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %140 @test_S64_33_1(%141 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%141)))), const<i32>(33)), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_33_1:[0-9]+]] @test_S64_33_1(%[[VALUE_x_71:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_71]])))), const<i32>(33)), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %142 @test_S64_48_1(%143 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%143)))), const<i32>(48)), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_48_1:[0-9]+]] @test_S64_48_1(%[[VALUE_x_72:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_72]])))), const<i32>(48)), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %144 @test_S64_48_240(%145 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%145)))), const<i32>(48)), widen<i64, reason=usual_arith>(const<i32>(240)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_48_240:[0-9]+]] @test_S64_48_240(%[[VALUE_x_73:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_73]])))), const<i32>(48)), widen<i64, reason=usual_arith>(const<i32>(240)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %146 @test_S64_48_255(%147 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%147)))), const<i32>(48)), widen<i64, reason=usual_arith>(const<i32>(255)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_48_255:[0-9]+]] @test_S64_48_255(%[[VALUE_x_74:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_74]])))), const<i32>(48)), widen<i64, reason=usual_arith>(const<i32>(255)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %148 @test_S64_56_1(%149 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%149)))), const<i32>(56)), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_56_1:[0-9]+]] @test_S64_56_1(%[[VALUE_x_75:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_75]])))), const<i32>(56)), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %150 @test_S64_56_240(%151 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%151)))), const<i32>(56)), widen<i64, reason=usual_arith>(const<i32>(240)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_56_240:[0-9]+]] @test_S64_56_240(%[[VALUE_x_76:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_76]])))), const<i32>(56)), widen<i64, reason=usual_arith>(const<i32>(240)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %152 @test_S64_56_255(%153 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%153)))), const<i32>(56)), widen<i64, reason=usual_arith>(const<i32>(255)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_56_255:[0-9]+]] @test_S64_56_255(%[[VALUE_x_77:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_77]])))), const<i32>(56)), widen<i64, reason=usual_arith>(const<i32>(255)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %154 @test_S64_57_1(%155 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%155)))), const<i32>(57)), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_57_1:[0-9]+]] @test_S64_57_1(%[[VALUE_x_78:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_78]])))), const<i32>(57)), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %156 @test_S64_63_1(%157 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%157)))), const<i32>(63)), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S64_63_1:[0-9]+]] @test_S64_63_1(%[[VALUE_x_79:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i64>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i64, reason=explicit, fits=unknown>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_79]])))), const<i32>(63)), widen<i64, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %158 @test_u64_56_255(%159 x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, read<u64>(%159)), const<i32>(56)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(255))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u64_56_255:[0-9]+]] @test_u64_56_255(%[[VALUE_x_80:[0-9]+]] x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_x_80]])), const<i32>(56)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(255))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %255 @__builtin_bswap16(%254 <unnamed>: u16) -> u16 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %160 @test_s16_0_1(%161 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%161))))), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_bswap16:[0-9]+]] @__builtin_bswap16(%[[VALUE2:[0-9]+]] <unnamed>: u16) -> u16 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_test_s16_0_1:[0-9]+]] @test_s16_0_1(%[[VALUE_x_81:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_81]]))))), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %162 @test_s16_0_240(%163 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%163))))), const<i32>(240)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s16_0_240:[0-9]+]] @test_s16_0_240(%[[VALUE_x_82:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_82]]))))), const<i32>(240)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %164 @test_s16_0_255(%165 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%165))))), const<i32>(255)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s16_0_255:[0-9]+]] @test_s16_0_255(%[[VALUE_x_83:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_83]]))))), const<i32>(255)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %166 @test_s16_1_1(%167 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%167))))), const<i32>(1)), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s16_1_1:[0-9]+]] @test_s16_1_1(%[[VALUE_x_84:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_84]]))))), const<i32>(1)), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %168 @test_s16_7_1(%169 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%169))))), const<i32>(7)), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s16_7_1:[0-9]+]] @test_s16_7_1(%[[VALUE_x_85:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_85]]))))), const<i32>(7)), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %170 @test_s16_8_1(%171 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%171))))), const<i32>(8)), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s16_8_1:[0-9]+]] @test_s16_8_1(%[[VALUE_x_86:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_86]]))))), const<i32>(8)), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %172 @test_s16_8_240(%173 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%173))))), const<i32>(8)), const<i32>(240)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s16_8_240:[0-9]+]] @test_s16_8_240(%[[VALUE_x_87:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_87]]))))), const<i32>(8)), const<i32>(240)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %174 @test_s16_8_255(%175 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%175))))), const<i32>(8)), const<i32>(255)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s16_8_255:[0-9]+]] @test_s16_8_255(%[[VALUE_x_88:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_88]]))))), const<i32>(8)), const<i32>(255)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %176 @test_s16_9_1(%177 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%177))))), const<i32>(9)), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s16_9_1:[0-9]+]] @test_s16_9_1(%[[VALUE_x_89:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_89]]))))), const<i32>(9)), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %178 @test_s16_15_1(%179 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%179))))), const<i32>(15)), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s16_15_1:[0-9]+]] @test_s16_15_1(%[[VALUE_x_90:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_90]]))))), const<i32>(15)), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %180 @test_S16_0_1(%181 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%181))))), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S16_0_1:[0-9]+]] @test_S16_0_1(%[[VALUE_x_91:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_91]]))))), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %182 @test_S16_0_240(%183 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%183))))), const<i32>(240)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S16_0_240:[0-9]+]] @test_S16_0_240(%[[VALUE_x_92:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_92]]))))), const<i32>(240)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %184 @test_S16_0_255(%185 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%185))))), const<i32>(255)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S16_0_255:[0-9]+]] @test_S16_0_255(%[[VALUE_x_93:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_93]]))))), const<i32>(255)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %186 @test_S16_1_1(%187 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%187))))), const<i32>(1)), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S16_1_1:[0-9]+]] @test_S16_1_1(%[[VALUE_x_94:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_94]]))))), const<i32>(1)), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %188 @test_S16_7_1(%189 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%189))))), const<i32>(7)), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S16_7_1:[0-9]+]] @test_S16_7_1(%[[VALUE_x_95:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_95]]))))), const<i32>(7)), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %190 @test_S16_8_1(%191 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%191))))), const<i32>(8)), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S16_8_1:[0-9]+]] @test_S16_8_1(%[[VALUE_x_96:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_96]]))))), const<i32>(8)), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %192 @test_S16_8_240(%193 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%193))))), const<i32>(8)), const<i32>(240)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S16_8_240:[0-9]+]] @test_S16_8_240(%[[VALUE_x_97:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_97]]))))), const<i32>(8)), const<i32>(240)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %194 @test_S16_8_255(%195 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%195))))), const<i32>(8)), const<i32>(255)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S16_8_255:[0-9]+]] @test_S16_8_255(%[[VALUE_x_98:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_98]]))))), const<i32>(8)), const<i32>(255)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %196 @test_S16_9_1(%197 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%197))))), const<i32>(9)), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S16_9_1:[0-9]+]] @test_S16_9_1(%[[VALUE_x_99:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_99]]))))), const<i32>(9)), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %198 @test_S16_15_1(%199 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%199))))), const<i32>(15)), const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_S16_15_1:[0-9]+]] @test_S16_15_1(%[[VALUE_x_100:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(reinterpret<i16, reason=explicit, fits=unknown>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_100]]))))), const<i32>(15)), const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %200 @test_u16_8_255(%201 x: u16) -> u16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, read<u16>(%201)))), const<i32>(8)), const<i32>(255))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u16_8_255:[0-9]+]] @test_u16_8_255(%[[VALUE_x_101:[0-9]+]] x: u16) -> u16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=unknown>(and<i32>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], read<u16>(%[[VALUE_x_101]])))), const<i32>(8)), const<i32>(255))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %202 @test_s32_24(%203 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%203))), const<i32>(24)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_24:[0-9]+]] @test_s32_24(%[[VALUE_x_102:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_102]]))), const<i32>(24)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %204 @test_s32_25(%205 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%205))), const<i32>(25)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_25:[0-9]+]] @test_s32_25(%[[VALUE_x_103:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_103]]))), const<i32>(25)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %206 @test_s32_30(%207 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%207))), const<i32>(30)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_30:[0-9]+]] @test_s32_30(%[[VALUE_x_104:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_104]]))), const<i32>(30)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %208 @test_s32_31(%209 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%209))), const<i32>(31)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s32_31:[0-9]+]] @test_s32_31(%[[VALUE_x_105:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(%[[VALUE_x_105]]))), const<i32>(31)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %210 @test_u32_24(%211 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, read<u32>(%211)), const<i32>(24));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u32_24:[0-9]+]] @test_u32_24(%[[VALUE_x_106:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], read<u32>(%[[VALUE_x_106]])), const<i32>(24));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %212 @test_u32_25(%213 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, read<u32>(%213)), const<i32>(25));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u32_25:[0-9]+]] @test_u32_25(%[[VALUE_x_107:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], read<u32>(%[[VALUE_x_107]])), const<i32>(25));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %214 @test_u32_30(%215 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, read<u32>(%215)), const<i32>(30));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u32_30:[0-9]+]] @test_u32_30(%[[VALUE_x_108:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], read<u32>(%[[VALUE_x_108]])), const<i32>(30));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %216 @test_u32_31(%217 x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%251, read<u32>(%217)), const<i32>(31));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u32_31:[0-9]+]] @test_u32_31(%[[VALUE_x_109:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return shr<u32, amount_out_of_range=ub, fill=zero_extend>(call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], read<u32>(%[[VALUE_x_109]])), const<i32>(31));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %218 @test_s64_56(%219 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%219))), const<i32>(56)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_56:[0-9]+]] @test_s64_56(%[[VALUE_x_110:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_110]]))), const<i32>(56)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %220 @test_s64_57(%221 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%221))), const<i32>(57)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_57:[0-9]+]] @test_s64_57(%[[VALUE_x_111:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_111]]))), const<i32>(57)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %222 @test_s64_62(%223 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%223))), const<i32>(62)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_62:[0-9]+]] @test_s64_62(%[[VALUE_x_112:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_112]]))), const<i32>(62)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %224 @test_s64_63(%225 x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%225))), const<i32>(63)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s64_63:[0-9]+]] @test_s64_63(%[[VALUE_x_113:[0-9]+]] x: i64) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i64, reason=return, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], reinterpret<u64, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x_113]]))), const<i32>(63)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %226 @test_u64_56(%227 x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, read<u64>(%227)), const<i32>(56));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u64_56:[0-9]+]] @test_u64_56(%[[VALUE_x_114:[0-9]+]] x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_x_114]])), const<i32>(56));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %228 @test_u64_57(%229 x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, read<u64>(%229)), const<i32>(57));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u64_57:[0-9]+]] @test_u64_57(%[[VALUE_x_115:[0-9]+]] x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_x_115]])), const<i32>(57));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %230 @test_u64_62(%231 x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, read<u64>(%231)), const<i32>(62));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u64_62:[0-9]+]] @test_u64_62(%[[VALUE_x_116:[0-9]+]] x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_x_116]])), const<i32>(62));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %232 @test_u64_63(%233 x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%253, read<u64>(%233)), const<i32>(63));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u64_63:[0-9]+]] @test_u64_63(%[[VALUE_x_117:[0-9]+]] x: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_x_117]])), const<i32>(63));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %234 @test_s16_8(%235 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%235))))), const<i32>(8)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s16_8:[0-9]+]] @test_s16_8(%[[VALUE_x_118:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_118]]))))), const<i32>(8)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %236 @test_s16_9(%237 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%237))))), const<i32>(9)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s16_9:[0-9]+]] @test_s16_9(%[[VALUE_x_119:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_119]]))))), const<i32>(9)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %238 @test_s16_14(%239 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%239))))), const<i32>(14)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s16_14:[0-9]+]] @test_s16_14(%[[VALUE_x_120:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_120]]))))), const<i32>(14)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %240 @test_s16_15(%241 x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%241))))), const<i32>(15)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_s16_15:[0-9]+]] @test_s16_15(%[[VALUE_x_121:[0-9]+]] x: i16) -> i16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_x_121]]))))), const<i32>(15)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %242 @test_u16_8(%243 x: u16) -> u16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, read<u16>(%243)))), const<i32>(8))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u16_8:[0-9]+]] @test_u16_8(%[[VALUE_x_122:[0-9]+]] x: u16) -> u16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], read<u16>(%[[VALUE_x_122]])))), const<i32>(8))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %244 @test_u16_9(%245 x: u16) -> u16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, read<u16>(%245)))), const<i32>(9))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u16_9:[0-9]+]] @test_u16_9(%[[VALUE_x_123:[0-9]+]] x: u16) -> u16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], read<u16>(%[[VALUE_x_123]])))), const<i32>(9))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %246 @test_u16_14(%247 x: u16) -> u16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, read<u16>(%247)))), const<i32>(14))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u16_14:[0-9]+]] @test_u16_14(%[[VALUE_x_124:[0-9]+]] x: u16) -> u16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], read<u16>(%[[VALUE_x_124]])))), const<i32>(14))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %248 @test_u16_15(%249 x: u16) -> u16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%255, read<u16>(%249)))), const<i32>(15))));
+// DEFAULT-NEXT:     fn %[[VALUE_test_u16_15:[0-9]+]] @test_u16_15(%[[VALUE_x_125:[0-9]+]] x: u16) -> u16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u16, reason=return, fits=unknown>(truncate<i16, reason=return, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn(u16) -> u16>(%[[VALUE___builtin_bswap16]], read<u16>(%[[VALUE_x_125]])))), const<i32>(15))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

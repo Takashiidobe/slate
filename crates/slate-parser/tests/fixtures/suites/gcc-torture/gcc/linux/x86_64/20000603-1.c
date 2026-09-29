@@ -54,26 +54,26 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s1:[0-9]+]] s1 = struct {
 // DEFAULT-NEXT:         field0 d: f64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 s2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s2:[0-9]+]] s2 = struct {
 // DEFAULT-NEXT:         field0 d: f64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 u = union {
-// DEFAULT-NEXT:         field0 x: @type0;
-// DEFAULT-NEXT:         field1 y: @type1;
+// DEFAULT-NEXT:     type @type[[TYPE_u:[0-9]+]] u = union {
+// DEFAULT-NEXT:         field0 x: @type[[TYPE_s1]];
+// DEFAULT-NEXT:         field1 y: @type[[TYPE_s2]];
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @f(%5 a: ptr<@type0>, %6 b: ptr<@type1>) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<f64>(field0(deref(read<ptr<@type0>>(%5))), const<f64>(1.0));
-// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(field0(deref(read<ptr<@type1>>(%6)))), const<f64>(1.0));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a:[0-9]+]] a: ptr<@type[[TYPE_s1]]>, %[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE_s2]]>) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<f64>(field0(deref(read<ptr<@type[[TYPE_s1]]>>(%[[VALUE_a]]))), const<f64>(1.0));
+// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(field0(deref(read<ptr<@type[[TYPE_s2]]>>(%[[VALUE_b]])))), const<f64>(1.0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 a: @type2 [storage=automatic];
-// DEFAULT-NEXT:         write<f64>(field0(field0(%8)), const<f64>(0.0));
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(ptr<@type0>, ptr<@type1>) -> f64>(%4, addr_of<ptr<@type0>>(field0(%8)), addr_of<ptr<@type1>>(field1(%8))), const<f64>(2.0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: @type[[TYPE_u]] [storage=automatic];
+// DEFAULT-NEXT:         write<f64>(field0(field0(%[[VALUE_a_2]])), const<f64>(0.0));
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(ptr<@type[[TYPE_s1]]>, ptr<@type[[TYPE_s2]]>) -> f64>(%[[VALUE_f]], addr_of<ptr<@type[[TYPE_s1]]>>(field0(%[[VALUE_a_2]])), addr_of<ptr<@type[[TYPE_s2]]>>(field1(%[[VALUE_a_2]]))), const<f64>(2.0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

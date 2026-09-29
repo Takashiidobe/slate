@@ -62,38 +62,38 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 assembly_operand = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_assembly_operand:[0-9]+]] assembly_operand = struct {
 // DEFAULT-NEXT:         field0 type: i32;
 // DEFAULT-NEXT:         field1 value: i32;
 // DEFAULT-NEXT:         field2 symtype: i32;
 // DEFAULT-NEXT:         field3 symflags: i32;
 // DEFAULT-NEXT:         field4 marker: i32;
 // DEFAULT-NEXT:     } [size=20, align=4, offsets=[0, 4, 8, 12, 16]];
-// DEFAULT-NEXT:     global %1 to_input: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 from_input: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @assemblez_1(%4 internal_number: i32, %5 o1: @type0) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(scalar, native_c) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%5)), read<i32>(field0(%2)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:     global %[[VALUE_to_input:[0-9]+]] to_input: @type[[TYPE_assembly_operand]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_from_input:[0-9]+]] from_input: @type[[TYPE_assembly_operand]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_assemblez_1:[0-9]+]] @assemblez_1(%[[VALUE_internal_number:[0-9]+]] internal_number: i32, %[[VALUE_o1:[0-9]+]] o1: @type[[TYPE_assembly_operand]]) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(scalar, native_c) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%[[VALUE_o1]])), read<i32>(field0(%[[VALUE_from_input]])))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @t0(%7 to: @type0, %8 from: @type0) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(native_c, native_c) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(field1(%7)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn(i32, @type0) -> void, abi=sysv64(scalar, native_c) -> void>(%3, const<i32>(32), copy<@type0, reason=arg>(read<@type0>(%8)));
+// DEFAULT-NEXT:     fn %[[VALUE_t0:[0-9]+]] @t0(%[[VALUE_to:[0-9]+]] to: @type[[TYPE_assembly_operand]], %[[VALUE_from:[0-9]+]] from: @type[[TYPE_assembly_operand]]) -> void [linkage=external] [inline=never] [definition=emitted] [abi=sysv64(native_c, native_c) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(field1(%[[VALUE_to]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn(i32, @type[[TYPE_assembly_operand]]) -> void, abi=sysv64(scalar, native_c) -> void>(%[[VALUE_assemblez_1]], const<i32>(32), copy<@type[[TYPE_assembly_operand]], reason=arg>(read<@type[[TYPE_assembly_operand]]>(%[[VALUE_from]])));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<i32>(field1(%1), const<i32>(0));
-// DEFAULT-NEXT:         write<i32>(field0(%1), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(field2(%1), const<i32>(2));
-// DEFAULT-NEXT:         write<i32>(field3(%1), const<i32>(3));
-// DEFAULT-NEXT:         write<i32>(field4(%1), const<i32>(4));
-// DEFAULT-NEXT:         write<i32>(field1(%2), const<i32>(5));
-// DEFAULT-NEXT:         write<i32>(field0(%2), const<i32>(6));
-// DEFAULT-NEXT:         write<i32>(field2(%2), const<i32>(7));
-// DEFAULT-NEXT:         write<i32>(field3(%2), const<i32>(8));
-// DEFAULT-NEXT:         write<i32>(field4(%2), const<i32>(9));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0, @type0) -> void, abi=sysv64(native_c, native_c) -> void>(%6, copy<@type0, reason=arg>(read<@type0>(%1)), copy<@type0, reason=arg>(read<@type0>(%2)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_to_input]]), const<i32>(0));
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_to_input]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(field2(%[[VALUE_to_input]]), const<i32>(2));
+// DEFAULT-NEXT:         write<i32>(field3(%[[VALUE_to_input]]), const<i32>(3));
+// DEFAULT-NEXT:         write<i32>(field4(%[[VALUE_to_input]]), const<i32>(4));
+// DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_from_input]]), const<i32>(5));
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_from_input]]), const<i32>(6));
+// DEFAULT-NEXT:         write<i32>(field2(%[[VALUE_from_input]]), const<i32>(7));
+// DEFAULT-NEXT:         write<i32>(field3(%[[VALUE_from_input]]), const<i32>(8));
+// DEFAULT-NEXT:         write<i32>(field4(%[[VALUE_from_input]]), const<i32>(9));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_assembly_operand]], @type[[TYPE_assembly_operand]]) -> void, abi=sysv64(native_c, native_c) -> void>(%[[VALUE_t0]], copy<@type[[TYPE_assembly_operand]], reason=arg>(read<@type[[TYPE_assembly_operand]]>(%[[VALUE_to_input]])), copy<@type[[TYPE_assembly_operand]], reason=arg>(read<@type[[TYPE_assembly_operand]]>(%[[VALUE_from_input]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

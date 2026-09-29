@@ -64,31 +64,31 @@ void bar(void) {}
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 ptr1: ptr<void> [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %3 ptr2: ptr<void> [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %4 i: i32 [storage=static] = const<i32>(1) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%15 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @doit(%7 pptr: ptr<ptr<void>>, %8 cond: i32) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%8), const<i32>(0))
+// DEFAULT-NEXT:     global %[[VALUE_ptr1:[0-9]+]] ptr1: ptr<void> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ptr2:[0-9]+]] ptr2: ptr<void> [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] = const<i32>(1) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_doit:[0-9]+]] @doit(%[[VALUE_pptr:[0-9]+]] pptr: ptr<ptr<void>>, %[[VALUE_cond:[0-9]+]] cond: i32) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_cond]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 label %6 here:
-// DEFAULT-NEXT:                     write<ptr<void>>(deref(read<ptr<ptr<void>>>(%7)), label_addr<ptr<void>>(%6));
+// DEFAULT-NEXT:                 label %[[VALUE_here:[0-9]+]] here:
+// DEFAULT-NEXT:                     write<ptr<void>>(deref(read<ptr<ptr<void>>>(%[[VALUE_pptr]])), label_addr<ptr<void>>(%[[VALUE_here]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @f(%10 cond: i32) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>, i32) -> void>(%5, addr_of<ptr<ptr<void>>>(%2), read<i32>(%10));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_cond_2:[0-9]+]] cond: i32) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>, i32) -> void>(%[[VALUE_doit]], addr_of<ptr<ptr<void>>>(%[[VALUE_ptr1]]), read<i32>(%[[VALUE_cond_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @g(%12 cond: i32) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>, i32) -> void>(%5, addr_of<ptr<ptr<void>>>(%3), read<i32>(%12));
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_cond_3:[0-9]+]] cond: i32) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>, i32) -> void>(%[[VALUE_doit]], addr_of<ptr<ptr<void>>>(%[[VALUE_ptr2]]), read<i32>(%[[VALUE_cond_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @bar() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%9, read<i32>(%4));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%13);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%11, read<i32>(%4));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_f]], read<i32>(%[[VALUE_i]]));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_bar]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_g]], read<i32>(%[[VALUE_i]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

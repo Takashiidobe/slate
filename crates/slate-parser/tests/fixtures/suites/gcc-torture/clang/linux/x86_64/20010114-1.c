@@ -29,8 +29,8 @@ void proc(int (*x)(void)) {}
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 x = i32;
-// DEFAULT-NEXT:     fn %1 @proc(%2 x: ptr<fn() -> i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     type @type[[TYPE_x:[0-9]+]] x = i32;
+// DEFAULT-NEXT:     fn %[[VALUE_proc:[0-9]+]] @proc(%[[VALUE_x:[0-9]+]] x: ptr<fn() -> i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -37,11 +37,11 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 T = u31b;
-// DEFAULT-NEXT:     global %1 a: u31b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 b: u31b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<u31b>(%2, truncate<u31b, reason=explicit, fits=unknown>(or<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(or<u32>(widen<u32, reason=usual_arith>(read<u31b>(%1)), shr<u32, amount_out_of_range=ub, fill=zero_extend>(neg<u32, overflow=wrap>(const<u32>(1)), const<i32>(1))), const<i32>(1)), reinterpret<u32, reason=usual_arith, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(or<i32>(reinterpret<i32, reason=usual_arith, fits=unknown>(widen<u32, reason=usual_arith>(read<u31b>(%1))), const<i32>(5)), const<i32>(4))))));
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = u31b;
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: u31b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: u31b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<u31b>(%[[VALUE_b]], truncate<u31b, reason=explicit, fits=unknown>(or<u32>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(or<u32>(widen<u32, reason=usual_arith>(read<u31b>(%[[VALUE_a]])), shr<u32, amount_out_of_range=ub, fill=zero_extend>(neg<u32, overflow=wrap>(const<u32>(1)), const<i32>(1))), const<i32>(1)), reinterpret<u32, reason=usual_arith, fits=unknown>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(or<i32>(reinterpret<i32, reason=usual_arith, fits=unknown>(widen<u32, reason=usual_arith>(read<u31b>(%[[VALUE_a]]))), const<i32>(5)), const<i32>(4))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -44,24 +44,24 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%13 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @brother(%4 a: i32, %5 b: i32, %6 c: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_brother:[0-9]+]] @brother(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32, %[[VALUE_c:[0-9]+]] c: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @sister(%8 f: @type0, %9 b: i32, %10 c: i32) -> void [linkage=external] [abi=sysv64(native_c, scalar, scalar) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32) -> void>(%3, from_bool<i32, reason=arg>(eq<i32>(read<i32>(field1(%8)), read<i32>(%9))), read<i32>(%9), read<i32>(%10));
+// DEFAULT-NEXT:     fn %[[VALUE_sister:[0-9]+]] @sister(%[[VALUE_f:[0-9]+]] f: @type[[TYPE_foo]], %[[VALUE_b_2:[0-9]+]] b: i32, %[[VALUE_c_2:[0-9]+]] c: i32) -> void [linkage=external] [abi=sysv64(native_c, scalar, scalar) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32) -> void>(%[[VALUE_brother]], from_bool<i32, reason=arg>(eq<i32>(read<i32>(field1(%[[VALUE_f]])), read<i32>(%[[VALUE_b_2]]))), read<i32>(%[[VALUE_b_2]]), read<i32>(%[[VALUE_c_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 f: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(7), field1 = const<i32>(8), field2 = const<i32>(9));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0, i32, i32) -> void, abi=sysv64(native_c, scalar, scalar) -> void>(%7, copy<@type0, reason=arg>(read<@type0>(%12)), const<i32>(1), const<i32>(2));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_f_2:[0-9]+]] f: @type[[TYPE_foo]] [storage=automatic] = aggregate<@type[[TYPE_foo]], zero_fill=false>(field0 = const<i32>(7), field1 = const<i32>(8), field2 = const<i32>(9));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_foo]], i32, i32) -> void, abi=sysv64(native_c, scalar, scalar) -> void>(%[[VALUE_sister]], copy<@type[[TYPE_foo]], reason=arg>(read<@type[[TYPE_foo]]>(%[[VALUE_f_2]])), const<i32>(1), const<i32>(2));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

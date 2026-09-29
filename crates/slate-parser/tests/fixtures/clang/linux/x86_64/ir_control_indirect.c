@@ -36,17 +36,17 @@ done: return;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @indirect(%3 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %4 target: ptr<void> [storage=automatic] = conditional<ptr<void>>(ne<i32>(read<i32>(%3), const<i32>(0)), label_addr<ptr<void>>(%1), label_addr<ptr<void>>(%2));
-// IR-NEXT:         goto *read<ptr<void>>(%4);
-// IR-NEXT:         label %1 yes:
+// IR-NEXT:     fn %[[VALUE_indirect:[0-9]+]] @indirect(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_target:[0-9]+]] target: ptr<void> [storage=automatic] = conditional<ptr<void>>(ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0)), label_addr<ptr<void>>(%[[VALUE_yes:[0-9]+]]), label_addr<ptr<void>>(%[[VALUE_no:[0-9]+]]));
+// IR-NEXT:         goto *read<ptr<void>>(%[[VALUE_target]]);
+// IR-NEXT:         label %[[VALUE_yes]] yes:
 // IR-NEXT:             return const<i32>(1);
-// IR-NEXT:         label %2 no:
+// IR-NEXT:         label %[[VALUE_no]] no:
 // IR-NEXT:             return const<i32>(0);
 // IR-NEXT:     }
-// IR-NEXT:     fn %5 @direct_address() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         goto *label_addr<ptr<void>>(%6);
-// IR-NEXT:         label %6 done:
+// IR-NEXT:     fn %[[VALUE_direct_address:[0-9]+]] @direct_address() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         goto *label_addr<ptr<void>>(%[[VALUE_done:[0-9]+]]);
+// IR-NEXT:         label %[[VALUE_done]] done:
 // IR-NEXT:             return;
 // IR-NEXT:     }
 // IR-NEXT: }

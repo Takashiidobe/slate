@@ -35,12 +35,12 @@ bar (void *x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%3 <unnamed>: ptr<void>) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @__builtin_setjmp(%4 <unnamed>: ptr<ptr<void>>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @bar(%2 x: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<ptr<void>>) -> i32>(%5, pointer_cast<ptr<ptr<void>>, reason=arg>(read<ptr<void>>(%2))), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_setjmp:[0-9]+]] @__builtin_setjmp(%[[VALUE1:[0-9]+]] <unnamed>: ptr<ptr<void>>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: ptr<void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<ptr<void>>) -> i32>(%[[VALUE___builtin_setjmp]], pointer_cast<ptr<ptr<void>>, reason=arg>(read<ptr<void>>(%[[VALUE_x]]))), const<i32>(0))
 // DEFAULT-NEXT:             return;
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%0, read<ptr<void>>(%2));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_foo]], read<ptr<void>>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

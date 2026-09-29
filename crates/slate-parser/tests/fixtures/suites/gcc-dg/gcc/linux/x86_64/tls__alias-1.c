@@ -50,13 +50,13 @@ extern __thread struct __res_state bar
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __res_state = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___res_state:[0-9]+]] __res_state = struct {
 // DEFAULT-NEXT:         field0 x: array<i8, 123>;
 // DEFAULT-NEXT:     } [size=123, align=1, offsets=[0]];
-// DEFAULT-NEXT:     global %1 bar: @type0 [storage=thread] [linkage=external] [visibility=hidden] [alias="foo"] [tls_model=initial-exec];
-// DEFAULT-NEXT:     global %3 foo: @type0 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(123)>(field0(%1)), const<i32>(0))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:     global %[[VALUE_bar:[0-9]+]] bar: @type[[TYPE___res_state]] [storage=thread] [linkage=external] [visibility=hidden] [alias="foo"] [tls_model=initial-exec];
+// DEFAULT-NEXT:     global %[[VALUE_foo:[0-9]+]] foo: @type[[TYPE___res_state]] [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(123)>(field0(%[[VALUE_bar]])), const<i32>(0))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

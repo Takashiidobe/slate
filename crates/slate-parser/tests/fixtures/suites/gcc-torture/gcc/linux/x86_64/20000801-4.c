@@ -52,22 +52,22 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 t: ptr<i8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 s: array<i8, 2> [storage=automatic] = code_units<array<i8, 2>>([0, 0]);
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(const<i32>(0), widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(2)>(%3), const<i32>(1)))))));
+// DEFAULT-NEXT:     global %[[VALUE_t:[0-9]+]] t: ptr<i8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: array<i8, 2> [storage=automatic] = code_units<array<i8, 2>>([0, 0]);
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(const<i32>(0), widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_s]]), const<i32>(1)))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %6 s: array<i8, 2> [storage=automatic] = code_units<array<i8, 2>>([120, 0]);
-// DEFAULT-NEXT:             write<ptr<i8>>(%4, array_decay<ptr<i8>, length=Some(2)>(%6));
+// DEFAULT-NEXT:             let %[[VALUE_s_2:[0-9]+]] s: array<i8, 2> [storage=automatic] = code_units<array<i8, 2>>([120, 0]);
+// DEFAULT-NEXT:             write<ptr<i8>>(%[[VALUE_t]], array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_s_2]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%2), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_foo]]), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

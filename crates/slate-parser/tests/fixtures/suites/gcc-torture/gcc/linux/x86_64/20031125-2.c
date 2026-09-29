@@ -42,31 +42,31 @@ void render_blob_line(struct BlobSpan blobdata) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 BlobSpan = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_BlobSpan:[0-9]+]] BlobSpan = struct {
 // DEFAULT-NEXT:         field0 right: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @render_blob_line(%2 blobdata: @type0) -> void [linkage=external] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 buf: array<i32, 32> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %4 data: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(32)>(%3);
-// DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %6 n: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%2)), const<i32>(0))
-// DEFAULT-NEXT:             let %9: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:             let %10: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%9), const<i32>(1));
-// DEFAULT-NEXT:             write<i32>(%6, read<i32>(%10));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%6), const<i32>(0))
-// DEFAULT-NEXT:             for %7
+// DEFAULT-NEXT:     fn %[[VALUE_render_blob_line:[0-9]+]] @render_blob_line(%[[VALUE_blobdata:[0-9]+]] blobdata: @type[[TYPE_BlobSpan]]) -> void [linkage=external] [abi=sysv64(native_c) -> void] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_buf:[0-9]+]] buf: array<i32, 32> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_data:[0-9]+]] data: ptr<i32> [storage=automatic] = array_decay<ptr<i32>, length=Some(32)>(%[[VALUE_buf]]);
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%[[VALUE_blobdata]])), const<i32>(0))
+// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n]]);
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_n]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0))
+// DEFAULT-NEXT:             for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:                 init:
-// DEFAULT-NEXT:                 condition: lt<i32>(read<i32>(%5), mul<i32, overflow=ub>(const<i32>(2), read<i32>(%6)))
+// DEFAULT-NEXT:                 condition: lt<i32>(read<i32>(%[[VALUE_i]]), mul<i32, overflow=ub>(const<i32>(2), read<i32>(%[[VALUE_n]])))
 // DEFAULT-NEXT:                 increment: omitted
 // DEFAULT-NEXT:                 body:
-// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%4), read<i32>(%5))), const<i32>(0));
-// DEFAULT-NEXT:         let %11: i32 [synthetic] = read<i32>(%6);
-// DEFAULT-NEXT:         let %12: i32 [synthetic] = mul<i32, overflow=ub>(read<i32>(%11), const<i32>(2));
-// DEFAULT-NEXT:         write<i32>(%6, read<i32>(%12));
-// DEFAULT-NEXT:         for %8
+// DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_data]]), read<i32>(%[[VALUE_i]]))), const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_n]]);
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = mul<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(2));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_n]], read<i32>(%[[VALUE4]]));
+// DEFAULT-NEXT:         for %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:             condition: ne<i32>(read<i32>(%6), const<i32>(0))
+// DEFAULT-NEXT:             condition: ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0))
 // DEFAULT-NEXT:             increment: omitted
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 ;

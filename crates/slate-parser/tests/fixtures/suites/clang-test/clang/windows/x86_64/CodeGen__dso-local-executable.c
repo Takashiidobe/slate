@@ -66,24 +66,24 @@ int *get_thread_var(int a) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 baz: i32 [storage=static] = const<i32>(42) [linkage=external];
-// DEFAULT-NEXT:     extern %1 import_var: i32 [storage=static] [linkage=external] [dllimport];
-// DEFAULT-NEXT:     extern %2 weak_bar: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     extern %3 bar: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 local_thread_var: i32 [storage=thread] = const<i32>(42) [linkage=external];
-// DEFAULT-NEXT:     extern %9 thread_var: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @import_func() -> void [linkage=external] [dllimport];
-// DEFAULT-NEXT:     fn %5 @use_import() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%1);
+// DEFAULT-NEXT:     global %[[VALUE_baz:[0-9]+]] baz: i32 [storage=static] = const<i32>(42) [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_import_var:[0-9]+]] import_var: i32 [storage=static] [linkage=external] [dllimport];
+// DEFAULT-NEXT:     extern %[[VALUE_weak_bar:[0-9]+]] weak_bar: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     extern %[[VALUE_bar:[0-9]+]] bar: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_local_thread_var:[0-9]+]] local_thread_var: i32 [storage=thread] = const<i32>(42) [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_thread_var:[0-9]+]] thread_var: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_import_func:[0-9]+]] @import_func() -> void [linkage=external] [dllimport];
+// DEFAULT-NEXT:     fn %[[VALUE_use_import:[0-9]+]] @use_import() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_import_func]]);
+// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_import_var]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @foo() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @zed() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%6);
-// DEFAULT-NEXT:         return conditional<ptr<i32>>(ne<i32>(read<i32>(%0), const<i32>(0)), addr_of<ptr<i32>>(%2), addr_of<ptr<i32>>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_zed:[0-9]+]] @zed() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:         return conditional<ptr<i32>>(ne<i32>(read<i32>(%[[VALUE_baz]]), const<i32>(0)), addr_of<ptr<i32>>(%[[VALUE_weak_bar]]), addr_of<ptr<i32>>(%[[VALUE_bar]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @get_thread_var(%11 a: i32) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<ptr<i32>>(ne<i32>(read<i32>(%11), const<i32>(0)), addr_of<ptr<i32>>(%9), addr_of<ptr<i32>>(%8));
+// DEFAULT-NEXT:     fn %[[VALUE_get_thread_var:[0-9]+]] @get_thread_var(%[[VALUE_a:[0-9]+]] a: i32) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<ptr<i32>>(ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)), addr_of<ptr<i32>>(%[[VALUE_thread_var]]), addr_of<ptr<i32>>(%[[VALUE_local_thread_var]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

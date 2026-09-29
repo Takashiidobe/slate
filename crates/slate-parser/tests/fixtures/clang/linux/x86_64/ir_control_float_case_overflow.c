@@ -31,12 +31,12 @@ int out_of_range_case(int x) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @out_of_range_case(%1 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         switch %2 read<i32>(%1)
+// IR-NEXT:     fn %[[VALUE_out_of_range_case:[0-9]+]] @out_of_range_case(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_x]])
 // IR-NEXT:             {
-// IR-NEXT:                 case %2 const<i32>(2147483647):
+// IR-NEXT:                 case %[[VALUE0]] const<i32>(2147483647):
 // IR-NEXT:                     return const<i32>(1);
-// IR-NEXT:                 default %2:
+// IR-NEXT:                 default %[[VALUE0]]:
 // IR-NEXT:                     return const<i32>(0);
 // IR-NEXT:             }
 // IR-NEXT:     }

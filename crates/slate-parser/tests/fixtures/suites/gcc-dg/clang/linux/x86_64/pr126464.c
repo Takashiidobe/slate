@@ -90,58 +90,58 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @__builtin_inff() -> f32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %0 @foo(%1 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 y: f32 [storage=automatic] = float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f64>(%1));
-// DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%2), neg<f32>(call<f32, signature=fn() -> f32>(%13)))
-// DEFAULT-NEXT:             return mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%1), const<f64>(0.5));
-// DEFAULT-NEXT:         return float_widen<f64, reason=return>(read<f32>(%2));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_inff:[0-9]+]] @__builtin_inff() -> f32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: f32 [storage=automatic] = float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f64>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%[[VALUE_y]]), neg<f32>(call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]])))
+// DEFAULT-NEXT:             return mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_x]]), const<f64>(0.5));
+// DEFAULT-NEXT:         return float_widen<f64, reason=return>(read<f32>(%[[VALUE_y]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @__builtin_inf() -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %3 @bar(%4 x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 y: f64 [storage=automatic] = float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f80>(%4));
-// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%5), call<f64, signature=fn() -> f64>(%14))
-// DEFAULT-NEXT:             return mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%4), const<f80>(0.5));
-// DEFAULT-NEXT:         return float_widen<f80, reason=return>(read<f64>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_inf:[0-9]+]] @__builtin_inf() -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_2:[0-9]+]] x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: f64 [storage=automatic] = float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f80>(%[[VALUE_x_2]]));
+// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%[[VALUE_y_2]]), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]))
+// DEFAULT-NEXT:             return mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%[[VALUE_x_2]]), const<f80>(0.5));
+// DEFAULT-NEXT:         return float_widen<f80, reason=return>(read<f64>(%[[VALUE_y_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @baz(%7 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 y: f32 [storage=automatic] = float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f64>(%7));
-// DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%8), call<f32, signature=fn() -> f32>(%13))
-// DEFAULT-NEXT:             return mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%7), const<f64>(0.5));
-// DEFAULT-NEXT:         return float_widen<f64, reason=return>(read<f32>(%8));
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_x_3:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_3:[0-9]+]] y: f32 [storage=automatic] = float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f64>(%[[VALUE_x_3]]));
+// DEFAULT-NEXT:         if eq<f32, exceptions=ignore>(read<f32>(%[[VALUE_y_3]]), call<f32, signature=fn() -> f32>(%[[VALUE___builtin_inff]]))
+// DEFAULT-NEXT:             return mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_x_3]]), const<f64>(0.5));
+// DEFAULT-NEXT:         return float_widen<f64, reason=return>(read<f32>(%[[VALUE_y_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @qux(%10 x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 y: f64 [storage=automatic] = float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f80>(%10));
-// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%11), neg<f64>(call<f64, signature=fn() -> f64>(%14)))
-// DEFAULT-NEXT:             return mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%10), const<f80>(0.5));
-// DEFAULT-NEXT:         return float_widen<f80, reason=return>(read<f64>(%11));
+// DEFAULT-NEXT:     fn %[[VALUE_qux:[0-9]+]] @qux(%[[VALUE_x_4:[0-9]+]] x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_4:[0-9]+]] y: f64 [storage=automatic] = float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(read<f80>(%[[VALUE_x_4]]));
+// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%[[VALUE_y_4]]), neg<f64>(call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]])))
+// DEFAULT-NEXT:             return mul<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%[[VALUE_x_4]]), const<f80>(0.5));
+// DEFAULT-NEXT:         return float_widen<f80, reason=return>(read<f64>(%[[VALUE_y_4]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %16: bool [synthetic];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if logical_and<bool>(not<bool>(float_class<bool, test=infinite>(const<f64>(1e300))), float_class<bool, test=infinite>(float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f64>(1e300))))
-// DEFAULT-NEXT:             let %17: bool [synthetic];
-// DEFAULT-NEXT:             if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%0, neg<f64>(const<f64>(1e300))), neg<f64>(const<f64>(5e299)))
-// DEFAULT-NEXT:                 write<bool>(%17, const<bool>(true));
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_foo]], neg<f64>(const<f64>(1e300))), neg<f64>(const<f64>(5e299)))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE1]], const<bool>(true));
 // DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%17, ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%6, const<f64>(1e300)), const<f64>(5e299)));
-// DEFAULT-NEXT:             write<bool>(%16, read<bool>(%17));
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE1]], ne<f64, exceptions=ignore>(call<f64, signature=fn(f64) -> f64>(%[[VALUE_baz]], const<f64>(1e300)), const<f64>(5e299)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], read<bool>(%[[VALUE1]]));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%16, const<bool>(false));
-// DEFAULT-NEXT:         if read<bool>(%16)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%15);
-// DEFAULT-NEXT:         let %18: bool [synthetic];
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(false));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE0]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if logical_and<bool>(not<bool>(float_class<bool, test=infinite>(const<f80>(9.99999999999999999997E+3999))), float_class<bool, test=infinite>(float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f80>(9.99999999999999999997E+3999))))
-// DEFAULT-NEXT:             let %19: bool [synthetic];
-// DEFAULT-NEXT:             if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%3, const<f80>(9.99999999999999999997E+3999)), const<f80>(4.99999999999999999998E+3999))
-// DEFAULT-NEXT:                 write<bool>(%19, const<bool>(true));
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:             if ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%[[VALUE_bar]], const<f80>(9.99999999999999999997E+3999)), const<f80>(4.99999999999999999998E+3999))
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE3]], const<bool>(true));
 // DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<bool>(%19, ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%9, neg<f80>(const<f80>(9.99999999999999999997E+3999))), neg<f80>(const<f80>(4.99999999999999999998E+3999))));
-// DEFAULT-NEXT:             write<bool>(%18, read<bool>(%19));
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE3]], ne<f80, exceptions=ignore>(call<f80, signature=fn(f80) -> f80>(%[[VALUE_qux]], neg<f80>(const<f80>(9.99999999999999999997E+3999))), neg<f80>(const<f80>(4.99999999999999999998E+3999))));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], read<bool>(%[[VALUE3]]));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%18, const<bool>(false));
-// DEFAULT-NEXT:         if read<bool>(%18)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%15);
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], const<bool>(false));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE2]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

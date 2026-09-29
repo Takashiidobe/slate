@@ -52,13 +52,13 @@ int foo4 (int x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 foo1: i32 [storage=static] = const<i32>(1) [linkage=external] [asm_name="bar1"];
-// DEFAULT-NEXT:     global %3 foo3: i32 [storage=static] = const<i32>(1) [linkage=external] [asm_name="bar3"];
-// DEFAULT-NEXT:     fn %1 @foo2(%2 x: i32) -> i32 [linkage=external] [asm_name="bar2"] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%2);
+// DEFAULT-NEXT:     global %[[VALUE_foo1:[0-9]+]] foo1: i32 [storage=static] = const<i32>(1) [linkage=external] [asm_name="bar1"];
+// DEFAULT-NEXT:     global %[[VALUE_foo3:[0-9]+]] foo3: i32 [storage=static] = const<i32>(1) [linkage=external] [asm_name="bar3"];
+// DEFAULT-NEXT:     fn %[[VALUE_foo2:[0-9]+]] @foo2(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [asm_name="bar2"] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @foo4(%5 x: i32) -> i32 [linkage=external] [asm_name="bar4"] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%5);
+// DEFAULT-NEXT:     fn %[[VALUE_foo4:[0-9]+]] @foo4(%[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=external] [asm_name="bar4"] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

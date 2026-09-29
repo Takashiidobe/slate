@@ -45,25 +45,25 @@ again:
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i127b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i511b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo(%4 c: i31b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         do %5
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i127b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i511b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_c:[0-9]+]] c: i31b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %6: i31b [synthetic] = read<i31b>(%4);
-// DEFAULT-NEXT:                 let %7: i31b [synthetic] = truncate<i31b, reason=assign, fits=unknown>(rem<i511b, by_zero=ub, min_by_neg_one=ub>(widen<i511b, reason=usual_arith>(read<i31b>(%6)), read<i511b>(%1)));
-// DEFAULT-NEXT:                 write<i31b>(%4, read<i31b>(%7));
-// DEFAULT-NEXT:                 label %3 again:
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i31b [synthetic] = read<i31b>(%[[VALUE_c]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i31b [synthetic] = truncate<i31b, reason=assign, fits=unknown>(rem<i511b, by_zero=ub, min_by_neg_one=ub>(widen<i511b, reason=usual_arith>(read<i31b>(%[[VALUE1]])), read<i511b>(%[[VALUE_b]])));
+// DEFAULT-NEXT:                 write<i31b>(%[[VALUE_c]], read<i31b>(%[[VALUE2]]));
+// DEFAULT-NEXT:                 label %[[VALUE_again:[0-9]+]] again:
 // DEFAULT-NEXT:                     ;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i31b>(read<i31b>(%4), const<i31b>(0));
-// DEFAULT-NEXT:         let %8: i127b [synthetic] = read<i127b>(%0);
-// DEFAULT-NEXT:         let %9: i127b [synthetic] = div<i127b, by_zero=ub, min_by_neg_one=ub>(read<i127b>(%8), widen<i127b, reason=usual_arith>(const<i32>(0)));
-// DEFAULT-NEXT:         write<i127b>(%0, read<i127b>(%9));
-// DEFAULT-NEXT:         let %10: i31b [synthetic] = read<i31b>(%4);
-// DEFAULT-NEXT:         let %11: i31b [synthetic] = truncate<i31b, reason=assign, fits=unknown>(sub<i127b, overflow=ub>(widen<i127b, reason=usual_arith>(read<i31b>(%10)), read<i127b>(%0)));
-// DEFAULT-NEXT:         write<i31b>(%4, read<i31b>(%11));
-// DEFAULT-NEXT:         goto %3;
+// DEFAULT-NEXT:         while ne<i31b>(read<i31b>(%[[VALUE_c]]), const<i31b>(0));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i127b [synthetic] = read<i127b>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i127b [synthetic] = div<i127b, by_zero=ub, min_by_neg_one=ub>(read<i127b>(%[[VALUE3]]), widen<i127b, reason=usual_arith>(const<i32>(0)));
+// DEFAULT-NEXT:         write<i127b>(%[[VALUE_a]], read<i127b>(%[[VALUE4]]));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i31b [synthetic] = read<i31b>(%[[VALUE_c]]);
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i31b [synthetic] = truncate<i31b, reason=assign, fits=unknown>(sub<i127b, overflow=ub>(widen<i127b, reason=usual_arith>(read<i31b>(%[[VALUE5]])), read<i127b>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         write<i31b>(%[[VALUE_c]], read<i31b>(%[[VALUE6]]));
+// DEFAULT-NEXT:         goto %[[VALUE_again]];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

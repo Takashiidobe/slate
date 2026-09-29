@@ -31,7 +31,7 @@ typedef int TI; /* { dg-error "redefinition of typedef" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 TI = i32;
-// DEFAULT-NEXT:     type @type1 TI = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_TI:[0-9]+]] TI = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_TI_2:[0-9]+]] TI = i32;
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

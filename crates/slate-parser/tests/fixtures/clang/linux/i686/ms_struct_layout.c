@@ -56,40 +56,40 @@ struct MS L { char c; long double d; };
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 A = struct {
+// IR-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 x: i64;
 // IR-NEXT:         field2 d: array<f64, 2>;
 // IR-NEXT:     } [size=32, align=8, offsets=[0, 8, 16]];
-// IR-NEXT:     type @type1 B = struct {
+// IR-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 z: complex<f64>;
 // IR-NEXT:     } [size=20, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type2 P = enum : u32 {
-// IR-NEXT:         %0 Q = const<i32>(0);
+// IR-NEXT:     type @type[[TYPE_P:[0-9]+]] P = enum : u32 {
+// IR-NEXT:         %[[VALUE_Q:[0-9]+]] Q = const<i32>(0);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     type @type3 C = struct {
+// IR-NEXT:     type @type[[TYPE_C:[0-9]+]] C = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 b: i64b;
 // IR-NEXT:     } [size=12, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type4 D = struct {
+// IR-NEXT:     type @type[[TYPE_D:[0-9]+]] D = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 b: i64 : 3;
 // IR-NEXT:     } [size=16, align=8, offsets=[0, 8], bit_offsets=[None, Some(64)], bit_units=[(8, 8)], field_units=[None, Some(0)]];
-// IR-NEXT:     type @type5 E = struct {
+// IR-NEXT:     type @type[[TYPE_E:[0-9]+]] E = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 x: i64;
 // IR-NEXT:     } [size=9, align=1, offsets=[0, 1]];
-// IR-NEXT:     type @type6 F = struct {
+// IR-NEXT:     type @type[[TYPE_F:[0-9]+]] F = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 x: i64;
 // IR-NEXT:     } [size=10, align=2, offsets=[0, 2]];
-// IR-NEXT:     type @type7 G = struct {
+// IR-NEXT:     type @type[[TYPE_G:[0-9]+]] G = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 x: i64;
 // IR-NEXT:     } [size=12, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type8 H = struct {
-// IR-NEXT:         field0 g: @type7;
+// IR-NEXT:     type @type[[TYPE_H:[0-9]+]] H = struct {
+// IR-NEXT:         field0 g: @type[[TYPE_G]];
 // IR-NEXT:         field1 c: i8;
 // IR-NEXT:     } [size=16, align=4, offsets=[0, 12]];
 // IR-NEXT: }

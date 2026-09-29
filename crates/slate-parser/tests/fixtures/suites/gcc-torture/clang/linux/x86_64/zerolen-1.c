@@ -55,30 +55,30 @@ void set(union iso_directory_record *p) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 iso_directory_record = union {
+// DEFAULT-NEXT:     type @type[[TYPE_iso_directory_record:[0-9]+]] iso_directory_record = union {
 // DEFAULT-NEXT:         field0 carr: array<i8, 4>;
-// DEFAULT-NEXT:         field1 u: @type1;
+// DEFAULT-NEXT:         field1 u: @type[[TYPE0:[0-9]+]];
 // DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0]] = struct {
 // DEFAULT-NEXT:         field0 name_len: array<u8, 1>;
 // DEFAULT-NEXT:         field1 name: array<i8, 0>;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     global %4 entry: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @set(%8 p: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(field0(deref(read<ptr<@type0>>(%8)))), const<i32>(0))), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(field0(deref(read<ptr<@type0>>(%8)))), const<i32>(1))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:     global %[[VALUE_entry:[0-9]+]] entry: @type[[TYPE_iso_directory_record]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_set:[0-9]+]] @set(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_iso_directory_record]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_iso_directory_record]]>>(%[[VALUE_p]])))), const<i32>(0))), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_iso_directory_record]]>>(%[[VALUE_p]])))), const<i32>(1))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 de: ptr<@type0> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type0>>(%7, addr_of<ptr<@type0>>(%4));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%5, read<ptr<@type0>>(%7));
-// DEFAULT-NEXT:         if logical_and<bool>(eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1)>(field0(field1(deref(read<ptr<@type0>>(%7))))), const<i32>(0)))))), const<i32>(1)), eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(0)>(field1(field1(deref(read<ptr<@type0>>(%7))))), const<i32>(0))))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_de:[0-9]+]] de: ptr<@type[[TYPE_iso_directory_record]]> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_iso_directory_record]]>>(%[[VALUE_de]], addr_of<ptr<@type[[TYPE_iso_directory_record]]>>(%[[VALUE_entry]]));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_iso_directory_record]]>) -> void>(%[[VALUE_set]], read<ptr<@type[[TYPE_iso_directory_record]]>>(%[[VALUE_de]]));
+// DEFAULT-NEXT:         if logical_and<bool>(eq<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(1)>(field0(field1(deref(read<ptr<@type[[TYPE_iso_directory_record]]>>(%[[VALUE_de]]))))), const<i32>(0)))))), const<i32>(1)), eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(0)>(field1(field1(deref(read<ptr<@type[[TYPE_iso_directory_record]]>>(%[[VALUE_de]]))))), const<i32>(0))))), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -56,48 +56,48 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 hours: i8;
 // DEFAULT-NEXT:         field1 day: i8;
 // DEFAULT-NEXT:         field2 month: i8;
 // DEFAULT-NEXT:         field3 year: i16;
 // DEFAULT-NEXT:     } [size=6, align=2, offsets=[0, 1, 2, 4]];
-// DEFAULT-NEXT:     type @type1 T = @type0;
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%9 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @g() -> @type0 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 now: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i8>(field0(%5), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i8>(field1(%5), truncate<i8, reason=assign, fits=always>(const<i32>(2)));
-// DEFAULT-NEXT:         write<i8>(field2(%5), truncate<i8, reason=assign, fits=always>(const<i32>(3)));
-// DEFAULT-NEXT:         write<i16>(field3(%5), truncate<i16, reason=assign, fits=always>(const<i32>(4)));
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%5));
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_now:[0-9]+]] now: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         write<i8>(field0(%[[VALUE_now]]), truncate<i8, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i8>(field1(%[[VALUE_now]]), truncate<i8, reason=assign, fits=always>(const<i32>(2)));
+// DEFAULT-NEXT:         write<i8>(field2(%[[VALUE_now]]), truncate<i8, reason=assign, fits=always>(const<i32>(3)));
+// DEFAULT-NEXT:         write<i16>(field3(%[[VALUE_now]]), truncate<i16, reason=assign, fits=always>(const<i32>(4)));
+// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_now]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f() -> @type0 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 virk: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<@type0>(%7, copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%4)));
-// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%4));
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%7));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_virk:[0-9]+]] virk: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_virk]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_g]])));
+// DEFAULT-NEXT:         copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_g]]));
+// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_virk]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %14: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(temporary %10 = call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%6)))), const<i32>(1))
-// DEFAULT-NEXT:             write<bool>(%14, const<bool>(true));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(temporary %[[VALUE2:[0-9]+]] = call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_f]])))), const<i32>(1))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%14, ne<i32>(widen<i32, reason=promotion>(read<i8>(field1(temporary %11 = call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%6)))), const<i32>(2)));
-// DEFAULT-NEXT:         let %15: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%14)
-// DEFAULT-NEXT:             write<bool>(%15, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], ne<i32>(widen<i32, reason=promotion>(read<i8>(field1(temporary %[[VALUE3:[0-9]+]] = call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_f]])))), const<i32>(2)));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE1]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%15, ne<i32>(widen<i32, reason=promotion>(read<i8>(field2(temporary %12 = call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%6)))), const<i32>(3)));
-// DEFAULT-NEXT:         let %16: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%15)
-// DEFAULT-NEXT:             write<bool>(%16, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], ne<i32>(widen<i32, reason=promotion>(read<i8>(field2(temporary %[[VALUE5:[0-9]+]] = call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_f]])))), const<i32>(3)));
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE4]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%16, ne<i32>(widen<i32, reason=promotion>(read<i16>(field3(temporary %13 = call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%6)))), const<i32>(4)));
-// DEFAULT-NEXT:         if read<bool>(%16)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], ne<i32>(widen<i32, reason=promotion>(read<i16>(field3(temporary %[[VALUE7:[0-9]+]] = call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_f]])))), const<i32>(4)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE6]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

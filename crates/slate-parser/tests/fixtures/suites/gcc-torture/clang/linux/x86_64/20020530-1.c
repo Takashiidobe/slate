@@ -40,15 +40,15 @@ int bar2 (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo1() -> u8 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo2() -> u16 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @bar1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 q: u8 [storage=automatic] = call<u8, signature=fn() -> u8>(%0);
-// DEFAULT-NEXT:         return conditional<i32>(lt<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%3))), const<i32>(128)), const<i32>(64), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_foo1:[0-9]+]] @foo1() -> u8 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo2:[0-9]+]] @foo2() -> u16 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar1:[0-9]+]] @bar1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: u8 [storage=automatic] = call<u8, signature=fn() -> u8>(%[[VALUE_foo1]]);
+// DEFAULT-NEXT:         return conditional<i32>(lt<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_q]]))), const<i32>(128)), const<i32>(64), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @bar2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 h: u16 [storage=automatic] = call<u16, signature=fn() -> u16>(%1);
-// DEFAULT-NEXT:         return conditional<i32>(lt<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%5))), const<i32>(32768)), const<i32>(64), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_bar2:[0-9]+]] @bar2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: u16 [storage=automatic] = call<u16, signature=fn() -> u16>(%[[VALUE_foo2]]);
+// DEFAULT-NEXT:         return conditional<i32>(lt<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_h]]))), const<i32>(32768)), const<i32>(64), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

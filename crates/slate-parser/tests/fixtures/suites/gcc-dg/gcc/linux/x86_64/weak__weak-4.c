@@ -135,46 +135,46 @@ int vfoo1k = 1;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 vfoo1a: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     extern %2 vfoo1b: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     extern %4 vfoo1c: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %6 vfoo1d: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %8 vfoo1e: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %10 vfoo1f: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %12 vfoo1g: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %14 vfoo1h: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %16 vfoo1i: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %18 vfoo1j: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %20 vfoo1k: i32 [storage=static] = const<i32>(1) [linkage=external] [weak];
-// DEFAULT-NEXT:     fn %1 @foo1a() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%0));
+// DEFAULT-NEXT:     extern %[[VALUE_vfoo1a:[0-9]+]] vfoo1a: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     extern %[[VALUE_vfoo1b:[0-9]+]] vfoo1b: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     extern %[[VALUE_vfoo1c:[0-9]+]] vfoo1c: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %[[VALUE_vfoo1d:[0-9]+]] vfoo1d: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %[[VALUE_vfoo1e:[0-9]+]] vfoo1e: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %[[VALUE_vfoo1f:[0-9]+]] vfoo1f: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %[[VALUE_vfoo1g:[0-9]+]] vfoo1g: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %[[VALUE_vfoo1h:[0-9]+]] vfoo1h: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %[[VALUE_vfoo1i:[0-9]+]] vfoo1i: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %[[VALUE_vfoo1j:[0-9]+]] vfoo1j: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %[[VALUE_vfoo1k:[0-9]+]] vfoo1k: i32 [storage=static] = const<i32>(1) [linkage=external] [weak];
+// DEFAULT-NEXT:     fn %[[VALUE_foo1a:[0-9]+]] @foo1a() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_vfoo1a]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @foo1b() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%2));
+// DEFAULT-NEXT:     fn %[[VALUE_foo1b:[0-9]+]] @foo1b() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_vfoo1b]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @foo1c() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%4));
+// DEFAULT-NEXT:     fn %[[VALUE_foo1c:[0-9]+]] @foo1c() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_vfoo1c]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @foo1d() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%6));
+// DEFAULT-NEXT:     fn %[[VALUE_foo1d:[0-9]+]] @foo1d() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_vfoo1d]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @foo1e() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%8));
+// DEFAULT-NEXT:     fn %[[VALUE_foo1e:[0-9]+]] @foo1e() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_vfoo1e]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @foo1f() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%10));
+// DEFAULT-NEXT:     fn %[[VALUE_foo1f:[0-9]+]] @foo1f() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_vfoo1f]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @foo1g() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%12));
+// DEFAULT-NEXT:     fn %[[VALUE_foo1g:[0-9]+]] @foo1g() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_vfoo1g]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @foo1h() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%14));
+// DEFAULT-NEXT:     fn %[[VALUE_foo1h:[0-9]+]] @foo1h() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_vfoo1h]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @foo1i() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%16));
+// DEFAULT-NEXT:     fn %[[VALUE_foo1i:[0-9]+]] @foo1i() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_vfoo1i]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @foo1j() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%18));
+// DEFAULT-NEXT:     fn %[[VALUE_foo1j:[0-9]+]] @foo1j() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<i32>>(%[[VALUE_vfoo1j]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

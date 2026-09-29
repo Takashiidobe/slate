@@ -31,16 +31,16 @@ int nested_return(void) { { return 4; } }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] [c_storage="none"] [c_return="int"] [c="int(void)"] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @missing_value() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
+// DEFAULT-NEXT:     fn %[[VALUE_missing_value:[0-9]+]] @missing_value() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @no_value() -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(void)"] {
+// DEFAULT-NEXT:     fn %[[VALUE_no_value:[0-9]+]] @no_value() -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(void)"] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @explicit_return() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
+// DEFAULT-NEXT:     fn %[[VALUE_explicit_return:[0-9]+]] @explicit_return() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // DEFAULT-NEXT:         return const<i32>(7);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @nested_return() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
+// DEFAULT-NEXT:     fn %[[VALUE_nested_return:[0-9]+]] @nested_return() -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(void)"] {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             return const<i32>(4);
 // DEFAULT-NEXT:         }

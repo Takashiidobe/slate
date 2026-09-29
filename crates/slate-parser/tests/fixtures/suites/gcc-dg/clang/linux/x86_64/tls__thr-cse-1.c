@@ -55,18 +55,18 @@ int foo (int b, int c, int d)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 a: i32 [storage=thread] = const<i32>(1) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @foo(%1 b: i32, %2 c: i32, %3 d: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:         let %6: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%5), read<i32>(%1));
-// DEFAULT-NEXT:         write<i32>(%4, read<i32>(%6));
-// DEFAULT-NEXT:         let %7: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:         let %8: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%7), read<i32>(%2));
-// DEFAULT-NEXT:         write<i32>(%4, read<i32>(%8));
-// DEFAULT-NEXT:         let %9: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:         let %10: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%9), read<i32>(%3));
-// DEFAULT-NEXT:         write<i32>(%4, read<i32>(%10));
-// DEFAULT-NEXT:         return read<i32>(%4);
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=thread] = const<i32>(1) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_b:[0-9]+]] b: i32, %[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_d:[0-9]+]] d: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), read<i32>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE2]]), read<i32>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE3]]));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), read<i32>(%[[VALUE_d]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE5]]));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

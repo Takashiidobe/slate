@@ -70,95 +70,95 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @link_error() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @fmod(%5 <unnamed>: f64, %6 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @fmodf(%7 <unnamed>: f32, %8 <unnamed>: f32) -> f32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @fmodl(%9 <unnamed>: f80, %10 <unnamed>: f80) -> f80 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %11: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%1, const<f64>(6.5), const<f64>(2.3)), const<f64>(1.8999))
-// DEFAULT-NEXT:             write<bool>(%11, const<bool>(true));
+// DEFAULT-NEXT:     fn %[[VALUE_link_error:[0-9]+]] @link_error() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fmod:[0-9]+]] @fmod(%[[VALUE0:[0-9]+]] <unnamed>: f64, %[[VALUE1:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fmodf:[0-9]+]] @fmodf(%[[VALUE2:[0-9]+]] <unnamed>: f32, %[[VALUE3:[0-9]+]] <unnamed>: f32) -> f32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fmodl:[0-9]+]] @fmodl(%[[VALUE4:[0-9]+]] <unnamed>: f80, %[[VALUE5:[0-9]+]] <unnamed>: f80) -> f80 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_fmod]], const<f64>(6.5), const<f64>(2.3)), const<f64>(1.8999))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%11, gt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%1, const<f64>(6.5), const<f64>(2.3)), const<f64>(1.9001)));
-// DEFAULT-NEXT:         if read<bool>(%11)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %12: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%1, neg<f64>(const<f64>(6.5)), const<f64>(2.3)), neg<f64>(const<f64>(1.9001)))
-// DEFAULT-NEXT:             write<bool>(%12, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], gt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_fmod]], const<f64>(6.5), const<f64>(2.3)), const<f64>(1.9001)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE6]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_fmod]], neg<f64>(const<f64>(6.5)), const<f64>(2.3)), neg<f64>(const<f64>(1.9001)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE7]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%12, gt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%1, neg<f64>(const<f64>(6.5)), const<f64>(2.3)), neg<f64>(const<f64>(1.8999))));
-// DEFAULT-NEXT:         if read<bool>(%12)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %13: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%1, const<f64>(6.5), neg<f64>(const<f64>(2.3))), const<f64>(1.8999))
-// DEFAULT-NEXT:             write<bool>(%13, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE7]], gt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_fmod]], neg<f64>(const<f64>(6.5)), const<f64>(2.3)), neg<f64>(const<f64>(1.8999))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE7]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_fmod]], const<f64>(6.5), neg<f64>(const<f64>(2.3))), const<f64>(1.8999))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE8]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%13, gt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%1, const<f64>(6.5), neg<f64>(const<f64>(2.3))), const<f64>(1.9001)));
-// DEFAULT-NEXT:         if read<bool>(%13)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %14: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%1, neg<f64>(const<f64>(6.5)), neg<f64>(const<f64>(2.3))), neg<f64>(const<f64>(1.9001)))
-// DEFAULT-NEXT:             write<bool>(%14, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE8]], gt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_fmod]], const<f64>(6.5), neg<f64>(const<f64>(2.3))), const<f64>(1.9001)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE8]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_fmod]], neg<f64>(const<f64>(6.5)), neg<f64>(const<f64>(2.3))), neg<f64>(const<f64>(1.9001)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE9]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%14, gt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%1, neg<f64>(const<f64>(6.5)), neg<f64>(const<f64>(2.3))), neg<f64>(const<f64>(1.8999))));
-// DEFAULT-NEXT:         if read<bool>(%14)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %15: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%2, const<f32>(6.5), const<f32>(2.3)), const<f32>(1.8999))
-// DEFAULT-NEXT:             write<bool>(%15, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE9]], gt<f64, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_fmod]], neg<f64>(const<f64>(6.5)), neg<f64>(const<f64>(2.3))), neg<f64>(const<f64>(1.8999))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE9]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_fmodf]], const<f32>(6.5), const<f32>(2.3)), const<f32>(1.8999))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE10]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%15, gt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%2, const<f32>(6.5), const<f32>(2.3)), const<f32>(1.9001)));
-// DEFAULT-NEXT:         if read<bool>(%15)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %16: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%2, neg<f32>(const<f32>(6.5)), const<f32>(2.3)), neg<f32>(const<f32>(1.9001)))
-// DEFAULT-NEXT:             write<bool>(%16, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE10]], gt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_fmodf]], const<f32>(6.5), const<f32>(2.3)), const<f32>(1.9001)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE10]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_fmodf]], neg<f32>(const<f32>(6.5)), const<f32>(2.3)), neg<f32>(const<f32>(1.9001)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE11]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%16, gt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%2, neg<f32>(const<f32>(6.5)), const<f32>(2.3)), neg<f32>(const<f32>(1.8999))));
-// DEFAULT-NEXT:         if read<bool>(%16)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %17: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%2, const<f32>(6.5), neg<f32>(const<f32>(2.3))), const<f32>(1.8999))
-// DEFAULT-NEXT:             write<bool>(%17, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE11]], gt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_fmodf]], neg<f32>(const<f32>(6.5)), const<f32>(2.3)), neg<f32>(const<f32>(1.8999))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE11]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_fmodf]], const<f32>(6.5), neg<f32>(const<f32>(2.3))), const<f32>(1.8999))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE12]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%17, gt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%2, const<f32>(6.5), neg<f32>(const<f32>(2.3))), const<f32>(1.9001)));
-// DEFAULT-NEXT:         if read<bool>(%17)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %18: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%2, neg<f32>(const<f32>(6.5)), neg<f32>(const<f32>(2.3))), neg<f32>(const<f32>(1.9001)))
-// DEFAULT-NEXT:             write<bool>(%18, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE12]], gt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_fmodf]], const<f32>(6.5), neg<f32>(const<f32>(2.3))), const<f32>(1.9001)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE12]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         let %[[VALUE13:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_fmodf]], neg<f32>(const<f32>(6.5)), neg<f32>(const<f32>(2.3))), neg<f32>(const<f32>(1.9001)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE13]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%18, gt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%2, neg<f32>(const<f32>(6.5)), neg<f32>(const<f32>(2.3))), neg<f32>(const<f32>(1.8999))));
-// DEFAULT-NEXT:         if read<bool>(%18)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %19: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f80, exceptions=ignore>(call<f80, signature=fn(f80, f80) -> f80>(%3, const<f80>(6.5), const<f80>(2.29999999999999999996)), const<f80>(1.89990000000000000004))
-// DEFAULT-NEXT:             write<bool>(%19, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE13]], gt<f32, exceptions=ignore>(call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_fmodf]], neg<f32>(const<f32>(6.5)), neg<f32>(const<f32>(2.3))), neg<f32>(const<f32>(1.8999))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE13]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f80, exceptions=ignore>(call<f80, signature=fn(f80, f80) -> f80>(%[[VALUE_fmodl]], const<f80>(6.5), const<f80>(2.29999999999999999996)), const<f80>(1.89990000000000000004))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE14]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%19, gt<f80, exceptions=ignore>(float_widen<f80, reason=usual_arith>(call<f64, signature=fn(f64, f64) -> f64>(%1, float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f80>(6.5)), float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f80>(2.29999999999999999996)))), const<f80>(1.90010000000000000002)));
-// DEFAULT-NEXT:         if read<bool>(%19)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %20: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f80, exceptions=ignore>(call<f80, signature=fn(f80, f80) -> f80>(%3, neg<f80>(const<f80>(6.5)), const<f80>(2.29999999999999999996)), neg<f80>(const<f80>(1.90010000000000000002)))
-// DEFAULT-NEXT:             write<bool>(%20, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE14]], gt<f80, exceptions=ignore>(float_widen<f80, reason=usual_arith>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_fmod]], float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f80>(6.5)), float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f80>(2.29999999999999999996)))), const<f80>(1.90010000000000000002)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE14]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f80, exceptions=ignore>(call<f80, signature=fn(f80, f80) -> f80>(%[[VALUE_fmodl]], neg<f80>(const<f80>(6.5)), const<f80>(2.29999999999999999996)), neg<f80>(const<f80>(1.90010000000000000002)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE15]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%20, gt<f80, exceptions=ignore>(float_widen<f80, reason=usual_arith>(call<f64, signature=fn(f64, f64) -> f64>(%1, float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(neg<f80>(const<f80>(6.5))), float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f80>(2.29999999999999999996)))), neg<f80>(const<f80>(1.89990000000000000004))));
-// DEFAULT-NEXT:         if read<bool>(%20)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %21: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f80, exceptions=ignore>(call<f80, signature=fn(f80, f80) -> f80>(%3, const<f80>(6.5), neg<f80>(const<f80>(2.29999999999999999996))), const<f80>(1.89990000000000000004))
-// DEFAULT-NEXT:             write<bool>(%21, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE15]], gt<f80, exceptions=ignore>(float_widen<f80, reason=usual_arith>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_fmod]], float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(neg<f80>(const<f80>(6.5))), float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f80>(2.29999999999999999996)))), neg<f80>(const<f80>(1.89990000000000000004))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE15]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f80, exceptions=ignore>(call<f80, signature=fn(f80, f80) -> f80>(%[[VALUE_fmodl]], const<f80>(6.5), neg<f80>(const<f80>(2.29999999999999999996))), const<f80>(1.89990000000000000004))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE16]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%21, gt<f80, exceptions=ignore>(float_widen<f80, reason=usual_arith>(call<f64, signature=fn(f64, f64) -> f64>(%1, float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f80>(6.5)), float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(neg<f80>(const<f80>(2.29999999999999999996))))), const<f80>(1.90010000000000000002)));
-// DEFAULT-NEXT:         if read<bool>(%21)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %22: bool [synthetic];
-// DEFAULT-NEXT:         if lt<f80, exceptions=ignore>(call<f80, signature=fn(f80, f80) -> f80>(%3, neg<f80>(const<f80>(6.5)), neg<f80>(const<f80>(2.29999999999999999996))), neg<f80>(const<f80>(1.90010000000000000002)))
-// DEFAULT-NEXT:             write<bool>(%22, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE16]], gt<f80, exceptions=ignore>(float_widen<f80, reason=usual_arith>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_fmod]], float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(const<f80>(6.5)), float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(neg<f80>(const<f80>(2.29999999999999999996))))), const<f80>(1.90010000000000000002)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE16]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
+// DEFAULT-NEXT:         let %[[VALUE17:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if lt<f80, exceptions=ignore>(call<f80, signature=fn(f80, f80) -> f80>(%[[VALUE_fmodl]], neg<f80>(const<f80>(6.5)), neg<f80>(const<f80>(2.29999999999999999996))), neg<f80>(const<f80>(1.90010000000000000002)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE17]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%22, gt<f80, exceptions=ignore>(float_widen<f80, reason=usual_arith>(call<f64, signature=fn(f64, f64) -> f64>(%1, float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(neg<f80>(const<f80>(6.5))), float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(neg<f80>(const<f80>(2.29999999999999999996))))), neg<f80>(const<f80>(1.89990000000000000004))));
-// DEFAULT-NEXT:         if read<bool>(%22)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             write<bool>(%[[VALUE17]], gt<f80, exceptions=ignore>(float_widen<f80, reason=usual_arith>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_fmod]], float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(neg<f80>(const<f80>(6.5))), float_narrow<f64, reason=arg, rounding=nearest_even, exceptions=ignore>(neg<f80>(const<f80>(2.29999999999999999996))))), neg<f80>(const<f80>(1.89990000000000000004))));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE17]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

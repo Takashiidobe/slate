@@ -27,8 +27,8 @@ __attribute__((__const__, __may_alias__)) int aliased;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 aligned_type = i32;
-// DEFAULT-NEXT:     type @type1 vector_type = vector<i32, 4>;
-// DEFAULT-NEXT:     global %2 aliased: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_aligned_type:[0-9]+]] aligned_type = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_vector_type:[0-9]+]] vector_type = vector<i32, 4>;
+// DEFAULT-NEXT:     global %[[VALUE_aliased:[0-9]+]] aliased: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

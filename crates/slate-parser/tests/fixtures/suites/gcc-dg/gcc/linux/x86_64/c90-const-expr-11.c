@@ -53,24 +53,24 @@ f (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 d: f64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 t = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_t:[0-9]+]] t = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     fn %0 @atan(%8 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 a: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = call<f64, signature=fn(f64) -> f64>(%0, const<f64>(1.0)));
-// DEFAULT-NEXT:         let %5 b: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = add<i32, overflow=ub>(const<i32>(2147483647), const<i32>(1)));
-// DEFAULT-NEXT:         let %6 c: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f80>(1.79769313486231570815E+308))));
-// DEFAULT-NEXT:         let %7 d: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %9: f64 [synthetic];
+// DEFAULT-NEXT:     fn %[[VALUE_atan:[0-9]+]] @atan(%[[VALUE0:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_s]] [storage=automatic] = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = call<f64, signature=fn(f64) -> f64>(%[[VALUE_atan]], const<f64>(1.0)));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_t]] [storage=automatic] = aggregate<@type[[TYPE_t]], zero_fill=false>(field0 = add<i32, overflow=ub>(const<i32>(2147483647), const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: @type[[TYPE_t]] [storage=automatic] = aggregate<@type[[TYPE_t]], zero_fill=false>(field0 = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(float_narrow<f64, reason=explicit, rounding=nearest_even, exceptions=ignore>(const<f80>(1.79769313486231570815E+308))));
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: @type[[TYPE_s]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: f64 [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0))
-// DEFAULT-NEXT:             write<f64>(%9, const<f64>(1.0));
+// DEFAULT-NEXT:             write<f64>(%[[VALUE1]], const<f64>(1.0));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<f64>(%9, call<f64, signature=fn(f64) -> f64>(%0, read<f64>(field0(%4))));
-// DEFAULT-NEXT:         write<@type0>(%7, aggregate<@type0, zero_fill=false>(field0 = read<f64>(%9)));
+// DEFAULT-NEXT:             write<f64>(%[[VALUE1]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_atan]], read<f64>(field0(%[[VALUE_a]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_d]], aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = read<f64>(%[[VALUE1]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

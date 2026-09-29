@@ -37,11 +37,11 @@ void reference() { x++; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 x: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @reference() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2: i32 [synthetic] = read<i32>(%0);
-// DEFAULT-NEXT:         let %3: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%2), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%0, read<i32>(%3));
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_reference:[0-9]+]] @reference() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

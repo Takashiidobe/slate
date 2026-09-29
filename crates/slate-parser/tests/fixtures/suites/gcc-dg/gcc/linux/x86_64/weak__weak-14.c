@@ -60,23 +60,23 @@ int main (void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %3 lv1: u64 [storage=static] = const<u64>(3735928559) [linkage=internal];
-// DEFAULT-NEXT:     global %4 Av1a: u64 [storage=static] [linkage=external] [weak] [alias="lv1"];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @exit(%8 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @lf1() -> u64 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_lv1:[0-9]+]] lv1: u64 [storage=static] = const<u64>(3735928559) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_Av1a:[0-9]+]] Av1a: u64 [storage=static] [linkage=external] [weak] [alias="lv1"];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_lf1:[0-9]+]] @lf1() -> u64 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<u64>(84983463);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @Af1a() -> u64 [linkage=external] [weak] [alias="lf1"];
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9: bool [synthetic];
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(not<bool>(ne<ptr<u64>>(addr_of<ptr<u64>>(%4), null<ptr<u64>>)), not<bool>(ne<ptr<fn() -> u64>>(addr_of<ptr<fn() -> u64>>(%6), null<ptr<fn() -> u64>>))), ne<u64>(read<u64>(%4), const<u64>(3735928559)))
-// DEFAULT-NEXT:             write<bool>(%9, const<bool>(true));
+// DEFAULT-NEXT:     fn %[[VALUE_Af1a:[0-9]+]] @Af1a() -> u64 [linkage=external] [weak] [alias="lf1"];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(not<bool>(ne<ptr<u64>>(addr_of<ptr<u64>>(%[[VALUE_Av1a]]), null<ptr<u64>>)), not<bool>(ne<ptr<fn() -> u64>>(addr_of<ptr<fn() -> u64>>(%[[VALUE_Af1a]]), null<ptr<fn() -> u64>>))), ne<u64>(read<u64>(%[[VALUE_Av1a]]), const<u64>(3735928559)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%9, ne<u64>(call<u64, signature=fn() -> u64>(%6), const<u64>(84983463)));
-// DEFAULT-NEXT:         if read<bool>(%9)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<u64>(call<u64, signature=fn() -> u64>(%[[VALUE_Af1a]]), const<u64>(84983463)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE0]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

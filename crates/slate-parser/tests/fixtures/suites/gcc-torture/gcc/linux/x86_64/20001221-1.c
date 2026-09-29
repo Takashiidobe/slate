@@ -94,81 +94,81 @@ foo ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = union {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 __ui: u32;
 // DEFAULT-NEXT:         field1 __usi: u16;
 // DEFAULT-NEXT:         field2 __uc: u8;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 0]];
-// DEFAULT-NEXT:     type @type1 = union {
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 __ui: u32;
 // DEFAULT-NEXT:         field1 __usi: u16;
 // DEFAULT-NEXT:         field2 __uc: u8;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0, 0]];
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 maplength: i64 [storage=automatic];
-// DEFAULT-NEXT:         let %2 type: i32 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_maplength:[0-9]+]] maplength: i64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_type:[0-9]+]] type: i32 [storage=automatic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %3 nibbles: i64 [storage=automatic] [const] = widen<i64, reason=assign>(const<i32>(8));
-// DEFAULT-NEXT:             let %15: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(add<i64, overflow=ub>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:             let %4 buf1: vla<i8, %15> [storage=automatic];
-// DEFAULT-NEXT:             let %16: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(add<i64, overflow=ub>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:             let %5 buf2: vla<i8, %16> [storage=automatic];
-// DEFAULT-NEXT:             let %17: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(add<i64, overflow=ub>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:             let %6 buf3: vla<i8, %17> [storage=automatic];
-// DEFAULT-NEXT:             write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=None>(%4), read<i64>(%3))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:             write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=None>(%5), read<i64>(%3))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:             write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=None>(%6), read<i64>(%3))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:             let %20: ptr<void> [synthetic];
-// DEFAULT-NEXT:             if le<i64>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(16)))
-// DEFAULT-NEXT:                 let %21: ptr<void> [synthetic];
+// DEFAULT-NEXT:             let %[[VALUE_nibbles:[0-9]+]] nibbles: i64 [storage=automatic] [const] = widen<i64, reason=assign>(const<i32>(8));
+// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(add<i64, overflow=ub>(read<i64>(%[[VALUE_nibbles]]), widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:             let %[[VALUE_buf1:[0-9]+]] buf1: vla<i8, %[[VALUE0]]> [storage=automatic];
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(add<i64, overflow=ub>(read<i64>(%[[VALUE_nibbles]]), widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:             let %[[VALUE_buf2:[0-9]+]] buf2: vla<i8, %[[VALUE1]]> [storage=automatic];
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(add<i64, overflow=ub>(read<i64>(%[[VALUE_nibbles]]), widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:             let %[[VALUE_buf3:[0-9]+]] buf3: vla<i8, %[[VALUE2]]> [storage=automatic];
+// DEFAULT-NEXT:             write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=None>(%[[VALUE_buf1]]), read<i64>(%[[VALUE_nibbles]]))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:             write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=None>(%[[VALUE_buf2]]), read<i64>(%[[VALUE_nibbles]]))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:             write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=None>(%[[VALUE_buf3]]), read<i64>(%[[VALUE_nibbles]]))), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: ptr<void> [synthetic];
+// DEFAULT-NEXT:             if le<i64>(read<i64>(%[[VALUE_nibbles]]), widen<i64, reason=usual_arith>(const<i32>(16)))
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<void> [synthetic];
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %7 __s: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(array_decay<ptr<i8>, length=None>(%4));
-// DEFAULT-NEXT:                     let %9 __u: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=assign>(read<ptr<void>>(%7));
-// DEFAULT-NEXT:                     let %10 __c: u8 [storage=automatic] = reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(48)));
-// DEFAULT-NEXT:                     switch %18 reinterpret<u32, reason=explicit, fits=unknown>(truncate<i32, reason=explicit, fits=unknown>(read<i64>(%3)))
+// DEFAULT-NEXT:                     let %[[VALUE___s:[0-9]+]] __s: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(array_decay<ptr<i8>, length=None>(%[[VALUE_buf1]]));
+// DEFAULT-NEXT:                     let %[[VALUE___u:[0-9]+]] __u: ptr<@type[[TYPE0]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE0]]>, reason=assign>(read<ptr<void>>(%[[VALUE___s]]));
+// DEFAULT-NEXT:                     let %[[VALUE___c:[0-9]+]] __c: u8 [storage=automatic] = reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(48)));
+// DEFAULT-NEXT:                     switch %[[VALUE5:[0-9]+]] reinterpret<u32, reason=explicit, fits=unknown>(truncate<i32, reason=explicit, fits=unknown>(read<i64>(%[[VALUE_nibbles]])))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             case %18 const<u32>(16):
-// DEFAULT-NEXT:                                 write<u32>(field0(deref(read<ptr<@type0>>(%9))), reinterpret<u32, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%10))), const<i32>(16843009))));
-// DEFAULT-NEXT:                             write<ptr<@type0>>(%9, pointer_cast<ptr<@type0>, reason=assign>(ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(pointer_cast<ptr<void>, reason=explicit>(read<ptr<@type0>>(%9)), const<i32>(4))));
-// DEFAULT-NEXT:                             case %18 const<u32>(12):
-// DEFAULT-NEXT:                                 write<u32>(field0(deref(read<ptr<@type0>>(%9))), reinterpret<u32, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%10))), const<i32>(16843009))));
-// DEFAULT-NEXT:                             write<ptr<@type0>>(%9, pointer_cast<ptr<@type0>, reason=assign>(ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(pointer_cast<ptr<void>, reason=explicit>(read<ptr<@type0>>(%9)), const<i32>(4))));
-// DEFAULT-NEXT:                             case %18 const<u32>(0):
-// DEFAULT-NEXT:                                 break %18;
+// DEFAULT-NEXT:                             case %[[VALUE5]] const<u32>(16):
+// DEFAULT-NEXT:                                 write<u32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE___u]]))), reinterpret<u32, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE___c]]))), const<i32>(16843009))));
+// DEFAULT-NEXT:                             write<ptr<@type[[TYPE0]]>>(%[[VALUE___u]], pointer_cast<ptr<@type[[TYPE0]]>, reason=assign>(ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(pointer_cast<ptr<void>, reason=explicit>(read<ptr<@type[[TYPE0]]>>(%[[VALUE___u]])), const<i32>(4))));
+// DEFAULT-NEXT:                             case %[[VALUE5]] const<u32>(12):
+// DEFAULT-NEXT:                                 write<u32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE___u]]))), reinterpret<u32, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE___c]]))), const<i32>(16843009))));
+// DEFAULT-NEXT:                             write<ptr<@type[[TYPE0]]>>(%[[VALUE___u]], pointer_cast<ptr<@type[[TYPE0]]>, reason=assign>(ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(pointer_cast<ptr<void>, reason=explicit>(read<ptr<@type[[TYPE0]]>>(%[[VALUE___u]])), const<i32>(4))));
+// DEFAULT-NEXT:                             case %[[VALUE5]] const<u32>(0):
+// DEFAULT-NEXT:                                 break %[[VALUE5]];
 // DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:                     write<ptr<void>>(%21, read<ptr<void>>(%7));
+// DEFAULT-NEXT:                     write<ptr<void>>(%[[VALUE4]], read<ptr<void>>(%[[VALUE___s]]));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:                 write<ptr<void>>(%20, read<ptr<void>>(%21));
+// DEFAULT-NEXT:                 write<ptr<void>>(%[[VALUE3]], read<ptr<void>>(%[[VALUE4]]));
 // DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<ptr<void>>(%20, null<ptr<void>>);
-// DEFAULT-NEXT:             let %22: ptr<void> [synthetic];
-// DEFAULT-NEXT:             if le<i64>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(16)))
-// DEFAULT-NEXT:                 let %23: ptr<void> [synthetic];
+// DEFAULT-NEXT:                 write<ptr<void>>(%[[VALUE3]], null<ptr<void>>);
+// DEFAULT-NEXT:             let %[[VALUE6:[0-9]+]]: ptr<void> [synthetic];
+// DEFAULT-NEXT:             if le<i64>(read<i64>(%[[VALUE_nibbles]]), widen<i64, reason=usual_arith>(const<i32>(16)))
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: ptr<void> [synthetic];
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %11 __s: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(array_decay<ptr<i8>, length=None>(%5));
-// DEFAULT-NEXT:                     let %13 __u: ptr<@type1> [storage=automatic] = pointer_cast<ptr<@type1>, reason=assign>(read<ptr<void>>(%11));
-// DEFAULT-NEXT:                     let %14 __c: u8 [storage=automatic] = reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(48)));
-// DEFAULT-NEXT:                     switch %19 reinterpret<u32, reason=explicit, fits=unknown>(truncate<i32, reason=explicit, fits=unknown>(read<i64>(%3)))
+// DEFAULT-NEXT:                     let %[[VALUE___s_2:[0-9]+]] __s: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(array_decay<ptr<i8>, length=None>(%[[VALUE_buf2]]));
+// DEFAULT-NEXT:                     let %[[VALUE___u_2:[0-9]+]] __u: ptr<@type[[TYPE1]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE1]]>, reason=assign>(read<ptr<void>>(%[[VALUE___s_2]]));
+// DEFAULT-NEXT:                     let %[[VALUE___c_2:[0-9]+]] __c: u8 [storage=automatic] = reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=always>(const<i32>(48)));
+// DEFAULT-NEXT:                     switch %[[VALUE8:[0-9]+]] reinterpret<u32, reason=explicit, fits=unknown>(truncate<i32, reason=explicit, fits=unknown>(read<i64>(%[[VALUE_nibbles]])))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             case %19 const<u32>(16):
-// DEFAULT-NEXT:                                 write<u32>(field0(deref(read<ptr<@type1>>(%13))), reinterpret<u32, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%14))), const<i32>(16843009))));
-// DEFAULT-NEXT:                             write<ptr<@type1>>(%13, pointer_cast<ptr<@type1>, reason=assign>(ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(pointer_cast<ptr<void>, reason=explicit>(read<ptr<@type1>>(%13)), const<i32>(4))));
-// DEFAULT-NEXT:                             case %19 const<u32>(12):
-// DEFAULT-NEXT:                                 write<u32>(field0(deref(read<ptr<@type1>>(%13))), reinterpret<u32, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%14))), const<i32>(16843009))));
-// DEFAULT-NEXT:                             write<ptr<@type1>>(%13, pointer_cast<ptr<@type1>, reason=assign>(ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(pointer_cast<ptr<void>, reason=explicit>(read<ptr<@type1>>(%13)), const<i32>(4))));
-// DEFAULT-NEXT:                             case %19 const<u32>(8):
-// DEFAULT-NEXT:                                 write<u32>(field0(deref(read<ptr<@type1>>(%13))), reinterpret<u32, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%14))), const<i32>(16843009))));
-// DEFAULT-NEXT:                             write<ptr<@type1>>(%13, pointer_cast<ptr<@type1>, reason=assign>(ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(pointer_cast<ptr<void>, reason=explicit>(read<ptr<@type1>>(%13)), const<i32>(4))));
-// DEFAULT-NEXT:                             case %19 const<u32>(4):
-// DEFAULT-NEXT:                                 write<u32>(field0(deref(read<ptr<@type1>>(%13))), reinterpret<u32, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%14))), const<i32>(16843009))));
-// DEFAULT-NEXT:                             case %19 const<u32>(0):
-// DEFAULT-NEXT:                                 break %19;
+// DEFAULT-NEXT:                             case %[[VALUE8]] const<u32>(16):
+// DEFAULT-NEXT:                                 write<u32>(field0(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE___u_2]]))), reinterpret<u32, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE___c_2]]))), const<i32>(16843009))));
+// DEFAULT-NEXT:                             write<ptr<@type[[TYPE1]]>>(%[[VALUE___u_2]], pointer_cast<ptr<@type[[TYPE1]]>, reason=assign>(ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(pointer_cast<ptr<void>, reason=explicit>(read<ptr<@type[[TYPE1]]>>(%[[VALUE___u_2]])), const<i32>(4))));
+// DEFAULT-NEXT:                             case %[[VALUE8]] const<u32>(12):
+// DEFAULT-NEXT:                                 write<u32>(field0(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE___u_2]]))), reinterpret<u32, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE___c_2]]))), const<i32>(16843009))));
+// DEFAULT-NEXT:                             write<ptr<@type[[TYPE1]]>>(%[[VALUE___u_2]], pointer_cast<ptr<@type[[TYPE1]]>, reason=assign>(ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(pointer_cast<ptr<void>, reason=explicit>(read<ptr<@type[[TYPE1]]>>(%[[VALUE___u_2]])), const<i32>(4))));
+// DEFAULT-NEXT:                             case %[[VALUE8]] const<u32>(8):
+// DEFAULT-NEXT:                                 write<u32>(field0(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE___u_2]]))), reinterpret<u32, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE___c_2]]))), const<i32>(16843009))));
+// DEFAULT-NEXT:                             write<ptr<@type[[TYPE1]]>>(%[[VALUE___u_2]], pointer_cast<ptr<@type[[TYPE1]]>, reason=assign>(ptr_offset<ptr<void>, subtract=false, element=void, overflow=ub>(pointer_cast<ptr<void>, reason=explicit>(read<ptr<@type[[TYPE1]]>>(%[[VALUE___u_2]])), const<i32>(4))));
+// DEFAULT-NEXT:                             case %[[VALUE8]] const<u32>(4):
+// DEFAULT-NEXT:                                 write<u32>(field0(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE___u_2]]))), reinterpret<u32, reason=assign, fits=unknown>(mul<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE___c_2]]))), const<i32>(16843009))));
+// DEFAULT-NEXT:                             case %[[VALUE8]] const<u32>(0):
+// DEFAULT-NEXT:                                 break %[[VALUE8]];
 // DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:                     write<ptr<void>>(%23, read<ptr<void>>(%11));
+// DEFAULT-NEXT:                     write<ptr<void>>(%[[VALUE7]], read<ptr<void>>(%[[VALUE___s_2]]));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:                 write<ptr<void>>(%22, read<ptr<void>>(%23));
+// DEFAULT-NEXT:                 write<ptr<void>>(%[[VALUE6]], read<ptr<void>>(%[[VALUE7]]));
 // DEFAULT-NEXT:             else
-// DEFAULT-NEXT:                 write<ptr<void>>(%22, null<ptr<void>>);
+// DEFAULT-NEXT:                 write<ptr<void>>(%[[VALUE6]], null<ptr<void>>);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

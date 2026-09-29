@@ -54,27 +54,27 @@ bar495 (int i)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 T156 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_T156:[0-9]+]] T156 = struct {
 // DEFAULT-NEXT:         field0 a: i156b : 2;
 // DEFAULT-NEXT:         field1 b: u156b : 135;
 // DEFAULT-NEXT:         field2 c: i156b : 2;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 0, 17], bit_offsets=[Some(0), Some(2), Some(137)], bit_units=[(0, 18)], field_units=[Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     type @type1 T495 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_T495:[0-9]+]] T495 = struct {
 // DEFAULT-NEXT:         field0 a: i495b : 2;
 // DEFAULT-NEXT:         field1 b: u495b : 471;
 // DEFAULT-NEXT:         field2 c: i495b : 2;
 // DEFAULT-NEXT:     } [size=64, align=8, offsets=[0, 0, 59], bit_offsets=[Some(0), Some(2), Some(473)], bit_units=[(0, 60)], field_units=[Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     fn %1 @foo156(%11 <unnamed>: ptr<@type0>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @bar156(%3 i: i32) -> u156b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 r156: array<@type0, 12> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%1, addr_of<ptr<@type0>>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(12)>(%4), const<i32>(0)))));
-// DEFAULT-NEXT:         return read<u156b>(bitfield1<unit=0, bytes=0..18, bits=2..137>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(12)>(%4), read<i32>(%3)))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo156:[0-9]+]] @foo156(%[[VALUE0:[0-9]+]] <unnamed>: ptr<@type[[TYPE_T156]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar156:[0-9]+]] @bar156(%[[VALUE_i:[0-9]+]] i: i32) -> u156b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r156:[0-9]+]] r156: array<@type[[TYPE_T156]], 12> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_T156]]>) -> void>(%[[VALUE_foo156]], addr_of<ptr<@type[[TYPE_T156]]>>(deref(ptr_offset<ptr<@type[[TYPE_T156]]>, subtract=false, element=@type[[TYPE_T156]], overflow=ub>(array_decay<ptr<@type[[TYPE_T156]]>, length=Some(12)>(%[[VALUE_r156]]), const<i32>(0)))));
+// DEFAULT-NEXT:         return read<u156b>(bitfield1<unit=0, bytes=0..18, bits=2..137>(deref(ptr_offset<ptr<@type[[TYPE_T156]]>, subtract=false, element=@type[[TYPE_T156]], overflow=ub>(array_decay<ptr<@type[[TYPE_T156]]>, length=Some(12)>(%[[VALUE_r156]]), read<i32>(%[[VALUE_i]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @foo495(%12 r495: ptr<@type1>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %8 @bar495(%9 i: i32) -> u495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 r495: array<@type1, 12> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>) -> void>(%7, array_decay<ptr<@type1>, length=Some(12)>(%10));
-// DEFAULT-NEXT:         return read<u495b>(bitfield1<unit=0, bytes=0..60, bits=2..473>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(12)>(%10), read<i32>(%9)))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo495:[0-9]+]] @foo495(%[[VALUE_r495:[0-9]+]] r495: ptr<@type[[TYPE_T495]]>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar495:[0-9]+]] @bar495(%[[VALUE_i_2:[0-9]+]] i: i32) -> u495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r495_2:[0-9]+]] r495: array<@type[[TYPE_T495]], 12> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_T495]]>) -> void>(%[[VALUE_foo495]], array_decay<ptr<@type[[TYPE_T495]]>, length=Some(12)>(%[[VALUE_r495_2]]));
+// DEFAULT-NEXT:         return read<u495b>(bitfield1<unit=0, bytes=0..60, bits=2..473>(deref(ptr_offset<ptr<@type[[TYPE_T495]]>, subtract=false, element=@type[[TYPE_T495]], overflow=ub>(array_decay<ptr<@type[[TYPE_T495]]>, length=Some(12)>(%[[VALUE_r495_2]]), read<i32>(%[[VALUE_i_2]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

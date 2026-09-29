@@ -68,40 +68,40 @@ is_dst (const char *start, const char *name, const char *str,
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     fn %12 @__builtin_expect(%10 <unnamed>: i64, %11 <unnamed>: i64) -> i64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %1 @is_dst(%2 start: ptr<const i8>, %3 name: ptr<const i8>, %4 str: ptr<const i8>, %5 is_path: i32, %6 secure: i32) -> u64 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 len: u64 [storage=automatic];
-// DEFAULT-NEXT:         let %8 is_curly: bool [storage=automatic] = ne<i32, reason=assign>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         if eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), const<i32>(0))))), const<i32>(123))
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_expect:[0-9]+]] @__builtin_expect(%[[VALUE0:[0-9]+]] <unnamed>: i64, %[[VALUE1:[0-9]+]] <unnamed>: i64) -> i64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_is_dst:[0-9]+]] @is_dst(%[[VALUE_start:[0-9]+]] start: ptr<const i8>, %[[VALUE_name:[0-9]+]] name: ptr<const i8>, %[[VALUE_str:[0-9]+]] str: ptr<const i8>, %[[VALUE_is_path:[0-9]+]] is_path: i32, %[[VALUE_secure:[0-9]+]] secure: i32) -> u64 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_len:[0-9]+]] len: u64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_is_curly:[0-9]+]] is_curly: bool [storage=automatic] = ne<i32, reason=assign>(const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:         if eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_name]]), const<i32>(0))))), const<i32>(123))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<bool>(%8, ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
-// DEFAULT-NEXT:                 let %13: ptr<const i8> [synthetic] = read<ptr<const i8>>(%3);
-// DEFAULT-NEXT:                 let %14: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%13), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<const i8>>(%3, read<ptr<const i8>>(%14));
+// DEFAULT-NEXT:                 write<bool>(%[[VALUE_is_curly]], ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: ptr<const i8> [synthetic] = read<ptr<const i8>>(%[[VALUE_name]]);
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<const i8>>(%[[VALUE_name]], read<ptr<const i8>>(%[[VALUE3]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<u64>(%7, reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
-// DEFAULT-NEXT:         while %9 logical_and<bool>(eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%4), read<u64>(%7)))))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(0)))
-// DEFAULT-NEXT:             let %15: u64 [synthetic] = read<u64>(%7);
-// DEFAULT-NEXT:             let %16: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%15), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:             write<u64>(%7, read<u64>(%16));
-// DEFAULT-NEXT:         if read<bool>(%8)
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_len]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
+// DEFAULT-NEXT:         while %[[VALUE4:[0-9]+]] logical_and<bool>(eq<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_name]]), read<u64>(%[[VALUE_len]]))))), widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_str]]), read<u64>(%[[VALUE_len]])))))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_name]]), read<u64>(%[[VALUE_len]]))))), const<i32>(0)))
+// DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_len]]);
+// DEFAULT-NEXT:             let %[[VALUE6:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE5]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:             write<u64>(%[[VALUE_len]], read<u64>(%[[VALUE6]]));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE_is_curly]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(125))
+// DEFAULT-NEXT:                 if ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_name]]), read<u64>(%[[VALUE_len]]))))), const<i32>(125))
 // DEFAULT-NEXT:                     return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(0)));
-// DEFAULT-NEXT:                 let %17: ptr<const i8> [synthetic] = read<ptr<const i8>>(%3);
-// DEFAULT-NEXT:                 let %18: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=true, element=i8, overflow=ub>(read<ptr<const i8>>(%17), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<const i8>>(%3, read<ptr<const i8>>(%18));
-// DEFAULT-NEXT:                 let %19: u64 [synthetic] = read<u64>(%7);
-// DEFAULT-NEXT:                 let %20: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%19), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))));
-// DEFAULT-NEXT:                 write<u64>(%7, read<u64>(%20));
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: ptr<const i8> [synthetic] = read<ptr<const i8>>(%[[VALUE_name]]);
+// DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: ptr<const i8> [synthetic] = ptr_offset<ptr<const i8>, subtract=true, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE7]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<const i8>>(%[[VALUE_name]], read<ptr<const i8>>(%[[VALUE8]]));
+// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_len]]);
+// DEFAULT-NEXT:                 let %[[VALUE10:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE9]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))));
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_len]], read<u64>(%[[VALUE10]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             if logical_and<bool>(logical_and<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(0)), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(47))), logical_or<bool>(not<bool>(ne<i32>(read<i32>(%5), const<i32>(0))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(58))))
+// DEFAULT-NEXT:             if logical_and<bool>(logical_and<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_name]]), read<u64>(%[[VALUE_len]]))))), const<i32>(0)), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_name]]), read<u64>(%[[VALUE_len]]))))), const<i32>(47))), logical_or<bool>(not<bool>(ne<i32>(read<i32>(%[[VALUE_is_path]]), const<i32>(0))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_name]]), read<u64>(%[[VALUE_len]]))))), const<i32>(58))))
 // DEFAULT-NEXT:                 return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(0)));
-// DEFAULT-NEXT:         if logical_and<bool>(ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%12, widen<i64, reason=arg>(read<i32>(%6)), widen<i64, reason=arg>(const<i32>(0))), const<i64>(0)), logical_or<bool>(logical_and<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(0)), logical_or<bool>(not<bool>(ne<i32>(read<i32>(%5), const<i32>(0))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), read<u64>(%7))))), const<i32>(58)))), logical_and<bool>(ne<ptr<const i8>>(read<ptr<const i8>>(%3), ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%2), const<i32>(1))), logical_or<bool>(not<bool>(ne<i32>(read<i32>(%5), const<i32>(0))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), neg<i32, overflow=ub>(const<i32>(2)))))), const<i32>(58))))))
+// DEFAULT-NEXT:         if logical_and<bool>(ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%[[VALUE___builtin_expect]], widen<i64, reason=arg>(read<i32>(%[[VALUE_secure]])), widen<i64, reason=arg>(const<i32>(0))), const<i64>(0)), logical_or<bool>(logical_and<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_name]]), read<u64>(%[[VALUE_len]]))))), const<i32>(0)), logical_or<bool>(not<bool>(ne<i32>(read<i32>(%[[VALUE_is_path]]), const<i32>(0))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_name]]), read<u64>(%[[VALUE_len]]))))), const<i32>(58)))), logical_and<bool>(ne<ptr<const i8>>(read<ptr<const i8>>(%[[VALUE_name]]), ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_start]]), const<i32>(1))), logical_or<bool>(not<bool>(ne<i32>(read<i32>(%[[VALUE_is_path]]), const<i32>(0))), ne<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_name]]), neg<i32, overflow=ub>(const<i32>(2)))))), const<i32>(58))))))
 // DEFAULT-NEXT:             return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(0)));
-// DEFAULT-NEXT:         return read<u64>(%7);
+// DEFAULT-NEXT:         return read<u64>(%[[VALUE_len]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

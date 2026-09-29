@@ -94,55 +94,55 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %4 a: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 c: volatile ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @f1(%1 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: volatile ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_i:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         return read<i32>(%1);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @f2(%3 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_i_2:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         return read<i32>(%3);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_i_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %23: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:         let %24: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%23), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%4, read<i32>(%24));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @__builtin_sqrt(%20 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @f4(%8 x: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_sqrt:[0-9]+]] @__builtin_sqrt(%[[VALUE2:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_x:[0-9]+]] x: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(float_class<bool, test=finite>(call<f64, signature=fn(f64) -> f64>(%21, read<f64>(%8))));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(float_class<bool, test=finite>(call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sqrt]], read<f64>(%[[VALUE_x]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @f5(%10 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE_x_2:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%21, read<f64>(%10));
+// DEFAULT-NEXT:         return call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sqrt]], read<f64>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @f6(%12 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(%[[VALUE_x_3:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         return read<i32>(%12);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %13 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %14 b: i32 [storage=automatic] = const<i32>(42);
-// DEFAULT-NEXT:         let %15 d: f64 [storage=automatic] = const<f64>(42.0);
-// DEFAULT-NEXT:         let %16 e: f64 [storage=automatic] = const<f64>(43.0);
-// DEFAULT-NEXT:         write<ptr<i32>, volatile>(%5, addr_of<ptr<i32>>(%14));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic] = const<i32>(42);
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: f64 [storage=automatic] = const<f64>(42.0);
+// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: f64 [storage=automatic] = const<f64>(43.0);
+// DEFAULT-NEXT:         write<ptr<i32>, volatile>(%[[VALUE_c]], addr_of<ptr<i32>>(%[[VALUE_b]]));
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%4), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%22);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%14), const<i32>(42)), ne<i32>(read<i32>(deref(read<ptr<i32>, volatile>(%5))), const<i32>(42)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%22);
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(42)), ne<i32>(read<i32>(deref(read<ptr<i32>, volatile>(%[[VALUE_c]]))), const<i32>(42)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         let %17 i: i32 [storage=automatic] = const<i32>(90);
-// DEFAULT-NEXT:         let %18 j: i32 [storage=automatic] = const<i32>(91);
-// DEFAULT-NEXT:         let %19 k: i32 [storage=automatic] = const<i32>(92);
+// DEFAULT-NEXT:         let %[[VALUE_i_3:[0-9]+]] i: i32 [storage=automatic] = const<i32>(90);
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic] = const<i32>(91);
+// DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: i32 [storage=automatic] = const<i32>(92);
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         ;
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%11, const<i32>(93)), const<i32>(93))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%22);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_f6]], const<i32>(93)), const<i32>(93))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

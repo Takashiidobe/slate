@@ -60,49 +60,49 @@ test (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @test() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %1 x: i32 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             lateout 0 "{0}{1}" [{0}{1}] width 32 place<i32>(%1);
+// DEFAULT-NEXT:             lateout 0 "{0}{1}" [{0}{1}] width 32 place<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             lateout 0 "{0}m{1}" [{0}m{1}] width 32 place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "r" [reg] width 32 read<i32>(%1);
+// DEFAULT-NEXT:             lateout 0 "{0}m{1}" [{0}m{1}] width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "r" [reg] width 32 read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=nostack] {
-// DEFAULT-NEXT:             lateout 0 "{0}m" [unresolved("{") | unresolved("0") | unresolved("}") | mem] -> mem width 32 place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "r" [reg] width 32 read<i32>(%1);
+// DEFAULT-NEXT:             lateout 0 "{0}m" [unresolved("{") | unresolved("0") | unresolved("}") | mem] -> mem width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "r" [reg] width 32 read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "{0}{1}" [{0}{1}] width 32 read<i32>(%1);
+// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "{0}{1}" [{0}{1}] width 32 read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "{0}i{1}" [{0}i{1}] width 32 read<i32>(%1);
+// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "{0}i{1}" [{0}i{1}] width 32 read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] [alternative=none] {
-// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "{0}i" [unresolved("{") | unresolved("0") | unresolved("}") | imm | sym] width 32 read<i32>(%1);
+// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "{0}i" [unresolved("{") | unresolved("0") | unresolved("}") | imm | sym] width 32 read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:             rejected: 0 (operand 1: unresolved("{"));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             lateout 0 "{0}r" [unresolved("{") | unresolved("0") | unresolved("}") | reg] -> reg width 32 place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "r" [reg] width 32 read<i32>(%1);
+// DEFAULT-NEXT:             lateout 0 "{0}r" [unresolved("{") | unresolved("0") | unresolved("}") | reg] -> reg width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "r" [reg] width 32 read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             lateout 0 "r{0}" [reg | unresolved("{") | unresolved("0") | unresolved("}")] -> reg width 32 place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "r" [reg] width 32 read<i32>(%1);
+// DEFAULT-NEXT:             lateout 0 "r{0}" [reg | unresolved("{") | unresolved("0") | unresolved("}")] -> reg width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "r" [reg] width 32 read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "{0}r" [unresolved("{") | unresolved("0") | unresolved("}") | reg] -> reg width 32 read<i32>(%1);
+// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "{0}r" [unresolved("{") | unresolved("0") | unresolved("}") | reg] -> reg width 32 read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%1);
-// DEFAULT-NEXT:             in 1 "r{0}" [reg | unresolved("{") | unresolved("0") | unresolved("}")] -> reg width 32 read<i32>(%1);
+// DEFAULT-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "r{0}" [reg | unresolved("{") | unresolved("0") | unresolved("}")] -> reg width 32 read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<i32>(%1);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -150,156 +150,156 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @foo(%2 x: i8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 y: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         switch %5 widen<i32, reason=promotion>(read<i8>(%2))
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] widen<i32, reason=promotion>(read<i8>(%[[VALUE_x]]))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %5 const<i32>(0):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(1));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(1):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(7));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(2):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(2));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(3):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(19));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(4):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(5));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(5):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(17));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(6):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(31));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(7):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(8));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(8):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(28));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(9):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(16));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(10):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(31));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(11):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(12));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(12):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(15));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(13):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(111));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(14):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(17));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(15):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(10));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(16):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(31));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(17):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(7));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(18):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(2));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(19):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(19));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(20):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(5));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(21):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(107));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(22):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(31));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(23):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(8));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(24):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(28));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(25):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(106));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(26):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(31));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(27):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(102));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(28):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(105));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(29):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(111));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(30):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(17));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(31):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(10));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(32):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(31));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(98):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(18));
-// DEFAULT-NEXT:                 break %5;
-// DEFAULT-NEXT:                 case %5 const<i32>(-62):
-// DEFAULT-NEXT:                     write<i32>(%3, const<i32>(19));
-// DEFAULT-NEXT:                 break %5;
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(0):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(1));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(1):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(7));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(2):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(2));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(3):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(19));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(4):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(5));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(5):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(17));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(6):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(31));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(7):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(8));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(8):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(28));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(9):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(16));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(10):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(31));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(11):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(12));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(12):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(15));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(13):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(111));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(14):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(17));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(15):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(10));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(16):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(31));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(17):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(7));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(18):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(2));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(19):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(19));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(20):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(5));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(21):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(107));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(22):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(31));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(23):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(8));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(24):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(28));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(25):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(106));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(26):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(31));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(27):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(102));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(28):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(105));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(29):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(111));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(30):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(17));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(31):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(10));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(32):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(31));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(98):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(18));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(-62):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_y]], const<i32>(19));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<i32>(%3);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_y]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i8) -> i32>(%1, truncate<i8, reason=arg, fits=always>(const<i32>(98))), const<i32>(18))
-// DEFAULT-NEXT:             write<bool>(%6, const<bool>(true));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i8) -> i32>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=always>(const<i32>(98))), const<i32>(18))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%6, ne<i32>(call<i32, signature=fn(i8) -> i32>(%1, truncate<i8, reason=arg, fits=always>(const<i32>(97))), const<i32>(0)));
-// DEFAULT-NEXT:         let %7: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%6)
-// DEFAULT-NEXT:             write<bool>(%7, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE1]], ne<i32>(call<i32, signature=fn(i8) -> i32>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=always>(const<i32>(97))), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE1]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%7, ne<i32>(call<i32, signature=fn(i8) -> i32>(%1, truncate<i8, reason=arg, fits=always>(const<i32>(99))), const<i32>(0)));
-// DEFAULT-NEXT:         if read<bool>(%7)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %8: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i8) -> i32>(%1, truncate<i8, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(62)))), const<i32>(19))
-// DEFAULT-NEXT:             write<bool>(%8, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE2]], ne<i32>(call<i32, signature=fn(i8) -> i32>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=always>(const<i32>(99))), const<i32>(0)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE2]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i8) -> i32>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(62)))), const<i32>(19))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE3]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%8, ne<i32>(call<i32, signature=fn(i8) -> i32>(%1, truncate<i8, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(63)))), const<i32>(0)));
-// DEFAULT-NEXT:         let %9: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%8)
-// DEFAULT-NEXT:             write<bool>(%9, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE3]], ne<i32>(call<i32, signature=fn(i8) -> i32>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(63)))), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE3]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%9, ne<i32>(call<i32, signature=fn(i8) -> i32>(%1, truncate<i8, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(61)))), const<i32>(0)));
-// DEFAULT-NEXT:         if read<bool>(%9)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %10: bool [synthetic];
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i8) -> i32>(%1, truncate<i8, reason=arg, fits=always>(const<i32>(28))), const<i32>(105))
-// DEFAULT-NEXT:             write<bool>(%10, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], ne<i32>(call<i32, signature=fn(i8) -> i32>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=unknown>(neg<i32, overflow=ub>(const<i32>(61)))), const<i32>(0)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE4]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i8) -> i32>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=always>(const<i32>(28))), const<i32>(105))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%10, ne<i32>(call<i32, signature=fn(i8) -> i32>(%1, truncate<i8, reason=arg, fits=always>(const<i32>(27))), const<i32>(102)));
-// DEFAULT-NEXT:         let %11: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%10)
-// DEFAULT-NEXT:             write<bool>(%11, const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], ne<i32>(call<i32, signature=fn(i8) -> i32>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=always>(const<i32>(27))), const<i32>(102)));
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE5]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%11, ne<i32>(call<i32, signature=fn(i8) -> i32>(%1, truncate<i8, reason=arg, fits=always>(const<i32>(29))), const<i32>(111)));
-// DEFAULT-NEXT:         if read<bool>(%11)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], ne<i32>(call<i32, signature=fn(i8) -> i32>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=always>(const<i32>(29))), const<i32>(111)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE6]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

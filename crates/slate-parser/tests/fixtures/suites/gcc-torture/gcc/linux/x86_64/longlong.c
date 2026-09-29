@@ -63,36 +63,36 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 uint64 = u64;
-// DEFAULT-NEXT:     global %3 pars: u64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 b: array<u64, 32> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %5 r: ptr<u64> [storage=static] = array_decay<ptr<u64>, length=Some(32)>(%4) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%12 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @alpha_ep_extbl_i_eq_0() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 rb: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %8 ra: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %9 rc: u32 [storage=automatic];
-// DEFAULT-NEXT:         write<u32>(%7, truncate<u32, reason=assign, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%3), const<i32>(27)), const<u64>(31))));
-// DEFAULT-NEXT:         write<u32>(%8, truncate<u32, reason=assign, fits=unknown>(and<u64>(widen<u64, reason=usual_arith>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%3)), const<i32>(5))), const<u64>(31))));
-// DEFAULT-NEXT:         write<u32>(%9, truncate<u32, reason=assign, fits=unknown>(and<u64>(widen<u64, reason=usual_arith>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%3)), const<i32>(0))), const<u64>(31))));
+// DEFAULT-NEXT:     type @type[[TYPE_uint64:[0-9]+]] uint64 = u64;
+// DEFAULT-NEXT:     global %[[VALUE_pars:[0-9]+]] pars: u64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: array<u64, 32> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_r:[0-9]+]] r: ptr<u64> [storage=static] = array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_alpha_ep_extbl_i_eq_0:[0-9]+]] @alpha_ep_extbl_i_eq_0() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_rb:[0-9]+]] rb: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_ra:[0-9]+]] ra: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_rc:[0-9]+]] rc: u32 [storage=automatic];
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_rb]], truncate<u32, reason=assign, fits=unknown>(and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_pars]]), const<i32>(27)), const<u64>(31))));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_ra]], truncate<u32, reason=assign, fits=unknown>(and<u64>(widen<u64, reason=usual_arith>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_pars]])), const<i32>(5))), const<u64>(31))));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_rc]], truncate<u32, reason=assign, fits=unknown>(and<u64>(widen<u64, reason=usual_arith>(shr<u32, amount_out_of_range=ub, fill=zero_extend>(truncate<u32, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_pars]])), const<i32>(0))), const<u64>(31))));
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %10 temp: u64 [storage=automatic] = and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%5), read<u32>(%8)))), shl<u64, overflow=wrap, amount_out_of_range=ub>(and<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%5), read<u32>(%7)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(7)))), const<i32>(3))), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(255)));
-// DEFAULT-NEXT:             if ne<u32>(read<u32>(%9), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(31)))
-// DEFAULT-NEXT:                 write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%5), read<u32>(%9))), read<u64>(%10));
+// DEFAULT-NEXT:             let %[[VALUE_temp:[0-9]+]] temp: u64 [storage=automatic] = and<u64>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%[[VALUE_r]]), read<u32>(%[[VALUE_ra]])))), shl<u64, overflow=wrap, amount_out_of_range=ub>(and<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%[[VALUE_r]]), read<u32>(%[[VALUE_rb]])))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(7)))), const<i32>(3))), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(255)));
+// DEFAULT-NEXT:             if ne<u32>(read<u32>(%[[VALUE_rc]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(31)))
+// DEFAULT-NEXT:                 write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%[[VALUE_r]]), read<u32>(%[[VALUE_rc]]))), read<u64>(%[[VALUE_temp]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         if eq<u64>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%4), const<i32>(17))), const<u64>(3160194));
-// DEFAULT-NEXT:                 write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%4), const<i32>(2))), const<u64>(6003104017374052362));
-// DEFAULT-NEXT:                 write<u64>(%3, widen<u64, reason=assign>(const<u32>(2281701442)));
-// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%6);
-// DEFAULT-NEXT:                 if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%4), const<i32>(2)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(77))))
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]), const<i32>(17))), const<u64>(3160194));
+// DEFAULT-NEXT:                 write<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]), const<i32>(2))), const<u64>(6003104017374052362));
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_pars]], widen<u64, reason=assign>(const<u32>(2281701442)));
+// DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE_alpha_ep_extbl_i_eq_0]]);
+// DEFAULT-NEXT:                 if ne<u64>(read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(32)>(%[[VALUE_b]]), const<i32>(2)))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(77))))
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

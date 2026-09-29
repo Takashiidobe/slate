@@ -56,9 +56,9 @@ int triple = TRIPLE_NESTED;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 nested: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     global %1 feature: i32 [storage=static] = const<i32>(2) [linkage=external];
-// DEFAULT-NEXT:     global %2 triple: i32 [storage=static] = const<i32>(3) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_nested:[0-9]+]] nested: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_feature:[0-9]+]] feature: i32 [storage=static] = const<i32>(2) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_triple:[0-9]+]] triple: i32 [storage=static] = const<i32>(3) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN FEATURE
@@ -84,8 +84,8 @@ int triple = TRIPLE_NESTED;
 // FEATURE-NEXT:         storage d64 [size=8, align=8];
 // FEATURE-NEXT:         storage d128 [size=16, align=16];
 // FEATURE-NEXT:     }
-// FEATURE-NEXT:     global %0 nested: i32 [storage=static] = const<i32>(1) [linkage=external];
-// FEATURE-NEXT:     global %1 feature: i32 [storage=static] = const<i32>(1) [linkage=external];
-// FEATURE-NEXT:     global %2 triple: i32 [storage=static] = const<i32>(3) [linkage=external];
+// FEATURE-NEXT:     global %[[VALUE_nested:[0-9]+]] nested: i32 [storage=static] = const<i32>(1) [linkage=external];
+// FEATURE-NEXT:     global %[[VALUE_feature:[0-9]+]] feature: i32 [storage=static] = const<i32>(1) [linkage=external];
+// FEATURE-NEXT:     global %[[VALUE_triple:[0-9]+]] triple: i32 [storage=static] = const<i32>(3) [linkage=external];
 // FEATURE-NEXT: }
 // SLATE-FILECHECK-END FEATURE

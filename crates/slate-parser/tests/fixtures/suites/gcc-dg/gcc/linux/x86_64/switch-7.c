@@ -39,10 +39,10 @@ f (int a)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(%1 a: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         switch %2 read<i32>(%1)
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_a:[0-9]+]] a: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_a]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %2 const<i32>(0) ... const<i32>(0):
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(0) ... const<i32>(0):
 // DEFAULT-NEXT:                     ;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }

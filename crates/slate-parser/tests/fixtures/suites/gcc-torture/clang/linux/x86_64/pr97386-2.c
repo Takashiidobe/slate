@@ -40,20 +40,20 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 x: i32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 a: u64 [storage=automatic] = or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(9223372036854828236), read<i32>(%1)), shr<u64, amount_out_of_range=ub, fill=zero_extend>(const<u64>(9223372036854828236), sub<i32, overflow=ub>(const<i32>(64), read<i32>(%1))));
-// DEFAULT-NEXT:         let %3 b: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(read<u64>(%2));
-// DEFAULT-NEXT:         return or<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%3), const<i32>(24)), shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%3), const<i32>(8)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: u64 [storage=automatic] = or<u64>(shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(9223372036854828236), read<i32>(%[[VALUE_x]])), shr<u64, amount_out_of_range=ub, fill=zero_extend>(const<u64>(9223372036854828236), sub<i32, overflow=ub>(const<i32>(64), read<i32>(%[[VALUE_x]]))));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(read<u64>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         return or<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_b]]), const<i32>(24)), shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_b]]), const<i32>(8)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6: bool [synthetic];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i32>(const<i32>(8), const<i32>(8)), eq<i32>(const<i32>(4), const<i32>(4))), eq<i32>(const<i32>(8), const<i32>(8)))
-// DEFAULT-NEXT:             write<bool>(%6, ne<u32>(call<u32, signature=fn(i32) -> u32>(%0, const<i32>(1)), const<u32>(2566914457)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<u32>(call<u32, signature=fn(i32) -> u32>(%[[VALUE_foo]], const<i32>(1)), const<u32>(2566914457)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%6, const<bool>(false));
-// DEFAULT-NEXT:         if read<bool>(%6)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(false));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE0]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

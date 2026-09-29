@@ -55,33 +55,33 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %13 .str13: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([120, 121, 122, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %14 .str14: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%11 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @check_target(%3 ptr: ptr<const i8>, %4 end: ptr<const i8>, %5 tokPtr: ptr<i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 upper: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%5)), const<i32>(7));
-// DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<const i8>>(%4), read<ptr<const i8>>(%3)), widen<i64, reason=usual_arith>(const<i32>(3)))
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([120, 121, 122, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_check_target:[0-9]+]] @check_target(%[[VALUE_ptr:[0-9]+]] ptr: ptr<const i8>, %[[VALUE_end:[0-9]+]] end: ptr<const i8>, %[[VALUE_tokPtr:[0-9]+]] tokPtr: ptr<i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_upper:[0-9]+]] upper: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_tokPtr]])), const<i32>(7));
+// DEFAULT-NEXT:         if ne<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<const i8>>(%[[VALUE_end]]), read<ptr<const i8>>(%[[VALUE_ptr]])), widen<i64, reason=usual_arith>(const<i32>(3)))
 // DEFAULT-NEXT:             return const<i32>(1);
-// DEFAULT-NEXT:         switch %12 widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%3), const<i32>(0)))))
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_ptr]]), const<i32>(0)))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %12 const<i32>(120):
-// DEFAULT-NEXT:                     break %12;
-// DEFAULT-NEXT:                 case %12 const<i32>(88):
-// DEFAULT-NEXT:                     write<i32>(%6, const<i32>(1));
-// DEFAULT-NEXT:                 break %12;
-// DEFAULT-NEXT:                 default %12:
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(120):
+// DEFAULT-NEXT:                     break %[[VALUE0]];
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(88):
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_upper]], const<i32>(1));
+// DEFAULT-NEXT:                 break %[[VALUE0]];
+// DEFAULT-NEXT:                 default %[[VALUE0]]:
 // DEFAULT-NEXT:                     return const<i32>(1);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%6), const<i32>(0))
-// DEFAULT-NEXT:             write<i32>(deref(read<ptr<i32>>(%5)), const<i32>(9));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_upper]]), const<i32>(0))
+// DEFAULT-NEXT:             write<i32>(deref(read<ptr<i32>>(%[[VALUE_tokPtr]])), const<i32>(9));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 tok: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %9 s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%13));
-// DEFAULT-NEXT:         let %10 r: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i8>, ptr<const i8>, ptr<i32>) -> i32>(%2, read<ptr<const i8>>(%9), ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%9), const<i32>(3)), addr_of<ptr<i32>>(%8));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%14)), read<i32>(%10), read<i32>(%8));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_tok:[0-9]+]] tok: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: ptr<const i8> [storage=automatic] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]]));
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i8>, ptr<const i8>, ptr<i32>) -> i32>(%[[VALUE_check_target]], read<ptr<const i8>>(%[[VALUE_s]]), ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(read<ptr<const i8>>(%[[VALUE_s]]), const<i32>(3)), addr_of<ptr<i32>>(%[[VALUE_tok]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_2]])), read<i32>(%[[VALUE_r]]), read<i32>(%[[VALUE_tok]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

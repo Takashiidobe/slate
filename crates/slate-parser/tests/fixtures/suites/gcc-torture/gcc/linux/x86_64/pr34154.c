@@ -40,21 +40,21 @@ int         main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 aLL: u64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         switch %5 read<u64>(%1)
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_aLL:[0-9]+]] aLL: u64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] read<u64>(%[[VALUE_aLL]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %5 const<u64>(1000000000000000000) ... const<u64>(9999999999999999999):
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<u64>(1000000000000000000) ... const<u64>(9999999999999999999):
 // DEFAULT-NEXT:                     return const<i32>(19);
-// DEFAULT-NEXT:                 default %5:
+// DEFAULT-NEXT:                 default %[[VALUE0]]:
 // DEFAULT-NEXT:                     return const<i32>(20);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 aLL: u64 [storage=automatic] = const<u64>(1000000000000000000);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(%0, read<u64>(%4)), const<i32>(19))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_aLL_2:[0-9]+]] aLL: u64 [storage=automatic] = const<u64>(1000000000000000000);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(u64) -> i32>(%[[VALUE_foo]], read<u64>(%[[VALUE_aLL_2]])), const<i32>(19))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

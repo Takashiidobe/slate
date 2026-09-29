@@ -129,54 +129,54 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 u_int32_t = u32;
-// DEFAULT-NEXT:     type @type1 u_int8_t = u8;
-// DEFAULT-NEXT:     type @type2 int32_t = i32;
-// DEFAULT-NEXT:     type @type3 = enum : u32 {
-// DEFAULT-NEXT:         %0 TXNLIST_DELETE = const<i32>(0);
-// DEFAULT-NEXT:         %1 TXNLIST_LSN = const<i32>(1);
-// DEFAULT-NEXT:         %2 TXNLIST_TXNID = const<i32>(2);
-// DEFAULT-NEXT:         %3 TXNLIST_PGNO = const<i32>(3);
+// DEFAULT-NEXT:     type @type[[TYPE_u_int32_t:[0-9]+]] u_int32_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_u_int8_t:[0-9]+]] u_int8_t = u8;
+// DEFAULT-NEXT:     type @type[[TYPE_int32_t:[0-9]+]] int32_t = i32;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_TXNLIST_DELETE:[0-9]+]] TXNLIST_DELETE = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_TXNLIST_LSN:[0-9]+]] TXNLIST_LSN = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_TXNLIST_TXNID:[0-9]+]] TXNLIST_TXNID = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE_TXNLIST_PGNO:[0-9]+]] TXNLIST_PGNO = const<i32>(3);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type4 db_txnlist_type = @type3;
-// DEFAULT-NEXT:     type @type5 __db_lsn = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_db_txnlist_type:[0-9]+]] db_txnlist_type = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE___db_lsn:[0-9]+]] __db_lsn = struct {
 // DEFAULT-NEXT:         field0 file: u32;
 // DEFAULT-NEXT:         field1 offset: u32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type6 DB_LSN = @type5;
-// DEFAULT-NEXT:     type @type7 __db_txnlist = struct {
-// DEFAULT-NEXT:         field0 type: @type3;
-// DEFAULT-NEXT:         field1 links: @type9;
-// DEFAULT-NEXT:         field2 u: @type10;
+// DEFAULT-NEXT:     type @type[[TYPE_DB_LSN:[0-9]+]] DB_LSN = @type[[TYPE___db_lsn]];
+// DEFAULT-NEXT:     type @type[[TYPE___db_txnlist:[0-9]+]] __db_txnlist = struct {
+// DEFAULT-NEXT:         field0 type: @type[[TYPE0]];
+// DEFAULT-NEXT:         field1 links: @type[[TYPE1:[0-9]+]];
+// DEFAULT-NEXT:         field2 u: @type[[TYPE2:[0-9]+]];
 // DEFAULT-NEXT:     } [size=80, align=8, offsets=[0, 8, 24]];
-// DEFAULT-NEXT:     type @type8 DB_TXNLIST = @type7;
-// DEFAULT-NEXT:     type @type9 = struct {
-// DEFAULT-NEXT:         field0 le_next: ptr<@type7>;
-// DEFAULT-NEXT:         field1 le_prev: ptr<ptr<@type7>>;
+// DEFAULT-NEXT:     type @type[[TYPE_DB_TXNLIST:[0-9]+]] DB_TXNLIST = @type[[TYPE___db_txnlist]];
+// DEFAULT-NEXT:     type @type[[TYPE1]] = struct {
+// DEFAULT-NEXT:         field0 le_next: ptr<@type[[TYPE___db_txnlist]]>;
+// DEFAULT-NEXT:         field1 le_prev: ptr<ptr<@type[[TYPE___db_txnlist]]>>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type10 = union {
-// DEFAULT-NEXT:         field0 t: @type11;
-// DEFAULT-NEXT:         field1 d: @type12;
-// DEFAULT-NEXT:         field2 l: @type13;
-// DEFAULT-NEXT:         field3 p: @type14;
+// DEFAULT-NEXT:     type @type[[TYPE2]] = union {
+// DEFAULT-NEXT:         field0 t: @type[[TYPE3:[0-9]+]];
+// DEFAULT-NEXT:         field1 d: @type[[TYPE4:[0-9]+]];
+// DEFAULT-NEXT:         field2 l: @type[[TYPE5:[0-9]+]];
+// DEFAULT-NEXT:         field3 p: @type[[TYPE6:[0-9]+]];
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 0, 0, 0]];
-// DEFAULT-NEXT:     type @type11 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE3]] = struct {
 // DEFAULT-NEXT:         field0 txnid: u32;
 // DEFAULT-NEXT:         field1 generation: i32;
 // DEFAULT-NEXT:         field2 aborted: i32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     type @type12 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE4]] = struct {
 // DEFAULT-NEXT:         field0 flags: u32;
 // DEFAULT-NEXT:         field1 fileid: i32;
 // DEFAULT-NEXT:         field2 count: u32;
 // DEFAULT-NEXT:         field3 fname: ptr<i8>;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 4, 8, 16]];
-// DEFAULT-NEXT:     type @type13 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE5]] = struct {
 // DEFAULT-NEXT:         field0 ntxns: i32;
 // DEFAULT-NEXT:         field1 maxn: i32;
-// DEFAULT-NEXT:         field2 lsn_array: ptr<@type5>;
+// DEFAULT-NEXT:         field2 lsn_array: ptr<@type[[TYPE___db_lsn]]>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     type @type14 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE6]] = struct {
 // DEFAULT-NEXT:         field0 nentries: i32;
 // DEFAULT-NEXT:         field1 maxentry: i32;
 // DEFAULT-NEXT:         field2 fname: ptr<i8>;
@@ -184,62 +184,62 @@ int main(void) {
 // DEFAULT-NEXT:         field4 pgno_array: ptr<void>;
 // DEFAULT-NEXT:         field5 uid: array<u8, 20>;
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 4, 8, 16, 24, 32]];
-// DEFAULT-NEXT:     fn %0 @exit(%36 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %21 @log_compare(%22 a: ptr<const @type5>, %23 b: ptr<const @type5>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_TXNLIST_DELETE]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_TXNLIST_LSN]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_log_compare:[0-9]+]] @log_compare(%[[VALUE_a:[0-9]+]] a: ptr<const @type[[TYPE___db_lsn]]>, %[[VALUE_b:[0-9]+]] b: ptr<const @type[[TYPE___db_lsn]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @__db_txnlist_lsnadd(%25 val: i32, %26 elp: ptr<@type7>, %27 lsnp: ptr<@type5>, %28 flags: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %29 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %37
+// DEFAULT-NEXT:     fn %[[VALUE___db_txnlist_lsnadd:[0-9]+]] @__db_txnlist_lsnadd(%[[VALUE_val:[0-9]+]] val: i32, %[[VALUE_elp:[0-9]+]] elp: ptr<@type[[TYPE___db_txnlist]]>, %[[VALUE_lsnp:[0-9]+]] lsnp: ptr<@type[[TYPE___db_lsn]]>, %[[VALUE_flags:[0-9]+]] flags: u32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%29, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%29), conditional<i32>(not<bool>(ne<u32>(and<u32>(read<u32>(%28), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), const<u32>(0))), const<i32>(1), read<i32>(field0(field2(field2(deref(read<ptr<@type7>>(%26))))))))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), conditional<i32>(not<bool>(ne<u32>(and<u32>(read<u32>(%[[VALUE_flags]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), const<u32>(0))), const<i32>(1), read<i32>(field0(field2(field2(deref(read<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_elp]]))))))))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %39: i32 [synthetic] = read<i32>(%29);
-// DEFAULT-NEXT:                 let %40: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%39), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%29, read<i32>(%40));
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %30 __j: i32 [storage=automatic];
-// DEFAULT-NEXT:                     let %31 __tmp: @type5 [storage=automatic];
-// DEFAULT-NEXT:                     let %41: i32 [synthetic] = read<i32>(%25);
-// DEFAULT-NEXT:                     let %42: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%41), const<i32>(1));
-// DEFAULT-NEXT:                     write<i32>(%25, read<i32>(%42));
-// DEFAULT-NEXT:                     for %38
+// DEFAULT-NEXT:                     let %[[VALUE___j:[0-9]+]] __j: i32 [storage=automatic];
+// DEFAULT-NEXT:                     let %[[VALUE___tmp:[0-9]+]] __tmp: @type[[TYPE___db_lsn]] [storage=automatic];
+// DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_val]]);
+// DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_val]], read<i32>(%[[VALUE5]]));
+// DEFAULT-NEXT:                     for %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:                         init:
-// DEFAULT-NEXT:                             write<i32>(%30, const<i32>(0));
-// DEFAULT-NEXT:                         condition: lt<i32>(read<i32>(%30), sub<i32, overflow=ub>(read<i32>(field0(field2(field2(deref(read<ptr<@type7>>(%26)))))), const<i32>(1)))
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE___j]], const<i32>(0));
+// DEFAULT-NEXT:                         condition: lt<i32>(read<i32>(%[[VALUE___j]]), sub<i32, overflow=ub>(read<i32>(field0(field2(field2(deref(read<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_elp]])))))), const<i32>(1)))
 // DEFAULT-NEXT:                         increment: {
-// DEFAULT-NEXT:                             let %43: i32 [synthetic] = read<i32>(%30);
-// DEFAULT-NEXT:                             let %44: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%43), const<i32>(1));
-// DEFAULT-NEXT:                             write<i32>(%30, read<i32>(%44));
+// DEFAULT-NEXT:                             let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE___j]]);
+// DEFAULT-NEXT:                             let %[[VALUE8:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE7]]), const<i32>(1));
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE___j]], read<i32>(%[[VALUE8]]));
 // DEFAULT-NEXT:                             yield void;
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
-// DEFAULT-NEXT:                             if lt<i32>(call<i32, signature=fn(ptr<const @type5>, ptr<const @type5>) -> i32>(%21, pointer_cast<ptr<const @type5>, reason=arg>(addr_of<ptr<@type5>>(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(read<ptr<@type5>>(field2(field2(field2(deref(read<ptr<@type7>>(%26)))))), read<i32>(%30))))), pointer_cast<ptr<const @type5>, reason=arg>(addr_of<ptr<@type5>>(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(read<ptr<@type5>>(field2(field2(field2(deref(read<ptr<@type7>>(%26)))))), add<i32, overflow=ub>(read<i32>(%30), const<i32>(1))))))), const<i32>(0))
+// DEFAULT-NEXT:                             if lt<i32>(call<i32, signature=fn(ptr<const @type[[TYPE___db_lsn]]>, ptr<const @type[[TYPE___db_lsn]]>) -> i32>(%[[VALUE_log_compare]], pointer_cast<ptr<const @type[[TYPE___db_lsn]]>, reason=arg>(addr_of<ptr<@type[[TYPE___db_lsn]]>>(deref(ptr_offset<ptr<@type[[TYPE___db_lsn]]>, subtract=false, element=@type[[TYPE___db_lsn]], overflow=ub>(read<ptr<@type[[TYPE___db_lsn]]>>(field2(field2(field2(deref(read<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_elp]])))))), read<i32>(%[[VALUE___j]]))))), pointer_cast<ptr<const @type[[TYPE___db_lsn]]>, reason=arg>(addr_of<ptr<@type[[TYPE___db_lsn]]>>(deref(ptr_offset<ptr<@type[[TYPE___db_lsn]]>, subtract=false, element=@type[[TYPE___db_lsn]], overflow=ub>(read<ptr<@type[[TYPE___db_lsn]]>>(field2(field2(field2(deref(read<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_elp]])))))), add<i32, overflow=ub>(read<i32>(%[[VALUE___j]]), const<i32>(1))))))), const<i32>(0))
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     write<@type5>(%31, copy<@type5, reason=assign>(read<@type5>(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(read<ptr<@type5>>(field2(field2(field2(deref(read<ptr<@type7>>(%26)))))), read<i32>(%30))))));
-// DEFAULT-NEXT:                                     write<@type5>(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(read<ptr<@type5>>(field2(field2(field2(deref(read<ptr<@type7>>(%26)))))), read<i32>(%30))), copy<@type5, reason=assign>(read<@type5>(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(read<ptr<@type5>>(field2(field2(field2(deref(read<ptr<@type7>>(%26)))))), add<i32, overflow=ub>(read<i32>(%30), const<i32>(1)))))));
-// DEFAULT-NEXT:                                     write<@type5>(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(read<ptr<@type5>>(field2(field2(field2(deref(read<ptr<@type7>>(%26)))))), add<i32, overflow=ub>(read<i32>(%30), const<i32>(1)))), copy<@type5, reason=assign>(read<@type5>(%31)));
+// DEFAULT-NEXT:                                     write<@type[[TYPE___db_lsn]]>(%[[VALUE___tmp]], copy<@type[[TYPE___db_lsn]], reason=assign>(read<@type[[TYPE___db_lsn]]>(deref(ptr_offset<ptr<@type[[TYPE___db_lsn]]>, subtract=false, element=@type[[TYPE___db_lsn]], overflow=ub>(read<ptr<@type[[TYPE___db_lsn]]>>(field2(field2(field2(deref(read<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_elp]])))))), read<i32>(%[[VALUE___j]]))))));
+// DEFAULT-NEXT:                                     write<@type[[TYPE___db_lsn]]>(deref(ptr_offset<ptr<@type[[TYPE___db_lsn]]>, subtract=false, element=@type[[TYPE___db_lsn]], overflow=ub>(read<ptr<@type[[TYPE___db_lsn]]>>(field2(field2(field2(deref(read<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_elp]])))))), read<i32>(%[[VALUE___j]]))), copy<@type[[TYPE___db_lsn]], reason=assign>(read<@type[[TYPE___db_lsn]]>(deref(ptr_offset<ptr<@type[[TYPE___db_lsn]]>, subtract=false, element=@type[[TYPE___db_lsn]], overflow=ub>(read<ptr<@type[[TYPE___db_lsn]]>>(field2(field2(field2(deref(read<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_elp]])))))), add<i32, overflow=ub>(read<i32>(%[[VALUE___j]]), const<i32>(1)))))));
+// DEFAULT-NEXT:                                     write<@type[[TYPE___db_lsn]]>(deref(ptr_offset<ptr<@type[[TYPE___db_lsn]]>, subtract=false, element=@type[[TYPE___db_lsn]], overflow=ub>(read<ptr<@type[[TYPE___db_lsn]]>>(field2(field2(field2(deref(read<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_elp]])))))), add<i32, overflow=ub>(read<i32>(%[[VALUE___j]]), const<i32>(1)))), copy<@type[[TYPE___db_lsn]], reason=assign>(read<@type[[TYPE___db_lsn]]>(%[[VALUE___tmp]])));
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         write<@type5>(deref(read<ptr<@type5>>(%27)), copy<@type5, reason=assign>(read<@type5>(deref(ptr_offset<ptr<@type5>, subtract=false, element=@type5, overflow=ub>(read<ptr<@type5>>(field2(field2(field2(deref(read<ptr<@type7>>(%26)))))), const<i32>(0))))));
-// DEFAULT-NEXT:         return read<i32>(%25);
+// DEFAULT-NEXT:         write<@type[[TYPE___db_lsn]]>(deref(read<ptr<@type[[TYPE___db_lsn]]>>(%[[VALUE_lsnp]])), copy<@type[[TYPE___db_lsn]], reason=assign>(read<@type[[TYPE___db_lsn]]>(deref(ptr_offset<ptr<@type[[TYPE___db_lsn]]>, subtract=false, element=@type[[TYPE___db_lsn]], overflow=ub>(read<ptr<@type[[TYPE___db_lsn]]>>(field2(field2(field2(deref(read<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_elp]])))))), const<i32>(0))))));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_val]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %33 el: @type7 [storage=automatic];
-// DEFAULT-NEXT:         let %34 lsn: @type5 [storage=automatic];
-// DEFAULT-NEXT:         let %35 lsn_a: array<@type5, 1235> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         write<i32>(field0(field2(field2(%33))), sub<i32, overflow=ub>(const<i32>(1235), const<i32>(1)));
-// DEFAULT-NEXT:         write<ptr<@type5>>(field2(field2(field2(%33))), array_decay<ptr<@type5>, length=Some(1235)>(%35));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<@type7>, ptr<@type5>, u32) -> i32>(%24, const<i32>(0), addr_of<ptr<@type7>>(%33), addr_of<ptr<@type5>>(%34), reinterpret<u32, reason=arg, fits=always>(const<i32>(0))), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<@type7>, ptr<@type5>, u32) -> i32>(%24, const<i32>(0), addr_of<ptr<@type7>>(%33), addr_of<ptr<@type5>>(%34), reinterpret<u32, reason=arg, fits=always>(const<i32>(1))), sub<i32, overflow=ub>(const<i32>(1235), const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%1);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%0, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_el:[0-9]+]] el: @type[[TYPE___db_txnlist]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_lsn:[0-9]+]] lsn: @type[[TYPE___db_lsn]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_lsn_a:[0-9]+]] lsn_a: array<@type[[TYPE___db_lsn]], 1235> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         write<i32>(field0(field2(field2(%[[VALUE_el]]))), sub<i32, overflow=ub>(const<i32>(1235), const<i32>(1)));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE___db_lsn]]>>(field2(field2(field2(%[[VALUE_el]]))), array_decay<ptr<@type[[TYPE___db_lsn]]>, length=Some(1235)>(%[[VALUE_lsn_a]]));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<@type[[TYPE___db_txnlist]]>, ptr<@type[[TYPE___db_lsn]]>, u32) -> i32>(%[[VALUE___db_txnlist_lsnadd]], const<i32>(0), addr_of<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_el]]), addr_of<ptr<@type[[TYPE___db_lsn]]>>(%[[VALUE_lsn]]), reinterpret<u32, reason=arg, fits=always>(const<i32>(0))), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_TXNLIST_LSN]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<@type[[TYPE___db_txnlist]]>, ptr<@type[[TYPE___db_lsn]]>, u32) -> i32>(%[[VALUE___db_txnlist_lsnadd]], const<i32>(0), addr_of<ptr<@type[[TYPE___db_txnlist]]>>(%[[VALUE_el]]), addr_of<ptr<@type[[TYPE___db_lsn]]>>(%[[VALUE_lsn]]), reinterpret<u32, reason=arg, fits=always>(const<i32>(1))), sub<i32, overflow=ub>(const<i32>(1235), const<i32>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_TXNLIST_LSN]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_TXNLIST_DELETE]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

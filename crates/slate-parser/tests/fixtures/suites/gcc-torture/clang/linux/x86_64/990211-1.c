@@ -84,45 +84,45 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @func(%2 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_and<bool>(lt<i32>(read<i32>(%2), const<i32>(0)), ge<i32>(read<i32>(%2), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if logical_and<bool>(gt<i32>(read<i32>(%2), const<i32>(0)), le<i32>(read<i32>(%2), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if logical_and<bool>(ge<i32>(read<i32>(%2), const<i32>(0)), lt<i32>(read<i32>(%2), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(read<i32>(%2), const<i32>(0)), gt<i32>(read<i32>(%2), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if logical_and<bool>(lt<i32>(read<i32>(%2), const<i32>(77)), ge<i32>(read<i32>(%2), const<i32>(77)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if logical_and<bool>(gt<i32>(read<i32>(%2), const<i32>(77)), le<i32>(read<i32>(%2), const<i32>(77)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if logical_and<bool>(ge<i32>(read<i32>(%2), const<i32>(77)), lt<i32>(read<i32>(%2), const<i32>(77)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(read<i32>(%2), const<i32>(77)), gt<i32>(read<i32>(%2), const<i32>(77)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(lt<i32>(read<i32>(%2), const<i32>(0)), ge<i32>(read<i32>(%2), const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(gt<i32>(read<i32>(%2), const<i32>(0)), le<i32>(read<i32>(%2), const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(ge<i32>(read<i32>(%2), const<i32>(0)), lt<i32>(read<i32>(%2), const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(le<i32>(read<i32>(%2), const<i32>(0)), gt<i32>(read<i32>(%2), const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(lt<i32>(read<i32>(%2), const<i32>(77)), ge<i32>(read<i32>(%2), const<i32>(77))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(gt<i32>(read<i32>(%2), const<i32>(77)), le<i32>(read<i32>(%2), const<i32>(77))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(ge<i32>(read<i32>(%2), const<i32>(77)), lt<i32>(read<i32>(%2), const<i32>(77))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(le<i32>(read<i32>(%2), const<i32>(77)), gt<i32>(read<i32>(%2), const<i32>(77))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_func:[0-9]+]] @func(%[[VALUE_i:[0-9]+]] i: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_and<bool>(lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), ge<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if logical_and<bool>(gt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), le<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if logical_and<bool>(ge<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), gt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if logical_and<bool>(lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77)), ge<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if logical_and<bool>(gt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77)), le<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if logical_and<bool>(ge<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77)), lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if logical_and<bool>(le<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77)), gt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), ge<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(gt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), le<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(ge<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(le<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), gt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77)), ge<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(gt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77)), le<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(ge<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77)), lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if not<bool>(logical_or<bool>(le<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77)), gt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(77))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_func]], const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_func]], const<i32>(1));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

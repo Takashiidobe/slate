@@ -32,23 +32,23 @@ char member_through_pointer[sizeof((&o)->nested.n) == sizeof(int) ? 1 : -1];
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 s = struct {
+// IR-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 n: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type1 outer = struct {
-// IR-NEXT:         field0 <anonymous>: @type2;
-// IR-NEXT:         field1 nested: @type0;
+// IR-NEXT:     type @type[[TYPE_outer:[0-9]+]] outer = struct {
+// IR-NEXT:         field0 <anonymous>: @type[[TYPE0:[0-9]+]];
+// IR-NEXT:         field1 nested: @type[[TYPE_s]];
 // IR-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// IR-NEXT:     type @type2 = struct {
+// IR-NEXT:     type @type[[TYPE0]] = struct {
 // IR-NEXT:         field0 anonymous: i64;
 // IR-NEXT:     } [size=8, align=8, offsets=[0]];
-// IR-NEXT:     global %1 a: @type0 [storage=static] [linkage=external];
-// IR-NEXT:     global %2 b: @type0 [storage=static] [linkage=external];
-// IR-NEXT:     global %5 o: @type1 [storage=static] [linkage=external];
-// IR-NEXT:     global %6 flag: i32 [storage=static] [linkage=external];
-// IR-NEXT:     global %7 member_of_conditional: array<i8, 1> [storage=static] [linkage=external];
-// IR-NEXT:     global %8 member_of_anonymous: array<i8, 1> [storage=static] [linkage=external];
-// IR-NEXT:     global %9 member_through_pointer: array<i8, 1> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_s]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE_s]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_o:[0-9]+]] o: @type[[TYPE_outer]] [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_flag:[0-9]+]] flag: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_member_of_conditional:[0-9]+]] member_of_conditional: array<i8, 1> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_member_of_anonymous:[0-9]+]] member_of_anonymous: array<i8, 1> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_member_through_pointer:[0-9]+]] member_through_pointer: array<i8, 1> [storage=static] [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

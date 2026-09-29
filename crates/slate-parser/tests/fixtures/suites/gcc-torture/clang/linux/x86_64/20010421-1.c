@@ -32,23 +32,23 @@ void residual ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 j: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @residual() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 s: f80 [storage=automatic];
-// DEFAULT-NEXT:         for %3
+// DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_residual:[0-9]+]] @residual() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: f80 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%0, const<i32>(3));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%0), const<i32>(9))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_j]], const<i32>(3));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_j]]), const<i32>(9))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %4: i32 [synthetic] = read<i32>(%0);
-// DEFAULT-NEXT:                 let %5: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%4), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%0, read<i32>(%5));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 let %6: f80 [synthetic] = read<f80>(%2);
-// DEFAULT-NEXT:                 let %7: f80 [synthetic] = sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%6), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(3)));
-// DEFAULT-NEXT:                 write<f80>(%2, read<f80>(%7));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: f80 [synthetic] = read<f80>(%[[VALUE_s]]);
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: f80 [synthetic] = sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%[[VALUE3]]), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(3)));
+// DEFAULT-NEXT:                 write<f80>(%[[VALUE_s]], read<f80>(%[[VALUE4]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

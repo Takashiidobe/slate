@@ -50,31 +50,31 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = enum : u32 {
-// DEFAULT-NEXT:         %0 e0 = const<i32>(0);
-// DEFAULT-NEXT:         %1 e1 = const<i32>(1);
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_e0:[0-9]+]] e0 = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_e1:[0-9]+]] e1 = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 E = @type0;
-// DEFAULT-NEXT:     type @type2 = struct {
-// DEFAULT-NEXT:         field0 eval: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_E:[0-9]+]] E = @type[[TYPE_foo]];
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
+// DEFAULT-NEXT:         field0 eval: @type[[TYPE_foo]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %7 s: @type2 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @p() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE0]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_e0]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_e1]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_p:[0-9]+]] @p() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_e0]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         switch %12 enum_to_int<u32, reason=promotion>(read<@type0>(field0(%7)))
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         switch %[[VALUE1:[0-9]+]] enum_to_int<u32, reason=promotion>(read<@type[[TYPE_foo]]>(field0(%[[VALUE_s]])))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %12 const<u32>(0):
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%8);
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<u32>(0):
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_p]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<@type0>(field0(%7), int_to_enum<@type0, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%9);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<@type[[TYPE_foo]]>(field0(%[[VALUE_s]]), int_to_enum<@type[[TYPE_foo]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_f]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_e1]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -29,7 +29,7 @@ void __attribute__((__noreturn__)) foo (const char *, ...) __attribute__((__form
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%2 <unnamed>: ptr<const i8>, ...) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @bar() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const i8>, ...) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

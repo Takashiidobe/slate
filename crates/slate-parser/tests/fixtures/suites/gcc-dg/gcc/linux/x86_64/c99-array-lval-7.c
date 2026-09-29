@@ -46,16 +46,16 @@ bar (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 c: array<i8, 1>;
 // DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
-// DEFAULT-NEXT:     global %1 a: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 b: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 c: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 d: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 e: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %6 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         conditional<ptr<i8>>(ne<i32>(read<i32>(%5), const<i32>(0)), array_decay<ptr<i8>, length=Some(1)>(field0(temporary %7 = conditional<@type0>(ne<i32>(read<i32>(%4), const<i32>(0)), read<@type0>(%2), read<@type0>(%3)))), array_decay<ptr<i8>, length=Some(1)>(field0(temporary %8 = conditional<@type0>(ne<i32>(read<i32>(%5), const<i32>(0)), read<@type0>(%2), read<@type0>(%3)))));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_s]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE_s]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: @type[[TYPE_s]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         conditional<ptr<i8>>(ne<i32>(read<i32>(%[[VALUE_e]]), const<i32>(0)), array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE0:[0-9]+]] = conditional<@type[[TYPE_s]]>(ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0)), read<@type[[TYPE_s]]>(%[[VALUE_b]]), read<@type[[TYPE_s]]>(%[[VALUE_c]])))), array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE1:[0-9]+]] = conditional<@type[[TYPE_s]]>(ne<i32>(read<i32>(%[[VALUE_e]]), const<i32>(0)), read<@type[[TYPE_s]]>(%[[VALUE_b]]), read<@type[[TYPE_s]]>(%[[VALUE_c]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

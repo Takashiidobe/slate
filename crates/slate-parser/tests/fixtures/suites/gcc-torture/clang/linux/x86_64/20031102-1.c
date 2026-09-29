@@ -35,11 +35,11 @@ int foo(int t)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 t: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 result: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(0))
-// DEFAULT-NEXT:             write<i32>(%2, read<i32>(%1));
-// DEFAULT-NEXT:         return read<i32>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_t:[0-9]+]] t: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_t]]), const<i32>(0))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_result]], read<i32>(%[[VALUE_t]]));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_result]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

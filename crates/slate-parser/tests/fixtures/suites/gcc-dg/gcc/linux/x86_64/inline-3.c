@@ -74,79 +74,79 @@ big_function_2()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @t() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @big_function_2() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         while %20 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_t:[0-9]+]] @t() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_big_function_2:[0-9]+]] @big_function_2() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %21 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %22 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE2:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %23 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE3:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %24 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE4:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %25 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE5:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %26 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE6:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %27 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE7:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %28 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE8:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %29 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE9:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %30 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE10:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %31 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE11:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %32 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE12:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %33 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE13:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %34 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE14:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %35 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE15:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %36 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE16:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @big_function_1() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         while %3 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_big_function_1:[0-9]+]] @big_function_1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         while %[[VALUE17:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %4 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE18:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %5 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE19:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %6 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE20:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %7 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE21:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %8 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE22:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %9 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE23:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %10 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE24:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %11 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE25:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %12 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE26:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %13 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE27:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %14 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE28:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %15 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE29:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %16 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE30:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %17 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE31:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %18 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE32:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         while %19 ne<i32>(call<i32, signature=fn() -> i32>(%0), const<i32>(0))
+// DEFAULT-NEXT:         while %[[VALUE33:[0-9]+]] ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_t]]), const<i32>(0))
 // DEFAULT-NEXT:             ;
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%1);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_big_function_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

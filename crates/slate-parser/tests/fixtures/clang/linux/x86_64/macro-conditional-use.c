@@ -49,9 +49,9 @@ int picked(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 selected: i32 [storage=static] = const<i32>(2) [linkage=external];
-// DEFAULT-NEXT:     global %1 typed: i8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @picked() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     global %[[VALUE_selected:[0-9]+]] selected: i32 [storage=static] = const<i32>(2) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_typed:[0-9]+]] typed: i8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_picked:[0-9]+]] @picked() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(4);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
@@ -79,9 +79,9 @@ int picked(void) {
 // SELECT-NEXT:         storage d64 [size=8, align=8];
 // SELECT-NEXT:         storage d128 [size=16, align=16];
 // SELECT-NEXT:     }
-// SELECT-NEXT:     global %0 selected: i32 [storage=static] = const<i32>(1) [linkage=external];
-// SELECT-NEXT:     global %1 typed: i32 [storage=static] [linkage=external];
-// SELECT-NEXT:     fn %2 @picked() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// SELECT-NEXT:     global %[[VALUE_selected:[0-9]+]] selected: i32 [storage=static] = const<i32>(1) [linkage=external];
+// SELECT-NEXT:     global %[[VALUE_typed:[0-9]+]] typed: i32 [storage=static] [linkage=external];
+// SELECT-NEXT:     fn %[[VALUE_picked:[0-9]+]] @picked() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // SELECT-NEXT:         return const<i32>(3);
 // SELECT-NEXT:     }
 // SELECT-NEXT: }

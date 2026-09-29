@@ -337,6 +337,14 @@ void f(void) { __asm__("" : : "m"(b.x)); }
 // TYPEOF_BITFIELD: ·                           ───
 // TYPEOF_BITFIELD: 44 │ #elif defined(BITCAST_SIZE)
 // TYPEOF_BITFIELD: ╰────
+// TYPEOF_BITFIELD: Error:
+// TYPEOF_BITFIELD: × typeof applied to a bit-field
+// TYPEOF_BITFIELD: ╭─[tests/fixtures/error/clang/linux/x86_64/expression_operand_rules.c:43:16]
+// TYPEOF_BITFIELD: 42 │ #elif defined(TYPEOF_BITFIELD)
+// TYPEOF_BITFIELD: 43 │ void f(void) { __typeof__(b.x) y; }
+// TYPEOF_BITFIELD: ·                ──────────────────
+// TYPEOF_BITFIELD: 44 │ #elif defined(BITCAST_SIZE)
+// TYPEOF_BITFIELD: ╰────
 // SLATE-FILECHECK-END TYPEOF_BITFIELD
 // SLATE-FILECHECK-BEGIN BITCAST_SIZE
 // BITCAST_SIZE: Error:   × semantic analysis failed

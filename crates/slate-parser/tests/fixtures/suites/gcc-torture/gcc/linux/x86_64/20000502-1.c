@@ -41,21 +41,21 @@ static int bar(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %3 a: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %4 b: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @minimum(%1 a: i32, %2 b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if lt<i32>(read<i32>(%1), read<i32>(%2))
-// DEFAULT-NEXT:             return read<i32>(%1);
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_minimum:[0-9]+]] @minimum(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b_2:[0-9]+]] b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_a_2]]), read<i32>(%[[VALUE_b_2]]))
+// DEFAULT-NEXT:             return read<i32>(%[[VALUE_a_2]]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             return read<i32>(%2);
+// DEFAULT-NEXT:             return read<i32>(%[[VALUE_b_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @foo() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i32>(%3, call<i32, signature=fn(i32, i32) -> i32>(%0, read<i32>(%3), read<i32>(%4)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, i32) -> i32>(%0, read<i32>(%3), read<i32>(%4));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_a]], call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_minimum]], read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_minimum]], read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @bar() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn() -> i32>(%5);
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn() -> i32>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

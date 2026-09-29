@@ -35,18 +35,18 @@ int use_wrapper(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 local_int = i32;
-// DEFAULT-NEXT:     type @type1 nested_int = i64;
-// DEFAULT-NEXT:     type @type2 outer_int = i64;
-// DEFAULT-NEXT:     global %7 from_outer: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 from_nested: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 from_local: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @system_call(%11 value: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @local_wrapper(%6 value: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%4, read<i32>(%6));
+// DEFAULT-NEXT:     type @type[[TYPE_local_int:[0-9]+]] local_int = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_nested_int:[0-9]+]] nested_int = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_outer_int:[0-9]+]] outer_int = i64;
+// DEFAULT-NEXT:     global %[[VALUE_from_outer:[0-9]+]] from_outer: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_from_nested:[0-9]+]] from_nested: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_from_local:[0-9]+]] from_local: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_system_call:[0-9]+]] @system_call(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_local_wrapper:[0-9]+]] @local_wrapper(%[[VALUE_value_2:[0-9]+]] value: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_system_call]], read<i32>(%[[VALUE_value_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @use_wrapper() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%5, const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_use_wrapper:[0-9]+]] @use_wrapper() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_local_wrapper]], const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

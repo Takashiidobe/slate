@@ -31,9 +31,9 @@ int f (char *p, char *q, int i)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @__builtin_bcmp(%4 <unnamed>: ptr<const void>, %5 <unnamed>: ptr<const void>, %6 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %0 @f(%1 p: ptr<i8>, %2 q: ptr<i8>, %3 i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%7, pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%1)), pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%2)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%3))));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_bcmp:[0-9]+]] @__builtin_bcmp(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_p:[0-9]+]] p: ptr<i8>, %[[VALUE_q:[0-9]+]] q: ptr<i8>, %[[VALUE_i:[0-9]+]] i: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_bcmp]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%[[VALUE_p]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<i8>>(%[[VALUE_q]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_i]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

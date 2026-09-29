@@ -49,21 +49,21 @@ D256_add_finite (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 td0: d128;
 // DEFAULT-NEXT:         field1 td1: d128;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 16]];
-// DEFAULT-NEXT:     type @type1 TDx2_t = @type0;
-// DEFAULT-NEXT:     fn %2 @D256_add_finite() -> @type0 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 z: d128 [storage=automatic];
-// DEFAULT-NEXT:         let %4 zz: d128 [storage=automatic];
-// DEFAULT-NEXT:         let %5 result: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<d128>(0.), field1 = const<d128>(0.));
-// DEFAULT-NEXT:         if eq<d128, exceptions=observable>(read<d128>(%4), const<d128>(0.))
+// DEFAULT-NEXT:     type @type[[TYPE_TDx2_t:[0-9]+]] TDx2_t = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_D256_add_finite:[0-9]+]] @D256_add_finite() -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: d128 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_zz:[0-9]+]] zz: d128 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: @type[[TYPE0]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<d128>(0.), field1 = const<d128>(0.));
+// DEFAULT-NEXT:         if eq<d128, exceptions=observable>(read<d128>(%[[VALUE_zz]]), const<d128>(0.))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<d128>(field0(%5), read<d128>(%3));
-// DEFAULT-NEXT:                 return copy<@type0, reason=return>(read<@type0>(%5));
+// DEFAULT-NEXT:                 write<d128>(field0(%[[VALUE_result]]), read<d128>(%[[VALUE_z]]));
+// DEFAULT-NEXT:                 return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_result]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%5));
+// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_result]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

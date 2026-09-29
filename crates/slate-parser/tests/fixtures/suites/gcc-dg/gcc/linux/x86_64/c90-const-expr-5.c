@@ -64,30 +64,30 @@ f (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 V = void;
-// DEFAULT-NEXT:     global %1 p: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 q: ptr<i64> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 j: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 fp: ptr<fn() -> void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %5 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<i64>>(%2, pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<i32>>(ne<i32>(read<i32>(%3), const<i32>(0)), read<ptr<i32>>(%1), null<ptr<i32>>)));
-// DEFAULT-NEXT:         write<ptr<i64>>(%2, pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<i32>>(ne<i32>(read<i32>(%3), const<i32>(0)), read<ptr<i32>>(%1), null<ptr<i32>>)));
+// DEFAULT-NEXT:     type @type[[TYPE_V:[0-9]+]] V = void;
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: ptr<i64> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_fp:[0-9]+]] fp: ptr<fn() -> void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<i64>>(%[[VALUE_q]], pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<i32>>(ne<i32>(read<i32>(%[[VALUE_j]]), const<i32>(0)), read<ptr<i32>>(%[[VALUE_p]]), null<ptr<i32>>)));
+// DEFAULT-NEXT:         write<ptr<i64>>(%[[VALUE_q]], pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<i32>>(ne<i32>(read<i32>(%[[VALUE_j]]), const<i32>(0)), read<ptr<i32>>(%[[VALUE_p]]), null<ptr<i32>>)));
 // DEFAULT-NEXT:         null<ptr<fn() -> void>>;
 // DEFAULT-NEXT:         null<ptr<fn() -> void>>;
-// DEFAULT-NEXT:         write<ptr<fn() -> void>>(%4, pointer_cast<ptr<fn() -> void>, reason=assign>(null<ptr<const void>>));
-// DEFAULT-NEXT:         write<ptr<fn() -> void>>(%4, null<ptr<fn() -> void>>);
-// DEFAULT-NEXT:         write<ptr<fn() -> void>>(%4, null<ptr<fn() -> void>>);
-// DEFAULT-NEXT:         write<ptr<fn() -> void>>(%4, null<ptr<fn() -> void>>);
-// DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%4), null<ptr<fn() -> void>>);
-// DEFAULT-NEXT:         eq<ptr<fn() -> void>>(null<ptr<fn() -> void>>, read<ptr<fn() -> void>>(%4));
-// DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%4), null<ptr<fn() -> void>>);
-// DEFAULT-NEXT:         eq<ptr<void>>(null<ptr<void>>, pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<fn() -> void>>(%4)));
-// DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%4), null<ptr<fn() -> void>>);
-// DEFAULT-NEXT:         eq<ptr<void>>(null<ptr<void>>, pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<fn() -> void>>(%4)));
-// DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%4), pointer_cast<ptr<fn() -> void>, reason=usual_arith>(int_to_ptr<ptr<void>, reason=explicit>(const<i32>(1))));
-// DEFAULT-NEXT:         eq<ptr<void>>(int_to_ptr<ptr<void>, reason=explicit>(const<i32>(1)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<fn() -> void>>(%4)));
-// DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%4), null<ptr<fn() -> void>>);
-// DEFAULT-NEXT:         eq<ptr<const void>>(null<ptr<const void>>, pointer_cast<ptr<const void>, reason=usual_arith>(read<ptr<fn() -> void>>(%4)));
+// DEFAULT-NEXT:         write<ptr<fn() -> void>>(%[[VALUE_fp]], pointer_cast<ptr<fn() -> void>, reason=assign>(null<ptr<const void>>));
+// DEFAULT-NEXT:         write<ptr<fn() -> void>>(%[[VALUE_fp]], null<ptr<fn() -> void>>);
+// DEFAULT-NEXT:         write<ptr<fn() -> void>>(%[[VALUE_fp]], null<ptr<fn() -> void>>);
+// DEFAULT-NEXT:         write<ptr<fn() -> void>>(%[[VALUE_fp]], null<ptr<fn() -> void>>);
+// DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_fp]]), null<ptr<fn() -> void>>);
+// DEFAULT-NEXT:         eq<ptr<fn() -> void>>(null<ptr<fn() -> void>>, read<ptr<fn() -> void>>(%[[VALUE_fp]]));
+// DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_fp]]), null<ptr<fn() -> void>>);
+// DEFAULT-NEXT:         eq<ptr<void>>(null<ptr<void>>, pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<fn() -> void>>(%[[VALUE_fp]])));
+// DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_fp]]), null<ptr<fn() -> void>>);
+// DEFAULT-NEXT:         eq<ptr<void>>(null<ptr<void>>, pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<fn() -> void>>(%[[VALUE_fp]])));
+// DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_fp]]), pointer_cast<ptr<fn() -> void>, reason=usual_arith>(int_to_ptr<ptr<void>, reason=explicit>(const<i32>(1))));
+// DEFAULT-NEXT:         eq<ptr<void>>(int_to_ptr<ptr<void>, reason=explicit>(const<i32>(1)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<fn() -> void>>(%[[VALUE_fp]])));
+// DEFAULT-NEXT:         eq<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE_fp]]), null<ptr<fn() -> void>>);
+// DEFAULT-NEXT:         eq<ptr<const void>>(null<ptr<const void>>, pointer_cast<ptr<const void>, reason=usual_arith>(read<ptr<fn() -> void>>(%[[VALUE_fp]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -36,10 +36,10 @@ extern void foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 bar: ptr<i8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 str: array<i8, 27> [storage=automatic] [align=16] = code_units<array<i8, 27>>([97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 0]);
-// DEFAULT-NEXT:         write<ptr<i8>>(%0, array_decay<ptr<i8>, length=Some(27)>(%2));
+// DEFAULT-NEXT:     extern %[[VALUE_bar:[0-9]+]] bar: ptr<i8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_str:[0-9]+]] str: array<i8, 27> [storage=automatic] [align=16] = code_units<array<i8, 27>>([97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 0]);
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_bar]], array_decay<ptr<i8>, length=Some(27)>(%[[VALUE_str]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

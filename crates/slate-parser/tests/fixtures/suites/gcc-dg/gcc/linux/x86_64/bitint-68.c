@@ -39,13 +39,13 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 V = vector<i64, 2>;
-// DEFAULT-NEXT:     global %1 u: vector<i64, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 v: vector<i64, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 i: i535b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         while %5 ne<i535b>(read<i535b>(%3), const<i535b>(0))
-// DEFAULT-NEXT:             write<vector<i64, 2>>(%1, read<vector<i64, 2>>(%2));
+// DEFAULT-NEXT:     type @type[[TYPE_V:[0-9]+]] V = vector<i64, 2>;
+// DEFAULT-NEXT:     global %[[VALUE_u:[0-9]+]] u: vector<i64, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: vector<i64, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i535b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<i535b>(read<i535b>(%[[VALUE_i]]), const<i535b>(0))
+// DEFAULT-NEXT:             write<vector<i64, 2>>(%[[VALUE_u]], read<vector<i64, 2>>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

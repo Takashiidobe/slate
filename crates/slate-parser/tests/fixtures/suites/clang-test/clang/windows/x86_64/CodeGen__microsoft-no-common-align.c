@@ -31,10 +31,10 @@ TooLargeAlignment *IsAPointer;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 TooLargeAlignment = vector<f32, 16>;
-// DEFAULT-NEXT:     type @type1 NormalAlignment = vector<f32, 1>;
-// DEFAULT-NEXT:     global %2 TooBig: vector<f32, 16> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 JustRight: vector<f32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 IsAPointer: ptr<vector<f32, 16>> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_TooLargeAlignment:[0-9]+]] TooLargeAlignment = vector<f32, 16>;
+// DEFAULT-NEXT:     type @type[[TYPE_NormalAlignment:[0-9]+]] NormalAlignment = vector<f32, 1>;
+// DEFAULT-NEXT:     global %[[VALUE_TooBig:[0-9]+]] TooBig: vector<f32, 16> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_JustRight:[0-9]+]] JustRight: vector<f32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_IsAPointer:[0-9]+]] IsAPointer: ptr<vector<f32, 16>> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -50,31 +50,31 @@ int l = (int) sizeof ((struct C) { 16 });
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:         field1 j: i32;
 // DEFAULT-NEXT:         field2 k: array<i32, 4>;
 // DEFAULT-NEXT:     } [size=24, align=4, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     type @type1 B = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
-// DEFAULT-NEXT:     type @type2 C = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_C:[0-9]+]] C = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 D = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_D:[0-9]+]] D = struct {
 // DEFAULT-NEXT:         field0 i: i32;
-// DEFAULT-NEXT:         field1 j: @type2;
+// DEFAULT-NEXT:         field1 j: @type[[TYPE_C]];
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %4 a: @type0 [storage=static] = copy<@type0, reason=assign>(read<@type0>(compound_literal %16 [storage=static] = aggregate<@type0, zero_fill=true>(field1 = const<i32>(6), field2 = aggregate<array<i32, 4>, zero_fill=true>(index2 = const<i32>(12))))) [linkage=external];
-// DEFAULT-NEXT:     global %5 b: @type1 [storage=static] = copy<@type1, reason=assign>(read<@type1>(compound_literal %17 [storage=static] = aggregate<@type1, zero_fill=false>())) [linkage=external];
-// DEFAULT-NEXT:     global %6 c: array<i32, 5> [storage=static] [align=16] = aggregate<array<i32, 5>, zero_fill=true>(index2 = const<i32>(6), index3 = const<i32>(7), index4 = const<i32>(8)) [linkage=external];
-// DEFAULT-NEXT:     global %7 d: array<i32, 3> [storage=static] = aggregate<array<i32, 3>, zero_fill=true>(index0 = const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     global %8 e: array<i32, 2> [storage=static] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)) [linkage=external];
-// DEFAULT-NEXT:     global %9 f: array<i32, 2> [storage=static] = aggregate<array<i32, 2>, zero_fill=true>(index0 = const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     global %10 g: array<@type2, 3> [storage=static] = aggregate<array<@type2, 3>, zero_fill=true>(index1 = copy<@type2, reason=assign>(read<@type2>(compound_literal %19 [storage=static] = aggregate<@type2, zero_fill=false>(field0 = const<i32>(12)))), index2 = copy<@type2, reason=assign>(read<@type2>(compound_literal %18 [storage=static] = aggregate<@type2, zero_fill=false>(field0 = const<i32>(13))))) [linkage=external];
-// DEFAULT-NEXT:     global %11 h: @type3 [storage=static] = aggregate<@type3, zero_fill=false>(field0 = const<i32>(14), field1 = copy<@type2, reason=assign>(read<@type2>(compound_literal %20 [storage=static] = aggregate<@type2, zero_fill=false>(field0 = const<i32>(15))))) [linkage=external];
-// DEFAULT-NEXT:     global %12 i: array<@type3, 2> [storage=static] [align=16] = aggregate<array<@type3, 2>, zero_fill=false>(index0 = aggregate<@type3, zero_fill=false>(field0 = const<i32>(0), field1 = copy<@type2, reason=assign>(read<@type2>(compound_literal %22 [storage=static] = aggregate<@type2, zero_fill=false>(field0 = const<i32>(16))))), index1 = aggregate<@type3, zero_fill=true>(field1 = copy<@type2, reason=assign>(read<@type2>(compound_literal %21 [storage=static] = aggregate<@type2, zero_fill=false>(field0 = const<i32>(17)))))) [linkage=external];
-// DEFAULT-NEXT:     global %13 j: ptr<const i32> [storage=static] = conditional<ptr<const i32>>(ne<i32>(const<i32>(1), const<i32>(0)), null<ptr<const i32>>, addr_of<ptr<const i32>>(compound_literal %23 [storage=static] = const<i32>(26))) [linkage=internal];
-// DEFAULT-NEXT:     global %14 k: i32 [storage=static] = add<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(24))), const<i32>(4)) [linkage=external];
-// DEFAULT-NEXT:     global %15 l: i32 [storage=static] = reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(4))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_A]] [storage=static] = copy<@type[[TYPE_A]], reason=assign>(read<@type[[TYPE_A]]>(compound_literal %[[VALUE0:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_A]], zero_fill=true>(field1 = const<i32>(6), field2 = aggregate<array<i32, 4>, zero_fill=true>(index2 = const<i32>(12))))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE_B]] [storage=static] = copy<@type[[TYPE_B]], reason=assign>(read<@type[[TYPE_B]]>(compound_literal %[[VALUE1:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_B]], zero_fill=false>())) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: array<i32, 5> [storage=static] [align=16] = aggregate<array<i32, 5>, zero_fill=true>(index2 = const<i32>(6), index3 = const<i32>(7), index4 = const<i32>(8)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: array<i32, 3> [storage=static] = aggregate<array<i32, 3>, zero_fill=true>(index0 = const<i32>(1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: array<i32, 2> [storage=static] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: array<i32, 2> [storage=static] = aggregate<array<i32, 2>, zero_fill=true>(index0 = const<i32>(1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: array<@type[[TYPE_C]], 3> [storage=static] = aggregate<array<@type[[TYPE_C]], 3>, zero_fill=true>(index1 = copy<@type[[TYPE_C]], reason=assign>(read<@type[[TYPE_C]]>(compound_literal %[[VALUE2:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_C]], zero_fill=false>(field0 = const<i32>(12)))), index2 = copy<@type[[TYPE_C]], reason=assign>(read<@type[[TYPE_C]]>(compound_literal %[[VALUE3:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_C]], zero_fill=false>(field0 = const<i32>(13))))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_h:[0-9]+]] h: @type[[TYPE_D]] [storage=static] = aggregate<@type[[TYPE_D]], zero_fill=false>(field0 = const<i32>(14), field1 = copy<@type[[TYPE_C]], reason=assign>(read<@type[[TYPE_C]]>(compound_literal %[[VALUE4:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_C]], zero_fill=false>(field0 = const<i32>(15))))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: array<@type[[TYPE_D]], 2> [storage=static] [align=16] = aggregate<array<@type[[TYPE_D]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE_D]], zero_fill=false>(field0 = const<i32>(0), field1 = copy<@type[[TYPE_C]], reason=assign>(read<@type[[TYPE_C]]>(compound_literal %[[VALUE5:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_C]], zero_fill=false>(field0 = const<i32>(16))))), index1 = aggregate<@type[[TYPE_D]], zero_fill=true>(field1 = copy<@type[[TYPE_C]], reason=assign>(read<@type[[TYPE_C]]>(compound_literal %[[VALUE6:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_C]], zero_fill=false>(field0 = const<i32>(17)))))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: ptr<const i32> [storage=static] = conditional<ptr<const i32>>(ne<i32>(const<i32>(1), const<i32>(0)), null<ptr<const i32>>, addr_of<ptr<const i32>>(compound_literal %[[VALUE7:[0-9]+]] [storage=static] = const<i32>(26))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_k:[0-9]+]] k: i32 [storage=static] = add<i32, overflow=ub>(reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(24))), const<i32>(4)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_l:[0-9]+]] l: i32 [storage=static] = reinterpret<i32, reason=explicit, fits=unknown>(truncate<u32, reason=explicit, fits=always>(const<u64>(4))) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

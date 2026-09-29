@@ -43,18 +43,18 @@ dr106_2(const void *pcv, volatile void *pvv, int i)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @dr106_1(%1 pv: ptr<void>, %2 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         read<void>(deref(read<ptr<void>>(%1)));
-// DEFAULT-NEXT:         conditional<void>(ne<i32>(read<i32>(%2), const<i32>(0)), read<void>(deref(read<ptr<void>>(%1))), read<void>(deref(read<ptr<void>>(%1))));
-// DEFAULT-NEXT:         read<void>(deref(read<ptr<void>>(%1)));
+// DEFAULT-NEXT:     fn %[[VALUE_dr106_1:[0-9]+]] @dr106_1(%[[VALUE_pv:[0-9]+]] pv: ptr<void>, %[[VALUE_i:[0-9]+]] i: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         read<void>(deref(read<ptr<void>>(%[[VALUE_pv]])));
+// DEFAULT-NEXT:         conditional<void>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<void>(deref(read<ptr<void>>(%[[VALUE_pv]]))), read<void>(deref(read<ptr<void>>(%[[VALUE_pv]]))));
+// DEFAULT-NEXT:         read<void>(deref(read<ptr<void>>(%[[VALUE_pv]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @dr106_2(%4 pcv: ptr<const void>, %5 pvv: ptr<volatile void>, %6 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         read<void>(deref(read<ptr<const void>>(%4)));
-// DEFAULT-NEXT:         conditional<void>(ne<i32>(read<i32>(%6), const<i32>(0)), read<void>(deref(read<ptr<const void>>(%4))), read<void>(deref(read<ptr<const void>>(%4))));
-// DEFAULT-NEXT:         read<void>(deref(read<ptr<const void>>(%4)));
-// DEFAULT-NEXT:         read<void, volatile>(deref(read<ptr<volatile void>>(%5)));
-// DEFAULT-NEXT:         conditional<void>(ne<i32>(read<i32>(%6), const<i32>(0)), read<void, volatile>(deref(read<ptr<volatile void>>(%5))), read<void, volatile>(deref(read<ptr<volatile void>>(%5))));
-// DEFAULT-NEXT:         read<void, volatile>(deref(read<ptr<volatile void>>(%5)));
+// DEFAULT-NEXT:     fn %[[VALUE_dr106_2:[0-9]+]] @dr106_2(%[[VALUE_pcv:[0-9]+]] pcv: ptr<const void>, %[[VALUE_pvv:[0-9]+]] pvv: ptr<volatile void>, %[[VALUE_i_2:[0-9]+]] i: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         read<void>(deref(read<ptr<const void>>(%[[VALUE_pcv]])));
+// DEFAULT-NEXT:         conditional<void>(ne<i32>(read<i32>(%[[VALUE_i_2]]), const<i32>(0)), read<void>(deref(read<ptr<const void>>(%[[VALUE_pcv]]))), read<void>(deref(read<ptr<const void>>(%[[VALUE_pcv]]))));
+// DEFAULT-NEXT:         read<void>(deref(read<ptr<const void>>(%[[VALUE_pcv]])));
+// DEFAULT-NEXT:         read<void, volatile>(deref(read<ptr<volatile void>>(%[[VALUE_pvv]])));
+// DEFAULT-NEXT:         conditional<void>(ne<i32>(read<i32>(%[[VALUE_i_2]]), const<i32>(0)), read<void, volatile>(deref(read<ptr<volatile void>>(%[[VALUE_pvv]]))), read<void, volatile>(deref(read<ptr<volatile void>>(%[[VALUE_pvv]]))));
+// DEFAULT-NEXT:         read<void, volatile>(deref(read<ptr<volatile void>>(%[[VALUE_pvv]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

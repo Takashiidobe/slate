@@ -37,15 +37,15 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %8 .str8: array<i8, 36> [storage=static] = code_units<array<i8, 36>>([115, 108, 97, 116, 101, 95, 112, 101, 114, 114, 111, 114, 95, 99, 97, 108, 108, 95, 103, 117, 97, 114, 100, 95, 109, 105, 115, 115, 105, 110, 103, 46, 116, 109, 112, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %9 .str9: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([114, 101, 109, 111, 118, 101, 32, 102, 97, 105, 108, 101, 100, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @remove(%6 __filename: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @perror(%7 __s: ptr<const i8>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5 rc: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i8>) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(36)>(%8)));
-// DEFAULT-NEXT:         if lt<i32>(read<i32>(%5), const<i32>(0))
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 36> [storage=static] = code_units<array<i8, 36>>([115, 108, 97, 116, 101, 95, 112, 101, 114, 114, 111, 114, 95, 99, 97, 108, 108, 95, 103, 117, 97, 114, 100, 95, 109, 105, 115, 115, 105, 110, 103, 46, 116, 109, 112, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 14> [storage=static] = code_units<array<i8, 14>>([114, 101, 109, 111, 118, 101, 32, 102, 97, 105, 108, 101, 100, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_remove:[0-9]+]] @remove(%[[VALUE___filename:[0-9]+]] __filename: ptr<const i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_perror:[0-9]+]] @perror(%[[VALUE___s:[0-9]+]] __s: ptr<const i8>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_rc:[0-9]+]] rc: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_remove]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(36)>(%[[VALUE_str]])));
+// DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_rc]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<const i8>) -> void>(%3, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%9)));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<const i8>) -> void>(%[[VALUE_perror]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(14)>(%[[VALUE_str_2]])));
 // DEFAULT-NEXT:                 return const<i32>(1);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(0);

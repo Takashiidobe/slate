@@ -52,33 +52,33 @@ main (int argc, char **argv)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 a: ptr<i8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 b: ptr<i8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 d: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @noret() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @foo(%9 <unnamed>: i32, %10 <unnamed>: ptr<ptr<i8>>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %5 @main(%6 argc: i32, %7 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 c: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%4, const<i32>(1));
-// DEFAULT-NEXT:         while %11 {
-// DEFAULT-NEXT:             write<i32>(%8, call<i32, signature=fn(i32, ptr<ptr<i8>>) -> i32>(%1, read<i32>(%6), read<ptr<ptr<i8>>>(%7)));
-// DEFAULT-NEXT:             yield ne<i32>(call<i32, signature=fn(i32, ptr<ptr<i8>>) -> i32>(%1, read<i32>(%6), read<ptr<ptr<i8>>>(%7)), neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: ptr<i8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: ptr<i8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_noret:[0-9]+]] @noret() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE1:[0-9]+]] <unnamed>: ptr<ptr<i8>>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_d]], const<i32>(1));
+// DEFAULT-NEXT:         while %[[VALUE2:[0-9]+]] {
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_c]], call<i32, signature=fn(i32, ptr<ptr<i8>>) -> i32>(%[[VALUE_foo]], read<i32>(%[[VALUE_argc]]), read<ptr<ptr<i8>>>(%[[VALUE_argv]])));
+// DEFAULT-NEXT:             yield ne<i32>(call<i32, signature=fn(i32, ptr<ptr<i8>>) -> i32>(%[[VALUE_foo]], read<i32>(%[[VALUE_argc]]), read<ptr<ptr<i8>>>(%[[VALUE_argv]])), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             switch %12 read<i32>(%8)
+// DEFAULT-NEXT:             switch %[[VALUE3:[0-9]+]] read<i32>(%[[VALUE_c]])
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     case %12 const<i32>(115):
-// DEFAULT-NEXT:                         case %12 const<i32>(99):
-// DEFAULT-NEXT:                             case %12 const<i32>(102):
-// DEFAULT-NEXT:                                 write<ptr<i8>>(%2, read<ptr<i8>>(%3));
-// DEFAULT-NEXT:                     break %12;
-// DEFAULT-NEXT:                     case %12 const<i32>(118):
-// DEFAULT-NEXT:                         write<i32>(%4, const<i32>(1));
-// DEFAULT-NEXT:                     break %12;
-// DEFAULT-NEXT:                     case %12 const<i32>(86):
-// DEFAULT-NEXT:                         write<i32>(%4, const<i32>(0));
-// DEFAULT-NEXT:                     break %12;
+// DEFAULT-NEXT:                     case %[[VALUE3]] const<i32>(115):
+// DEFAULT-NEXT:                         case %[[VALUE3]] const<i32>(99):
+// DEFAULT-NEXT:                             case %[[VALUE3]] const<i32>(102):
+// DEFAULT-NEXT:                                 write<ptr<i8>>(%[[VALUE_a]], read<ptr<i8>>(%[[VALUE_b]]));
+// DEFAULT-NEXT:                     break %[[VALUE3]];
+// DEFAULT-NEXT:                     case %[[VALUE3]] const<i32>(118):
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_d]], const<i32>(1));
+// DEFAULT-NEXT:                     break %[[VALUE3]];
+// DEFAULT-NEXT:                     case %[[VALUE3]] const<i32>(86):
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_d]], const<i32>(0));
+// DEFAULT-NEXT:                     break %[[VALUE3]];
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_noret]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

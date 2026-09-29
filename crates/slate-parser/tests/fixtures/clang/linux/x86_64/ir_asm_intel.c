@@ -30,14 +30,14 @@ void dialects(int x) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @dialects(%1 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_dialects:[0-9]+]] @dialects(%[[VALUE_x:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm "mov{l|} {%0, %%eax|eax, %0}" [dialect=intel] [options=nostack] {
 // IR-NEXT:             template: "mov eax, " %0;
-// IR-NEXT:             in 0 "r" [reg] width 32 read<i32>(%1);
+// IR-NEXT:             in 0 "r" [reg] width 32 read<i32>(%[[VALUE_x]]);
 // IR-NEXT:         }
 // IR-NEXT:         asm "a{b|c|d} {e} f|g} {h|i" [dialect=intel] [options=nostack] {
 // IR-NEXT:             template: "ac  f|g} i";
-// IR-NEXT:             in 0 "r" [reg] width 32 read<i32>(%1);
+// IR-NEXT:             in 0 "r" [reg] width 32 read<i32>(%[[VALUE_x]]);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

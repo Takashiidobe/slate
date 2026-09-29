@@ -37,17 +37,17 @@ struct pair record(struct pair value) { return value; }
 // I686-WINDOWS-MSVC-CLANG-NEXT:         storage d64 [size=8, align=8];
 // I686-WINDOWS-MSVC-CLANG-NEXT:         storage d128 [size=16, align=16];
 // I686-WINDOWS-MSVC-CLANG-NEXT:     }
-// I686-WINDOWS-MSVC-CLANG-NEXT:     type @type0 pair = struct {
+// I686-WINDOWS-MSVC-CLANG-NEXT:     type @type[[TYPE_pair:[0-9]+]] pair = struct {
 // I686-WINDOWS-MSVC-CLANG-NEXT:         field0 a: i32;
 // I686-WINDOWS-MSVC-CLANG-NEXT:         field1 b: i32;
 // I686-WINDOWS-MSVC-CLANG-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// I686-WINDOWS-MSVC-CLANG-NEXT:     global %0 msc_ver: i32 [storage=static] = const<i32>(1933) [linkage=external];
-// I686-WINDOWS-MSVC-CLANG-NEXT:     global %1 sizeof_long: u32 [storage=static] = const<u32>(4) [linkage=external];
-// I686-WINDOWS-MSVC-CLANG-NEXT:     global %2 sizeof_long_double: u32 [storage=static] = const<u32>(8) [linkage=external];
-// I686-WINDOWS-MSVC-CLANG-NEXT:     global %3 sizeof_va_list: u32 [storage=static] = const<u32>(4) [linkage=external];
-// I686-WINDOWS-MSVC-CLANG-NEXT:     global %4 alignof_long_long: u32 [storage=static] = const<u32>(8) [linkage=external];
-// I686-WINDOWS-MSVC-CLANG-NEXT:     fn %6 @record(%7 value: @type0) -> @type0 [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
-// I686-WINDOWS-MSVC-CLANG-NEXT:         return copy<@type0, reason=return>(read<@type0>(%7));
+// I686-WINDOWS-MSVC-CLANG-NEXT:     global %[[VALUE_msc_ver:[0-9]+]] msc_ver: i32 [storage=static] = const<i32>(1933) [linkage=external];
+// I686-WINDOWS-MSVC-CLANG-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u32 [storage=static] = const<u32>(4) [linkage=external];
+// I686-WINDOWS-MSVC-CLANG-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u32 [storage=static] = const<u32>(8) [linkage=external];
+// I686-WINDOWS-MSVC-CLANG-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u32 [storage=static] = const<u32>(4) [linkage=external];
+// I686-WINDOWS-MSVC-CLANG-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u32 [storage=static] = const<u32>(8) [linkage=external];
+// I686-WINDOWS-MSVC-CLANG-NEXT:     fn %[[VALUE_record:[0-9]+]] @record(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=x86_win32(native_c) -> native_c] [fallthrough=ub_if_used] {
+// I686-WINDOWS-MSVC-CLANG-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value]]));
 // I686-WINDOWS-MSVC-CLANG-NEXT:     }
 // I686-WINDOWS-MSVC-CLANG-NEXT: }
 // SLATE-FILECHECK-END I686-WINDOWS-MSVC-CLANG

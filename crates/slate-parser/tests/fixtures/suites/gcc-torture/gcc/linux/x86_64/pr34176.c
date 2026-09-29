@@ -84,64 +84,64 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     type @type1 index_ty = u32;
-// DEFAULT-NEXT:     type @type2 index_list_ty = ptr<u32>;
-// DEFAULT-NEXT:     type @type3 mult_index = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_index_ty:[0-9]+]] index_ty = u32;
+// DEFAULT-NEXT:     type @type[[TYPE_index_list_ty:[0-9]+]] index_list_ty = ptr<u32>;
+// DEFAULT-NEXT:     type @type[[TYPE_mult_index:[0-9]+]] mult_index = struct {
 // DEFAULT-NEXT:         field0 index: u32;
 // DEFAULT-NEXT:         field1 count: u32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type4 mult_index_list = struct {
-// DEFAULT-NEXT:         field0 item: ptr<@type3>;
+// DEFAULT-NEXT:     type @type[[TYPE_mult_index_list:[0-9]+]] mult_index_list = struct {
+// DEFAULT-NEXT:         field0 item: ptr<@type[[TYPE_mult_index]]>;
 // DEFAULT-NEXT:         field1 nitems: u64;
 // DEFAULT-NEXT:         field2 nitems_max: u64;
-// DEFAULT-NEXT:         field3 item2: ptr<@type3>;
+// DEFAULT-NEXT:         field3 item2: ptr<@type[[TYPE_mult_index]]>;
 // DEFAULT-NEXT:         field4 nitems2_max: u64;
 // DEFAULT-NEXT:     } [size=40, align=8, offsets=[0, 8, 16, 24, 32]];
-// DEFAULT-NEXT:     global %10 count: i32 [storage=static] = const<i32>(0) [linkage=internal];
-// DEFAULT-NEXT:     fn %5 @hash_find_entry(%6 result: ptr<u64>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%6)), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(2))));
+// DEFAULT-NEXT:     global %[[VALUE_count:[0-9]+]] count: i32 [storage=static] = const<i32>(0) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_hash_find_entry:[0-9]+]] @hash_find_entry(%[[VALUE_result:[0-9]+]] result: ptr<u64>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<u64>(deref(read<ptr<u64>>(%[[VALUE_result]])), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(2))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @foo(%9 n: u64) -> ptr<@type3> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %20: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:         let %21: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%20), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%10, read<i32>(%21));
-// DEFAULT-NEXT:         if gt<i32>(read<i32>(%20), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
-// DEFAULT-NEXT:         return null<ptr<@type3>>;
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_n:[0-9]+]] n: u64) -> ptr<@type[[TYPE_mult_index]]> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_count]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_count]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE0]]), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         return null<ptr<@type[[TYPE_mult_index]]>>;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %12 nitems: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         for %18
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_nitems:[0-9]+]] nitems: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:         for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: omitted
 // DEFAULT-NEXT:             increment: omitted
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %13 list: u64 [storage=automatic];
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<u64>) -> i32>(%5, addr_of<ptr<u64>>(%13));
+// DEFAULT-NEXT:                     let %[[VALUE_list:[0-9]+]] list: u64 [storage=automatic];
+// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<u64>) -> i32>(%[[VALUE_hash_find_entry]], addr_of<ptr<u64>>(%[[VALUE_list]]));
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         let %14 len2: u64 [storage=automatic] = read<u64>(%13);
-// DEFAULT-NEXT:                         let %15 destptr: ptr<@type3> [storage=automatic];
-// DEFAULT-NEXT:                         let %16 dest: ptr<@type3> [storage=automatic];
-// DEFAULT-NEXT:                         let %17 new_max: u64 [storage=automatic] = add<u64, overflow=wrap>(read<u64>(%12), read<u64>(%14));
-// DEFAULT-NEXT:                         if ne<u64>(read<u64>(%17), read<u64>(%14))
-// DEFAULT-NEXT:                             break %18;
-// DEFAULT-NEXT:                         write<ptr<@type3>>(%16, call<ptr<@type3>, signature=fn(u64) -> ptr<@type3>>(%8, read<u64>(%17)));
-// DEFAULT-NEXT:                         call<ptr<@type3>, signature=fn(u64) -> ptr<@type3>>(%8, read<u64>(%17));
-// DEFAULT-NEXT:                         write<ptr<@type3>>(%15, read<ptr<@type3>>(%16));
-// DEFAULT-NEXT:                         while %19 {
-// DEFAULT-NEXT:                             let %22: u64 [synthetic] = read<u64>(%14);
-// DEFAULT-NEXT:                             let %23: u64 [synthetic] = sub<u64, overflow=wrap>(read<u64>(%22), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                             write<u64>(%14, read<u64>(%23));
-// DEFAULT-NEXT:                             yield ne<u64>(read<u64>(%22), const<u64>(0));
+// DEFAULT-NEXT:                         let %[[VALUE_len2:[0-9]+]] len2: u64 [storage=automatic] = read<u64>(%[[VALUE_list]]);
+// DEFAULT-NEXT:                         let %[[VALUE_destptr:[0-9]+]] destptr: ptr<@type[[TYPE_mult_index]]> [storage=automatic];
+// DEFAULT-NEXT:                         let %[[VALUE_dest:[0-9]+]] dest: ptr<@type[[TYPE_mult_index]]> [storage=automatic];
+// DEFAULT-NEXT:                         let %[[VALUE_new_max:[0-9]+]] new_max: u64 [storage=automatic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE_nitems]]), read<u64>(%[[VALUE_len2]]));
+// DEFAULT-NEXT:                         if ne<u64>(read<u64>(%[[VALUE_new_max]]), read<u64>(%[[VALUE_len2]]))
+// DEFAULT-NEXT:                             break %[[VALUE2]];
+// DEFAULT-NEXT:                         write<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_dest]], call<ptr<@type[[TYPE_mult_index]]>, signature=fn(u64) -> ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_foo]], read<u64>(%[[VALUE_new_max]])));
+// DEFAULT-NEXT:                         call<ptr<@type[[TYPE_mult_index]]>, signature=fn(u64) -> ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_foo]], read<u64>(%[[VALUE_new_max]]));
+// DEFAULT-NEXT:                         write<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_destptr]], read<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_dest]]));
+// DEFAULT-NEXT:                         while %[[VALUE3:[0-9]+]] {
+// DEFAULT-NEXT:                             let %[[VALUE4:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_len2]]);
+// DEFAULT-NEXT:                             let %[[VALUE5:[0-9]+]]: u64 [synthetic] = sub<u64, overflow=wrap>(read<u64>(%[[VALUE4]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:                             write<u64>(%[[VALUE_len2]], read<u64>(%[[VALUE5]]));
+// DEFAULT-NEXT:                             yield ne<u64>(read<u64>(%[[VALUE4]]), const<u64>(0));
 // DEFAULT-NEXT:                         }
-// DEFAULT-NEXT:                             let %24: ptr<@type3> [synthetic] = read<ptr<@type3>>(%15);
-// DEFAULT-NEXT:                             let %25: ptr<@type3> [synthetic] = ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(read<ptr<@type3>>(%24), const<i32>(1));
-// DEFAULT-NEXT:                             write<ptr<@type3>>(%15, read<ptr<@type3>>(%25));
-// DEFAULT-NEXT:                         write<u64>(%12, reinterpret<u64, reason=assign, fits=unknown>(ptr_diff<i64, element=@type3, same_array=required, overflow=ub>(read<ptr<@type3>>(%15), read<ptr<@type3>>(%16))));
+// DEFAULT-NEXT:                             let %[[VALUE6:[0-9]+]]: ptr<@type[[TYPE_mult_index]]> [synthetic] = read<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_destptr]]);
+// DEFAULT-NEXT:                             let %[[VALUE7:[0-9]+]]: ptr<@type[[TYPE_mult_index]]> [synthetic] = ptr_offset<ptr<@type[[TYPE_mult_index]]>, subtract=false, element=@type[[TYPE_mult_index]], overflow=ub>(read<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE6]]), const<i32>(1));
+// DEFAULT-NEXT:                             write<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_destptr]], read<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE7]]));
+// DEFAULT-NEXT:                         write<u64>(%[[VALUE_nitems]], reinterpret<u64, reason=assign, fits=unknown>(ptr_diff<i64, element=@type[[TYPE_mult_index]], same_array=required, overflow=ub>(read<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_destptr]]), read<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_dest]]))));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);

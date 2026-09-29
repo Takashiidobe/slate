@@ -59,79 +59,79 @@ void f (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 E = enum : u32 {
-// DEFAULT-NEXT:         %0 e = const<i32>(0);
+// DEFAULT-NEXT:     type @type[[TYPE_E:[0-9]+]] E = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_e:[0-9]+]] e = const<i32>(0);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 E = @type0;
-// DEFAULT-NEXT:     global %1 x: i8 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %3 x: i8 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %5 x: u8 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %7 x: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %9 x: u32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %11 x: i64 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %13 x: u64 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %15 x: i64 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %17 x: u64 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %22 x: @type0 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         do %24
+// DEFAULT-NEXT:     type @type[[TYPE_E_2:[0-9]+]] E = @type[[TYPE_E]];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i8 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_x_2:[0-9]+]] x: i8 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_x_3:[0-9]+]] x: u8 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_x_4:[0-9]+]] x: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_x_5:[0-9]+]] x: u32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_x_6:[0-9]+]] x: i64 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_x_7:[0-9]+]] x: u64 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_x_8:[0-9]+]] x: i64 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_x_9:[0-9]+]] x: u64 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_x_10:[0-9]+]] x: @type[[TYPE_E]] [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_e]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %2 r: array<i32, 1> [storage=automatic];
-// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%2);
+// DEFAULT-NEXT:                 let %[[VALUE_r:[0-9]+]] r: array<i32, 1> [storage=automatic];
+// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%[[VALUE_r]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %25
+// DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %4 r: array<i32, 1> [storage=automatic];
-// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%4);
+// DEFAULT-NEXT:                 let %[[VALUE_r_2:[0-9]+]] r: array<i32, 1> [storage=automatic];
+// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%[[VALUE_r_2]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %26
+// DEFAULT-NEXT:         do %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %6 r: array<i32, 1> [storage=automatic];
-// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%6);
+// DEFAULT-NEXT:                 let %[[VALUE_r_3:[0-9]+]] r: array<i32, 1> [storage=automatic];
+// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%[[VALUE_r_3]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %27
+// DEFAULT-NEXT:         do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %8 r: array<i32, 1> [storage=automatic];
-// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%8);
+// DEFAULT-NEXT:                 let %[[VALUE_r_4:[0-9]+]] r: array<i32, 1> [storage=automatic];
+// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%[[VALUE_r_4]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %28
+// DEFAULT-NEXT:         do %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %10 r: array<i32, 1> [storage=automatic];
-// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%10);
+// DEFAULT-NEXT:                 let %[[VALUE_r_5:[0-9]+]] r: array<i32, 1> [storage=automatic];
+// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%[[VALUE_r_5]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %29
+// DEFAULT-NEXT:         do %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %12 r: array<i32, 1> [storage=automatic];
-// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%12);
+// DEFAULT-NEXT:                 let %[[VALUE_r_6:[0-9]+]] r: array<i32, 1> [storage=automatic];
+// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%[[VALUE_r_6]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %30
+// DEFAULT-NEXT:         do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %14 r: array<i32, 1> [storage=automatic];
-// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%14);
+// DEFAULT-NEXT:                 let %[[VALUE_r_7:[0-9]+]] r: array<i32, 1> [storage=automatic];
+// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%[[VALUE_r_7]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %31
+// DEFAULT-NEXT:         do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %16 r: array<i32, 1> [storage=automatic];
-// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%16);
+// DEFAULT-NEXT:                 let %[[VALUE_r_8:[0-9]+]] r: array<i32, 1> [storage=automatic];
+// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%[[VALUE_r_8]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %32
+// DEFAULT-NEXT:         do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %18 r: array<i32, 1> [storage=automatic];
-// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%18);
+// DEFAULT-NEXT:                 let %[[VALUE_r_9:[0-9]+]] r: array<i32, 1> [storage=automatic];
+// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%[[VALUE_r_9]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %33
+// DEFAULT-NEXT:         do %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %23 r: array<i32, 1> [storage=automatic];
-// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%23);
+// DEFAULT-NEXT:                 let %[[VALUE_r_10:[0-9]+]] r: array<i32, 1> [storage=automatic];
+// DEFAULT-NEXT:                 addr_of<ptr<array<i32, 1>>>(%[[VALUE_r_10]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }

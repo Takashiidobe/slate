@@ -40,10 +40,10 @@ int in_function(void) {
 // IR-NEXT:     }
 // IR-NEXT:     asm "top_basic" [dialect=att];
 // IR-NEXT:     asm "concat" [dialect=att];
-// IR-NEXT:     global %0 packed: i32 [storage=static] [linkage=external];
-// IR-NEXT:     global %1 value: i32 [storage=static] = const<i32>(1) [linkage=external];
-// IR-NEXT:     fn %2 @in_function() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<i32>(%1);
+// IR-NEXT:     global %[[VALUE_packed:[0-9]+]] packed: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_value:[0-9]+]] value: i32 [storage=static] = const<i32>(1) [linkage=external];
+// IR-NEXT:     fn %[[VALUE_in_function:[0-9]+]] @in_function() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<i32>(%[[VALUE_value]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -41,19 +41,19 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @test(%3 le: f64 [const], %4 ri: f64 [const]) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 val: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%4), read<f64>(%3)), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%4), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%3), const<f64>(1.0))));
-// DEFAULT-NEXT:         return read<f64>(%5);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_le:[0-9]+]] le: f64 [const], %[[VALUE_ri:[0-9]+]] ri: f64 [const]) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_val:[0-9]+]] val: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_ri]]), read<f64>(%[[VALUE_le]])), mul<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_ri]]), add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_le]]), const<f64>(1.0))));
+// DEFAULT-NEXT:         return read<f64>(%[[VALUE_val]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 retval: f64 [storage=automatic];
-// DEFAULT-NEXT:         write<f64>(%7, call<f64, signature=fn(f64, f64) -> f64>(%2, const<f64>(1.0), const<f64>(2.0)));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64, f64) -> f64>(%2, const<f64>(1.0), const<f64>(2.0));
-// DEFAULT-NEXT:         if logical_or<bool>(lt<f64, exceptions=observable>(read<f64>(%7), const<f64>(0.24)), gt<f64, exceptions=observable>(read<f64>(%7), const<f64>(0.26)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_retval:[0-9]+]] retval: f64 [storage=automatic];
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_retval]], call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_test]], const<f64>(1.0), const<f64>(2.0)));
+// DEFAULT-NEXT:         call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_test]], const<f64>(1.0), const<f64>(2.0));
+// DEFAULT-NEXT:         if logical_or<bool>(lt<f64, exceptions=observable>(read<f64>(%[[VALUE_retval]]), const<f64>(0.24)), gt<f64, exceptions=observable>(read<f64>(%[[VALUE_retval]]), const<f64>(0.26)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

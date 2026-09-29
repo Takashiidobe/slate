@@ -42,20 +42,20 @@ void foo (struct S *x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:         field2 f: ptr<fn(i64, i32) -> void>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     fn %1 @foo(%2 x: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 c: i64 [storage=automatic] = widen<i64, reason=assign>(mul<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<@type0>>(%2)))), const<i32>(50)));
-// DEFAULT-NEXT:         let %4: i64 [synthetic] = read<i64>(%3);
-// DEFAULT-NEXT:         let %5: i64 [synthetic] = div<i64, by_zero=ub, min_by_neg_one=ub>(read<i64>(%4), widen<i64, reason=explicit>(read<i32>(field1(deref(read<ptr<@type0>>(%2))))));
-// DEFAULT-NEXT:         write<i64>(%3, read<i64>(%5));
-// DEFAULT-NEXT:         let %6: i64 [synthetic] = read<i64>(%3);
-// DEFAULT-NEXT:         let %7: i64 [synthetic] = mul<i64, overflow=ub>(read<i64>(%6), widen<i64, reason=explicit>(read<i32>(field1(deref(read<ptr<@type0>>(%2))))));
-// DEFAULT-NEXT:         write<i64>(%3, read<i64>(%7));
-// DEFAULT-NEXT:         call<void, signature=fn(i64, i32) -> void>(read<ptr<fn(i64, i32) -> void>>(field2(deref(read<ptr<@type0>>(%2)))), read<i64>(%3), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE_S]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i64 [storage=automatic] = widen<i64, reason=assign>(mul<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_x]])))), const<i32>(50)));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_c]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i64 [synthetic] = div<i64, by_zero=ub, min_by_neg_one=ub>(read<i64>(%[[VALUE0]]), widen<i64, reason=explicit>(read<i32>(field1(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_x]]))))));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_c]], read<i64>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_c]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i64 [synthetic] = mul<i64, overflow=ub>(read<i64>(%[[VALUE2]]), widen<i64, reason=explicit>(read<i32>(field1(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_x]]))))));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_c]], read<i64>(%[[VALUE3]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i64, i32) -> void>(read<ptr<fn(i64, i32) -> void>>(field2(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_x]])))), read<i64>(%[[VALUE_c]]), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

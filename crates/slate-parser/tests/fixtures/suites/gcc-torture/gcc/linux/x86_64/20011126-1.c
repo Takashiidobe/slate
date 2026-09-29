@@ -45,17 +45,17 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 a: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 s: i64 [storage=automatic];
-// DEFAULT-NEXT:         write<i64>(%3, widen<i64, reason=assign>(read<i32>(%1)));
-// DEFAULT-NEXT:         if lt<i64>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             write<i64>(%3, neg<i64, overflow=ub>(const<i64>(2147483648)));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: i64 [storage=automatic];
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_s]], widen<i64, reason=assign>(read<i32>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         if lt<i64>(read<i64>(%[[VALUE_s]]), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             write<i64>(%[[VALUE_s]], neg<i64, overflow=ub>(const<i64>(2147483648)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i64>(%3, const<i64>(2147483647));
-// DEFAULT-NEXT:         if lt<i64>(read<i64>(%3), widen<i64, reason=usual_arith>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:             write<i64>(%[[VALUE_s]], const<i64>(2147483647));
+// DEFAULT-NEXT:         if lt<i64>(read<i64>(%[[VALUE_s]]), widen<i64, reason=usual_arith>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

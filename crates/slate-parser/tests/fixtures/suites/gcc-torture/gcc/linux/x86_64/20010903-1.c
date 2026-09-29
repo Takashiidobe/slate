@@ -52,41 +52,41 @@ int baz(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 a: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 B = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
 // DEFAULT-NEXT:         field0 buf: array<i8, 640>;
-// DEFAULT-NEXT:         field1 a: @type0;
+// DEFAULT-NEXT:         field1 a: @type[[TYPE_A]];
 // DEFAULT-NEXT:     } [size=648, align=8, offsets=[0, 640]];
-// DEFAULT-NEXT:     global %6 b: array<@type1, 32> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%2 x: ptr<@type0>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: array<@type[[TYPE_B]], 32> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE_A]]>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
-// DEFAULT-NEXT:             inlateout 0 "m" [mem] width 64 place<i64>(field0(deref(read<ptr<@type0>>(%2))));
-// DEFAULT-NEXT:             in 1 "r" [reg] width 64 read<ptr<@type0>>(%2);
+// DEFAULT-NEXT:             inlateout 0 "m" [mem] width 64 place<i64>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]))));
+// DEFAULT-NEXT:             in 1 "r" [reg] width 64 read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]);
 // DEFAULT-NEXT:             clobbers: memory, cc;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @bar(%4 x: ptr<@type0>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%1, read<ptr<@type0>>(%4));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_2:[0-9]+]] x: ptr<@type[[TYPE_A]]>) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_foo]], read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @baz() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %9 j: ptr<@type1> [storage=automatic];
-// DEFAULT-NEXT:         for %10
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: ptr<@type[[TYPE_B]]> [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%8, const<i32>(1));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%8), const<i32>(32))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(1));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(32))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %11: i32 [synthetic] = read<i32>(%8);
-// DEFAULT-NEXT:                 let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%8, read<i32>(%12));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<ptr<@type1>>(%9, addr_of<ptr<@type1>>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(32)>(%6), read<i32>(%8)))));
-// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type0>) -> void>(%3, addr_of<ptr<@type0>>(field1(deref(read<ptr<@type1>>(%9)))));
+// DEFAULT-NEXT:                     write<ptr<@type[[TYPE_B]]>>(%[[VALUE_j]], addr_of<ptr<@type[[TYPE_B]]>>(deref(ptr_offset<ptr<@type[[TYPE_B]]>, subtract=false, element=@type[[TYPE_B]], overflow=ub>(array_decay<ptr<@type[[TYPE_B]]>, length=Some(32)>(%[[VALUE_b]]), read<i32>(%[[VALUE_i]])))));
+// DEFAULT-NEXT:                     call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_bar]], addr_of<ptr<@type[[TYPE_A]]>>(field1(deref(read<ptr<@type[[TYPE_B]]>>(%[[VALUE_j]])))));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

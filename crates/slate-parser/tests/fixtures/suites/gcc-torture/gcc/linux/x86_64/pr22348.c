@@ -38,27 +38,27 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @f(%2 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if gt<i32>(read<i32>(%2), add<i32, overflow=ub>(const<i32>(4), mul<i32, overflow=ub>(const<i32>(3), const<i32>(16))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_i:[0-9]+]] i: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_i]]), add<i32, overflow=ub>(const<i32>(4), mul<i32, overflow=ub>(const<i32>(3), const<i32>(16))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 buflen: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %5 i: u32 [storage=automatic];
-// DEFAULT-NEXT:         write<u32>(%4, reinterpret<u32, reason=assign, fits=unknown>(add<i32, overflow=ub>(const<i32>(4), mul<i32, overflow=ub>(const<i32>(3), const<i32>(16)))));
-// DEFAULT-NEXT:         for %6
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_buflen:[0-9]+]] buflen: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: u32 [storage=automatic];
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_buflen]], reinterpret<u32, reason=assign, fits=unknown>(add<i32, overflow=ub>(const<i32>(4), mul<i32, overflow=ub>(const<i32>(3), const<i32>(16)))));
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<u32>(%5, reinterpret<u32, reason=assign, fits=always>(const<i32>(4)));
-// DEFAULT-NEXT:             condition: lt<u32>(read<u32>(%5), read<u32>(%4))
+// DEFAULT-NEXT:                 write<u32>(%[[VALUE_i_2]], reinterpret<u32, reason=assign, fits=always>(const<i32>(4)));
+// DEFAULT-NEXT:             condition: lt<u32>(read<u32>(%[[VALUE_i_2]]), read<u32>(%[[VALUE_buflen]]))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %7: u32 [synthetic] = read<u32>(%5);
-// DEFAULT-NEXT:                 let %8: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%7), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)));
-// DEFAULT-NEXT:                 write<u32>(%5, read<u32>(%8));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_i_2]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE1]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)));
+// DEFAULT-NEXT:                 write<u32>(%[[VALUE_i_2]], read<u32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%1, reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%5)));
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_f]], reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%[[VALUE_i_2]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

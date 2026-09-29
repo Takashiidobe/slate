@@ -52,92 +52,92 @@ _Complex float complex_float(_Complex float value) { return value; }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 plain = struct {
+// IR-NEXT:     type @type[[TYPE_plain:[0-9]+]] plain = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: f32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type1 flexible = struct {
+// IR-NEXT:     type @type[[TYPE_flexible:[0-9]+]] flexible = struct {
 // IR-NEXT:         field0 n: i32;
 // IR-NEXT:         field1 tail: array<i32, incomplete>;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type2 zero_tail = struct {
+// IR-NEXT:     type @type[[TYPE_zero_tail:[0-9]+]] zero_tail = struct {
 // IR-NEXT:         field0 f: f32;
 // IR-NEXT:         field1 tail: array<i32, 0>;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type3 halves = struct {
+// IR-NEXT:     type @type[[TYPE_halves:[0-9]+]] halves = struct {
 // IR-NEXT:         field0 a: f16;
 // IR-NEXT:         field1 b: f16;
 // IR-NEXT:     } [size=4, align=2, offsets=[0, 2]];
-// IR-NEXT:     type @type4 half_float = struct {
+// IR-NEXT:     type @type[[TYPE_half_float:[0-9]+]] half_float = struct {
 // IR-NEXT:         field0 a: f16;
 // IR-NEXT:         field1 b: f32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type5 double_half = struct {
+// IR-NEXT:     type @type[[TYPE_double_half:[0-9]+]] double_half = struct {
 // IR-NEXT:         field0 d: f64;
 // IR-NEXT:         field1 h: f16;
 // IR-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// IR-NEXT:     type @type6 brain_floats = struct {
+// IR-NEXT:     type @type[[TYPE_brain_floats:[0-9]+]] brain_floats = struct {
 // IR-NEXT:         field0 a: bf16;
 // IR-NEXT:         field1 b: bf16;
 // IR-NEXT:     } [size=4, align=2, offsets=[0, 2]];
-// IR-NEXT:     type @type7 long_double = struct {
+// IR-NEXT:     type @type[[TYPE_long_double:[0-9]+]] long_double = struct {
 // IR-NEXT:         field0 x: f80;
 // IR-NEXT:     } [size=16, align=16, offsets=[0]];
-// IR-NEXT:     type @type8 quad = struct {
+// IR-NEXT:     type @type[[TYPE_quad:[0-9]+]] quad = struct {
 // IR-NEXT:         field0 q: f128;
 // IR-NEXT:     } [size=16, align=16, offsets=[0]];
-// IR-NEXT:     type @type9 half_or_float = union {
+// IR-NEXT:     type @type[[TYPE_half_or_float:[0-9]+]] half_or_float = union {
 // IR-NEXT:         field0 h: f16;
 // IR-NEXT:         field1 f: f32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// IR-NEXT:     type @type10 half_int = struct {
+// IR-NEXT:     type @type[[TYPE_half_int:[0-9]+]] half_int = struct {
 // IR-NEXT:         field0 h: f16;
 // IR-NEXT:         field1 i: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     fn %11 @plain(%12 value: @type0) -> @type0 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type0, reason=return>(read<@type0>(%12));
+// IR-NEXT:     fn %[[VALUE_plain:[0-9]+]] @plain(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_plain]]) -> @type[[TYPE_plain]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_plain]], reason=return>(read<@type[[TYPE_plain]]>(%[[VALUE_value]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %13 @flexible(%14 value: @type1) -> @type1 [linkage=external] [abi=sysv64(byval<align=4>) -> sret<align=4>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type1, reason=return>(read<@type1>(%14));
+// IR-NEXT:     fn %[[VALUE_flexible:[0-9]+]] @flexible(%[[VALUE_value_2:[0-9]+]] value: @type[[TYPE_flexible]]) -> @type[[TYPE_flexible]] [linkage=external] [abi=sysv64(byval<align=4>) -> sret<align=4>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_flexible]], reason=return>(read<@type[[TYPE_flexible]]>(%[[VALUE_value_2]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %15 @zero_tail(%16 value: @type2) -> @type2 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type2, reason=return>(read<@type2>(%16));
+// IR-NEXT:     fn %[[VALUE_zero_tail:[0-9]+]] @zero_tail(%[[VALUE_value_3:[0-9]+]] value: @type[[TYPE_zero_tail]]) -> @type[[TYPE_zero_tail]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_zero_tail]], reason=return>(read<@type[[TYPE_zero_tail]]>(%[[VALUE_value_3]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %17 @halves(%18 value: @type3) -> @type3 [linkage=external] [abi=sysv64(coerce<pair<f16>>) -> coerce<pair<f16>>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type3, reason=return>(read<@type3>(%18));
+// IR-NEXT:     fn %[[VALUE_halves:[0-9]+]] @halves(%[[VALUE_value_4:[0-9]+]] value: @type[[TYPE_halves]]) -> @type[[TYPE_halves]] [linkage=external] [abi=sysv64(coerce<pair<f16>>) -> coerce<pair<f16>>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_halves]], reason=return>(read<@type[[TYPE_halves]]>(%[[VALUE_value_4]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %19 @half_float(%20 value: @type4) -> @type4 [linkage=external] [abi=sysv64(coerce<quad<f16>>) -> coerce<quad<f16>>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type4, reason=return>(read<@type4>(%20));
+// IR-NEXT:     fn %[[VALUE_half_float:[0-9]+]] @half_float(%[[VALUE_value_5:[0-9]+]] value: @type[[TYPE_half_float]]) -> @type[[TYPE_half_float]] [linkage=external] [abi=sysv64(coerce<quad<f16>>) -> coerce<quad<f16>>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_half_float]], reason=return>(read<@type[[TYPE_half_float]]>(%[[VALUE_value_5]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %21 @double_half(%22 value: @type5) -> @type5 [linkage=external] [abi=sysv64(coerce<f64, f16>) -> coerce<f64, f16>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type5, reason=return>(read<@type5>(%22));
+// IR-NEXT:     fn %[[VALUE_double_half:[0-9]+]] @double_half(%[[VALUE_value_6:[0-9]+]] value: @type[[TYPE_double_half]]) -> @type[[TYPE_double_half]] [linkage=external] [abi=sysv64(coerce<f64, f16>) -> coerce<f64, f16>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_double_half]], reason=return>(read<@type[[TYPE_double_half]]>(%[[VALUE_value_6]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %23 @brain_floats(%24 value: @type6) -> @type6 [linkage=external] [abi=sysv64(coerce<pair<bf16>>) -> coerce<pair<bf16>>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type6, reason=return>(read<@type6>(%24));
+// IR-NEXT:     fn %[[VALUE_brain_floats:[0-9]+]] @brain_floats(%[[VALUE_value_7:[0-9]+]] value: @type[[TYPE_brain_floats]]) -> @type[[TYPE_brain_floats]] [linkage=external] [abi=sysv64(coerce<pair<bf16>>) -> coerce<pair<bf16>>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_brain_floats]], reason=return>(read<@type[[TYPE_brain_floats]]>(%[[VALUE_value_7]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %25 @long_double(%26 value: @type7) -> @type7 [linkage=external] [abi=sysv64(byval<align=16>) -> coerce<f80>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type7, reason=return>(read<@type7>(%26));
+// IR-NEXT:     fn %[[VALUE_long_double:[0-9]+]] @long_double(%[[VALUE_value_8:[0-9]+]] value: @type[[TYPE_long_double]]) -> @type[[TYPE_long_double]] [linkage=external] [abi=sysv64(byval<align=16>) -> coerce<f80>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_long_double]], reason=return>(read<@type[[TYPE_long_double]]>(%[[VALUE_value_8]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %27 @quad(%28 value: @type8) -> @type8 [linkage=external] [abi=sysv64(coerce<f128>) -> coerce<f128>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type8, reason=return>(read<@type8>(%28));
+// IR-NEXT:     fn %[[VALUE_quad:[0-9]+]] @quad(%[[VALUE_value_9:[0-9]+]] value: @type[[TYPE_quad]]) -> @type[[TYPE_quad]] [linkage=external] [abi=sysv64(coerce<f128>) -> coerce<f128>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_quad]], reason=return>(read<@type[[TYPE_quad]]>(%[[VALUE_value_9]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %29 @half_or_float(%30 value: @type9) -> @type9 [linkage=external] [abi=sysv64(coerce<f32>) -> coerce<f32>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type9, reason=return>(read<@type9>(%30));
+// IR-NEXT:     fn %[[VALUE_half_or_float:[0-9]+]] @half_or_float(%[[VALUE_value_10:[0-9]+]] value: @type[[TYPE_half_or_float]]) -> @type[[TYPE_half_or_float]] [linkage=external] [abi=sysv64(coerce<f32>) -> coerce<f32>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_half_or_float]], reason=return>(read<@type[[TYPE_half_or_float]]>(%[[VALUE_value_10]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %31 @half_int(%32 value: @type10) -> @type10 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type10, reason=return>(read<@type10>(%32));
+// IR-NEXT:     fn %[[VALUE_half_int:[0-9]+]] @half_int(%[[VALUE_value_11:[0-9]+]] value: @type[[TYPE_half_int]]) -> @type[[TYPE_half_int]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_half_int]], reason=return>(read<@type[[TYPE_half_int]]>(%[[VALUE_value_11]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %33 @complex_half(%34 value: complex<f16>) -> complex<f16> [linkage=external] [abi=sysv64(coerce<pair<f16>>) -> coerce<pair<f16>>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<complex<f16>>(%34);
+// IR-NEXT:     fn %[[VALUE_complex_half:[0-9]+]] @complex_half(%[[VALUE_value_12:[0-9]+]] value: complex<f16>) -> complex<f16> [linkage=external] [abi=sysv64(coerce<pair<f16>>) -> coerce<pair<f16>>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<complex<f16>>(%[[VALUE_value_12]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %35 @complex_quad(%36 value: complex<f128>) -> complex<f128> [linkage=external] [abi=sysv64(byval<align=16>) -> sret<align=16>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<complex<f128>>(%36);
+// IR-NEXT:     fn %[[VALUE_complex_quad:[0-9]+]] @complex_quad(%[[VALUE_value_13:[0-9]+]] value: complex<f128>) -> complex<f128> [linkage=external] [abi=sysv64(byval<align=16>) -> sret<align=16>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<complex<f128>>(%[[VALUE_value_13]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %37 @complex_long_double(%38 value: complex<f80>) -> complex<f80> [linkage=external] [abi=sysv64(byval<align=16>) -> coerce<f80, f80>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<complex<f80>>(%38);
+// IR-NEXT:     fn %[[VALUE_complex_long_double:[0-9]+]] @complex_long_double(%[[VALUE_value_14:[0-9]+]] value: complex<f80>) -> complex<f80> [linkage=external] [abi=sysv64(byval<align=16>) -> coerce<f80, f80>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<complex<f80>>(%[[VALUE_value_14]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %39 @complex_float(%40 value: complex<f32>) -> complex<f32> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<complex<f32>>(%40);
+// IR-NEXT:     fn %[[VALUE_complex_float:[0-9]+]] @complex_float(%[[VALUE_value_15:[0-9]+]] value: complex<f32>) -> complex<f32> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<complex<f32>>(%[[VALUE_value_15]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

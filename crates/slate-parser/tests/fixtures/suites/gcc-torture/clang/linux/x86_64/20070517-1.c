@@ -59,30 +59,30 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @get_kind(%2 v: i32) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 k: volatile i32 [storage=automatic] = read<i32>(%2);
-// DEFAULT-NEXT:         return read<i32, volatile>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_get_kind:[0-9]+]] @get_kind(%[[VALUE_v:[0-9]+]] v: i32) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: volatile i32 [storage=automatic] = read<i32>(%[[VALUE_v]]);
+// DEFAULT-NEXT:         return read<i32, volatile>(%[[VALUE_k]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @some_call() -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_some_call:[0-9]+]] @some_call() -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @example(%6 arg: i32) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 tmp: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %8 kind: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%6));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(eq<i32>(read<i32>(%8), const<i32>(9)), eq<i32>(read<i32>(%8), const<i32>(10))), eq<i32>(read<i32>(%8), const<i32>(5)))
+// DEFAULT-NEXT:     fn %[[VALUE_example:[0-9]+]] @example(%[[VALUE_arg:[0-9]+]] arg: i32) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_tmp:[0-9]+]] tmp: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_kind:[0-9]+]] kind: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_get_kind]], read<i32>(%[[VALUE_arg]]));
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(eq<i32>(read<i32>(%[[VALUE_kind]]), const<i32>(9)), eq<i32>(read<i32>(%[[VALUE_kind]]), const<i32>(10))), eq<i32>(read<i32>(%[[VALUE_kind]]), const<i32>(5)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if eq<i32>(call<i32, signature=fn() -> i32>(%4), const<i32>(0))
+// DEFAULT-NEXT:                 if eq<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_some_call]]), const<i32>(0))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if logical_or<bool>(eq<i32>(read<i32>(%8), const<i32>(9)), eq<i32>(read<i32>(%8), const<i32>(10)))
-// DEFAULT-NEXT:                             write<i32>(%7, read<i32>(%6));
+// DEFAULT-NEXT:                         if logical_or<bool>(eq<i32>(read<i32>(%[[VALUE_kind]]), const<i32>(9)), eq<i32>(read<i32>(%[[VALUE_kind]]), const<i32>(10)))
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_tmp]], read<i32>(%[[VALUE_arg]]));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%5, const<i32>(10));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_example]], const<i32>(10));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

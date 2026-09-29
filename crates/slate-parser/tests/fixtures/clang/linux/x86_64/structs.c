@@ -55,29 +55,29 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Pair = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Pair:[0-9]+]] Pair = struct {
 // DEFAULT-NEXT:         field0 left: i32;
 // DEFAULT-NEXT:         field1 right: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     global %13 .str13: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %14 .str14: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%12 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @sum_pair(%4 a: i32, %5 b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 p: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field0(%6), read<i32>(%4));
-// DEFAULT-NEXT:         write<i32>(field1(%6), read<i32>(%5));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(field0(%6)), read<i32>(field1(%6)));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_sum_pair:[0-9]+]] @sum_pair(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: @type[[TYPE_Pair]] [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_p]]), read<i32>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_p]]), read<i32>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(field0(%[[VALUE_p]])), read<i32>(field1(%[[VALUE_p]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @overwrite_left(%8 a: i32, %9 b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 p: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field0(%10), read<i32>(%8));
-// DEFAULT-NEXT:         write<i32>(field1(%10), read<i32>(%9));
-// DEFAULT-NEXT:         write<i32>(field0(%10), add<i32, overflow=ub>(read<i32>(field1(%10)), const<i32>(2)));
-// DEFAULT-NEXT:         return read<i32>(field0(%10));
+// DEFAULT-NEXT:     fn %[[VALUE_overwrite_left:[0-9]+]] @overwrite_left(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b_2:[0-9]+]] b: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: @type[[TYPE_Pair]] [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_p_2]]), read<i32>(%[[VALUE_a_2]]));
+// DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_p_2]]), read<i32>(%[[VALUE_b_2]]));
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_p_2]]), add<i32, overflow=ub>(read<i32>(field1(%[[VALUE_p_2]])), const<i32>(2)));
+// DEFAULT-NEXT:         return read<i32>(field0(%[[VALUE_p_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%13)), call<i32, signature=fn(i32, i32) -> i32>(%3, const<i32>(4), const<i32>(5)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%14)), call<i32, signature=fn(i32, i32) -> i32>(%7, const<i32>(3), const<i32>(8)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_sum_pair]], const<i32>(4), const<i32>(5)));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_overwrite_left]], const<i32>(3), const<i32>(8)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -45,11 +45,11 @@ _Bool and2(unsigned *x, unsigned *y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @and1(%1 x: ptr<u32>, %2 y: ptr<u32>) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return logical_and<bool>(gt<ptr<u32>>(read<ptr<u32>>(%1), read<ptr<u32>>(%2)), eq<ptr<u32>>(read<ptr<u32>>(%1), null<ptr<u32>>));
+// DEFAULT-NEXT:     fn %[[VALUE_and1:[0-9]+]] @and1(%[[VALUE_x:[0-9]+]] x: ptr<u32>, %[[VALUE_y:[0-9]+]] y: ptr<u32>) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return logical_and<bool>(gt<ptr<u32>>(read<ptr<u32>>(%[[VALUE_x]]), read<ptr<u32>>(%[[VALUE_y]])), eq<ptr<u32>>(read<ptr<u32>>(%[[VALUE_x]]), null<ptr<u32>>));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @and2(%4 x: ptr<u32>, %5 y: ptr<u32>) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return logical_and<bool>(lt<ptr<u32>>(read<ptr<u32>>(%4), read<ptr<u32>>(%5)), eq<ptr<u32>>(read<ptr<u32>>(%4), int_to_ptr<ptr<u32>, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))));
+// DEFAULT-NEXT:     fn %[[VALUE_and2:[0-9]+]] @and2(%[[VALUE_x_2:[0-9]+]] x: ptr<u32>, %[[VALUE_y_2:[0-9]+]] y: ptr<u32>) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return logical_and<bool>(lt<ptr<u32>>(read<ptr<u32>>(%[[VALUE_x_2]]), read<ptr<u32>>(%[[VALUE_y_2]])), eq<ptr<u32>>(read<ptr<u32>>(%[[VALUE_x_2]]), int_to_ptr<ptr<u32>, reason=explicit>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

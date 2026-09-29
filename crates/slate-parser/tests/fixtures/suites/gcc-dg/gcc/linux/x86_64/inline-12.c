@@ -39,11 +39,11 @@ void g(inline int(void)); /* { dg-error "parameter '\\({anonymous}\\)' declared 
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 c = fn() -> void;
-// DEFAULT-NEXT:     type @type1 d = i32;
-// DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 b: ptr<fn() -> i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %5 @e(%7 f: ptr<fn() -> i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %6 @g(%8 <unnamed>: ptr<fn() -> i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_c:[0-9]+]] c = fn() -> void;
+// DEFAULT-NEXT:     type @type[[TYPE_d:[0-9]+]] d = i32;
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: ptr<fn() -> i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_e:[0-9]+]] @e(%[[VALUE_f:[0-9]+]] f: ptr<fn() -> i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE0:[0-9]+]] <unnamed>: ptr<fn() -> i32>) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -35,40 +35,40 @@ void side_effects(struct Pair *p, int *a, int x, int y, int i, int c) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 Pair = struct {
+// IR-NEXT:     type @type[[TYPE_Pair:[0-9]+]] Pair = struct {
 // IR-NEXT:         field0 n: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     fn %0 @f(%10 <unnamed>: i32) -> i32 [linkage=external];
-// IR-NEXT:     fn %1 @getc(%11 <unnamed>: ptr<void>) -> i32 [linkage=external];
-// IR-NEXT:     fn %3 @side_effects(%4 p: ptr<@type0>, %5 a: ptr<i32>, %6 x: i32, %7 y: i32, %8 i: i32, %9 c: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %13: i32 [synthetic] = read<i32>(%8);
-// IR-NEXT:         let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
-// IR-NEXT:         write<i32>(%8, read<i32>(%14));
-// IR-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%5), read<i32>(%13))), read<i32>(%6));
-// IR-NEXT:         while %12 {
-// IR-NEXT:             write<i32>(%9, call<i32, signature=fn(ptr<void>) -> i32>(%1, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type0>>(%4))));
-// IR-NEXT:             yield ne<i32>(call<i32, signature=fn(ptr<void>) -> i32>(%1, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type0>>(%4))), neg<i32, overflow=ub>(const<i32>(1)));
+// IR-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_getc:[0-9]+]] @getc(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>) -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_side_effects:[0-9]+]] @side_effects(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_Pair]]>, %[[VALUE_a:[0-9]+]] a: ptr<i32>, %[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32, %[[VALUE_i:[0-9]+]] i: i32, %[[VALUE_c:[0-9]+]] c: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// IR-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// IR-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE3]]));
+// IR-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_a]]), read<i32>(%[[VALUE2]]))), read<i32>(%[[VALUE_x]]));
+// IR-NEXT:         while %[[VALUE4:[0-9]+]] {
+// IR-NEXT:             write<i32>(%[[VALUE_c]], call<i32, signature=fn(ptr<void>) -> i32>(%[[VALUE_getc]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_Pair]]>>(%[[VALUE_p]]))));
+// IR-NEXT:             yield ne<i32>(call<i32, signature=fn(ptr<void>) -> i32>(%[[VALUE_getc]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_Pair]]>>(%[[VALUE_p]]))), neg<i32, overflow=ub>(const<i32>(1)));
 // IR-NEXT:         }
-// IR-NEXT:             call<i32, signature=fn(i32) -> i32>(%0, read<i32>(%9));
-// IR-NEXT:         write<i32>(%7, const<i32>(0));
-// IR-NEXT:         write<i32>(%6, const<i32>(0));
-// IR-NEXT:         let %15: i32 [synthetic] = read<i32>(%8);
-// IR-NEXT:         let %16: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%15), const<i32>(1));
-// IR-NEXT:         write<i32>(%8, read<i32>(%16));
-// IR-NEXT:         call<i32, signature=fn(i32) -> i32>(%0, read<i32>(%15));
-// IR-NEXT:         let %17: bool [synthetic];
-// IR-NEXT:         if ne<ptr<@type0>>(read<ptr<@type0>>(%4), null<ptr<@type0>>)
-// IR-NEXT:             let %18: ptr<@type0> [synthetic] = read<ptr<@type0>>(%4);
-// IR-NEXT:             let %19: i32 [synthetic] = read<i32>(field0(deref(read<ptr<@type0>>(%18))));
-// IR-NEXT:             let %20: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%19), const<i32>(1));
-// IR-NEXT:             write<i32>(field0(deref(read<ptr<@type0>>(%18))), read<i32>(%20));
-// IR-NEXT:             write<bool>(%17, ne<i32>(read<i32>(%19), const<i32>(0)));
+// IR-NEXT:             call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32>(%[[VALUE_c]]));
+// IR-NEXT:         write<i32>(%[[VALUE_y]], const<i32>(0));
+// IR-NEXT:         write<i32>(%[[VALUE_x]], const<i32>(0));
+// IR-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// IR-NEXT:         let %[[VALUE6:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE5]]), const<i32>(1));
+// IR-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE6]]));
+// IR-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32>(%[[VALUE5]]));
+// IR-NEXT:         let %[[VALUE7:[0-9]+]]: bool [synthetic];
+// IR-NEXT:         if ne<ptr<@type[[TYPE_Pair]]>>(read<ptr<@type[[TYPE_Pair]]>>(%[[VALUE_p]]), null<ptr<@type[[TYPE_Pair]]>>)
+// IR-NEXT:             let %[[VALUE8:[0-9]+]]: ptr<@type[[TYPE_Pair]]> [synthetic] = read<ptr<@type[[TYPE_Pair]]>>(%[[VALUE_p]]);
+// IR-NEXT:             let %[[VALUE9:[0-9]+]]: i32 [synthetic] = read<i32>(field0(deref(read<ptr<@type[[TYPE_Pair]]>>(%[[VALUE8]]))));
+// IR-NEXT:             let %[[VALUE10:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE9]]), const<i32>(1));
+// IR-NEXT:             write<i32>(field0(deref(read<ptr<@type[[TYPE_Pair]]>>(%[[VALUE8]]))), read<i32>(%[[VALUE10]]));
+// IR-NEXT:             write<bool>(%[[VALUE7]], ne<i32>(read<i32>(%[[VALUE9]]), const<i32>(0)));
 // IR-NEXT:         else
-// IR-NEXT:             write<bool>(%17, const<bool>(false));
-// IR-NEXT:         if read<bool>(%17)
-// IR-NEXT:             let %21: i32 [synthetic] = read<i32>(%6);
-// IR-NEXT:             let %22: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%21), const<i32>(1));
-// IR-NEXT:             write<i32>(%6, read<i32>(%22));
+// IR-NEXT:             write<bool>(%[[VALUE7]], const<bool>(false));
+// IR-NEXT:         if read<bool>(%[[VALUE7]])
+// IR-NEXT:             let %[[VALUE11:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// IR-NEXT:             let %[[VALUE12:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE11]]), const<i32>(1));
+// IR-NEXT:             write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE12]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

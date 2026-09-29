@@ -45,28 +45,28 @@ int         main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 X = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_X:[0-9]+]] X = struct {
 // DEFAULT-NEXT:         field0 p: ptr<i32>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     global %0 i: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %9 @__builtin_malloc(%8 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @my_alloc() -> ptr<@type0> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 p: ptr<@type0> [storage=automatic] = pointer_cast<ptr<@type0>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%9, const<u64>(8)));
-// DEFAULT-NEXT:         write<ptr<i32>>(field0(deref(read<ptr<@type0>>(%3))), addr_of<ptr<i32>>(%0));
-// DEFAULT-NEXT:         return read<ptr<@type0>>(%3);
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_my_alloc:[0-9]+]] @my_alloc() -> ptr<@type[[TYPE_X]]> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_X]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_X]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], const<u64>(8)));
+// DEFAULT-NEXT:         write<ptr<i32>>(field0(deref(read<ptr<@type[[TYPE_X]]>>(%[[VALUE_p]]))), addr_of<ptr<i32>>(%[[VALUE_i]]));
+// DEFAULT-NEXT:         return read<ptr<@type[[TYPE_X]]>>(%[[VALUE_p]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 p: ptr<@type0> [storage=automatic];
-// DEFAULT-NEXT:         let %7 q: ptr<@type0> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type0>>(%6, call<ptr<@type0>, signature=fn() -> ptr<@type0>>(%2));
-// DEFAULT-NEXT:         call<ptr<@type0>, signature=fn() -> ptr<@type0>>(%2);
-// DEFAULT-NEXT:         write<ptr<@type0>>(%7, call<ptr<@type0>, signature=fn() -> ptr<@type0>>(%2));
-// DEFAULT-NEXT:         call<ptr<@type0>, signature=fn() -> ptr<@type0>>(%2);
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field0(deref(read<ptr<@type0>>(%6))))), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field0(deref(read<ptr<@type0>>(%7))))), const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(read<ptr<i32>>(field0(deref(read<ptr<@type0>>(%6)))))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<@type[[TYPE_X]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_X]]> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_X]]>>(%[[VALUE_p_2]], call<ptr<@type[[TYPE_X]]>, signature=fn() -> ptr<@type[[TYPE_X]]>>(%[[VALUE_my_alloc]]));
+// DEFAULT-NEXT:         call<ptr<@type[[TYPE_X]]>, signature=fn() -> ptr<@type[[TYPE_X]]>>(%[[VALUE_my_alloc]]);
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_X]]>>(%[[VALUE_q]], call<ptr<@type[[TYPE_X]]>, signature=fn() -> ptr<@type[[TYPE_X]]>>(%[[VALUE_my_alloc]]));
+// DEFAULT-NEXT:         call<ptr<@type[[TYPE_X]]>, signature=fn() -> ptr<@type[[TYPE_X]]>>(%[[VALUE_my_alloc]]);
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field0(deref(read<ptr<@type[[TYPE_X]]>>(%[[VALUE_p_2]]))))), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field0(deref(read<ptr<@type[[TYPE_X]]>>(%[[VALUE_q]]))))), const<i32>(0));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(read<ptr<i32>>(field0(deref(read<ptr<@type[[TYPE_X]]>>(%[[VALUE_p_2]])))))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

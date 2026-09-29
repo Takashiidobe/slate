@@ -47,20 +47,20 @@ foo (_Complex double z)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 z: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2: complex<f64> [synthetic] = read<complex<f64>>(%1);
-// DEFAULT-NEXT:         let %3: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%2), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:         write<complex<f64>>(%1, read<complex<f64>>(%3));
-// DEFAULT-NEXT:         let %4: complex<f64> [synthetic] = read<complex<f64>>(%1);
-// DEFAULT-NEXT:         let %5: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%4), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:         write<complex<f64>>(%1, read<complex<f64>>(%5));
-// DEFAULT-NEXT:         let %6: complex<f64> [synthetic] = read<complex<f64>>(%1);
-// DEFAULT-NEXT:         let %7: complex<f64> [synthetic] = sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%6), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:         write<complex<f64>>(%1, read<complex<f64>>(%7));
-// DEFAULT-NEXT:         let %8: complex<f64> [synthetic] = read<complex<f64>>(%1);
-// DEFAULT-NEXT:         let %9: complex<f64> [synthetic] = sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%8), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
-// DEFAULT-NEXT:         write<complex<f64>>(%1, read<complex<f64>>(%9));
-// DEFAULT-NEXT:         return read<complex<f64>>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_z:[0-9]+]] z: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: complex<f64> [synthetic] = read<complex<f64>>(%[[VALUE_z]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%[[VALUE0]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         write<complex<f64>>(%[[VALUE_z]], read<complex<f64>>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: complex<f64> [synthetic] = read<complex<f64>>(%[[VALUE_z]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: complex<f64> [synthetic] = add<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%[[VALUE2]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         write<complex<f64>>(%[[VALUE_z]], read<complex<f64>>(%[[VALUE3]]));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: complex<f64> [synthetic] = read<complex<f64>>(%[[VALUE_z]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: complex<f64> [synthetic] = sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%[[VALUE4]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         write<complex<f64>>(%[[VALUE_z]], read<complex<f64>>(%[[VALUE5]]));
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: complex<f64> [synthetic] = read<complex<f64>>(%[[VALUE_z]]);
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: complex<f64> [synthetic] = sub<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%[[VALUE6]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(1)));
+// DEFAULT-NEXT:         write<complex<f64>>(%[[VALUE_z]], read<complex<f64>>(%[[VALUE7]]));
+// DEFAULT-NEXT:         return read<complex<f64>>(%[[VALUE_z]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -84,62 +84,62 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 i: atomic f32 [storage=static] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(5)) [linkage=external];
-// DEFAULT-NEXT:     global %1 j: atomic f32 [storage=static] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(2)) [linkage=external];
-// DEFAULT-NEXT:     fn %2 @fn1(%3 a: ptr<f32> [array=%17]) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<f32, atomic=seq_cst>(%0, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)));
-// DEFAULT-NEXT:         let %17: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)))));
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: atomic f32 [storage=static] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(5)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: atomic f32 [storage=static] = int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=ignore>(const<i32>(2)) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1(%[[VALUE_a:[0-9]+]] a: ptr<f32> [array=%[[VALUE0:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<f32, atomic=seq_cst>(%[[VALUE_i]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE0]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @fn2(%5 a: ptr<f32> [array=%18]) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %26: f32 [synthetic] = update<f32, result=new, atomic=seq_cst>(%0, add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))));
-// DEFAULT-NEXT:         let %18: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(read<f32>(%26))));
+// DEFAULT-NEXT:     fn %[[VALUE_fn2:[0-9]+]] @fn2(%[[VALUE_a_2:[0-9]+]] a: ptr<f32> [array=%[[VALUE1:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: f32 [synthetic] = update<f32, result=new, atomic=seq_cst>(%[[VALUE_i]], add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))));
+// DEFAULT-NEXT:         let %[[VALUE1]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(read<f32>(%[[VALUE2]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @fn3(%7 a: ptr<f32> [array=%19]) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %27: f32 [synthetic] = update<f32, result=new, atomic=seq_cst>(%0, add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))));
-// DEFAULT-NEXT:         let %19: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(read<f32>(%27))));
+// DEFAULT-NEXT:     fn %[[VALUE_fn3:[0-9]+]] @fn3(%[[VALUE_a_3:[0-9]+]] a: ptr<f32> [array=%[[VALUE3:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: f32 [synthetic] = update<f32, result=new, atomic=seq_cst>(%[[VALUE_i]], add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE3]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(read<f32>(%[[VALUE4]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @fn4(%9 a: ptr<f32> [array=%20]) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %28: f32 [synthetic] = update<f32, result=new, atomic=seq_cst>(%0, add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))));
-// DEFAULT-NEXT:         let %20: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(read<f32>(%28))));
+// DEFAULT-NEXT:     fn %[[VALUE_fn4:[0-9]+]] @fn4(%[[VALUE_a_4:[0-9]+]] a: ptr<f32> [array=%[[VALUE5:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: f32 [synthetic] = update<f32, result=new, atomic=seq_cst>(%[[VALUE_i]], add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE5]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(read<f32>(%[[VALUE6]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @fn5(%11 a: ptr<vla<f32, %22>> [array=%21]) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %29: f32 [synthetic] = update<f32, result=new, atomic=seq_cst>(%0, add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))));
-// DEFAULT-NEXT:         let %21: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(read<f32>(%29))));
-// DEFAULT-NEXT:         write<f32, atomic=seq_cst>(%1, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(10)));
-// DEFAULT-NEXT:         let %22: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(10)))));
+// DEFAULT-NEXT:     fn %[[VALUE_fn5:[0-9]+]] @fn5(%[[VALUE_a_5:[0-9]+]] a: ptr<vla<f32, %[[VALUE7:[0-9]+]]>> [array=%[[VALUE8:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: f32 [synthetic] = update<f32, result=new, atomic=seq_cst>(%[[VALUE_i]], add<f32, rounding=nearest_even, exceptions=observable, contract=fast>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE8]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(read<f32>(%[[VALUE9]]))));
+// DEFAULT-NEXT:         write<f32, atomic=seq_cst>(%[[VALUE_j]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(10)));
+// DEFAULT-NEXT:         let %[[VALUE7]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(10)))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @fn6(%13 a: ptr<vla<f32, %24>> [array=%23]) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<f32, atomic=seq_cst>(%0, int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(7)));
-// DEFAULT-NEXT:         let %23: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(7)))));
-// DEFAULT-NEXT:         let %30: f32 [synthetic] = update<f32, result=old, atomic=seq_cst>(%1, sub<f32, rounding=nearest_even, exceptions=observable, contract=fast>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))));
-// DEFAULT-NEXT:         let %24: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(read<f32>(%30))));
+// DEFAULT-NEXT:     fn %[[VALUE_fn6:[0-9]+]] @fn6(%[[VALUE_a_6:[0-9]+]] a: ptr<vla<f32, %[[VALUE10:[0-9]+]]>> [array=%[[VALUE11:[0-9]+]]]) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<f32, atomic=seq_cst>(%[[VALUE_i]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(7)));
+// DEFAULT-NEXT:         let %[[VALUE11]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(7)))));
+// DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: f32 [synthetic] = update<f32, result=old, atomic=seq_cst>(%[[VALUE_j]], sub<f32, rounding=nearest_even, exceptions=observable, contract=fast>(old<f32>, int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1))));
+// DEFAULT-NEXT:         let %[[VALUE10]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(float_to_int<i32, reason=explicit, out_of_range=ub, exceptions=observable>(read<f32>(%[[VALUE12]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %15 a: array<f32, 10> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %16 aa: array<array<f32, 10>, 10> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>) -> void>(%2, array_decay<ptr<f32>, length=Some(10)>(%15));
-// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%0), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%25);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>) -> void>(%4, array_decay<ptr<f32>, length=Some(10)>(%15));
-// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%0), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%25);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>) -> void>(%6, array_decay<ptr<f32>, length=Some(10)>(%15));
-// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%0), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(3))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%25);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>) -> void>(%8, array_decay<ptr<f32>, length=Some(10)>(%15));
-// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%0), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(4))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%25);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<vla<f32, *>>) -> void>(%10, pointer_cast<ptr<vla<f32, *>>, reason=arg>(array_decay<ptr<array<f32, 10>>, length=Some(10)>(%16)));
-// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%0), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(5))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%25);
-// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%1), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(10))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%25);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<vla<f32, *>>) -> void>(%12, pointer_cast<ptr<vla<f32, *>>, reason=arg>(array_decay<ptr<array<f32, 10>>, length=Some(10)>(%16)));
-// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%0), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(7))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%25);
-// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%1), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(9))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%25);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a_7:[0-9]+]] a: array<f32, 10> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_aa:[0-9]+]] aa: array<array<f32, 10>, 10> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>) -> void>(%[[VALUE_fn1]], array_decay<ptr<f32>, length=Some(10)>(%[[VALUE_a_7]]));
+// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%[[VALUE_i]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(0))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>) -> void>(%[[VALUE_fn2]], array_decay<ptr<f32>, length=Some(10)>(%[[VALUE_a_7]]));
+// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%[[VALUE_i]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>) -> void>(%[[VALUE_fn3]], array_decay<ptr<f32>, length=Some(10)>(%[[VALUE_a_7]]));
+// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%[[VALUE_i]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(3))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<f32>) -> void>(%[[VALUE_fn4]], array_decay<ptr<f32>, length=Some(10)>(%[[VALUE_a_7]]));
+// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%[[VALUE_i]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(4))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<vla<f32, *>>) -> void>(%[[VALUE_fn5]], pointer_cast<ptr<vla<f32, *>>, reason=arg>(array_decay<ptr<array<f32, 10>>, length=Some(10)>(%[[VALUE_aa]])));
+// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%[[VALUE_i]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(5))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%[[VALUE_j]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(10))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<vla<f32, *>>) -> void>(%[[VALUE_fn6]], pointer_cast<ptr<vla<f32, *>>, reason=arg>(array_decay<ptr<array<f32, 10>>, length=Some(10)>(%[[VALUE_aa]])));
+// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%[[VALUE_i]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(7))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         if not<bool>(eq<f32, exceptions=observable>(read<f32, atomic=seq_cst>(%[[VALUE_j]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(9))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

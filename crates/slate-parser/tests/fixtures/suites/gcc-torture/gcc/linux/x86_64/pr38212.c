@@ -43,23 +43,23 @@ int         main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 p: ptr<i32> [restrict], %2 i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 q: ptr<i32> [storage=automatic] [restrict];
-// DEFAULT-NEXT:         let %4 r: ptr<i32> [storage=automatic] [restrict];
-// DEFAULT-NEXT:         let %5 v: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %6 w: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<i32>>(%3, ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%1), const<i32>(1)));
-// DEFAULT-NEXT:         write<ptr<i32>>(%4, ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%3), read<i32>(%2)));
-// DEFAULT-NEXT:         write<i32>(%5, read<i32>(deref(read<ptr<i32>>(%4))));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%1)), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%6, read<i32>(deref(read<ptr<i32>>(%4))));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%5), read<i32>(%6));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<i32> [restrict], %[[VALUE_i:[0-9]+]] i: i32) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=automatic] [restrict];
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: ptr<i32> [storage=automatic] [restrict];
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_w:[0-9]+]] w: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_q]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_p]]), const<i32>(1)));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_r]], ptr_offset<ptr<i32>, subtract=true, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_q]]), read<i32>(%[[VALUE_i]])));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_v]], read<i32>(deref(read<ptr<i32>>(%[[VALUE_r]]))));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_p]])), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_w]], read<i32>(deref(read<ptr<i32>>(%[[VALUE_r]]))));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_v]]), read<i32>(%[[VALUE_w]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<i32>, i32) -> i32>(%0, addr_of<ptr<i32>>(%9), const<i32>(1)), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%7);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<i32>, i32) -> i32>(%[[VALUE_foo]], addr_of<ptr<i32>>(%[[VALUE_i_2]]), const<i32>(1)), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

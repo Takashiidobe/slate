@@ -48,10 +48,10 @@ int narrow;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 version_ok: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 max_ok: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 defined_ok: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 narrow: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_version_ok:[0-9]+]] version_ok: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_max_ok:[0-9]+]] max_ok: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defined_ok:[0-9]+]] defined_ok: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_narrow:[0-9]+]] narrow: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN WIDE
@@ -77,9 +77,9 @@ int narrow;
 // WIDE-NEXT:         storage d64 [size=8, align=8];
 // WIDE-NEXT:         storage d128 [size=16, align=16];
 // WIDE-NEXT:     }
-// WIDE-NEXT:     global %0 version_ok: i32 [storage=static] [linkage=external];
-// WIDE-NEXT:     global %1 max_ok: i32 [storage=static] [linkage=external];
-// WIDE-NEXT:     global %2 defined_ok: i32 [storage=static] [linkage=external];
-// WIDE-NEXT:     global %3 wide: i32 [storage=static] [linkage=external];
+// WIDE-NEXT:     global %[[VALUE_version_ok:[0-9]+]] version_ok: i32 [storage=static] [linkage=external];
+// WIDE-NEXT:     global %[[VALUE_max_ok:[0-9]+]] max_ok: i32 [storage=static] [linkage=external];
+// WIDE-NEXT:     global %[[VALUE_defined_ok:[0-9]+]] defined_ok: i32 [storage=static] [linkage=external];
+// WIDE-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: i32 [storage=static] [linkage=external];
 // WIDE-NEXT: }
 // SLATE-FILECHECK-END WIDE

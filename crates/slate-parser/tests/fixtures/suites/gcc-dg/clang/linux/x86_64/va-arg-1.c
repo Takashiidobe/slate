@@ -38,16 +38,16 @@ void foo()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 va_list = va_list;
-// DEFAULT-NEXT:     global %1 v: va_list [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 i: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32, volatile>(%2, widen<i32, reason=assign>(va_arg<i8>(%1)));
-// DEFAULT-NEXT:         widen<i32, reason=assign>(va_arg<i8>(%1));
-// DEFAULT-NEXT:         write<i32, volatile>(%2, widen<i32, reason=assign>(va_arg<i16>(%1)));
-// DEFAULT-NEXT:         widen<i32, reason=assign>(va_arg<i16>(%1));
-// DEFAULT-NEXT:         write<i32, volatile>(%2, float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f32>(%1)));
-// DEFAULT-NEXT:         float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f32>(%1));
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: va_list [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_i]], widen<i32, reason=assign>(va_arg<i8>(%[[VALUE_v]])));
+// DEFAULT-NEXT:         widen<i32, reason=assign>(va_arg<i8>(%[[VALUE_v]]));
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_i]], widen<i32, reason=assign>(va_arg<i16>(%[[VALUE_v]])));
+// DEFAULT-NEXT:         widen<i32, reason=assign>(va_arg<i16>(%[[VALUE_v]]));
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_i]], float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f32>(%[[VALUE_v]])));
+// DEFAULT-NEXT:         float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f32>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

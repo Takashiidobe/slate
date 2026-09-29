@@ -42,13 +42,13 @@ void f()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @bar(%1 xs: i16 [const], %2 xe: i16 [const]) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_and<bool>(ne<i16>(read<i16>(%2), const<i16>(0)), lt<i32>(widen<i32, reason=promotion>(read<i16>(%1)), widen<i32, reason=promotion>(read<i16>(%2))))
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_xs:[0-9]+]] xs: i16 [const], %[[VALUE_xe:[0-9]+]] xe: i16 [const]) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_and<bool>(ne<i16>(read<i16>(%[[VALUE_xe]]), const<i16>(0)), lt<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_xs]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_xe]]))))
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 xe: i16 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(i16, i16) -> void>(%0, truncate<i16, reason=arg, fits=always>(const<i32>(0)), read<i16>(%4));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_xe_2:[0-9]+]] xe: i16 [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(i16, i16) -> void>(%[[VALUE_bar]], truncate<i16, reason=arg, fits=always>(const<i32>(0)), read<i16>(%[[VALUE_xe_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

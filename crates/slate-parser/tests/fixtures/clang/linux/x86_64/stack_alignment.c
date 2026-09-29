@@ -28,7 +28,7 @@ int one(void) {
 // CHECK-NEXT:         storage d64 [size=8, align=8];
 // CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     fn %0 @one() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// CHECK-NEXT:     fn %[[VALUE_one:[0-9]+]] @one() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // CHECK-NEXT:         return const<i32>(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

@@ -39,22 +39,22 @@ enum e5 { e5a = __INT_MAX__, e5b }; /* { dg-error "ISO C restricts enumerator va
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 e1 = enum : i64 {
-// DEFAULT-NEXT:         %0 e1a = const<i64>(-9223372036854775808);
+// DEFAULT-NEXT:     type @type[[TYPE_e1:[0-9]+]] e1 = enum : i64 {
+// DEFAULT-NEXT:         %[[VALUE_e1a:[0-9]+]] e1a = const<i64>(-9223372036854775808);
 // DEFAULT-NEXT:     } [size=8, align=8];
-// DEFAULT-NEXT:     type @type1 e2 = enum : u64 {
-// DEFAULT-NEXT:         %0 e2a = const<u64>(9223372036854775807);
+// DEFAULT-NEXT:     type @type[[TYPE_e2:[0-9]+]] e2 = enum : u64 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] e2a = const<u64>(9223372036854775807);
 // DEFAULT-NEXT:     } [size=8, align=8];
-// DEFAULT-NEXT:     type @type2 e3 = enum : u32 {
-// DEFAULT-NEXT:         %0 e3a = const<u32>(4294967295);
+// DEFAULT-NEXT:     type @type[[TYPE_e3:[0-9]+]] e3 = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] e3a = const<u32>(4294967295);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type3 e4 = enum : i32 {
-// DEFAULT-NEXT:         %0 e4a = const<i32>(-2147483648);
-// DEFAULT-NEXT:         %1 e4b = const<i32>(2147483647);
+// DEFAULT-NEXT:     type @type[[TYPE_e4:[0-9]+]] e4 = enum : i32 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] e4a = const<i32>(-2147483648);
+// DEFAULT-NEXT:         %[[VALUE_e4b:[0-9]+]] e4b = const<i32>(2147483647);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type4 e5 = enum : u32 {
-// DEFAULT-NEXT:         %0 e5a = const<u32>(2147483647);
-// DEFAULT-NEXT:         %1 e5b = const<u32>(2147483648);
+// DEFAULT-NEXT:     type @type[[TYPE_e5:[0-9]+]] e5 = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_e1a]] e5a = const<u32>(2147483647);
+// DEFAULT-NEXT:         %[[VALUE_e4b]] e5b = const<u32>(2147483648);
 // DEFAULT-NEXT:     } [size=4, align=4];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

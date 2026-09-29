@@ -40,9 +40,9 @@ __typeof(subject) always_typeof_derived;
 // C89-NEXT:         storage d64 [size=8, align=8];
 // C89-NEXT:         storage d128 [size=16, align=16];
 // C89-NEXT:     }
-// C89-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
-// C89-NEXT:     global %1 typeof: i32 [storage=static] [linkage=external];
-// C89-NEXT:     global %2 always_typeof_derived: i32 [storage=static] [linkage=external];
+// C89-NEXT:     global %[[VALUE_subject:[0-9]+]] subject: i32 [storage=static] [linkage=external];
+// C89-NEXT:     global %[[VALUE_typeof:[0-9]+]] typeof: i32 [storage=static] [linkage=external];
+// C89-NEXT:     global %[[VALUE_always_typeof_derived:[0-9]+]] always_typeof_derived: i32 [storage=static] [linkage=external];
 // C89-NEXT: }
 // SLATE-FILECHECK-END C89
 // SLATE-FILECHECK-BEGIN GNU89
@@ -68,9 +68,9 @@ __typeof(subject) always_typeof_derived;
 // GNU89-NEXT:         storage d64 [size=8, align=8];
 // GNU89-NEXT:         storage d128 [size=16, align=16];
 // GNU89-NEXT:     }
-// GNU89-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
-// GNU89-NEXT:     global %1 typeof_derived: i32 [storage=static] [linkage=external];
-// GNU89-NEXT:     global %2 always_typeof_derived: i32 [storage=static] [linkage=external];
+// GNU89-NEXT:     global %[[VALUE_subject:[0-9]+]] subject: i32 [storage=static] [linkage=external];
+// GNU89-NEXT:     global %[[VALUE_typeof_derived:[0-9]+]] typeof_derived: i32 [storage=static] [linkage=external];
+// GNU89-NEXT:     global %[[VALUE_always_typeof_derived:[0-9]+]] always_typeof_derived: i32 [storage=static] [linkage=external];
 // GNU89-NEXT: }
 // SLATE-FILECHECK-END GNU89
 // SLATE-FILECHECK-BEGIN C17
@@ -96,9 +96,9 @@ __typeof(subject) always_typeof_derived;
 // C17-NEXT:         storage d64 [size=8, align=8];
 // C17-NEXT:         storage d128 [size=16, align=16];
 // C17-NEXT:     }
-// C17-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
-// C17-NEXT:     global %1 typeof: i32 [storage=static] [linkage=external];
-// C17-NEXT:     global %2 always_typeof_derived: i32 [storage=static] [linkage=external];
+// C17-NEXT:     global %[[VALUE_subject:[0-9]+]] subject: i32 [storage=static] [linkage=external];
+// C17-NEXT:     global %[[VALUE_typeof:[0-9]+]] typeof: i32 [storage=static] [linkage=external];
+// C17-NEXT:     global %[[VALUE_always_typeof_derived:[0-9]+]] always_typeof_derived: i32 [storage=static] [linkage=external];
 // C17-NEXT: }
 // SLATE-FILECHECK-END C17
 // SLATE-FILECHECK-BEGIN GNU17
@@ -124,9 +124,9 @@ __typeof(subject) always_typeof_derived;
 // GNU17-NEXT:         storage d64 [size=8, align=8];
 // GNU17-NEXT:         storage d128 [size=16, align=16];
 // GNU17-NEXT:     }
-// GNU17-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
-// GNU17-NEXT:     global %1 typeof_derived: i32 [storage=static] [linkage=external];
-// GNU17-NEXT:     global %2 always_typeof_derived: i32 [storage=static] [linkage=external];
+// GNU17-NEXT:     global %[[VALUE_subject:[0-9]+]] subject: i32 [storage=static] [linkage=external];
+// GNU17-NEXT:     global %[[VALUE_typeof_derived:[0-9]+]] typeof_derived: i32 [storage=static] [linkage=external];
+// GNU17-NEXT:     global %[[VALUE_always_typeof_derived:[0-9]+]] always_typeof_derived: i32 [storage=static] [linkage=external];
 // GNU17-NEXT: }
 // SLATE-FILECHECK-END GNU17
 // SLATE-FILECHECK-BEGIN C23
@@ -152,8 +152,8 @@ __typeof(subject) always_typeof_derived;
 // C23-NEXT:         storage d64 [size=8, align=8];
 // C23-NEXT:         storage d128 [size=16, align=16];
 // C23-NEXT:     }
-// C23-NEXT:     global %0 subject: i32 [storage=static] [linkage=external];
-// C23-NEXT:     global %1 typeof_derived: i32 [storage=static] [linkage=external];
-// C23-NEXT:     global %2 always_typeof_derived: i32 [storage=static] [linkage=external];
+// C23-NEXT:     global %[[VALUE_subject:[0-9]+]] subject: i32 [storage=static] [linkage=external];
+// C23-NEXT:     global %[[VALUE_typeof_derived:[0-9]+]] typeof_derived: i32 [storage=static] [linkage=external];
+// C23-NEXT:     global %[[VALUE_always_typeof_derived:[0-9]+]] always_typeof_derived: i32 [storage=static] [linkage=external];
 // C23-NEXT: }
 // SLATE-FILECHECK-END C23

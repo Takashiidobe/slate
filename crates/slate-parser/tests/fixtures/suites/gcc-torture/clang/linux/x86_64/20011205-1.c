@@ -34,13 +34,13 @@ long foo()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %1 x: i64 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i64 [storage=automatic];
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,readonly,nostack] {
-// DEFAULT-NEXT:             lateout 0 "r" [reg] width 64 place<i64>(%1);
-// DEFAULT-NEXT:             in 1 "m" [mem] width 64 place<i64>(%1);
+// DEFAULT-NEXT:             lateout 0 "r" [reg] width 64 place<i64>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "m" [mem] width 64 place<i64>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return read<i64>(%1);
+// DEFAULT-NEXT:         return read<i64>(%[[VALUE_x]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

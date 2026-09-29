@@ -44,13 +44,13 @@ extern void __attribute__((dllexport, visibility("default")))
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f1(unprototyped) -> void [linkage=external] [visibility=hidden];
-// DEFAULT-NEXT:     fn %1 @f2(unprototyped) -> void [linkage=external] [visibility=hidden];
-// DEFAULT-NEXT:     fn %2 @f3(unprototyped) -> void [linkage=external] [visibility=hidden];
-// DEFAULT-NEXT:     fn %3 @f4(unprototyped) -> void [linkage=external] [visibility=hidden];
-// DEFAULT-NEXT:     fn %4 @f5(unprototyped) -> void [linkage=external] [visibility=default];
-// DEFAULT-NEXT:     fn %5 @f6(unprototyped) -> void [linkage=external] [visibility=default];
-// DEFAULT-NEXT:     fn %6 @f7(unprototyped) -> void [linkage=external] [visibility=default];
-// DEFAULT-NEXT:     fn %7 @f8(unprototyped) -> void [linkage=external] [visibility=default];
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(unprototyped) -> void [linkage=external] [visibility=hidden];
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(unprototyped) -> void [linkage=external] [visibility=hidden];
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(unprototyped) -> void [linkage=external] [visibility=hidden];
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(unprototyped) -> void [linkage=external] [visibility=hidden];
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(unprototyped) -> void [linkage=external] [visibility=default];
+// DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(unprototyped) -> void [linkage=external] [visibility=default];
+// DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(unprototyped) -> void [linkage=external] [visibility=default];
+// DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(unprototyped) -> void [linkage=external] [visibility=default];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

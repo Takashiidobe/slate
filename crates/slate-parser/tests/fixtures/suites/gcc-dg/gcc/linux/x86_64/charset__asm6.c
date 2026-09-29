@@ -38,18 +38,18 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %1 ptr: ptr<u64> [storage=automatic];
-// DEFAULT-NEXT:         let %3: ptr<void> [synthetic];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_ptr:[0-9]+]] ptr: ptr<u64> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<void> [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %2 stack_ptr: ptr<void> [storage=automatic];
+// DEFAULT-NEXT:             let %[[VALUE_stack_ptr:[0-9]+]] stack_ptr: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:             asm volatile "foo %0" [dialect=att] [options=nomem,nostack] {
 // DEFAULT-NEXT:                 template: "foo " %0;
-// DEFAULT-NEXT:                 lateout 0 "r" [reg] width 64 place<ptr<void>>(%2);
+// DEFAULT-NEXT:                 lateout 0 "r" [reg] width 64 place<ptr<void>>(%[[VALUE_stack_ptr]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<ptr<void>>(%3, read<ptr<void>>(%2));
+// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE0]], read<ptr<void>>(%[[VALUE_stack_ptr]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<ptr<u64>>(%1, pointer_cast<ptr<u64>, reason=explicit>(read<ptr<void>>(%3)));
+// DEFAULT-NEXT:         write<ptr<u64>>(%[[VALUE_ptr]], pointer_cast<ptr<u64>, reason=explicit>(read<ptr<void>>(%[[VALUE0]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

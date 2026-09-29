@@ -59,36 +59,36 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 FIO_Dict_t = @type0;
-// DEFAULT-NEXT:     type @type2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_FIO_Dict_t:[0-9]+]] FIO_Dict_t = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 y: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 FIO_SyncCompressIO = @type2;
-// DEFAULT-NEXT:     type @type4 = struct {
-// DEFAULT-NEXT:         field0 dict: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_FIO_SyncCompressIO:[0-9]+]] FIO_SyncCompressIO = @type[[TYPE1]];
+// DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = struct {
+// DEFAULT-NEXT:         field0 dict: @type[[TYPE0]];
 // DEFAULT-NEXT:         field1 cctx: i32;
-// DEFAULT-NEXT:         field2 io: @type2;
+// DEFAULT-NEXT:         field2 io: @type[[TYPE1]];
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     type @type5 cRess_t = @type4;
-// DEFAULT-NEXT:     global %17 .str17: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%16 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %8 @freeDict(%9 dict: ptr<@type0>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type0>>(%9))), const<i32>(0));
+// DEFAULT-NEXT:     type @type[[TYPE_cRess_t:[0-9]+]] cRess_t = @type[[TYPE2]];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_freeDict:[0-9]+]] @freeDict(%[[VALUE_dict:[0-9]+]] dict: ptr<@type[[TYPE0]]>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_dict]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @syncDestroy(%11 io: ptr<@type2>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type2>>(%11))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_syncDestroy:[0-9]+]] @syncDestroy(%[[VALUE_io:[0-9]+]] io: ptr<@type[[TYPE1]]>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_io]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @freeCResources(%13 ress: ptr<@type4> [const]) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%8, addr_of<ptr<@type0>>(field0(deref(read<ptr<@type4>>(%13)))));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type2>) -> void>(%10, addr_of<ptr<@type2>>(field2(deref(read<ptr<@type4>>(%13)))));
+// DEFAULT-NEXT:     fn %[[VALUE_freeCResources:[0-9]+]] @freeCResources(%[[VALUE_ress:[0-9]+]] ress: ptr<@type[[TYPE2]]> [const]) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE0]]>) -> void>(%[[VALUE_freeDict]], addr_of<ptr<@type[[TYPE0]]>>(field0(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_ress]])))));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE1]]>) -> void>(%[[VALUE_syncDestroy]], addr_of<ptr<@type[[TYPE1]]>>(field2(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_ress]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %15 r: @type4 [storage=automatic] = aggregate<@type4, zero_fill=false>(field0 = aggregate<@type0, zero_fill=false>(field0 = const<i32>(5)), field1 = const<i32>(9), field2 = aggregate<@type2, zero_fill=false>(field0 = const<i32>(7)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type4>) -> void>(%12, addr_of<ptr<@type4>>(%15));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%17)), read<i32>(field0(field0(%15))), read<i32>(field0(field2(%15))), read<i32>(field1(%15)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: @type[[TYPE2]] [storage=automatic] = aggregate<@type[[TYPE2]], zero_fill=false>(field0 = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = const<i32>(5)), field1 = const<i32>(9), field2 = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = const<i32>(7)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE2]]>) -> void>(%[[VALUE_freeCResources]], addr_of<ptr<@type[[TYPE2]]>>(%[[VALUE_r]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), read<i32>(field0(field0(%[[VALUE_r]]))), read<i32>(field0(field2(%[[VALUE_r]]))), read<i32>(field1(%[[VALUE_r]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

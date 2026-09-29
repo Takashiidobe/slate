@@ -48,19 +48,19 @@ int     main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 e = enum : i32 {
-// DEFAULT-NEXT:         %0 a = const<i32>(-2147483648);
+// DEFAULT-NEXT:     type @type[[TYPE_e:[0-9]+]] e = enum : i32 {
+// DEFAULT-NEXT:         %[[VALUE_a:[0-9]+]] a = const<i32>(-2147483648);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %4 p: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 q: ptr<@type0> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%8 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 x: @type0 [storage=automatic] = int_to_enum<@type0, reason=assign>(const<i32>(-2147483648));
-// DEFAULT-NEXT:         write<ptr<@type0>>(%5, addr_of<ptr<@type0>>(%7));
-// DEFAULT-NEXT:         if gt<i32>(enum_to_int<i32, reason=promotion>(read<@type0>(deref(conditional<ptr<@type0>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type0>>(%5), pointer_cast<ptr<@type0>, reason=usual_arith>(read<ptr<i32>>(%4)))))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_e]]> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_a]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: @type[[TYPE_e]] [storage=automatic] = int_to_enum<@type[[TYPE_e]], reason=assign>(const<i32>(-2147483648));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_e]]>>(%[[VALUE_q]], addr_of<ptr<@type[[TYPE_e]]>>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         if gt<i32>(enum_to_int<i32, reason=promotion>(read<@type[[TYPE_e]]>(deref(conditional<ptr<@type[[TYPE_e]]>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<@type[[TYPE_e]]>>(%[[VALUE_q]]), pointer_cast<ptr<@type[[TYPE_e]]>, reason=usual_arith>(read<ptr<i32>>(%[[VALUE_p]])))))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

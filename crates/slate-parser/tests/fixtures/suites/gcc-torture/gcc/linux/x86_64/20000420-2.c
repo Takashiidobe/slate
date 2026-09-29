@@ -35,16 +35,16 @@ foo ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 x = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_x:[0-9]+]] x = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     fn %1 @a() -> @type0 [linkage=external] [abi=sysv64() -> native_c];
-// DEFAULT-NEXT:     fn %2 @b(%4 <unnamed>: @type0) -> void [linkage=external] [abi=sysv64(native_c) -> void];
-// DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%1);
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void, abi=sysv64(native_c) -> void>(%2, copy<@type0, reason=arg>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%1)));
+// DEFAULT-NEXT:     fn %[[VALUE_a:[0-9]+]] @a() -> @type[[TYPE_x]] [linkage=external] [abi=sysv64() -> native_c];
+// DEFAULT-NEXT:     fn %[[VALUE_b:[0-9]+]] @b(%[[VALUE0:[0-9]+]] <unnamed>: @type[[TYPE_x]]) -> void [linkage=external] [abi=sysv64(native_c) -> void];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<@type[[TYPE_x]], signature=fn() -> @type[[TYPE_x]], abi=sysv64() -> native_c>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_x]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_b]], copy<@type[[TYPE_x]], reason=arg>(call<@type[[TYPE_x]], signature=fn() -> @type[[TYPE_x]], abi=sysv64() -> native_c>(%[[VALUE_a]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

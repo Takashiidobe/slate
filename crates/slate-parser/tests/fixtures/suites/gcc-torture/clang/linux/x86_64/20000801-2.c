@@ -57,42 +57,42 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = struct {
-// DEFAULT-NEXT:         field0 next: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = struct {
+// DEFAULT-NEXT:         field0 next: ptr<@type[[TYPE_foo]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @baz() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @test(%6 node: ptr<@type0>) -> ptr<@type0> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         while %12 ne<ptr<@type0>>(read<ptr<@type0>>(%6), null<ptr<@type0>>)
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_node:[0-9]+]] node: ptr<@type[[TYPE_foo]]>) -> ptr<@type[[TYPE_foo]]> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] ne<ptr<@type[[TYPE_foo]]>>(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_node]]), null<ptr<@type[[TYPE_foo]]>>)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %13: bool [synthetic];
-// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn() -> i32>(%2), const<i32>(0))
-// DEFAULT-NEXT:                     write<bool>(%13, not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%3), const<i32>(0))));
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_bar]]), const<i32>(0))
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE2]], not<bool>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_baz]]), const<i32>(0))));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<bool>(%13, const<bool>(false));
-// DEFAULT-NEXT:                 if read<bool>(%13)
-// DEFAULT-NEXT:                     break %12;
-// DEFAULT-NEXT:                 write<ptr<@type0>>(%6, read<ptr<@type0>>(field0(deref(read<ptr<@type0>>(%6)))));
+// DEFAULT-NEXT:                     write<bool>(%[[VALUE2]], const<bool>(false));
+// DEFAULT-NEXT:                 if read<bool>(%[[VALUE2]])
+// DEFAULT-NEXT:                     break %[[VALUE1]];
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_foo]]>>(%[[VALUE_node]], read<ptr<@type[[TYPE_foo]]>>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_node]])))));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<ptr<@type0>>(%6);
+// DEFAULT-NEXT:         return read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_node]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %9 b: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %10 c: ptr<@type0> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type0>>(field0(%8), addr_of<ptr<@type0>>(%9));
-// DEFAULT-NEXT:         write<ptr<@type0>>(field0(%9), null<ptr<@type0>>);
-// DEFAULT-NEXT:         write<ptr<@type0>>(%10, call<ptr<@type0>, signature=fn(ptr<@type0>) -> ptr<@type0>>(%5, addr_of<ptr<@type0>>(%8)));
-// DEFAULT-NEXT:         call<ptr<@type0>, signature=fn(ptr<@type0>) -> ptr<@type0>>(%5, addr_of<ptr<@type0>>(%8));
-// DEFAULT-NEXT:         if ne<ptr<@type0>>(read<ptr<@type0>>(%10), null<ptr<@type0>>)
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_foo]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_foo]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: ptr<@type[[TYPE_foo]]> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_foo]]>>(field0(%[[VALUE_a]]), addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_foo]]>>(field0(%[[VALUE_b]]), null<ptr<@type[[TYPE_foo]]>>);
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_foo]]>>(%[[VALUE_c]], call<ptr<@type[[TYPE_foo]]>, signature=fn(ptr<@type[[TYPE_foo]]>) -> ptr<@type[[TYPE_foo]]>>(%[[VALUE_test]], addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         call<ptr<@type[[TYPE_foo]]>, signature=fn(ptr<@type[[TYPE_foo]]>) -> ptr<@type[[TYPE_foo]]>>(%[[VALUE_test]], addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_foo]]>>(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_c]]), null<ptr<@type[[TYPE_foo]]>>)
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

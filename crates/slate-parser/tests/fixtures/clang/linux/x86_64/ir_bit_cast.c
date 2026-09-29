@@ -36,24 +36,24 @@ unsigned long address(int *p) { return __builtin_bit_cast(unsigned long, p); }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 Pair = struct {
+// IR-NEXT:     type @type[[TYPE_Pair:[0-9]+]] Pair = struct {
 // IR-NEXT:         field0 lo: i16;
 // IR-NEXT:         field1 hi: i16;
 // IR-NEXT:     } [size=4, align=2, offsets=[0, 2]];
-// IR-NEXT:     fn %1 @bits(%2 x: f32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return bit_cast<u32, reason=explicit>(read<f32>(%2));
+// IR-NEXT:     fn %[[VALUE_bits:[0-9]+]] @bits(%[[VALUE_x:[0-9]+]] x: f32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return bit_cast<u32, reason=explicit>(read<f32>(%[[VALUE_x]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %3 @from_bits(%4 x: u64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return bit_cast<f64, reason=explicit>(read<u64>(%4));
+// IR-NEXT:     fn %[[VALUE_from_bits:[0-9]+]] @from_bits(%[[VALUE_x_2:[0-9]+]] x: u64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return bit_cast<f64, reason=explicit>(read<u64>(%[[VALUE_x_2]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %5 @split(%6 x: i32) -> @type0 [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type0, reason=return>(bit_cast<@type0, reason=explicit>(read<i32>(%6)));
+// IR-NEXT:     fn %[[VALUE_split:[0-9]+]] @split(%[[VALUE_x_3:[0-9]+]] x: i32) -> @type[[TYPE_Pair]] [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_Pair]], reason=return>(bit_cast<@type[[TYPE_Pair]], reason=explicit>(read<i32>(%[[VALUE_x_3]])));
 // IR-NEXT:     }
-// IR-NEXT:     fn %7 @join(%8 p: @type0) -> i32 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// IR-NEXT:         return bit_cast<i32, reason=explicit>(read<@type0>(%8));
+// IR-NEXT:     fn %[[VALUE_join:[0-9]+]] @join(%[[VALUE_p:[0-9]+]] p: @type[[TYPE_Pair]]) -> i32 [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// IR-NEXT:         return bit_cast<i32, reason=explicit>(read<@type[[TYPE_Pair]]>(%[[VALUE_p]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %9 @address(%10 p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return bit_cast<u64, reason=explicit>(read<ptr<i32>>(%10));
+// IR-NEXT:     fn %[[VALUE_address:[0-9]+]] @address(%[[VALUE_p_2:[0-9]+]] p: ptr<i32>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return bit_cast<u64, reason=explicit>(read<ptr<i32>>(%[[VALUE_p_2]]));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

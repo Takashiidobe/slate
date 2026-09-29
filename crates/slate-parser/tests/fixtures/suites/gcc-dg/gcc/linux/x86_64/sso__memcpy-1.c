@@ -84,89 +84,89 @@ int main(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 uint8_t = u8;
-// DEFAULT-NEXT:     type @type1 uint32_t = u32;
-// DEFAULT-NEXT:     type @type2 = union {
+// DEFAULT-NEXT:     type @type[[TYPE_uint8_t:[0-9]+]] uint8_t = u8;
+// DEFAULT-NEXT:     type @type[[TYPE_uint32_t:[0-9]+]] uint32_t = u32;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 val: u32;
 // DEFAULT-NEXT:         field1 v: array<u8, 4>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type3 upal_u32be_t = @type2;
-// DEFAULT-NEXT:     type @type4 = union {
+// DEFAULT-NEXT:     type @type[[TYPE_upal_u32be_t:[0-9]+]] upal_u32be_t = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 val: u32;
 // DEFAULT-NEXT:         field1 v: array<u8, 4>;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type5 upal_u32le_t = @type4;
-// DEFAULT-NEXT:     fn %19 @__builtin_bswap32(%18 <unnamed>: u32) -> u32 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %6 @native_to_big_endian(%7 t: u32) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u32, signature=fn(u32) -> u32>(%19, read<u32>(%7));
+// DEFAULT-NEXT:     type @type[[TYPE_upal_u32le_t:[0-9]+]] upal_u32le_t = @type[[TYPE1]];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_bswap32:[0-9]+]] @__builtin_bswap32(%[[VALUE0:[0-9]+]] <unnamed>: u32) -> u32 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_native_to_big_endian:[0-9]+]] @native_to_big_endian(%[[VALUE_t:[0-9]+]] t: u32) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<u32, signature=fn(u32) -> u32>(%[[VALUE___builtin_bswap32]], read<u32>(%[[VALUE_t]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @native_to_little_endian(%9 t: u32) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<u32>(%9);
+// DEFAULT-NEXT:     fn %[[VALUE_native_to_little_endian:[0-9]+]] @native_to_little_endian(%[[VALUE_t_2:[0-9]+]] t: u32) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<u32>(%[[VALUE_t_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @__builtin_memcpy(%20 <unnamed>: ptr<void>, %21 <unnamed>: ptr<const void>, %22 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %26 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %11 u: u32 [storage=automatic] [const] = reinterpret<u32, reason=assign, fits=always>(const<i32>(305419896));
-// DEFAULT-NEXT:         let %12 tempb: @type2 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%23, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type2>>(%12)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const u32>>(%11)), const<u64>(4));
-// DEFAULT-NEXT:         let %13 bu: u32 [storage=automatic] = read<u32>(field0(%12));
-// DEFAULT-NEXT:         let %14 b1u: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%6, read<u32>(%11));
-// DEFAULT-NEXT:         do %24
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: u32 [storage=automatic] [const] = reinterpret<u32, reason=assign, fits=always>(const<i32>(305419896));
+// DEFAULT-NEXT:         let %[[VALUE_tempb:[0-9]+]] tempb: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_tempb]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const u32>>(%[[VALUE_u]])), const<u64>(4));
+// DEFAULT-NEXT:         let %[[VALUE_bu:[0-9]+]] bu: u32 [storage=automatic] = read<u32>(field0(%[[VALUE_tempb]]));
+// DEFAULT-NEXT:         let %[[VALUE_b1u:[0-9]+]] b1u: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%[[VALUE_native_to_big_endian]], read<u32>(%[[VALUE_u]]));
+// DEFAULT-NEXT:         do %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 do %25
+// DEFAULT-NEXT:                 do %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%13)), const<i32>(0)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%14)), const<i32>(0)))))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%26);
+// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_bu]])), const<i32>(0)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_b1u]])), const<i32>(0)))))))
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                 do %27
+// DEFAULT-NEXT:                 do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%13)), const<i32>(1)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%14)), const<i32>(1)))))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%26);
+// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_bu]])), const<i32>(1)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_b1u]])), const<i32>(1)))))))
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                 do %28
+// DEFAULT-NEXT:                 do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%13)), const<i32>(2)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%14)), const<i32>(2)))))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%26);
+// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_bu]])), const<i32>(2)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_b1u]])), const<i32>(2)))))))
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                 do %29
+// DEFAULT-NEXT:                 do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%13)), const<i32>(3)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%14)), const<i32>(3)))))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%26);
+// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_bu]])), const<i32>(3)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_b1u]])), const<i32>(3)))))))
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         let %15 templ: @type4 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%23, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type4>>(%15)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const u32>>(%11)), const<u64>(4));
-// DEFAULT-NEXT:         let %16 lu: u32 [storage=automatic] = read<u32>(field0(%15));
-// DEFAULT-NEXT:         let %17 l1u: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%8, read<u32>(%11));
-// DEFAULT-NEXT:         do %30
+// DEFAULT-NEXT:         let %[[VALUE_templ:[0-9]+]] templ: @type[[TYPE1]] [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE1]]>>(%[[VALUE_templ]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<const u32>>(%[[VALUE_u]])), const<u64>(4));
+// DEFAULT-NEXT:         let %[[VALUE_lu:[0-9]+]] lu: u32 [storage=automatic] = read<u32>(field0(%[[VALUE_templ]]));
+// DEFAULT-NEXT:         let %[[VALUE_l1u:[0-9]+]] l1u: u32 [storage=automatic] = call<u32, signature=fn(u32) -> u32>(%[[VALUE_native_to_little_endian]], read<u32>(%[[VALUE_u]]));
+// DEFAULT-NEXT:         do %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 do %31
+// DEFAULT-NEXT:                 do %[[VALUE10:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%16)), const<i32>(0)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%17)), const<i32>(0)))))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%26);
+// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_lu]])), const<i32>(0)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_l1u]])), const<i32>(0)))))))
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                 do %32
+// DEFAULT-NEXT:                 do %[[VALUE11:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%16)), const<i32>(1)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%17)), const<i32>(1)))))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%26);
+// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_lu]])), const<i32>(1)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_l1u]])), const<i32>(1)))))))
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                 do %33
+// DEFAULT-NEXT:                 do %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%16)), const<i32>(2)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%17)), const<i32>(2)))))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%26);
+// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_lu]])), const<i32>(2)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_l1u]])), const<i32>(2)))))))
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                 do %34
+// DEFAULT-NEXT:                 do %[[VALUE13:[0-9]+]]
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%16)), const<i32>(3)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%17)), const<i32>(3)))))))
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%26);
+// DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_lu]])), const<i32>(3)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<u32>>(%[[VALUE_l1u]])), const<i32>(3)))))))
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:             }

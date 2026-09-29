@@ -46,24 +46,24 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 a: u64 : 8;
 // DEFAULT-NEXT:         field1 b: u64 : 32;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 1], bit_offsets=[Some(0), Some(8)], bit_units=[(0, 5)], field_units=[Some(0), Some(0)]];
-// DEFAULT-NEXT:     global %6 i: @type0 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%7 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @f(%4 x: @type0) -> @type0 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=0..5, bits=8..40>(%4), widen<u64, reason=assign>(const<u32>(3454997044)));
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%4));
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: @type[[TYPE_s]] [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: @type[[TYPE_s]]) -> @type[[TYPE_s]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=0..5, bits=8..40>(%[[VALUE_x]]), widen<u64, reason=assign>(const<u32>(3454997044)));
+// DEFAULT-NEXT:         return copy<@type[[TYPE_s]], reason=return>(read<@type[[TYPE_s]]>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..5, bits=0..8>(%6), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(12))));
-// DEFAULT-NEXT:         write<@type0>(%6, copy<@type0, reason=assign>(call<@type0, signature=fn(@type0) -> @type0, abi=sysv64(native_c) -> native_c>(%3, copy<@type0, reason=arg>(read<@type0>(%6)))));
-// DEFAULT-NEXT:         copy<@type0, reason=assign>(call<@type0, signature=fn(@type0) -> @type0, abi=sysv64(native_c) -> native_c>(%3, copy<@type0, reason=arg>(read<@type0>(%6))));
-// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..5, bits=0..8>(%6)))), const<i32>(12)), ne<u64>(read<u64>(bitfield1<unit=0, bytes=0..5, bits=8..40>(%6)), widen<u64, reason=usual_arith>(const<u32>(3454997044))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..5, bits=0..8>(%[[VALUE_i]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(12))));
+// DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_i]], copy<@type[[TYPE_s]], reason=assign>(call<@type[[TYPE_s]], signature=fn(@type[[TYPE_s]]) -> @type[[TYPE_s]], abi=sysv64(native_c) -> native_c>(%[[VALUE_f]], copy<@type[[TYPE_s]], reason=arg>(read<@type[[TYPE_s]]>(%[[VALUE_i]])))));
+// DEFAULT-NEXT:         copy<@type[[TYPE_s]], reason=assign>(call<@type[[TYPE_s]], signature=fn(@type[[TYPE_s]]) -> @type[[TYPE_s]], abi=sysv64(native_c) -> native_c>(%[[VALUE_f]], copy<@type[[TYPE_s]], reason=arg>(read<@type[[TYPE_s]]>(%[[VALUE_i]]))));
+// DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..5, bits=0..8>(%[[VALUE_i]])))), const<i32>(12)), ne<u64>(read<u64>(bitfield1<unit=0, bytes=0..5, bits=8..40>(%[[VALUE_i]])), widen<u64, reason=usual_arith>(const<u32>(3454997044))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

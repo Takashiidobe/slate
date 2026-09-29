@@ -64,34 +64,34 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 SInt16 = i16;
-// DEFAULT-NEXT:     type @type1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_SInt16:[0-9]+]] SInt16 = i16;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 minx: i16;
 // DEFAULT-NEXT:         field1 maxx: i16;
 // DEFAULT-NEXT:         field2 miny: i16;
 // DEFAULT-NEXT:         field3 maxy: i16;
 // DEFAULT-NEXT:     } [size=8, align=2, offsets=[0, 2, 4, 6]];
-// DEFAULT-NEXT:     type @type2 IOGBounds = @type1;
-// DEFAULT-NEXT:     global %6 expectedwidth: i32 [storage=static] = const<i32>(50) [linkage=external];
-// DEFAULT-NEXT:     global %7 global_vramPtr: ptr<u32> [storage=static] = int_to_ptr<ptr<u32>, reason=explicit>(const<i32>(40960)) [linkage=external];
-// DEFAULT-NEXT:     global %8 global_bounds: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(100)), field1 = truncate<i16, reason=assign, fits=always>(const<i32>(150)), field2 = truncate<i16, reason=assign, fits=always>(const<i32>(100)), field3 = truncate<i16, reason=assign, fits=always>(const<i32>(150))) [linkage=external];
-// DEFAULT-NEXT:     global %9 global_saveRect: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(75)), field1 = truncate<i16, reason=assign, fits=always>(const<i32>(175)), field2 = truncate<i16, reason=assign, fits=always>(const<i32>(75)), field3 = truncate<i16, reason=assign, fits=always>(const<i32>(175))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @exit(%15 __status: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %11 vramPtr: ptr<u32> [storage=automatic];
-// DEFAULT-NEXT:         let %12 width: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %13 saveRect: @type1 [storage=automatic] = copy<@type1, reason=assign>(read<@type1>(%9));
-// DEFAULT-NEXT:         let %14 bounds: @type1 [storage=automatic] = copy<@type1, reason=assign>(read<@type1>(%8));
-// DEFAULT-NEXT:         if lt<i32>(widen<i32, reason=promotion>(read<i16>(field0(%13))), widen<i32, reason=promotion>(read<i16>(field0(%14))))
-// DEFAULT-NEXT:             write<i16>(field0(%13), read<i16>(field0(%14)));
-// DEFAULT-NEXT:         if gt<i32>(widen<i32, reason=promotion>(read<i16>(field1(%13))), widen<i32, reason=promotion>(read<i16>(field1(%14))))
-// DEFAULT-NEXT:             write<i16>(field1(%13), read<i16>(field1(%14)));
-// DEFAULT-NEXT:         write<ptr<u32>>(%11, ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(%7), sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(field2(%13))), widen<i32, reason=promotion>(read<i16>(field2(%14))))));
-// DEFAULT-NEXT:         write<i32>(%12, sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(field1(%13))), widen<i32, reason=promotion>(read<i16>(field0(%13)))));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%12), read<i32>(%6))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%2, const<i32>(0));
+// DEFAULT-NEXT:     type @type[[TYPE_IOGBounds:[0-9]+]] IOGBounds = @type[[TYPE0]];
+// DEFAULT-NEXT:     global %[[VALUE_expectedwidth:[0-9]+]] expectedwidth: i32 [storage=static] = const<i32>(50) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_global_vramPtr:[0-9]+]] global_vramPtr: ptr<u32> [storage=static] = int_to_ptr<ptr<u32>, reason=explicit>(const<i32>(40960)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_global_bounds:[0-9]+]] global_bounds: @type[[TYPE0]] [storage=static] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(100)), field1 = truncate<i16, reason=assign, fits=always>(const<i32>(150)), field2 = truncate<i16, reason=assign, fits=always>(const<i32>(100)), field3 = truncate<i16, reason=assign, fits=always>(const<i32>(150))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_global_saveRect:[0-9]+]] global_saveRect: @type[[TYPE0]] [storage=static] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(75)), field1 = truncate<i16, reason=assign, fits=always>(const<i32>(175)), field2 = truncate<i16, reason=assign, fits=always>(const<i32>(75)), field3 = truncate<i16, reason=assign, fits=always>(const<i32>(175))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_vramPtr:[0-9]+]] vramPtr: ptr<u32> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_width:[0-9]+]] width: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_saveRect:[0-9]+]] saveRect: @type[[TYPE0]] [storage=automatic] = copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(%[[VALUE_global_saveRect]]));
+// DEFAULT-NEXT:         let %[[VALUE_bounds:[0-9]+]] bounds: @type[[TYPE0]] [storage=automatic] = copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(%[[VALUE_global_bounds]]));
+// DEFAULT-NEXT:         if lt<i32>(widen<i32, reason=promotion>(read<i16>(field0(%[[VALUE_saveRect]]))), widen<i32, reason=promotion>(read<i16>(field0(%[[VALUE_bounds]]))))
+// DEFAULT-NEXT:             write<i16>(field0(%[[VALUE_saveRect]]), read<i16>(field0(%[[VALUE_bounds]])));
+// DEFAULT-NEXT:         if gt<i32>(widen<i32, reason=promotion>(read<i16>(field1(%[[VALUE_saveRect]]))), widen<i32, reason=promotion>(read<i16>(field1(%[[VALUE_bounds]]))))
+// DEFAULT-NEXT:             write<i16>(field1(%[[VALUE_saveRect]]), read<i16>(field1(%[[VALUE_bounds]])));
+// DEFAULT-NEXT:         write<ptr<u32>>(%[[VALUE_vramPtr]], ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(%[[VALUE_global_vramPtr]]), sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(field2(%[[VALUE_saveRect]]))), widen<i32, reason=promotion>(read<i16>(field2(%[[VALUE_bounds]]))))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_width]], sub<i32, overflow=ub>(widen<i32, reason=promotion>(read<i16>(field1(%[[VALUE_saveRect]]))), widen<i32, reason=promotion>(read<i16>(field0(%[[VALUE_saveRect]])))));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_width]]), read<i32>(%[[VALUE_expectedwidth]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

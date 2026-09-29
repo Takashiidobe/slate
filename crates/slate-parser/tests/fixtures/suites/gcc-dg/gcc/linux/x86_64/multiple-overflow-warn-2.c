@@ -37,7 +37,7 @@ g1 (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @g1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_g1:[0-9]+]] @g1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return sub<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(2147483647), const<i32>(1)), const<i32>(2147483647));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

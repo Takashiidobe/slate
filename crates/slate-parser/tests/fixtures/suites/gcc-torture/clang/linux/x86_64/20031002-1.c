@@ -33,11 +33,11 @@ int bug12292(int t)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 flags: i8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @bug12292(%2 t: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3: i8 [synthetic] = read<i8>(%0);
-// DEFAULT-NEXT:         let %4: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(and<i32>(widen<i32, reason=promotion>(read<i8>(%3)), not<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), add<i32, overflow=ub>(read<i32>(%2), const<i32>(4))))));
-// DEFAULT-NEXT:         write<i8>(%0, read<i8>(%4));
+// DEFAULT-NEXT:     global %[[VALUE_flags:[0-9]+]] flags: i8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bug12292:[0-9]+]] @bug12292(%[[VALUE_t:[0-9]+]] t: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i8 [synthetic] = read<i8>(%[[VALUE_flags]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(and<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE0]])), not<i32>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), add<i32, overflow=ub>(read<i32>(%[[VALUE_t]]), const<i32>(4))))));
+// DEFAULT-NEXT:         write<i8>(%[[VALUE_flags]], read<i8>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

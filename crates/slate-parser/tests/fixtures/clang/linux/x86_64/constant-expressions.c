@@ -39,14 +39,14 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Values = enum : u32 {
-// DEFAULT-NEXT:         %0 FIRST = const<i32>(7);
-// DEFAULT-NEXT:         %1 SECOND = const<i32>(8);
+// DEFAULT-NEXT:     type @type[[TYPE_Values:[0-9]+]] Values = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_FIRST:[0-9]+]] FIRST = const<i32>(7);
+// DEFAULT-NEXT:         %[[VALUE_SECOND:[0-9]+]] SECOND = const<i32>(8);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %3 values: array<i32, 7> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %4 flags: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 selected: array<i32, 5> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     global %[[VALUE_values:[0-9]+]] values: array<i32, 7> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_flags:[0-9]+]] flags: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_selected:[0-9]+]] selected: array<i32, 5> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

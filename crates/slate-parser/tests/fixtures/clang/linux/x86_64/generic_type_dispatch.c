@@ -48,24 +48,24 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %15 .str15: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%14 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @int_score(%3 value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%3), const<i32>(10));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_int_score:[0-9]+]] @int_score(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_value]]), const<i32>(10));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @long_score(%5 value: i64) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(truncate<i32, reason=explicit, fits=unknown>(read<i64>(%5)), const<i32>(20));
+// DEFAULT-NEXT:     fn %[[VALUE_long_score:[0-9]+]] @long_score(%[[VALUE_value_2:[0-9]+]] value: i64) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(truncate<i32, reason=explicit, fits=unknown>(read<i64>(%[[VALUE_value_2]])), const<i32>(20));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @pointer_score(%7 value: ptr<const i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(read<ptr<const i32>>(%7))), const<i32>(30));
+// DEFAULT-NEXT:     fn %[[VALUE_pointer_score:[0-9]+]] @pointer_score(%[[VALUE_value_3:[0-9]+]] value: ptr<const i32>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(deref(read<ptr<const i32>>(%[[VALUE_value_3]]))), const<i32>(30));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 value: i32 [storage=automatic] [const] = const<i32>(7);
-// DEFAULT-NEXT:         let %10 array: array<i32, 2> [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(5), index1 = const<i32>(6));
-// DEFAULT-NEXT:         let %11 first: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%9));
-// DEFAULT-NEXT:         let %12 second: i32 [storage=automatic] = call<i32, signature=fn(i64) -> i32>(%4, const<i64>(8));
-// DEFAULT-NEXT:         let %13 third: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i32>) -> i32>(%6, pointer_cast<ptr<const i32>, reason=explicit>(array_decay<ptr<i32>, length=Some(2)>(%10)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%15)), read<i32>(%11), read<i32>(%12), read<i32>(%13));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_value_4:[0-9]+]] value: i32 [storage=automatic] [const] = const<i32>(7);
+// DEFAULT-NEXT:         let %[[VALUE_array:[0-9]+]] array: array<i32, 2> [storage=automatic] = aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(5), index1 = const<i32>(6));
+// DEFAULT-NEXT:         let %[[VALUE_first:[0-9]+]] first: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE_int_score]], read<i32>(%[[VALUE_value_4]]));
+// DEFAULT-NEXT:         let %[[VALUE_second:[0-9]+]] second: i32 [storage=automatic] = call<i32, signature=fn(i64) -> i32>(%[[VALUE_long_score]], const<i64>(8));
+// DEFAULT-NEXT:         let %[[VALUE_third:[0-9]+]] third: i32 [storage=automatic] = call<i32, signature=fn(ptr<const i32>) -> i32>(%[[VALUE_pointer_score]], pointer_cast<ptr<const i32>, reason=explicit>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_array]])));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), read<i32>(%[[VALUE_first]]), read<i32>(%[[VALUE_second]]), read<i32>(%[[VALUE_third]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

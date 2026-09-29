@@ -33,17 +33,17 @@ void uf8 (void) {}
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 uv4: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 uv5: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 uv7: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 uv8: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @uf4() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_uv4:[0-9]+]] uv4: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_uv5:[0-9]+]] uv5: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_uv7:[0-9]+]] uv7: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_uv8:[0-9]+]] uv8: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_uf4:[0-9]+]] @uf4() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @uf5() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_uf5:[0-9]+]] @uf5() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @uf7() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_uf7:[0-9]+]] @uf7() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @uf8() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_uf8:[0-9]+]] @uf8() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

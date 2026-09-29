@@ -49,24 +49,24 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 bovid = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_bovid:[0-9]+]] bovid = struct {
 // DEFAULT-NEXT:         field0 red: f32;
 // DEFAULT-NEXT:         field1 green: i32;
 // DEFAULT-NEXT:         field2 blue: ptr<void>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     fn %1 @ox(%2 fail: i32, %3 cow: ptr<@type0>) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 r: i32 [storage=automatic];
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(0))
-// DEFAULT-NEXT:             write<i32>(%4, float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(read<f32>(field0(deref(read<ptr<@type0>>(%3))))));
+// DEFAULT-NEXT:     fn %[[VALUE_ox:[0-9]+]] @ox(%[[VALUE_fail:[0-9]+]] fail: i32, %[[VALUE_cow:[0-9]+]] cow: ptr<@type[[TYPE_bovid]]>) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_fail]]), const<i32>(0))
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_r]], float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(read<f32>(field0(deref(read<ptr<@type[[TYPE_bovid]]>>(%[[VALUE_cow]]))))));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<i32>(%4, const<i32>(0));
-// DEFAULT-NEXT:         return read<i32>(%4);
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_r]], const<i32>(0));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_r]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main(%6 argc: i32, %7 argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 r: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%8, call<i32, signature=fn(i32, ptr<@type0>) -> i32>(%1, from_bool<i32, reason=arg>(gt<i32>(read<i32>(%6), const<i32>(2000))), null<ptr<@type0>>));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<@type0>) -> i32>(%1, from_bool<i32, reason=arg>(gt<i32>(read<i32>(%6), const<i32>(2000))), null<ptr<@type0>>);
-// DEFAULT-NEXT:         return read<i32>(%8);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_r_2]], call<i32, signature=fn(i32, ptr<@type[[TYPE_bovid]]>) -> i32>(%[[VALUE_ox]], from_bool<i32, reason=arg>(gt<i32>(read<i32>(%[[VALUE_argc]]), const<i32>(2000))), null<ptr<@type[[TYPE_bovid]]>>));
+// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<@type[[TYPE_bovid]]>) -> i32>(%[[VALUE_ox]], from_bool<i32, reason=arg>(gt<i32>(read<i32>(%[[VALUE_argc]]), const<i32>(2000))), null<ptr<@type[[TYPE_bovid]]>>);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_r_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

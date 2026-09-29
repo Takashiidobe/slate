@@ -58,25 +58,25 @@ long deq (char *a, char *b, int c, int d)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @bar(%32 <unnamed>: ptr<i8>, %33 <unnamed>: ptr<i8>, %34 <unnamed>: i32, %35 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @baz(%36 <unnamed>: ptr<i8>, %37 <unnamed>: ptr<i8>, %38 <unnamed>: i32, %39 <unnamed>: i32) -> i64 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @sgt(%3 a: ptr<i8>, %4 b: ptr<i8>, %5 c: i32, %6 d: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<i32>(call<i32, signature=fn(ptr<i8>, ptr<i8>, i32, i32) -> i32>(%0, read<ptr<i8>>(%3), read<ptr<i8>>(%4), read<i32>(%5), read<i32>(%6)), const<i32>(0)));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE2:[0-9]+]] <unnamed>: i32, %[[VALUE3:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE4:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE5:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE6:[0-9]+]] <unnamed>: i32, %[[VALUE7:[0-9]+]] <unnamed>: i32) -> i64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_sgt:[0-9]+]] @sgt(%[[VALUE_a:[0-9]+]] a: ptr<i8>, %[[VALUE_b:[0-9]+]] b: ptr<i8>, %[[VALUE_c:[0-9]+]] c: i32, %[[VALUE_d:[0-9]+]] d: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(gt<i32>(call<i32, signature=fn(ptr<i8>, ptr<i8>, i32, i32) -> i32>(%[[VALUE_bar]], read<ptr<i8>>(%[[VALUE_a]]), read<ptr<i8>>(%[[VALUE_b]]), read<i32>(%[[VALUE_c]]), read<i32>(%[[VALUE_d]])), const<i32>(0)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @dgt(%8 a: ptr<i8>, %9 b: ptr<i8>, %10 c: i32, %11 d: i32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i64, reason=return>(gt<i64>(call<i64, signature=fn(ptr<i8>, ptr<i8>, i32, i32) -> i64>(%1, read<ptr<i8>>(%8), read<ptr<i8>>(%9), read<i32>(%10), read<i32>(%11)), widen<i64, reason=usual_arith>(const<i32>(0))));
+// DEFAULT-NEXT:     fn %[[VALUE_dgt:[0-9]+]] @dgt(%[[VALUE_a_2:[0-9]+]] a: ptr<i8>, %[[VALUE_b_2:[0-9]+]] b: ptr<i8>, %[[VALUE_c_2:[0-9]+]] c: i32, %[[VALUE_d_2:[0-9]+]] d: i32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i64, reason=return>(gt<i64>(call<i64, signature=fn(ptr<i8>, ptr<i8>, i32, i32) -> i64>(%[[VALUE_baz]], read<ptr<i8>>(%[[VALUE_a_2]]), read<ptr<i8>>(%[[VALUE_b_2]]), read<i32>(%[[VALUE_c_2]]), read<i32>(%[[VALUE_d_2]])), widen<i64, reason=usual_arith>(const<i32>(0))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @sne(%13 a: ptr<i8>, %14 b: ptr<i8>, %15 c: i32, %16 d: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i32>(call<i32, signature=fn(ptr<i8>, ptr<i8>, i32, i32) -> i32>(%0, read<ptr<i8>>(%13), read<ptr<i8>>(%14), read<i32>(%15), read<i32>(%16)), const<i32>(0)));
+// DEFAULT-NEXT:     fn %[[VALUE_sne:[0-9]+]] @sne(%[[VALUE_a_3:[0-9]+]] a: ptr<i8>, %[[VALUE_b_3:[0-9]+]] b: ptr<i8>, %[[VALUE_c_3:[0-9]+]] c: i32, %[[VALUE_d_3:[0-9]+]] d: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ne<i32>(call<i32, signature=fn(ptr<i8>, ptr<i8>, i32, i32) -> i32>(%[[VALUE_bar]], read<ptr<i8>>(%[[VALUE_a_3]]), read<ptr<i8>>(%[[VALUE_b_3]]), read<i32>(%[[VALUE_c_3]]), read<i32>(%[[VALUE_d_3]])), const<i32>(0)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @dne(%18 a: ptr<i8>, %19 b: ptr<i8>, %20 c: i32, %21 d: i32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i64, reason=return>(ne<i64>(call<i64, signature=fn(ptr<i8>, ptr<i8>, i32, i32) -> i64>(%1, read<ptr<i8>>(%18), read<ptr<i8>>(%19), read<i32>(%20), read<i32>(%21)), widen<i64, reason=usual_arith>(const<i32>(0))));
+// DEFAULT-NEXT:     fn %[[VALUE_dne:[0-9]+]] @dne(%[[VALUE_a_4:[0-9]+]] a: ptr<i8>, %[[VALUE_b_4:[0-9]+]] b: ptr<i8>, %[[VALUE_c_4:[0-9]+]] c: i32, %[[VALUE_d_4:[0-9]+]] d: i32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i64, reason=return>(ne<i64>(call<i64, signature=fn(ptr<i8>, ptr<i8>, i32, i32) -> i64>(%[[VALUE_baz]], read<ptr<i8>>(%[[VALUE_a_4]]), read<ptr<i8>>(%[[VALUE_b_4]]), read<i32>(%[[VALUE_c_4]]), read<i32>(%[[VALUE_d_4]])), widen<i64, reason=usual_arith>(const<i32>(0))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @seq(%23 a: ptr<i8>, %24 b: ptr<i8>, %25 c: i32, %26 d: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(call<i32, signature=fn(ptr<i8>, ptr<i8>, i32, i32) -> i32>(%0, read<ptr<i8>>(%23), read<ptr<i8>>(%24), read<i32>(%25), read<i32>(%26)), const<i32>(0)));
+// DEFAULT-NEXT:     fn %[[VALUE_seq:[0-9]+]] @seq(%[[VALUE_a_5:[0-9]+]] a: ptr<i8>, %[[VALUE_b_5:[0-9]+]] b: ptr<i8>, %[[VALUE_c_5:[0-9]+]] c: i32, %[[VALUE_d_5:[0-9]+]] d: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(call<i32, signature=fn(ptr<i8>, ptr<i8>, i32, i32) -> i32>(%[[VALUE_bar]], read<ptr<i8>>(%[[VALUE_a_5]]), read<ptr<i8>>(%[[VALUE_b_5]]), read<i32>(%[[VALUE_c_5]]), read<i32>(%[[VALUE_d_5]])), const<i32>(0)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @deq(%28 a: ptr<i8>, %29 b: ptr<i8>, %30 c: i32, %31 d: i32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i64, reason=return>(eq<i64>(call<i64, signature=fn(ptr<i8>, ptr<i8>, i32, i32) -> i64>(%1, read<ptr<i8>>(%28), read<ptr<i8>>(%29), read<i32>(%30), read<i32>(%31)), widen<i64, reason=usual_arith>(const<i32>(0))));
+// DEFAULT-NEXT:     fn %[[VALUE_deq:[0-9]+]] @deq(%[[VALUE_a_6:[0-9]+]] a: ptr<i8>, %[[VALUE_b_6:[0-9]+]] b: ptr<i8>, %[[VALUE_c_6:[0-9]+]] c: i32, %[[VALUE_d_6:[0-9]+]] d: i32) -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i64, reason=return>(eq<i64>(call<i64, signature=fn(ptr<i8>, ptr<i8>, i32, i32) -> i64>(%[[VALUE_baz]], read<ptr<i8>>(%[[VALUE_a_6]]), read<ptr<i8>>(%[[VALUE_b_6]]), read<i32>(%[[VALUE_c_6]]), read<i32>(%[[VALUE_d_6]])), widen<i64, reason=usual_arith>(const<i32>(0))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

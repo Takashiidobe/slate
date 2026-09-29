@@ -58,39 +58,39 @@ int use_forced(void) { return forced() + forced_static() + forced_after(); }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 packed_member = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_packed_member:[0-9]+]] packed_member = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 x: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 pointer_member = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_pointer_member:[0-9]+]] pointer_member = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 p: ptr<i32>;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type2 UI = i32;
-// DEFAULT-NEXT:     type @type3 WCHAR = u16;
-// DEFAULT-NEXT:     type @type4 LPUWSTR = ptr<u16>;
-// DEFAULT-NEXT:     type @type5 UP = ptr<i32>;
-// DEFAULT-NEXT:     global %6 wide: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 wide_const: ptr<i32> [storage=static] [const] = null<ptr<i32>> [linkage=external];
-// DEFAULT-NEXT:     global %8 unaligned_int: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 unaligned_pointer: ptr<i32> [storage=static] [align=1] [linkage=external];
-// DEFAULT-NEXT:     global %10 unaligned_wide_string: ptr<u16> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 plain: ptr<i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %12 @convert() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<u16>>(%10, pointer_cast<ptr<u16>, reason=explicit>(read<ptr<i32>>(%11)));
-// DEFAULT-NEXT:         write<ptr<i32>>(%11, read<ptr<i32>>(%9));
+// DEFAULT-NEXT:     type @type[[TYPE_UI:[0-9]+]] UI = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_WCHAR:[0-9]+]] WCHAR = u16;
+// DEFAULT-NEXT:     type @type[[TYPE_LPUWSTR:[0-9]+]] LPUWSTR = ptr<u16>;
+// DEFAULT-NEXT:     type @type[[TYPE_UP:[0-9]+]] UP = ptr<i32>;
+// DEFAULT-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wide_const:[0-9]+]] wide_const: ptr<i32> [storage=static] [const] = null<ptr<i32>> [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unaligned_int:[0-9]+]] unaligned_int: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unaligned_pointer:[0-9]+]] unaligned_pointer: ptr<i32> [storage=static] [align=1] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unaligned_wide_string:[0-9]+]] unaligned_wide_string: ptr<u16> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_plain:[0-9]+]] plain: ptr<i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_convert:[0-9]+]] @convert() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<u16>>(%[[VALUE_unaligned_wide_string]], pointer_cast<ptr<u16>, reason=explicit>(read<ptr<i32>>(%[[VALUE_plain]])));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_plain]], read<ptr<i32>>(%[[VALUE_unaligned_pointer]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @forced() -> i32 [linkage=external] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_forced:[0-9]+]] @forced() -> i32 [linkage=external] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @forced_static() -> i32 [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_forced_static:[0-9]+]] @forced_static() -> i32 [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(2);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @forced_after() -> i32 [linkage=external] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_forced_after:[0-9]+]] @forced_after() -> i32 [linkage=external] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return const<i32>(3);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @use_forced() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%13), call<i32, signature=fn() -> i32>(%14)), call<i32, signature=fn() -> i32>(%15));
+// DEFAULT-NEXT:     fn %[[VALUE_use_forced:[0-9]+]] @use_forced() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_forced]]), call<i32, signature=fn() -> i32>(%[[VALUE_forced_static]])), call<i32, signature=fn() -> i32>(%[[VALUE_forced_after]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

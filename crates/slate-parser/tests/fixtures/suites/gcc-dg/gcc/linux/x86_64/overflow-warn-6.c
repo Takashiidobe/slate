@@ -42,11 +42,11 @@ h2 (int x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @h1(%1 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<i32, overflow=ub>(read<i32>(%1), mul<i32, overflow=ub>(const<i32>(0), add<i32, overflow=ub>(const<i32>(2147483647), const<i32>(1))));
+// DEFAULT-NEXT:     fn %[[VALUE_h1:[0-9]+]] @h1(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return mul<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), mul<i32, overflow=ub>(const<i32>(0), add<i32, overflow=ub>(const<i32>(2147483647), const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @h2(%3 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(2147483647), const<i32>(1)), const<i32>(0)), read<i32>(%3));
+// DEFAULT-NEXT:     fn %[[VALUE_h2:[0-9]+]] @h2(%[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return mul<i32, overflow=ub>(mul<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(2147483647), const<i32>(1)), const<i32>(0)), read<i32>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

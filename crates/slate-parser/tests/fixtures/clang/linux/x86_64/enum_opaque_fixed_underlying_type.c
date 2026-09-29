@@ -27,7 +27,7 @@ enum E value;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 E = enum : u8 incomplete [size=1, align=1];
-// DEFAULT-NEXT:     global %1 value: @type0 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     type @type[[TYPE_E:[0-9]+]] E = enum : u8 incomplete [size=1, align=1];
+// DEFAULT-NEXT:     global %[[VALUE_value:[0-9]+]] value: @type[[TYPE_E]] [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

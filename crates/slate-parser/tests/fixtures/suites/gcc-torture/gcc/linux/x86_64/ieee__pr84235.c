@@ -35,12 +35,12 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %1 d: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(1.0), const<f64>(0.0));
-// DEFAULT-NEXT:         let %2 b: bool [storage=automatic] = logical_and<bool>(eq<f64, exceptions=observable>(read<f64>(%1), read<f64>(%1)), ne<f64, exceptions=observable>(sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%1), read<f64>(%1)), sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%1), read<f64>(%1))));
-// DEFAULT-NEXT:         if not<bool>(read<bool>(%2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: f64 [storage=automatic] = div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(1.0), const<f64>(0.0));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: bool [storage=automatic] = logical_and<bool>(eq<f64, exceptions=observable>(read<f64>(%[[VALUE_d]]), read<f64>(%[[VALUE_d]])), ne<f64, exceptions=observable>(sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_d]]), read<f64>(%[[VALUE_d]])), sub<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_d]]), read<f64>(%[[VALUE_d]]))));
+// DEFAULT-NEXT:         if not<bool>(read<bool>(%[[VALUE_b]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

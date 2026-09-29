@@ -39,10 +39,10 @@ f (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 a: f32 [storage=automatic] = const<f32>(inf);
-// DEFAULT-NEXT:         let %2 b: f64 [storage=automatic] = const<f64>(inf);
-// DEFAULT-NEXT:         let %3 c: f80 [storage=automatic] = const<f80>(+Inf);
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: f32 [storage=automatic] = const<f32>(inf);
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: f64 [storage=automatic] = const<f64>(inf);
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: f80 [storage=automatic] = const<f80>(+Inf);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

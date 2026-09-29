@@ -278,277 +278,277 @@ f30 (W x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 V = vector<i32, 8>;
-// DEFAULT-NEXT:     type @type1 W = vector<i32, 16>;
-// DEFAULT-NEXT:     type @type2 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_V:[0-9]+]] V = vector<i32, 8>;
+// DEFAULT-NEXT:     type @type[[TYPE_W:[0-9]+]] W = vector<i32, 16>;
+// DEFAULT-NEXT:     type @type[[TYPE_U:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i256b;
 // DEFAULT-NEXT:         field1 y: complex<i128>;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type3 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_2:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i254b;
 // DEFAULT-NEXT:         field1 y: complex<i128>;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type4 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_3:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i256b;
 // DEFAULT-NEXT:         field1 y: complex<i128>;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type5 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_4:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i252b;
 // DEFAULT-NEXT:         field1 y: complex<i128>;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type6 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_5:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i256b;
 // DEFAULT-NEXT:         field1 y: complex<i128>;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type7 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_6:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i254b;
 // DEFAULT-NEXT:         field1 y: complex<i128>;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type8 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_7:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i256b;
 // DEFAULT-NEXT:         field1 y: complex<i128>;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type9 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_8:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i254b;
 // DEFAULT-NEXT:         field1 y: complex<i128>;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type10 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_9:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i256b;
 // DEFAULT-NEXT:         field1 y: complex<i128>;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type11 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_10:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i252b;
 // DEFAULT-NEXT:         field1 y: complex<i128>;
 // DEFAULT-NEXT:     } [size=32, align=16, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type12 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_11:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i256b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 8>;
 // DEFAULT-NEXT:     } [size=32, align=32, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type13 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_12:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i254b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 8>;
 // DEFAULT-NEXT:     } [size=32, align=32, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type14 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_13:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i256b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 8>;
 // DEFAULT-NEXT:     } [size=32, align=32, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type15 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_14:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i252b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 8>;
 // DEFAULT-NEXT:     } [size=32, align=32, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type16 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_15:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i256b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 8>;
 // DEFAULT-NEXT:     } [size=32, align=32, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type17 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_16:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i254b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 8>;
 // DEFAULT-NEXT:     } [size=32, align=32, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type18 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_17:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i256b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 8>;
 // DEFAULT-NEXT:     } [size=32, align=32, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type19 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_18:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i254b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 8>;
 // DEFAULT-NEXT:     } [size=32, align=32, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type20 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_19:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i256b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 8>;
 // DEFAULT-NEXT:     } [size=32, align=32, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type21 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_20:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i252b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 8>;
 // DEFAULT-NEXT:     } [size=32, align=32, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type22 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_21:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i512b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 16>;
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type23 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_22:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i509b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 16>;
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type24 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_23:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i512b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 16>;
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type25 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_24:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i506b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 16>;
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type26 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_25:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i512b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 16>;
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type27 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_26:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i509b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 16>;
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type28 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_27:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i512b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 16>;
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type29 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_28:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i509b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 16>;
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type30 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_29:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i512b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 16>;
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type31 U = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U_30:[0-9]+]] U = union {
 // DEFAULT-NEXT:         field0 x: i506b;
 // DEFAULT-NEXT:         field1 y: vector<i32, 16>;
 // DEFAULT-NEXT:     } [size=64, align=64, offsets=[0, 0]];
-// DEFAULT-NEXT:     fn %2 @f1(%3 x: i256b) -> complex<i128> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 u: @type2 [storage=automatic];
-// DEFAULT-NEXT:         write<i256b>(field0(%5), read<i256b>(%3));
-// DEFAULT-NEXT:         return read<complex<i128>>(field1(%5));
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_x:[0-9]+]] x: i256b) -> complex<i128> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE_U]] [storage=automatic];
+// DEFAULT-NEXT:         write<i256b>(field0(%[[VALUE_u]]), read<i256b>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         return read<complex<i128>>(field1(%[[VALUE_u]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f2(%7 x: i254b) -> complex<i128> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9 u: @type3 [storage=automatic];
-// DEFAULT-NEXT:         write<i254b>(field0(%9), read<i254b>(%7));
-// DEFAULT-NEXT:         return read<complex<i128>>(field1(%9));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_x_2:[0-9]+]] x: i254b) -> complex<i128> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_2:[0-9]+]] u: @type[[TYPE_U_2]] [storage=automatic];
+// DEFAULT-NEXT:         write<i254b>(field0(%[[VALUE_u_2]]), read<i254b>(%[[VALUE_x_2]]));
+// DEFAULT-NEXT:         return read<complex<i128>>(field1(%[[VALUE_u_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @f3(%11 x: complex<i128>) -> i256b [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %13 u: @type4 [storage=automatic];
-// DEFAULT-NEXT:         write<complex<i128>>(field1(%13), read<complex<i128>>(%11));
-// DEFAULT-NEXT:         return read<i256b>(field0(%13));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_x_3:[0-9]+]] x: complex<i128>) -> i256b [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_3:[0-9]+]] u: @type[[TYPE_U_3]] [storage=automatic];
+// DEFAULT-NEXT:         write<complex<i128>>(field1(%[[VALUE_u_3]]), read<complex<i128>>(%[[VALUE_x_3]]));
+// DEFAULT-NEXT:         return read<i256b>(field0(%[[VALUE_u_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @f4(%15 x: complex<i128>) -> i252b [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %17 u: @type5 [storage=automatic];
-// DEFAULT-NEXT:         write<complex<i128>>(field1(%17), read<complex<i128>>(%15));
-// DEFAULT-NEXT:         return read<i252b>(field0(%17));
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_x_4:[0-9]+]] x: complex<i128>) -> i252b [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_4:[0-9]+]] u: @type[[TYPE_U_4]] [storage=automatic];
+// DEFAULT-NEXT:         write<complex<i128>>(field1(%[[VALUE_u_4]]), read<complex<i128>>(%[[VALUE_x_4]]));
+// DEFAULT-NEXT:         return read<i252b>(field0(%[[VALUE_u_4]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @f5(%19 x: i256b) -> complex<i128> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %21 u: @type6 [storage=automatic];
-// DEFAULT-NEXT:         write<i256b>(field0(%21), add<i256b, overflow=ub>(read<i256b>(%19), widen<i256b, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         return read<complex<i128>>(field1(%21));
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE_x_5:[0-9]+]] x: i256b) -> complex<i128> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_5:[0-9]+]] u: @type[[TYPE_U_5]] [storage=automatic];
+// DEFAULT-NEXT:         write<i256b>(field0(%[[VALUE_u_5]]), add<i256b, overflow=ub>(read<i256b>(%[[VALUE_x_5]]), widen<i256b, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         return read<complex<i128>>(field1(%[[VALUE_u_5]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @f6(%23 x: i254b) -> complex<i128> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %25 u: @type7 [storage=automatic];
-// DEFAULT-NEXT:         write<i254b>(field0(%25), add<i254b, overflow=ub>(read<i254b>(%23), widen<i254b, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         return read<complex<i128>>(field1(%25));
+// DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(%[[VALUE_x_6:[0-9]+]] x: i254b) -> complex<i128> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_6:[0-9]+]] u: @type[[TYPE_U_6]] [storage=automatic];
+// DEFAULT-NEXT:         write<i254b>(field0(%[[VALUE_u_6]]), add<i254b, overflow=ub>(read<i254b>(%[[VALUE_x_6]]), widen<i254b, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         return read<complex<i128>>(field1(%[[VALUE_u_6]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @f7(%27 x: ptr<i256b>) -> complex<i128> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %29 u: @type8 [storage=automatic];
-// DEFAULT-NEXT:         write<i256b>(field0(%29), add<i256b, overflow=ub>(read<i256b>(deref(read<ptr<i256b>>(%27))), widen<i256b, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         return read<complex<i128>>(field1(%29));
+// DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_x_7:[0-9]+]] x: ptr<i256b>) -> complex<i128> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_7:[0-9]+]] u: @type[[TYPE_U_7]] [storage=automatic];
+// DEFAULT-NEXT:         write<i256b>(field0(%[[VALUE_u_7]]), add<i256b, overflow=ub>(read<i256b>(deref(read<ptr<i256b>>(%[[VALUE_x_7]]))), widen<i256b, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         return read<complex<i128>>(field1(%[[VALUE_u_7]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @f8(%31 x: ptr<i254b>) -> complex<i128> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %33 u: @type9 [storage=automatic];
-// DEFAULT-NEXT:         write<i254b>(field0(%33), add<i254b, overflow=ub>(read<i254b>(deref(read<ptr<i254b>>(%31))), widen<i254b, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         return read<complex<i128>>(field1(%33));
+// DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_x_8:[0-9]+]] x: ptr<i254b>) -> complex<i128> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_8:[0-9]+]] u: @type[[TYPE_U_8]] [storage=automatic];
+// DEFAULT-NEXT:         write<i254b>(field0(%[[VALUE_u_8]]), add<i254b, overflow=ub>(read<i254b>(deref(read<ptr<i254b>>(%[[VALUE_x_8]]))), widen<i254b, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         return read<complex<i128>>(field1(%[[VALUE_u_8]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %34 @f9(%35 x: complex<i128>) -> i256b [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %37 u: @type10 [storage=automatic];
-// DEFAULT-NEXT:         write<complex<i128>>(field1(%37), read<complex<i128>>(%35));
-// DEFAULT-NEXT:         return add<i256b, overflow=ub>(read<i256b>(field0(%37)), widen<i256b, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_f9:[0-9]+]] @f9(%[[VALUE_x_9:[0-9]+]] x: complex<i128>) -> i256b [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_9:[0-9]+]] u: @type[[TYPE_U_9]] [storage=automatic];
+// DEFAULT-NEXT:         write<complex<i128>>(field1(%[[VALUE_u_9]]), read<complex<i128>>(%[[VALUE_x_9]]));
+// DEFAULT-NEXT:         return add<i256b, overflow=ub>(read<i256b>(field0(%[[VALUE_u_9]])), widen<i256b, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %38 @f10(%39 x: complex<i128>) -> i252b [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %41 u: @type11 [storage=automatic];
-// DEFAULT-NEXT:         write<complex<i128>>(field1(%41), read<complex<i128>>(%39));
-// DEFAULT-NEXT:         return add<i252b, overflow=ub>(read<i252b>(field0(%41)), widen<i252b, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_f10:[0-9]+]] @f10(%[[VALUE_x_10:[0-9]+]] x: complex<i128>) -> i252b [linkage=external] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_10:[0-9]+]] u: @type[[TYPE_U_10]] [storage=automatic];
+// DEFAULT-NEXT:         write<complex<i128>>(field1(%[[VALUE_u_10]]), read<complex<i128>>(%[[VALUE_x_10]]));
+// DEFAULT-NEXT:         return add<i252b, overflow=ub>(read<i252b>(field0(%[[VALUE_u_10]])), widen<i252b, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %42 @f11(%43 x: i256b) -> vector<i32, 8> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %45 u: @type12 [storage=automatic];
-// DEFAULT-NEXT:         write<i256b>(field0(%45), read<i256b>(%43));
-// DEFAULT-NEXT:         return read<vector<i32, 8>>(field1(%45));
+// DEFAULT-NEXT:     fn %[[VALUE_f11:[0-9]+]] @f11(%[[VALUE_x_11:[0-9]+]] x: i256b) -> vector<i32, 8> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_11:[0-9]+]] u: @type[[TYPE_U_11]] [storage=automatic];
+// DEFAULT-NEXT:         write<i256b>(field0(%[[VALUE_u_11]]), read<i256b>(%[[VALUE_x_11]]));
+// DEFAULT-NEXT:         return read<vector<i32, 8>>(field1(%[[VALUE_u_11]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %46 @f12(%47 x: i254b) -> vector<i32, 8> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %49 u: @type13 [storage=automatic];
-// DEFAULT-NEXT:         write<i254b>(field0(%49), read<i254b>(%47));
-// DEFAULT-NEXT:         return read<vector<i32, 8>>(field1(%49));
+// DEFAULT-NEXT:     fn %[[VALUE_f12:[0-9]+]] @f12(%[[VALUE_x_12:[0-9]+]] x: i254b) -> vector<i32, 8> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_12:[0-9]+]] u: @type[[TYPE_U_12]] [storage=automatic];
+// DEFAULT-NEXT:         write<i254b>(field0(%[[VALUE_u_12]]), read<i254b>(%[[VALUE_x_12]]));
+// DEFAULT-NEXT:         return read<vector<i32, 8>>(field1(%[[VALUE_u_12]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %50 @f13(%51 x: vector<i32, 8>) -> i256b [linkage=external] [abi=sysv64(byval<align=32>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %53 u: @type14 [storage=automatic];
-// DEFAULT-NEXT:         write<vector<i32, 8>>(field1(%53), read<vector<i32, 8>>(%51));
-// DEFAULT-NEXT:         return read<i256b>(field0(%53));
+// DEFAULT-NEXT:     fn %[[VALUE_f13:[0-9]+]] @f13(%[[VALUE_x_13:[0-9]+]] x: vector<i32, 8>) -> i256b [linkage=external] [abi=sysv64(byval<align=32>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_13:[0-9]+]] u: @type[[TYPE_U_13]] [storage=automatic];
+// DEFAULT-NEXT:         write<vector<i32, 8>>(field1(%[[VALUE_u_13]]), read<vector<i32, 8>>(%[[VALUE_x_13]]));
+// DEFAULT-NEXT:         return read<i256b>(field0(%[[VALUE_u_13]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %54 @f14(%55 x: vector<i32, 8>) -> i252b [linkage=external] [abi=sysv64(byval<align=32>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %57 u: @type15 [storage=automatic];
-// DEFAULT-NEXT:         write<vector<i32, 8>>(field1(%57), read<vector<i32, 8>>(%55));
-// DEFAULT-NEXT:         return read<i252b>(field0(%57));
+// DEFAULT-NEXT:     fn %[[VALUE_f14:[0-9]+]] @f14(%[[VALUE_x_14:[0-9]+]] x: vector<i32, 8>) -> i252b [linkage=external] [abi=sysv64(byval<align=32>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_14:[0-9]+]] u: @type[[TYPE_U_14]] [storage=automatic];
+// DEFAULT-NEXT:         write<vector<i32, 8>>(field1(%[[VALUE_u_14]]), read<vector<i32, 8>>(%[[VALUE_x_14]]));
+// DEFAULT-NEXT:         return read<i252b>(field0(%[[VALUE_u_14]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %58 @f15(%59 x: i256b) -> vector<i32, 8> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %61 u: @type16 [storage=automatic];
-// DEFAULT-NEXT:         write<i256b>(field0(%61), add<i256b, overflow=ub>(read<i256b>(%59), widen<i256b, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         return read<vector<i32, 8>>(field1(%61));
+// DEFAULT-NEXT:     fn %[[VALUE_f15:[0-9]+]] @f15(%[[VALUE_x_15:[0-9]+]] x: i256b) -> vector<i32, 8> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_15:[0-9]+]] u: @type[[TYPE_U_15]] [storage=automatic];
+// DEFAULT-NEXT:         write<i256b>(field0(%[[VALUE_u_15]]), add<i256b, overflow=ub>(read<i256b>(%[[VALUE_x_15]]), widen<i256b, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         return read<vector<i32, 8>>(field1(%[[VALUE_u_15]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %62 @f16(%63 x: i254b) -> vector<i32, 8> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %65 u: @type17 [storage=automatic];
-// DEFAULT-NEXT:         write<i254b>(field0(%65), add<i254b, overflow=ub>(read<i254b>(%63), widen<i254b, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         return read<vector<i32, 8>>(field1(%65));
+// DEFAULT-NEXT:     fn %[[VALUE_f16:[0-9]+]] @f16(%[[VALUE_x_16:[0-9]+]] x: i254b) -> vector<i32, 8> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_16:[0-9]+]] u: @type[[TYPE_U_16]] [storage=automatic];
+// DEFAULT-NEXT:         write<i254b>(field0(%[[VALUE_u_16]]), add<i254b, overflow=ub>(read<i254b>(%[[VALUE_x_16]]), widen<i254b, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         return read<vector<i32, 8>>(field1(%[[VALUE_u_16]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %66 @f17(%67 x: ptr<i256b>) -> vector<i32, 8> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %69 u: @type18 [storage=automatic];
-// DEFAULT-NEXT:         write<i256b>(field0(%69), add<i256b, overflow=ub>(read<i256b>(deref(read<ptr<i256b>>(%67))), widen<i256b, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         return read<vector<i32, 8>>(field1(%69));
+// DEFAULT-NEXT:     fn %[[VALUE_f17:[0-9]+]] @f17(%[[VALUE_x_17:[0-9]+]] x: ptr<i256b>) -> vector<i32, 8> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_17:[0-9]+]] u: @type[[TYPE_U_17]] [storage=automatic];
+// DEFAULT-NEXT:         write<i256b>(field0(%[[VALUE_u_17]]), add<i256b, overflow=ub>(read<i256b>(deref(read<ptr<i256b>>(%[[VALUE_x_17]]))), widen<i256b, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         return read<vector<i32, 8>>(field1(%[[VALUE_u_17]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %70 @f18(%71 x: ptr<i254b>) -> vector<i32, 8> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %73 u: @type19 [storage=automatic];
-// DEFAULT-NEXT:         write<i254b>(field0(%73), add<i254b, overflow=ub>(read<i254b>(deref(read<ptr<i254b>>(%71))), widen<i254b, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         return read<vector<i32, 8>>(field1(%73));
+// DEFAULT-NEXT:     fn %[[VALUE_f18:[0-9]+]] @f18(%[[VALUE_x_18:[0-9]+]] x: ptr<i254b>) -> vector<i32, 8> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_18:[0-9]+]] u: @type[[TYPE_U_18]] [storage=automatic];
+// DEFAULT-NEXT:         write<i254b>(field0(%[[VALUE_u_18]]), add<i254b, overflow=ub>(read<i254b>(deref(read<ptr<i254b>>(%[[VALUE_x_18]]))), widen<i254b, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         return read<vector<i32, 8>>(field1(%[[VALUE_u_18]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %74 @f19(%75 x: vector<i32, 8>) -> i256b [linkage=external] [abi=sysv64(byval<align=32>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %77 u: @type20 [storage=automatic];
-// DEFAULT-NEXT:         write<vector<i32, 8>>(field1(%77), read<vector<i32, 8>>(%75));
-// DEFAULT-NEXT:         return add<i256b, overflow=ub>(read<i256b>(field0(%77)), widen<i256b, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_f19:[0-9]+]] @f19(%[[VALUE_x_19:[0-9]+]] x: vector<i32, 8>) -> i256b [linkage=external] [abi=sysv64(byval<align=32>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_19:[0-9]+]] u: @type[[TYPE_U_19]] [storage=automatic];
+// DEFAULT-NEXT:         write<vector<i32, 8>>(field1(%[[VALUE_u_19]]), read<vector<i32, 8>>(%[[VALUE_x_19]]));
+// DEFAULT-NEXT:         return add<i256b, overflow=ub>(read<i256b>(field0(%[[VALUE_u_19]])), widen<i256b, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %78 @f20(%79 x: vector<i32, 8>) -> i252b [linkage=external] [abi=sysv64(byval<align=32>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %81 u: @type21 [storage=automatic];
-// DEFAULT-NEXT:         write<vector<i32, 8>>(field1(%81), read<vector<i32, 8>>(%79));
-// DEFAULT-NEXT:         return add<i252b, overflow=ub>(read<i252b>(field0(%81)), widen<i252b, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_f20:[0-9]+]] @f20(%[[VALUE_x_20:[0-9]+]] x: vector<i32, 8>) -> i252b [linkage=external] [abi=sysv64(byval<align=32>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_20:[0-9]+]] u: @type[[TYPE_U_20]] [storage=automatic];
+// DEFAULT-NEXT:         write<vector<i32, 8>>(field1(%[[VALUE_u_20]]), read<vector<i32, 8>>(%[[VALUE_x_20]]));
+// DEFAULT-NEXT:         return add<i252b, overflow=ub>(read<i252b>(field0(%[[VALUE_u_20]])), widen<i252b, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %82 @f21(%83 x: i512b) -> vector<i32, 16> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %85 u: @type22 [storage=automatic];
-// DEFAULT-NEXT:         write<i512b>(field0(%85), read<i512b>(%83));
-// DEFAULT-NEXT:         return read<vector<i32, 16>>(field1(%85));
+// DEFAULT-NEXT:     fn %[[VALUE_f21:[0-9]+]] @f21(%[[VALUE_x_21:[0-9]+]] x: i512b) -> vector<i32, 16> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_21:[0-9]+]] u: @type[[TYPE_U_21]] [storage=automatic];
+// DEFAULT-NEXT:         write<i512b>(field0(%[[VALUE_u_21]]), read<i512b>(%[[VALUE_x_21]]));
+// DEFAULT-NEXT:         return read<vector<i32, 16>>(field1(%[[VALUE_u_21]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %86 @f22(%87 x: i509b) -> vector<i32, 16> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %89 u: @type23 [storage=automatic];
-// DEFAULT-NEXT:         write<i509b>(field0(%89), read<i509b>(%87));
-// DEFAULT-NEXT:         return read<vector<i32, 16>>(field1(%89));
+// DEFAULT-NEXT:     fn %[[VALUE_f22:[0-9]+]] @f22(%[[VALUE_x_22:[0-9]+]] x: i509b) -> vector<i32, 16> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_22:[0-9]+]] u: @type[[TYPE_U_22]] [storage=automatic];
+// DEFAULT-NEXT:         write<i509b>(field0(%[[VALUE_u_22]]), read<i509b>(%[[VALUE_x_22]]));
+// DEFAULT-NEXT:         return read<vector<i32, 16>>(field1(%[[VALUE_u_22]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %90 @f23(%91 x: vector<i32, 16>) -> i512b [linkage=external] [abi=sysv64(byval<align=64>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %93 u: @type24 [storage=automatic];
-// DEFAULT-NEXT:         write<vector<i32, 16>>(field1(%93), read<vector<i32, 16>>(%91));
-// DEFAULT-NEXT:         return read<i512b>(field0(%93));
+// DEFAULT-NEXT:     fn %[[VALUE_f23:[0-9]+]] @f23(%[[VALUE_x_23:[0-9]+]] x: vector<i32, 16>) -> i512b [linkage=external] [abi=sysv64(byval<align=64>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_23:[0-9]+]] u: @type[[TYPE_U_23]] [storage=automatic];
+// DEFAULT-NEXT:         write<vector<i32, 16>>(field1(%[[VALUE_u_23]]), read<vector<i32, 16>>(%[[VALUE_x_23]]));
+// DEFAULT-NEXT:         return read<i512b>(field0(%[[VALUE_u_23]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %94 @f24(%95 x: vector<i32, 16>) -> i506b [linkage=external] [abi=sysv64(byval<align=64>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %97 u: @type25 [storage=automatic];
-// DEFAULT-NEXT:         write<vector<i32, 16>>(field1(%97), read<vector<i32, 16>>(%95));
-// DEFAULT-NEXT:         return read<i506b>(field0(%97));
+// DEFAULT-NEXT:     fn %[[VALUE_f24:[0-9]+]] @f24(%[[VALUE_x_24:[0-9]+]] x: vector<i32, 16>) -> i506b [linkage=external] [abi=sysv64(byval<align=64>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_24:[0-9]+]] u: @type[[TYPE_U_24]] [storage=automatic];
+// DEFAULT-NEXT:         write<vector<i32, 16>>(field1(%[[VALUE_u_24]]), read<vector<i32, 16>>(%[[VALUE_x_24]]));
+// DEFAULT-NEXT:         return read<i506b>(field0(%[[VALUE_u_24]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %98 @f25(%99 x: i512b) -> vector<i32, 16> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %101 u: @type26 [storage=automatic];
-// DEFAULT-NEXT:         write<i512b>(field0(%101), add<i512b, overflow=ub>(read<i512b>(%99), widen<i512b, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         return read<vector<i32, 16>>(field1(%101));
+// DEFAULT-NEXT:     fn %[[VALUE_f25:[0-9]+]] @f25(%[[VALUE_x_25:[0-9]+]] x: i512b) -> vector<i32, 16> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_25:[0-9]+]] u: @type[[TYPE_U_25]] [storage=automatic];
+// DEFAULT-NEXT:         write<i512b>(field0(%[[VALUE_u_25]]), add<i512b, overflow=ub>(read<i512b>(%[[VALUE_x_25]]), widen<i512b, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         return read<vector<i32, 16>>(field1(%[[VALUE_u_25]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %102 @f26(%103 x: i509b) -> vector<i32, 16> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %105 u: @type27 [storage=automatic];
-// DEFAULT-NEXT:         write<i509b>(field0(%105), add<i509b, overflow=ub>(read<i509b>(%103), widen<i509b, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         return read<vector<i32, 16>>(field1(%105));
+// DEFAULT-NEXT:     fn %[[VALUE_f26:[0-9]+]] @f26(%[[VALUE_x_26:[0-9]+]] x: i509b) -> vector<i32, 16> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_26:[0-9]+]] u: @type[[TYPE_U_26]] [storage=automatic];
+// DEFAULT-NEXT:         write<i509b>(field0(%[[VALUE_u_26]]), add<i509b, overflow=ub>(read<i509b>(%[[VALUE_x_26]]), widen<i509b, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         return read<vector<i32, 16>>(field1(%[[VALUE_u_26]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %106 @f27(%107 x: ptr<i512b>) -> vector<i32, 16> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %109 u: @type28 [storage=automatic];
-// DEFAULT-NEXT:         write<i512b>(field0(%109), add<i512b, overflow=ub>(read<i512b>(deref(read<ptr<i512b>>(%107))), widen<i512b, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         return read<vector<i32, 16>>(field1(%109));
+// DEFAULT-NEXT:     fn %[[VALUE_f27:[0-9]+]] @f27(%[[VALUE_x_27:[0-9]+]] x: ptr<i512b>) -> vector<i32, 16> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_27:[0-9]+]] u: @type[[TYPE_U_27]] [storage=automatic];
+// DEFAULT-NEXT:         write<i512b>(field0(%[[VALUE_u_27]]), add<i512b, overflow=ub>(read<i512b>(deref(read<ptr<i512b>>(%[[VALUE_x_27]]))), widen<i512b, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         return read<vector<i32, 16>>(field1(%[[VALUE_u_27]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %110 @f28(%111 x: ptr<i509b>) -> vector<i32, 16> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %113 u: @type29 [storage=automatic];
-// DEFAULT-NEXT:         write<i509b>(field0(%113), add<i509b, overflow=ub>(read<i509b>(deref(read<ptr<i509b>>(%111))), widen<i509b, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:         return read<vector<i32, 16>>(field1(%113));
+// DEFAULT-NEXT:     fn %[[VALUE_f28:[0-9]+]] @f28(%[[VALUE_x_28:[0-9]+]] x: ptr<i509b>) -> vector<i32, 16> [linkage=external] [abi=sysv64(scalar) -> direct] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_28:[0-9]+]] u: @type[[TYPE_U_28]] [storage=automatic];
+// DEFAULT-NEXT:         write<i509b>(field0(%[[VALUE_u_28]]), add<i509b, overflow=ub>(read<i509b>(deref(read<ptr<i509b>>(%[[VALUE_x_28]]))), widen<i509b, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:         return read<vector<i32, 16>>(field1(%[[VALUE_u_28]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %114 @f29(%115 x: vector<i32, 16>) -> i512b [linkage=external] [abi=sysv64(byval<align=64>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %117 u: @type30 [storage=automatic];
-// DEFAULT-NEXT:         write<vector<i32, 16>>(field1(%117), read<vector<i32, 16>>(%115));
-// DEFAULT-NEXT:         return add<i512b, overflow=ub>(read<i512b>(field0(%117)), widen<i512b, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_f29:[0-9]+]] @f29(%[[VALUE_x_29:[0-9]+]] x: vector<i32, 16>) -> i512b [linkage=external] [abi=sysv64(byval<align=64>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_29:[0-9]+]] u: @type[[TYPE_U_29]] [storage=automatic];
+// DEFAULT-NEXT:         write<vector<i32, 16>>(field1(%[[VALUE_u_29]]), read<vector<i32, 16>>(%[[VALUE_x_29]]));
+// DEFAULT-NEXT:         return add<i512b, overflow=ub>(read<i512b>(field0(%[[VALUE_u_29]])), widen<i512b, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %118 @f30(%119 x: vector<i32, 16>) -> i506b [linkage=external] [abi=sysv64(byval<align=64>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %121 u: @type31 [storage=automatic];
-// DEFAULT-NEXT:         write<vector<i32, 16>>(field1(%121), read<vector<i32, 16>>(%119));
-// DEFAULT-NEXT:         return add<i506b, overflow=ub>(read<i506b>(field0(%121)), widen<i506b, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     fn %[[VALUE_f30:[0-9]+]] @f30(%[[VALUE_x_30:[0-9]+]] x: vector<i32, 16>) -> i506b [linkage=external] [abi=sysv64(byval<align=64>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_u_30:[0-9]+]] u: @type[[TYPE_U_30]] [storage=automatic];
+// DEFAULT-NEXT:         write<vector<i32, 16>>(field1(%[[VALUE_u_30]]), read<vector<i32, 16>>(%[[VALUE_x_30]]));
+// DEFAULT-NEXT:         return add<i506b, overflow=ub>(read<i506b>(field0(%[[VALUE_u_30]])), widen<i506b, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -27,14 +27,14 @@ int g(int x) { return x; }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %1 @g(%4 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<i32>(%4);
+// IR-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<i32>(%[[VALUE_x]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @first() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         call<i32>(%1, const<i32>(4));
+// IR-NEXT:     fn %[[VALUE_first:[0-9]+]] @first() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         call<i32>(%[[VALUE_g]], const<i32>(4));
 // IR-NEXT:     }
-// IR-NEXT:     fn %2 @second() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %3 d: f64 [storage=automatic] = int_to_float<f64>(call<i32>(%1, const<i32>(1), float_widen<f64>(const<f32>(2.0))));
+// IR-NEXT:     fn %[[VALUE_second:[0-9]+]] @second() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_d:[0-9]+]] d: f64 [storage=automatic] = int_to_float<f64>(call<i32>(%[[VALUE_g]], const<i32>(1), float_widen<f64>(const<f32>(2.0))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

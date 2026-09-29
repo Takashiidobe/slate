@@ -51,33 +51,33 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %19 .str19: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%18 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @identity_mut(%3 value: ptr<i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<ptr<i32>>(%3);
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_identity_mut:[0-9]+]] @identity_mut(%[[VALUE_value:[0-9]+]] value: ptr<i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<ptr<i32>>(%[[VALUE_value]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @forward_mut(%5 value: ptr<i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(%2, read<ptr<i32>>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE_forward_mut:[0-9]+]] @forward_mut(%[[VALUE_value_2:[0-9]+]] value: ptr<i32>) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(%[[VALUE_identity_mut]], read<ptr<i32>>(%[[VALUE_value_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @identity_const(%7 value: ptr<const i32>) -> ptr<const i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<ptr<const i32>>(%7);
+// DEFAULT-NEXT:     fn %[[VALUE_identity_const:[0-9]+]] @identity_const(%[[VALUE_value_3:[0-9]+]] value: ptr<const i32>) -> ptr<const i32> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<ptr<const i32>>(%[[VALUE_value_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @choose_value(%9 first: ptr<i32>, %10 second: ptr<i32>, %11 choose_first: i32) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%11), const<i32>(0))
-// DEFAULT-NEXT:             return read<ptr<i32>>(%9);
-// DEFAULT-NEXT:         return read<ptr<i32>>(%10);
+// DEFAULT-NEXT:     fn %[[VALUE_choose_value:[0-9]+]] @choose_value(%[[VALUE_first:[0-9]+]] first: ptr<i32>, %[[VALUE_second:[0-9]+]] second: ptr<i32>, %[[VALUE_choose_first:[0-9]+]] choose_first: i32) -> ptr<i32> [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_choose_first]]), const<i32>(0))
+// DEFAULT-NEXT:             return read<ptr<i32>>(%[[VALUE_first]]);
+// DEFAULT-NEXT:         return read<ptr<i32>>(%[[VALUE_second]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %13 first: i32 [storage=automatic] = const<i32>(20);
-// DEFAULT-NEXT:         let %14 second: i32 [storage=automatic] = const<i32>(22);
-// DEFAULT-NEXT:         let %15 alias: ptr<i32> [storage=automatic] = call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(%4, addr_of<ptr<i32>>(%13));
-// DEFAULT-NEXT:         let %20: ptr<i32> [synthetic] = read<ptr<i32>>(%15);
-// DEFAULT-NEXT:         let %21: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%20)));
-// DEFAULT-NEXT:         let %22: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%21), const<i32>(2));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%20)), read<i32>(%22));
-// DEFAULT-NEXT:         let %16 read_alias: ptr<const i32> [storage=automatic] = call<ptr<const i32>, signature=fn(ptr<const i32>) -> ptr<const i32>>(%6, pointer_cast<ptr<const i32>, reason=arg>(addr_of<ptr<i32>>(%14)));
-// DEFAULT-NEXT:         let %17 ambiguous: ptr<i32> [storage=automatic] = call<ptr<i32>, signature=fn(ptr<i32>, ptr<i32>, i32) -> ptr<i32>>(%8, addr_of<ptr<i32>>(%13), addr_of<ptr<i32>>(%14), const<i32>(1));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%19)), read<i32>(%13), read<i32>(deref(read<ptr<const i32>>(%16))), read<i32>(deref(read<ptr<i32>>(%17))));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_first_2:[0-9]+]] first: i32 [storage=automatic] = const<i32>(20);
+// DEFAULT-NEXT:         let %[[VALUE_second_2:[0-9]+]] second: i32 [storage=automatic] = const<i32>(22);
+// DEFAULT-NEXT:         let %[[VALUE_alias:[0-9]+]] alias: ptr<i32> [storage=automatic] = call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(%[[VALUE_forward_mut]], addr_of<ptr<i32>>(%[[VALUE_first_2]]));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<i32> [synthetic] = read<ptr<i32>>(%[[VALUE_alias]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%[[VALUE0]])));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(2));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE0]])), read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:         let %[[VALUE_read_alias:[0-9]+]] read_alias: ptr<const i32> [storage=automatic] = call<ptr<const i32>, signature=fn(ptr<const i32>) -> ptr<const i32>>(%[[VALUE_identity_const]], pointer_cast<ptr<const i32>, reason=arg>(addr_of<ptr<i32>>(%[[VALUE_second_2]])));
+// DEFAULT-NEXT:         let %[[VALUE_ambiguous:[0-9]+]] ambiguous: ptr<i32> [storage=automatic] = call<ptr<i32>, signature=fn(ptr<i32>, ptr<i32>, i32) -> ptr<i32>>(%[[VALUE_choose_value]], addr_of<ptr<i32>>(%[[VALUE_first_2]]), addr_of<ptr<i32>>(%[[VALUE_second_2]]), const<i32>(1));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]])), read<i32>(%[[VALUE_first_2]]), read<i32>(deref(read<ptr<const i32>>(%[[VALUE_read_alias]]))), read<i32>(deref(read<ptr<i32>>(%[[VALUE_ambiguous]]))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

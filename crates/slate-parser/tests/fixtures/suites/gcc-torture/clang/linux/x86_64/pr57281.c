@@ -45,36 +45,36 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 d: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 e: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%2) [linkage=external];
-// DEFAULT-NEXT:     global %4 c: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 g: ptr<i64> [storage=static] = addr_of<ptr<i64>>(%4) [linkage=external];
-// DEFAULT-NEXT:     global %6 f: volatile i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %7 @foo(%8 h: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9 j: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%5)), widen<i64, reason=assign>(read<i32>(%1)));
-// DEFAULT-NEXT:         write<i32>(%9, truncate<i32, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%1))));
-// DEFAULT-NEXT:         return conditional<i32>(eq<i32>(read<i32>(%8), const<i32>(0)), read<i32>(%9), const<i32>(0));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_d]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: ptr<i64> [storage=static] = addr_of<ptr<i64>>(%[[VALUE_c]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: volatile i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_h:[0-9]+]] h: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%[[VALUE_g]])), widen<i64, reason=assign>(read<i32>(%[[VALUE_b]])));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_j]], truncate<i32, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE_b]]))));
+// DEFAULT-NEXT:         return conditional<i32>(eq<i32>(read<i32>(%[[VALUE_h]]), const<i32>(0)), read<i32>(%[[VALUE_j]]), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %11 h: i32 [storage=automatic] = read<i32>(%0);
-// DEFAULT-NEXT:         for %12
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_h_2:[0-9]+]] h: i32 [storage=automatic] = read<i32>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:             condition: ne<i32>(read<i32>(%1), neg<i32, overflow=ub>(const<i32>(20)))
+// DEFAULT-NEXT:             condition: ne<i32>(read<i32>(%[[VALUE_b]]), neg<i32, overflow=ub>(const<i32>(20)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %13: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%1, read<i32>(%14));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_b]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_b]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     truncate<i32, reason=explicit, fits=unknown>(read<i64, volatile>(%6));
-// DEFAULT-NEXT:                     write<i32>(deref(read<ptr<i32>>(%3)), const<i32>(0));
-// DEFAULT-NEXT:                     write<i32>(deref(read<ptr<i32>>(%3)), call<i32, signature=fn(i32) -> i32>(%7, read<i32>(%11)));
-// DEFAULT-NEXT:                     call<i32, signature=fn(i32) -> i32>(%7, read<i32>(%11));
+// DEFAULT-NEXT:                     truncate<i32, reason=explicit, fits=unknown>(read<i64, volatile>(%[[VALUE_f]]));
+// DEFAULT-NEXT:                     write<i32>(deref(read<ptr<i32>>(%[[VALUE_e]])), const<i32>(0));
+// DEFAULT-NEXT:                     write<i32>(deref(read<ptr<i32>>(%[[VALUE_e]])), call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], read<i32>(%[[VALUE_h_2]])));
+// DEFAULT-NEXT:                     call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], read<i32>(%[[VALUE_h_2]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

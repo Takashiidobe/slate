@@ -52,24 +52,24 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 v16: i16;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 jint16_t = @type0;
-// DEFAULT-NEXT:     type @type2 node = struct {
-// DEFAULT-NEXT:         field0 magic: @type0;
-// DEFAULT-NEXT:         field1 nodetype: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_jint16_t:[0-9]+]] jint16_t = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE_node:[0-9]+]] node = struct {
+// DEFAULT-NEXT:         field0 magic: @type[[TYPE0]];
+// DEFAULT-NEXT:         field1 nodetype: @type[[TYPE0]];
 // DEFAULT-NEXT:         field2 totlen: i32;
 // DEFAULT-NEXT:     } [size=8, align=1, offsets=[0, 2, 4]];
-// DEFAULT-NEXT:     global %4 node: @type2 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 node_p: ptr<@type2> [storage=static] = addr_of<ptr<@type2>>(%4) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 marker: @type2 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = copy<@type0, reason=assign>(read<@type0>(compound_literal %8 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(6533))))), field1 = copy<@type0, reason=assign>(read<@type0>(compound_literal %9 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(8195))))), field2 = read<i32>(field2(deref(read<ptr<@type2>>(%5)))));
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(field0(%7)))), const<i32>(6533))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(field1(%7)))), const<i32>(8195))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_node:[0-9]+]] node: @type[[TYPE_node]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_node_p:[0-9]+]] node_p: ptr<@type[[TYPE_node]]> [storage=static] = addr_of<ptr<@type[[TYPE_node]]>>(%[[VALUE_node]]) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_marker:[0-9]+]] marker: @type[[TYPE_node]] [storage=automatic] = aggregate<@type[[TYPE_node]], zero_fill=false>(field0 = copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(6533))))), field1 = copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(8195))))), field2 = read<i32>(field2(deref(read<ptr<@type[[TYPE_node]]>>(%[[VALUE_node_p]])))));
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(field0(%[[VALUE_marker]])))), const<i32>(6533))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field0(field1(%[[VALUE_marker]])))), const<i32>(8195))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

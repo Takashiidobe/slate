@@ -73,56 +73,56 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 packed_ushort = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_packed_ushort:[0-9]+]] packed_ushort = struct {
 // DEFAULT-NEXT:         field0 ucs: u16;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 source = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_source:[0-9]+]] source = struct {
 // DEFAULT-NEXT:         field0 pos: i32;
 // DEFAULT-NEXT:         field1 length: i32;
 // DEFAULT-NEXT:         field2 flag: i32;
 // DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @fetch(%4 p: ptr<@type1>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type1>>(%4))), const<i32>(128));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_fetch:[0-9]+]] @fetch(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_source]]>) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_source]]>>(%[[VALUE_p]]))), const<i32>(128));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @next(%6 p: ptr<@type1>) -> @type0 [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 rv: @type0 [storage=automatic];
-// DEFAULT-NEXT:         if ge<i32>(read<i32>(field0(deref(read<ptr<@type1>>(%6)))), read<i32>(field1(deref(read<ptr<@type1>>(%6)))))
+// DEFAULT-NEXT:     fn %[[VALUE_next:[0-9]+]] @next(%[[VALUE_p_2:[0-9]+]] p: ptr<@type[[TYPE_source]]>) -> @type[[TYPE_packed_ushort]] [linkage=internal] [inline=never] [definition=emitted] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_rv:[0-9]+]] rv: @type[[TYPE_packed_ushort]] [storage=automatic];
+// DEFAULT-NEXT:         if ge<i32>(read<i32>(field0(deref(read<ptr<@type[[TYPE_source]]>>(%[[VALUE_p_2]])))), read<i32>(field1(deref(read<ptr<@type[[TYPE_source]]>>(%[[VALUE_p_2]])))))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if ne<i32>(read<i32>(field2(deref(read<ptr<@type1>>(%6)))), const<i32>(0))
+// DEFAULT-NEXT:                 if ne<i32>(read<i32>(field2(deref(read<ptr<@type[[TYPE_source]]>>(%[[VALUE_p_2]])))), const<i32>(0))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         write<i32>(field2(deref(read<ptr<@type1>>(%6))), const<i32>(0));
-// DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type1>) -> void>(%3, read<ptr<@type1>>(%6));
-// DEFAULT-NEXT:                         return copy<@type0, reason=return>(call<@type0, signature=fn(ptr<@type1>) -> @type0, abi=sysv64(scalar) -> native_c>(%5, read<ptr<@type1>>(%6)));
+// DEFAULT-NEXT:                         write<i32>(field2(deref(read<ptr<@type[[TYPE_source]]>>(%[[VALUE_p_2]]))), const<i32>(0));
+// DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type[[TYPE_source]]>) -> void>(%[[VALUE_fetch]], read<ptr<@type[[TYPE_source]]>>(%[[VALUE_p_2]]));
+// DEFAULT-NEXT:                         return copy<@type[[TYPE_packed_ushort]], reason=return>(call<@type[[TYPE_packed_ushort]], signature=fn(ptr<@type[[TYPE_source]]>) -> @type[[TYPE_packed_ushort]], abi=sysv64(scalar) -> native_c>(%[[VALUE_next]], read<ptr<@type[[TYPE_source]]>>(%[[VALUE_p_2]])));
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                 write<i32>(field2(deref(read<ptr<@type1>>(%6))), const<i32>(1));
-// DEFAULT-NEXT:                 write<u16>(field0(%7), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(const<i32>(65535))));
-// DEFAULT-NEXT:                 return copy<@type0, reason=return>(read<@type0>(%7));
+// DEFAULT-NEXT:                 write<i32>(field2(deref(read<ptr<@type[[TYPE_source]]>>(%[[VALUE_p_2]]))), const<i32>(1));
+// DEFAULT-NEXT:                 write<u16>(field0(%[[VALUE_rv]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(const<i32>(65535))));
+// DEFAULT-NEXT:                 return copy<@type[[TYPE_packed_ushort]], reason=return>(read<@type[[TYPE_packed_ushort]]>(%[[VALUE_rv]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         write<u16>(field0(%7), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%7));
+// DEFAULT-NEXT:         write<u16>(field0(%[[VALUE_rv]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         return copy<@type[[TYPE_packed_ushort]], reason=return>(read<@type[[TYPE_packed_ushort]]>(%[[VALUE_rv]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 s: @type1 [storage=automatic];
-// DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(field0(%9), const<i32>(0));
-// DEFAULT-NEXT:         write<i32>(field1(%9), const<i32>(0));
-// DEFAULT-NEXT:         write<i32>(field2(%9), const<i32>(0));
-// DEFAULT-NEXT:         for %12
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_source]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_s]]), const<i32>(0));
+// DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_s]]), const<i32>(0));
+// DEFAULT-NEXT:         write<i32>(field2(%[[VALUE_s]]), const<i32>(0));
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%10, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(16))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(16))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %13: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%13), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%14));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %11 rv: @type0 [storage=automatic] = copy<@type0, reason=assign>(call<@type0, signature=fn(ptr<@type1>) -> @type0, abi=sysv64(scalar) -> native_c>(%5, addr_of<ptr<@type1>>(%9)));
-// DEFAULT-NEXT:                     if logical_or<bool>(logical_and<bool>(eq<i32>(read<i32>(%10), const<i32>(0)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field0(%11)))), const<i32>(65535))), logical_and<bool>(gt<i32>(read<i32>(%10), const<i32>(0)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field0(%11)))), const<i32>(0))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     let %[[VALUE_rv_2:[0-9]+]] rv: @type[[TYPE_packed_ushort]] [storage=automatic] = copy<@type[[TYPE_packed_ushort]], reason=assign>(call<@type[[TYPE_packed_ushort]], signature=fn(ptr<@type[[TYPE_source]]>) -> @type[[TYPE_packed_ushort]], abi=sysv64(scalar) -> native_c>(%[[VALUE_next]], addr_of<ptr<@type[[TYPE_source]]>>(%[[VALUE_s]])));
+// DEFAULT-NEXT:                     if logical_or<bool>(logical_and<bool>(eq<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field0(%[[VALUE_rv_2]])))), const<i32>(65535))), logical_and<bool>(gt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field0(%[[VALUE_rv_2]])))), const<i32>(0))))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

@@ -42,14 +42,14 @@ foo (_BitInt(4058) d)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 b: i8b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 c: bool [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 a: i8445b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo(%4 d: i4058b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<bool>(%1, overflow_add<bool>(read<i8445b>(%2), const<u64>(0), deref(addr_of<ptr<i4058b>>(%4))));
-// DEFAULT-NEXT:         overflow_add<bool>(read<i8445b>(%2), const<u64>(0), deref(addr_of<ptr<i4058b>>(%4)));
-// DEFAULT-NEXT:         overflow_add<bool>(read<i8445b>(%2), const<u64>(0), deref(addr_of<ptr<i4058b>>(%4)));
-// DEFAULT-NEXT:         write<i8b>(%0, truncate<i8b, reason=assign, fits=unknown>(read<i4058b>(%4)));
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i8b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: bool [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i8445b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_d:[0-9]+]] d: i4058b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<bool>(%[[VALUE_c]], overflow_add<bool>(read<i8445b>(%[[VALUE_a]]), const<u64>(0), deref(addr_of<ptr<i4058b>>(%[[VALUE_d]]))));
+// DEFAULT-NEXT:         overflow_add<bool>(read<i8445b>(%[[VALUE_a]]), const<u64>(0), deref(addr_of<ptr<i4058b>>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         overflow_add<bool>(read<i8445b>(%[[VALUE_a]]), const<u64>(0), deref(addr_of<ptr<i4058b>>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         write<i8b>(%[[VALUE_b]], truncate<i8b, reason=assign, fits=unknown>(read<i4058b>(%[[VALUE_d]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

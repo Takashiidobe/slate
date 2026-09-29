@@ -37,14 +37,14 @@ bar (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 accept: i8) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 s: i8 [storage=automatic];
-// DEFAULT-NEXT:         while %5 eq<i32>(widen<i32, reason=promotion>(read<i8>(%2)), widen<i32, reason=promotion>(read<i8>(%1)))
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_accept:[0-9]+]] accept: i8) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: i8 [storage=automatic];
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] eq<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_s]])), widen<i32, reason=promotion>(read<i8>(%[[VALUE_accept]])))
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @bar() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 ch: i8 [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(i8) -> void>(%0, read<i8>(%4));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ch:[0-9]+]] ch: i8 [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(i8) -> void>(%[[VALUE_foo]], read<i8>(%[[VALUE_ch]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

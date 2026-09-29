@@ -34,10 +34,10 @@ void f()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 x: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %2 y: volatile i32 [storage=automatic];
-// DEFAULT-NEXT:         eq<ptr<i32>>(addr_of<ptr<i32>>(%1), pointer_cast<ptr<i32>, reason=usual_arith>(addr_of<ptr<volatile i32>>(%2)));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: volatile i32 [storage=automatic];
+// DEFAULT-NEXT:         eq<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_x]]), pointer_cast<ptr<i32>, reason=usual_arith>(addr_of<ptr<volatile i32>>(%[[VALUE_y]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

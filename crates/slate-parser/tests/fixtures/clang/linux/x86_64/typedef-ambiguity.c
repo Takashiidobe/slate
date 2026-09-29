@@ -39,10 +39,10 @@ int call_main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 B: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @A(%4 value: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @call_main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%0));
+// DEFAULT-NEXT:     global %[[VALUE_B:[0-9]+]] B: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_A:[0-9]+]] @A(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_call_main:[0-9]+]] @call_main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_A]], read<i32>(%[[VALUE_B]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
@@ -70,10 +70,10 @@ int call_main() {
 // CAST-NEXT:         storage d64 [size=8, align=8];
 // CAST-NEXT:         storage d128 [size=16, align=16];
 // CAST-NEXT:     }
-// CAST-NEXT:     type @type0 A = i32;
-// CAST-NEXT:     global %0 B: i32 [storage=static] [linkage=external];
-// CAST-NEXT:     fn %2 @cast_main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// CAST-NEXT:         read<i32>(%0);
+// CAST-NEXT:     type @type[[TYPE_A:[0-9]+]] A = i32;
+// CAST-NEXT:     global %[[VALUE_B:[0-9]+]] B: i32 [storage=static] [linkage=external];
+// CAST-NEXT:     fn %[[VALUE_cast_main:[0-9]+]] @cast_main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// CAST-NEXT:         read<i32>(%[[VALUE_B]]);
 // CAST-NEXT:         return const<i32>(0);
 // CAST-NEXT:     }
 // CAST-NEXT: }

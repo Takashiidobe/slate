@@ -63,36 +63,36 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:         field1 j: i32;
 // DEFAULT-NEXT:         field2 k: i32;
 // DEFAULT-NEXT:         field3 l: i32;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 4, 8, 12]];
-// DEFAULT-NEXT:     type @type1 B = struct {
-// DEFAULT-NEXT:         field0 a: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
+// DEFAULT-NEXT:         field0 a: @type[[TYPE_A]];
 // DEFAULT-NEXT:         field1 r: array<i32, 1>;
 // DEFAULT-NEXT:     } [size=20, align=4, offsets=[0, 16]];
-// DEFAULT-NEXT:     type @type2 C = struct {
-// DEFAULT-NEXT:         field0 a: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_C:[0-9]+]] C = struct {
+// DEFAULT-NEXT:         field0 a: @type[[TYPE_A]];
 // DEFAULT-NEXT:         field1 r: array<i32, 0>;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 16]];
-// DEFAULT-NEXT:     type @type3 D = struct {
-// DEFAULT-NEXT:         field0 a: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_D:[0-9]+]] D = struct {
+// DEFAULT-NEXT:         field0 a: @type[[TYPE_A]];
 // DEFAULT-NEXT:         field1 r: array<i32, incomplete>;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 16]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @foo(%6 x: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type0>>(%6)))), const<i32>(0)), ne<i32>(read<i32>(field1(deref(read<ptr<@type0>>(%6)))), const<i32>(5))), ne<i32>(read<i32>(field2(deref(read<ptr<@type0>>(%6)))), const<i32>(0))), ne<i32>(read<i32>(field3(deref(read<ptr<@type0>>(%6)))), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE_A]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]])))), const<i32>(0)), ne<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]])))), const<i32>(5))), ne<i32>(read<i32>(field2(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]])))), const<i32>(0))), ne<i32>(read<i32>(field3(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]])))), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 b: @type1 [storage=automatic] = aggregate<@type1, zero_fill=true>(field0 = aggregate<@type0, zero_fill=true>(field1 = const<i32>(5)));
-// DEFAULT-NEXT:         let %9 c: @type2 [storage=automatic] = aggregate<@type2, zero_fill=true>(field0 = aggregate<@type0, zero_fill=true>(field1 = const<i32>(5)));
-// DEFAULT-NEXT:         let %10 d: @type3 [storage=automatic] = aggregate<@type3, zero_fill=false>(field0 = aggregate<@type0, zero_fill=true>(field1 = const<i32>(5)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%5, addr_of<ptr<@type0>>(field0(%8)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%5, addr_of<ptr<@type0>>(field0(%9)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type0>) -> void>(%5, addr_of<ptr<@type0>>(field0(%10)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_B]] [storage=automatic] = aggregate<@type[[TYPE_B]], zero_fill=true>(field0 = aggregate<@type[[TYPE_A]], zero_fill=true>(field1 = const<i32>(5)));
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: @type[[TYPE_C]] [storage=automatic] = aggregate<@type[[TYPE_C]], zero_fill=true>(field0 = aggregate<@type[[TYPE_A]], zero_fill=true>(field1 = const<i32>(5)));
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: @type[[TYPE_D]] [storage=automatic] = aggregate<@type[[TYPE_D]], zero_fill=false>(field0 = aggregate<@type[[TYPE_A]], zero_fill=true>(field1 = const<i32>(5)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_A]]>>(field0(%[[VALUE_b]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_A]]>>(field0(%[[VALUE_c]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_A]]>) -> void>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_A]]>>(field0(%[[VALUE_d]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

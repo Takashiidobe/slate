@@ -34,10 +34,10 @@ void test()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @test() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 dc: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         let %2 d: f64 [storage=automatic];
-// DEFAULT-NEXT:         write<f64>(%2, complex_to_real<f64, reason=explicit>(mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%1), read<complex<f64>>(%1))));
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_dc:[0-9]+]] dc: complex<f64> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: f64 [storage=automatic];
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_d]], complex_to_real<f64, reason=explicit>(mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<complex<f64>>(%[[VALUE_dc]]), read<complex<f64>>(%[[VALUE_dc]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

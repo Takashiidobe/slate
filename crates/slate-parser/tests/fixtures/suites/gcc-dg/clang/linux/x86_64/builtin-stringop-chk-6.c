@@ -137,68 +137,68 @@ void test_stringop_warn_subobject (const char *src)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     type @type1 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 a: i8;
 // DEFAULT-NEXT:         field1 b: i8;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0, 1]];
-// DEFAULT-NEXT:     type @type2 B = struct {
-// DEFAULT-NEXT:         field0 a: @type1;
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
+// DEFAULT-NEXT:         field0 a: @type[[TYPE_A]];
 // DEFAULT-NEXT:         field1 c: i8;
 // DEFAULT-NEXT:         field2 d: i8;
 // DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 2, 3]];
-// DEFAULT-NEXT:     type @type3 C = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_C:[0-9]+]] C = struct {
 // DEFAULT-NEXT:         field0 a: array<i8, 3>;
 // DEFAULT-NEXT:         field1 b: i8;
 // DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 3]];
-// DEFAULT-NEXT:     type @type4 D = struct {
-// DEFAULT-NEXT:         field0 c: @type3;
+// DEFAULT-NEXT:     type @type[[TYPE_D:[0-9]+]] D = struct {
+// DEFAULT-NEXT:         field0 c: @type[[TYPE_C]];
 // DEFAULT-NEXT:         field1 d: i8;
 // DEFAULT-NEXT:         field2 e: i8;
 // DEFAULT-NEXT:     } [size=6, align=1, offsets=[0, 4, 5]];
-// DEFAULT-NEXT:     global %42 .str42: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([49, 50, 51, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %43 .str43: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([49, 50, 51, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @memcpy(%32 <unnamed>: ptr<void>, %33 <unnamed>: ptr<const void>, %34 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %2 @memset(%35 <unnamed>: ptr<void>, %36 <unnamed>: i32, %37 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %5 @escape(%38 <unnamed>: ptr<void>, ...) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %6 @random_unsigned_value() -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @range(%8 min: u64, %9 max: u64) -> u64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 val: u64 [storage=automatic] [const] = call<u64, signature=fn() -> u64>(%6);
-// DEFAULT-NEXT:         return conditional<u64>(logical_or<bool>(lt<u64>(read<u64>(%10), read<u64>(%8)), lt<u64>(read<u64>(%9), read<u64>(%10))), read<u64>(%8), read<u64>(%10));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([49, 50, 51, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([49, 50, 51, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_memcpy:[0-9]+]] @memcpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE3:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE4:[0-9]+]] <unnamed>: i32, %[[VALUE5:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_escape:[0-9]+]] @escape(%[[VALUE6:[0-9]+]] <unnamed>: ptr<void>, ...) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_random_unsigned_value:[0-9]+]] @random_unsigned_value() -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_range:[0-9]+]] @range(%[[VALUE_min:[0-9]+]] min: u64, %[[VALUE_max:[0-9]+]] max: u64) -> u64 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_val:[0-9]+]] val: u64 [storage=automatic] [const] = call<u64, signature=fn() -> u64>(%[[VALUE_random_unsigned_value]]);
+// DEFAULT-NEXT:         return conditional<u64>(logical_or<bool>(lt<u64>(read<u64>(%[[VALUE_val]]), read<u64>(%[[VALUE_min]])), lt<u64>(read<u64>(%[[VALUE_max]]), read<u64>(%[[VALUE_val]]))), read<u64>(%[[VALUE_min]]), read<u64>(%[[VALUE_val]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @test_memop_warn_object(%12 src: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %13 n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(u64, u64) -> u64>(%7, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(17))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(29)))));
-// DEFAULT-NEXT:         let %14 a: array<@type1, 2> [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type1>>(deref(ptr_offset<ptr<@type1>, subtract=false, element=@type1, overflow=ub>(array_decay<ptr<@type1>, length=Some(2)>(%14), const<i32>(0))))), read<ptr<const void>>(%12), widen<u64, reason=arg>(read<u32>(%13)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%5, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type1>, length=Some(2)>(%14)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_memop_warn_object:[0-9]+]] @test_memop_warn_object(%[[VALUE_src:[0-9]+]] src: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(u64, u64) -> u64>(%[[VALUE_range]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(17))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(29)))));
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: array<@type[[TYPE_A]], 2> [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_A]]>>(deref(ptr_offset<ptr<@type[[TYPE_A]]>, subtract=false, element=@type[[TYPE_A]], overflow=ub>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(2)>(%[[VALUE_a]]), const<i32>(0))))), read<ptr<const void>>(%[[VALUE_src]]), widen<u64, reason=arg>(read<u32>(%[[VALUE_n]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%[[VALUE_escape]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE_A]]>, length=Some(2)>(%[[VALUE_a]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @test_memop_warn_subobject(%16 src: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %17 n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(u64, u64) -> u64>(%7, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(17))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(31)))));
-// DEFAULT-NEXT:         let %18 b: array<@type2, 2> [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%1, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type1>>(field0(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(2)>(%18), const<i32>(0)))))), read<ptr<const void>>(%16), widen<u64, reason=arg>(read<u32>(%17)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%5, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type2>, length=Some(2)>(%18)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_memop_warn_subobject:[0-9]+]] @test_memop_warn_subobject(%[[VALUE_src_2:[0-9]+]] src: ptr<const void>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_n_2:[0-9]+]] n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(u64, u64) -> u64>(%[[VALUE_range]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(17))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(31)))));
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: array<@type[[TYPE_B]], 2> [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_A]]>>(field0(deref(ptr_offset<ptr<@type[[TYPE_B]]>, subtract=false, element=@type[[TYPE_B]], overflow=ub>(array_decay<ptr<@type[[TYPE_B]]>, length=Some(2)>(%[[VALUE_b]]), const<i32>(0)))))), read<ptr<const void>>(%[[VALUE_src_2]]), widen<u64, reason=arg>(read<u32>(%[[VALUE_n_2]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%[[VALUE_escape]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE_B]]>, length=Some(2)>(%[[VALUE_b]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @test_memop_nowarn_subobject() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %20 b: array<@type2, 2> [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%2, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i8>>(field1(deref(ptr_offset<ptr<@type2>, subtract=false, element=@type2, overflow=ub>(array_decay<ptr<@type2>, length=Some(2)>(%20), const<i32>(0)))))), const<i32>(0), sub<u64, overflow=wrap>(const<u64>(4), const<u64>(2)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%5, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type2>, length=Some(2)>(%20)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_memop_nowarn_subobject:[0-9]+]] @test_memop_nowarn_subobject() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: array<@type[[TYPE_B]], 2> [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<i8>>(field1(deref(ptr_offset<ptr<@type[[TYPE_B]]>, subtract=false, element=@type[[TYPE_B]], overflow=ub>(array_decay<ptr<@type[[TYPE_B]]>, length=Some(2)>(%[[VALUE_b_2]]), const<i32>(0)))))), const<i32>(0), sub<u64, overflow=wrap>(const<u64>(4), const<u64>(2)));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%[[VALUE_escape]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE_B]]>, length=Some(2)>(%[[VALUE_b_2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @strncpy(%39 <unnamed>: ptr<i8>, %40 <unnamed>: ptr<const i8>, %41 <unnamed>: u64) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %24 @test_stringop_warn_object(%25 str: ptr<const i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %26 n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(u64, u64) -> u64>(%7, mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))), const<u64>(6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(32)))));
-// DEFAULT-NEXT:         let %27 c: array<@type3, 2> [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%23, array_decay<ptr<i8>, length=Some(3)>(field0(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(2)>(%27), const<i32>(0))))), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%42)), widen<u64, reason=arg>(read<u32>(%26)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%5, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type3>, length=Some(2)>(%27)));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%23, array_decay<ptr<i8>, length=Some(3)>(field0(deref(ptr_offset<ptr<@type3>, subtract=false, element=@type3, overflow=ub>(array_decay<ptr<@type3>, length=Some(2)>(%27), const<i32>(0))))), read<ptr<const i8>>(%25), widen<u64, reason=arg>(read<u32>(%26)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%5, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type3>, length=Some(2)>(%27)));
+// DEFAULT-NEXT:     fn %[[VALUE_strncpy:[0-9]+]] @strncpy(%[[VALUE7:[0-9]+]] <unnamed>: ptr<i8>, %[[VALUE8:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE9:[0-9]+]] <unnamed>: u64) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test_stringop_warn_object:[0-9]+]] @test_stringop_warn_object(%[[VALUE_str_3:[0-9]+]] str: ptr<const i8>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_n_3:[0-9]+]] n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(u64, u64) -> u64>(%[[VALUE_range]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))), const<u64>(6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(32)))));
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: array<@type[[TYPE_C]], 2> [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE_strncpy]], array_decay<ptr<i8>, length=Some(3)>(field0(deref(ptr_offset<ptr<@type[[TYPE_C]]>, subtract=false, element=@type[[TYPE_C]], overflow=ub>(array_decay<ptr<@type[[TYPE_C]]>, length=Some(2)>(%[[VALUE_c]]), const<i32>(0))))), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), widen<u64, reason=arg>(read<u32>(%[[VALUE_n_3]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%[[VALUE_escape]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE_C]]>, length=Some(2)>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE_strncpy]], array_decay<ptr<i8>, length=Some(3)>(field0(deref(ptr_offset<ptr<@type[[TYPE_C]]>, subtract=false, element=@type[[TYPE_C]], overflow=ub>(array_decay<ptr<@type[[TYPE_C]]>, length=Some(2)>(%[[VALUE_c]]), const<i32>(0))))), read<ptr<const i8>>(%[[VALUE_str_3]]), widen<u64, reason=arg>(read<u32>(%[[VALUE_n_3]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%[[VALUE_escape]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE_C]]>, length=Some(2)>(%[[VALUE_c]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %28 @test_stringop_warn_subobject(%29 src: ptr<const i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %30 n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(u64, u64) -> u64>(%7, mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))), const<u64>(6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(32)))));
-// DEFAULT-NEXT:         let %31 d: array<@type4, 2> [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%23, array_decay<ptr<i8>, length=Some(3)>(field0(field0(deref(ptr_offset<ptr<@type4>, subtract=false, element=@type4, overflow=ub>(array_decay<ptr<@type4>, length=Some(2)>(%31), const<i32>(0)))))), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%43)), widen<u64, reason=arg>(read<u32>(%30)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%5, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type4>, length=Some(2)>(%31)));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%23, array_decay<ptr<i8>, length=Some(3)>(field0(field0(deref(ptr_offset<ptr<@type4>, subtract=false, element=@type4, overflow=ub>(array_decay<ptr<@type4>, length=Some(2)>(%31), const<i32>(0)))))), read<ptr<const i8>>(%29), widen<u64, reason=arg>(read<u32>(%30)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%5, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type4>, length=Some(2)>(%31)));
+// DEFAULT-NEXT:     fn %[[VALUE_test_stringop_warn_subobject:[0-9]+]] @test_stringop_warn_subobject(%[[VALUE_src_3:[0-9]+]] src: ptr<const i8>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_n_4:[0-9]+]] n: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(call<u64, signature=fn(u64, u64) -> u64>(%[[VALUE_range]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))), const<u64>(6)), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(32)))));
+// DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: array<@type[[TYPE_D]], 2> [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE_strncpy]], array_decay<ptr<i8>, length=Some(3)>(field0(field0(deref(ptr_offset<ptr<@type[[TYPE_D]]>, subtract=false, element=@type[[TYPE_D]], overflow=ub>(array_decay<ptr<@type[[TYPE_D]]>, length=Some(2)>(%[[VALUE_d]]), const<i32>(0)))))), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), widen<u64, reason=arg>(read<u32>(%[[VALUE_n_4]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%[[VALUE_escape]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE_D]]>, length=Some(2)>(%[[VALUE_d]])));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE_strncpy]], array_decay<ptr<i8>, length=Some(3)>(field0(field0(deref(ptr_offset<ptr<@type[[TYPE_D]]>, subtract=false, element=@type[[TYPE_D]], overflow=ub>(array_decay<ptr<@type[[TYPE_D]]>, length=Some(2)>(%[[VALUE_d]]), const<i32>(0)))))), read<ptr<const i8>>(%[[VALUE_src_3]]), widen<u64, reason=arg>(read<u32>(%[[VALUE_n_4]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ...) -> void>(%[[VALUE_escape]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<@type[[TYPE_D]]>, length=Some(2)>(%[[VALUE_d]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

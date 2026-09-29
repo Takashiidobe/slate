@@ -45,31 +45,31 @@ _Static_assert(sizeof(struct Scalars) == 24, "clang: 24");
 // TARGET-NEXT:         storage d64 [size=8, align=8];
 // TARGET-NEXT:         storage d128 [size=16, align=16];
 // TARGET-NEXT:     }
-// TARGET-NEXT:     type @type0 Scalars = struct {
+// TARGET-NEXT:     type @type[[TYPE_Scalars:[0-9]+]] Scalars = struct {
 // TARGET-NEXT:         field0 first: i8;
 // TARGET-NEXT:         field1 wide: i64;
 // TARGET-NEXT:         field2 real: f64;
 // TARGET-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// TARGET-NEXT:     type @type1 Pointers = struct {
+// TARGET-NEXT:     type @type[[TYPE_Pointers:[0-9]+]] Pointers = struct {
 // TARGET-NEXT:         field0 first: i8;
 // TARGET-NEXT:         field1 pointer: ptr<i32>;
 // TARGET-NEXT:         field2 last: i8;
 // TARGET-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// TARGET-NEXT:     type @type2 Arrays = struct {
+// TARGET-NEXT:     type @type[[TYPE_Arrays:[0-9]+]] Arrays = struct {
 // TARGET-NEXT:         field0 first: i8;
 // TARGET-NEXT:         field1 values: array<f64, 2>;
 // TARGET-NEXT:         field2 last: i8;
 // TARGET-NEXT:     } [size=32, align=8, offsets=[0, 8, 24]];
-// TARGET-NEXT:     type @type3 Choice = union {
+// TARGET-NEXT:     type @type[[TYPE_Choice:[0-9]+]] Choice = union {
 // TARGET-NEXT:         field0 real: f64;
 // TARGET-NEXT:         field1 bytes: array<i8, 3>;
 // TARGET-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// TARGET-NEXT:     type @type4 Aligned = struct {
+// TARGET-NEXT:     type @type[[TYPE_Aligned:[0-9]+]] Aligned = struct {
 // TARGET-NEXT:         field0 value: i32;
 // TARGET-NEXT:     } [size=8, align=8, offsets=[0]];
-// TARGET-NEXT:     type @type5 NestedAligned = struct {
+// TARGET-NEXT:     type @type[[TYPE_NestedAligned:[0-9]+]] NestedAligned = struct {
 // TARGET-NEXT:         field0 first: i8;
-// TARGET-NEXT:         field1 inner: @type4;
+// TARGET-NEXT:         field1 inner: @type[[TYPE_Aligned]];
 // TARGET-NEXT:     } [size=16, align=8, offsets=[0, 8]];
 // TARGET-NEXT: }
 // SLATE-FILECHECK-END TARGET

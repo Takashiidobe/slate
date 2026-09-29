@@ -62,38 +62,38 @@ baz (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i1024b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i1024b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 c: i1024b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 d: i1024b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 e: i1024b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 f: i1024b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 g: i512b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 h: i512b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 i: i512b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 j: i512b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 k: i512b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %12 l: i512b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %14 m: i32b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %15 n: i32b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %16 o: i32b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %17 p: i32b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %18 q: i32b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %19 r: i32b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %6 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         overflow_add<bool>(read<i1024b>(%0), read<i1024b>(%1), deref(addr_of<ptr<i1024b>>(%0)));
-// DEFAULT-NEXT:         overflow_sub<bool>(read<i1024b>(%2), read<i1024b>(%3), deref(addr_of<ptr<i1024b>>(%2)));
-// DEFAULT-NEXT:         overflow_mul<bool>(read<i1024b>(%4), read<i1024b>(%5), deref(addr_of<ptr<i1024b>>(%4)));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i1024b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i1024b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i1024b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i1024b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i1024b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: i1024b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: i512b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_h:[0-9]+]] h: i512b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i512b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: i512b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_k:[0-9]+]] k: i512b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_l:[0-9]+]] l: i512b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_m:[0-9]+]] m: i32b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_n:[0-9]+]] n: i32b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_o:[0-9]+]] o: i32b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: i32b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: i32b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_r:[0-9]+]] r: i32b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         overflow_add<bool>(read<i1024b>(%[[VALUE_a]]), read<i1024b>(%[[VALUE_b]]), deref(addr_of<ptr<i1024b>>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         overflow_sub<bool>(read<i1024b>(%[[VALUE_c]]), read<i1024b>(%[[VALUE_d]]), deref(addr_of<ptr<i1024b>>(%[[VALUE_c]])));
+// DEFAULT-NEXT:         overflow_mul<bool>(read<i1024b>(%[[VALUE_e]]), read<i1024b>(%[[VALUE_f]]), deref(addr_of<ptr<i1024b>>(%[[VALUE_e]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @bar() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         overflow_add<bool>(read<i512b>(%7), read<i512b>(%8), deref(addr_of<ptr<i512b>>(%7)));
-// DEFAULT-NEXT:         overflow_sub<bool>(read<i512b>(%9), read<i512b>(%10), deref(addr_of<ptr<i512b>>(%9)));
-// DEFAULT-NEXT:         overflow_mul<bool>(read<i512b>(%11), read<i512b>(%12), deref(addr_of<ptr<i512b>>(%11)));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         overflow_add<bool>(read<i512b>(%[[VALUE_g]]), read<i512b>(%[[VALUE_h]]), deref(addr_of<ptr<i512b>>(%[[VALUE_g]])));
+// DEFAULT-NEXT:         overflow_sub<bool>(read<i512b>(%[[VALUE_i]]), read<i512b>(%[[VALUE_j]]), deref(addr_of<ptr<i512b>>(%[[VALUE_i]])));
+// DEFAULT-NEXT:         overflow_mul<bool>(read<i512b>(%[[VALUE_k]]), read<i512b>(%[[VALUE_l]]), deref(addr_of<ptr<i512b>>(%[[VALUE_k]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @baz() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         overflow_add<bool>(read<i32b>(%14), read<i32b>(%15), deref(addr_of<ptr<i32b>>(%14)));
-// DEFAULT-NEXT:         overflow_sub<bool>(read<i32b>(%16), read<i32b>(%17), deref(addr_of<ptr<i32b>>(%16)));
-// DEFAULT-NEXT:         overflow_mul<bool>(read<i32b>(%18), read<i32b>(%19), deref(addr_of<ptr<i32b>>(%18)));
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         overflow_add<bool>(read<i32b>(%[[VALUE_m]]), read<i32b>(%[[VALUE_n]]), deref(addr_of<ptr<i32b>>(%[[VALUE_m]])));
+// DEFAULT-NEXT:         overflow_sub<bool>(read<i32b>(%[[VALUE_o]]), read<i32b>(%[[VALUE_p]]), deref(addr_of<ptr<i32b>>(%[[VALUE_o]])));
+// DEFAULT-NEXT:         overflow_mul<bool>(read<i32b>(%[[VALUE_q]]), read<i32b>(%[[VALUE_r]]), deref(addr_of<ptr<i32b>>(%[[VALUE_q]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

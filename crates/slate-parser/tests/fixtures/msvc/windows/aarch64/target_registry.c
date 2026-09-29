@@ -37,17 +37,17 @@ struct pair record(struct pair value) { return value; }
 // AARCH64-WINDOWS-MSVC-MSVC-NEXT:         storage d64 [size=8, align=8];
 // AARCH64-WINDOWS-MSVC-MSVC-NEXT:         storage d128 [size=16, align=16];
 // AARCH64-WINDOWS-MSVC-MSVC-NEXT:     }
-// AARCH64-WINDOWS-MSVC-MSVC-NEXT:     type @type0 pair = struct {
+// AARCH64-WINDOWS-MSVC-MSVC-NEXT:     type @type[[TYPE_pair:[0-9]+]] pair = struct {
 // AARCH64-WINDOWS-MSVC-MSVC-NEXT:         field0 a: i32;
 // AARCH64-WINDOWS-MSVC-MSVC-NEXT:         field1 b: i32;
 // AARCH64-WINDOWS-MSVC-MSVC-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// AARCH64-WINDOWS-MSVC-MSVC-NEXT:     global %0 msc_ver: i32 [storage=static] = const<i32>(1951) [linkage=external];
-// AARCH64-WINDOWS-MSVC-MSVC-NEXT:     global %1 sizeof_long: u32 [storage=static] = truncate<u32>(const<u64>(4)) [linkage=external];
-// AARCH64-WINDOWS-MSVC-MSVC-NEXT:     global %2 sizeof_long_double: u32 [storage=static] = truncate<u32>(const<u64>(8)) [linkage=external];
-// AARCH64-WINDOWS-MSVC-MSVC-NEXT:     global %3 sizeof_va_list: u32 [storage=static] = truncate<u32>(const<u64>(8)) [linkage=external];
-// AARCH64-WINDOWS-MSVC-MSVC-NEXT:     global %4 alignof_long_long: u32 [storage=static] = truncate<u32>(const<u64>(8)) [linkage=external];
-// AARCH64-WINDOWS-MSVC-MSVC-NEXT:     fn %6 @record(%7 value: @type0) -> @type0 [linkage=external] [abi=win_arm64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// AARCH64-WINDOWS-MSVC-MSVC-NEXT:         return copy<@type0, reason=return>(read<@type0>(%7));
+// AARCH64-WINDOWS-MSVC-MSVC-NEXT:     global %[[VALUE_msc_ver:[0-9]+]] msc_ver: i32 [storage=static] = const<i32>(1951) [linkage=external];
+// AARCH64-WINDOWS-MSVC-MSVC-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u32 [storage=static] = truncate<u32>(const<u64>(4)) [linkage=external];
+// AARCH64-WINDOWS-MSVC-MSVC-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u32 [storage=static] = truncate<u32>(const<u64>(8)) [linkage=external];
+// AARCH64-WINDOWS-MSVC-MSVC-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u32 [storage=static] = truncate<u32>(const<u64>(8)) [linkage=external];
+// AARCH64-WINDOWS-MSVC-MSVC-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u32 [storage=static] = truncate<u32>(const<u64>(8)) [linkage=external];
+// AARCH64-WINDOWS-MSVC-MSVC-NEXT:     fn %[[VALUE_record:[0-9]+]] @record(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=win_arm64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// AARCH64-WINDOWS-MSVC-MSVC-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value]]));
 // AARCH64-WINDOWS-MSVC-MSVC-NEXT:     }
 // AARCH64-WINDOWS-MSVC-MSVC-NEXT: }
 // SLATE-FILECHECK-END AARCH64-WINDOWS-MSVC-MSVC

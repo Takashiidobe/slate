@@ -65,24 +65,24 @@ int i;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 a: i710b;
 // DEFAULT-NEXT:     } [size=96, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 T = struct {
-// DEFAULT-NEXT:         field0 b: array<@type0, 4>;
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = struct {
+// DEFAULT-NEXT:         field0 b: array<@type[[TYPE_S]], 4>;
 // DEFAULT-NEXT:     } [size=384, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %2 @foo(%3 p: ptr<@type1>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 s: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<@type0>(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(4)>(field0(deref(read<ptr<@type1>>(%3)))), const<i32>(0))), copy<@type0, reason=assign>(read<@type0>(%4)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_T]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=automatic];
+// DEFAULT-NEXT:         write<@type[[TYPE_S]]>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_p]])))), const<i32>(0))), copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_s]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @bar(%6 p: ptr<@type1>, %7 x: i710b, %8 y: i32, %9 z: f64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i710b>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(4)>(field0(deref(read<ptr<@type1>>(%6)))), const<i32>(0)))), add<i710b, overflow=ub>(read<i710b>(%7), widen<i710b, reason=usual_arith>(const<i32>(42))));
-// DEFAULT-NEXT:         write<i710b>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(4)>(field0(deref(read<ptr<@type1>>(%6)))), const<i32>(1)))), shl<i710b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i710b>(%7), read<i32>(%8)));
-// DEFAULT-NEXT:         write<i710b>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(4)>(field0(deref(read<ptr<@type1>>(%6)))), const<i32>(2)))), shr<i710b, amount_out_of_range=ub, fill=sign_extend>(read<i710b>(%7), read<i32>(%8)));
-// DEFAULT-NEXT:         write<i710b>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(4)>(field0(deref(read<ptr<@type1>>(%6)))), const<i32>(3)))), float_to_int<i710b, reason=assign, out_of_range=ub, exceptions=ignore>(read<f64>(%9)));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_p_2:[0-9]+]] p: ptr<@type[[TYPE_T]]>, %[[VALUE_x:[0-9]+]] x: i710b, %[[VALUE_y:[0-9]+]] y: i32, %[[VALUE_z:[0-9]+]] z: f64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i710b>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_p_2]])))), const<i32>(0)))), add<i710b, overflow=ub>(read<i710b>(%[[VALUE_x]]), widen<i710b, reason=usual_arith>(const<i32>(42))));
+// DEFAULT-NEXT:         write<i710b>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_p_2]])))), const<i32>(1)))), shl<i710b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i710b>(%[[VALUE_x]]), read<i32>(%[[VALUE_y]])));
+// DEFAULT-NEXT:         write<i710b>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_p_2]])))), const<i32>(2)))), shr<i710b, amount_out_of_range=ub, fill=sign_extend>(read<i710b>(%[[VALUE_x]]), read<i32>(%[[VALUE_y]])));
+// DEFAULT-NEXT:         write<i710b>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_p_2]])))), const<i32>(3)))), float_to_int<i710b, reason=assign, out_of_range=ub, exceptions=ignore>(read<f64>(%[[VALUE_z]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @baz(%11 p: ptr<@type1>, %12 x: i710b, %13 y: i710b) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(overflow_add<bool>(read<i710b>(%12), read<i710b>(%13), deref(addr_of<ptr<i710b>>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(4)>(field0(deref(read<ptr<@type1>>(%11)))), const<i32>(1))))))));
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_p_3:[0-9]+]] p: ptr<@type[[TYPE_T]]>, %[[VALUE_x_2:[0-9]+]] x: i710b, %[[VALUE_y_2:[0-9]+]] y: i710b) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(overflow_add<bool>(read<i710b>(%[[VALUE_x_2]]), read<i710b>(%[[VALUE_y_2]]), deref(addr_of<ptr<i710b>>(field0(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(4)>(field0(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_p_3]])))), const<i32>(1))))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

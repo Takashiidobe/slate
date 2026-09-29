@@ -45,26 +45,26 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @buggy(%2 param: ptr<u32>) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 accu: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %4 zero: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
-// DEFAULT-NEXT:         let %5 borrow: u32 [storage=automatic];
-// DEFAULT-NEXT:         write<u32>(%3, neg<u32, overflow=wrap>(read<u32>(deref(read<ptr<u32>>(%2)))));
-// DEFAULT-NEXT:         write<u32>(%5, reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(from_bool<i32, reason=promotion>(gt<u32>(read<u32>(%3), read<u32>(%4))))));
-// DEFAULT-NEXT:         let %9: ptr<u32> [synthetic] = read<ptr<u32>>(%2);
-// DEFAULT-NEXT:         let %10: u32 [synthetic] = read<u32>(deref(read<ptr<u32>>(%9)));
-// DEFAULT-NEXT:         let %11: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%10), read<u32>(%3));
-// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%9)), read<u32>(%11));
-// DEFAULT-NEXT:         return read<u32>(%5);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_buggy:[0-9]+]] @buggy(%[[VALUE_param:[0-9]+]] param: ptr<u32>) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_accu:[0-9]+]] accu: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_zero:[0-9]+]] zero: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE_borrow:[0-9]+]] borrow: u32 [storage=automatic];
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_accu]], neg<u32, overflow=wrap>(read<u32>(deref(read<ptr<u32>>(%[[VALUE_param]])))));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_borrow]], reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(from_bool<i32, reason=promotion>(gt<u32>(read<u32>(%[[VALUE_accu]]), read<u32>(%[[VALUE_zero]]))))));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<u32> [synthetic] = read<ptr<u32>>(%[[VALUE_param]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(deref(read<ptr<u32>>(%[[VALUE0]])));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE1]]), read<u32>(%[[VALUE_accu]]));
+// DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%[[VALUE0]])), read<u32>(%[[VALUE2]]));
+// DEFAULT-NEXT:         return read<u32>(%[[VALUE_borrow]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 param: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(1));
-// DEFAULT-NEXT:         let %8 borrow: u32 [storage=automatic] = call<u32, signature=fn(ptr<u32>) -> u32>(%1, addr_of<ptr<u32>>(%7));
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%7), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<u32>(add<u32, overflow=wrap>(read<u32>(%8), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_param_2:[0-9]+]] param: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE_borrow_2:[0-9]+]] borrow: u32 [storage=automatic] = call<u32, signature=fn(ptr<u32>) -> u32>(%[[VALUE_buggy]], addr_of<ptr<u32>>(%[[VALUE_param_2]]));
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_param_2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_borrow_2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

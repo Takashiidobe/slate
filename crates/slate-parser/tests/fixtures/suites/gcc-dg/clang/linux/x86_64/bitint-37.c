@@ -36,9 +36,9 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 e: i575b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo() -> i575b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return and<i575b>(read<i575b>(%0), widen<i575b, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i575b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i575b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return and<i575b>(read<i575b>(%[[VALUE_e]]), widen<i575b, reason=usual_arith>(const<i32>(1)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

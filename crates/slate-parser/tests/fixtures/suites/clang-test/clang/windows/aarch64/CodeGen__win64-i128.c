@@ -67,27 +67,27 @@ void vararg_struct(int a, ...) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 int128_t = i128;
-// DEFAULT-NEXT:     type @type1 Align16 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_int128_t:[0-9]+]] int128_t = i128;
+// DEFAULT-NEXT:     type @type[[TYPE_Align16:[0-9]+]] Align16 = struct {
 // DEFAULT-NEXT:         field0 x: array<i8, 16>;
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @foo() -> i128 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i128 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return widen<i128, reason=return>(const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @bar(%3 a: i128, %4 b: i128) -> i128 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<i128, overflow=ub>(read<i128>(%3), read<i128>(%4));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_a:[0-9]+]] a: i128, %[[VALUE_b:[0-9]+]] b: i128) -> i128 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return mul<i128, overflow=ub>(read<i128>(%[[VALUE_a]]), read<i128>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @vararg(%6 a: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %7 ap: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         va_start(%7);
-// DEFAULT-NEXT:         let %8 i: i128 [storage=automatic] = va_arg<i128>(%7);
-// DEFAULT-NEXT:         va_end(%7);
+// DEFAULT-NEXT:     fn %[[VALUE_vararg:[0-9]+]] @vararg(%[[VALUE_a_2:[0-9]+]] a: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i128 [storage=automatic] = va_arg<i128>(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @vararg_struct(%11 a: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %12 ap: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         va_start(%12);
-// DEFAULT-NEXT:         let %13 i: @type1 [storage=automatic] = copy<@type1, reason=assign>(va_arg<@type1>(%12));
-// DEFAULT-NEXT:         va_end(%12);
+// DEFAULT-NEXT:     fn %[[VALUE_vararg_struct:[0-9]+]] @vararg_struct(%[[VALUE_a_3:[0-9]+]] a: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
+// DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: @type[[TYPE_Align16]] [storage=automatic] = copy<@type[[TYPE_Align16]], reason=assign>(va_arg<@type[[TYPE_Align16]]>(%[[VALUE_ap_2]]));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -52,24 +52,24 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S0:[0-9]+]] S0 = struct {
 // DEFAULT-NEXT:         field0 m0: i16;
 // DEFAULT-NEXT:         field1 m1: i16;
 // DEFAULT-NEXT:     } [size=4, align=2, offsets=[0, 2]];
-// DEFAULT-NEXT:     type @type1 S1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S1:[0-9]+]] S1 = struct {
 // DEFAULT-NEXT:         field0 m0: u32 : 1;
 // DEFAULT-NEXT:         field1 m1: array<array<i8, 2>, 2>;
-// DEFAULT-NEXT:         field2 m2: array<@type0, 2>;
+// DEFAULT-NEXT:         field2 m2: array<@type[[TYPE_S0]], 2>;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 1, 6], bit_offsets=[Some(0), None, None], bit_units=[(0, 1)], field_units=[Some(0), None, None]];
-// DEFAULT-NEXT:     global %3 x: @type1 [storage=static] = aggregate<@type1, zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)), field1 = aggregate<array<array<i8, 2>, 2>, zero_fill=false>(index0 = aggregate<array<i8, 2>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(2)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(3))), index1 = aggregate<array<i8, 2>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(4)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(5)))), field2 = aggregate<array<@type0, 2>, zero_fill=false>(index0 = aggregate<@type0, zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(6)), field1 = truncate<i16, reason=assign, fits=always>(const<i32>(7))), index1 = aggregate<@type0, zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(8)), field1 = truncate<i16, reason=assign, fits=always>(const<i32>(9))))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @func() -> @type1 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type1, reason=return>(read<@type1>(%3));
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: @type[[TYPE_S1]] [storage=static] = aggregate<@type[[TYPE_S1]], zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(1)), field1 = aggregate<array<array<i8, 2>, 2>, zero_fill=false>(index0 = aggregate<array<i8, 2>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(2)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(3))), index1 = aggregate<array<i8, 2>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(4)), index1 = truncate<i8, reason=assign, fits=always>(const<i32>(5)))), field2 = aggregate<array<@type[[TYPE_S0]], 2>, zero_fill=false>(index0 = aggregate<@type[[TYPE_S0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(6)), field1 = truncate<i16, reason=assign, fits=always>(const<i32>(7))), index1 = aggregate<@type[[TYPE_S0]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(8)), field1 = truncate<i16, reason=assign, fits=always>(const<i32>(9))))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_func:[0-9]+]] @func() -> @type[[TYPE_S1]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return copy<@type[[TYPE_S1]], reason=return>(read<@type[[TYPE_S1]]>(%[[VALUE_x]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 ret: @type1 [storage=automatic] = copy<@type1, reason=assign>(call<@type1, signature=fn() -> @type1, abi=sysv64() -> native_c>(%4));
-// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field1(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(2)>(field2(%6)), const<i32>(1)))))), const<i32>(9))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_ret:[0-9]+]] ret: @type[[TYPE_S1]] [storage=automatic] = copy<@type[[TYPE_S1]], reason=assign>(call<@type[[TYPE_S1]], signature=fn() -> @type[[TYPE_S1]], abi=sysv64() -> native_c>(%[[VALUE_func]]));
+// DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(field1(deref(ptr_offset<ptr<@type[[TYPE_S0]]>, subtract=false, element=@type[[TYPE_S0]], overflow=ub>(array_decay<ptr<@type[[TYPE_S0]]>, length=Some(2)>(field2(%[[VALUE_ret]])), const<i32>(1)))))), const<i32>(9))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

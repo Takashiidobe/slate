@@ -54,14 +54,14 @@ main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @test(%2 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return div<i32, by_zero=ub, min_by_neg_one=ub>(mul<i32, overflow=wrap>(const<i32>(2), read<i32>(%2)), const<i32>(2));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_test:[0-9]+]] @test(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return div<i32, by_zero=ub, min_by_neg_one=ub>(mul<i32, overflow=wrap>(const<i32>(2), read<i32>(%[[VALUE_x]])), const<i32>(2));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 x: i32 [storage=automatic] = const<i32>(2147483647);
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(i32) -> i32>(%1, read<i32>(%4)), read<i32>(%4))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: i32 [storage=automatic] = const<i32>(2147483647);
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_test]], read<i32>(%[[VALUE_x_2]])), read<i32>(%[[VALUE_x_2]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -79,71 +79,71 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 epic_rx_desc = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_epic_rx_desc:[0-9]+]] epic_rx_desc = struct {
 // DEFAULT-NEXT:         field0 next: u32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 epic_private = struct {
-// DEFAULT-NEXT:         field0 rx_ring: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_epic_private:[0-9]+]] epic_private = struct {
+// DEFAULT-NEXT:         field0 rx_ring: ptr<@type[[TYPE_epic_rx_desc]]>;
 // DEFAULT-NEXT:         field1 rx_skbuff: array<u32, 5>;
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %6 check_rx_ring: array<i32, 5> [storage=static] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(12), index1 = const<i32>(14), index2 = const<i32>(16), index3 = const<i32>(18), index4 = const<i32>(10)) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @epic_init_ring(%4 ep: ptr<@type1>) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %11
+// DEFAULT-NEXT:     global %[[VALUE_check_rx_ring:[0-9]+]] check_rx_ring: array<i32, 5> [storage=static] [align=16] = aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(12), index1 = const<i32>(14), index2 = const<i32>(16), index3 = const<i32>(18), index4 = const<i32>(10)) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_epic_init_ring:[0-9]+]] @epic_init_ring(%[[VALUE_ep:[0-9]+]] ep: ptr<@type[[TYPE_epic_private]]>) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%5, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%5), const<i32>(5))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(5))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %14: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:                 let %15: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%14), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%5, read<i32>(%15));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<u32>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(%4)))), read<i32>(%5)))), reinterpret<u32, reason=assign, fits=unknown>(add<i32, overflow=ub>(const<i32>(10), mul<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%5), const<i32>(1)), const<i32>(2)))));
-// DEFAULT-NEXT:                     write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(5)>(field1(deref(read<ptr<@type1>>(%4)))), read<i32>(%5))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:                     write<u32>(field0(deref(ptr_offset<ptr<@type[[TYPE_epic_rx_desc]]>, subtract=false, element=@type[[TYPE_epic_rx_desc]], overflow=ub>(read<ptr<@type[[TYPE_epic_rx_desc]]>>(field0(deref(read<ptr<@type[[TYPE_epic_private]]>>(%[[VALUE_ep]])))), read<i32>(%[[VALUE_i]])))), reinterpret<u32, reason=assign, fits=unknown>(add<i32, overflow=ub>(const<i32>(10), mul<i32, overflow=ub>(add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(1)), const<i32>(2)))));
+// DEFAULT-NEXT:                     write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(5)>(field1(deref(read<ptr<@type[[TYPE_epic_private]]>>(%[[VALUE_ep]])))), read<i32>(%[[VALUE_i]]))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         write<u32>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(read<ptr<@type0>>(field0(deref(read<ptr<@type1>>(%4)))), sub<i32, overflow=ub>(read<i32>(%5), const<i32>(1))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(10)));
+// DEFAULT-NEXT:         write<u32>(field0(deref(ptr_offset<ptr<@type[[TYPE_epic_rx_desc]]>, subtract=false, element=@type[[TYPE_epic_rx_desc]], overflow=ub>(read<ptr<@type[[TYPE_epic_rx_desc]]>>(field0(deref(read<ptr<@type[[TYPE_epic_private]]>>(%[[VALUE_ep]])))), sub<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(1))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(10)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 ep: @type1 [storage=automatic];
-// DEFAULT-NEXT:         let %9 rx_ring: array<@type0, 5> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %12
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_ep_2:[0-9]+]] ep: @type[[TYPE_epic_private]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_rx_ring:[0-9]+]] rx_ring: array<@type[[TYPE_epic_rx_desc]], 5> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%10, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(5))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i_2]]), const<i32>(5))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %16: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                 let %17: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%16), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%17));
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_2]]);
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<u32>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%9), read<i32>(%10)))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:                     write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(5)>(field1(%8)), read<i32>(%10))), reinterpret<u32, reason=assign, fits=always>(const<i32>(5)));
+// DEFAULT-NEXT:                     write<u32>(field0(deref(ptr_offset<ptr<@type[[TYPE_epic_rx_desc]]>, subtract=false, element=@type[[TYPE_epic_rx_desc]], overflow=ub>(array_decay<ptr<@type[[TYPE_epic_rx_desc]]>, length=Some(5)>(%[[VALUE_rx_ring]]), read<i32>(%[[VALUE_i_2]])))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:                     write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(5)>(field1(%[[VALUE_ep_2]])), read<i32>(%[[VALUE_i_2]]))), reinterpret<u32, reason=assign, fits=always>(const<i32>(5)));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         write<ptr<@type0>>(field0(%8), array_decay<ptr<@type0>, length=Some(5)>(%9));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type1>) -> void>(%3, addr_of<ptr<@type1>>(%8));
-// DEFAULT-NEXT:         for %13
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_epic_rx_desc]]>>(field0(%[[VALUE_ep_2]]), array_decay<ptr<@type[[TYPE_epic_rx_desc]]>, length=Some(5)>(%[[VALUE_rx_ring]]));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_epic_private]]>) -> void>(%[[VALUE_epic_init_ring]], addr_of<ptr<@type[[TYPE_epic_private]]>>(%[[VALUE_ep_2]]));
+// DEFAULT-NEXT:         for %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%10, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(5))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i_2]]), const<i32>(5))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %18: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                 let %19: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%18), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%19));
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_2]]);
+// DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE7]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE8]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if ne<u32>(read<u32>(field0(deref(ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(array_decay<ptr<@type0>, length=Some(5)>(%9), read<i32>(%10))))), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(5)>(%6), read<i32>(%10))))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:                     if ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(5)>(field1(%8)), read<i32>(%10)))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     if ne<u32>(read<u32>(field0(deref(ptr_offset<ptr<@type[[TYPE_epic_rx_desc]]>, subtract=false, element=@type[[TYPE_epic_rx_desc]], overflow=ub>(array_decay<ptr<@type[[TYPE_epic_rx_desc]]>, length=Some(5)>(%[[VALUE_rx_ring]]), read<i32>(%[[VALUE_i_2]]))))), reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(5)>(%[[VALUE_check_rx_ring]]), read<i32>(%[[VALUE_i_2]]))))))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:                     if ne<u32>(read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(array_decay<ptr<u32>, length=Some(5)>(field1(%[[VALUE_ep_2]])), read<i32>(%[[VALUE_i_2]])))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

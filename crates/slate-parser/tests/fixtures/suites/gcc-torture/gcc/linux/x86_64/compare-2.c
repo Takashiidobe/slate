@@ -44,13 +44,13 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @foo(%2 x: i32, %3 y: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(le<i32>(read<i32>(%2), read<i32>(%3)), ge<u32>(reinterpret<u32, reason=explicit, fits=unknown>(read<i32>(%2)), reinterpret<u32, reason=explicit, fits=unknown>(read<i32>(%3)))));
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_and<bool>(le<i32>(read<i32>(%[[VALUE_x]]), read<i32>(%[[VALUE_y]])), ge<u32>(reinterpret<u32, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_x]])), reinterpret<u32, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_y]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%1, neg<i32, overflow=ub>(const<i32>(1)), const<i32>(0)), const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_foo]], neg<i32, overflow=ub>(const<i32>(1)), const<i32>(0)), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

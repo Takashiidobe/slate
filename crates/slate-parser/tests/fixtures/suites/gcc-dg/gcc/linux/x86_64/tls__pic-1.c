@@ -98,49 +98,49 @@ long gs4 (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 e1: i64 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     extern %1 e2: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     global %2 s1: i64 [storage=thread] [linkage=internal];
-// DEFAULT-NEXT:     global %3 s2: i32 [storage=thread] [linkage=internal];
-// DEFAULT-NEXT:     fn %4 @ae1() -> ptr<i64> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<i64>>(%0);
+// DEFAULT-NEXT:     extern %[[VALUE_e1:[0-9]+]] e1: i64 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_e2:[0-9]+]] e2: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s1:[0-9]+]] s1: i64 [storage=thread] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_s2:[0-9]+]] s2: i32 [storage=thread] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_ae1:[0-9]+]] @ae1() -> ptr<i64> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return addr_of<ptr<i64>>(%[[VALUE_e1]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @ae2() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_ae2:[0-9]+]] @ae2() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_e2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @as1() -> ptr<i64> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<i64>>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_as1:[0-9]+]] @as1() -> ptr<i64> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return addr_of<ptr<i64>>(%[[VALUE_s1]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @as2() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE_as2:[0-9]+]] @as2() -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return addr_of<ptr<i32>>(%[[VALUE_s2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @ge1() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i64>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_ge1:[0-9]+]] @ge1() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i64>(%[[VALUE_e1]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @ge2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_ge2:[0-9]+]] @ge2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_e2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @gs1() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i64>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_gs1:[0-9]+]] @gs1() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i64>(%[[VALUE_s1]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @gs2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE_gs2:[0-9]+]] @gs2() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_s2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @ge3() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i64, overflow=ub>(read<i64>(%0), widen<i64, reason=usual_arith>(read<i32>(%1)));
+// DEFAULT-NEXT:     fn %[[VALUE_ge3:[0-9]+]] @ge3() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i64, overflow=ub>(read<i64>(%[[VALUE_e1]]), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_e2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @gs3() -> i64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i64, overflow=ub>(read<i64>(%2), widen<i64, reason=usual_arith>(read<i32>(%3)));
+// DEFAULT-NEXT:     fn %[[VALUE_gs3:[0-9]+]] @gs3() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i64, overflow=ub>(read<i64>(%[[VALUE_s1]]), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_s2]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @ge4() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_ge4:[0-9]+]] @ge4() -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0))
-// DEFAULT-NEXT:             return read<i64>(%0);
-// DEFAULT-NEXT:         return widen<i64, reason=return>(read<i32>(%1));
+// DEFAULT-NEXT:             return read<i64>(%[[VALUE_e1]]);
+// DEFAULT-NEXT:         return widen<i64, reason=return>(read<i32>(%[[VALUE_e2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @gs4() -> i64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_gs4:[0-9]+]] @gs4() -> i64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(0), const<i32>(0))
-// DEFAULT-NEXT:             return read<i64>(%2);
-// DEFAULT-NEXT:         return widen<i64, reason=return>(read<i32>(%3));
+// DEFAULT-NEXT:             return read<i64>(%[[VALUE_s1]]);
+// DEFAULT-NEXT:         return widen<i64, reason=return>(read<i32>(%[[VALUE_s2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

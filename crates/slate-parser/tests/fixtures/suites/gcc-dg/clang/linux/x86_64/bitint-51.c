@@ -39,12 +39,12 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 f: f32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 i: i256b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3: f32 [synthetic] = read<f32>(%0);
-// DEFAULT-NEXT:         let %4: f32 [synthetic] = mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%3), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(mul<i256b, overflow=ub>(widen<i256b, reason=usual_arith>(const<i32>(4)), read<i256b>(%1))));
-// DEFAULT-NEXT:         write<f32>(%0, read<f32>(%4));
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: f32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i256b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: f32 [synthetic] = read<f32>(%[[VALUE_f]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: f32 [synthetic] = mul<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%[[VALUE0]]), int_to_float<f32, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(mul<i256b, overflow=ub>(widen<i256b, reason=usual_arith>(const<i32>(4)), read<i256b>(%[[VALUE_i]]))));
+// DEFAULT-NEXT:         write<f32>(%[[VALUE_f]], read<f32>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

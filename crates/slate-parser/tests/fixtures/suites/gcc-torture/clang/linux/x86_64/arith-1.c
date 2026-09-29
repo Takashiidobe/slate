@@ -67,42 +67,42 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%15 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @sat_add(%3 i: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 ret: u32 [storage=automatic] = add<u32, overflow=wrap>(read<u32>(%3), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         if lt<u32>(read<u32>(%4), read<u32>(%3))
-// DEFAULT-NEXT:             write<u32>(%4, read<u32>(%3));
-// DEFAULT-NEXT:         return read<u32>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_sat_add:[0-9]+]] @sat_add(%[[VALUE_i:[0-9]+]] i: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_ret:[0-9]+]] ret: u32 [storage=automatic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE_i]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         if lt<u32>(read<u32>(%[[VALUE_ret]]), read<u32>(%[[VALUE_i]]))
+// DEFAULT-NEXT:             write<u32>(%[[VALUE_ret]], read<u32>(%[[VALUE_i]]));
+// DEFAULT-NEXT:         return read<u32>(%[[VALUE_ret]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @sat_add2(%6 i: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 ret: u32 [storage=automatic] = add<u32, overflow=wrap>(read<u32>(%6), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         if gt<u32>(read<u32>(%7), read<u32>(%6))
-// DEFAULT-NEXT:             return read<u32>(%7);
-// DEFAULT-NEXT:         return read<u32>(%6);
+// DEFAULT-NEXT:     fn %[[VALUE_sat_add2:[0-9]+]] @sat_add2(%[[VALUE_i_2:[0-9]+]] i: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_ret_2:[0-9]+]] ret: u32 [storage=automatic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE_i_2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         if gt<u32>(read<u32>(%[[VALUE_ret_2]]), read<u32>(%[[VALUE_i_2]]))
+// DEFAULT-NEXT:             return read<u32>(%[[VALUE_ret_2]]);
+// DEFAULT-NEXT:         return read<u32>(%[[VALUE_i_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @sat_add3(%9 i: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 ret: u32 [storage=automatic] = sub<u32, overflow=wrap>(read<u32>(%9), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         if gt<u32>(read<u32>(%10), read<u32>(%9))
-// DEFAULT-NEXT:             write<u32>(%10, read<u32>(%9));
-// DEFAULT-NEXT:         return read<u32>(%10);
+// DEFAULT-NEXT:     fn %[[VALUE_sat_add3:[0-9]+]] @sat_add3(%[[VALUE_i_3:[0-9]+]] i: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_ret_3:[0-9]+]] ret: u32 [storage=automatic] = sub<u32, overflow=wrap>(read<u32>(%[[VALUE_i_3]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         if gt<u32>(read<u32>(%[[VALUE_ret_3]]), read<u32>(%[[VALUE_i_3]]))
+// DEFAULT-NEXT:             write<u32>(%[[VALUE_ret_3]], read<u32>(%[[VALUE_i_3]]));
+// DEFAULT-NEXT:         return read<u32>(%[[VALUE_ret_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @sat_add4(%12 i: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %13 ret: u32 [storage=automatic] = sub<u32, overflow=wrap>(read<u32>(%12), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         if lt<u32>(read<u32>(%13), read<u32>(%12))
-// DEFAULT-NEXT:             return read<u32>(%13);
-// DEFAULT-NEXT:         return read<u32>(%12);
+// DEFAULT-NEXT:     fn %[[VALUE_sat_add4:[0-9]+]] @sat_add4(%[[VALUE_i_4:[0-9]+]] i: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_ret_4:[0-9]+]] ret: u32 [storage=automatic] = sub<u32, overflow=wrap>(read<u32>(%[[VALUE_i_4]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         if lt<u32>(read<u32>(%[[VALUE_ret_4]]), read<u32>(%[[VALUE_i_4]]))
+// DEFAULT-NEXT:             return read<u32>(%[[VALUE_ret_4]]);
+// DEFAULT-NEXT:         return read<u32>(%[[VALUE_i_4]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%2, not<u32>(const<u32>(0))), not<u32>(const<u32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%5, not<u32>(const<u32>(0))), not<u32>(const<u32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%8, const<u32>(0)), const<u32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%11, const<u32>(0)), const<u32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_sat_add]], not<u32>(const<u32>(0))), not<u32>(const<u32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_sat_add2]], not<u32>(const<u32>(0))), not<u32>(const<u32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_sat_add3]], const<u32>(0)), const<u32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_sat_add4]], const<u32>(0)), const<u32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

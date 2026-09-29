@@ -33,11 +33,11 @@ void foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 .str1: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([116, 114, 97, 110, 115, 108, 97, 116, 101, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([116, 114, 97, 110, 115, 108, 97, 116, 101, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm "xx" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "xx";
-// DEFAULT-NEXT:             in 0 "r" [reg] width 64 array_decay<ptr<i8>, length=Some(10)>(%1);
+// DEFAULT-NEXT:             in 0 "r" [reg] width 64 array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str]]);
 // DEFAULT-NEXT:             clobbers: cc;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }

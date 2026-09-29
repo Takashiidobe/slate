@@ -37,17 +37,17 @@ int unicode_name __attribute__((slate_literal(\u03B1name)));
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 decimal_separator: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 binary_bitint: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 hexadecimal: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 decimal_float: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 hex_float: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 character: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 escaped_string: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 utf8_string: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 utf16_string: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 utf32_string: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 wide_string: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 unicode_name: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_decimal_separator:[0-9]+]] decimal_separator: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_binary_bitint:[0-9]+]] binary_bitint: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_hexadecimal:[0-9]+]] hexadecimal: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_decimal_float:[0-9]+]] decimal_float: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_hex_float:[0-9]+]] hex_float: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_character:[0-9]+]] character: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_escaped_string:[0-9]+]] escaped_string: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_utf8_string:[0-9]+]] utf8_string: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_utf16_string:[0-9]+]] utf16_string: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_utf32_string:[0-9]+]] utf32_string: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wide_string:[0-9]+]] wide_string: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unicode_name:[0-9]+]] unicode_name: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

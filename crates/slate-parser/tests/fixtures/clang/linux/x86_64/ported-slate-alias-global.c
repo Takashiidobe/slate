@@ -34,12 +34,12 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 real_global: i32 [storage=static] = const<i32>(12) [linkage=external];
-// DEFAULT-NEXT:     global %1 alias_global: i32 [storage=static] [linkage=external] [alias="real_global"];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 result: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%3, read<i32>(%1));
-// DEFAULT-NEXT:         return read<i32>(%3);
+// DEFAULT-NEXT:     global %[[VALUE_real_global:[0-9]+]] real_global: i32 [storage=static] = const<i32>(12) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_alias_global:[0-9]+]] alias_global: i32 [storage=static] [linkage=external] [alias="real_global"];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: i32 [storage=automatic];
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_result]], read<i32>(%[[VALUE_alias_global]]));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_result]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

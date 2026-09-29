@@ -50,14 +50,14 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i8b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @bar(%5 <unnamed>: i32, %6 <unnamed>: i32, %7 <unnamed>: i32, %8 <unnamed>: i32, %9 <unnamed>: i32, %10 <unnamed>: i32, %11 <unnamed>: i32, %12 <unnamed>: i32) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 b: i65535b [storage=automatic] = widen<i65535b, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:         let %3 c: i383b [storage=automatic] = widen<i383b, reason=assign>(const<i32>(0));
-// DEFAULT-NEXT:         write<i8b>(%0, truncate<i8b, reason=assign, fits=unknown>(read<i65535b>(%2)));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i8b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE1:[0-9]+]] <unnamed>: i32, %[[VALUE2:[0-9]+]] <unnamed>: i32, %[[VALUE3:[0-9]+]] <unnamed>: i32, %[[VALUE4:[0-9]+]] <unnamed>: i32, %[[VALUE5:[0-9]+]] <unnamed>: i32, %[[VALUE6:[0-9]+]] <unnamed>: i32, %[[VALUE7:[0-9]+]] <unnamed>: i32) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i65535b [storage=automatic] = widen<i65535b, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i383b [storage=automatic] = widen<i383b, reason=assign>(const<i32>(0));
+// DEFAULT-NEXT:         write<i8b>(%[[VALUE_a]], truncate<i8b, reason=assign, fits=unknown>(read<i65535b>(%[[VALUE_b]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i32, i32) -> void>(%1, const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, i32, i32, i32, i32, i32, i32, i32) -> void>(%[[VALUE_bar]], const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

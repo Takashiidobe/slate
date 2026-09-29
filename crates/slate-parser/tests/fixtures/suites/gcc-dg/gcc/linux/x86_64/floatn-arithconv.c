@@ -75,69 +75,69 @@ f (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 restype = f64;
-// DEFAULT-NEXT:     type @type1 restype2 = f64;
-// DEFAULT-NEXT:     type @type2 exptype = f64;
-// DEFAULT-NEXT:     type @type3 restype = f64;
-// DEFAULT-NEXT:     type @type4 restype2 = f64;
-// DEFAULT-NEXT:     type @type5 exptype = f64;
-// DEFAULT-NEXT:     type @type6 restype = f64;
-// DEFAULT-NEXT:     type @type7 restype2 = f64;
-// DEFAULT-NEXT:     type @type8 exptype = f64;
-// DEFAULT-NEXT:     type @type9 restype = f64;
-// DEFAULT-NEXT:     type @type10 restype2 = f64;
-// DEFAULT-NEXT:     type @type11 exptype = f64;
-// DEFAULT-NEXT:     type @type12 restype = f32;
-// DEFAULT-NEXT:     type @type13 restype2 = f32;
-// DEFAULT-NEXT:     type @type14 exptype = f32;
-// DEFAULT-NEXT:     type @type15 restype = f64;
-// DEFAULT-NEXT:     type @type16 restype2 = f64;
-// DEFAULT-NEXT:     type @type17 exptype = f64;
-// DEFAULT-NEXT:     type @type18 restype = f64;
-// DEFAULT-NEXT:     type @type19 restype2 = f64;
-// DEFAULT-NEXT:     type @type20 exptype = f64;
-// DEFAULT-NEXT:     type @type21 restype = f64;
-// DEFAULT-NEXT:     type @type22 restype2 = f64;
-// DEFAULT-NEXT:     type @type23 exptype = f64;
-// DEFAULT-NEXT:     global %0 i: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %5 v1: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %9 v2: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %13 v3: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %17 v4: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %21 v5: f32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %25 v6: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %29 v7: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     extern %33 v8: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         do %34
+// DEFAULT-NEXT:     type @type[[TYPE_restype:[0-9]+]] restype = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_restype2:[0-9]+]] restype2 = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_exptype:[0-9]+]] exptype = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_restype_2:[0-9]+]] restype = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_restype2_2:[0-9]+]] restype2 = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_exptype_2:[0-9]+]] exptype = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_restype_3:[0-9]+]] restype = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_restype2_3:[0-9]+]] restype2 = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_exptype_3:[0-9]+]] exptype = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_restype_4:[0-9]+]] restype = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_restype2_4:[0-9]+]] restype2 = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_exptype_4:[0-9]+]] exptype = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_restype_5:[0-9]+]] restype = f32;
+// DEFAULT-NEXT:     type @type[[TYPE_restype2_5:[0-9]+]] restype2 = f32;
+// DEFAULT-NEXT:     type @type[[TYPE_exptype_5:[0-9]+]] exptype = f32;
+// DEFAULT-NEXT:     type @type[[TYPE_restype_6:[0-9]+]] restype = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_restype2_6:[0-9]+]] restype2 = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_exptype_6:[0-9]+]] exptype = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_restype_7:[0-9]+]] restype = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_restype2_7:[0-9]+]] restype2 = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_exptype_7:[0-9]+]] exptype = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_restype_8:[0-9]+]] restype = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_restype2_8:[0-9]+]] restype2 = f64;
+// DEFAULT-NEXT:     type @type[[TYPE_exptype_8:[0-9]+]] exptype = f64;
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_v1:[0-9]+]] v1: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_v2:[0-9]+]] v2: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_v3:[0-9]+]] v3: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_v4:[0-9]+]] v4: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_v5:[0-9]+]] v5: f32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_v6:[0-9]+]] v6: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_v7:[0-9]+]] v7: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_v8:[0-9]+]] v8: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %35
+// DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %36
+// DEFAULT-NEXT:         do %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %37
+// DEFAULT-NEXT:         do %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %38
+// DEFAULT-NEXT:         do %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %39
+// DEFAULT-NEXT:         do %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %40
+// DEFAULT-NEXT:         do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         do %41
+// DEFAULT-NEXT:         do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));

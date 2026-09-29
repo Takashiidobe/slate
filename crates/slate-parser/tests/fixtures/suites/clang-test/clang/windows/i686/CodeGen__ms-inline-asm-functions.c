@@ -73,46 +73,46 @@ void __declspec(naked) naked(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 kptr: ptr<fn(i32) -> i32> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @k(%9 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @kimport(%10 <unnamed>: i32) -> i32 [linkage=external] [dllimport];
-// DEFAULT-NEXT:     fn %3 @gptr() -> ptr<fn(i32) -> i32> [linkage=external];
-// DEFAULT-NEXT:     fn %4 @foo() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%11)))] {
-// DEFAULT-NEXT:         let %11: u32 [synthetic];
-// DEFAULT-NEXT:         let %5 r: ptr<fn(i32) -> i32> [storage=automatic] = call<ptr<fn(i32) -> i32>, signature=fn() -> ptr<fn(i32) -> i32>>(%3);
+// DEFAULT-NEXT:     global %[[VALUE_kptr:[0-9]+]] kptr: ptr<fn(i32) -> i32> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_k:[0-9]+]] @k(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_kimport:[0-9]+]] @kimport(%[[VALUE1:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [dllimport];
+// DEFAULT-NEXT:     fn %[[VALUE_gptr:[0-9]+]] @gptr() -> ptr<fn(i32) -> i32> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE2:[0-9]+]])))] {
+// DEFAULT-NEXT:         let %[[VALUE2]]: u32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: ptr<fn(i32) -> i32> [storage=automatic] = call<ptr<fn(i32) -> i32>, signature=fn() -> ptr<fn(i32) -> i32>>(%[[VALUE_gptr]]);
 // DEFAULT-NEXT:         asm volatile "call k\ncall r\ncall kimport\ncall kptr" [dialect=intel] [alternative=none] {
 // DEFAULT-NEXT:             template: "call " %1 "\ncall " addr<dword>(%2) "\ncall " %3 "\ncall " addr<dword>(%4);
-// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%11);
-// DEFAULT-NEXT:             in 1 sym<offset=0>(%0);
-// DEFAULT-NEXT:             in 2 [r] mem<read> place<ptr<fn(i32) -> i32>>(%5);
-// DEFAULT-NEXT:             in 3 sym<offset=0>(%1);
-// DEFAULT-NEXT:             in 4 [kptr] mem<read> place<ptr<fn(i32) -> i32>>(%2);
+// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE2]]);
+// DEFAULT-NEXT:             in 1 sym<offset=0>(%[[VALUE_k]]);
+// DEFAULT-NEXT:             in 2 [r] mem<read> place<ptr<fn(i32) -> i32>>(%[[VALUE_r]]);
+// DEFAULT-NEXT:             in 3 sym<offset=0>(%[[VALUE_kimport]]);
+// DEFAULT-NEXT:             in 4 [kptr] mem<read> place<ptr<fn(i32) -> i32>>(%[[VALUE_kptr]]);
 // DEFAULT-NEXT:             clobbers: "ecx" as cx, "edx" as dx;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @bar() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%12)))] {
-// DEFAULT-NEXT:         let %12: u32 [synthetic];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE3:[0-9]+]])))] {
+// DEFAULT-NEXT:         let %[[VALUE3]]: u32 [synthetic];
 // DEFAULT-NEXT:         asm volatile "jmp k\nja k\nJAE k\nLOOP k\nloope k\nloopne k" [dialect=intel] [alternative=none] {
 // DEFAULT-NEXT:             template: "jmp " %1 "\nja " %1 "\nJAE " %1 "\nLOOP " %1 "\nloope " %1 "\nloopne " %1;
-// DEFAULT-NEXT:             lateout 0 "{eax}" [{ax}] width 32 place<u32>(%12);
-// DEFAULT-NEXT:             in 1 sym<offset=0>(%0);
+// DEFAULT-NEXT:             lateout 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE3]]);
+// DEFAULT-NEXT:             in 1 sym<offset=0>(%[[VALUE_k]]);
 // DEFAULT-NEXT:             clobbers: "ecx" as cx;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @baz() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%13)))] {
-// DEFAULT-NEXT:         let %13: u32 [synthetic];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> i32 [linkage=external] [fallthrough=ret(reinterpret<i32, reason=return, fits=unknown>(read<u32>(%[[VALUE4:[0-9]+]])))] {
+// DEFAULT-NEXT:         let %[[VALUE4]]: u32 [synthetic];
 // DEFAULT-NEXT:         asm volatile "mov eax, k\nmov eax, kptr" [dialect=intel] [alternative=none] {
 // DEFAULT-NEXT:             template: "mov eax, " %1 "\nmov eax, " addr(%2);
-// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%13);
-// DEFAULT-NEXT:             in 1 sym<offset=0>(%0);
-// DEFAULT-NEXT:             in 2 [kptr] mem<read> place<ptr<fn(i32) -> i32>>(%2);
+// DEFAULT-NEXT:             out 0 "{eax}" [{ax}] width 32 place<u32>(%[[VALUE4]]);
+// DEFAULT-NEXT:             in 1 sym<offset=0>(%[[VALUE_k]]);
+// DEFAULT-NEXT:             in 2 [kptr] mem<read> place<ptr<fn(i32) -> i32>>(%[[VALUE_kptr]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @naked() -> void [linkage=external] [naked] [fallthrough=ub] {
+// DEFAULT-NEXT:     fn %[[VALUE_naked:[0-9]+]] @naked() -> void [linkage=external] [naked] [fallthrough=ub] {
 // DEFAULT-NEXT:         asm volatile "pusha\ncall k\npopa\nret" [dialect=intel] {
 // DEFAULT-NEXT:             template: "pusha\ncall " %0 "\npopa\nret";
-// DEFAULT-NEXT:             in 0 sym<offset=0>(%0);
+// DEFAULT-NEXT:             in 0 sym<offset=0>(%[[VALUE_k]]);
 // DEFAULT-NEXT:             clobbers: "eax" as ax, "ebp" as bp, "ebx" as bx, "ecx" as cx, "edi" as di, "edx" as dx, "esi" as si;
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }

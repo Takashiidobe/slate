@@ -40,18 +40,18 @@ void f(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: i16;
 // DEFAULT-NEXT:         field1 b: i16;
 // DEFAULT-NEXT:     } [size=4, align=2, offsets=[0, 2]];
-// DEFAULT-NEXT:     type @type1 s1 = @type0;
-// DEFAULT-NEXT:     fn %3 @g(%7 b: ptr<u8>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @f() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %6 b: ptr<u8> [storage=automatic];
-// DEFAULT-NEXT:         write<i16>(field0(%5), truncate<i16, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:         write<ptr<u8>>(%6, pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<@type0>>(%5)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<u8>) -> void>(%3, read<ptr<u8>>(%6));
+// DEFAULT-NEXT:     type @type[[TYPE_s1:[0-9]+]] s1 = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g(%[[VALUE_b:[0-9]+]] b: ptr<u8>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: ptr<u8> [storage=automatic];
+// DEFAULT-NEXT:         write<i16>(field0(%[[VALUE_a]]), truncate<i16, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:         write<ptr<u8>>(%[[VALUE_b_2]], pointer_cast<ptr<u8>, reason=explicit>(addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_a]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<u8>) -> void>(%[[VALUE_g]], read<ptr<u8>>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

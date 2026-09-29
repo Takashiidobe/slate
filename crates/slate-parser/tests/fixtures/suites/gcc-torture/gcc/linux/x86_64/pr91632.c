@@ -49,26 +49,26 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 x: i8) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         switch %3 widen<i32, reason=promotion>(read<i8>(%1))
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i8) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         switch %[[VALUE0:[0-9]+]] widen<i32, reason=promotion>(read<i8>(%[[VALUE_x]]))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %3 const<i32>(34):
-// DEFAULT-NEXT:                     case %3 const<i32>(60):
-// DEFAULT-NEXT:                         case %3 const<i32>(62):
-// DEFAULT-NEXT:                             case %3 const<i32>(92):
-// DEFAULT-NEXT:                                 case %3 const<i32>(94):
-// DEFAULT-NEXT:                                     case %3 const<i32>(96):
-// DEFAULT-NEXT:                                         case %3 const<i32>(123):
-// DEFAULT-NEXT:                                             case %3 const<i32>(124):
-// DEFAULT-NEXT:                                                 case %3 const<i32>(125):
+// DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(34):
+// DEFAULT-NEXT:                     case %[[VALUE0]] const<i32>(60):
+// DEFAULT-NEXT:                         case %[[VALUE0]] const<i32>(62):
+// DEFAULT-NEXT:                             case %[[VALUE0]] const<i32>(92):
+// DEFAULT-NEXT:                                 case %[[VALUE0]] const<i32>(94):
+// DEFAULT-NEXT:                                     case %[[VALUE0]] const<i32>(96):
+// DEFAULT-NEXT:                                         case %[[VALUE0]] const<i32>(123):
+// DEFAULT-NEXT:                                             case %[[VALUE0]] const<i32>(124):
+// DEFAULT-NEXT:                                                 case %[[VALUE0]] const<i32>(125):
 // DEFAULT-NEXT:                                                     return const<i32>(0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(i8) -> i32>(%0, truncate<i8, reason=arg, fits=always>(const<i32>(104))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(i8) -> i32>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=always>(const<i32>(104))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -40,16 +40,16 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @bug(%2 Cref: ptr<f64>, %3 transb: i8, %4 m: i32, %5 n: i32, %6 k: i32, %7 a: f64, %8 A: ptr<f64>, %9 fdA: i32, %10 B: ptr<f64>, %11 fdB: i32, %12 b: f64, %13 C: ptr<f64>, %14 fdC: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         if ne<ptr<f64>>(read<ptr<f64>>(%13), read<ptr<f64>>(%2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bug:[0-9]+]] @bug(%[[VALUE_Cref:[0-9]+]] Cref: ptr<f64>, %[[VALUE_transb:[0-9]+]] transb: i8, %[[VALUE_m:[0-9]+]] m: i32, %[[VALUE_n:[0-9]+]] n: i32, %[[VALUE_k:[0-9]+]] k: i32, %[[VALUE_a:[0-9]+]] a: f64, %[[VALUE_A:[0-9]+]] A: ptr<f64>, %[[VALUE_fdA:[0-9]+]] fdA: i32, %[[VALUE_B:[0-9]+]] B: ptr<f64>, %[[VALUE_fdB:[0-9]+]] fdB: i32, %[[VALUE_b:[0-9]+]] b: f64, %[[VALUE_C:[0-9]+]] C: ptr<f64>, %[[VALUE_fdC:[0-9]+]] fdC: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         if ne<ptr<f64>>(read<ptr<f64>>(%[[VALUE_C]]), read<ptr<f64>>(%[[VALUE_Cref]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %16 A: array<f64, 1> [storage=automatic];
-// DEFAULT-NEXT:         let %17 B: array<f64, 1> [storage=automatic];
-// DEFAULT-NEXT:         let %18 C: array<f64, 1> [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<f64>, i8, i32, i32, i32, f64, ptr<f64>, i32, ptr<f64>, i32, f64, ptr<f64>, i32) -> void>(%1, array_decay<ptr<f64>, length=Some(1)>(%18), truncate<i8, reason=arg, fits=always>(const<i32>(66)), const<i32>(1), const<i32>(2), const<i32>(3), const<f64>(4.0), array_decay<ptr<f64>, length=Some(1)>(%16), const<i32>(5), array_decay<ptr<f64>, length=Some(1)>(%17), const<i32>(6), const<f64>(7.0), array_decay<ptr<f64>, length=Some(1)>(%18), const<i32>(8));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_A_2:[0-9]+]] A: array<f64, 1> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_B_2:[0-9]+]] B: array<f64, 1> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_C_2:[0-9]+]] C: array<f64, 1> [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<f64>, i8, i32, i32, i32, f64, ptr<f64>, i32, ptr<f64>, i32, f64, ptr<f64>, i32) -> void>(%[[VALUE_bug]], array_decay<ptr<f64>, length=Some(1)>(%[[VALUE_C_2]]), truncate<i8, reason=arg, fits=always>(const<i32>(66)), const<i32>(1), const<i32>(2), const<i32>(3), const<f64>(4.0), array_decay<ptr<f64>, length=Some(1)>(%[[VALUE_A_2]]), const<i32>(5), array_decay<ptr<f64>, length=Some(1)>(%[[VALUE_B_2]]), const<i32>(6), const<f64>(7.0), array_decay<ptr<f64>, length=Some(1)>(%[[VALUE_C_2]]), const<i32>(8));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -37,12 +37,12 @@ void foo()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 g1: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     extern %1 g2: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     global %2 g3: i32 [storage=thread] [linkage=internal];
-// DEFAULT-NEXT:     extern %4 l1: i32 [storage=thread] [linkage=external];
-// DEFAULT-NEXT:     global %5 l2: i32 [storage=thread] [linkage=internal];
-// DEFAULT-NEXT:     fn %3 @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_g1:[0-9]+]] g1: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_g2:[0-9]+]] g2: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_g3:[0-9]+]] g3: i32 [storage=thread] [linkage=internal];
+// DEFAULT-NEXT:     extern %[[VALUE_l1:[0-9]+]] l1: i32 [storage=thread] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_l2:[0-9]+]] l2: i32 [storage=thread] [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

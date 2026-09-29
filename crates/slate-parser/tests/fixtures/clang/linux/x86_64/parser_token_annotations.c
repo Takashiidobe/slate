@@ -51,24 +51,24 @@ int read_item(Item *p) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Item = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Item:[0-9]+]] Item = struct {
 // DEFAULT-NEXT:         field0 value: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 Item = @type0;
-// DEFAULT-NEXT:     type @type2 State = enum : u32 {
-// DEFAULT-NEXT:         %0 READY = const<i32>(0);
-// DEFAULT-NEXT:         %1 DONE = const<i32>(1);
+// DEFAULT-NEXT:     type @type[[TYPE_Item_2:[0-9]+]] Item = @type[[TYPE_Item]];
+// DEFAULT-NEXT:     type @type[[TYPE_State:[0-9]+]] State = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_READY:[0-9]+]] READY = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_DONE:[0-9]+]] DONE = const<i32>(1);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     fn %5 @read_item(%6 p: ptr<@type0>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_read_item:[0-9]+]] @read_item(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_Item]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         let %7 x: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %8: i32 [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             write<i32>(%8, read<i32>(field0(deref(read<ptr<@type0>>(%6)))));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE0]], read<i32>(field0(deref(read<ptr<@type[[TYPE_Item]]>>(%[[VALUE_p]])))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<i32>(%7, read<i32>(%8));
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%7), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE0]]));
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_x]]), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

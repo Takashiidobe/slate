@@ -87,18 +87,18 @@ test_reg_mem (int x, long long *y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @test_reg_reg(%1 x: i32, %2 y: ptr<i64>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_reg_reg:[0-9]+]] @test_reg_reg(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: ptr<i64>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm "foo\\t%0,%1" [dialect=att] [options=nomem,nostack] [alternative=0] {
 // DEFAULT-NEXT:             template: "foo\\t" %0 "," %1;
-// DEFAULT-NEXT:             in 0 "{eax}m,{ebx}" [unresolved("{") | imm | {ax} | xmm_reg | unresolved("}") | mem, {bx}] -> xmm_reg width 32 read<i32>(%1);
-// DEFAULT-NEXT:             in 1 "{rcx},m" [{cx}, mem] width 64 read<ptr<i64>>(%2);
+// DEFAULT-NEXT:             in 0 "{eax}m,{ebx}" [unresolved("{") | imm | {ax} | xmm_reg | unresolved("}") | mem, {bx}] -> xmm_reg width 32 read<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 "{rcx},m" [{cx}, mem] width 64 read<ptr<i64>>(%[[VALUE_y]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @test_reg_mem(%4 x: i32, %5 y: ptr<i64>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_test_reg_mem:[0-9]+]] @test_reg_mem(%[[VALUE_x_2:[0-9]+]] x: i32, %[[VALUE_y_2:[0-9]+]] y: ptr<i64>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm "bar\\t%0,%1" [dialect=att] [options=nomem,nostack] [alternative=0] {
 // DEFAULT-NEXT:             template: "bar\\t" %0 "," %1;
-// DEFAULT-NEXT:             in 0 "{eax}m,{ebx}" [unresolved("{") | imm | {ax} | xmm_reg | unresolved("}") | mem, {bx}] -> xmm_reg width 32 read<i32>(%4);
-// DEFAULT-NEXT:             in 1 "{rcx},m" [{cx}, mem] width 64 read<i64>(deref(read<ptr<i64>>(%5)));
+// DEFAULT-NEXT:             in 0 "{eax}m,{ebx}" [unresolved("{") | imm | {ax} | xmm_reg | unresolved("}") | mem, {bx}] -> xmm_reg width 32 read<i32>(%[[VALUE_x_2]]);
+// DEFAULT-NEXT:             in 1 "{rcx},m" [{cx}, mem] width 64 read<i64>(deref(read<ptr<i64>>(%[[VALUE_y_2]])));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -70,29 +70,29 @@ uint64_t foo7 (uint64_t a, uint64_t b)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __uint64_t = u64;
-// DEFAULT-NEXT:     type @type1 uint64_t = u64;
-// DEFAULT-NEXT:     fn %20 @__builtin_bswap64(%19 <unnamed>: u64) -> u64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %2 @foo1(%3 a: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%20, not<u64>(call<u64, signature=fn(u64) -> u64>(%20, read<u64>(%3))));
+// DEFAULT-NEXT:     type @type[[TYPE___uint64_t:[0-9]+]] __uint64_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_uint64_t:[0-9]+]] uint64_t = u64;
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_bswap64:[0-9]+]] @__builtin_bswap64(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> u64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_foo1:[0-9]+]] @foo1(%[[VALUE_a:[0-9]+]] a: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], not<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_a]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @foo2(%5 a: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%20, and<u64>(call<u64, signature=fn(u64) -> u64>(%20, read<u64>(%5)), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(42949672960))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo2:[0-9]+]] @foo2(%[[VALUE_a_2:[0-9]+]] a: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], and<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_a_2]])), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(42949672960))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @foo3(%7 a: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%20, or<u64>(call<u64, signature=fn(u64) -> u64>(%20, read<u64>(%7)), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(42949672960))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo3:[0-9]+]] @foo3(%[[VALUE_a_3:[0-9]+]] a: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], or<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_a_3]])), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(42949672960))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @foo4(%9 a: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%20, xor<u64>(call<u64, signature=fn(u64) -> u64>(%20, read<u64>(%9)), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(42949672960))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo4:[0-9]+]] @foo4(%[[VALUE_a_4:[0-9]+]] a: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], xor<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_a_4]])), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(42949672960))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @foo5(%11 a: u64, %12 b: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%20, and<u64>(call<u64, signature=fn(u64) -> u64>(%20, read<u64>(%11)), call<u64, signature=fn(u64) -> u64>(%20, read<u64>(%12))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo5:[0-9]+]] @foo5(%[[VALUE_a_5:[0-9]+]] a: u64, %[[VALUE_b:[0-9]+]] b: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], and<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_a_5]])), call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_b]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @foo6(%14 a: u64, %15 b: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%20, or<u64>(call<u64, signature=fn(u64) -> u64>(%20, read<u64>(%14)), call<u64, signature=fn(u64) -> u64>(%20, read<u64>(%15))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo6:[0-9]+]] @foo6(%[[VALUE_a_6:[0-9]+]] a: u64, %[[VALUE_b_2:[0-9]+]] b: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], or<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_a_6]])), call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_b_2]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @foo7(%17 a: u64, %18 b: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%20, xor<u64>(call<u64, signature=fn(u64) -> u64>(%20, read<u64>(%17)), call<u64, signature=fn(u64) -> u64>(%20, read<u64>(%18))));
+// DEFAULT-NEXT:     fn %[[VALUE_foo7:[0-9]+]] @foo7(%[[VALUE_a_7:[0-9]+]] a: u64, %[[VALUE_b_3:[0-9]+]] b: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], xor<u64>(call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_a_7]])), call<u64, signature=fn(u64) -> u64>(%[[VALUE___builtin_bswap64]], read<u64>(%[[VALUE_b_3]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

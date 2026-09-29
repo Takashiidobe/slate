@@ -53,37 +53,37 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 U1 = union {
+// DEFAULT-NEXT:     type @type[[TYPE_U1:[0-9]+]] U1 = union {
 // DEFAULT-NEXT:         field0 f0: u32;
 // DEFAULT-NEXT:         field1 f1: u32 : 15;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0, 0], bit_offsets=[None, Some(0)], bit_units=[(0, 2)], field_units=[None, Some(0)]];
-// DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 c: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 d: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 b: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 e: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%2) [linkage=external];
-// DEFAULT-NEXT:     global %6 u: volatile @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(67305985))) [linkage=external];
-// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         for %9
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_d]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_u:[0-9]+]] u: volatile @type[[TYPE_U1]] [storage=static] = aggregate<@type[[TYPE_U1]], zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(67305985))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%1, const<i32>(0));
-// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%1), const<i32>(1))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_c]], const<i32>(0));
+// DEFAULT-NEXT:             condition: le<i32>(read<i32>(%[[VALUE_c]]), const<i32>(1))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %11: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:                 let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%1, read<i32>(%12));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %8 f: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(67305985)));
-// DEFAULT-NEXT:                     if eq<i32>(read<i32>(%1), const<i32>(1))
-// DEFAULT-NEXT:                         read<i32, volatile>(%3);
-// DEFAULT-NEXT:                     write<i32>(deref(read<ptr<i32>>(%4)), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=0..15>(%8))));
+// DEFAULT-NEXT:                     let %[[VALUE_f:[0-9]+]] f: @type[[TYPE_U1]] [storage=automatic] = aggregate<@type[[TYPE_U1]], zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(67305985)));
+// DEFAULT-NEXT:                     if eq<i32>(read<i32>(%[[VALUE_c]]), const<i32>(1))
+// DEFAULT-NEXT:                         read<i32, volatile>(%[[VALUE_b]]);
+// DEFAULT-NEXT:                     write<i32>(deref(read<ptr<i32>>(%[[VALUE_e]])), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..2, bits=0..15>(%[[VALUE_f]]))));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), reinterpret<i32, reason=promotion, fits=unknown>(read<u32, volatile>(bitfield1<unit=0, bytes=0..2, bits=0..15>(%6))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_d]]), reinterpret<i32, reason=promotion, fits=unknown>(read<u32, volatile>(bitfield1<unit=0, bytes=0..2, bits=0..15>(%[[VALUE_u]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

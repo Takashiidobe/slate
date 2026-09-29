@@ -38,19 +38,19 @@ void foo ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @bar() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0))
-// DEFAULT-NEXT:             goto %2;
+// DEFAULT-NEXT:             goto %[[VALUE_foo_2:[0-9]+]];
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             for %3
+// DEFAULT-NEXT:             for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:                 init:
 // DEFAULT-NEXT:                 condition: omitted
 // DEFAULT-NEXT:                 increment: omitted
 // DEFAULT-NEXT:                 body:
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         label %2 foo:
-// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                         label %[[VALUE_foo_2]] foo:
+// DEFAULT-NEXT:                             call<void, signature=fn() -> void>(%[[VALUE_bar]]);
 // DEFAULT-NEXT:                         return;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:     }

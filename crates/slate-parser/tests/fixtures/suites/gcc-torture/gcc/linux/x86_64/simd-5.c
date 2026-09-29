@@ -76,57 +76,57 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Q = vector<i16, 4>;
-// DEFAULT-NEXT:     global %2 q1: vector<i16, 4> [storage=static] = aggregate<vector<i16, 4>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(1)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(2))) [linkage=external];
-// DEFAULT-NEXT:     global %3 q2: vector<i16, 4> [storage=static] = aggregate<vector<i16, 4>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(3)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(4))) [linkage=external];
-// DEFAULT-NEXT:     global %4 q3: vector<i16, 4> [storage=static] = aggregate<vector<i16, 4>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(5)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(6))) [linkage=external];
-// DEFAULT-NEXT:     global %5 q4: vector<i16, 4> [storage=static] = aggregate<vector<i16, 4>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(7)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(8))) [linkage=external];
-// DEFAULT-NEXT:     global %6 w1: vector<i16, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 w2: vector<i16, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 w3: vector<i16, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 w4: vector<i16, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 z1: vector<i16, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 z2: vector<i16, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %12 z3: vector<i16, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %13 z4: vector<i16, 4> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %14 dummy: volatile i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %15 @func0() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32, volatile>(%14, const<i32>(1));
+// DEFAULT-NEXT:     type @type[[TYPE_Q:[0-9]+]] Q = vector<i16, 4>;
+// DEFAULT-NEXT:     global %[[VALUE_q1:[0-9]+]] q1: vector<i16, 4> [storage=static] = aggregate<vector<i16, 4>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(1)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(2))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_q2:[0-9]+]] q2: vector<i16, 4> [storage=static] = aggregate<vector<i16, 4>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(3)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(4))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_q3:[0-9]+]] q3: vector<i16, 4> [storage=static] = aggregate<vector<i16, 4>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(5)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(6))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_q4:[0-9]+]] q4: vector<i16, 4> [storage=static] = aggregate<vector<i16, 4>, zero_fill=true>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(7)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(8))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_w1:[0-9]+]] w1: vector<i16, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_w2:[0-9]+]] w2: vector<i16, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_w3:[0-9]+]] w3: vector<i16, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_w4:[0-9]+]] w4: vector<i16, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_z1:[0-9]+]] z1: vector<i16, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_z2:[0-9]+]] z2: vector<i16, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_z3:[0-9]+]] z3: vector<i16, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_z4:[0-9]+]] z4: vector<i16, 4> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_dummy:[0-9]+]] dummy: volatile i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_func0:[0-9]+]] @func0() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_dummy]], const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @func1() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %17 a: vector<i16, 4> [storage=automatic];
-// DEFAULT-NEXT:         let %18 b: vector<i16, 4> [storage=automatic];
-// DEFAULT-NEXT:         write<vector<i16, 4>>(%17, mul<vector<i16, 4>, elementwise=true, overflow=wrap>(read<vector<i16, 4>>(%2), read<vector<i16, 4>>(%3)));
-// DEFAULT-NEXT:         write<vector<i16, 4>>(%18, mul<vector<i16, 4>, elementwise=true, overflow=wrap>(read<vector<i16, 4>>(%4), read<vector<i16, 4>>(%5)));
-// DEFAULT-NEXT:         write<vector<i16, 4>>(%6, read<vector<i16, 4>>(%17));
-// DEFAULT-NEXT:         write<vector<i16, 4>>(%7, read<vector<i16, 4>>(%18));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%15);
-// DEFAULT-NEXT:         write<vector<i16, 4>>(%8, read<vector<i16, 4>>(%17));
-// DEFAULT-NEXT:         write<vector<i16, 4>>(%9, read<vector<i16, 4>>(%18));
+// DEFAULT-NEXT:     fn %[[VALUE_func1:[0-9]+]] @func1() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: vector<i16, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: vector<i16, 4> [storage=automatic];
+// DEFAULT-NEXT:         write<vector<i16, 4>>(%[[VALUE_a]], mul<vector<i16, 4>, elementwise=true, overflow=wrap>(read<vector<i16, 4>>(%[[VALUE_q1]]), read<vector<i16, 4>>(%[[VALUE_q2]])));
+// DEFAULT-NEXT:         write<vector<i16, 4>>(%[[VALUE_b]], mul<vector<i16, 4>, elementwise=true, overflow=wrap>(read<vector<i16, 4>>(%[[VALUE_q3]]), read<vector<i16, 4>>(%[[VALUE_q4]])));
+// DEFAULT-NEXT:         write<vector<i16, 4>>(%[[VALUE_w1]], read<vector<i16, 4>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         write<vector<i16, 4>>(%[[VALUE_w2]], read<vector<i16, 4>>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_func0]]);
+// DEFAULT-NEXT:         write<vector<i16, 4>>(%[[VALUE_w3]], read<vector<i16, 4>>(%[[VALUE_a]]));
+// DEFAULT-NEXT:         write<vector<i16, 4>>(%[[VALUE_w4]], read<vector<i16, 4>>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @func2() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %20 a: vector<i16, 4> [storage=automatic];
-// DEFAULT-NEXT:         let %21 b: vector<i16, 4> [storage=automatic];
-// DEFAULT-NEXT:         write<vector<i16, 4>>(%20, add<vector<i16, 4>, elementwise=true, overflow=wrap>(read<vector<i16, 4>>(%2), read<vector<i16, 4>>(%3)));
-// DEFAULT-NEXT:         write<vector<i16, 4>>(%21, sub<vector<i16, 4>, elementwise=true, overflow=wrap>(read<vector<i16, 4>>(%4), read<vector<i16, 4>>(%5)));
-// DEFAULT-NEXT:         write<vector<i16, 4>>(%10, read<vector<i16, 4>>(%20));
-// DEFAULT-NEXT:         write<vector<i16, 4>>(%11, read<vector<i16, 4>>(%21));
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%16);
-// DEFAULT-NEXT:         write<vector<i16, 4>>(%12, read<vector<i16, 4>>(%20));
-// DEFAULT-NEXT:         write<vector<i16, 4>>(%13, read<vector<i16, 4>>(%21));
+// DEFAULT-NEXT:     fn %[[VALUE_func2:[0-9]+]] @func2() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: vector<i16, 4> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: vector<i16, 4> [storage=automatic];
+// DEFAULT-NEXT:         write<vector<i16, 4>>(%[[VALUE_a_2]], add<vector<i16, 4>, elementwise=true, overflow=wrap>(read<vector<i16, 4>>(%[[VALUE_q1]]), read<vector<i16, 4>>(%[[VALUE_q2]])));
+// DEFAULT-NEXT:         write<vector<i16, 4>>(%[[VALUE_b_2]], sub<vector<i16, 4>, elementwise=true, overflow=wrap>(read<vector<i16, 4>>(%[[VALUE_q3]]), read<vector<i16, 4>>(%[[VALUE_q4]])));
+// DEFAULT-NEXT:         write<vector<i16, 4>>(%[[VALUE_z1]], read<vector<i16, 4>>(%[[VALUE_a_2]]));
+// DEFAULT-NEXT:         write<vector<i16, 4>>(%[[VALUE_z2]], read<vector<i16, 4>>(%[[VALUE_b_2]]));
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_func1]]);
+// DEFAULT-NEXT:         write<vector<i16, 4>>(%[[VALUE_z3]], read<vector<i16, 4>>(%[[VALUE_a_2]]));
+// DEFAULT-NEXT:         write<vector<i16, 4>>(%[[VALUE_z4]], read<vector<i16, 4>>(%[[VALUE_b_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @__builtin_memcmp(%23 <unnamed>: ptr<const void>, %24 <unnamed>: ptr<const void>, %25 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %22 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%19);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%26, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%6)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%8)), const<u64>(8)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%26, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%7)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%9)), const<u64>(8)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%26, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%10)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%12)), const<u64>(8)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%26, pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%11)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%13)), const<u64>(8)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcmp:[0-9]+]] @__builtin_memcmp(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_func2]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%[[VALUE_w1]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%[[VALUE_w3]])), const<u64>(8)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%[[VALUE_w2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%[[VALUE_w4]])), const<u64>(8)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%[[VALUE_z1]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%[[VALUE_z3]])), const<u64>(8)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%[[VALUE_z2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<i16, 4>>>(%[[VALUE_z4]])), const<u64>(8)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

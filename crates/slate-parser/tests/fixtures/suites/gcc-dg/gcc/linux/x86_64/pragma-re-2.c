@@ -32,6 +32,6 @@ int bar; /* silence `ISO C forbids an empty translation unit' warning */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 bar: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bar:[0-9]+]] bar: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

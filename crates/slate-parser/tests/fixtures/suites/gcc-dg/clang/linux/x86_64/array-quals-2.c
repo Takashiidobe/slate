@@ -39,17 +39,17 @@ T *g(void) { return 1 ? p : p2; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 T = array<i8, 1>;
-// DEFAULT-NEXT:     type @type1 T2 = array<i8, 1>;
-// DEFAULT-NEXT:     type @type2 U = array<i8, 1>;
-// DEFAULT-NEXT:     global %3 p: ptr<const array<i8, 1>> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 p2: ptr<const array<i8, 1>> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 q: ptr<volatile array<i8, 1>> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %6 @f() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(conditional<ptr<const volatile array<i8, 1>>>(ne<i32>(const<i32>(1), const<i32>(0)), pointer_cast<ptr<const volatile array<i8, 1>>, reason=usual_arith>(read<ptr<const array<i8, 1>>>(%3)), pointer_cast<ptr<const volatile array<i8, 1>>, reason=usual_arith>(read<ptr<volatile array<i8, 1>>>(%5))));
+// DEFAULT-NEXT:     type @type[[TYPE_T:[0-9]+]] T = array<i8, 1>;
+// DEFAULT-NEXT:     type @type[[TYPE_T2:[0-9]+]] T2 = array<i8, 1>;
+// DEFAULT-NEXT:     type @type[[TYPE_U:[0-9]+]] U = array<i8, 1>;
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<const array<i8, 1>> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p2:[0-9]+]] p2: ptr<const array<i8, 1>> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: ptr<volatile array<i8, 1>> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return pointer_cast<ptr<void>, reason=return>(conditional<ptr<const volatile array<i8, 1>>>(ne<i32>(const<i32>(1), const<i32>(0)), pointer_cast<ptr<const volatile array<i8, 1>>, reason=usual_arith>(read<ptr<const array<i8, 1>>>(%[[VALUE_p]])), pointer_cast<ptr<const volatile array<i8, 1>>, reason=usual_arith>(read<ptr<volatile array<i8, 1>>>(%[[VALUE_q]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @g() -> ptr<const array<i8, 1>> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return conditional<ptr<const array<i8, 1>>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<const array<i8, 1>>>(%3), read<ptr<const array<i8, 1>>>(%4));
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> ptr<const array<i8, 1>> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return conditional<ptr<const array<i8, 1>>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<const array<i8, 1>>>(%[[VALUE_p]]), read<ptr<const array<i8, 1>>>(%[[VALUE_p2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -56,36 +56,36 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%11 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @sub1(%3 val: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_sub1:[0-9]+]] @sub1(%[[VALUE_val:[0-9]+]] val: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_val]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @testcond(%6 val: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 flag1: i32 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_testcond:[0-9]+]] @testcond(%[[VALUE_val_2:[0-9]+]] val: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_flag1:[0-9]+]] flag1: i32 [storage=automatic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %8 t1: i32 [storage=automatic] = read<i32>(%6);
+// DEFAULT-NEXT:             let %[[VALUE_t1:[0-9]+]] t1: i32 [storage=automatic] = read<i32>(%[[VALUE_val_2]]);
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %9 t2: i32 [storage=automatic] = read<i32>(%8);
+// DEFAULT-NEXT:                 let %[[VALUE_t2:[0-9]+]] t2: i32 [storage=automatic] = read<i32>(%[[VALUE_t1]]);
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     write<i32>(%7, from_bool<i32, reason=assign>(eq<i32>(call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%9)), const<i32>(0))));
-// DEFAULT-NEXT:                     from_bool<i32, reason=assign>(eq<i32>(call<i32, signature=fn(i32) -> i32>(%2, read<i32>(%9)), const<i32>(0)));
-// DEFAULT-NEXT:                     goto %5;
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_flag1]], from_bool<i32, reason=assign>(eq<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_sub1]], read<i32>(%[[VALUE_t2]])), const<i32>(0))));
+// DEFAULT-NEXT:                     from_bool<i32, reason=assign>(eq<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_sub1]], read<i32>(%[[VALUE_t2]])), const<i32>(0)));
+// DEFAULT-NEXT:                     goto %[[VALUE_lab1:[0-9]+]];
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             label %5 lab1:
+// DEFAULT-NEXT:             label %[[VALUE_lab1]] lab1:
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%7), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_flag1]]), const<i32>(0))
 // DEFAULT-NEXT:             return const<i32>(5046272);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%4, const<i32>(1)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_testcond]], const<i32>(1)), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

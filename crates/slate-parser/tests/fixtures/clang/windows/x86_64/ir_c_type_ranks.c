@@ -42,18 +42,18 @@ long long difference(const int *a, int *b) { return a - b; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 mixed: u32 [storage=static] [linkage=external] [c="typeof(1L + 1u)"] [c_canon="unsigned long"];
-// DEFAULT-NEXT:     global %1 size: u64 [storage=static] [linkage=external] [c="typeof(sizeof(...))"] [c_canon="unsigned long long"];
-// DEFAULT-NEXT:     global %2 wider: i64 [storage=static] [linkage=external] [c="typeof(1LL + 1u)"] [c_canon="long long"];
-// DEFAULT-NEXT:     fn %3 @ranks(%4 a: i32 [c="long"], %5 b: u32 [c="unsigned int"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(long, unsigned int)"] {
-// DEFAULT-NEXT:         let %6 result: u32 [storage=automatic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%4)), read<u32>(%5)) [c="typeof(a + b)"] [c_canon="unsigned long"];
-// DEFAULT-NEXT:         return read<u32>(%6);
+// DEFAULT-NEXT:     global %[[VALUE_mixed:[0-9]+]] mixed: u32 [storage=static] [linkage=external] [c="typeof(1L + 1u)"] [c_canon="unsigned long"];
+// DEFAULT-NEXT:     global %[[VALUE_size:[0-9]+]] size: u64 [storage=static] [linkage=external] [c="typeof(sizeof(...))"] [c_canon="unsigned long long"];
+// DEFAULT-NEXT:     global %[[VALUE_wider:[0-9]+]] wider: i64 [storage=static] [linkage=external] [c="typeof(1LL + 1u)"] [c_canon="long long"];
+// DEFAULT-NEXT:     fn %[[VALUE_ranks:[0-9]+]] @ranks(%[[VALUE_a:[0-9]+]] a: i32 [c="long"], %[[VALUE_b:[0-9]+]] b: u32 [c="unsigned int"]) -> u32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="unsigned long"] [c="unsigned long(long, unsigned int)"] {
+// DEFAULT-NEXT:         let %[[VALUE_result:[0-9]+]] result: u32 [storage=automatic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_a]])), read<u32>(%[[VALUE_b]])) [c="typeof(a + b)"] [c_canon="unsigned long"];
+// DEFAULT-NEXT:         return read<u32>(%[[VALUE_result]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @selection(%8 a: i32 [c="long"], %9 b: u32 [c="unsigned int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(long, unsigned int)"] {
+// DEFAULT-NEXT:     fn %[[VALUE_selection:[0-9]+]] @selection(%[[VALUE_a_2:[0-9]+]] a: i32 [c="long"], %[[VALUE_b_2:[0-9]+]] b: u32 [c="unsigned int"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(long, unsigned int)"] {
 // DEFAULT-NEXT:         return const<i32>(1);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @difference(%11 a: ptr<const i32> [c="const int *"], %12 b: ptr<i32> [c="int *"]) -> i64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="long long"] [c="long long(const int *, int *)"] {
-// DEFAULT-NEXT:         return ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<const i32>>(%11), read<ptr<i32>>(%12));
+// DEFAULT-NEXT:     fn %[[VALUE_difference:[0-9]+]] @difference(%[[VALUE_a_3:[0-9]+]] a: ptr<const i32> [c="const int *"], %[[VALUE_b_3:[0-9]+]] b: ptr<i32> [c="int *"]) -> i64 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="long long"] [c="long long(const int *, int *)"] {
+// DEFAULT-NEXT:         return ptr_diff<i64, element=i32, same_array=required, overflow=ub>(read<ptr<const i32>>(%[[VALUE_a_3]]), read<ptr<i32>>(%[[VALUE_b_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

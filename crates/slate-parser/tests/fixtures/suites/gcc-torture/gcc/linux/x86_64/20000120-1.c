@@ -36,12 +36,12 @@ pad_home1 ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 letters: array<i8, 27> [storage=static] [align=16] = code_units<array<i8, 27>>([65, 98, 67, 100, 101, 102, 103, 104, 105, 74, 107, 108, 109, 78, 111, 112, 81, 114, 83, 116, 117, 86, 119, 88, 121, 90, 0]) [linkage=external];
-// DEFAULT-NEXT:     global %1 letter: i8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 letter_number: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @pad_home1() -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(%2, conditional<i32>(ne<i8>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(27)>(%0), add<i32, overflow=ub>(read<i32>(%2), const<i32>(1))))), const<i8>(0)), add<i32, overflow=ub>(read<i32>(%2), const<i32>(1)), const<i32>(0)));
-// DEFAULT-NEXT:         write<i8>(%1, read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(27)>(%0), conditional<i32>(ne<i8>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(27)>(%0), add<i32, overflow=ub>(read<i32>(%2), const<i32>(1))))), const<i8>(0)), add<i32, overflow=ub>(read<i32>(%2), const<i32>(1)), const<i32>(0))))));
+// DEFAULT-NEXT:     global %[[VALUE_letters:[0-9]+]] letters: array<i8, 27> [storage=static] [align=16] = code_units<array<i8, 27>>([65, 98, 67, 100, 101, 102, 103, 104, 105, 74, 107, 108, 109, 78, 111, 112, 81, 114, 83, 116, 117, 86, 119, 88, 121, 90, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_letter:[0-9]+]] letter: i8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_letter_number:[0-9]+]] letter_number: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_pad_home1:[0-9]+]] @pad_home1() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_letter_number]], conditional<i32>(ne<i8>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(27)>(%[[VALUE_letters]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_letter_number]]), const<i32>(1))))), const<i8>(0)), add<i32, overflow=ub>(read<i32>(%[[VALUE_letter_number]]), const<i32>(1)), const<i32>(0)));
+// DEFAULT-NEXT:         write<i8>(%[[VALUE_letter]], read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(27)>(%[[VALUE_letters]]), conditional<i32>(ne<i8>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(27)>(%[[VALUE_letters]]), add<i32, overflow=ub>(read<i32>(%[[VALUE_letter_number]]), const<i32>(1))))), const<i8>(0)), add<i32, overflow=ub>(read<i32>(%[[VALUE_letter_number]]), const<i32>(1)), const<i32>(0))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

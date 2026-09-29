@@ -36,14 +36,14 @@ unsigned short get16_unaligned(const void *p) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: array<i8, 2>;
 // DEFAULT-NEXT:     } [size=2, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 TU2 = @type0;
-// DEFAULT-NEXT:     fn %2 @get16_unaligned(%3 p: ptr<const void>) -> u16 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 v: u16 [storage=automatic];
-// DEFAULT-NEXT:         write<@type0>(deref(pointer_cast<ptr<@type0>, reason=explicit>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<u16>>(%4)))), copy<@type0, reason=assign>(read<@type0>(deref(pointer_cast<ptr<const @type0>, reason=explicit>(read<ptr<const void>>(%3))))));
-// DEFAULT-NEXT:         return read<u16>(%4);
+// DEFAULT-NEXT:     type @type[[TYPE_TU2:[0-9]+]] TU2 = @type[[TYPE0]];
+// DEFAULT-NEXT:     fn %[[VALUE_get16_unaligned:[0-9]+]] @get16_unaligned(%[[VALUE_p:[0-9]+]] p: ptr<const void>) -> u16 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: u16 [storage=automatic];
+// DEFAULT-NEXT:         write<@type[[TYPE0]]>(deref(pointer_cast<ptr<@type[[TYPE0]]>, reason=explicit>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<u16>>(%[[VALUE_v]])))), copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(deref(pointer_cast<ptr<const @type[[TYPE0]]>, reason=explicit>(read<ptr<const void>>(%[[VALUE_p]]))))));
+// DEFAULT-NEXT:         return read<u16>(%[[VALUE_v]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

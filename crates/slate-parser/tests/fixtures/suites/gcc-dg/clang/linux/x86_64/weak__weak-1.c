@@ -81,17 +81,17 @@ int use_j() { return j; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %1 b: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %2 c: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %3 d: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     global %5 g: i32 [storage=static] = const<i32>(1) [linkage=external] [weak];
-// DEFAULT-NEXT:     extern %6 i: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     extern %7 j: i32 [storage=static] [linkage=external] [weak];
-// DEFAULT-NEXT:     fn %4 @e() -> void [linkage=external] [weak] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: i32 [storage=static] = const<i32>(1) [linkage=external] [weak];
+// DEFAULT-NEXT:     extern %[[VALUE_i:[0-9]+]] i: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     extern %[[VALUE_j:[0-9]+]] j: i32 [storage=static] [linkage=external] [weak];
+// DEFAULT-NEXT:     fn %[[VALUE_e:[0-9]+]] @e() -> void [linkage=external] [weak] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @use_j() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%7);
+// DEFAULT-NEXT:     fn %[[VALUE_use_j:[0-9]+]] @use_j() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_j]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

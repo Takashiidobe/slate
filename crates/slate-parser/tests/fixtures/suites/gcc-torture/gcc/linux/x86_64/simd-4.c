@@ -47,28 +47,28 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __int32_t = i32;
-// DEFAULT-NEXT:     type @type1 __int64_t = i64;
-// DEFAULT-NEXT:     type @type2 int32_t = i32;
-// DEFAULT-NEXT:     type @type3 int64_t = i64;
-// DEFAULT-NEXT:     type @type4 v2si = vector<i32, 2>;
-// DEFAULT-NEXT:     type @type5 = union {
+// DEFAULT-NEXT:     type @type[[TYPE___int32_t:[0-9]+]] __int32_t = i32;
+// DEFAULT-NEXT:     type @type[[TYPE___int64_t:[0-9]+]] __int64_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_int32_t:[0-9]+]] int32_t = i32;
+// DEFAULT-NEXT:     type @type[[TYPE_int64_t:[0-9]+]] int64_t = i64;
+// DEFAULT-NEXT:     type @type[[TYPE_v2si:[0-9]+]] v2si = vector<i32, 2>;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 ll: i64;
 // DEFAULT-NEXT:         field1 i: array<i32, 2>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     global %6 s64: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %4 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @__ev_convert_s64(%8 a: vector<i32, 2>) -> i64 [linkage=internal] [inline=hint] [definition=emitted] [abi=sysv64(coerce<f64>) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return vector_bit_cast<i64, reason=explicit>(read<vector<i32, 2>>(%8));
+// DEFAULT-NEXT:     global %[[VALUE_s64:[0-9]+]] s64: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE___ev_convert_s64:[0-9]+]] @__ev_convert_s64(%[[VALUE_a:[0-9]+]] a: vector<i32, 2>) -> i64 [linkage=internal] [inline=hint] [definition=emitted] [abi=sysv64(coerce<f64>) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return vector_bit_cast<i64, reason=explicit>(read<vector<i32, 2>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %11 endianness_test: @type5 [storage=automatic];
-// DEFAULT-NEXT:         write<i64>(field0(%11), widen<i64, reason=assign>(const<i32>(1)));
-// DEFAULT-NEXT:         let %12 little_endian: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%11)), const<i32>(0))));
-// DEFAULT-NEXT:         write<i64>(%6, call<i64, signature=fn(vector<i32, 2>) -> i64, abi=sysv64(coerce<f64>) -> scalar>(%7, read<vector<i32, 2>>(compound_literal %13 [storage=automatic] = aggregate<vector<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(4294967295))))));
-// DEFAULT-NEXT:         call<i64, signature=fn(vector<i32, 2>) -> i64, abi=sysv64(coerce<f64>) -> scalar>(%7, read<vector<i32, 2>>(compound_literal %13 [storage=automatic] = aggregate<vector<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(4294967295)))));
-// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%6)), conditional<u64>(ne<i32>(read<i32>(%12), const<i32>(0)), const<u64>(18446744069414584321), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(8589934591))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%4);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_endianness_test:[0-9]+]] endianness_test: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         write<i64>(field0(%[[VALUE_endianness_test]]), widen<i64, reason=assign>(const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE_little_endian:[0-9]+]] little_endian: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%[[VALUE_endianness_test]])), const<i32>(0))));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_s64]], call<i64, signature=fn(vector<i32, 2>) -> i64, abi=sysv64(coerce<f64>) -> scalar>(%[[VALUE___ev_convert_s64]], read<vector<i32, 2>>(compound_literal %[[VALUE0:[0-9]+]] [storage=automatic] = aggregate<vector<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(4294967295))))));
+// DEFAULT-NEXT:         call<i64, signature=fn(vector<i32, 2>) -> i64, abi=sysv64(coerce<f64>) -> scalar>(%[[VALUE___ev_convert_s64]], read<vector<i32, 2>>(compound_literal %[[VALUE0]] [storage=automatic] = aggregate<vector<i32, 2>, zero_fill=false>(index0 = const<i32>(1), index1 = reinterpret<i32, reason=assign, fits=unknown>(const<u32>(4294967295)))));
+// DEFAULT-NEXT:         if ne<u64>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_s64]])), conditional<u64>(ne<i32>(read<i32>(%[[VALUE_little_endian]]), const<i32>(0)), const<u64>(18446744069414584321), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(8589934591))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

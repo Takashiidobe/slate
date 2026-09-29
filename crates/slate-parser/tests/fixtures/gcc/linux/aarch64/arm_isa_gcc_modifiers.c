@@ -119,25 +119,25 @@ int val__STDC_IEC_559__[__STDC_IEC_559__ + 1];
 // V9-NEXT:         storage d64 [size=8, align=8];
 // V9-NEXT:         storage d128 [size=16, align=16];
 // V9-NEXT:     }
-// V9-NEXT:     global %0 val__ARM_FEATURE_COMPLEX: array<i32, 2> [storage=static] [linkage=external];
-// V9-NEXT:     global %1 val__ARM_FEATURE_FMA: array<i32, 2> [storage=static] [linkage=external];
-// V9-NEXT:     global %2 val__ARM_FEATURE_FP16_FML: array<i32, 2> [storage=static] [linkage=external];
-// V9-NEXT:     global %3 val__ARM_FEATURE_FRINT: array<i32, 2> [storage=static] [linkage=external];
-// V9-NEXT:     global %4 val__ARM_FEATURE_JCVT: array<i32, 2> [storage=static] [linkage=external];
-// V9-NEXT:     global %5 val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 2> [storage=static] [linkage=external];
-// V9-NEXT:     global %6 val__ARM_FEATURE_QRDMX: array<i32, 2> [storage=static] [linkage=external];
-// V9-NEXT:     global %7 val__ARM_FEATURE_SVE: array<i32, 2> [storage=static] [linkage=external];
-// V9-NEXT:     global %8 val__ARM_FEATURE_SVE2: array<i32, 2> [storage=static] [linkage=external];
-// V9-NEXT:     global %9 val__ARM_FEATURE_SVE_BITS: array<i32, 1> [storage=static] [linkage=external];
-// V9-NEXT:     global %10 val__ARM_FEATURE_SVE_PREDICATE_OPERATORS: array<i32, 3> [storage=static] [linkage=external];
-// V9-NEXT:     global %11 val__ARM_FEATURE_SVE_VECTOR_OPERATORS: array<i32, 3> [storage=static] [linkage=external];
-// V9-NEXT:     global %12 val__ARM_FP16_FORMAT_IEEE: array<i32, 2> [storage=static] [linkage=external];
-// V9-NEXT:     global %13 val__FLT_EVAL_METHOD__: array<i32, 17> [storage=static] [linkage=external];
-// V9-NEXT:     global %14 val__FLT_EVAL_METHOD_C99__: array<i32, 17> [storage=static] [linkage=external];
-// V9-NEXT:     global %15 val__FP_FAST_FMA: array<i32, 2> [storage=static] [linkage=external];
-// V9-NEXT:     global %16 val__GCC_DESTRUCTIVE_SIZE: array<i32, 65> [storage=static] [linkage=external];
-// V9-NEXT:     global %17 val__GCC_IEC_559: array<i32, 3> [storage=static] [linkage=external];
-// V9-NEXT:     global %18 val__STDC_IEC_559__: array<i32, 2> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__ARM_FEATURE_COMPLEX:[0-9]+]] val__ARM_FEATURE_COMPLEX: array<i32, 2> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__ARM_FEATURE_FMA:[0-9]+]] val__ARM_FEATURE_FMA: array<i32, 2> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__ARM_FEATURE_FP16_FML:[0-9]+]] val__ARM_FEATURE_FP16_FML: array<i32, 2> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__ARM_FEATURE_FRINT:[0-9]+]] val__ARM_FEATURE_FRINT: array<i32, 2> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__ARM_FEATURE_JCVT:[0-9]+]] val__ARM_FEATURE_JCVT: array<i32, 2> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__ARM_FEATURE_NUMERIC_MAXMIN:[0-9]+]] val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 2> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__ARM_FEATURE_QRDMX:[0-9]+]] val__ARM_FEATURE_QRDMX: array<i32, 2> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__ARM_FEATURE_SVE:[0-9]+]] val__ARM_FEATURE_SVE: array<i32, 2> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__ARM_FEATURE_SVE2:[0-9]+]] val__ARM_FEATURE_SVE2: array<i32, 2> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__ARM_FEATURE_SVE_BITS:[0-9]+]] val__ARM_FEATURE_SVE_BITS: array<i32, 1> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__ARM_FEATURE_SVE_PREDICATE_OPERATORS:[0-9]+]] val__ARM_FEATURE_SVE_PREDICATE_OPERATORS: array<i32, 3> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__ARM_FEATURE_SVE_VECTOR_OPERATORS:[0-9]+]] val__ARM_FEATURE_SVE_VECTOR_OPERATORS: array<i32, 3> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__ARM_FP16_FORMAT_IEEE:[0-9]+]] val__ARM_FP16_FORMAT_IEEE: array<i32, 2> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__FLT_EVAL_METHOD__:[0-9]+]] val__FLT_EVAL_METHOD__: array<i32, 17> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__FLT_EVAL_METHOD_C99__:[0-9]+]] val__FLT_EVAL_METHOD_C99__: array<i32, 17> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__FP_FAST_FMA:[0-9]+]] val__FP_FAST_FMA: array<i32, 2> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__GCC_DESTRUCTIVE_SIZE:[0-9]+]] val__GCC_DESTRUCTIVE_SIZE: array<i32, 65> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__GCC_IEC_559:[0-9]+]] val__GCC_IEC_559: array<i32, 3> [storage=static] [linkage=external];
+// V9-NEXT:     global %[[VALUE_val__STDC_IEC_559__:[0-9]+]] val__STDC_IEC_559__: array<i32, 2> [storage=static] [linkage=external];
 // V9-NEXT: }
 // SLATE-FILECHECK-END V9
 // SLATE-FILECHECK-BEGIN V9-STRICT
@@ -162,25 +162,25 @@ int val__STDC_IEC_559__[__STDC_IEC_559__ + 1];
 // V9-STRICT-NEXT:         storage d64 [size=8, align=8];
 // V9-STRICT-NEXT:         storage d128 [size=16, align=16];
 // V9-STRICT-NEXT:     }
-// V9-STRICT-NEXT:     global %0 val__ARM_FEATURE_COMPLEX: array<i32, 2> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %1 val__ARM_FEATURE_FMA: array<i32, 2> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %2 val__ARM_FEATURE_FP16_FML: array<i32, 2> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %3 val__ARM_FEATURE_FRINT: array<i32, 2> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %4 val__ARM_FEATURE_JCVT: array<i32, 2> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %5 val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 2> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %6 val__ARM_FEATURE_QRDMX: array<i32, 2> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %7 val__ARM_FEATURE_SVE: array<i32, 2> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %8 val__ARM_FEATURE_SVE2: array<i32, 2> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %9 val__ARM_FEATURE_SVE_BITS: array<i32, 1> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %10 val__ARM_FEATURE_SVE_PREDICATE_OPERATORS: array<i32, 3> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %11 val__ARM_FEATURE_SVE_VECTOR_OPERATORS: array<i32, 3> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %12 val__ARM_FP16_FORMAT_IEEE: array<i32, 2> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %13 val__FLT_EVAL_METHOD__: array<i32, 1> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %14 val__FLT_EVAL_METHOD_C99__: array<i32, 17> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %15 val__FP_FAST_FMA: array<i32, 2> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %16 val__GCC_DESTRUCTIVE_SIZE: array<i32, 65> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %17 val__GCC_IEC_559: array<i32, 3> [storage=static] [linkage=external];
-// V9-STRICT-NEXT:     global %18 val__STDC_IEC_559__: array<i32, 2> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__ARM_FEATURE_COMPLEX:[0-9]+]] val__ARM_FEATURE_COMPLEX: array<i32, 2> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__ARM_FEATURE_FMA:[0-9]+]] val__ARM_FEATURE_FMA: array<i32, 2> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__ARM_FEATURE_FP16_FML:[0-9]+]] val__ARM_FEATURE_FP16_FML: array<i32, 2> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__ARM_FEATURE_FRINT:[0-9]+]] val__ARM_FEATURE_FRINT: array<i32, 2> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__ARM_FEATURE_JCVT:[0-9]+]] val__ARM_FEATURE_JCVT: array<i32, 2> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__ARM_FEATURE_NUMERIC_MAXMIN:[0-9]+]] val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 2> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__ARM_FEATURE_QRDMX:[0-9]+]] val__ARM_FEATURE_QRDMX: array<i32, 2> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__ARM_FEATURE_SVE:[0-9]+]] val__ARM_FEATURE_SVE: array<i32, 2> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__ARM_FEATURE_SVE2:[0-9]+]] val__ARM_FEATURE_SVE2: array<i32, 2> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__ARM_FEATURE_SVE_BITS:[0-9]+]] val__ARM_FEATURE_SVE_BITS: array<i32, 1> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__ARM_FEATURE_SVE_PREDICATE_OPERATORS:[0-9]+]] val__ARM_FEATURE_SVE_PREDICATE_OPERATORS: array<i32, 3> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__ARM_FEATURE_SVE_VECTOR_OPERATORS:[0-9]+]] val__ARM_FEATURE_SVE_VECTOR_OPERATORS: array<i32, 3> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__ARM_FP16_FORMAT_IEEE:[0-9]+]] val__ARM_FP16_FORMAT_IEEE: array<i32, 2> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__FLT_EVAL_METHOD__:[0-9]+]] val__FLT_EVAL_METHOD__: array<i32, 1> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__FLT_EVAL_METHOD_C99__:[0-9]+]] val__FLT_EVAL_METHOD_C99__: array<i32, 17> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__FP_FAST_FMA:[0-9]+]] val__FP_FAST_FMA: array<i32, 2> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__GCC_DESTRUCTIVE_SIZE:[0-9]+]] val__GCC_DESTRUCTIVE_SIZE: array<i32, 65> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__GCC_IEC_559:[0-9]+]] val__GCC_IEC_559: array<i32, 3> [storage=static] [linkage=external];
+// V9-STRICT-NEXT:     global %[[VALUE_val__STDC_IEC_559__:[0-9]+]] val__STDC_IEC_559__: array<i32, 2> [storage=static] [linkage=external];
 // V9-STRICT-NEXT: }
 // SLATE-FILECHECK-END V9-STRICT
 // SLATE-FILECHECK-BEGIN NOFP
@@ -205,10 +205,10 @@ int val__STDC_IEC_559__[__STDC_IEC_559__ + 1];
 // NOFP-NEXT:         storage d64 [size=8, align=8];
 // NOFP-NEXT:         storage d128 [size=16, align=16];
 // NOFP-NEXT:     }
-// NOFP-NEXT:     global %0 val__FLT_EVAL_METHOD__: array<i32, 1> [storage=static] [linkage=external];
-// NOFP-NEXT:     global %1 val__FLT_EVAL_METHOD_C99__: array<i32, 1> [storage=static] [linkage=external];
-// NOFP-NEXT:     global %2 val__GCC_DESTRUCTIVE_SIZE: array<i32, 257> [storage=static] [linkage=external];
-// NOFP-NEXT:     global %3 val__GCC_IEC_559: array<i32, 1> [storage=static] [linkage=external];
+// NOFP-NEXT:     global %[[VALUE_val__FLT_EVAL_METHOD__:[0-9]+]] val__FLT_EVAL_METHOD__: array<i32, 1> [storage=static] [linkage=external];
+// NOFP-NEXT:     global %[[VALUE_val__FLT_EVAL_METHOD_C99__:[0-9]+]] val__FLT_EVAL_METHOD_C99__: array<i32, 1> [storage=static] [linkage=external];
+// NOFP-NEXT:     global %[[VALUE_val__GCC_DESTRUCTIVE_SIZE:[0-9]+]] val__GCC_DESTRUCTIVE_SIZE: array<i32, 257> [storage=static] [linkage=external];
+// NOFP-NEXT:     global %[[VALUE_val__GCC_IEC_559:[0-9]+]] val__GCC_IEC_559: array<i32, 1> [storage=static] [linkage=external];
 // NOFP-NEXT: }
 // SLATE-FILECHECK-END NOFP
 // SLATE-FILECHECK-BEGIN NOSIMD-SIMD
@@ -233,21 +233,21 @@ int val__STDC_IEC_559__[__STDC_IEC_559__ + 1];
 // NOSIMD-SIMD-NEXT:         storage d64 [size=8, align=8];
 // NOSIMD-SIMD-NEXT:         storage d128 [size=16, align=16];
 // NOSIMD-SIMD-NEXT:     }
-// NOSIMD-SIMD-NEXT:     global %0 val__ARM_FEATURE_BF16: array<i32, 2> [storage=static] [linkage=external];
-// NOSIMD-SIMD-NEXT:     global %1 val__ARM_FEATURE_BF16_VECTOR_ARITHMETIC: array<i32, 2> [storage=static] [linkage=external];
-// NOSIMD-SIMD-NEXT:     global %2 val__ARM_FEATURE_FMA: array<i32, 2> [storage=static] [linkage=external];
-// NOSIMD-SIMD-NEXT:     global %3 val__ARM_FEATURE_FP16_FML: array<i32, 2> [storage=static] [linkage=external];
-// NOSIMD-SIMD-NEXT:     global %4 val__ARM_FEATURE_FRINT: array<i32, 2> [storage=static] [linkage=external];
-// NOSIMD-SIMD-NEXT:     global %5 val__ARM_FEATURE_JCVT: array<i32, 2> [storage=static] [linkage=external];
-// NOSIMD-SIMD-NEXT:     global %6 val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 2> [storage=static] [linkage=external];
-// NOSIMD-SIMD-NEXT:     global %7 val__ARM_FEATURE_QRDMX: array<i32, 2> [storage=static] [linkage=external];
-// NOSIMD-SIMD-NEXT:     global %8 val__ARM_FP16_FORMAT_IEEE: array<i32, 2> [storage=static] [linkage=external];
-// NOSIMD-SIMD-NEXT:     global %9 val__FLT_EVAL_METHOD__: array<i32, 17> [storage=static] [linkage=external];
-// NOSIMD-SIMD-NEXT:     global %10 val__FLT_EVAL_METHOD_C99__: array<i32, 17> [storage=static] [linkage=external];
-// NOSIMD-SIMD-NEXT:     global %11 val__FP_FAST_FMA: array<i32, 2> [storage=static] [linkage=external];
-// NOSIMD-SIMD-NEXT:     global %12 val__GCC_DESTRUCTIVE_SIZE: array<i32, 65> [storage=static] [linkage=external];
-// NOSIMD-SIMD-NEXT:     global %13 val__GCC_IEC_559: array<i32, 3> [storage=static] [linkage=external];
-// NOSIMD-SIMD-NEXT:     global %14 val__STDC_IEC_559__: array<i32, 2> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__ARM_FEATURE_BF16:[0-9]+]] val__ARM_FEATURE_BF16: array<i32, 2> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__ARM_FEATURE_BF16_VECTOR_ARITHMETIC:[0-9]+]] val__ARM_FEATURE_BF16_VECTOR_ARITHMETIC: array<i32, 2> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__ARM_FEATURE_FMA:[0-9]+]] val__ARM_FEATURE_FMA: array<i32, 2> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__ARM_FEATURE_FP16_FML:[0-9]+]] val__ARM_FEATURE_FP16_FML: array<i32, 2> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__ARM_FEATURE_FRINT:[0-9]+]] val__ARM_FEATURE_FRINT: array<i32, 2> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__ARM_FEATURE_JCVT:[0-9]+]] val__ARM_FEATURE_JCVT: array<i32, 2> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__ARM_FEATURE_NUMERIC_MAXMIN:[0-9]+]] val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 2> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__ARM_FEATURE_QRDMX:[0-9]+]] val__ARM_FEATURE_QRDMX: array<i32, 2> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__ARM_FP16_FORMAT_IEEE:[0-9]+]] val__ARM_FP16_FORMAT_IEEE: array<i32, 2> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__FLT_EVAL_METHOD__:[0-9]+]] val__FLT_EVAL_METHOD__: array<i32, 17> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__FLT_EVAL_METHOD_C99__:[0-9]+]] val__FLT_EVAL_METHOD_C99__: array<i32, 17> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__FP_FAST_FMA:[0-9]+]] val__FP_FAST_FMA: array<i32, 2> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__GCC_DESTRUCTIVE_SIZE:[0-9]+]] val__GCC_DESTRUCTIVE_SIZE: array<i32, 65> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__GCC_IEC_559:[0-9]+]] val__GCC_IEC_559: array<i32, 3> [storage=static] [linkage=external];
+// NOSIMD-SIMD-NEXT:     global %[[VALUE_val__STDC_IEC_559__:[0-9]+]] val__STDC_IEC_559__: array<i32, 2> [storage=static] [linkage=external];
 // NOSIMD-SIMD-NEXT: }
 // SLATE-FILECHECK-END NOSIMD-SIMD
 // SLATE-FILECHECK-BEGIN SVE-FIXED
@@ -272,20 +272,20 @@ int val__STDC_IEC_559__[__STDC_IEC_559__ + 1];
 // SVE-FIXED-NEXT:         storage d64 [size=8, align=8];
 // SVE-FIXED-NEXT:         storage d128 [size=16, align=16];
 // SVE-FIXED-NEXT:     }
-// SVE-FIXED-NEXT:     global %0 val__ARM_FEATURE_COMPLEX: array<i32, 2> [storage=static] [linkage=external];
-// SVE-FIXED-NEXT:     global %1 val__ARM_FEATURE_FMA: array<i32, 2> [storage=static] [linkage=external];
-// SVE-FIXED-NEXT:     global %2 val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 2> [storage=static] [linkage=external];
-// SVE-FIXED-NEXT:     global %3 val__ARM_FEATURE_SVE: array<i32, 2> [storage=static] [linkage=external];
-// SVE-FIXED-NEXT:     global %4 val__ARM_FEATURE_SVE_BITS: array<i32, 257> [storage=static] [linkage=external];
-// SVE-FIXED-NEXT:     global %5 val__ARM_FEATURE_SVE_PREDICATE_OPERATORS: array<i32, 2> [storage=static] [linkage=external];
-// SVE-FIXED-NEXT:     global %6 val__ARM_FEATURE_SVE_VECTOR_OPERATORS: array<i32, 2> [storage=static] [linkage=external];
-// SVE-FIXED-NEXT:     global %7 val__ARM_FP16_FORMAT_IEEE: array<i32, 2> [storage=static] [linkage=external];
-// SVE-FIXED-NEXT:     global %8 val__FLT_EVAL_METHOD__: array<i32, 17> [storage=static] [linkage=external];
-// SVE-FIXED-NEXT:     global %9 val__FLT_EVAL_METHOD_C99__: array<i32, 17> [storage=static] [linkage=external];
-// SVE-FIXED-NEXT:     global %10 val__FP_FAST_FMA: array<i32, 2> [storage=static] [linkage=external];
-// SVE-FIXED-NEXT:     global %11 val__GCC_DESTRUCTIVE_SIZE: array<i32, 257> [storage=static] [linkage=external];
-// SVE-FIXED-NEXT:     global %12 val__GCC_IEC_559: array<i32, 3> [storage=static] [linkage=external];
-// SVE-FIXED-NEXT:     global %13 val__STDC_IEC_559__: array<i32, 2> [storage=static] [linkage=external];
+// SVE-FIXED-NEXT:     global %[[VALUE_val__ARM_FEATURE_COMPLEX:[0-9]+]] val__ARM_FEATURE_COMPLEX: array<i32, 2> [storage=static] [linkage=external];
+// SVE-FIXED-NEXT:     global %[[VALUE_val__ARM_FEATURE_FMA:[0-9]+]] val__ARM_FEATURE_FMA: array<i32, 2> [storage=static] [linkage=external];
+// SVE-FIXED-NEXT:     global %[[VALUE_val__ARM_FEATURE_NUMERIC_MAXMIN:[0-9]+]] val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 2> [storage=static] [linkage=external];
+// SVE-FIXED-NEXT:     global %[[VALUE_val__ARM_FEATURE_SVE:[0-9]+]] val__ARM_FEATURE_SVE: array<i32, 2> [storage=static] [linkage=external];
+// SVE-FIXED-NEXT:     global %[[VALUE_val__ARM_FEATURE_SVE_BITS:[0-9]+]] val__ARM_FEATURE_SVE_BITS: array<i32, 257> [storage=static] [linkage=external];
+// SVE-FIXED-NEXT:     global %[[VALUE_val__ARM_FEATURE_SVE_PREDICATE_OPERATORS:[0-9]+]] val__ARM_FEATURE_SVE_PREDICATE_OPERATORS: array<i32, 2> [storage=static] [linkage=external];
+// SVE-FIXED-NEXT:     global %[[VALUE_val__ARM_FEATURE_SVE_VECTOR_OPERATORS:[0-9]+]] val__ARM_FEATURE_SVE_VECTOR_OPERATORS: array<i32, 2> [storage=static] [linkage=external];
+// SVE-FIXED-NEXT:     global %[[VALUE_val__ARM_FP16_FORMAT_IEEE:[0-9]+]] val__ARM_FP16_FORMAT_IEEE: array<i32, 2> [storage=static] [linkage=external];
+// SVE-FIXED-NEXT:     global %[[VALUE_val__FLT_EVAL_METHOD__:[0-9]+]] val__FLT_EVAL_METHOD__: array<i32, 17> [storage=static] [linkage=external];
+// SVE-FIXED-NEXT:     global %[[VALUE_val__FLT_EVAL_METHOD_C99__:[0-9]+]] val__FLT_EVAL_METHOD_C99__: array<i32, 17> [storage=static] [linkage=external];
+// SVE-FIXED-NEXT:     global %[[VALUE_val__FP_FAST_FMA:[0-9]+]] val__FP_FAST_FMA: array<i32, 2> [storage=static] [linkage=external];
+// SVE-FIXED-NEXT:     global %[[VALUE_val__GCC_DESTRUCTIVE_SIZE:[0-9]+]] val__GCC_DESTRUCTIVE_SIZE: array<i32, 257> [storage=static] [linkage=external];
+// SVE-FIXED-NEXT:     global %[[VALUE_val__GCC_IEC_559:[0-9]+]] val__GCC_IEC_559: array<i32, 3> [storage=static] [linkage=external];
+// SVE-FIXED-NEXT:     global %[[VALUE_val__STDC_IEC_559__:[0-9]+]] val__STDC_IEC_559__: array<i32, 2> [storage=static] [linkage=external];
 // SVE-FIXED-NEXT: }
 // SLATE-FILECHECK-END SVE-FIXED
 // SLATE-FILECHECK-BEGIN CRYPTO
@@ -310,17 +310,17 @@ int val__STDC_IEC_559__[__STDC_IEC_559__ + 1];
 // CRYPTO-NEXT:         storage d64 [size=8, align=8];
 // CRYPTO-NEXT:         storage d128 [size=16, align=16];
 // CRYPTO-NEXT:     }
-// CRYPTO-NEXT:     global %0 val__ARM_FEATURE_COMPLEX: array<i32, 2> [storage=static] [linkage=external];
-// CRYPTO-NEXT:     global %1 val__ARM_FEATURE_FMA: array<i32, 2> [storage=static] [linkage=external];
-// CRYPTO-NEXT:     global %2 val__ARM_FEATURE_JCVT: array<i32, 2> [storage=static] [linkage=external];
-// CRYPTO-NEXT:     global %3 val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 2> [storage=static] [linkage=external];
-// CRYPTO-NEXT:     global %4 val__ARM_FEATURE_QRDMX: array<i32, 2> [storage=static] [linkage=external];
-// CRYPTO-NEXT:     global %5 val__ARM_FP16_FORMAT_IEEE: array<i32, 2> [storage=static] [linkage=external];
-// CRYPTO-NEXT:     global %6 val__FLT_EVAL_METHOD__: array<i32, 1> [storage=static] [linkage=external];
-// CRYPTO-NEXT:     global %7 val__FLT_EVAL_METHOD_C99__: array<i32, 1> [storage=static] [linkage=external];
-// CRYPTO-NEXT:     global %8 val__FP_FAST_FMA: array<i32, 2> [storage=static] [linkage=external];
-// CRYPTO-NEXT:     global %9 val__GCC_DESTRUCTIVE_SIZE: array<i32, 257> [storage=static] [linkage=external];
-// CRYPTO-NEXT:     global %10 val__GCC_IEC_559: array<i32, 3> [storage=static] [linkage=external];
-// CRYPTO-NEXT:     global %11 val__STDC_IEC_559__: array<i32, 2> [storage=static] [linkage=external];
+// CRYPTO-NEXT:     global %[[VALUE_val__ARM_FEATURE_COMPLEX:[0-9]+]] val__ARM_FEATURE_COMPLEX: array<i32, 2> [storage=static] [linkage=external];
+// CRYPTO-NEXT:     global %[[VALUE_val__ARM_FEATURE_FMA:[0-9]+]] val__ARM_FEATURE_FMA: array<i32, 2> [storage=static] [linkage=external];
+// CRYPTO-NEXT:     global %[[VALUE_val__ARM_FEATURE_JCVT:[0-9]+]] val__ARM_FEATURE_JCVT: array<i32, 2> [storage=static] [linkage=external];
+// CRYPTO-NEXT:     global %[[VALUE_val__ARM_FEATURE_NUMERIC_MAXMIN:[0-9]+]] val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 2> [storage=static] [linkage=external];
+// CRYPTO-NEXT:     global %[[VALUE_val__ARM_FEATURE_QRDMX:[0-9]+]] val__ARM_FEATURE_QRDMX: array<i32, 2> [storage=static] [linkage=external];
+// CRYPTO-NEXT:     global %[[VALUE_val__ARM_FP16_FORMAT_IEEE:[0-9]+]] val__ARM_FP16_FORMAT_IEEE: array<i32, 2> [storage=static] [linkage=external];
+// CRYPTO-NEXT:     global %[[VALUE_val__FLT_EVAL_METHOD__:[0-9]+]] val__FLT_EVAL_METHOD__: array<i32, 1> [storage=static] [linkage=external];
+// CRYPTO-NEXT:     global %[[VALUE_val__FLT_EVAL_METHOD_C99__:[0-9]+]] val__FLT_EVAL_METHOD_C99__: array<i32, 1> [storage=static] [linkage=external];
+// CRYPTO-NEXT:     global %[[VALUE_val__FP_FAST_FMA:[0-9]+]] val__FP_FAST_FMA: array<i32, 2> [storage=static] [linkage=external];
+// CRYPTO-NEXT:     global %[[VALUE_val__GCC_DESTRUCTIVE_SIZE:[0-9]+]] val__GCC_DESTRUCTIVE_SIZE: array<i32, 257> [storage=static] [linkage=external];
+// CRYPTO-NEXT:     global %[[VALUE_val__GCC_IEC_559:[0-9]+]] val__GCC_IEC_559: array<i32, 3> [storage=static] [linkage=external];
+// CRYPTO-NEXT:     global %[[VALUE_val__STDC_IEC_559__:[0-9]+]] val__STDC_IEC_559__: array<i32, 2> [storage=static] [linkage=external];
 // CRYPTO-NEXT: }
 // SLATE-FILECHECK-END CRYPTO

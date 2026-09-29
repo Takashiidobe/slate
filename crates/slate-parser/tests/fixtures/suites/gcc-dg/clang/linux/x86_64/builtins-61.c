@@ -57,23 +57,23 @@ double test4(double x, double y)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @__builtin_cexp(%11 <unnamed>: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c];
-// DEFAULT-NEXT:     fn %0 @test1(%1 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return complex_to_real<f64, reason=explicit>(call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%12, mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<f64>(%1), complex_convert<complex<f64>, reason=usual_arith>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0))))));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_cexp:[0-9]+]] @__builtin_cexp(%[[VALUE0:[0-9]+]] <unnamed>: complex<f64>) -> complex<f64> [linkage=external] [abi=sysv64(native_c) -> native_c];
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_x:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return complex_to_real<f64, reason=explicit>(call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%[[VALUE___builtin_cexp]], mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<f64>(%[[VALUE_x]]), complex_convert<complex<f64>, reason=usual_arith>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @test2(%3 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return complex_to_imag<f64, reason=explicit>(call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%12, mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(complex_convert<complex<f64>, reason=usual_arith>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0))), read<f64>(%3))));
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_x_2:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return complex_to_imag<f64, reason=explicit>(call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%[[VALUE___builtin_cexp]], mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(complex_convert<complex<f64>, reason=usual_arith>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0))), read<f64>(%[[VALUE_x_2]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @test3(%5 x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 c: complex<f64> [storage=automatic] = call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%12, mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<f64>(%5), complex_convert<complex<f64>, reason=usual_arith>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0)))));
-// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(imag(%6)), read<f64>(real(%6)));
+// DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_x_3:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: complex<f64> [storage=automatic] = call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%[[VALUE___builtin_cexp]], mul<complex<f64>, complex=true, rounding=nearest_even, exceptions=ignore, range=full>(read<f64>(%[[VALUE_x_3]]), complex_convert<complex<f64>, reason=usual_arith>(aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(0.0), index1 = const<f32>(1.0)))));
+// DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(imag(%[[VALUE_c]])), read<f64>(real(%[[VALUE_c]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @__builtin_exp(%13 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @test4(%8 x: f64, %9 y: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %10 c: complex<f64> [storage=automatic] = call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%12, real_to_complex<complex<f64>, reason=arg>(read<f64>(%8)));
-// DEFAULT-NEXT:         write<f64>(%8, call<f64, signature=fn(f64) -> f64>(%14, read<f64>(%8)));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%14, read<f64>(%8));
-// DEFAULT-NEXT:         return sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%8), read<f64>(real(%10)));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_exp:[0-9]+]] @__builtin_exp(%[[VALUE1:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4(%[[VALUE_x_4:[0-9]+]] x: f64, %[[VALUE_y:[0-9]+]] y: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: complex<f64> [storage=automatic] = call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%[[VALUE___builtin_cexp]], real_to_complex<complex<f64>, reason=arg>(read<f64>(%[[VALUE_x_4]])));
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_x_4]], call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_exp]], read<f64>(%[[VALUE_x_4]])));
+// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_exp]], read<f64>(%[[VALUE_x_4]]));
+// DEFAULT-NEXT:         return sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_x_4]]), read<f64>(real(%[[VALUE_c_2]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

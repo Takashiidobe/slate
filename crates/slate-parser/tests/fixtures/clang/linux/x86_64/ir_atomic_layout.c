@@ -64,34 +64,34 @@ unsigned long objects(_Atomic struct odd3 *pointer, struct member *record) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 odd3 = struct {
+// IR-NEXT:     type @type[[TYPE_odd3:[0-9]+]] odd3 = struct {
 // IR-NEXT:         field0 a: array<i8, 3>;
 // IR-NEXT:     } [size=3, align=1, offsets=[0]];
-// IR-NEXT:     type @type1 odd5 = struct {
+// IR-NEXT:     type @type[[TYPE_odd5:[0-9]+]] odd5 = struct {
 // IR-NEXT:         field0 a: array<i8, 5>;
 // IR-NEXT:     } [size=5, align=1, offsets=[0]];
-// IR-NEXT:     type @type2 odd9 = struct {
+// IR-NEXT:     type @type[[TYPE_odd9:[0-9]+]] odd9 = struct {
 // IR-NEXT:         field0 a: array<i8, 9>;
 // IR-NEXT:     } [size=9, align=1, offsets=[0]];
-// IR-NEXT:     type @type3 wide17 = struct {
+// IR-NEXT:     type @type[[TYPE_wide17:[0-9]+]] wide17 = struct {
 // IR-NEXT:         field0 a: array<i8, 17>;
 // IR-NEXT:     } [size=17, align=1, offsets=[0]];
-// IR-NEXT:     type @type4 member = struct {
+// IR-NEXT:     type @type[[TYPE_member:[0-9]+]] member = struct {
 // IR-NEXT:         field0 head: i8;
-// IR-NEXT:         field1 value: atomic @type0;
+// IR-NEXT:         field1 value: atomic @type[[TYPE_odd3]];
 // IR-NEXT:         field2 tail: i8;
 // IR-NEXT:     } [size=12, align=4, offsets=[0, 4, 8]];
-// IR-NEXT:     type @type5 elements = struct {
-// IR-NEXT:         field0 values: atomic array<@type0, 3>;
+// IR-NEXT:     type @type[[TYPE_elements:[0-9]+]] elements = struct {
+// IR-NEXT:         field0 values: atomic array<@type[[TYPE_odd3]], 3>;
 // IR-NEXT:     } [size=12, align=4, offsets=[0]];
-// IR-NEXT:     type @type6 scalar_member = struct {
+// IR-NEXT:     type @type[[TYPE_scalar_member:[0-9]+]] scalar_member = struct {
 // IR-NEXT:         field0 value: atomic i32;
 // IR-NEXT:         field1 tail: i8;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     global %4 records: array<u64, 8> [storage=static] [align=16] = aggregate<array<u64, 8>, zero_fill=false>(index0 = const<u64>(4), index1 = const<u64>(4), index2 = const<u64>(8), index3 = const<u64>(8), index4 = const<u64>(16), index5 = const<u64>(16), index6 = const<u64>(17), index7 = const<u64>(1)) [linkage=external];
-// IR-NEXT:     global %5 scalars: array<u64, 14> [storage=static] [align=16] = aggregate<array<u64, 14>, zero_fill=false>(index0 = const<u64>(1), index1 = const<u64>(1), index2 = const<u64>(2), index3 = const<u64>(2), index4 = const<u64>(4), index5 = const<u64>(4), index6 = const<u64>(8), index7 = const<u64>(8), index8 = const<u64>(8), index9 = const<u64>(8), index10 = const<u64>(16), index11 = const<u64>(16), index12 = const<u64>(8), index13 = const<u64>(8)) [linkage=external];
-// IR-NEXT:     global %9 object: atomic @type0 [storage=static] [linkage=external];
-// IR-NEXT:     fn %10 @objects(%11 pointer: ptr<atomic @type0>, %12 record: ptr<@type4>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     global %[[VALUE_records:[0-9]+]] records: array<u64, 8> [storage=static] [align=16] = aggregate<array<u64, 8>, zero_fill=false>(index0 = const<u64>(4), index1 = const<u64>(4), index2 = const<u64>(8), index3 = const<u64>(8), index4 = const<u64>(16), index5 = const<u64>(16), index6 = const<u64>(17), index7 = const<u64>(1)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_scalars:[0-9]+]] scalars: array<u64, 14> [storage=static] [align=16] = aggregate<array<u64, 14>, zero_fill=false>(index0 = const<u64>(1), index1 = const<u64>(1), index2 = const<u64>(2), index3 = const<u64>(2), index4 = const<u64>(4), index5 = const<u64>(4), index6 = const<u64>(8), index7 = const<u64>(8), index8 = const<u64>(8), index9 = const<u64>(8), index10 = const<u64>(16), index11 = const<u64>(16), index12 = const<u64>(8), index13 = const<u64>(8)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_object:[0-9]+]] object: atomic @type[[TYPE_odd3]] [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_objects:[0-9]+]] @objects(%[[VALUE_pointer:[0-9]+]] pointer: ptr<atomic @type[[TYPE_odd3]]>, %[[VALUE_record:[0-9]+]] record: ptr<@type[[TYPE_member]]>) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(4), const<u64>(4)), const<u64>(4)), const<u64>(4));
 // IR-NEXT:     }
 // IR-NEXT: }

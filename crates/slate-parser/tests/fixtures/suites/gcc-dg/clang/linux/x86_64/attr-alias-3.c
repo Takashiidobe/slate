@@ -89,39 +89,39 @@ main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 ftype = fn() -> void;
-// DEFAULT-NEXT:     global %0 lv1: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %1 Av1a: i32 [storage=static] [linkage=external] [alias="lv1"];
-// DEFAULT-NEXT:     global %2 pv1a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%1) [linkage=external];
-// DEFAULT-NEXT:     global %3 lv2: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %4 Av2a: i32 [storage=static] [linkage=external] [alias="lv2"];
-// DEFAULT-NEXT:     global %5 pv2a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%3) [linkage=external];
-// DEFAULT-NEXT:     global %6 lv3: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %7 Av3a: i32 [storage=static] [linkage=external] [alias="lv3"];
-// DEFAULT-NEXT:     global %8 pv3a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%7) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %9 lv4: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %10 Av4a: i32 [storage=static] [linkage=external] [alias="lv4"];
-// DEFAULT-NEXT:     global %11 pv4a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%10) [linkage=internal];
-// DEFAULT-NEXT:     global %15 pf1a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%14) [linkage=external];
-// DEFAULT-NEXT:     global %18 pf2a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%17) [linkage=external];
-// DEFAULT-NEXT:     global %21 pf3a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%20) [linkage=internal] [used];
-// DEFAULT-NEXT:     global %24 pf4a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%23) [linkage=internal];
-// DEFAULT-NEXT:     fn %13 @lf1() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     type @type[[TYPE_ftype:[0-9]+]] ftype = fn() -> void;
+// DEFAULT-NEXT:     global %[[VALUE_lv1:[0-9]+]] lv1: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_Av1a:[0-9]+]] Av1a: i32 [storage=static] [linkage=external] [alias="lv1"];
+// DEFAULT-NEXT:     global %[[VALUE_pv1a:[0-9]+]] pv1a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Av1a]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_lv2:[0-9]+]] lv2: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_Av2a:[0-9]+]] Av2a: i32 [storage=static] [linkage=external] [alias="lv2"];
+// DEFAULT-NEXT:     global %[[VALUE_pv2a:[0-9]+]] pv2a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_lv2]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_lv3:[0-9]+]] lv3: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_Av3a:[0-9]+]] Av3a: i32 [storage=static] [linkage=external] [alias="lv3"];
+// DEFAULT-NEXT:     global %[[VALUE_pv3a:[0-9]+]] pv3a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Av3a]]) [linkage=internal] [used];
+// DEFAULT-NEXT:     global %[[VALUE_lv4:[0-9]+]] lv4: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_Av4a:[0-9]+]] Av4a: i32 [storage=static] [linkage=external] [alias="lv4"];
+// DEFAULT-NEXT:     global %[[VALUE_pv4a:[0-9]+]] pv4a: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_Av4a]]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_pf1a:[0-9]+]] pf1a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Af1a:[0-9]+]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_pf2a:[0-9]+]] pf2a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Af2a:[0-9]+]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_pf3a:[0-9]+]] pf3a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Af3a:[0-9]+]]) [linkage=internal] [used];
+// DEFAULT-NEXT:     global %[[VALUE_pf4a:[0-9]+]] pf4a: ptr<fn() -> void> [storage=static] = addr_of<ptr<fn() -> void>>(%[[VALUE_Af4a:[0-9]+]]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_lf1:[0-9]+]] @lf1() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %14 @Af1a() -> void [linkage=external] [alias="lf1"];
-// DEFAULT-NEXT:     fn %16 @lf2() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_Af1a]] @Af1a() -> void [linkage=external] [alias="lf1"];
+// DEFAULT-NEXT:     fn %[[VALUE_lf2:[0-9]+]] @lf2() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @Af2a() -> void [linkage=external] [alias="lf2"];
-// DEFAULT-NEXT:     fn %19 @lf3() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_Af2a]] @Af2a() -> void [linkage=external] [alias="lf2"];
+// DEFAULT-NEXT:     fn %[[VALUE_lf3:[0-9]+]] @lf3() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @Af3a() -> void [linkage=external] [alias="lf3"];
-// DEFAULT-NEXT:     fn %22 @lf4() -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_Af3a]] @Af3a() -> void [linkage=external] [alias="lf3"];
+// DEFAULT-NEXT:     fn %[[VALUE_lf4:[0-9]+]] @lf4() -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @Af4a() -> void [linkage=external] [alias="lf4"];
-// DEFAULT-NEXT:     fn %25 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_Af4a]] @Af4a() -> void [linkage=external] [alias="lf4"];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nostack] {
-// DEFAULT-NEXT:             in 0 "m" [mem] width 64 place<ptr<i32>>(%11);
-// DEFAULT-NEXT:             in 1 "m" [mem] width 64 place<ptr<fn() -> void>>(%24);
+// DEFAULT-NEXT:             in 0 "m" [mem] width 64 place<ptr<i32>>(%[[VALUE_pv4a]]);
+// DEFAULT-NEXT:             in 1 "m" [mem] width 64 place<ptr<fn() -> void>>(%[[VALUE_pf4a]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

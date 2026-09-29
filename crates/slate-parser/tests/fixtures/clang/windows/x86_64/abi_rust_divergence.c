@@ -32,31 +32,31 @@ __int128 wide(__int128 value) { return value; }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 pair = struct {
+// IR-NEXT:     type @type[[TYPE_pair:[0-9]+]] pair = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type1 flexible = struct {
+// IR-NEXT:     type @type[[TYPE_flexible:[0-9]+]] flexible = struct {
 // IR-NEXT:         field0 n: i32;
 // IR-NEXT:         field1 tail: array<i32, incomplete>;
 // IR-NEXT:     } [size=4, align=4, offsets=[0, 4]];
-// IR-NEXT:     type @type2 flexible_large = struct {
+// IR-NEXT:     type @type[[TYPE_flexible_large:[0-9]+]] flexible_large = struct {
 // IR-NEXT:         field0 n: i32;
 // IR-NEXT:         field1 m: i32;
 // IR-NEXT:         field2 k: i32;
 // IR-NEXT:         field3 tail: array<i32, incomplete>;
 // IR-NEXT:     } [size=12, align=4, offsets=[0, 4, 8, 12]];
-// IR-NEXT:     fn %3 @pair(%4 value: @type0) -> @type0 [linkage=external] [abi=win64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type0, reason=return>(read<@type0>(%4));
+// IR-NEXT:     fn %[[VALUE_pair:[0-9]+]] @pair(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=win64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %5 @flexible(%6 value: @type1) -> @type1 [linkage=external] [abi=win64(byref<align=4>) -> sret<align=4>] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type1, reason=return>(read<@type1>(%6));
+// IR-NEXT:     fn %[[VALUE_flexible:[0-9]+]] @flexible(%[[VALUE_value_2:[0-9]+]] value: @type[[TYPE_flexible]]) -> @type[[TYPE_flexible]] [linkage=external] [abi=win64(byref<align=4>) -> sret<align=4>] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_flexible]], reason=return>(read<@type[[TYPE_flexible]]>(%[[VALUE_value_2]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %7 @flexible_large(%8 value: @type2) -> @type2 [linkage=external] [abi=win64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// IR-NEXT:         return copy<@type2, reason=return>(read<@type2>(%8));
+// IR-NEXT:     fn %[[VALUE_flexible_large:[0-9]+]] @flexible_large(%[[VALUE_value_3:[0-9]+]] value: @type[[TYPE_flexible_large]]) -> @type[[TYPE_flexible_large]] [linkage=external] [abi=win64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// IR-NEXT:         return copy<@type[[TYPE_flexible_large]], reason=return>(read<@type[[TYPE_flexible_large]]>(%[[VALUE_value_3]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %9 @wide(%10 value: i128) -> i128 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<i128>(%10);
+// IR-NEXT:     fn %[[VALUE_wide:[0-9]+]] @wide(%[[VALUE_value_4:[0-9]+]] value: i128) -> i128 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<i128>(%[[VALUE_value_4]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -38,17 +38,17 @@ struct pair record(struct pair value) { return value; }
 // X86-64-LINUX-GNU-MSVC-NEXT:         storage d64 [size=8, align=8];
 // X86-64-LINUX-GNU-MSVC-NEXT:         storage d128 [size=16, align=16];
 // X86-64-LINUX-GNU-MSVC-NEXT:     }
-// X86-64-LINUX-GNU-MSVC-NEXT:     type @type0 pair = struct {
+// X86-64-LINUX-GNU-MSVC-NEXT:     type @type[[TYPE_pair:[0-9]+]] pair = struct {
 // X86-64-LINUX-GNU-MSVC-NEXT:         field0 a: i32;
 // X86-64-LINUX-GNU-MSVC-NEXT:         field1 b: i32;
 // X86-64-LINUX-GNU-MSVC-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// X86-64-LINUX-GNU-MSVC-NEXT:     global %0 clang_major: i32 [storage=static] = const<i32>(22) [linkage=external];
-// X86-64-LINUX-GNU-MSVC-NEXT:     global %1 sizeof_long: u64 [storage=static] = const<u64>(8) [linkage=external];
-// X86-64-LINUX-GNU-MSVC-NEXT:     global %2 sizeof_long_double: u64 [storage=static] = const<u64>(16) [linkage=external];
-// X86-64-LINUX-GNU-MSVC-NEXT:     global %3 sizeof_va_list: u64 [storage=static] = const<u64>(24) [linkage=external];
-// X86-64-LINUX-GNU-MSVC-NEXT:     global %4 alignof_long_long: u64 [storage=static] = const<u64>(8) [linkage=external];
-// X86-64-LINUX-GNU-MSVC-NEXT:     fn %6 @record(%7 value: @type0) -> @type0 [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
-// X86-64-LINUX-GNU-MSVC-NEXT:         return copy<@type0, reason=return>(read<@type0>(%7));
+// X86-64-LINUX-GNU-MSVC-NEXT:     global %[[VALUE_clang_major:[0-9]+]] clang_major: i32 [storage=static] = const<i32>(22) [linkage=external];
+// X86-64-LINUX-GNU-MSVC-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u64 [storage=static] = const<u64>(8) [linkage=external];
+// X86-64-LINUX-GNU-MSVC-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u64 [storage=static] = const<u64>(16) [linkage=external];
+// X86-64-LINUX-GNU-MSVC-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u64 [storage=static] = const<u64>(24) [linkage=external];
+// X86-64-LINUX-GNU-MSVC-NEXT:     global %[[VALUE_alignof_long_long:[0-9]+]] alignof_long_long: u64 [storage=static] = const<u64>(8) [linkage=external];
+// X86-64-LINUX-GNU-MSVC-NEXT:     fn %[[VALUE_record:[0-9]+]] @record(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_pair]]) -> @type[[TYPE_pair]] [linkage=external] [abi=sysv64(native_c) -> native_c] [fallthrough=ub_if_used] {
+// X86-64-LINUX-GNU-MSVC-NEXT:         return copy<@type[[TYPE_pair]], reason=return>(read<@type[[TYPE_pair]]>(%[[VALUE_value]]));
 // X86-64-LINUX-GNU-MSVC-NEXT:     }
 // X86-64-LINUX-GNU-MSVC-NEXT: }
 // SLATE-FILECHECK-END X86-64-LINUX-GNU-MSVC

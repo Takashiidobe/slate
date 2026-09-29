@@ -50,6 +50,6 @@ extern int blah;	/* prevent "ISO C forbids an empty translation unit" */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     extern %0 blah: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_blah:[0-9]+]] blah: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

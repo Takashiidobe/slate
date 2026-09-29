@@ -34,8 +34,8 @@ int wrapped[WRAP(1)];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 nested: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 wrapped: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_nested:[0-9]+]] nested: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_wrapped:[0-9]+]] wrapped: array<i32, 2> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
@@ -61,7 +61,7 @@ int wrapped[WRAP(1)];
 // A-NEXT:         storage d64 [size=8, align=8];
 // A-NEXT:         storage d128 [size=16, align=16];
 // A-NEXT:     }
-// A-NEXT:     global %0 nested: array<i32, 2> [storage=static] [linkage=external];
-// A-NEXT:     global %1 wrapped: array<i32, 3> [storage=static] [linkage=external];
+// A-NEXT:     global %[[VALUE_nested:[0-9]+]] nested: array<i32, 2> [storage=static] [linkage=external];
+// A-NEXT:     global %[[VALUE_wrapped:[0-9]+]] wrapped: array<i32, 3> [storage=static] [linkage=external];
 // A-NEXT: }
 // SLATE-FILECHECK-END A

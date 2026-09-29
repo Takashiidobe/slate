@@ -41,13 +41,13 @@ void baz (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%4 c: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 c: i8 [storage=automatic] = truncate<i8, reason=arg, fits=unknown>(read<i32>(%4));
-// DEFAULT-NEXT:         addr_of<ptr<i8>>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_c:[0-9]+]] c: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: i8 [storage=automatic] = truncate<i8, reason=arg, fits=unknown>(read<i32>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         addr_of<ptr<i8>>(%[[VALUE_c_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @bar() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @baz() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%0, call<i32, signature=fn() -> i32>(%2));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_foo]], call<i32, signature=fn() -> i32>(%[[VALUE_bar]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

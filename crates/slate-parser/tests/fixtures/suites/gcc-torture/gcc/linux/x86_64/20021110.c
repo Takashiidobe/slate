@@ -34,12 +34,12 @@ void foo(struct empty *p)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 empty = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_empty:[0-9]+]] empty = struct {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
-// DEFAULT-NEXT:     fn %1 @foo(%2 p: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3: ptr<@type0> [synthetic] = read<ptr<@type0>>(%2);
-// DEFAULT-NEXT:         let %4: ptr<@type0> [synthetic] = ptr_offset<ptr<@type0>, subtract=false, element=@type0, overflow=ub>(read<ptr<@type0>>(%3), const<i32>(1));
-// DEFAULT-NEXT:         write<ptr<@type0>>(%2, read<ptr<@type0>>(%4));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_empty]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<@type[[TYPE_empty]]> [synthetic] = read<ptr<@type[[TYPE_empty]]>>(%[[VALUE_p]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<@type[[TYPE_empty]]> [synthetic] = ptr_offset<ptr<@type[[TYPE_empty]]>, subtract=false, element=@type[[TYPE_empty]], overflow=ub>(read<ptr<@type[[TYPE_empty]]>>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_empty]]>>(%[[VALUE_p]], read<ptr<@type[[TYPE_empty]]>>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

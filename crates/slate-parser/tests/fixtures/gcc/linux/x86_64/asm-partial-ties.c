@@ -28,16 +28,16 @@ void f(int x, int y, int z, int w) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(%1 x: i32, %2 y: i32, %3 z: i32, %4 w: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i32, %[[VALUE_z:[0-9]+]] z: i32, %[[VALUE_w:[0-9]+]] w: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm "%0 %1 %2" [dialect=att] [options=pure,readonly,nostack] [alternative=0] {
 // DEFAULT-NEXT:             template: %0 " " %0 " " %1;
-// DEFAULT-NEXT:             inlateout 0 "r,m" [reg, mem] width 32 place<i32>(%1) from read<i32>(%2);
-// DEFAULT-NEXT:             in 1 "m,0" [mem, 0] width 32 place<i32>(%3);
+// DEFAULT-NEXT:             inlateout 0 "r,m" [reg, mem] width 32 place<i32>(%[[VALUE_x]]) from read<i32>(%[[VALUE_y]]);
+// DEFAULT-NEXT:             in 1 "m,0" [mem, 0] width 32 place<i32>(%[[VALUE_z]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm "%0 %1 %2 %3" [dialect=att] [options=pure,nomem,nostack] [alternative=0] {
 // DEFAULT-NEXT:             template: %0 " " %1 " " %0 " " %1;
-// DEFAULT-NEXT:             inlateout 0 "r,r" [reg, reg] width 32 place<i32>(%1) from read<i32>(%2);
-// DEFAULT-NEXT:             inlateout 1 "r,r" [reg, reg] width 32 place<i32>(%4) from read<i32>(%3);
+// DEFAULT-NEXT:             inlateout 0 "r,r" [reg, reg] width 32 place<i32>(%[[VALUE_x]]) from read<i32>(%[[VALUE_y]]);
+// DEFAULT-NEXT:             inlateout 1 "r,r" [reg, reg] width 32 place<i32>(%[[VALUE_w]]) from read<i32>(%[[VALUE_z]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

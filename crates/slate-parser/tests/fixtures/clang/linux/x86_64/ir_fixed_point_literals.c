@@ -31,11 +31,11 @@ unsigned long long _Accum unsigned_long_long = 1.0ullk;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 half_fract: fixed<i16, 15> [storage=static] = const<fixed<i16, 15>>(16384) [linkage=external];
-// IR-NEXT:     global %1 one_and_half_accum: fixed<i32, 15> [storage=static] = const<fixed<i32, 15>>(49152) [linkage=external];
-// IR-NEXT:     global %2 unsigned_half_fract: fixed<u16, 16> [storage=static] = const<fixed<u16, 16>>(32768) [linkage=external];
-// IR-NEXT:     global %3 short_half_fract: fixed<i8, 7> [storage=static] = const<fixed<i8, 7>>(64) [linkage=external];
-// IR-NEXT:     global %4 long_one: fixed<i64, 31> [storage=static] = const<fixed<i64, 31>>(2147483648) [linkage=external];
-// IR-NEXT:     global %5 unsigned_long_long: fixed<u128, 64> [storage=static] = const<fixed<u128, 64>>(18446744073709551616) [linkage=external];
+// IR-NEXT:     global %[[VALUE_half_fract:[0-9]+]] half_fract: fixed<i16, 15> [storage=static] = const<fixed<i16, 15>>(16384) [linkage=external];
+// IR-NEXT:     global %[[VALUE_one_and_half_accum:[0-9]+]] one_and_half_accum: fixed<i32, 15> [storage=static] = const<fixed<i32, 15>>(49152) [linkage=external];
+// IR-NEXT:     global %[[VALUE_unsigned_half_fract:[0-9]+]] unsigned_half_fract: fixed<u16, 16> [storage=static] = const<fixed<u16, 16>>(32768) [linkage=external];
+// IR-NEXT:     global %[[VALUE_short_half_fract:[0-9]+]] short_half_fract: fixed<i8, 7> [storage=static] = const<fixed<i8, 7>>(64) [linkage=external];
+// IR-NEXT:     global %[[VALUE_long_one:[0-9]+]] long_one: fixed<i64, 31> [storage=static] = const<fixed<i64, 31>>(2147483648) [linkage=external];
+// IR-NEXT:     global %[[VALUE_unsigned_long_long:[0-9]+]] unsigned_long_long: fixed<u128, 64> [storage=static] = const<fixed<u128, 64>>(18446744073709551616) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

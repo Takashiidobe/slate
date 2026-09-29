@@ -31,9 +31,9 @@ int f(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 global: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([1, 50, 0]) [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 local: array<i8, 3> [storage=automatic] = code_units<array<i8, 3>>([1, 50, 0]);
+// DEFAULT-NEXT:     global %[[VALUE_global:[0-9]+]] global: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([1, 50, 0]) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_local:[0-9]+]] local: array<i8, 3> [storage=automatic] = code_units<array<i8, 3>>([1, 50, 0]);
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=always>(const<u64>(3)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

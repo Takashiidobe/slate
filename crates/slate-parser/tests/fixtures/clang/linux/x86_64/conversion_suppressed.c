@@ -28,8 +28,8 @@ int *to_pointer(int value) { return value; }
 // CHECK-NEXT:         storage d64 [size=8, align=8];
 // CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     fn %0 @to_pointer(%1 value: i32) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
-// CHECK-NEXT:         return int_to_ptr<ptr<i32>>(read<i32>(%1));
+// CHECK-NEXT:     fn %[[VALUE_to_pointer:[0-9]+]] @to_pointer(%[[VALUE_value:[0-9]+]] value: i32) -> ptr<i32> [linkage=external] [fallthrough=ub_if_used] {
+// CHECK-NEXT:         return int_to_ptr<ptr<i32>>(read<i32>(%[[VALUE_value]]));
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // SLATE-FILECHECK-END CHECK

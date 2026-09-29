@@ -52,26 +52,26 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 First = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_First:[0-9]+]] First = struct {
 // DEFAULT-NEXT:         field0 value: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 Second = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Second:[0-9]+]] Second = struct {
 // DEFAULT-NEXT:         field0 value: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 = union {
-// DEFAULT-NEXT:         field0 first: ptr<@type0>;
-// DEFAULT-NEXT:         field1 second: ptr<@type1>;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
+// DEFAULT-NEXT:         field0 first: ptr<@type[[TYPE_First]]>;
+// DEFAULT-NEXT:         field1 second: ptr<@type[[TYPE_Second]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0]];
-// DEFAULT-NEXT:     type @type3 PointerArgument = @type2;
-// DEFAULT-NEXT:     global %12 .str12: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%11 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %6 @read_value(%7 argument: @type2) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(field0(deref(read<ptr<@type0>>(field0(%7)))));
+// DEFAULT-NEXT:     type @type[[TYPE_PointerArgument:[0-9]+]] PointerArgument = @type[[TYPE0]];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_read_value:[0-9]+]] @read_value(%[[VALUE_argument:[0-9]+]] argument: @type[[TYPE0]]) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(field0(deref(read<ptr<@type[[TYPE_First]]>>(field0(%[[VALUE_argument]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 first: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = const<i32>(17));
-// DEFAULT-NEXT:         let %10 second: @type1 [storage=automatic] = aggregate<@type1, zero_fill=false>(field0 = const<i32>(29));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%12)), call<i32, signature=fn(@type2) -> i32>(%6, aggregate<@type2, zero_fill=false>(field0 = addr_of<ptr<@type0>>(%9))), call<i32, signature=fn(@type2) -> i32>(%6, aggregate<@type2, zero_fill=false>(field1 = addr_of<ptr<@type1>>(%10))));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_first:[0-9]+]] first: @type[[TYPE_First]] [storage=automatic] = aggregate<@type[[TYPE_First]], zero_fill=false>(field0 = const<i32>(17));
+// DEFAULT-NEXT:         let %[[VALUE_second:[0-9]+]] second: @type[[TYPE_Second]] [storage=automatic] = aggregate<@type[[TYPE_Second]], zero_fill=false>(field0 = const<i32>(29));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])), call<i32, signature=fn(@type[[TYPE0]]) -> i32>(%[[VALUE_read_value]], aggregate<@type[[TYPE0]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_First]]>>(%[[VALUE_first]]))), call<i32, signature=fn(@type[[TYPE0]]) -> i32>(%[[VALUE_read_value]], aggregate<@type[[TYPE0]], zero_fill=false>(field1 = addr_of<ptr<@type[[TYPE_Second]]>>(%[[VALUE_second]]))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -41,23 +41,23 @@ _Bool returned(int *p) { return p; }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 = struct {
+// IR-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // IR-NEXT:         field0 b: bool;
 // IR-NEXT:     } [size=1, align=1, offsets=[0]];
-// IR-NEXT:     global %0 n: i32 [storage=static] [linkage=external];
-// IR-NEXT:     global %1 from_address: bool [storage=static] = ne<ptr<i32>>(addr_of<ptr<i32>>(%0), null<ptr<i32>>) [linkage=internal];
-// IR-NEXT:     global %2 cast_address: bool [storage=static] = ne<ptr<i32>>(addr_of<ptr<i32>>(%0), null<ptr<i32>>) [linkage=external];
-// IR-NEXT:     global %3 from_null_pointer: bool [storage=static] = ne<ptr<i32>>(null<ptr<i32>>, null<ptr<i32>>) [linkage=external];
-// IR-NEXT:     global %5 member: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = ne<ptr<i32>>(addr_of<ptr<i32>>(%0), null<ptr<i32>>)) [linkage=external];
-// IR-NEXT:     fn %6 @take(%12 <unnamed>: bool) -> void [linkage=external];
-// IR-NEXT:     fn %7 @convert(%8 p: ptr<i32>) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %9 b: bool [storage=automatic] = ne<ptr<i32>>(read<ptr<i32>>(%8), null<ptr<i32>>);
-// IR-NEXT:         write<bool>(%9, ne<ptr<i32>>(read<ptr<i32>>(%8), null<ptr<i32>>));
-// IR-NEXT:         call<void>(%6, ne<ptr<i32>>(read<ptr<i32>>(%8), null<ptr<i32>>));
-// IR-NEXT:         return logical_and<bool>(ne<ptr<i32>>(read<ptr<i32>>(%8), null<ptr<i32>>), read<bool>(%9));
+// IR-NEXT:     global %[[VALUE_n:[0-9]+]] n: i32 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_from_address:[0-9]+]] from_address: bool [storage=static] = ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_n]]), null<ptr<i32>>) [linkage=internal];
+// IR-NEXT:     global %[[VALUE_cast_address:[0-9]+]] cast_address: bool [storage=static] = ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_n]]), null<ptr<i32>>) [linkage=external];
+// IR-NEXT:     global %[[VALUE_from_null_pointer:[0-9]+]] from_null_pointer: bool [storage=static] = ne<ptr<i32>>(null<ptr<i32>>, null<ptr<i32>>) [linkage=external];
+// IR-NEXT:     global %[[VALUE_member:[0-9]+]] member: @type[[TYPE0]] [storage=static] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = ne<ptr<i32>>(addr_of<ptr<i32>>(%[[VALUE_n]]), null<ptr<i32>>)) [linkage=external];
+// IR-NEXT:     fn %[[VALUE_take:[0-9]+]] @take(%[[VALUE0:[0-9]+]] <unnamed>: bool) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_convert:[0-9]+]] @convert(%[[VALUE_p:[0-9]+]] p: ptr<i32>) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_b:[0-9]+]] b: bool [storage=automatic] = ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), null<ptr<i32>>);
+// IR-NEXT:         write<bool>(%[[VALUE_b]], ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), null<ptr<i32>>));
+// IR-NEXT:         call<void>(%[[VALUE_take]], ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), null<ptr<i32>>));
+// IR-NEXT:         return logical_and<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), null<ptr<i32>>), read<bool>(%[[VALUE_b]]));
 // IR-NEXT:     }
-// IR-NEXT:     fn %10 @returned(%11 p: ptr<i32>) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return ne<ptr<i32>>(read<ptr<i32>>(%11), null<ptr<i32>>);
+// IR-NEXT:     fn %[[VALUE_returned:[0-9]+]] @returned(%[[VALUE_p_2:[0-9]+]] p: ptr<i32>) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p_2]]), null<ptr<i32>>);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -46,13 +46,13 @@ int i;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 x: u6384b, %2 y: i8b) -> u2049b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 z: u6384b [storage=automatic] = reinterpret<u6384b, reason=assign, fits=unknown>(widen<i6384b, reason=assign>(read<i8b>(%2)));
-// DEFAULT-NEXT:         return truncate<u2049b, reason=return, fits=unknown>(mul<u6384b, overflow=wrap>(read<u6384b>(%1), read<u6384b>(%3)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: u6384b, %[[VALUE_y:[0-9]+]] y: i8b) -> u2049b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: u6384b [storage=automatic] = reinterpret<u6384b, reason=assign, fits=unknown>(widen<i6384b, reason=assign>(read<i8b>(%[[VALUE_y]])));
+// DEFAULT-NEXT:         return truncate<u2049b, reason=return, fits=unknown>(mul<u6384b, overflow=wrap>(read<u6384b>(%[[VALUE_x]]), read<u6384b>(%[[VALUE_z]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @bar(%5 x: u6384b, %6 y: i1023b) -> i2049b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 z: u6384b [storage=automatic] = reinterpret<u6384b, reason=assign, fits=unknown>(widen<i6384b, reason=assign>(read<i1023b>(%6)));
-// DEFAULT-NEXT:         return reinterpret<i2049b, reason=return, fits=unknown>(truncate<u2049b, reason=return, fits=unknown>(mul<u6384b, overflow=wrap>(read<u6384b>(%5), read<u6384b>(%7))));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_2:[0-9]+]] x: u6384b, %[[VALUE_y_2:[0-9]+]] y: i1023b) -> i2049b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_z_2:[0-9]+]] z: u6384b [storage=automatic] = reinterpret<u6384b, reason=assign, fits=unknown>(widen<i6384b, reason=assign>(read<i1023b>(%[[VALUE_y_2]])));
+// DEFAULT-NEXT:         return reinterpret<i2049b, reason=return, fits=unknown>(truncate<u2049b, reason=return, fits=unknown>(mul<u6384b, overflow=wrap>(read<u6384b>(%[[VALUE_x_2]]), read<u6384b>(%[[VALUE_z_2]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

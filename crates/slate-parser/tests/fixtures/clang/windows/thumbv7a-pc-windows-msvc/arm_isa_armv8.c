@@ -205,31 +205,31 @@ struct hfa pass_hfa(struct hfa value) {
 // CHECK-NEXT:         storage d64 [size=8, align=8];
 // CHECK-NEXT:         storage d128 [size=16, align=16];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     type @type0 hfa = struct {
+// CHECK-NEXT:     type @type[[TYPE_hfa:[0-9]+]] hfa = struct {
 // CHECK-NEXT:         field0 a: f32;
 // CHECK-NEXT:         field1 b: f32;
 // CHECK-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// CHECK-NEXT:     global %0 val__ARM_ARCH: array<i32, 8> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %1 val__ARM_ARCH_8A__: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %2 val__ARM_ARCH_EXT_IDIV__: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %3 val__ARM_FEATURE_COPROC: array<i32, 5> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %4 val__ARM_FEATURE_CRC32: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %5 val__ARM_FEATURE_DIRECTED_ROUNDING: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %6 val__ARM_FEATURE_IDIV: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %7 val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %8 val__ARM_FEATURE_UNALIGNED: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %9 val__ARM_FP: array<i32, 12> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %10 val__ARM_NEON: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %11 val__ARM_NEON_FP: array<i32, 4> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %12 val__ARM_NEON__: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %13 val__ARM_PCS_VFP: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %14 val__ARM_VFPV2__: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %15 val__ARM_VFPV3__: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %16 val__THUMBEL__: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %17 val__thumb2__: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     global %18 val__thumb__: array<i32, 1> [storage=static] [linkage=external];
-// CHECK-NEXT:     fn %20 @pass_hfa(%21 value: @type0) -> @type0 [linkage=external] [abi=aapcs32_hard_float(coerce<f32, f32>) -> coerce<f32, f32>] [fallthrough=ub_if_used] {
-// CHECK-NEXT:         return copy<@type0, reason=return>(read<@type0>(%21));
+// CHECK-NEXT:     global %[[VALUE_val__ARM_ARCH:[0-9]+]] val__ARM_ARCH: array<i32, 8> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_ARCH_8A__:[0-9]+]] val__ARM_ARCH_8A__: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_ARCH_EXT_IDIV__:[0-9]+]] val__ARM_ARCH_EXT_IDIV__: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FEATURE_COPROC:[0-9]+]] val__ARM_FEATURE_COPROC: array<i32, 5> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FEATURE_CRC32:[0-9]+]] val__ARM_FEATURE_CRC32: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FEATURE_DIRECTED_ROUNDING:[0-9]+]] val__ARM_FEATURE_DIRECTED_ROUNDING: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FEATURE_IDIV:[0-9]+]] val__ARM_FEATURE_IDIV: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FEATURE_NUMERIC_MAXMIN:[0-9]+]] val__ARM_FEATURE_NUMERIC_MAXMIN: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FEATURE_UNALIGNED:[0-9]+]] val__ARM_FEATURE_UNALIGNED: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_FP:[0-9]+]] val__ARM_FP: array<i32, 12> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_NEON:[0-9]+]] val__ARM_NEON: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_NEON_FP:[0-9]+]] val__ARM_NEON_FP: array<i32, 4> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_NEON__:[0-9]+]] val__ARM_NEON__: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_PCS_VFP:[0-9]+]] val__ARM_PCS_VFP: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_VFPV2__:[0-9]+]] val__ARM_VFPV2__: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__ARM_VFPV3__:[0-9]+]] val__ARM_VFPV3__: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__THUMBEL__:[0-9]+]] val__THUMBEL__: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__thumb2__:[0-9]+]] val__thumb2__: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     global %[[VALUE_val__thumb__:[0-9]+]] val__thumb__: array<i32, 1> [storage=static] [linkage=external];
+// CHECK-NEXT:     fn %[[VALUE_pass_hfa:[0-9]+]] @pass_hfa(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_hfa]]) -> @type[[TYPE_hfa]] [linkage=external] [abi=aapcs32_hard_float(coerce<f32, f32>) -> coerce<f32, f32>] [fallthrough=ub_if_used] {
+// CHECK-NEXT:         return copy<@type[[TYPE_hfa]], reason=return>(read<@type[[TYPE_hfa]]>(%[[VALUE_value]]));
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // SLATE-FILECHECK-END CHECK

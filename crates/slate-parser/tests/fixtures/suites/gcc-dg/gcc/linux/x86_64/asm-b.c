@@ -64,28 +64,28 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 v: u16 [storage=static] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(768))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @foo(%3 p: ptr<u16>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<u16>(deref(read<ptr<u16>>(%3)), read<u16>(%1));
+// DEFAULT-NEXT:     global %[[VALUE_v:[0-9]+]] v: u16 [storage=static] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(768))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_p:[0-9]+]] p: ptr<u16>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<u16>(deref(read<ptr<u16>>(%[[VALUE_p]])), read<u16>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 x: u16 [storage=automatic];
-// DEFAULT-NEXT:         let %6 z: ptr<volatile u16> [storage=automatic];
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<u16>) -> void>(%2, addr_of<ptr<u16>>(%5));
-// DEFAULT-NEXT:         let %7 y: u32 [storage=automatic] [const] = widen<u32, reason=assign>(read<u16>(%5));
-// DEFAULT-NEXT:         write<ptr<volatile u16>>(%6, pointer_cast<ptr<volatile u16>, reason=assign>(addr_of<ptr<u16>>(%5)));
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: u16 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: ptr<volatile u16> [storage=automatic];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<u16>) -> void>(%[[VALUE_foo]], addr_of<ptr<u16>>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: u32 [storage=automatic] [const] = widen<u32, reason=assign>(read<u16>(%[[VALUE_x]]));
+// DEFAULT-NEXT:         write<ptr<volatile u16>>(%[[VALUE_z]], pointer_cast<ptr<volatile u16>, reason=assign>(addr_of<ptr<u16>>(%[[VALUE_x]])));
 // DEFAULT-NEXT:         asm volatile "movb %b1,1(%2)\\n\\tmovb %h1,(%2)" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "movb " %b1(8) ",1(" %2 ")\\n\\tmovb " %h1(high8) ",(" %2 ")";
-// DEFAULT-NEXT:             lateout 0 "m" [mem] width 16 place<u16, volatile>(deref(read<ptr<volatile u16>>(%6)));
-// DEFAULT-NEXT:             in 1 "Q" [reg_abcd] width 32 read<u32>(%7);
-// DEFAULT-NEXT:             in 2 "R" [reg_legacy] width 64 read<ptr<volatile u16>>(%6);
+// DEFAULT-NEXT:             lateout 0 "m" [mem] width 16 place<u16, volatile>(deref(read<ptr<volatile u16>>(%[[VALUE_z]])));
+// DEFAULT-NEXT:             in 1 "Q" [reg_abcd] width 32 read<u32>(%[[VALUE_y]]);
+// DEFAULT-NEXT:             in 2 "R" [reg_legacy] width 64 read<ptr<volatile u16>>(%[[VALUE_z]]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%5))), const<i32>(1)), const<i32>(0)));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_x]]))), const<i32>(1)), const<i32>(0)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%4), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_bar]]), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

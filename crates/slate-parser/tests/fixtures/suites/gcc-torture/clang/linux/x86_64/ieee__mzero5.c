@@ -49,34 +49,34 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 zero: f64 [storage=static] = const<f64>(0.0) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %12 @__builtin_memcmp(%9 <unnamed>: ptr<const void>, %10 <unnamed>: ptr<const void>, %11 <unnamed>: u64) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @negzero_check(%3 d: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%3), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)))
-// DEFAULT-NEXT:             return from_bool<i32, reason=return>(not<bool>(not<bool>(ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%12, pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%1))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%3))), const<u64>(8)), const<i32>(0)))));
+// DEFAULT-NEXT:     global %[[VALUE_zero:[0-9]+]] zero: f64 [storage=static] = const<f64>(0.0) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcmp:[0-9]+]] @__builtin_memcmp(%[[VALUE0:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_negzero_check:[0-9]+]] @negzero_check(%[[VALUE_d:[0-9]+]] d: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if eq<f64, exceptions=ignore>(read<f64>(%[[VALUE_d]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0)))
+// DEFAULT-NEXT:             return from_bool<i32, reason=return>(not<bool>(not<bool>(ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%[[VALUE_zero]]))), pointer_cast<ptr<const void>, reason=arg>(pointer_cast<ptr<void>, reason=explicit>(addr_of<ptr<f64>>(%[[VALUE_d]]))), const<u64>(8)), const<i32>(0)))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @sub(%5 d: f64, %6 e: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %13: bool [synthetic];
-// DEFAULT-NEXT:         if logical_and<bool>(eq<f64, exceptions=ignore>(read<f64>(%5), const<f64>(0.0)), eq<f64, exceptions=ignore>(read<f64>(%6), const<f64>(0.0)))
-// DEFAULT-NEXT:             write<bool>(%13, eq<i32>(call<i32, signature=fn(f64) -> i32>(%2, read<f64>(%5)), const<i32>(0)));
+// DEFAULT-NEXT:     fn %[[VALUE_sub:[0-9]+]] @sub(%[[VALUE_d_2:[0-9]+]] d: f64, %[[VALUE_e:[0-9]+]] e: f64) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if logical_and<bool>(eq<f64, exceptions=ignore>(read<f64>(%[[VALUE_d_2]]), const<f64>(0.0)), eq<f64, exceptions=ignore>(read<f64>(%[[VALUE_e]]), const<f64>(0.0)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE3]], eq<i32>(call<i32, signature=fn(f64) -> i32>(%[[VALUE_negzero_check]], read<f64>(%[[VALUE_d_2]])), const<i32>(0)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%13, const<bool>(false));
-// DEFAULT-NEXT:         let %14: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%13)
-// DEFAULT-NEXT:             write<bool>(%14, eq<i32>(call<i32, signature=fn(f64) -> i32>(%2, read<f64>(%6)), const<i32>(0)));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE3]], const<bool>(false));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE3]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], eq<i32>(call<i32, signature=fn(f64) -> i32>(%[[VALUE_negzero_check]], read<f64>(%[[VALUE_e]])), const<i32>(0)));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%14, const<bool>(false));
-// DEFAULT-NEXT:         if read<bool>(%14)
+// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], const<bool>(false));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE4]])
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 minus_zero: f64 [storage=automatic] = neg<f64>(const<f64>(0.0));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f64, f64) -> i32>(%4, read<f64>(%8), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_minus_zero:[0-9]+]] minus_zero: f64 [storage=automatic] = neg<f64>(const<f64>(0.0));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(f64, f64) -> i32>(%[[VALUE_sub]], read<f64>(%[[VALUE_minus_zero]]), int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(0))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

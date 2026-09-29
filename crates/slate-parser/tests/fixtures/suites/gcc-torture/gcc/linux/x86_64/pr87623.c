@@ -57,27 +57,27 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 be = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_be:[0-9]+]] be = struct {
 // DEFAULT-NEXT:         field0 pad: array<u16, 1>;
 // DEFAULT-NEXT:         field1 a: u8;
 // DEFAULT-NEXT:         field2 b: u8;
 // DEFAULT-NEXT:     } [size=4, align=2, offsets=[0, 2, 3]];
-// DEFAULT-NEXT:     type @type1 t_be = @type0;
-// DEFAULT-NEXT:     type @type2 le = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_t_be:[0-9]+]] t_be = @type[[TYPE_be]];
+// DEFAULT-NEXT:     type @type[[TYPE_le:[0-9]+]] le = struct {
 // DEFAULT-NEXT:         field0 pad: array<u16, 3>;
 // DEFAULT-NEXT:         field1 a: u8;
 // DEFAULT-NEXT:         field2 b: u8;
 // DEFAULT-NEXT:     } [size=8, align=2, offsets=[0, 6, 7]];
-// DEFAULT-NEXT:     type @type3 t_le = @type2;
-// DEFAULT-NEXT:     fn %4 @a_or_b_different(%5 x: ptr<@type0>, %6 y: ptr<@type2>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field1(deref(read<ptr<@type0>>(%5)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field1(deref(read<ptr<@type2>>(%6))))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field2(deref(read<ptr<@type0>>(%5)))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field2(deref(read<ptr<@type2>>(%6)))))))));
+// DEFAULT-NEXT:     type @type[[TYPE_t_le:[0-9]+]] t_le = @type[[TYPE_le]];
+// DEFAULT-NEXT:     fn %[[VALUE_a_or_b_different:[0-9]+]] @a_or_b_different(%[[VALUE_x:[0-9]+]] x: ptr<@type[[TYPE_be]]>, %[[VALUE_y:[0-9]+]] y: ptr<@type[[TYPE_le]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field1(deref(read<ptr<@type[[TYPE_be]]>>(%[[VALUE_x]])))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field1(deref(read<ptr<@type[[TYPE_le]]>>(%[[VALUE_y]]))))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field2(deref(read<ptr<@type[[TYPE_be]]>>(%[[VALUE_x]])))))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field2(deref(read<ptr<@type[[TYPE_le]]>>(%[[VALUE_y]])))))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 x: @type0 [storage=automatic] = aggregate<@type0, zero_fill=true>(field1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field2 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))));
-// DEFAULT-NEXT:         let %9 y: @type2 [storage=automatic] = aggregate<@type2, zero_fill=true>(field1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field2 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type0>, ptr<@type2>) -> i32>(%4, addr_of<ptr<@type0>>(%8), addr_of<ptr<@type2>>(%9)), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%10);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: @type[[TYPE_be]] [storage=automatic] = aggregate<@type[[TYPE_be]], zero_fill=true>(field1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field2 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))));
+// DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: @type[[TYPE_le]] [storage=automatic] = aggregate<@type[[TYPE_le]], zero_fill=true>(field1 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))), field2 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(2))));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<@type[[TYPE_be]]>, ptr<@type[[TYPE_le]]>) -> i32>(%[[VALUE_a_or_b_different]], addr_of<ptr<@type[[TYPE_be]]>>(%[[VALUE_x_2]]), addr_of<ptr<@type[[TYPE_le]]>>(%[[VALUE_y_2]])), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

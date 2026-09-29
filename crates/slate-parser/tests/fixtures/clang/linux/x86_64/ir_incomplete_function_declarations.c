@@ -33,16 +33,16 @@ struct Later { long a, b, c; };
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Never = struct incomplete;
-// DEFAULT-NEXT:     type @type1 Opaque = union incomplete;
-// DEFAULT-NEXT:     type @type2 Later = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_Never:[0-9]+]] Never = struct incomplete;
+// DEFAULT-NEXT:     type @type[[TYPE_Opaque:[0-9]+]] Opaque = union incomplete;
+// DEFAULT-NEXT:     type @type[[TYPE_Later:[0-9]+]] Later = struct {
 // DEFAULT-NEXT:         field0 a: i64;
 // DEFAULT-NEXT:         field1 b: i64;
 // DEFAULT-NEXT:         field2 c: i64;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     fn %1 @takes_never(%8 <unnamed>: @type0) -> void [linkage=external] [abi=incomplete];
-// DEFAULT-NEXT:     fn %2 @returns_never() -> @type0 [linkage=external] [abi=incomplete];
-// DEFAULT-NEXT:     fn %5 @passes_opaque(%9 value: @type1) -> @type1 [linkage=external] [abi=incomplete];
-// DEFAULT-NEXT:     fn %7 @completed_later(%10 <unnamed>: @type2) -> @type2 [linkage=external] [abi=sysv64(native_c) -> native_c];
+// DEFAULT-NEXT:     fn %[[VALUE_takes_never:[0-9]+]] @takes_never(%[[VALUE0:[0-9]+]] <unnamed>: @type[[TYPE_Never]]) -> void [linkage=external] [abi=incomplete];
+// DEFAULT-NEXT:     fn %[[VALUE_returns_never:[0-9]+]] @returns_never() -> @type[[TYPE_Never]] [linkage=external] [abi=incomplete];
+// DEFAULT-NEXT:     fn %[[VALUE_passes_opaque:[0-9]+]] @passes_opaque(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_Opaque]]) -> @type[[TYPE_Opaque]] [linkage=external] [abi=incomplete];
+// DEFAULT-NEXT:     fn %[[VALUE_completed_later:[0-9]+]] @completed_later(%[[VALUE1:[0-9]+]] <unnamed>: @type[[TYPE_Later]]) -> @type[[TYPE_Later]] [linkage=external] [abi=sysv64(native_c) -> native_c];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

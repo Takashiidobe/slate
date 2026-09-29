@@ -44,3 +44,25 @@ remain testable (`error/clang/linux/x86_64/target_unknown.c`).
 
 File names don't repeat the directory: `ms-winnt-keywords.c` exists under
 both `clang/windows/x86_64/` and `msvc/windows/x86_64/`.
+
+## Ids in generated expectations
+
+Ids numbered over the whole translation unit, system headers included, are
+matched by FileCheck variables instead of literal numbers, so one more header
+declaration doesn't restamp every fixture that includes the header.
+
+- AST dumps: tag, file and node ids become numeric variables (`FILE0`,
+  `TAG0`, `NODE0`) in first-use order (`loosen_ids`).
+- IR dumps: `@typeN` and `%N` become string variables named after the declared
+  name: `TYPE__IO_FILE`, `VALUE_stderr` (`loosen_ir_ids`). `_` is the only
+  separator FileCheck allows, so the kind prefix runs into a leading `_`.
+  Repeated names count up (`VALUE_x_2`), and unnamed entities get ordinals
+  (`TYPE0`, `VALUE0`). A `.strN` global name reuses its binding's variable.
+  Quoted strings and asm `template:` lines are left alone, because their
+  `%N` are operand indices.
+
+Every IR type and binding has exactly one definition line, and blocks are
+checked with `-NEXT`, so a use still has to name the same entity as before.
+Only the absolute number stops mattering: a changed cross-reference fails,
+and renumbering alone doesn't. String variables, unlike numeric ones, can be
+reused on the line that defines them.

@@ -37,9 +37,9 @@ __thread int l A("bar");  /* { dg-error "causes a section type conflict" "confli
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 i: i32 [storage=thread] [linkage=external] [section="foo"];
-// DEFAULT-NEXT:     global %1 j: i32 [storage=thread] [linkage=external] [section=".data"];
-// DEFAULT-NEXT:     global %2 k: i32 [storage=static] [linkage=external] [section="bar"];
-// DEFAULT-NEXT:     global %3 l: i32 [storage=thread] [linkage=external] [section="bar"];
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=thread] [linkage=external] [section="foo"];
+// DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: i32 [storage=thread] [linkage=external] [section=".data"];
+// DEFAULT-NEXT:     global %[[VALUE_k:[0-9]+]] k: i32 [storage=static] [linkage=external] [section="bar"];
+// DEFAULT-NEXT:     global %[[VALUE_l:[0-9]+]] l: i32 [storage=thread] [linkage=external] [section="bar"];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

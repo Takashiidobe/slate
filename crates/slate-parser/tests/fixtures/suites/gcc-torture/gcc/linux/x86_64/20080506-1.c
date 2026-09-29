@@ -45,16 +45,16 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %2 u: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %3 i: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
-// DEFAULT-NEXT:         write<u32>(%2, conditional<u32>(gt<u32>(reinterpret<u32, reason=explicit, fits=unknown>(conditional<i32>(gt<i32>(read<i32>(%3), const<i32>(0)), read<i32>(%3), const<i32>(0))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), reinterpret<u32, reason=explicit, fits=unknown>(conditional<i32>(gt<i32>(read<i32>(%3), const<i32>(0)), read<i32>(%3), const<i32>(0))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%2), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         write<u32>(%2, conditional<u32>(lt<u32>(reinterpret<u32, reason=explicit, fits=unknown>(conditional<i32>(gt<i32>(read<i32>(%3), const<i32>(0)), read<i32>(%3), const<i32>(0))), reinterpret<u32, reason=explicit, fits=unknown>(read<i32>(%3))), reinterpret<u32, reason=explicit, fits=unknown>(conditional<i32>(gt<i32>(read<i32>(%3), const<i32>(0)), read<i32>(%3), const<i32>(0))), reinterpret<u32, reason=explicit, fits=unknown>(read<i32>(%3))));
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(%2), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_u]], conditional<u32>(gt<u32>(reinterpret<u32, reason=explicit, fits=unknown>(conditional<i32>(gt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32>(%[[VALUE_i]]), const<i32>(0))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), reinterpret<u32, reason=explicit, fits=unknown>(conditional<i32>(gt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32>(%[[VALUE_i]]), const<i32>(0))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_u]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_u]], conditional<u32>(lt<u32>(reinterpret<u32, reason=explicit, fits=unknown>(conditional<i32>(gt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32>(%[[VALUE_i]]), const<i32>(0))), reinterpret<u32, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_i]]))), reinterpret<u32, reason=explicit, fits=unknown>(conditional<i32>(gt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32>(%[[VALUE_i]]), const<i32>(0))), reinterpret<u32, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_i]]))));
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(%[[VALUE_u]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

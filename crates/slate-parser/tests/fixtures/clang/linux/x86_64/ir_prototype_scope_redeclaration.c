@@ -37,24 +37,24 @@ extern __typeof(probe) probe __asm__("__GI_probe");
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 T = f64;
-// IR-NEXT:     type @type1 = enum : u32 {
-// IR-NEXT:         %0 T = const<i32>(2);
+// IR-NEXT:     type @type[[TYPE_T:[0-9]+]] T = f64;
+// IR-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// IR-NEXT:         %[[VALUE_T:[0-9]+]] T = const<i32>(2);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     type @type2 = enum : u32 {
-// IR-NEXT:         %0 U = const<i32>(3);
+// IR-NEXT:     type @type[[TYPE1:[0-9]+]] = enum : u32 {
+// IR-NEXT:         %[[VALUE_T]] U = const<i32>(3);
 // IR-NEXT:     } [size=4, align=4];
-// IR-NEXT:     type @type3 hidden = struct {
+// IR-NEXT:     type @type[[TYPE_hidden:[0-9]+]] hidden = struct {
 // IR-NEXT:         field0 x: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     global %6 after_prototype: f64 [storage=static] [linkage=external];
-// IR-NEXT:     global %11 after_definition: f64 [storage=static] [linkage=external];
-// IR-NEXT:     fn %5 @prototype(%17 value: @type1, %18 a: ptr<i32> [array=4]) -> i32 [linkage=external];
-// IR-NEXT:     fn %7 @defined(%10 value: @type2) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     global %[[VALUE_after_prototype:[0-9]+]] after_prototype: f64 [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_after_definition:[0-9]+]] after_definition: f64 [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_prototype:[0-9]+]] @prototype(%[[VALUE_value:[0-9]+]] value: @type[[TYPE0]], %[[VALUE_a:[0-9]+]] a: ptr<i32> [array=4]) -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_defined:[0-9]+]] @defined(%[[VALUE_value_2:[0-9]+]] value: @type[[TYPE1]]) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(3);
 // IR-NEXT:     }
-// IR-NEXT:     fn %14 @tagged(%19 p: ptr<@type3>) -> i32 [linkage=external];
-// IR-NEXT:     fn %15 @probe(%16 value: f64) -> i32 [linkage=external] [asm_name="__GI_probe"] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_tagged:[0-9]+]] @tagged(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_hidden]]>) -> i32 [linkage=external];
+// IR-NEXT:     fn %[[VALUE_probe:[0-9]+]] @probe(%[[VALUE_value_3:[0-9]+]] value: f64) -> i32 [linkage=external] [asm_name="__GI_probe"] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(0);
 // IR-NEXT:     }
 // IR-NEXT: }

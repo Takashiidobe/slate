@@ -49,16 +49,16 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @add(%1 a: f128, %2 b: f128) -> f128 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<f128, rounding=nearest_even, exceptions=ignore, contract=on>(read<f128>(%1), read<f128>(%2));
+// DEFAULT-NEXT:     fn %[[VALUE_add:[0-9]+]] @add(%[[VALUE_a:[0-9]+]] a: f128, %[[VALUE_b:[0-9]+]] b: f128) -> f128 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<f128, rounding=nearest_even, exceptions=ignore, contract=on>(read<f128>(%[[VALUE_a]]), read<f128>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 one: f128 [storage=automatic] = const<f128>(1);
-// DEFAULT-NEXT:         let %5 tiny: f128 [storage=automatic] = const<f128>(7.88860905221011805411728565282786229E-31);
-// DEFAULT-NEXT:         let %6 sum: f128 [storage=automatic] = call<f128, signature=fn(f128, f128) -> f128>(%0, read<f128>(%4), read<f128>(%5));
-// DEFAULT-NEXT:         if eq<f128, exceptions=ignore>(read<f128>(%6), read<f128>(%4))
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_one:[0-9]+]] one: f128 [storage=automatic] = const<f128>(1);
+// DEFAULT-NEXT:         let %[[VALUE_tiny:[0-9]+]] tiny: f128 [storage=automatic] = const<f128>(7.88860905221011805411728565282786229E-31);
+// DEFAULT-NEXT:         let %[[VALUE_sum:[0-9]+]] sum: f128 [storage=automatic] = call<f128, signature=fn(f128, f128) -> f128>(%[[VALUE_add]], read<f128>(%[[VALUE_one]]), read<f128>(%[[VALUE_tiny]]));
+// DEFAULT-NEXT:         if eq<f128, exceptions=ignore>(read<f128>(%[[VALUE_sum]]), read<f128>(%[[VALUE_one]]))
 // DEFAULT-NEXT:             return const<i32>(1);
-// DEFAULT-NEXT:         if ne<f128, exceptions=ignore>(sub<f128, rounding=nearest_even, exceptions=ignore, contract=on>(read<f128>(%6), read<f128>(%4)), read<f128>(%5))
+// DEFAULT-NEXT:         if ne<f128, exceptions=ignore>(sub<f128, rounding=nearest_even, exceptions=ignore, contract=on>(read<f128>(%[[VALUE_sum]]), read<f128>(%[[VALUE_one]])), read<f128>(%[[VALUE_tiny]]))
 // DEFAULT-NEXT:             return const<i32>(2);
 // DEFAULT-NEXT:         if ne<f128, exceptions=ignore>(int_to_float<f128, reason=explicit, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(42)), const<f128>(42))
 // DEFAULT-NEXT:             return const<i32>(3);

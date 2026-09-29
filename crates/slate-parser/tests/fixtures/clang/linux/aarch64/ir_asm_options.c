@@ -39,26 +39,26 @@ void basic(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @keeps_flags(%1 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %2 r: i32 [storage=automatic];
+// IR-NEXT:     fn %[[VALUE_keeps_flags:[0-9]+]] @keeps_flags(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
 // IR-NEXT:         asm "mov %w0, %w1" [options=pure,nomem,nostack,preserves_flags] {
 // IR-NEXT:             template: "mov " %w0(32) ", " %w1(32);
-// IR-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%2);
-// IR-NEXT:             in 1 "r" [reg] width 32 read<i32>(%1);
+// IR-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_r]]);
+// IR-NEXT:             in 1 "r" [reg] width 32 read<i32>(%[[VALUE_x]]);
 // IR-NEXT:         }
-// IR-NEXT:         return read<i32>(%2);
+// IR-NEXT:         return read<i32>(%[[VALUE_r]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %3 @clobbers_flags(%4 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %5 r: i32 [storage=automatic];
+// IR-NEXT:     fn %[[VALUE_clobbers_flags:[0-9]+]] @clobbers_flags(%[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: i32 [storage=automatic];
 // IR-NEXT:         asm "adds %w0, %w1, 1" [options=pure,nomem,nostack] {
 // IR-NEXT:             template: "adds " %w0(32) ", " %w1(32) ", 1";
-// IR-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%5);
-// IR-NEXT:             in 1 "r" [reg] width 32 read<i32>(%4);
+// IR-NEXT:             lateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_r_2]]);
+// IR-NEXT:             in 1 "r" [reg] width 32 read<i32>(%[[VALUE_x_2]]);
 // IR-NEXT:             clobbers: cc;
 // IR-NEXT:         }
-// IR-NEXT:         return read<i32>(%5);
+// IR-NEXT:         return read<i32>(%[[VALUE_r_2]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %6 @basic() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:     fn %[[VALUE_basic:[0-9]+]] @basic() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm "nop" [options=nostack,preserves_flags];
 // IR-NEXT:     }
 // IR-NEXT: }

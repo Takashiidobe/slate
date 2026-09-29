@@ -42,22 +42,22 @@ unsigned long ignored(int r __attribute__((unused))) { return _Alignof(r); }
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @aligned_attribute(%1 q: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_aligned_attribute:[0-9]+]] @aligned_attribute(%[[VALUE_q:[0-9]+]] q: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(16);
 // IR-NEXT:     }
-// IR-NEXT:     fn %2 @alignas_specifier(%3 p: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_alignas_specifier:[0-9]+]] @alignas_specifier(%[[VALUE_p:[0-9]+]] p: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(32);
 // IR-NEXT:     }
-// IR-NEXT:     fn %4 @below_natural(%5 q: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_below_natural:[0-9]+]] @below_natural(%[[VALUE_q_2:[0-9]+]] q: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(1);
 // IR-NEXT:     }
-// IR-NEXT:     fn %6 @repeated(%7 q: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_repeated:[0-9]+]] @repeated(%[[VALUE_q_3:[0-9]+]] q: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(16);
 // IR-NEXT:     }
-// IR-NEXT:     fn %8 @plain(%9 r: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_plain:[0-9]+]] @plain(%[[VALUE_r:[0-9]+]] r: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(4);
 // IR-NEXT:     }
-// IR-NEXT:     fn %10 @ignored(%11 r: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_ignored:[0-9]+]] @ignored(%[[VALUE_r_2:[0-9]+]] r: i32) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<u64>(4);
 // IR-NEXT:     }
 // IR-NEXT: }

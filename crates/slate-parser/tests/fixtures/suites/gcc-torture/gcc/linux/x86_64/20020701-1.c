@@ -99,98 +99,98 @@ f (const char* p1, const char* p2, char p3)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     type @type1 = enum : u32 {
-// DEFAULT-NEXT:         %0 A = const<i32>(0);
-// DEFAULT-NEXT:         %1 B = const<i32>(1);
-// DEFAULT-NEXT:         %2 C = const<i32>(2);
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_A:[0-9]+]] A = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_B:[0-9]+]] B = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_C:[0-9]+]] C = const<i32>(2);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type2 t1 = @type1;
-// DEFAULT-NEXT:     extern %12 _v: array<i8, incomplete> [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @f1(%26 <unnamed>: ptr<void>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @f2(%27 <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %3 @atoi(%28 <unnamed>: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %4 @strchr(%29 <unnamed>: ptr<const i8>, %30 <unnamed>: i32) -> ptr<i8> [linkage=external];
-// DEFAULT-NEXT:     fn %5 @strcmp(%31 <unnamed>: ptr<const i8>, %32 <unnamed>: ptr<const i8>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %6 @strlen(%33 <unnamed>: ptr<const i8>) -> u64 [linkage=external];
-// DEFAULT-NEXT:     fn %37 @__builtin_memcpy(%34 <unnamed>: ptr<void>, %35 <unnamed>: ptr<const void>, %36 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %13 @f(%14 p1: ptr<const i8>, %15 p2: ptr<const i8>, %16 p3: i8) -> @type1 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %17 v1: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %18 v2: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %19 a: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %20 v3: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %21 v4: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %22 v5: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %23 e: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %24 v6: ptr<i8> [storage=automatic];
-// DEFAULT-NEXT:         let %25 r: @type1 [storage=automatic] = int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2)));
-// DEFAULT-NEXT:         write<ptr<i8>>(%17, call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%2, read<ptr<const i8>>(%15)));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%2, read<ptr<const i8>>(%15));
-// DEFAULT-NEXT:         write<ptr<i8>>(%21, call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%2, read<ptr<const i8>>(%14)));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%2, read<ptr<const i8>>(%14));
-// DEFAULT-NEXT:         write<ptr<i8>>(%18, read<ptr<i8>>(%17));
-// DEFAULT-NEXT:         write<ptr<i8>>(%19, read<ptr<i8>>(%17));
-// DEFAULT-NEXT:         write<ptr<i8>>(%22, read<ptr<i8>>(%21));
-// DEFAULT-NEXT:         write<ptr<i8>>(%23, read<ptr<i8>>(%21));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%37, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<i8>>>(%23)), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<ptr<i8>>>(%23)), const<u64>(8));
-// DEFAULT-NEXT:         write<ptr<i8>>(%20, call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%4, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%18)), const<i32>(44)));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%4, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%18)), const<i32>(44));
-// DEFAULT-NEXT:         write<ptr<i8>>(%24, call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%4, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%22)), const<i32>(44)));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%4, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%22)), const<i32>(44));
-// DEFAULT-NEXT:         while %38 ne<i32>(and<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=None>(%12), const<i32>(1)), reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i8>(deref(read<ptr<i8>>(%19))))))))), const<i32>(4)), const<i32>(0))
-// DEFAULT-NEXT:             let %42: ptr<i8> [synthetic] = read<ptr<i8>>(%19);
-// DEFAULT-NEXT:             let %43: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%42), const<i32>(1));
-// DEFAULT-NEXT:             write<ptr<i8>>(%19, read<ptr<i8>>(%43));
-// DEFAULT-NEXT:         while %39 ne<i32>(and<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=None>(%12), const<i32>(1)), reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i8>(deref(read<ptr<i8>>(%23))))))))), const<i32>(4)), const<i32>(0))
-// DEFAULT-NEXT:             let %44: ptr<i8> [synthetic] = read<ptr<i8>>(%23);
-// DEFAULT-NEXT:             let %45: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%44), const<i32>(1));
-// DEFAULT-NEXT:             write<ptr<i8>>(%23, read<ptr<i8>>(%45));
-// DEFAULT-NEXT:         if logical_and<bool>(eq<ptr<i8>>(read<ptr<i8>>(%19), read<ptr<i8>>(%20)), eq<ptr<i8>>(read<ptr<i8>>(%23), read<ptr<i8>>(%24)))
+// DEFAULT-NEXT:     type @type[[TYPE_t1:[0-9]+]] t1 = @type[[TYPE0]];
+// DEFAULT-NEXT:     extern %[[VALUE__v:[0-9]+]] _v: array<i8, incomplete> [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_B]] @f1(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_C]] @f2(%[[VALUE1:[0-9]+]] <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_atoi:[0-9]+]] @atoi(%[[VALUE2:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strchr:[0-9]+]] @strchr(%[[VALUE3:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE4:[0-9]+]] <unnamed>: i32) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strcmp:[0-9]+]] @strcmp(%[[VALUE5:[0-9]+]] <unnamed>: ptr<const i8>, %[[VALUE6:[0-9]+]] <unnamed>: ptr<const i8>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_strlen:[0-9]+]] @strlen(%[[VALUE7:[0-9]+]] <unnamed>: ptr<const i8>) -> u64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE8:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE9:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE10:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_p1:[0-9]+]] p1: ptr<const i8>, %[[VALUE_p2:[0-9]+]] p2: ptr<const i8>, %[[VALUE_p3:[0-9]+]] p3: i8) -> @type[[TYPE0]] [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_v1:[0-9]+]] v1: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_v2:[0-9]+]] v2: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_v3:[0-9]+]] v3: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_v4:[0-9]+]] v4: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_v5:[0-9]+]] v5: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_v6:[0-9]+]] v6: ptr<i8> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: @type[[TYPE0]] [storage=automatic] = int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2)));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_v1]], call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_C]], read<ptr<const i8>>(%[[VALUE_p2]])));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_C]], read<ptr<const i8>>(%[[VALUE_p2]]));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_v4]], call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_C]], read<ptr<const i8>>(%[[VALUE_p1]])));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_C]], read<ptr<const i8>>(%[[VALUE_p1]]));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_v2]], read<ptr<i8>>(%[[VALUE_v1]]));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_a]], read<ptr<i8>>(%[[VALUE_v1]]));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_v5]], read<ptr<i8>>(%[[VALUE_v4]]));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_e]], read<ptr<i8>>(%[[VALUE_v4]]));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<ptr<i8>>>(%[[VALUE_e]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<ptr<i8>>>(%[[VALUE_e]])), const<u64>(8));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_v3]], call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%[[VALUE_strchr]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])), const<i32>(44)));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%[[VALUE_strchr]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])), const<i32>(44));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_v6]], call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%[[VALUE_strchr]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]])), const<i32>(44)));
+// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%[[VALUE_strchr]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]])), const<i32>(44));
+// DEFAULT-NEXT:         while %[[VALUE11:[0-9]+]] ne<i32>(and<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=None>(%[[VALUE__v]]), const<i32>(1)), reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_a]]))))))))), const<i32>(4)), const<i32>(0))
+// DEFAULT-NEXT:             let %[[VALUE12:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_a]]);
+// DEFAULT-NEXT:             let %[[VALUE13:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE12]]), const<i32>(1));
+// DEFAULT-NEXT:             write<ptr<i8>>(%[[VALUE_a]], read<ptr<i8>>(%[[VALUE13]]));
+// DEFAULT-NEXT:         while %[[VALUE14:[0-9]+]] ne<i32>(and<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=None>(%[[VALUE__v]]), const<i32>(1)), reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_e]]))))))))), const<i32>(4)), const<i32>(0))
+// DEFAULT-NEXT:             let %[[VALUE15:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_e]]);
+// DEFAULT-NEXT:             let %[[VALUE16:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE15]]), const<i32>(1));
+// DEFAULT-NEXT:             write<ptr<i8>>(%[[VALUE_e]], read<ptr<i8>>(%[[VALUE16]]));
+// DEFAULT-NEXT:         if logical_and<bool>(eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_a]]), read<ptr<i8>>(%[[VALUE_v3]])), eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_e]]), read<ptr<i8>>(%[[VALUE_v6]])))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 if ne<i8>(read<i8>(%16), const<i8>(0))
-// DEFAULT-NEXT:                     write<@type1>(%25, int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(lt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%22))), call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%18)))), const<i32>(1), const<i32>(0)))));
-// DEFAULT-NEXT:                     int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(lt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%22))), call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%18)))), const<i32>(1), const<i32>(0))));
+// DEFAULT-NEXT:                 if ne<i8>(read<i8>(%[[VALUE_p3]]), const<i8>(0))
+// DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(lt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0)))));
+// DEFAULT-NEXT:                     int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(lt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0))));
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<@type1>(%25, int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(gt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%22))), call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%18)))), const<i32>(1), const<i32>(0)))));
-// DEFAULT-NEXT:                     int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(gt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%22))), call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%18)))), const<i32>(1), const<i32>(0))));
-// DEFAULT-NEXT:                 let %46: ptr<i8> [synthetic] = read<ptr<i8>>(%19);
-// DEFAULT-NEXT:                 let %47: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%46), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<i8>>(%19, read<ptr<i8>>(%47));
-// DEFAULT-NEXT:                 write<ptr<i8>>(%18, read<ptr<i8>>(%47));
-// DEFAULT-NEXT:                 let %48: ptr<i8> [synthetic] = read<ptr<i8>>(%23);
-// DEFAULT-NEXT:                 let %49: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%48), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<i8>>(%23, read<ptr<i8>>(%49));
-// DEFAULT-NEXT:                 write<ptr<i8>>(%22, read<ptr<i8>>(%49));
-// DEFAULT-NEXT:                 write<ptr<i8>>(%20, call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%4, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%18)), const<i32>(44)));
-// DEFAULT-NEXT:                 call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%4, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%18)), const<i32>(44));
-// DEFAULT-NEXT:                 write<ptr<i8>>(%24, call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%4, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%22)), const<i32>(44)));
-// DEFAULT-NEXT:                 call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%4, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%22)), const<i32>(44));
-// DEFAULT-NEXT:                 while %40 ne<i32>(and<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=None>(%12), const<i32>(1)), reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i8>(deref(read<ptr<i8>>(%19))))))))), const<i32>(4)), const<i32>(0))
-// DEFAULT-NEXT:                     let %50: ptr<i8> [synthetic] = read<ptr<i8>>(%19);
-// DEFAULT-NEXT:                     let %51: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%50), const<i32>(1));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%19, read<ptr<i8>>(%51));
-// DEFAULT-NEXT:                 while %41 ne<i32>(and<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=None>(%12), const<i32>(1)), reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i8>(deref(read<ptr<i8>>(%23))))))))), const<i32>(4)), const<i32>(0))
-// DEFAULT-NEXT:                     let %52: ptr<i8> [synthetic] = read<ptr<i8>>(%23);
-// DEFAULT-NEXT:                     let %53: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%52), const<i32>(1));
-// DEFAULT-NEXT:                     write<ptr<i8>>(%23, read<ptr<i8>>(%53));
-// DEFAULT-NEXT:                 if logical_and<bool>(eq<ptr<i8>>(read<ptr<i8>>(%19), read<ptr<i8>>(%20)), eq<ptr<i8>>(read<ptr<i8>>(%23), read<ptr<i8>>(%24)))
+// DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(gt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0)))));
+// DEFAULT-NEXT:                     int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(gt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0))));
+// DEFAULT-NEXT:                 let %[[VALUE17:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_a]]);
+// DEFAULT-NEXT:                 let %[[VALUE18:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE17]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_a]], read<ptr<i8>>(%[[VALUE18]]));
+// DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_v2]], read<ptr<i8>>(%[[VALUE18]]));
+// DEFAULT-NEXT:                 let %[[VALUE19:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_e]]);
+// DEFAULT-NEXT:                 let %[[VALUE20:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE19]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_e]], read<ptr<i8>>(%[[VALUE20]]));
+// DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_v5]], read<ptr<i8>>(%[[VALUE20]]));
+// DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_v3]], call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%[[VALUE_strchr]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])), const<i32>(44)));
+// DEFAULT-NEXT:                 call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%[[VALUE_strchr]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])), const<i32>(44));
+// DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_v6]], call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%[[VALUE_strchr]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]])), const<i32>(44)));
+// DEFAULT-NEXT:                 call<ptr<i8>, signature=fn(ptr<const i8>, i32) -> ptr<i8>>(%[[VALUE_strchr]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]])), const<i32>(44));
+// DEFAULT-NEXT:                 while %[[VALUE21:[0-9]+]] ne<i32>(and<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=None>(%[[VALUE__v]]), const<i32>(1)), reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_a]]))))))))), const<i32>(4)), const<i32>(0))
+// DEFAULT-NEXT:                     let %[[VALUE22:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_a]]);
+// DEFAULT-NEXT:                     let %[[VALUE23:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE22]]), const<i32>(1));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_a]], read<ptr<i8>>(%[[VALUE23]]));
+// DEFAULT-NEXT:                 while %[[VALUE24:[0-9]+]] ne<i32>(and<i32>(widen<i32, reason=promotion>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=None>(%[[VALUE__v]]), const<i32>(1)), reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_e]]))))))))), const<i32>(4)), const<i32>(0))
+// DEFAULT-NEXT:                     let %[[VALUE25:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_e]]);
+// DEFAULT-NEXT:                     let %[[VALUE26:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE25]]), const<i32>(1));
+// DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_e]], read<ptr<i8>>(%[[VALUE26]]));
+// DEFAULT-NEXT:                 if logical_and<bool>(eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_a]]), read<ptr<i8>>(%[[VALUE_v3]])), eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_e]]), read<ptr<i8>>(%[[VALUE_v6]])))
 // DEFAULT-NEXT:                     {
-// DEFAULT-NEXT:                         if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type1>(%25)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
-// DEFAULT-NEXT:                             write<@type1>(%25, int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:                         if eq<u32>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(%[[VALUE_r]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))
+// DEFAULT-NEXT:                             write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1))));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             if ne<i8>(read<i8>(%16), const<i8>(0))
-// DEFAULT-NEXT:                                 write<@type1>(%25, int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(lt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%22))), call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%18)))), const<i32>(1), const<i32>(0)))));
-// DEFAULT-NEXT:                                 int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(lt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%22))), call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%18)))), const<i32>(1), const<i32>(0))));
+// DEFAULT-NEXT:                             if ne<i8>(read<i8>(%[[VALUE_p3]]), const<i8>(0))
+// DEFAULT-NEXT:                                 write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(lt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0)))));
+// DEFAULT-NEXT:                                 int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(lt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0))));
 // DEFAULT-NEXT:                             else
-// DEFAULT-NEXT:                                 write<@type1>(%25, int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(gt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%22))), call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%18)))), const<i32>(1), const<i32>(0)))));
-// DEFAULT-NEXT:                                 int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(gt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%22))), call<i32, signature=fn(ptr<const i8>) -> i32>(%3, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%18)))), const<i32>(1), const<i32>(0))));
+// DEFAULT-NEXT:                                 write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(gt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0)))));
+// DEFAULT-NEXT:                                 int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(gt<i32>(call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v5]]))), call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_atoi]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_v2]])))), const<i32>(1), const<i32>(0))));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 else
-// DEFAULT-NEXT:                     write<@type1>(%25, int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2))));
+// DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_r]], int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(2))));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%1, pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%17)));
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%1, pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%21)));
-// DEFAULT-NEXT:         return read<@type1>(%25);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_B]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%[[VALUE_v1]])));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_B]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%[[VALUE_v4]])));
+// DEFAULT-NEXT:         return read<@type[[TYPE0]]>(%[[VALUE_r]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

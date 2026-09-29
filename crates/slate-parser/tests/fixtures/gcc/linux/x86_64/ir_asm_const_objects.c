@@ -33,10 +33,10 @@ void tentative_zero(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 tentative: i32 [storage=static] [const] [linkage=internal];
-// IR-NEXT:     global %1 external: i32 [storage=static] [const] [linkage=external];
-// IR-NEXT:     global %2 redefined: i32 [storage=static] [const] = const<i32>(4) [linkage=internal];
-// IR-NEXT:     fn %3 @tentative_zero() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:     global %[[VALUE_tentative:[0-9]+]] tentative: i32 [storage=static] [const] [linkage=internal];
+// IR-NEXT:     global %[[VALUE_external:[0-9]+]] external: i32 [storage=static] [const] [linkage=external];
+// IR-NEXT:     global %[[VALUE_redefined:[0-9]+]] redefined: i32 [storage=static] [const] = const<i32>(4) [linkage=internal];
+// IR-NEXT:     fn %[[VALUE_tentative_zero:[0-9]+]] @tentative_zero() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm "# %0 %1 %2" [dialect=att] [options=nomem,nostack] {
 // IR-NEXT:             template: "# " %0 " " %1 " " %2;
 // IR-NEXT:             in 0 "i" [imm | sym] -> imm width 32 const<i32>(0);

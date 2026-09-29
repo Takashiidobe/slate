@@ -39,13 +39,13 @@ int __declspec(noinline) this_does_not_get_hotpatched() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @this_might_have_side_effects(unprototyped) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %1 @this_gets_hotpatched(unprototyped) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_this_might_have_side_effects:[0-9]+]] @this_might_have_side_effects(unprototyped) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_this_gets_hotpatched:[0-9]+]] @this_gets_hotpatched(unprototyped) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn(unprototyped) -> void>(%[[VALUE_this_might_have_side_effects]]);
 // DEFAULT-NEXT:         return const<i32>(42);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @this_does_not_get_hotpatched(unprototyped) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn(unprototyped) -> i32>(%1), const<i32>(100));
+// DEFAULT-NEXT:     fn %[[VALUE_this_does_not_get_hotpatched:[0-9]+]] @this_does_not_get_hotpatched(unprototyped) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_this_gets_hotpatched]]), const<i32>(100));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

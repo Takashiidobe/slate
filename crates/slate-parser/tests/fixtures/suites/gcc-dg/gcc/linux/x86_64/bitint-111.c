@@ -41,21 +41,21 @@ foo (signed char c)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 f: f32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 b: i255b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo(%3 c: i8) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         for %4
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: f32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i255b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_c:[0-9]+]] c: i8) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: omitted
 // DEFAULT-NEXT:             increment: omitted
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %5: i8 [synthetic] = read<i8>(%3);
-// DEFAULT-NEXT:                     let %6: i8 [synthetic] = reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(rem<u512b, by_zero=ub>(reinterpret<u512b, reason=usual_arith, fits=unknown>(widen<i512b, reason=usual_arith>(widen<i32, reason=promotion>(read<i8>(%5)))), reinterpret<u512b, reason=explicit, fits=unknown>(widen<i512b, reason=explicit>(const<i32>(0))))));
-// DEFAULT-NEXT:                     write<i8>(%3, read<i8>(%6));
-// DEFAULT-NEXT:                     let %7: f32 [synthetic] = read<f32>(%0);
-// DEFAULT-NEXT:                     let %8: f32 [synthetic] = div<f32, rounding=nearest_even, exceptions=observable, contract=fast>(read<f32>(%7), int_to_float<f32, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(from_bool<i32, reason=promotion>(ge<i255b>(read<i255b>(%1), widen<i255b, reason=usual_arith>(widen<i32, reason=promotion>(read<i8>(%3)))))));
-// DEFAULT-NEXT:                     write<f32>(%0, read<f32>(%8));
+// DEFAULT-NEXT:                     let %[[VALUE1:[0-9]+]]: i8 [synthetic] = read<i8>(%[[VALUE_c]]);
+// DEFAULT-NEXT:                     let %[[VALUE2:[0-9]+]]: i8 [synthetic] = reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(rem<u512b, by_zero=ub>(reinterpret<u512b, reason=usual_arith, fits=unknown>(widen<i512b, reason=usual_arith>(widen<i32, reason=promotion>(read<i8>(%[[VALUE1]])))), reinterpret<u512b, reason=explicit, fits=unknown>(widen<i512b, reason=explicit>(const<i32>(0))))));
+// DEFAULT-NEXT:                     write<i8>(%[[VALUE_c]], read<i8>(%[[VALUE2]]));
+// DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: f32 [synthetic] = read<f32>(%[[VALUE_f]]);
+// DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: f32 [synthetic] = div<f32, rounding=nearest_even, exceptions=observable, contract=fast>(read<f32>(%[[VALUE3]]), int_to_float<f32, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(from_bool<i32, reason=promotion>(ge<i255b>(read<i255b>(%[[VALUE_b]]), widen<i255b, reason=usual_arith>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_c]])))))));
+// DEFAULT-NEXT:                     write<f32>(%[[VALUE_f]], read<f32>(%[[VALUE4]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

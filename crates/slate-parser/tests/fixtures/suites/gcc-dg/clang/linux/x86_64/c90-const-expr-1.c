@@ -48,14 +48,14 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %3 j: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(1), const<i32>(0)), const<i32>(0), store<i32>(%2, const<i32>(2))) [linkage=internal];
-// DEFAULT-NEXT:     global %4 k: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(1), const<i32>(0)), const<i32>(0), update<i32, result=new>(%2, add<i32, overflow=ub>(old<i32>, const<i32>(1)))) [linkage=internal];
-// DEFAULT-NEXT:     global %5 l: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(1), const<i32>(0)), const<i32>(0), update<i32, result=new>(%2, sub<i32, overflow=ub>(old<i32>, const<i32>(1)))) [linkage=internal];
-// DEFAULT-NEXT:     global %6 m: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(1), const<i32>(0)), const<i32>(0), call<i32, signature=fn() -> i32>(%0)) [linkage=internal];
-// DEFAULT-NEXT:     global %7 n: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(1), const<i32>(0)), const<i32>(0), sequence<i32>(const<i32>(2), const<i32>(3))) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @bar() -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %2 i: i32 [storage=automatic];
+// DEFAULT-NEXT:     global %[[VALUE_j:[0-9]+]] j: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(1), const<i32>(0)), const<i32>(0), store<i32>(%[[VALUE_i:[0-9]+]], const<i32>(2))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_k:[0-9]+]] k: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(1), const<i32>(0)), const<i32>(0), update<i32, result=new>(%[[VALUE_i]], add<i32, overflow=ub>(old<i32>, const<i32>(1)))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_l:[0-9]+]] l: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(1), const<i32>(0)), const<i32>(0), update<i32, result=new>(%[[VALUE_i]], sub<i32, overflow=ub>(old<i32>, const<i32>(1)))) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_m:[0-9]+]] m: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(1), const<i32>(0)), const<i32>(0), call<i32, signature=fn() -> i32>(%[[VALUE_bar:[0-9]+]])) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_n:[0-9]+]] n: i32 [storage=static] = conditional<i32>(ne<i32>(const<i32>(1), const<i32>(0)), const<i32>(0), sequence<i32>(const<i32>(2), const<i32>(3))) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_bar]] @bar() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

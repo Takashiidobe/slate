@@ -38,28 +38,28 @@ baz(int* arg)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%7 <unnamed>: f64, %8 <unnamed>: f64) -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @bar(%9 <unnamed>: ptr<f32>, %10 <unnamed>: ptr<i32>) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %2 @baz(%3 arg: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 tmp: f32 [storage=automatic] = float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%0, const<f64>(2.0), const<f64>(1.0)));
-// DEFAULT-NEXT:         let %5 i: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %6 junk: array<i16, 64> [storage=automatic] [align=16];
-// DEFAULT-NEXT:         for %11
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE0:[0-9]+]] <unnamed>: f64, %[[VALUE1:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE2:[0-9]+]] <unnamed>: ptr<f32>, %[[VALUE3:[0-9]+]] <unnamed>: ptr<i32>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_arg:[0-9]+]] arg: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_tmp:[0-9]+]] tmp: f32 [storage=automatic] = float_narrow<f32, reason=explicit, rounding=nearest_even, exceptions=ignore>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_foo]], const<f64>(2.0), const<f64>(1.0)));
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_junk:[0-9]+]] junk: array<i16, 64> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         for %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<u32>(%5, reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:             condition: lt<u32>(read<u32>(%5), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10)))
+// DEFAULT-NEXT:                 write<u32>(%[[VALUE_i]], reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:             condition: lt<u32>(read<u32>(%[[VALUE_i]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(10)))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %12: u32 [synthetic] = read<u32>(%5);
-// DEFAULT-NEXT:                 let %13: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%12), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<u32>(%5, read<u32>(%13));
-// DEFAULT-NEXT:                 let %14: ptr<i32> [synthetic] = read<ptr<i32>>(%3);
-// DEFAULT-NEXT:                 let %15: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%14), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<i32>>(%3, read<ptr<i32>>(%15));
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE5]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<u32>(%[[VALUE_i]], read<u32>(%[[VALUE6]]));
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: ptr<i32> [synthetic] = read<ptr<i32>>(%[[VALUE_arg]]);
+// DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: ptr<i32> [synthetic] = ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE7]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<i32>>(%[[VALUE_arg]], read<ptr<i32>>(%[[VALUE8]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     call<void, signature=fn(ptr<f32>, ptr<i32>) -> void>(%1, addr_of<ptr<f32>>(%4), read<ptr<i32>>(%3));
+// DEFAULT-NEXT:                     call<void, signature=fn(ptr<f32>, ptr<i32>) -> void>(%[[VALUE_bar]], addr_of<ptr<f32>>(%[[VALUE_tmp]]), read<ptr<i32>>(%[[VALUE_arg]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

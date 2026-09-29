@@ -34,15 +34,15 @@ void baz(struct S *p)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     fn %4 @__builtin_setjmp(%3 <unnamed>: ptr<void>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %1 @baz(%2 p: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5: ptr<@type0> [synthetic] = read<ptr<@type0>>(%2);
-// DEFAULT-NEXT:         let %6: ptr<@type0> [synthetic] = ptr_offset<ptr<@type0>, subtract=true, element=@type0, overflow=ub>(read<ptr<@type0>>(%5), const<i32>(1));
-// DEFAULT-NEXT:         write<ptr<@type0>>(%2, read<ptr<@type0>>(%6));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<void>) -> i32>(%4, pointer_cast<ptr<void>, reason=arg>(read<ptr<@type0>>(%5)));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_setjmp:[0-9]+]] @__builtin_setjmp(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_S]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<@type[[TYPE_S]]> [synthetic] = read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]]);
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: ptr<@type[[TYPE_S]]> [synthetic] = ptr_offset<ptr<@type[[TYPE_S]]>, subtract=true, element=@type[[TYPE_S]], overflow=ub>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]], read<ptr<@type[[TYPE_S]]>>(%[[VALUE2]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<void>) -> i32>(%[[VALUE___builtin_setjmp]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE1]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

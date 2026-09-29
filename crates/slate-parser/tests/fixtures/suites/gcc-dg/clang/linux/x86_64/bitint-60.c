@@ -45,61 +45,61 @@ _BitInt(495) f16 (unsigned _BitInt(381) x) { return (_BitInt(539)) x; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f1(%1 x: i381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2 y: u539b [storage=automatic] = reinterpret<u539b, reason=assign, fits=unknown>(widen<i539b, reason=assign>(read<i381b>(%1)));
-// DEFAULT-NEXT:         return truncate<u495b, reason=return, fits=unknown>(read<u539b>(%2));
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_x:[0-9]+]] x: i381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: u539b [storage=automatic] = reinterpret<u539b, reason=assign, fits=unknown>(widen<i539b, reason=assign>(read<i381b>(%[[VALUE_x]])));
+// DEFAULT-NEXT:         return truncate<u495b, reason=return, fits=unknown>(read<u539b>(%[[VALUE_y]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @f2(%4 x: u381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5 y: u539b [storage=automatic] = widen<u539b, reason=assign>(read<u381b>(%4));
-// DEFAULT-NEXT:         return truncate<u495b, reason=return, fits=unknown>(read<u539b>(%5));
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_x_2:[0-9]+]] x: u381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: u539b [storage=automatic] = widen<u539b, reason=assign>(read<u381b>(%[[VALUE_x_2]]));
+// DEFAULT-NEXT:         return truncate<u495b, reason=return, fits=unknown>(read<u539b>(%[[VALUE_y_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @f3(%7 x: i381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 y: i539b [storage=automatic] = widen<i539b, reason=assign>(read<i381b>(%7));
-// DEFAULT-NEXT:         return reinterpret<u495b, reason=return, fits=unknown>(truncate<i495b, reason=return, fits=unknown>(read<i539b>(%8)));
+// DEFAULT-NEXT:     fn %[[VALUE_f3:[0-9]+]] @f3(%[[VALUE_x_3:[0-9]+]] x: i381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_3:[0-9]+]] y: i539b [storage=automatic] = widen<i539b, reason=assign>(read<i381b>(%[[VALUE_x_3]]));
+// DEFAULT-NEXT:         return reinterpret<u495b, reason=return, fits=unknown>(truncate<i495b, reason=return, fits=unknown>(read<i539b>(%[[VALUE_y_3]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @f4(%10 x: u381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 y: i539b [storage=automatic] = reinterpret<i539b, reason=assign, fits=unknown>(widen<u539b, reason=assign>(read<u381b>(%10)));
-// DEFAULT-NEXT:         return reinterpret<u495b, reason=return, fits=unknown>(truncate<i495b, reason=return, fits=unknown>(read<i539b>(%11)));
+// DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_x_4:[0-9]+]] x: u381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_4:[0-9]+]] y: i539b [storage=automatic] = reinterpret<i539b, reason=assign, fits=unknown>(widen<u539b, reason=assign>(read<u381b>(%[[VALUE_x_4]])));
+// DEFAULT-NEXT:         return reinterpret<u495b, reason=return, fits=unknown>(truncate<i495b, reason=return, fits=unknown>(read<i539b>(%[[VALUE_y_4]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @f5(%13 x: i381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %14 y: u539b [storage=automatic] = reinterpret<u539b, reason=assign, fits=unknown>(widen<i539b, reason=assign>(read<i381b>(%13)));
-// DEFAULT-NEXT:         return reinterpret<i495b, reason=return, fits=unknown>(truncate<u495b, reason=return, fits=unknown>(read<u539b>(%14)));
+// DEFAULT-NEXT:     fn %[[VALUE_f5:[0-9]+]] @f5(%[[VALUE_x_5:[0-9]+]] x: i381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_5:[0-9]+]] y: u539b [storage=automatic] = reinterpret<u539b, reason=assign, fits=unknown>(widen<i539b, reason=assign>(read<i381b>(%[[VALUE_x_5]])));
+// DEFAULT-NEXT:         return reinterpret<i495b, reason=return, fits=unknown>(truncate<u495b, reason=return, fits=unknown>(read<u539b>(%[[VALUE_y_5]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @f6(%16 x: u381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %17 y: u539b [storage=automatic] = widen<u539b, reason=assign>(read<u381b>(%16));
-// DEFAULT-NEXT:         return reinterpret<i495b, reason=return, fits=unknown>(truncate<u495b, reason=return, fits=unknown>(read<u539b>(%17)));
+// DEFAULT-NEXT:     fn %[[VALUE_f6:[0-9]+]] @f6(%[[VALUE_x_6:[0-9]+]] x: u381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_6:[0-9]+]] y: u539b [storage=automatic] = widen<u539b, reason=assign>(read<u381b>(%[[VALUE_x_6]]));
+// DEFAULT-NEXT:         return reinterpret<i495b, reason=return, fits=unknown>(truncate<u495b, reason=return, fits=unknown>(read<u539b>(%[[VALUE_y_6]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @f7(%19 x: i381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %20 y: i539b [storage=automatic] = widen<i539b, reason=assign>(read<i381b>(%19));
-// DEFAULT-NEXT:         return truncate<i495b, reason=return, fits=unknown>(read<i539b>(%20));
+// DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_x_7:[0-9]+]] x: i381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_7:[0-9]+]] y: i539b [storage=automatic] = widen<i539b, reason=assign>(read<i381b>(%[[VALUE_x_7]]));
+// DEFAULT-NEXT:         return truncate<i495b, reason=return, fits=unknown>(read<i539b>(%[[VALUE_y_7]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @f8(%22 x: u381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %23 y: i539b [storage=automatic] = reinterpret<i539b, reason=assign, fits=unknown>(widen<u539b, reason=assign>(read<u381b>(%22)));
-// DEFAULT-NEXT:         return truncate<i495b, reason=return, fits=unknown>(read<i539b>(%23));
+// DEFAULT-NEXT:     fn %[[VALUE_f8:[0-9]+]] @f8(%[[VALUE_x_8:[0-9]+]] x: u381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y_8:[0-9]+]] y: i539b [storage=automatic] = reinterpret<i539b, reason=assign, fits=unknown>(widen<u539b, reason=assign>(read<u381b>(%[[VALUE_x_8]])));
+// DEFAULT-NEXT:         return truncate<i495b, reason=return, fits=unknown>(read<i539b>(%[[VALUE_y_8]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @f9(%25 x: i381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<u495b, reason=return, fits=unknown>(reinterpret<u539b, reason=explicit, fits=unknown>(widen<i539b, reason=explicit>(read<i381b>(%25))));
+// DEFAULT-NEXT:     fn %[[VALUE_f9:[0-9]+]] @f9(%[[VALUE_x_9:[0-9]+]] x: i381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<u495b, reason=return, fits=unknown>(reinterpret<u539b, reason=explicit, fits=unknown>(widen<i539b, reason=explicit>(read<i381b>(%[[VALUE_x_9]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %26 @f10(%27 x: u381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<u495b, reason=return, fits=unknown>(widen<u539b, reason=explicit>(read<u381b>(%27)));
+// DEFAULT-NEXT:     fn %[[VALUE_f10:[0-9]+]] @f10(%[[VALUE_x_10:[0-9]+]] x: u381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<u495b, reason=return, fits=unknown>(widen<u539b, reason=explicit>(read<u381b>(%[[VALUE_x_10]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %28 @f11(%29 x: i381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u495b, reason=return, fits=unknown>(truncate<i495b, reason=return, fits=unknown>(widen<i539b, reason=explicit>(read<i381b>(%29))));
+// DEFAULT-NEXT:     fn %[[VALUE_f11:[0-9]+]] @f11(%[[VALUE_x_11:[0-9]+]] x: i381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u495b, reason=return, fits=unknown>(truncate<i495b, reason=return, fits=unknown>(widen<i539b, reason=explicit>(read<i381b>(%[[VALUE_x_11]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @f12(%31 x: u381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<u495b, reason=return, fits=unknown>(truncate<i495b, reason=return, fits=unknown>(reinterpret<i539b, reason=explicit, fits=unknown>(widen<u539b, reason=explicit>(read<u381b>(%31)))));
+// DEFAULT-NEXT:     fn %[[VALUE_f12:[0-9]+]] @f12(%[[VALUE_x_12:[0-9]+]] x: u381b) -> u495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<u495b, reason=return, fits=unknown>(truncate<i495b, reason=return, fits=unknown>(reinterpret<i539b, reason=explicit, fits=unknown>(widen<u539b, reason=explicit>(read<u381b>(%[[VALUE_x_12]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @f13(%33 x: i381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i495b, reason=return, fits=unknown>(truncate<u495b, reason=return, fits=unknown>(reinterpret<u539b, reason=explicit, fits=unknown>(widen<i539b, reason=explicit>(read<i381b>(%33)))));
+// DEFAULT-NEXT:     fn %[[VALUE_f13:[0-9]+]] @f13(%[[VALUE_x_13:[0-9]+]] x: i381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i495b, reason=return, fits=unknown>(truncate<u495b, reason=return, fits=unknown>(reinterpret<u539b, reason=explicit, fits=unknown>(widen<i539b, reason=explicit>(read<i381b>(%[[VALUE_x_13]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %34 @f14(%35 x: u381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return reinterpret<i495b, reason=return, fits=unknown>(truncate<u495b, reason=return, fits=unknown>(widen<u539b, reason=explicit>(read<u381b>(%35))));
+// DEFAULT-NEXT:     fn %[[VALUE_f14:[0-9]+]] @f14(%[[VALUE_x_14:[0-9]+]] x: u381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return reinterpret<i495b, reason=return, fits=unknown>(truncate<u495b, reason=return, fits=unknown>(widen<u539b, reason=explicit>(read<u381b>(%[[VALUE_x_14]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %36 @f15(%37 x: i381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i495b, reason=return, fits=unknown>(widen<i539b, reason=explicit>(read<i381b>(%37)));
+// DEFAULT-NEXT:     fn %[[VALUE_f15:[0-9]+]] @f15(%[[VALUE_x_15:[0-9]+]] x: i381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i495b, reason=return, fits=unknown>(widen<i539b, reason=explicit>(read<i381b>(%[[VALUE_x_15]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %38 @f16(%39 x: u381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i495b, reason=return, fits=unknown>(reinterpret<i539b, reason=explicit, fits=unknown>(widen<u539b, reason=explicit>(read<u381b>(%39))));
+// DEFAULT-NEXT:     fn %[[VALUE_f16:[0-9]+]] @f16(%[[VALUE_x_16:[0-9]+]] x: u381b) -> i495b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i495b, reason=return, fits=unknown>(reinterpret<i539b, reason=explicit, fits=unknown>(widen<u539b, reason=explicit>(read<u381b>(%[[VALUE_x_16]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

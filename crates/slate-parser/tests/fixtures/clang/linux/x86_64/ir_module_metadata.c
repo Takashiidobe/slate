@@ -28,7 +28,7 @@ static int answer(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @answer() -> i32 [linkage=internal] [fallthrough=ub_if_used] [c_storage="static"] [c_return="int"] [c="int(void)"] {
+// IR-NEXT:     fn %[[VALUE_answer:[0-9]+]] @answer() -> i32 [linkage=internal] [fallthrough=ub_if_used] [c_storage="static"] [c_return="int"] [c="int(void)"] {
 // IR-NEXT:         return const<i32>(42);
 // IR-NEXT:     }
 // IR-NEXT: }

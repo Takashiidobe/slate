@@ -157,130 +157,130 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:         field0 x: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo_2:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
-// DEFAULT-NEXT:     type @type2 bar = struct {
-// DEFAULT-NEXT:         field0 c: ptr<@type1>;
+// DEFAULT-NEXT:     type @type[[TYPE_bar:[0-9]+]] bar = struct {
+// DEFAULT-NEXT:         field0 c: ptr<@type[[TYPE_foo_2]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 baz = union {
-// DEFAULT-NEXT:         field0 c: ptr<@type1>;
+// DEFAULT-NEXT:     type @type[[TYPE_baz:[0-9]+]] baz = union {
+// DEFAULT-NEXT:         field0 c: ptr<@type[[TYPE_foo_2]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type4 arr = struct {
-// DEFAULT-NEXT:         field0 c: array<ptr<@type1>, 1>;
+// DEFAULT-NEXT:     type @type[[TYPE_arr:[0-9]+]] arr = struct {
+// DEFAULT-NEXT:         field0 c: array<ptr<@type[[TYPE_foo_2]]>, 1>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type5 fun = struct {
-// DEFAULT-NEXT:         field0 c: ptr<fn() -> @type1>;
+// DEFAULT-NEXT:     type @type[[TYPE_fun:[0-9]+]] fun = struct {
+// DEFAULT-NEXT:         field0 c: ptr<fn() -> @type[[TYPE_foo_2]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type6 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo_3:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
-// DEFAULT-NEXT:     type @type7 bar = struct {
-// DEFAULT-NEXT:         field0 c: ptr<@type6>;
+// DEFAULT-NEXT:     type @type[[TYPE_bar_2:[0-9]+]] bar = struct {
+// DEFAULT-NEXT:         field0 c: ptr<@type[[TYPE_foo_3]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type8 baz = union {
-// DEFAULT-NEXT:         field0 c: ptr<@type6>;
+// DEFAULT-NEXT:     type @type[[TYPE_baz_2:[0-9]+]] baz = union {
+// DEFAULT-NEXT:         field0 c: ptr<@type[[TYPE_foo_3]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type9 arr = struct {
-// DEFAULT-NEXT:         field0 c: array<ptr<@type6>, 1>;
+// DEFAULT-NEXT:     type @type[[TYPE_arr_2:[0-9]+]] arr = struct {
+// DEFAULT-NEXT:         field0 c: array<ptr<@type[[TYPE_foo_3]]>, 1>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type10 fun = struct {
-// DEFAULT-NEXT:         field0 c: ptr<fn() -> @type6>;
+// DEFAULT-NEXT:     type @type[[TYPE_fun_2:[0-9]+]] fun = struct {
+// DEFAULT-NEXT:         field0 c: ptr<fn() -> @type[[TYPE_foo_3]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type11 bar = struct {
-// DEFAULT-NEXT:         field0 c: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_bar_3:[0-9]+]] bar = struct {
+// DEFAULT-NEXT:         field0 c: ptr<@type[[TYPE_foo]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type12 baz = union {
-// DEFAULT-NEXT:         field0 c: ptr<@type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_baz_3:[0-9]+]] baz = union {
+// DEFAULT-NEXT:         field0 c: ptr<@type[[TYPE_foo]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type13 arr = struct {
-// DEFAULT-NEXT:         field0 c: array<ptr<@type0>, 1>;
+// DEFAULT-NEXT:     type @type[[TYPE_arr_3:[0-9]+]] arr = struct {
+// DEFAULT-NEXT:         field0 c: array<ptr<@type[[TYPE_foo]]>, 1>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type14 fun = struct {
-// DEFAULT-NEXT:         field0 c: ptr<fn() -> @type0>;
+// DEFAULT-NEXT:     type @type[[TYPE_fun_3:[0-9]+]] fun = struct {
+// DEFAULT-NEXT:         field0 c: ptr<fn() -> @type[[TYPE_foo]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type15 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo_4:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:         field0 y: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type16 bar = struct {
-// DEFAULT-NEXT:         field0 c: ptr<@type15>;
+// DEFAULT-NEXT:     type @type[[TYPE_bar_4:[0-9]+]] bar = struct {
+// DEFAULT-NEXT:         field0 c: ptr<@type[[TYPE_foo_4]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type17 baz = union {
-// DEFAULT-NEXT:         field0 c: ptr<@type15>;
+// DEFAULT-NEXT:     type @type[[TYPE_baz_4:[0-9]+]] baz = union {
+// DEFAULT-NEXT:         field0 c: ptr<@type[[TYPE_foo_4]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type18 arr = struct {
-// DEFAULT-NEXT:         field0 c: array<ptr<@type15>, 1>;
+// DEFAULT-NEXT:     type @type[[TYPE_arr_4:[0-9]+]] arr = struct {
+// DEFAULT-NEXT:         field0 c: array<ptr<@type[[TYPE_foo_4]]>, 1>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type19 fun = struct {
-// DEFAULT-NEXT:         field0 c: ptr<fn() -> @type15>;
+// DEFAULT-NEXT:     type @type[[TYPE_fun_4:[0-9]+]] fun = struct {
+// DEFAULT-NEXT:         field0 c: ptr<fn() -> @type[[TYPE_foo_4]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type20 bar = struct {
-// DEFAULT-NEXT:         field0 c: ptr<@type21>;
+// DEFAULT-NEXT:     type @type[[TYPE_bar_5:[0-9]+]] bar = struct {
+// DEFAULT-NEXT:         field0 c: ptr<@type[[TYPE_foo_5:[0-9]+]]>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     type @type21 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo_5]] foo = struct {
 // DEFAULT-NEXT:         field0 x: i64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @f() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @f1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @f2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @g1(%24 B: ptr<@type11>, %25 Q: ptr<@type11>) -> ptr<@type0> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %26 t: @type11 [storage=automatic] = copy<@type11, reason=assign>(read<@type11>(deref(read<ptr<@type11>>(%24))));
-// DEFAULT-NEXT:         write<@type11>(deref(read<ptr<@type11>>(%24)), copy<@type11, reason=assign>(read<@type11>(deref(read<ptr<@type11>>(%25)))));
-// DEFAULT-NEXT:         write<@type11>(deref(read<ptr<@type11>>(%25)), copy<@type11, reason=assign>(read<@type11>(%26)));
-// DEFAULT-NEXT:         return read<ptr<@type0>>(field0(deref(read<ptr<@type11>>(%24))));
+// DEFAULT-NEXT:     fn %[[VALUE_g1:[0-9]+]] @g1(%[[VALUE_B:[0-9]+]] B: ptr<@type[[TYPE_bar_3]]>, %[[VALUE_Q:[0-9]+]] Q: ptr<@type[[TYPE_bar_3]]>) -> ptr<@type[[TYPE_foo]]> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE_bar_3]] [storage=automatic] = copy<@type[[TYPE_bar_3]], reason=assign>(read<@type[[TYPE_bar_3]]>(deref(read<ptr<@type[[TYPE_bar_3]]>>(%[[VALUE_B]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_bar_3]]>(deref(read<ptr<@type[[TYPE_bar_3]]>>(%[[VALUE_B]])), copy<@type[[TYPE_bar_3]], reason=assign>(read<@type[[TYPE_bar_3]]>(deref(read<ptr<@type[[TYPE_bar_3]]>>(%[[VALUE_Q]])))));
+// DEFAULT-NEXT:         write<@type[[TYPE_bar_3]]>(deref(read<ptr<@type[[TYPE_bar_3]]>>(%[[VALUE_Q]])), copy<@type[[TYPE_bar_3]], reason=assign>(read<@type[[TYPE_bar_3]]>(%[[VALUE_t]])));
+// DEFAULT-NEXT:         return read<ptr<@type[[TYPE_foo]]>>(field0(deref(read<ptr<@type[[TYPE_bar_3]]>>(%[[VALUE_B]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @g2(%28 B: ptr<@type12>, %29 Q: ptr<@type12>) -> ptr<@type0> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %30 t: @type12 [storage=automatic] = copy<@type12, reason=assign>(read<@type12>(deref(read<ptr<@type12>>(%28))));
-// DEFAULT-NEXT:         write<@type12>(deref(read<ptr<@type12>>(%28)), copy<@type12, reason=assign>(read<@type12>(deref(read<ptr<@type12>>(%29)))));
-// DEFAULT-NEXT:         write<@type12>(deref(read<ptr<@type12>>(%29)), copy<@type12, reason=assign>(read<@type12>(%30)));
-// DEFAULT-NEXT:         return read<ptr<@type0>>(field0(deref(read<ptr<@type12>>(%28))));
+// DEFAULT-NEXT:     fn %[[VALUE_g2:[0-9]+]] @g2(%[[VALUE_B_2:[0-9]+]] B: ptr<@type[[TYPE_baz_3]]>, %[[VALUE_Q_2:[0-9]+]] Q: ptr<@type[[TYPE_baz_3]]>) -> ptr<@type[[TYPE_foo]]> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_t_2:[0-9]+]] t: @type[[TYPE_baz_3]] [storage=automatic] = copy<@type[[TYPE_baz_3]], reason=assign>(read<@type[[TYPE_baz_3]]>(deref(read<ptr<@type[[TYPE_baz_3]]>>(%[[VALUE_B_2]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_baz_3]]>(deref(read<ptr<@type[[TYPE_baz_3]]>>(%[[VALUE_B_2]])), copy<@type[[TYPE_baz_3]], reason=assign>(read<@type[[TYPE_baz_3]]>(deref(read<ptr<@type[[TYPE_baz_3]]>>(%[[VALUE_Q_2]])))));
+// DEFAULT-NEXT:         write<@type[[TYPE_baz_3]]>(deref(read<ptr<@type[[TYPE_baz_3]]>>(%[[VALUE_Q_2]])), copy<@type[[TYPE_baz_3]], reason=assign>(read<@type[[TYPE_baz_3]]>(%[[VALUE_t_2]])));
+// DEFAULT-NEXT:         return read<ptr<@type[[TYPE_foo]]>>(field0(deref(read<ptr<@type[[TYPE_baz_3]]>>(%[[VALUE_B_2]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @g3(%34 B: ptr<@type20>, %35 Q: ptr<@type20>) -> ptr<@type0> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %36 t: @type20 [storage=automatic] = copy<@type20, reason=assign>(read<@type20>(deref(read<ptr<@type20>>(%34))));
-// DEFAULT-NEXT:         write<@type20>(deref(read<ptr<@type20>>(%34)), copy<@type20, reason=assign>(read<@type20>(deref(read<ptr<@type20>>(%35)))));
-// DEFAULT-NEXT:         write<@type20>(deref(read<ptr<@type20>>(%35)), copy<@type20, reason=assign>(read<@type20>(%36)));
-// DEFAULT-NEXT:         return pointer_cast<ptr<@type0>, reason=return>(read<ptr<@type21>>(field0(deref(read<ptr<@type20>>(%34)))));
+// DEFAULT-NEXT:     fn %[[VALUE_g3:[0-9]+]] @g3(%[[VALUE_B_3:[0-9]+]] B: ptr<@type[[TYPE_bar_5]]>, %[[VALUE_Q_3:[0-9]+]] Q: ptr<@type[[TYPE_bar_5]]>) -> ptr<@type[[TYPE_foo]]> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_t_3:[0-9]+]] t: @type[[TYPE_bar_5]] [storage=automatic] = copy<@type[[TYPE_bar_5]], reason=assign>(read<@type[[TYPE_bar_5]]>(deref(read<ptr<@type[[TYPE_bar_5]]>>(%[[VALUE_B_3]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_bar_5]]>(deref(read<ptr<@type[[TYPE_bar_5]]>>(%[[VALUE_B_3]])), copy<@type[[TYPE_bar_5]], reason=assign>(read<@type[[TYPE_bar_5]]>(deref(read<ptr<@type[[TYPE_bar_5]]>>(%[[VALUE_Q_3]])))));
+// DEFAULT-NEXT:         write<@type[[TYPE_bar_5]]>(deref(read<ptr<@type[[TYPE_bar_5]]>>(%[[VALUE_Q_3]])), copy<@type[[TYPE_bar_5]], reason=assign>(read<@type[[TYPE_bar_5]]>(%[[VALUE_t_3]])));
+// DEFAULT-NEXT:         return pointer_cast<ptr<@type[[TYPE_foo]]>, reason=return>(read<ptr<@type[[TYPE_foo_5]]>>(field0(deref(read<ptr<@type[[TYPE_bar_5]]>>(%[[VALUE_B_3]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %37 @g4(%38 B: ptr<@type13>, %39 Q: ptr<@type13>) -> ptr<@type0> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %40 t: @type13 [storage=automatic] = copy<@type13, reason=assign>(read<@type13>(deref(read<ptr<@type13>>(%38))));
-// DEFAULT-NEXT:         write<@type13>(deref(read<ptr<@type13>>(%38)), copy<@type13, reason=assign>(read<@type13>(deref(read<ptr<@type13>>(%39)))));
-// DEFAULT-NEXT:         write<@type13>(deref(read<ptr<@type13>>(%39)), copy<@type13, reason=assign>(read<@type13>(%40)));
-// DEFAULT-NEXT:         return read<ptr<@type0>>(deref(ptr_offset<ptr<ptr<@type0>>, subtract=false, element=ptr<@type0>, overflow=ub>(array_decay<ptr<ptr<@type0>>, length=Some(1)>(field0(deref(read<ptr<@type13>>(%38)))), const<i32>(0))));
+// DEFAULT-NEXT:     fn %[[VALUE_g4:[0-9]+]] @g4(%[[VALUE_B_4:[0-9]+]] B: ptr<@type[[TYPE_arr_3]]>, %[[VALUE_Q_4:[0-9]+]] Q: ptr<@type[[TYPE_arr_3]]>) -> ptr<@type[[TYPE_foo]]> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_t_4:[0-9]+]] t: @type[[TYPE_arr_3]] [storage=automatic] = copy<@type[[TYPE_arr_3]], reason=assign>(read<@type[[TYPE_arr_3]]>(deref(read<ptr<@type[[TYPE_arr_3]]>>(%[[VALUE_B_4]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_arr_3]]>(deref(read<ptr<@type[[TYPE_arr_3]]>>(%[[VALUE_B_4]])), copy<@type[[TYPE_arr_3]], reason=assign>(read<@type[[TYPE_arr_3]]>(deref(read<ptr<@type[[TYPE_arr_3]]>>(%[[VALUE_Q_4]])))));
+// DEFAULT-NEXT:         write<@type[[TYPE_arr_3]]>(deref(read<ptr<@type[[TYPE_arr_3]]>>(%[[VALUE_Q_4]])), copy<@type[[TYPE_arr_3]], reason=assign>(read<@type[[TYPE_arr_3]]>(%[[VALUE_t_4]])));
+// DEFAULT-NEXT:         return read<ptr<@type[[TYPE_foo]]>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_foo]]>>, subtract=false, element=ptr<@type[[TYPE_foo]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_foo]]>>, length=Some(1)>(field0(deref(read<ptr<@type[[TYPE_arr_3]]>>(%[[VALUE_B_4]])))), const<i32>(0))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %41 @g5(%42 B: ptr<@type14>, %43 Q: ptr<@type14>) -> ptr<fn() -> @type0> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %44 t: @type14 [storage=automatic] = copy<@type14, reason=assign>(read<@type14>(deref(read<ptr<@type14>>(%42))));
-// DEFAULT-NEXT:         write<@type14>(deref(read<ptr<@type14>>(%42)), copy<@type14, reason=assign>(read<@type14>(deref(read<ptr<@type14>>(%43)))));
-// DEFAULT-NEXT:         write<@type14>(deref(read<ptr<@type14>>(%43)), copy<@type14, reason=assign>(read<@type14>(%44)));
-// DEFAULT-NEXT:         return read<ptr<fn() -> @type0>>(field0(deref(read<ptr<@type14>>(%42))));
+// DEFAULT-NEXT:     fn %[[VALUE_g5:[0-9]+]] @g5(%[[VALUE_B_5:[0-9]+]] B: ptr<@type[[TYPE_fun_3]]>, %[[VALUE_Q_5:[0-9]+]] Q: ptr<@type[[TYPE_fun_3]]>) -> ptr<fn() -> @type[[TYPE_foo]]> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_t_5:[0-9]+]] t: @type[[TYPE_fun_3]] [storage=automatic] = copy<@type[[TYPE_fun_3]], reason=assign>(read<@type[[TYPE_fun_3]]>(deref(read<ptr<@type[[TYPE_fun_3]]>>(%[[VALUE_B_5]]))));
+// DEFAULT-NEXT:         write<@type[[TYPE_fun_3]]>(deref(read<ptr<@type[[TYPE_fun_3]]>>(%[[VALUE_B_5]])), copy<@type[[TYPE_fun_3]], reason=assign>(read<@type[[TYPE_fun_3]]>(deref(read<ptr<@type[[TYPE_fun_3]]>>(%[[VALUE_Q_5]])))));
+// DEFAULT-NEXT:         write<@type[[TYPE_fun_3]]>(deref(read<ptr<@type[[TYPE_fun_3]]>>(%[[VALUE_Q_5]])), copy<@type[[TYPE_fun_3]], reason=assign>(read<@type[[TYPE_fun_3]]>(%[[VALUE_t_5]])));
+// DEFAULT-NEXT:         return read<ptr<fn() -> @type[[TYPE_foo]]>>(field0(deref(read<ptr<@type[[TYPE_fun_3]]>>(%[[VALUE_B_5]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %45 @Bd() -> @type0 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_Bd:[0-9]+]] @Bd() -> @type[[TYPE_foo]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %46 @Qd() -> @type0 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_Qd:[0-9]+]] @Qd() -> @type[[TYPE_foo]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %58 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %47 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %48 Bc: @type0 [storage=automatic] = aggregate<@type0, zero_fill=true>();
-// DEFAULT-NEXT:         let %49 Qc: @type0 [storage=automatic] = aggregate<@type0, zero_fill=true>();
-// DEFAULT-NEXT:         let %50 B: @type11 [storage=automatic] = aggregate<@type11, zero_fill=false>(field0 = addr_of<ptr<@type0>>(%48));
-// DEFAULT-NEXT:         let %51 Q: @type11 [storage=automatic] = aggregate<@type11, zero_fill=false>(field0 = addr_of<ptr<@type0>>(%49));
-// DEFAULT-NEXT:         if ne<ptr<@type0>>(call<ptr<@type0>, signature=fn(ptr<@type11>, ptr<@type11>) -> ptr<@type0>>(%23, addr_of<ptr<@type11>>(%50), addr_of<ptr<@type11>>(%51)), addr_of<ptr<@type0>>(%49))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%58);
-// DEFAULT-NEXT:         let %52 Bu: @type12 [storage=automatic] = aggregate<@type12, zero_fill=false>(field0 = addr_of<ptr<@type0>>(%48));
-// DEFAULT-NEXT:         let %53 Qu: @type12 [storage=automatic] = aggregate<@type12, zero_fill=false>(field0 = addr_of<ptr<@type0>>(%49));
-// DEFAULT-NEXT:         if ne<ptr<@type0>>(call<ptr<@type0>, signature=fn(ptr<@type12>, ptr<@type12>) -> ptr<@type0>>(%27, addr_of<ptr<@type12>>(%52), addr_of<ptr<@type12>>(%53)), addr_of<ptr<@type0>>(%49))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%58);
-// DEFAULT-NEXT:         let %54 B2: @type11 [storage=automatic] = aggregate<@type11, zero_fill=false>(field0 = addr_of<ptr<@type0>>(%48));
-// DEFAULT-NEXT:         let %55 Q2: @type11 [storage=automatic] = aggregate<@type11, zero_fill=false>(field0 = addr_of<ptr<@type0>>(%49));
-// DEFAULT-NEXT:         if ne<ptr<@type0>>(call<ptr<@type0>, signature=fn(ptr<@type20>, ptr<@type20>) -> ptr<@type0>>(%31, pointer_cast<ptr<@type20>, reason=arg>(addr_of<ptr<@type11>>(%54)), pointer_cast<ptr<@type20>, reason=arg>(addr_of<ptr<@type11>>(%55))), addr_of<ptr<@type0>>(%49))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%58);
-// DEFAULT-NEXT:         let %56 Ba: @type13 [storage=automatic] = aggregate<@type13, zero_fill=false>(field0 = aggregate<array<ptr<@type0>, 1>, zero_fill=false>(index0 = addr_of<ptr<@type0>>(%48)));
-// DEFAULT-NEXT:         let %57 Qa: @type13 [storage=automatic] = aggregate<@type13, zero_fill=false>(field0 = aggregate<array<ptr<@type0>, 1>, zero_fill=false>(index0 = addr_of<ptr<@type0>>(%49)));
-// DEFAULT-NEXT:         if ne<ptr<@type0>>(call<ptr<@type0>, signature=fn(ptr<@type13>, ptr<@type13>) -> ptr<@type0>>(%37, addr_of<ptr<@type13>>(%56), addr_of<ptr<@type13>>(%57)), addr_of<ptr<@type0>>(%49))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%58);
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_Bc:[0-9]+]] Bc: @type[[TYPE_foo]] [storage=automatic] = aggregate<@type[[TYPE_foo]], zero_fill=true>();
+// DEFAULT-NEXT:         let %[[VALUE_Qc:[0-9]+]] Qc: @type[[TYPE_foo]] [storage=automatic] = aggregate<@type[[TYPE_foo]], zero_fill=true>();
+// DEFAULT-NEXT:         let %[[VALUE_B_6:[0-9]+]] B: @type[[TYPE_bar_3]] [storage=automatic] = aggregate<@type[[TYPE_bar_3]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_Bc]]));
+// DEFAULT-NEXT:         let %[[VALUE_Q_6:[0-9]+]] Q: @type[[TYPE_bar_3]] [storage=automatic] = aggregate<@type[[TYPE_bar_3]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_Qc]]));
+// DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_foo]]>>(call<ptr<@type[[TYPE_foo]]>, signature=fn(ptr<@type[[TYPE_bar_3]]>, ptr<@type[[TYPE_bar_3]]>) -> ptr<@type[[TYPE_foo]]>>(%[[VALUE_g1]], addr_of<ptr<@type[[TYPE_bar_3]]>>(%[[VALUE_B_6]]), addr_of<ptr<@type[[TYPE_bar_3]]>>(%[[VALUE_Q_6]])), addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_Qc]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE_Bu:[0-9]+]] Bu: @type[[TYPE_baz_3]] [storage=automatic] = aggregate<@type[[TYPE_baz_3]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_Bc]]));
+// DEFAULT-NEXT:         let %[[VALUE_Qu:[0-9]+]] Qu: @type[[TYPE_baz_3]] [storage=automatic] = aggregate<@type[[TYPE_baz_3]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_Qc]]));
+// DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_foo]]>>(call<ptr<@type[[TYPE_foo]]>, signature=fn(ptr<@type[[TYPE_baz_3]]>, ptr<@type[[TYPE_baz_3]]>) -> ptr<@type[[TYPE_foo]]>>(%[[VALUE_g2]], addr_of<ptr<@type[[TYPE_baz_3]]>>(%[[VALUE_Bu]]), addr_of<ptr<@type[[TYPE_baz_3]]>>(%[[VALUE_Qu]])), addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_Qc]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE_B2:[0-9]+]] B2: @type[[TYPE_bar_3]] [storage=automatic] = aggregate<@type[[TYPE_bar_3]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_Bc]]));
+// DEFAULT-NEXT:         let %[[VALUE_Q2:[0-9]+]] Q2: @type[[TYPE_bar_3]] [storage=automatic] = aggregate<@type[[TYPE_bar_3]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_Qc]]));
+// DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_foo]]>>(call<ptr<@type[[TYPE_foo]]>, signature=fn(ptr<@type[[TYPE_bar_5]]>, ptr<@type[[TYPE_bar_5]]>) -> ptr<@type[[TYPE_foo]]>>(%[[VALUE_g3]], pointer_cast<ptr<@type[[TYPE_bar_5]]>, reason=arg>(addr_of<ptr<@type[[TYPE_bar_3]]>>(%[[VALUE_B2]])), pointer_cast<ptr<@type[[TYPE_bar_5]]>, reason=arg>(addr_of<ptr<@type[[TYPE_bar_3]]>>(%[[VALUE_Q2]]))), addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_Qc]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE_Ba:[0-9]+]] Ba: @type[[TYPE_arr_3]] [storage=automatic] = aggregate<@type[[TYPE_arr_3]], zero_fill=false>(field0 = aggregate<array<ptr<@type[[TYPE_foo]]>, 1>, zero_fill=false>(index0 = addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_Bc]])));
+// DEFAULT-NEXT:         let %[[VALUE_Qa:[0-9]+]] Qa: @type[[TYPE_arr_3]] [storage=automatic] = aggregate<@type[[TYPE_arr_3]], zero_fill=false>(field0 = aggregate<array<ptr<@type[[TYPE_foo]]>, 1>, zero_fill=false>(index0 = addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_Qc]])));
+// DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_foo]]>>(call<ptr<@type[[TYPE_foo]]>, signature=fn(ptr<@type[[TYPE_arr_3]]>, ptr<@type[[TYPE_arr_3]]>) -> ptr<@type[[TYPE_foo]]>>(%[[VALUE_g4]], addr_of<ptr<@type[[TYPE_arr_3]]>>(%[[VALUE_Ba]]), addr_of<ptr<@type[[TYPE_arr_3]]>>(%[[VALUE_Qa]])), addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_Qc]]))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

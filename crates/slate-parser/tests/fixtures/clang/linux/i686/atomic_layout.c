@@ -36,12 +36,12 @@ unsigned long widths[] = {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 odd5 = struct {
+// IR-NEXT:     type @type[[TYPE_odd5:[0-9]+]] odd5 = struct {
 // IR-NEXT:         field0 a: array<i8, 5>;
 // IR-NEXT:     } [size=5, align=1, offsets=[0]];
-// IR-NEXT:     type @type1 odd9 = struct {
+// IR-NEXT:     type @type[[TYPE_odd9:[0-9]+]] odd9 = struct {
 // IR-NEXT:         field0 a: array<i8, 9>;
 // IR-NEXT:     } [size=9, align=1, offsets=[0]];
-// IR-NEXT:     global %2 widths: array<u32, 8> [storage=static] = aggregate<array<u32, 8>, zero_fill=false>(index0 = const<u32>(8), index1 = const<u32>(8), index2 = const<u32>(9), index3 = const<u32>(1), index4 = const<u32>(8), index5 = const<u32>(8), index6 = const<u32>(8), index7 = const<u32>(4)) [linkage=external];
+// IR-NEXT:     global %[[VALUE_widths:[0-9]+]] widths: array<u32, 8> [storage=static] = aggregate<array<u32, 8>, zero_fill=false>(index0 = const<u32>(8), index1 = const<u32>(8), index2 = const<u32>(9), index3 = const<u32>(1), index4 = const<u32>(8), index5 = const<u32>(8), index6 = const<u32>(8), index7 = const<u32>(4)) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

@@ -30,9 +30,9 @@ foo ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %1 tmp: i64 [storage=automatic];
-// DEFAULT-NEXT:         write<i64>(%1, shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%1), const<i32>(32)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_tmp:[0-9]+]] tmp: i64 [storage=automatic];
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_tmp]], shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%[[VALUE_tmp]]), const<i32>(32)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

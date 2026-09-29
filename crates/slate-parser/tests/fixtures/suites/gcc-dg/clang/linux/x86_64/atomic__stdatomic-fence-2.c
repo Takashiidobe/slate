@@ -51,30 +51,30 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 memory_order = enum : u32 {
-// DEFAULT-NEXT:         %0 memory_order_relaxed = const<i32>(0);
-// DEFAULT-NEXT:         %1 memory_order_consume = const<i32>(1);
-// DEFAULT-NEXT:         %2 memory_order_acquire = const<i32>(2);
-// DEFAULT-NEXT:         %3 memory_order_release = const<i32>(3);
-// DEFAULT-NEXT:         %4 memory_order_acq_rel = const<i32>(4);
-// DEFAULT-NEXT:         %5 memory_order_seq_cst = const<i32>(5);
+// DEFAULT-NEXT:     type @type[[TYPE_memory_order:[0-9]+]] memory_order = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_memory_order_relaxed:[0-9]+]] memory_order_relaxed = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_consume:[0-9]+]] memory_order_consume = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_acquire:[0-9]+]] memory_order_acquire = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_release:[0-9]+]] memory_order_release = const<i32>(3);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_acq_rel:[0-9]+]] memory_order_acq_rel = const<i32>(4);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_seq_cst:[0-9]+]] memory_order_seq_cst = const<i32>(5);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type1 memory_order = @type0;
-// DEFAULT-NEXT:     fn %8 @atomic_thread_fence(%11 <unnamed>: @type0) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %9 @atomic_signal_fence(%12 <unnamed>: @type0) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %10 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%8, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%8, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%8, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(2))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%8, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(3))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%8, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(4))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%8, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(5))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%9, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%9, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%9, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(2))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%9, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(3))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%9, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(4))));
-// DEFAULT-NEXT:         call<void, signature=fn(@type0) -> void>(%9, int_to_enum<@type0, reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(5))));
+// DEFAULT-NEXT:     type @type[[TYPE_memory_order_2:[0-9]+]] memory_order = @type[[TYPE_memory_order]];
+// DEFAULT-NEXT:     fn %[[VALUE_atomic_thread_fence:[0-9]+]] @atomic_thread_fence(%[[VALUE0:[0-9]+]] <unnamed>: @type[[TYPE_memory_order]]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_atomic_signal_fence:[0-9]+]] @atomic_signal_fence(%[[VALUE1:[0-9]+]] <unnamed>: @type[[TYPE_memory_order]]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_memory_order]]) -> void>(%[[VALUE_atomic_thread_fence]], int_to_enum<@type[[TYPE_memory_order]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_memory_order]]) -> void>(%[[VALUE_atomic_thread_fence]], int_to_enum<@type[[TYPE_memory_order]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_memory_order]]) -> void>(%[[VALUE_atomic_thread_fence]], int_to_enum<@type[[TYPE_memory_order]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(2))));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_memory_order]]) -> void>(%[[VALUE_atomic_thread_fence]], int_to_enum<@type[[TYPE_memory_order]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(3))));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_memory_order]]) -> void>(%[[VALUE_atomic_thread_fence]], int_to_enum<@type[[TYPE_memory_order]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(4))));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_memory_order]]) -> void>(%[[VALUE_atomic_thread_fence]], int_to_enum<@type[[TYPE_memory_order]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(5))));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_memory_order]]) -> void>(%[[VALUE_atomic_signal_fence]], int_to_enum<@type[[TYPE_memory_order]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_memory_order]]) -> void>(%[[VALUE_atomic_signal_fence]], int_to_enum<@type[[TYPE_memory_order]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(1))));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_memory_order]]) -> void>(%[[VALUE_atomic_signal_fence]], int_to_enum<@type[[TYPE_memory_order]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(2))));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_memory_order]]) -> void>(%[[VALUE_atomic_signal_fence]], int_to_enum<@type[[TYPE_memory_order]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(3))));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_memory_order]]) -> void>(%[[VALUE_atomic_signal_fence]], int_to_enum<@type[[TYPE_memory_order]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(4))));
+// DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_memory_order]]) -> void>(%[[VALUE_atomic_signal_fence]], int_to_enum<@type[[TYPE_memory_order]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(5))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

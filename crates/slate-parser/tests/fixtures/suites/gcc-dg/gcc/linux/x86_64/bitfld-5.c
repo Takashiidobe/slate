@@ -37,12 +37,12 @@ int f[sizeof (struct s) != sizeof (int) * 4 ? -1 : 1];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 i1: i32 : 32;
 // DEFAULT-NEXT:         field1 i2: i32 : 32;
 // DEFAULT-NEXT:         field2 i3: i32 : 32;
 // DEFAULT-NEXT:         field3 i4: i32 : 32;
 // DEFAULT-NEXT:     } [size=16, align=4, offsets=[0, 4, 8, 12], bit_offsets=[Some(0), Some(32), Some(64), Some(96)], bit_units=[(0, 16)], field_units=[Some(0), Some(0), Some(0), Some(0)]];
-// DEFAULT-NEXT:     global %1 f: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: array<i32, 1> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

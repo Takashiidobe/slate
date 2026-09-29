@@ -51,19 +51,19 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%6 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @func(%3 d: f64, %4 n: i32) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%4), const<i32>(0))
-// DEFAULT-NEXT:             return read<f64>(%3);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_func:[0-9]+]] @func(%[[VALUE_d:[0-9]+]] d: f64, %[[VALUE_n:[0-9]+]] n: i32) -> f64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0))
+// DEFAULT-NEXT:             return read<f64>(%[[VALUE_d]]);
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             return add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%3), call<f64, signature=fn(f64, i32) -> f64>(%2, read<f64>(%3), sub<i32, overflow=ub>(read<i32>(%4), const<i32>(1))));
+// DEFAULT-NEXT:             return add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_d]]), call<f64, signature=fn(f64, i32) -> f64>(%[[VALUE_func]], read<f64>(%[[VALUE_d]]), sub<i32, overflow=ub>(read<i32>(%[[VALUE_n]]), const<i32>(1))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @__builtin_copysign(%7 <unnamed>: f64, %8 <unnamed>: f64) -> f64 [linkage=external] [memory=none];
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, f64) -> f64>(%9, const<f64>(1.0), call<f64, signature=fn(f64, i32) -> f64>(%2, div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(0.0), neg<f64>(const<f64>(5.0))), const<i32>(10))), neg<f64>(const<f64>(1.0)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_copysign:[0-9]+]] @__builtin_copysign(%[[VALUE1:[0-9]+]] <unnamed>: f64, %[[VALUE2:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<f64, exceptions=observable>(call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE___builtin_copysign]], const<f64>(1.0), call<f64, signature=fn(f64, i32) -> f64>(%[[VALUE_func]], div<f64, rounding=nearest_even, exceptions=observable, contract=fast>(const<f64>(0.0), neg<f64>(const<f64>(5.0))), const<i32>(10))), neg<f64>(const<f64>(1.0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -62,42 +62,42 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 i: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     global %3 c: i8 [storage=static] = truncate<i8, reason=explicit, fits=always>(const<i32>(1)) [linkage=external];
-// DEFAULT-NEXT:     global %4 u: u32 [storage=static] = const<u32>(10) [linkage=internal];
-// DEFAULT-NEXT:     global %5 ll: i64 [storage=static] [const] = const<i64>(1) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%13 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%2), const<i32>(1)), ne<i32>(widen<i32, reason=promotion>(read<i8>(%3)), const<i32>(1))), ne<u32>(read<u32>(%4), const<u32>(10)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %7 ai: i32 [storage=automatic] = read<i32>(%2);
-// DEFAULT-NEXT:         let %8 aip: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%7);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%7), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %9 p: ptr<vla<i32, %14>> [storage=automatic];
-// DEFAULT-NEXT:         let %18: i32 [synthetic] = read<i32>(%2);
-// DEFAULT-NEXT:         let %19: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%18), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%2, read<i32>(%19));
-// DEFAULT-NEXT:         let %14: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%19)));
-// DEFAULT-NEXT:         write<ptr<vla<i32, %14>>>(%9, null<ptr<vla<i32, %14>>>);
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%2), const<i32>(2))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         if ne<u64>(mul<u64, overflow=wrap>(read<u64>(%14), const<u64>(4)), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))), const<u64>(4)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         let %15: u64 [synthetic] = widen<u64, reason=assign>(read<u32>(%4));
-// DEFAULT-NEXT:         let %16: u64 [synthetic] = widen<u64, reason=assign>(read<u32>(%4));
-// DEFAULT-NEXT:         let %10 vla: vla<vla<i32, %16>, %15> [storage=automatic];
-// DEFAULT-NEXT:         let %17: u64 [synthetic] = widen<u64, reason=assign>(read<u32>(%4));
-// DEFAULT-NEXT:         let %11 vp: ptr<vla<i32, %17>> [storage=automatic] = pointer_cast<ptr<vla<i32, %17>>, reason=assign>(addr_of<ptr<vla<i32, %16>>>(deref(ptr_offset<ptr<vla<i32, %16>>, subtract=false, element=vla<i32, %16>, overflow=ub>(array_decay<ptr<vla<i32, %16>>, length=None>(%10), const<i32>(0)))));
-// DEFAULT-NEXT:         let %12 vpp: ptr<vla<i32, %17>> [storage=automatic];
-// DEFAULT-NEXT:         let %20: ptr<vla<i32, %17>> [synthetic] = read<ptr<vla<i32, %17>>>(%11);
-// DEFAULT-NEXT:         let %21: ptr<vla<i32, %17>> [synthetic] = ptr_offset<ptr<vla<i32, %17>>, subtract=false, element=vla<i32, %17>, overflow=ub>(read<ptr<vla<i32, %17>>>(%20), const<i32>(1));
-// DEFAULT-NEXT:         write<ptr<vla<i32, %17>>>(%11, read<ptr<vla<i32, %17>>>(%21));
-// DEFAULT-NEXT:         write<ptr<vla<i32, %17>>>(%12, read<ptr<vla<i32, %17>>>(%21));
-// DEFAULT-NEXT:         if ne<ptr<vla<i32, %17>>>(read<ptr<vla<i32, %17>>>(%11), pointer_cast<ptr<vla<i32, %17>>, reason=usual_arith>(addr_of<ptr<vla<i32, %16>>>(deref(ptr_offset<ptr<vla<i32, %16>>, subtract=false, element=vla<i32, %16>, overflow=ub>(array_decay<ptr<vla<i32, %16>>, length=None>(%10), const<i32>(1))))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i8 [storage=static] = truncate<i8, reason=explicit, fits=always>(const<i32>(1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_u:[0-9]+]] u: u32 [storage=static] = const<u32>(10) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_ll:[0-9]+]] ll: i64 [storage=static] [const] = const<i64>(1) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(1)), ne<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_c]])), const<i32>(1))), ne<u32>(read<u32>(%[[VALUE_u]]), const<u32>(10)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE_ai:[0-9]+]] ai: i32 [storage=automatic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:         let %[[VALUE_aip:[0-9]+]] aip: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(%[[VALUE_ai]]);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_ai]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<vla<i32, %[[VALUE1:[0-9]+]]>> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE3]]));
+// DEFAULT-NEXT:         let %[[VALUE1]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(read<i32>(%[[VALUE3]])));
+// DEFAULT-NEXT:         write<ptr<vla<i32, %[[VALUE1]]>>>(%[[VALUE_p]], null<ptr<vla<i32, %[[VALUE1]]>>>);
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(2))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<u64>(mul<u64, overflow=wrap>(read<u64>(%[[VALUE1]]), const<u64>(4)), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))), const<u64>(4)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(read<u32>(%[[VALUE_u]]));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(read<u32>(%[[VALUE_u]]));
+// DEFAULT-NEXT:         let %[[VALUE_vla:[0-9]+]] vla: vla<vla<i32, %[[VALUE5]]>, %[[VALUE4]]> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(read<u32>(%[[VALUE_u]]));
+// DEFAULT-NEXT:         let %[[VALUE_vp:[0-9]+]] vp: ptr<vla<i32, %[[VALUE6]]>> [storage=automatic] = pointer_cast<ptr<vla<i32, %[[VALUE6]]>>, reason=assign>(addr_of<ptr<vla<i32, %[[VALUE5]]>>>(deref(ptr_offset<ptr<vla<i32, %[[VALUE5]]>>, subtract=false, element=vla<i32, %[[VALUE5]]>, overflow=ub>(array_decay<ptr<vla<i32, %[[VALUE5]]>>, length=None>(%[[VALUE_vla]]), const<i32>(0)))));
+// DEFAULT-NEXT:         let %[[VALUE_vpp:[0-9]+]] vpp: ptr<vla<i32, %[[VALUE6]]>> [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: ptr<vla<i32, %[[VALUE6]]>> [synthetic] = read<ptr<vla<i32, %[[VALUE6]]>>>(%[[VALUE_vp]]);
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: ptr<vla<i32, %[[VALUE6]]>> [synthetic] = ptr_offset<ptr<vla<i32, %[[VALUE6]]>>, subtract=false, element=vla<i32, %[[VALUE6]]>, overflow=ub>(read<ptr<vla<i32, %[[VALUE6]]>>>(%[[VALUE7]]), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<vla<i32, %[[VALUE6]]>>>(%[[VALUE_vp]], read<ptr<vla<i32, %[[VALUE6]]>>>(%[[VALUE8]]));
+// DEFAULT-NEXT:         write<ptr<vla<i32, %[[VALUE6]]>>>(%[[VALUE_vpp]], read<ptr<vla<i32, %[[VALUE6]]>>>(%[[VALUE8]]));
+// DEFAULT-NEXT:         if ne<ptr<vla<i32, %[[VALUE6]]>>>(read<ptr<vla<i32, %[[VALUE6]]>>>(%[[VALUE_vp]]), pointer_cast<ptr<vla<i32, %[[VALUE6]]>>, reason=usual_arith>(addr_of<ptr<vla<i32, %[[VALUE5]]>>>(deref(ptr_offset<ptr<vla<i32, %[[VALUE5]]>>, subtract=false, element=vla<i32, %[[VALUE5]]>, overflow=ub>(array_decay<ptr<vla<i32, %[[VALUE5]]>>, length=None>(%[[VALUE_vla]]), const<i32>(1))))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

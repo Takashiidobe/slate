@@ -43,26 +43,26 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
-// DEFAULT-NEXT:     type @type1 raw_spinlock_t = @type0;
-// DEFAULT-NEXT:     type @type2 = struct {
-// DEFAULT-NEXT:         field0 raw_lock: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_raw_spinlock_t:[0-9]+]] raw_spinlock_t = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
+// DEFAULT-NEXT:         field0 raw_lock: @type[[TYPE0]];
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[0]];
-// DEFAULT-NEXT:     type @type3 spinlock_t = @type2;
-// DEFAULT-NEXT:     global %1 ii: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %6 @one_raw_spinlock() -> @type0 [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7 raw_lock: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %11: i32 [synthetic] = read<i32>(%1);
-// DEFAULT-NEXT:         let %12: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%11), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%1, read<i32>(%12));
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%7));
+// DEFAULT-NEXT:     type @type[[TYPE_spinlock_t:[0-9]+]] spinlock_t = @type[[TYPE1]];
+// DEFAULT-NEXT:     global %[[VALUE_ii:[0-9]+]] ii: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_one_raw_spinlock:[0-9]+]] @one_raw_spinlock() -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_raw_lock:[0-9]+]] raw_lock: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_ii]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_ii]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_raw_lock]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 lock: @type2 [storage=automatic] = copy<@type2, reason=assign>(read<@type2>(compound_literal %10 [storage=automatic] = aggregate<@type2, zero_fill=false>(field0 = copy<@type0, reason=assign>(call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%6)))));
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_lock:[0-9]+]] lock: @type[[TYPE1]] [storage=automatic] = copy<@type[[TYPE1]], reason=assign>(read<@type[[TYPE1]]>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE1]], zero_fill=false>(field0 = copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_one_raw_spinlock]])))));
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_ii]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

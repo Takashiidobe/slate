@@ -27,8 +27,8 @@ _Bool always_too_wide = __atomic_always_lock_free(32, 0);
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 c11_wide: bool [storage=static] = const<bool>(true) [linkage=external];
-// IR-NEXT:     global %1 always_wide: bool [storage=static] = const<bool>(true) [linkage=external];
-// IR-NEXT:     global %2 always_too_wide: bool [storage=static] = const<bool>(false) [linkage=external];
+// IR-NEXT:     global %[[VALUE_c11_wide:[0-9]+]] c11_wide: bool [storage=static] = const<bool>(true) [linkage=external];
+// IR-NEXT:     global %[[VALUE_always_wide:[0-9]+]] always_wide: bool [storage=static] = const<bool>(true) [linkage=external];
+// IR-NEXT:     global %[[VALUE_always_too_wide:[0-9]+]] always_too_wide: bool [storage=static] = const<bool>(false) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

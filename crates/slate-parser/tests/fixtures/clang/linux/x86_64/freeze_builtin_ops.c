@@ -44,17 +44,17 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %11 .str11: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%8 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %10 @__builtin_nondeterministic_value(%9 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @freeze_probe(%3 seed: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %4 value: i32 [storage=automatic] = add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%3), const<i32>(2)), const<i32>(1));
-// DEFAULT-NEXT:         let %5 frozen: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%10, read<i32>(%4));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%5), read<i32>(%5)));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 4> [storage=static] = code_units<array<i8, 4>>([37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_nondeterministic_value:[0-9]+]] @__builtin_nondeterministic_value(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_freeze_probe:[0-9]+]] @freeze_probe(%[[VALUE_seed:[0-9]+]] seed: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: i32 [storage=automatic] = add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%[[VALUE_seed]]), const<i32>(2)), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE_frozen:[0-9]+]] frozen: i32 [storage=automatic] = call<i32, signature=fn(i32) -> i32>(%[[VALUE___builtin_nondeterministic_value]], read<i32>(%[[VALUE_value]]));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i32>(read<i32>(%[[VALUE_frozen]]), read<i32>(%[[VALUE_frozen]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %7 input: volatile i32 [storage=automatic] = const<i32>(20);
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%11)), call<i32, signature=fn(i32) -> i32>(%2, read<i32, volatile>(%7)));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_input:[0-9]+]] input: volatile i32 [storage=automatic] = const<i32>(20);
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), call<i32, signature=fn(i32) -> i32>(%[[VALUE_freeze_probe]], read<i32, volatile>(%[[VALUE_input]])));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

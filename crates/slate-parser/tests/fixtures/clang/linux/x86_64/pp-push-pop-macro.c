@@ -47,10 +47,10 @@ int after[WIDTH];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 inner: array<i32, 8> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %1 outer: array<i32, 4> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %2 unmatched_pop: array<i32, 4> [storage=static] [align=16] [linkage=external];
-// DEFAULT-NEXT:     global %3 after: array<i32, 4> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_inner:[0-9]+]] inner: array<i32, 8> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_outer:[0-9]+]] outer: array<i32, 4> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unmatched_pop:[0-9]+]] unmatched_pop: array<i32, 4> [storage=static] [align=16] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_after:[0-9]+]] after: array<i32, 4> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN WIDE
@@ -76,10 +76,10 @@ int after[WIDTH];
 // WIDE-NEXT:         storage d64 [size=8, align=8];
 // WIDE-NEXT:         storage d128 [size=16, align=16];
 // WIDE-NEXT:     }
-// WIDE-NEXT:     global %0 inner: array<i32, 8> [storage=static] [align=16] [linkage=external];
-// WIDE-NEXT:     global %1 outer: array<i32, 4> [storage=static] [align=16] [linkage=external];
-// WIDE-NEXT:     global %2 unmatched_pop: array<i32, 4> [storage=static] [align=16] [linkage=external];
-// WIDE-NEXT:     global %3 wide: array<i32, 16> [storage=static] [align=16] [linkage=external];
-// WIDE-NEXT:     global %4 after: array<i32, 4> [storage=static] [align=16] [linkage=external];
+// WIDE-NEXT:     global %[[VALUE_inner:[0-9]+]] inner: array<i32, 8> [storage=static] [align=16] [linkage=external];
+// WIDE-NEXT:     global %[[VALUE_outer:[0-9]+]] outer: array<i32, 4> [storage=static] [align=16] [linkage=external];
+// WIDE-NEXT:     global %[[VALUE_unmatched_pop:[0-9]+]] unmatched_pop: array<i32, 4> [storage=static] [align=16] [linkage=external];
+// WIDE-NEXT:     global %[[VALUE_wide:[0-9]+]] wide: array<i32, 16> [storage=static] [align=16] [linkage=external];
+// WIDE-NEXT:     global %[[VALUE_after:[0-9]+]] after: array<i32, 4> [storage=static] [align=16] [linkage=external];
 // WIDE-NEXT: }
 // SLATE-FILECHECK-END WIDE

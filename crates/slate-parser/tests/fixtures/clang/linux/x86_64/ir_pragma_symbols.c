@@ -46,25 +46,25 @@ int plain_var;
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %8 hidden_var: i32 [storage=static] [linkage=external] [visibility=hidden];
-// IR-NEXT:     global %9 explicit_default: i32 [storage=static] [linkage=external] [visibility=default];
-// IR-NEXT:     global %10 protected_var: i32 [storage=static] [linkage=external] [visibility=protected];
-// IR-NEXT:     global %11 still_hidden_var: i32 [storage=static] [linkage=external] [visibility=hidden];
-// IR-NEXT:     global %13 plain_var: i32 [storage=static] [linkage=external];
-// IR-NEXT:     fn %0 @weak_name(%1 v: i32) -> i32 [linkage=external] [weak] [fallthrough=ub_if_used] {
-// IR-NEXT:         return read<i32>(%1);
+// IR-NEXT:     global %[[VALUE_hidden_var:[0-9]+]] hidden_var: i32 [storage=static] [linkage=external] [visibility=hidden];
+// IR-NEXT:     global %[[VALUE_explicit_default:[0-9]+]] explicit_default: i32 [storage=static] [linkage=external] [visibility=default];
+// IR-NEXT:     global %[[VALUE_protected_var:[0-9]+]] protected_var: i32 [storage=static] [linkage=external] [visibility=protected];
+// IR-NEXT:     global %[[VALUE_still_hidden_var:[0-9]+]] still_hidden_var: i32 [storage=static] [linkage=external] [visibility=hidden];
+// IR-NEXT:     global %[[VALUE_plain_var:[0-9]+]] plain_var: i32 [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_weak_name:[0-9]+]] @weak_name(%[[VALUE_v:[0-9]+]] v: i32) -> i32 [linkage=external] [weak] [fallthrough=ub_if_used] {
+// IR-NEXT:         return read<i32>(%[[VALUE_v]]);
 // IR-NEXT:     }
-// IR-NEXT:     fn %2 @weak_target(%3 v: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%3), const<i32>(1));
+// IR-NEXT:     fn %[[VALUE_weak_target:[0-9]+]] @weak_target(%[[VALUE_v_2:[0-9]+]] v: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_v_2]]), const<i32>(1));
 // IR-NEXT:     }
-// IR-NEXT:     fn %4 @weak_alias(%14 <unnamed>: i32) -> i32 [linkage=external] [weak] [alias="weak_target"];
-// IR-NEXT:     fn %5 @renamed(%6 v: i32) -> i32 [linkage=external] [asm_name="actual"] [fallthrough=ub_if_used] {
-// IR-NEXT:         return mul<i32, overflow=ub>(read<i32>(%6), const<i32>(3));
+// IR-NEXT:     fn %[[VALUE_weak_alias:[0-9]+]] @weak_alias(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [weak] [alias="weak_target"];
+// IR-NEXT:     fn %[[VALUE_renamed:[0-9]+]] @renamed(%[[VALUE_v_3:[0-9]+]] v: i32) -> i32 [linkage=external] [asm_name="actual"] [fallthrough=ub_if_used] {
+// IR-NEXT:         return mul<i32, overflow=ub>(read<i32>(%[[VALUE_v_3]]), const<i32>(3));
 // IR-NEXT:     }
-// IR-NEXT:     fn %7 @hidden_fn() -> i32 [linkage=external] [visibility=hidden] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_hidden_fn:[0-9]+]] @hidden_fn() -> i32 [linkage=external] [visibility=hidden] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(1);
 // IR-NEXT:     }
-// IR-NEXT:     fn %12 @plain_fn() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE_plain_fn:[0-9]+]] @plain_fn() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         return const<i32>(2);
 // IR-NEXT:     }
 // IR-NEXT: }

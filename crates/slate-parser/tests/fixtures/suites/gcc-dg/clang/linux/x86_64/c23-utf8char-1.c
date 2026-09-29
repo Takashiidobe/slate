@@ -54,9 +54,9 @@ _Static_assert (_Generic (u8'\377', unsigned char: 1, default: 2) == 1);
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: u8 [storage=static] = const<u8>(97) [linkage=external];
-// DEFAULT-NEXT:     global %1 b: u8 [storage=static] = const<u8>(0) [linkage=external];
-// DEFAULT-NEXT:     global %2 c: u8 [storage=static] = const<u8>(255) [linkage=external];
-// DEFAULT-NEXT:     global %3 d: u8 [storage=static] = const<u8>(255) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: u8 [storage=static] = const<u8>(97) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: u8 [storage=static] = const<u8>(0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: u8 [storage=static] = const<u8>(255) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: u8 [storage=static] = const<u8>(255) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

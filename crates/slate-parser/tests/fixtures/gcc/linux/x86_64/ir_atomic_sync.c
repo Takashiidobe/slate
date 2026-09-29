@@ -31,10 +31,10 @@ void advance(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 raw: ptr<i64> [storage=static] [linkage=external];
-// IR-NEXT:     fn %1 @advance() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %2: ptr<i64> [synthetic] = update<ptr<i64>, result=old, atomic=seq_cst>(deref(addr_of<ptr<ptr<i64>>>(%0)), ptr_offset<ptr<i64>, subtract=false, element=u8, overflow=wrap>(old<ptr<i64>>, const<i32>(8)));
-// IR-NEXT:         let %3: ptr<i64> [synthetic] = update<ptr<i64>, result=new, atomic=seq_cst>(deref(addr_of<ptr<ptr<i64>>>(%0)), ptr_offset<ptr<i64>, subtract=true, element=u8, overflow=wrap>(old<ptr<i64>>, const<i32>(8)));
+// IR-NEXT:     global %[[VALUE_raw:[0-9]+]] raw: ptr<i64> [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_advance:[0-9]+]] @advance() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<i64> [synthetic] = update<ptr<i64>, result=old, atomic=seq_cst>(deref(addr_of<ptr<ptr<i64>>>(%[[VALUE_raw]])), ptr_offset<ptr<i64>, subtract=false, element=u8, overflow=wrap>(old<ptr<i64>>, const<i32>(8)));
+// IR-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<i64> [synthetic] = update<ptr<i64>, result=new, atomic=seq_cst>(deref(addr_of<ptr<ptr<i64>>>(%[[VALUE_raw]])), ptr_offset<ptr<i64>, subtract=true, element=u8, overflow=wrap>(old<ptr<i64>>, const<i32>(8)));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

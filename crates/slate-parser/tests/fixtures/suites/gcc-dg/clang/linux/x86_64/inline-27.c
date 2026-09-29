@@ -170,83 +170,83 @@ fn21 (int i)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i32 [storage=static] = const<i32>(6) [linkage=internal];
-// DEFAULT-NEXT:     global %1 b: i32 [storage=static] [const] = const<i32>(6) [linkage=internal];
-// DEFAULT-NEXT:     global %2 c: i32 [storage=static] = const<i32>(6) [linkage=external];
-// DEFAULT-NEXT:     global %7 d: i32 [storage=static] = const<i32>(6) [linkage=internal];
-// DEFAULT-NEXT:     global %9 e: i32 [storage=static] [const] = const<i32>(6) [linkage=internal];
-// DEFAULT-NEXT:     global %14 g: array<i8, 10> [storage=static] [const] = code_units<array<i8, 10>>([97, 98, 99, 100, 101, 102, 103, 104, 105, 106]) [linkage=internal];
-// DEFAULT-NEXT:     global %19 d: i32 [storage=static] = const<i32>(6) [linkage=internal];
-// DEFAULT-NEXT:     global %21 e: i32 [storage=static] [const] = const<i32>(6) [linkage=internal];
-// DEFAULT-NEXT:     global %26 g: array<i8, 10> [storage=static] [const] = code_units<array<i8, 10>>([97, 98, 99, 100, 101, 102, 103, 104, 105, 106]) [linkage=internal];
-// DEFAULT-NEXT:     global %31 d: i32 [storage=static] = const<i32>(6) [linkage=internal];
-// DEFAULT-NEXT:     global %33 e: i32 [storage=static] [const] = const<i32>(6) [linkage=internal];
-// DEFAULT-NEXT:     global %38 g: array<i8, 10> [storage=static] [const] = code_units<array<i8, 10>>([97, 98, 99, 100, 101, 102, 103, 104, 105, 106]) [linkage=internal];
-// DEFAULT-NEXT:     fn %3 @fn1() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%0);
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=static] = const<i32>(6) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [const] = const<i32>(6) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] = const<i32>(6) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_d:[0-9]+]] d: i32 [storage=static] = const<i32>(6) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i32 [storage=static] [const] = const<i32>(6) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_g:[0-9]+]] g: array<i8, 10> [storage=static] [const] = code_units<array<i8, 10>>([97, 98, 99, 100, 101, 102, 103, 104, 105, 106]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d_2:[0-9]+]] d: i32 [storage=static] = const<i32>(6) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_e_2:[0-9]+]] e: i32 [storage=static] [const] = const<i32>(6) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_g_2:[0-9]+]] g: array<i8, 10> [storage=static] [const] = code_units<array<i8, 10>>([97, 98, 99, 100, 101, 102, 103, 104, 105, 106]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_d_3:[0-9]+]] d: i32 [storage=static] = const<i32>(6) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_e_3:[0-9]+]] e: i32 [storage=static] [const] = const<i32>(6) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_g_3:[0-9]+]] g: array<i8, 10> [storage=static] [const] = code_units<array<i8, 10>>([97, 98, 99, 100, 101, 102, 103, 104, 105, 106]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_fn1:[0-9]+]] @fn1() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @fn2() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_fn2:[0-9]+]] @fn2() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_b]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @fn3() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_fn3:[0-9]+]] @fn3() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_c]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @fn4() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%7);
+// DEFAULT-NEXT:     fn %[[VALUE_fn4:[0-9]+]] @fn4() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_d]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @fn5() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%9);
+// DEFAULT-NEXT:     fn %[[VALUE_fn5:[0-9]+]] @fn5() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_e]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @fn6() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11 f: i32 [storage=automatic] = const<i32>(6);
-// DEFAULT-NEXT:         return read<i32>(%11);
+// DEFAULT-NEXT:     fn %[[VALUE_fn6:[0-9]+]] @fn6() -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: i32 [storage=automatic] = const<i32>(6);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_f]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @fn7(%13 i: i32) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(10)>(%14), read<i32>(%13)))));
+// DEFAULT-NEXT:     fn %[[VALUE_fn7:[0-9]+]] @fn7(%[[VALUE_i:[0-9]+]] i: i32) -> i32 [linkage=external] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(10)>(%[[VALUE_g]]), read<i32>(%[[VALUE_i]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @fn8() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_fn8:[0-9]+]] @fn8() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @fn9() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_fn9:[0-9]+]] @fn9() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_b]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @fn10() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_fn10:[0-9]+]] @fn10() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_c]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %18 @fn11() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%19);
+// DEFAULT-NEXT:     fn %[[VALUE_fn11:[0-9]+]] @fn11() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_d_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @fn12() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%21);
+// DEFAULT-NEXT:     fn %[[VALUE_fn12:[0-9]+]] @fn12() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_e_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @fn13() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %23 f: i32 [storage=automatic] = const<i32>(6);
-// DEFAULT-NEXT:         return read<i32>(%23);
+// DEFAULT-NEXT:     fn %[[VALUE_fn13:[0-9]+]] @fn13() -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_f_2:[0-9]+]] f: i32 [storage=automatic] = const<i32>(6);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_f_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %24 @fn14(%25 i: i32) -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(10)>(%26), read<i32>(%25)))));
+// DEFAULT-NEXT:     fn %[[VALUE_fn14:[0-9]+]] @fn14(%[[VALUE_i_2:[0-9]+]] i: i32) -> i32 [linkage=external] [inline=hint] [definition=inline_only] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(10)>(%[[VALUE_g_2]]), read<i32>(%[[VALUE_i_2]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @fn15() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_fn15:[0-9]+]] @fn15() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %28 @fn16() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_fn16:[0-9]+]] @fn16() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_b]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @fn17() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%2);
+// DEFAULT-NEXT:     fn %[[VALUE_fn17:[0-9]+]] @fn17() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_c]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @fn18() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%31);
+// DEFAULT-NEXT:     fn %[[VALUE_fn18:[0-9]+]] @fn18() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_d_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %32 @fn19() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32>(%33);
+// DEFAULT-NEXT:     fn %[[VALUE_fn19:[0-9]+]] @fn19() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_e_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %34 @fn20() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %35 f: i32 [storage=automatic] = const<i32>(6);
-// DEFAULT-NEXT:         return read<i32>(%35);
+// DEFAULT-NEXT:     fn %[[VALUE_fn20:[0-9]+]] @fn20() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_f_3:[0-9]+]] f: i32 [storage=automatic] = const<i32>(6);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_f_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %36 @fn21(%37 i: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(10)>(%38), read<i32>(%37)))));
+// DEFAULT-NEXT:     fn %[[VALUE_fn21:[0-9]+]] @fn21(%[[VALUE_i_3:[0-9]+]] i: i32) -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return widen<i32, reason=return>(read<i8>(deref(ptr_offset<ptr<const i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<const i8>, length=Some(10)>(%[[VALUE_g_3]]), read<i32>(%[[VALUE_i_3]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

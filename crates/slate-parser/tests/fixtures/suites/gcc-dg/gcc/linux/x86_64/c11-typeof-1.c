@@ -31,7 +31,7 @@ long typeof_unqual = 2;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 typeof: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     global %1 typeof_unqual: i64 [storage=static] = widen<i64, reason=assign>(const<i32>(2)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_typeof:[0-9]+]] typeof: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_typeof_unqual:[0-9]+]] typeof_unqual: i64 [storage=static] = widen<i64, reason=assign>(const<i32>(2)) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -339,247 +339,247 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 zext: array<u64, 64> [storage=static] [const] [align=16] = aggregate<array<u64, 64>, zero_fill=false>(index0 = const<u64>(9756277981056907920), index1 = const<u64>(4878138990528453960), index2 = const<u64>(2439069495264226980), index3 = const<u64>(1219534747632113490), index4 = const<u64>(609767373816056745), index5 = const<u64>(304883686908028372), index6 = const<u64>(152441843454014186), index7 = const<u64>(76220921727007093), index8 = const<u64>(38110460863503546), index9 = const<u64>(19055230431751773), index10 = const<u64>(9527615215875886), index11 = const<u64>(4763807607937943), index12 = const<u64>(2381903803968971), index13 = const<u64>(1190951901984485), index14 = const<u64>(595475950992242), index15 = const<u64>(297737975496121), index16 = const<u64>(148868987748060), index17 = const<u64>(74434493874030), index18 = const<u64>(37217246937015), index19 = const<u64>(18608623468507), index20 = const<u64>(9304311734253), index21 = const<u64>(4652155867126), index22 = const<u64>(2326077933563), index23 = const<u64>(1163038966781), index24 = const<u64>(581519483390), index25 = const<u64>(290759741695), index26 = const<u64>(145379870847), index27 = const<u64>(72689935423), index28 = const<u64>(36344967711), index29 = const<u64>(18172483855), index30 = const<u64>(9086241927), index31 = const<u64>(4543120963), index32 = const<u64>(2271560481), index33 = const<u64>(1135780240), index34 = const<u64>(567890120), index35 = const<u64>(283945060), index36 = const<u64>(141972530), index37 = const<u64>(70986265), index38 = const<u64>(35493132), index39 = const<u64>(17746566), index40 = const<u64>(8873283), index41 = const<u64>(4436641), index42 = const<u64>(2218320), index43 = const<u64>(1109160), index44 = const<u64>(554580), index45 = const<u64>(277290), index46 = const<u64>(138645), index47 = const<u64>(69322), index48 = const<u64>(34661), index49 = const<u64>(17330), index50 = const<u64>(8665), index51 = const<u64>(4332), index52 = const<u64>(2166), index53 = const<u64>(1083), index54 = const<u64>(541), index55 = const<u64>(270), index56 = const<u64>(135), index57 = const<u64>(67), index58 = const<u64>(33), index59 = const<u64>(16), index60 = const<u64>(8), index61 = const<u64>(4), index62 = const<u64>(2), index63 = const<u64>(1)) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%13 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @variable_shift(%4 x: u64, %5 i: i32) -> u64 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%4), read<i32>(%5));
+// DEFAULT-NEXT:     global %[[VALUE_zext:[0-9]+]] zext: array<u64, 64> [storage=static] [const] [align=16] = aggregate<array<u64, 64>, zero_fill=false>(index0 = const<u64>(9756277981056907920), index1 = const<u64>(4878138990528453960), index2 = const<u64>(2439069495264226980), index3 = const<u64>(1219534747632113490), index4 = const<u64>(609767373816056745), index5 = const<u64>(304883686908028372), index6 = const<u64>(152441843454014186), index7 = const<u64>(76220921727007093), index8 = const<u64>(38110460863503546), index9 = const<u64>(19055230431751773), index10 = const<u64>(9527615215875886), index11 = const<u64>(4763807607937943), index12 = const<u64>(2381903803968971), index13 = const<u64>(1190951901984485), index14 = const<u64>(595475950992242), index15 = const<u64>(297737975496121), index16 = const<u64>(148868987748060), index17 = const<u64>(74434493874030), index18 = const<u64>(37217246937015), index19 = const<u64>(18608623468507), index20 = const<u64>(9304311734253), index21 = const<u64>(4652155867126), index22 = const<u64>(2326077933563), index23 = const<u64>(1163038966781), index24 = const<u64>(581519483390), index25 = const<u64>(290759741695), index26 = const<u64>(145379870847), index27 = const<u64>(72689935423), index28 = const<u64>(36344967711), index29 = const<u64>(18172483855), index30 = const<u64>(9086241927), index31 = const<u64>(4543120963), index32 = const<u64>(2271560481), index33 = const<u64>(1135780240), index34 = const<u64>(567890120), index35 = const<u64>(283945060), index36 = const<u64>(141972530), index37 = const<u64>(70986265), index38 = const<u64>(35493132), index39 = const<u64>(17746566), index40 = const<u64>(8873283), index41 = const<u64>(4436641), index42 = const<u64>(2218320), index43 = const<u64>(1109160), index44 = const<u64>(554580), index45 = const<u64>(277290), index46 = const<u64>(138645), index47 = const<u64>(69322), index48 = const<u64>(34661), index49 = const<u64>(17330), index50 = const<u64>(8665), index51 = const<u64>(4332), index52 = const<u64>(2166), index53 = const<u64>(1083), index54 = const<u64>(541), index55 = const<u64>(270), index56 = const<u64>(135), index57 = const<u64>(67), index58 = const<u64>(33), index59 = const<u64>(16), index60 = const<u64>(8), index61 = const<u64>(4), index62 = const<u64>(2), index63 = const<u64>(1)) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_variable_shift:[0-9]+]] @variable_shift(%[[VALUE_x:[0-9]+]] x: u64, %[[VALUE_i:[0-9]+]] i: i32) -> u64 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x]]), read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @constant_shift(%7 x: u64, %8 i: i32) -> u64 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         switch %14 read<i32>(%8)
+// DEFAULT-NEXT:     fn %[[VALUE_constant_shift:[0-9]+]] @constant_shift(%[[VALUE_x_2:[0-9]+]] x: u64, %[[VALUE_i_2:[0-9]+]] i: i32) -> u64 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         switch %[[VALUE1:[0-9]+]] read<i32>(%[[VALUE_i_2]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %14 const<i32>(0):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(0)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(1):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(1)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(2):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(2)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(3):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(3)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(4):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(4)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(5):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(5)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(6):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(6)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(7):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(7)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(8):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(8)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(9):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(9)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(10):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(10)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(11):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(11)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(12):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(12)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(13):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(13)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(14):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(14)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(15):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(15)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(16):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(16)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(17):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(17)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(18):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(18)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(19):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(19)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(20):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(20)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(21):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(21)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(22):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(22)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(23):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(23)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(24):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(24)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(25):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(25)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(26):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(26)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(27):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(27)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(28):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(28)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(29):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(29)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(30):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(30)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(31):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(31)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(32):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(32)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(33):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(33)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(34):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(34)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(35):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(35)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(36):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(36)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(37):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(37)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(38):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(38)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(39):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(39)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(40):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(40)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(41):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(41)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(42):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(42)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(43):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(43)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(44):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(44)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(45):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(45)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(46):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(46)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(47):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(47)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(48):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(48)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(49):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(49)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(50):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(50)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(51):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(51)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(52):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(52)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(53):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(53)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(54):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(54)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(55):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(55)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(56):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(56)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(57):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(57)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(58):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(58)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(59):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(59)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(60):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(60)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(61):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(61)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(62):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(62)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 case %14 const<i32>(63):
-// DEFAULT-NEXT:                     write<u64>(%7, shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%7), const<i32>(63)));
-// DEFAULT-NEXT:                 break %14;
-// DEFAULT-NEXT:                 default %14:
-// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(0):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(0)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(1):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(1)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(2):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(2)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(3):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(3)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(4):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(4)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(5):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(5)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(6):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(6)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(7):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(7)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(8):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(8)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(9):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(9)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(10):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(10)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(11):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(11)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(12):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(12)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(13):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(13)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(14):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(14)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(15):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(15)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(16):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(16)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(17):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(17)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(18):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(18)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(19):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(19)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(20):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(20)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(21):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(21)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(22):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(22)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(23):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(23)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(24):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(24)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(25):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(25)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(26):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(26)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(27):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(27)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(28):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(28)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(29):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(29)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(30):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(30)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(31):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(31)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(32):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(32)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(33):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(33)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(34):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(34)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(35):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(35)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(36):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(36)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(37):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(37)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(38):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(38)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(39):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(39)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(40):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(40)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(41):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(41)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(42):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(42)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(43):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(43)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(44):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(44)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(45):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(45)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(46):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(46)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(47):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(47)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(48):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(48)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(49):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(49)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(50):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(50)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(51):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(51)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(52):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(52)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(53):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(53)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(54):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(54)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(55):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(55)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(56):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(56)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(57):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(57)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(58):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(58)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(59):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(59)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(60):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(60)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(61):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(61)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(62):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(62)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 case %[[VALUE1]] const<i32>(63):
+// DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_x_2]]), const<i32>(63)));
+// DEFAULT-NEXT:                 break %[[VALUE1]];
+// DEFAULT-NEXT:                 default %[[VALUE1]]:
+// DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<u64>(%7);
+// DEFAULT-NEXT:         return read<u64>(%[[VALUE_x_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %10 i: i32 [storage=automatic];
-// DEFAULT-NEXT:         for %15
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_i_3:[0-9]+]] i: i32 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%10, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(64))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_3]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i_3]]), const<i32>(64))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %17: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                 let %18: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%17), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%18));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_3]]);
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_3]], read<i32>(%[[VALUE4]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %11 y: u64 [storage=automatic] = call<u64, signature=fn(u64, i32) -> u64>(%3, read<u64>(deref(ptr_offset<ptr<const u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<const u64>, length=Some(64)>(%2), const<i32>(0)))), read<i32>(%10));
-// DEFAULT-NEXT:                     if ne<u64>(read<u64>(%11), read<u64>(deref(ptr_offset<ptr<const u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<const u64>, length=Some(64)>(%2), read<i32>(%10)))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     let %[[VALUE_y:[0-9]+]] y: u64 [storage=automatic] = call<u64, signature=fn(u64, i32) -> u64>(%[[VALUE_variable_shift]], read<u64>(deref(ptr_offset<ptr<const u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<const u64>, length=Some(64)>(%[[VALUE_zext]]), const<i32>(0)))), read<i32>(%[[VALUE_i_3]]));
+// DEFAULT-NEXT:                     if ne<u64>(read<u64>(%[[VALUE_y]]), read<u64>(deref(ptr_offset<ptr<const u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<const u64>, length=Some(64)>(%[[VALUE_zext]]), read<i32>(%[[VALUE_i_3]])))))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         for %16
+// DEFAULT-NEXT:         for %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%10, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%10), const<i32>(64))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_3]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i_3]]), const<i32>(64))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %19: i32 [synthetic] = read<i32>(%10);
-// DEFAULT-NEXT:                 let %20: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%19), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%10, read<i32>(%20));
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_3]]);
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_3]], read<i32>(%[[VALUE7]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %12 y: u64 [storage=automatic] = call<u64, signature=fn(u64, i32) -> u64>(%6, read<u64>(deref(ptr_offset<ptr<const u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<const u64>, length=Some(64)>(%2), const<i32>(0)))), read<i32>(%10));
-// DEFAULT-NEXT:                     if ne<u64>(read<u64>(%12), read<u64>(deref(ptr_offset<ptr<const u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<const u64>, length=Some(64)>(%2), read<i32>(%10)))))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:                     let %[[VALUE_y_2:[0-9]+]] y: u64 [storage=automatic] = call<u64, signature=fn(u64, i32) -> u64>(%[[VALUE_constant_shift]], read<u64>(deref(ptr_offset<ptr<const u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<const u64>, length=Some(64)>(%[[VALUE_zext]]), const<i32>(0)))), read<i32>(%[[VALUE_i_3]]));
+// DEFAULT-NEXT:                     if ne<u64>(read<u64>(%[[VALUE_y_2]]), read<u64>(deref(ptr_offset<ptr<const u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<const u64>, length=Some(64)>(%[[VALUE_zext]]), read<i32>(%[[VALUE_i_3]])))))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

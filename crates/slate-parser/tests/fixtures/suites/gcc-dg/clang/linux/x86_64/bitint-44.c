@@ -35,11 +35,11 @@ foo (_BitInt(575) a)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%1 a: i575b) -> i575b [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %2: i575b [synthetic] = read<i575b>(%1);
-// DEFAULT-NEXT:         let %3: i575b [synthetic] = div<i575b, by_zero=ub, min_by_neg_one=ub>(read<i575b>(%2), widen<i575b, reason=usual_arith>(const<i32>(0)));
-// DEFAULT-NEXT:         write<i575b>(%1, read<i575b>(%3));
-// DEFAULT-NEXT:         return read<i575b>(%1);
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_a:[0-9]+]] a: i575b) -> i575b [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i575b [synthetic] = read<i575b>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i575b [synthetic] = div<i575b, by_zero=ub, min_by_neg_one=ub>(read<i575b>(%[[VALUE0]]), widen<i575b, reason=usual_arith>(const<i32>(0)));
+// DEFAULT-NEXT:         write<i575b>(%[[VALUE_a]], read<i575b>(%[[VALUE1]]));
+// DEFAULT-NEXT:         return read<i575b>(%[[VALUE_a]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

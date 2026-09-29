@@ -54,14 +54,14 @@ const int restored = 1;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 x: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 p: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%0) [linkage=external];
-// DEFAULT-NEXT:     global %2 q: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 spelled: array<i8, 44> [storage=static] [align=16] = code_units<array<i8, 44>>([95, 95, 99, 111, 110, 115, 116, 32, 95, 95, 115, 105, 103, 110, 101, 100, 95, 95, 32, 95, 95, 105, 110, 108, 105, 110, 101, 32, 115, 105, 122, 101, 111, 102, 32, 95, 65, 108, 105, 103, 110, 111, 102, 0]) [linkage=external];
-// DEFAULT-NEXT:     global %4 pasted: u32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 restored: i32 [storage=static] [const] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     fn %5 @hinted() -> i32 [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return truncate<i32, reason=explicit, fits=unknown>(read<i64>(%2));
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_x]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_spelled:[0-9]+]] spelled: array<i8, 44> [storage=static] [align=16] = code_units<array<i8, 44>>([95, 95, 99, 111, 110, 115, 116, 32, 95, 95, 115, 105, 103, 110, 101, 100, 95, 95, 32, 95, 95, 105, 110, 108, 105, 110, 101, 32, 115, 105, 122, 101, 111, 102, 32, 95, 65, 108, 105, 103, 110, 111, 102, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_pasted:[0-9]+]] pasted: u32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_restored:[0-9]+]] restored: i32 [storage=static] [const] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_hinted:[0-9]+]] @hinted() -> i32 [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return truncate<i32, reason=explicit, fits=unknown>(read<i64>(%[[VALUE_q]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

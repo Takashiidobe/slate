@@ -75,51 +75,51 @@ int test12(struct qux *p) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = struct {
 // DEFAULT-NEXT:         field0 x: volatile i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 bar = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_bar:[0-9]+]] bar = struct {
 // DEFAULT-NEXT:         field0 x: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 baz = complex<f32>;
-// DEFAULT-NEXT:     type @type3 qux = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_baz:[0-9]+]] baz = complex<f32>;
+// DEFAULT-NEXT:     type @type[[TYPE_qux:[0-9]+]] qux = struct {
 // DEFAULT-NEXT:         field0 f: volatile i32;
 // DEFAULT-NEXT:     } [size=4, align=1, offsets=[0]];
-// DEFAULT-NEXT:     fn %4 @test1(%5 p: ptr<@type0>, %6 q: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<@type0>(deref(read<ptr<@type0>>(%5)), copy<@type0, reason=assign>(read<@type0>(deref(read<ptr<@type0>>(%6)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_foo]]>, %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_foo]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<@type[[TYPE_foo]]>(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_p]])), copy<@type[[TYPE_foo]], reason=assign>(read<@type[[TYPE_foo]]>(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_q]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @test2(%8 p: ptr<volatile i32>, %9 q: ptr<volatile i32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32, volatile>(deref(read<ptr<volatile i32>>(%8)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%9))));
+// DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_p_2:[0-9]+]] p: ptr<volatile i32>, %[[VALUE_q_2:[0-9]+]] q: ptr<volatile i32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_p_2]])), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_q_2]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @test3(%11 p: ptr<@type0>, %12 q: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32, volatile>(field0(deref(read<ptr<@type0>>(%11))), read<i32, volatile>(field0(deref(read<ptr<@type0>>(%12)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_p_3:[0-9]+]] p: ptr<@type[[TYPE_foo]]>, %[[VALUE_q_3:[0-9]+]] q: ptr<@type[[TYPE_foo]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32, volatile>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_p_3]]))), read<i32, volatile>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_q_3]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @test4(%14 p: ptr<volatile @type0>, %15 q: ptr<volatile @type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32, volatile>(field0(deref(read<ptr<volatile @type0>>(%14))), read<i32, volatile>(field0(deref(read<ptr<volatile @type0>>(%15)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4(%[[VALUE_p_4:[0-9]+]] p: ptr<volatile @type[[TYPE_foo]]>, %[[VALUE_q_4:[0-9]+]] q: ptr<volatile @type[[TYPE_foo]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32, volatile>(field0(deref(read<ptr<volatile @type[[TYPE_foo]]>>(%[[VALUE_p_4]]))), read<i32, volatile>(field0(deref(read<ptr<volatile @type[[TYPE_foo]]>>(%[[VALUE_q_4]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @test5(%17 p: ptr<volatile @type0>, %18 q: ptr<volatile @type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<@type0, volatile>(deref(read<ptr<volatile @type0>>(%17)), copy<@type0, reason=assign>(read<@type0, volatile>(deref(read<ptr<volatile @type0>>(%18)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test5:[0-9]+]] @test5(%[[VALUE_p_5:[0-9]+]] p: ptr<volatile @type[[TYPE_foo]]>, %[[VALUE_q_5:[0-9]+]] q: ptr<volatile @type[[TYPE_foo]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<@type[[TYPE_foo]], volatile>(deref(read<ptr<volatile @type[[TYPE_foo]]>>(%[[VALUE_p_5]])), copy<@type[[TYPE_foo]], reason=assign>(read<@type[[TYPE_foo]], volatile>(deref(read<ptr<volatile @type[[TYPE_foo]]>>(%[[VALUE_q_5]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @test6(%20 p: ptr<@type1>, %21 q: ptr<@type1>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<@type1>(deref(read<ptr<@type1>>(%20)), copy<@type1, reason=assign>(read<@type1>(deref(read<ptr<@type1>>(%21)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test6:[0-9]+]] @test6(%[[VALUE_p_6:[0-9]+]] p: ptr<@type[[TYPE_bar]]>, %[[VALUE_q_6:[0-9]+]] q: ptr<@type[[TYPE_bar]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<@type[[TYPE_bar]]>(deref(read<ptr<@type[[TYPE_bar]]>>(%[[VALUE_p_6]])), copy<@type[[TYPE_bar]], reason=assign>(read<@type[[TYPE_bar]]>(deref(read<ptr<@type[[TYPE_bar]]>>(%[[VALUE_q_6]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %22 @test7(%23 p: ptr<volatile @type1>, %24 q: ptr<volatile @type1>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<@type1, volatile>(deref(read<ptr<volatile @type1>>(%23)), copy<@type1, reason=assign>(read<@type1, volatile>(deref(read<ptr<volatile @type1>>(%24)))));
+// DEFAULT-NEXT:     fn %[[VALUE_test7:[0-9]+]] @test7(%[[VALUE_p_7:[0-9]+]] p: ptr<volatile @type[[TYPE_bar]]>, %[[VALUE_q_7:[0-9]+]] q: ptr<volatile @type[[TYPE_bar]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<@type[[TYPE_bar]], volatile>(deref(read<ptr<volatile @type[[TYPE_bar]]>>(%[[VALUE_p_7]])), copy<@type[[TYPE_bar]], reason=assign>(read<@type[[TYPE_bar]], volatile>(deref(read<ptr<volatile @type[[TYPE_bar]]>>(%[[VALUE_q_7]])))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @test8(%26 p: ptr<volatile f64>, %27 q: ptr<volatile f64>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<f64, volatile>(deref(read<ptr<volatile f64>>(%26)), read<f64, volatile>(deref(read<ptr<volatile f64>>(%27))));
+// DEFAULT-NEXT:     fn %[[VALUE_test8:[0-9]+]] @test8(%[[VALUE_p_8:[0-9]+]] p: ptr<volatile f64>, %[[VALUE_q_8:[0-9]+]] q: ptr<volatile f64>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<f64, volatile>(deref(read<ptr<volatile f64>>(%[[VALUE_p_8]])), read<f64, volatile>(deref(read<ptr<volatile f64>>(%[[VALUE_q_8]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %28 @test9(%29 p: ptr<volatile complex<f32>>, %30 q: ptr<complex<f32>>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<complex<f32>, volatile>(deref(read<ptr<volatile complex<f32>>>(%29)), read<complex<f32>>(deref(read<ptr<complex<f32>>>(%30))));
+// DEFAULT-NEXT:     fn %[[VALUE_test9:[0-9]+]] @test9(%[[VALUE_p_9:[0-9]+]] p: ptr<volatile complex<f32>>, %[[VALUE_q_9:[0-9]+]] q: ptr<complex<f32>>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<complex<f32>, volatile>(deref(read<ptr<volatile complex<f32>>>(%[[VALUE_p_9]])), read<complex<f32>>(deref(read<ptr<complex<f32>>>(%[[VALUE_q_9]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @test10(%32 p: ptr<volatile i64>, %33 q: ptr<volatile i64>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i64, volatile>(deref(read<ptr<volatile i64>>(%32)), read<i64, volatile>(deref(read<ptr<volatile i64>>(%33))));
+// DEFAULT-NEXT:     fn %[[VALUE_test10:[0-9]+]] @test10(%[[VALUE_p_10:[0-9]+]] p: ptr<volatile i64>, %[[VALUE_q_10:[0-9]+]] q: ptr<volatile i64>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i64, volatile>(deref(read<ptr<volatile i64>>(%[[VALUE_p_10]])), read<i64, volatile>(deref(read<ptr<volatile i64>>(%[[VALUE_q_10]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %34 @test11(%35 p: ptr<volatile f32>, %36 q: ptr<volatile f32>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<f32, volatile>(deref(read<ptr<volatile f32>>(%35)), read<f32, volatile>(deref(read<ptr<volatile f32>>(%36))));
+// DEFAULT-NEXT:     fn %[[VALUE_test11:[0-9]+]] @test11(%[[VALUE_p_11:[0-9]+]] p: ptr<volatile f32>, %[[VALUE_q_11:[0-9]+]] q: ptr<volatile f32>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<f32, volatile>(deref(read<ptr<volatile f32>>(%[[VALUE_p_11]])), read<f32, volatile>(deref(read<ptr<volatile f32>>(%[[VALUE_q_11]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %37 @test12(%38 p: ptr<@type3>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return read<i32, volatile>(field0(deref(read<ptr<@type3>>(%38))));
+// DEFAULT-NEXT:     fn %[[VALUE_test12:[0-9]+]] @test12(%[[VALUE_p_12:[0-9]+]] p: ptr<@type[[TYPE_qux]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return read<i32, volatile>(field0(deref(read<ptr<@type[[TYPE_qux]]>>(%[[VALUE_p_12]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

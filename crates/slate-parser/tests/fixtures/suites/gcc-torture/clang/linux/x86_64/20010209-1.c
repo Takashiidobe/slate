@@ -31,9 +31,9 @@ int main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 a: i16 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<i16>(%0, float_to_int<i16, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(65535.0)));
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i16 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<i16>(%[[VALUE_a]], float_to_int<i16, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(65535.0)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

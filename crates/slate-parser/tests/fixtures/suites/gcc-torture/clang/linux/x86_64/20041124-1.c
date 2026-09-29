@@ -40,19 +40,19 @@ int main() {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 x: complex<u16>;
 // DEFAULT-NEXT:     } [size=4, align=2, offsets=[0]];
-// DEFAULT-NEXT:     global %3 gs: @type0 [storage=static] = aggregate<@type0, zero_fill=false>(field0 = complex_convert<complex<u16>, reason=assign, fits=unknown>(add<complex<i32>, complex=true, overflow=ub>(const<i32>(100), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(200))))) [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%6 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @foo() -> @type0 [linkage=external] [inline=never] [definition=emitted] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return copy<@type0, reason=return>(read<@type0>(%3));
+// DEFAULT-NEXT:     global %[[VALUE_gs:[0-9]+]] gs: @type[[TYPE_s]] [storage=static] = aggregate<@type[[TYPE_s]], zero_fill=false>(field0 = complex_convert<complex<u16>, reason=assign, fits=unknown>(add<complex<i32>, complex=true, overflow=ub>(const<i32>(100), aggregate<complex<i32>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(200))))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> @type[[TYPE_s]] [linkage=external] [inline=never] [definition=emitted] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return copy<@type[[TYPE_s]], reason=return>(read<@type[[TYPE_s]]>(%[[VALUE_gs]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         if ne<complex<i32>>(complex_convert<complex<i32>, reason=usual_arith, fits=unknown>(read<complex<u16>>(field0(temporary %7 = call<@type0, signature=fn() -> @type0, abi=sysv64() -> native_c>(%4)))), complex_convert<complex<i32>, reason=usual_arith, fits=unknown>(read<complex<u16>>(field0(%3))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         if ne<complex<i32>>(complex_convert<complex<i32>, reason=usual_arith, fits=unknown>(read<complex<u16>>(field0(temporary %[[VALUE1:[0-9]+]] = call<@type[[TYPE_s]], signature=fn() -> @type[[TYPE_s]], abi=sysv64() -> native_c>(%[[VALUE_foo]])))), complex_convert<complex<i32>, reason=usual_arith, fits=unknown>(read<complex<u16>>(field0(%[[VALUE_gs]]))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

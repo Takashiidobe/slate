@@ -44,18 +44,18 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 a: atomic i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     global %2 b: atomic i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %5: i32 [synthetic];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: atomic i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: atomic i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %4 __kill_dependency_tmp: i32 [storage=automatic] = read<i32, atomic=seq_cst>(%1);
-// DEFAULT-NEXT:             write<i32>(%5, read<i32>(%4));
+// DEFAULT-NEXT:             let %[[VALUE___kill_dependency_tmp:[0-9]+]] __kill_dependency_tmp: i32 [storage=automatic] = read<i32, atomic=seq_cst>(%[[VALUE_a]]);
+// DEFAULT-NEXT:             write<i32>(%[[VALUE0]], read<i32>(%[[VALUE___kill_dependency_tmp]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<i32, atomic=seq_cst>(%2, read<i32>(%5));
-// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%2), const<i32>(1))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:         write<i32, atomic=seq_cst>(%[[VALUE_b]], read<i32>(%[[VALUE0]]));
+// DEFAULT-NEXT:         if ne<i32>(read<i32, atomic=seq_cst>(%[[VALUE_b]]), const<i32>(1))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

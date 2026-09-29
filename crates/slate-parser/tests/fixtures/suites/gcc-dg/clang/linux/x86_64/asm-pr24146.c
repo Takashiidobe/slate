@@ -40,13 +40,13 @@ void g (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @f(%1 x: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_x:[0-9]+]] x: i32) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm "extended asm not discarded" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "extended asm not discarded";
-// DEFAULT-NEXT:             in 0 "r" [reg] width 32 read<i32>(%1);
+// DEFAULT-NEXT:             in 0 "r" [reg] width 32 read<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @g() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         asm "simple asm not discarded" [dialect=att] [options=nostack];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

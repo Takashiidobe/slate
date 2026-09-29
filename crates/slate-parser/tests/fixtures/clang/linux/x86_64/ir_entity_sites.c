@@ -48,23 +48,23 @@ int block(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 fields = struct {
+// IR-NEXT:     type @type[[TYPE_fields:[0-9]+]] fields = struct {
 // IR-NEXT:         field0 field_aligned: i32;
 // IR-NEXT:         field1 field_const: const i32;
 // IR-NEXT:         field2 field_volatile: volatile i32;
 // IR-NEXT:         field3 field_atomic: atomic i32;
 // IR-NEXT:         field4 field_restrict: ptr<i32>;
 // IR-NEXT:     } [size=32, align=16, offsets=[0, 4, 8, 12, 16]];
-// IR-NEXT:     global %1 file_scope: volatile i32 [storage=static] [align=32] [linkage=external];
-// IR-NEXT:     global %2 file_restrict: ptr<const i32> [storage=static] [restrict] [linkage=external];
-// IR-NEXT:     global %8 file_literal: ptr<const @type0> [storage=static] = addr_of<ptr<const @type0>>(compound_literal %18 [storage=static] = aggregate<@type0, zero_fill=true>(field0 = const<i32>(0))) [linkage=external];
-// IR-NEXT:     global %11 static_local: atomic i32 [storage=static] [align=64] [linkage=internal];
-// IR-NEXT:     fn %7 @parameters(%14 a: atomic i32, %15 v: volatile i32, %16 c: i32 [const], %17 r: ptr<i32> [restrict]) -> void [linkage=external];
-// IR-NEXT:     fn %9 @block() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %10 block_scope: volatile i32 [storage=automatic] [align=32];
-// IR-NEXT:         let %12 const_literal: ptr<const i32> [storage=automatic] = addr_of<ptr<const i32>>(compound_literal %19 [storage=automatic] = const<i32>(7));
-// IR-NEXT:         let %13 volatile_literal: ptr<volatile i32> [storage=automatic] = addr_of<ptr<volatile i32>>(compound_literal %20 [storage=automatic] = const<i32>(8));
-// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(32), const<u64>(32)), const<u64>(64)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<const i32>>(%12)))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32, volatile>(deref(read<ptr<volatile i32>>(%13))))))));
+// IR-NEXT:     global %[[VALUE_file_scope:[0-9]+]] file_scope: volatile i32 [storage=static] [align=32] [linkage=external];
+// IR-NEXT:     global %[[VALUE_file_restrict:[0-9]+]] file_restrict: ptr<const i32> [storage=static] [restrict] [linkage=external];
+// IR-NEXT:     global %[[VALUE_file_literal:[0-9]+]] file_literal: ptr<const @type[[TYPE_fields]]> [storage=static] = addr_of<ptr<const @type[[TYPE_fields]]>>(compound_literal %[[VALUE0:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_fields]], zero_fill=true>(field0 = const<i32>(0))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_static_local:[0-9]+]] static_local: atomic i32 [storage=static] [align=64] [linkage=internal];
+// IR-NEXT:     fn %[[VALUE_parameters:[0-9]+]] @parameters(%[[VALUE_a:[0-9]+]] a: atomic i32, %[[VALUE_v:[0-9]+]] v: volatile i32, %[[VALUE_c:[0-9]+]] c: i32 [const], %[[VALUE_r:[0-9]+]] r: ptr<i32> [restrict]) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_block:[0-9]+]] @block() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_block_scope:[0-9]+]] block_scope: volatile i32 [storage=automatic] [align=32];
+// IR-NEXT:         let %[[VALUE_const_literal:[0-9]+]] const_literal: ptr<const i32> [storage=automatic] = addr_of<ptr<const i32>>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = const<i32>(7));
+// IR-NEXT:         let %[[VALUE_volatile_literal:[0-9]+]] volatile_literal: ptr<volatile i32> [storage=automatic] = addr_of<ptr<volatile i32>>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = const<i32>(8));
+// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(32), const<u64>(32)), const<u64>(64)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<const i32>>(%[[VALUE_const_literal]])))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_volatile_literal]]))))))));
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

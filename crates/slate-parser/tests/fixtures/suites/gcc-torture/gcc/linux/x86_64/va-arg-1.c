@@ -50,25 +50,25 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __gnuc_va_list = va_list;
-// DEFAULT-NEXT:     type @type1 va_list = va_list;
-// DEFAULT-NEXT:     type @type2 L = u64;
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %3 @exit(%17 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %5 @f(%6 p0: u64, %7 p1: u64, %8 p2: u64, %9 p3: u64, %10 p4: u64, %11 p5: u64, %12 p6: u64, %13 p7: u64, %14 p8: u64, ...) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %15 select: va_list [storage=automatic];
-// DEFAULT-NEXT:         va_start(%15);
-// DEFAULT-NEXT:         if ne<u64>(va_arg<u64>(%15), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(10))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         if ne<u64>(va_arg<u64>(%15), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(11))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         if ne<u64>(va_arg<u64>(%15), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         va_end(%15);
+// DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_L:[0-9]+]] L = u64;
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_p0:[0-9]+]] p0: u64, %[[VALUE_p1:[0-9]+]] p1: u64, %[[VALUE_p2:[0-9]+]] p2: u64, %[[VALUE_p3:[0-9]+]] p3: u64, %[[VALUE_p4:[0-9]+]] p4: u64, %[[VALUE_p5:[0-9]+]] p5: u64, %[[VALUE_p6:[0-9]+]] p6: u64, %[[VALUE_p7:[0-9]+]] p7: u64, %[[VALUE_p8:[0-9]+]] p8: u64, ...) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_select:[0-9]+]] select: va_list [storage=automatic];
+// DEFAULT-NEXT:         va_start(%[[VALUE_select]]);
+// DEFAULT-NEXT:         if ne<u64>(va_arg<u64>(%[[VALUE_select]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(10))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<u64>(va_arg<u64>(%[[VALUE_select]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(11))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<u64>(va_arg<u64>(%[[VALUE_select]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(0))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         va_end(%[[VALUE_select]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(u64, u64, u64, u64, u64, u64, u64, u64, u64, ...) -> void>(%5, reinterpret<u64, reason=arg, fits=always>(const<i64>(1)), reinterpret<u64, reason=arg, fits=always>(const<i64>(2)), reinterpret<u64, reason=arg, fits=always>(const<i64>(3)), reinterpret<u64, reason=arg, fits=always>(const<i64>(4)), reinterpret<u64, reason=arg, fits=always>(const<i64>(5)), reinterpret<u64, reason=arg, fits=always>(const<i64>(6)), reinterpret<u64, reason=arg, fits=always>(const<i64>(7)), reinterpret<u64, reason=arg, fits=always>(const<i64>(8)), reinterpret<u64, reason=arg, fits=always>(const<i64>(9)), const<i64>(10), const<i64>(11), const<i64>(0));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%3, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(u64, u64, u64, u64, u64, u64, u64, u64, u64, ...) -> void>(%[[VALUE_f]], reinterpret<u64, reason=arg, fits=always>(const<i64>(1)), reinterpret<u64, reason=arg, fits=always>(const<i64>(2)), reinterpret<u64, reason=arg, fits=always>(const<i64>(3)), reinterpret<u64, reason=arg, fits=always>(const<i64>(4)), reinterpret<u64, reason=arg, fits=always>(const<i64>(5)), reinterpret<u64, reason=arg, fits=always>(const<i64>(6)), reinterpret<u64, reason=arg, fits=always>(const<i64>(7)), reinterpret<u64, reason=arg, fits=always>(const<i64>(8)), reinterpret<u64, reason=arg, fits=always>(const<i64>(9)), const<i64>(10), const<i64>(11), const<i64>(0));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

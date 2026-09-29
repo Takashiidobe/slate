@@ -52,10 +52,10 @@ int second_pop[Y];
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 popped_in_branch: array<i32, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 unreachable_pop: array<i32, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 partial_push: array<i32, 2> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 second_pop: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_popped_in_branch:[0-9]+]] popped_in_branch: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_unreachable_pop:[0-9]+]] unreachable_pop: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_partial_push:[0-9]+]] partial_push: array<i32, 2> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_second_pop:[0-9]+]] second_pop: array<i32, 2> [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN A
@@ -81,9 +81,9 @@ int second_pop[Y];
 // A-NEXT:         storage d64 [size=8, align=8];
 // A-NEXT:         storage d128 [size=16, align=16];
 // A-NEXT:     }
-// A-NEXT:     global %0 popped_in_branch: array<i32, 1> [storage=static] [linkage=external];
-// A-NEXT:     global %1 unreachable_pop: array<i32, 2> [storage=static] [linkage=external];
-// A-NEXT:     global %2 partial_push: array<i32, 2> [storage=static] [linkage=external];
-// A-NEXT:     global %3 second_pop: array<i32, 1> [storage=static] [linkage=external];
+// A-NEXT:     global %[[VALUE_popped_in_branch:[0-9]+]] popped_in_branch: array<i32, 1> [storage=static] [linkage=external];
+// A-NEXT:     global %[[VALUE_unreachable_pop:[0-9]+]] unreachable_pop: array<i32, 2> [storage=static] [linkage=external];
+// A-NEXT:     global %[[VALUE_partial_push:[0-9]+]] partial_push: array<i32, 2> [storage=static] [linkage=external];
+// A-NEXT:     global %[[VALUE_second_pop:[0-9]+]] second_pop: array<i32, 1> [storage=static] [linkage=external];
 // A-NEXT: }
 // SLATE-FILECHECK-END A

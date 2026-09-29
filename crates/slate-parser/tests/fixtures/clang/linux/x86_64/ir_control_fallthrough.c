@@ -32,16 +32,16 @@ void fallthrough(int x) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     fn %0 @fallthrough(%1 x: i32 [c="int"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(int)"] {
-// IR-NEXT:         switch %2 read<i32>(%1)
+// IR-NEXT:     fn %[[VALUE_fallthrough:[0-9]+]] @fallthrough(%[[VALUE_x:[0-9]+]] x: i32 [c="int"]) -> void [linkage=external] [fallthrough=ret_void] [c_storage="none"] [c_return="void"] [c="void(int)"] {
+// IR-NEXT:         switch %[[VALUE0:[0-9]+]] read<i32>(%[[VALUE_x]])
 // IR-NEXT:             {
-// IR-NEXT:                 case %2 const<i32>(0):
-// IR-NEXT:                     let %3: i32 [synthetic] = read<i32>(%1);
-// IR-NEXT:                     let %4: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%3), const<i32>(1));
-// IR-NEXT:                     write<i32>(%1, read<i32>(%4));
+// IR-NEXT:                 case %[[VALUE0]] const<i32>(0):
+// IR-NEXT:                     let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x]]);
+// IR-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// IR-NEXT:                     write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE2]]));
 // IR-NEXT:                  [c_attribute="fallthrough"];
-// IR-NEXT:                 case %2 const<i32>(1):
-// IR-NEXT:                     break %2;
+// IR-NEXT:                 case %[[VALUE0]] const<i32>(1):
+// IR-NEXT:                     break %[[VALUE0]];
 // IR-NEXT:             }
 // IR-NEXT:     }
 // IR-NEXT: }

@@ -100,28 +100,28 @@ int return_current_vars (void) { return current_var + current_var_2; }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 ref0: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %1 var0: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 ptr0: ptr<void> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 arr: array<i32, 1> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 ref1: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 xref1: i8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %6 xref2: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %7 xref3: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %8 xref4: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %9 xref5: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %10 xref6: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %11 xref7: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %12 xref8: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %13 xref9: i32 [storage=static] [linkage=internal];
-// DEFAULT-NEXT:     global %14 common_var: i32 [storage=static] [linkage=external] [common];
-// DEFAULT-NEXT:     global %15 nocommon_var: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %16 common_copy: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %17 deprecated_var: i8 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %18 current_var: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %19 current_var_2: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %20 @return_current_vars() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%18), read<i32>(%19));
+// DEFAULT-NEXT:     global %[[VALUE_ref0:[0-9]+]] ref0: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_var0:[0-9]+]] var0: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ptr0:[0-9]+]] ptr0: ptr<void> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_arr:[0-9]+]] arr: array<i32, 1> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ref1:[0-9]+]] ref1: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_xref1:[0-9]+]] xref1: i8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_xref2:[0-9]+]] xref2: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_xref3:[0-9]+]] xref3: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_xref4:[0-9]+]] xref4: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_xref5:[0-9]+]] xref5: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_xref6:[0-9]+]] xref6: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_xref7:[0-9]+]] xref7: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_xref8:[0-9]+]] xref8: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_xref9:[0-9]+]] xref9: i32 [storage=static] [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_common_var:[0-9]+]] common_var: i32 [storage=static] [linkage=external] [common];
+// DEFAULT-NEXT:     global %[[VALUE_nocommon_var:[0-9]+]] nocommon_var: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_common_copy:[0-9]+]] common_copy: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_deprecated_var:[0-9]+]] deprecated_var: i8 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_current_var:[0-9]+]] current_var: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_current_var_2:[0-9]+]] current_var_2: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_return_current_vars:[0-9]+]] @return_current_vars() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_current_var]]), read<i32>(%[[VALUE_current_var_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

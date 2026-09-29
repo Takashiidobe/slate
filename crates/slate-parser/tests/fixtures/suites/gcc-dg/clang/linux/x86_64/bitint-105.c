@@ -54,25 +54,25 @@ l1:;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @foo(%15 <unnamed>: i32) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @bar(%16 x: i129b) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %3 @baz(%6 x: i32, %7 y: i129b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %8 q: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%5), index1 = label_addr<ptr<void>>(%4));
-// DEFAULT-NEXT:         label %4 l2:
-// DEFAULT-NEXT:             write<i32>(%6, call<i32, signature=fn(i32) -> i32>(%0, call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3))));
-// DEFAULT-NEXT:             call<i32, signature=fn(i32) -> i32>(%0, call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i129b) -> i32>(%2, read<i129b>(%7));
-// DEFAULT-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%8), and<i32>(read<i32>(%6), const<i32>(1)))));
-// DEFAULT-NEXT:         label %5 l1:
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: i129b) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz(%[[VALUE_x_2:[0-9]+]] x: i32, %[[VALUE_y:[0-9]+]] y: i129b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%[[VALUE_l1:[0-9]+]]), index1 = label_addr<ptr<void>>(%[[VALUE_l2:[0-9]+]]));
+// DEFAULT-NEXT:         label %[[VALUE_l2]] l2:
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_2]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3))));
+// DEFAULT-NEXT:             call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3)));
+// DEFAULT-NEXT:         call<i32, signature=fn(i129b) -> i32>(%[[VALUE_bar]], read<i129b>(%[[VALUE_y]]));
+// DEFAULT-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%[[VALUE_q]]), and<i32>(read<i32>(%[[VALUE_x_2]]), const<i32>(1)))));
+// DEFAULT-NEXT:         label %[[VALUE_l1]] l1:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @qux(%12 x: i32, %13 y: i129b) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %14 q: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%11), index1 = label_addr<ptr<void>>(%10));
-// DEFAULT-NEXT:         label %10 l2:
-// DEFAULT-NEXT:             write<i32>(%12, call<i32, signature=fn(i32) -> i32>(%0, call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3))));
-// DEFAULT-NEXT:             call<i32, signature=fn(i32) -> i32>(%0, call<i32, signature=fn(i32) -> i32>(%0, const<i32>(3)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i129b) -> i32>(%2, read<i129b>(%13));
-// DEFAULT-NEXT:         label %11 l1:
+// DEFAULT-NEXT:     fn %[[VALUE_qux:[0-9]+]] @qux(%[[VALUE_x_3:[0-9]+]] x: i32, %[[VALUE_y_2:[0-9]+]] y: i129b) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_q_2:[0-9]+]] q: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%[[VALUE_l1_2:[0-9]+]]), index1 = label_addr<ptr<void>>(%[[VALUE_l2_2:[0-9]+]]));
+// DEFAULT-NEXT:         label %[[VALUE_l2_2]] l2:
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_x_3]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3))));
+// DEFAULT-NEXT:             call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3)));
+// DEFAULT-NEXT:         call<i32, signature=fn(i129b) -> i32>(%[[VALUE_bar]], read<i129b>(%[[VALUE_y_2]]));
+// DEFAULT-NEXT:         label %[[VALUE_l1_2]] l1:
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

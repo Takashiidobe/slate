@@ -30,9 +30,9 @@ char *nested = PREFIXED(EMPTY, "name");
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %2 .str2: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
-// DEFAULT-NEXT:     global %0 empty: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(1)>(%2) [linkage=external];
-// DEFAULT-NEXT:     global %3 .str3: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([110, 97, 109, 101, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %1 nested: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(5)>(%3) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 1> [storage=static] = code_units<array<i8, 1>>([0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_empty:[0-9]+]] empty: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(1)>(%[[VALUE_str]]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 5> [storage=static] = code_units<array<i8, 5>>([110, 97, 109, 101, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_nested:[0-9]+]] nested: ptr<i8> [storage=static] = array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_2]]) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

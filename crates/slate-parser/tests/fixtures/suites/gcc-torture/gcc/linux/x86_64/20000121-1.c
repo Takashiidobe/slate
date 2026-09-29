@@ -37,16 +37,16 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %7 .str7: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %0 @big(%1 u: i64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 2> [storage=static] = code_units<array<i8, 2>>([10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_big:[0-9]+]] @big(%[[VALUE_u:[0-9]+]] u: i64) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @doit(%3 a: u32, %4 b: u32, %5 id: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%0, widen<i64, reason=arg>(read<i8>(deref(read<ptr<i8>>(%5)))));
-// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%0, reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u32>(%3))));
-// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%0, reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u32>(%4))));
+// DEFAULT-NEXT:     fn %[[VALUE_doit:[0-9]+]] @doit(%[[VALUE_a:[0-9]+]] a: u32, %[[VALUE_b:[0-9]+]] b: u32, %[[VALUE_id:[0-9]+]] id: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_big]], widen<i64, reason=arg>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_id]])))));
+// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_big]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u32>(%[[VALUE_a]]))));
+// DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_big]], reinterpret<i64, reason=arg, fits=unknown>(widen<u64, reason=arg>(read<u32>(%[[VALUE_b]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn(u32, u32, ptr<i8>) -> void>(%2, reinterpret<u32, reason=arg, fits=always>(const<i32>(1)), reinterpret<u32, reason=arg, fits=always>(const<i32>(1)), array_decay<ptr<i8>, length=Some(2)>(%7));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(u32, u32, ptr<i8>) -> void>(%[[VALUE_doit]], reinterpret<u32, reason=arg, fits=always>(const<i32>(1)), reinterpret<u32, reason=arg, fits=always>(const<i32>(1)), array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

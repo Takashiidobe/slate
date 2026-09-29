@@ -30,11 +30,11 @@ void thread_local_symbol(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 t: i32 [storage=thread] [linkage=external];
-// IR-NEXT:     fn %1 @thread_local_symbol() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:     global %[[VALUE_t:[0-9]+]] t: i32 [storage=thread] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_thread_local_symbol:[0-9]+]] @thread_local_symbol() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm "# %0" [dialect=att] [options=nomem,nostack] {
 // IR-NEXT:             template: "# " %0;
-// IR-NEXT:             in 0 "i" [imm | sym] -> sym width 64 sym<offset=0>(%0);
+// IR-NEXT:             in 0 "i" [imm | sym] -> sym width 64 sym<offset=0>(%[[VALUE_t]]);
 // IR-NEXT:         }
 // IR-NEXT:     }
 // IR-NEXT: }

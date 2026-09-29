@@ -49,19 +49,19 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%5 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %3 ee: volatile f80 [storage=automatic] = float_widen<f80, reason=assign>(const<f64>(1.0));
-// DEFAULT-NEXT:         let %4 eps: f80 [storage=automatic] = read<f80, volatile>(%3);
-// DEFAULT-NEXT:         while %6 ne<f80, exceptions=observable>(add<f80, rounding=nearest_even, exceptions=observable, contract=off>(read<f80, volatile>(%3), float_widen<f80, reason=usual_arith>(const<f64>(1.0))), float_widen<f80, reason=usual_arith>(const<f64>(1.0)))
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_ee:[0-9]+]] ee: volatile f80 [storage=automatic] = float_widen<f80, reason=assign>(const<f64>(1.0));
+// DEFAULT-NEXT:         let %[[VALUE_eps:[0-9]+]] eps: f80 [storage=automatic] = read<f80, volatile>(%[[VALUE_ee]]);
+// DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] ne<f80, exceptions=observable>(add<f80, rounding=nearest_even, exceptions=observable, contract=off>(read<f80, volatile>(%[[VALUE_ee]]), float_widen<f80, reason=usual_arith>(const<f64>(1.0))), float_widen<f80, reason=usual_arith>(const<f64>(1.0)))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<f80>(%4, read<f80, volatile>(%3));
-// DEFAULT-NEXT:                 write<f80, volatile>(%3, div<f80, rounding=nearest_even, exceptions=observable, contract=off>(read<f80>(%4), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2))));
+// DEFAULT-NEXT:                 write<f80>(%[[VALUE_eps]], read<f80, volatile>(%[[VALUE_ee]]));
+// DEFAULT-NEXT:                 write<f80, volatile>(%[[VALUE_ee]], div<f80, rounding=nearest_even, exceptions=observable, contract=off>(read<f80>(%[[VALUE_eps]]), int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(const<i32>(2))));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(%4), const<f80>(1.08420217248550443401E-19))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:         if ne<f80, exceptions=observable>(read<f80>(%[[VALUE_eps]]), const<f80>(1.08420217248550443401E-19))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -46,36 +46,36 @@ int foo (B *x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: u64;
 // DEFAULT-NEXT:         field1 b: u32;
 // DEFAULT-NEXT:         field2 c: u32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8, 12]];
-// DEFAULT-NEXT:     type @type1 A = @type0;
-// DEFAULT-NEXT:     type @type2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = @type[[TYPE0]];
+// DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: u64;
-// DEFAULT-NEXT:         field1 b: ptr<@type0>;
+// DEFAULT-NEXT:         field1 b: ptr<@type[[TYPE0]]>;
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:     } [size=24, align=8, offsets=[0, 8, 16]];
-// DEFAULT-NEXT:     type @type3 B = @type2;
-// DEFAULT-NEXT:     fn %4 @bar(%5 x: u32) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %6 r: u64 [storage=automatic];
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = @type[[TYPE1]];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: u32) -> u32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: u64 [storage=automatic];
 // DEFAULT-NEXT:         asm "" [dialect=att] [options=pure,nomem,nostack] {
-// DEFAULT-NEXT:             inlateout 0 "r" [reg] width 64 place<u64>(%6) from read<u32>(%5);
+// DEFAULT-NEXT:             inlateout 0 "r" [reg] width 64 place<u64>(%[[VALUE_r]]) from read<u32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         return truncate<u32, reason=return, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%6), const<i32>(31)));
+// DEFAULT-NEXT:         return truncate<u32, reason=return, fits=unknown>(shr<u64, amount_out_of_range=ub, fill=zero_extend>(read<u64>(%[[VALUE_r]]), const<i32>(31)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @foo(%8 x: ptr<@type2>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %9 y: ptr<@type0> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<@type0>>(%9, read<ptr<@type0>>(field1(deref(read<ptr<@type2>>(%8)))));
-// DEFAULT-NEXT:         write<u32>(field1(deref(read<ptr<@type0>>(%9))), call<u32, signature=fn(u32) -> u32>(%4, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(field2(deref(read<ptr<@type2>>(%8)))))));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%4, reinterpret<u32, reason=arg, fits=unknown>(read<i32>(field2(deref(read<ptr<@type2>>(%8))))));
-// DEFAULT-NEXT:         let %11: u32 [synthetic];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x_2:[0-9]+]] x: ptr<@type[[TYPE1]]>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: ptr<@type[[TYPE0]]> [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_y]], read<ptr<@type[[TYPE0]]>>(field1(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_x_2]])))));
+// DEFAULT-NEXT:         write<u32>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_y]]))), call<u32, signature=fn(u32) -> u32>(%[[VALUE_bar]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(field2(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_x_2]])))))));
+// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_bar]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(field2(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_x_2]]))))));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             let %10 z: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(1));
-// DEFAULT-NEXT:             write<u32>(%11, or<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%10), const<i32>(24)), shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%10), const<i32>(24))));
+// DEFAULT-NEXT:             let %[[VALUE_z:[0-9]+]] z: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(1));
+// DEFAULT-NEXT:             write<u32>(%[[VALUE0]], or<u32>(shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_z]]), const<i32>(24)), shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE_z]]), const<i32>(24))));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         write<u32>(field2(deref(read<ptr<@type0>>(%9))), read<u32>(%11));
+// DEFAULT-NEXT:         write<u32>(field2(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_y]]))), read<u32>(%[[VALUE0]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -42,17 +42,17 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 <anonymous>: i31b : 6;
 // DEFAULT-NEXT:         field1 b: i513b : 241;
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 0], bit_offsets=[Some(0), Some(6)], bit_units=[(0, 31)], field_units=[Some(0), Some(0)]];
-// DEFAULT-NEXT:     global %1 s: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 a: i4139b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4 i: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %5: i4139b [synthetic] = read<i4139b>(%2);
-// DEFAULT-NEXT:         let %6: i4139b [synthetic] = sub<i4139b, overflow=ub>(read<i4139b>(%5), widen<i4139b, reason=usual_arith>(shl<i513b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i513b>(bitfield1<unit=0, bytes=0..31, bits=6..247>(%1)), read<i32>(%4))));
-// DEFAULT-NEXT:         write<i4139b>(%2, read<i4139b>(%6));
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i4139b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i4139b [synthetic] = read<i4139b>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i4139b [synthetic] = sub<i4139b, overflow=ub>(read<i4139b>(%[[VALUE0]]), widen<i4139b, reason=usual_arith>(shl<i513b, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i513b>(bitfield1<unit=0, bytes=0..31, bits=6..247>(%[[VALUE_s]])), read<i32>(%[[VALUE_i]]))));
+// DEFAULT-NEXT:         write<i4139b>(%[[VALUE_a]], read<i4139b>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

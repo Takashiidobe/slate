@@ -56,30 +56,30 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %30 .str30: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %31 .str31: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %32 .str32: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %33 .str33: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%19 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %24 @__builtin_addc(%20 <unnamed>: u32, %21 <unnamed>: u32, %22 <unnamed>: u32, %23 <unnamed>: ptr<u32>) -> u32 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @add_with_carry(%3 a: u32, %4 b: u32, %5 carry_in: u32, %6 carry_out: ptr<u32>) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u32, signature=fn(u32, u32, u32, ptr<u32>) -> u32>(%24, read<u32>(%3), read<u32>(%4), read<u32>(%5), read<ptr<u32>>(%6));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_4:[0-9]+]] .str[[VALUE_str_4]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 117, 32, 37, 117, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_printf:[0-9]+]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_addc:[0-9]+]] @__builtin_addc(%[[VALUE0:[0-9]+]] <unnamed>: u32, %[[VALUE1:[0-9]+]] <unnamed>: u32, %[[VALUE2:[0-9]+]] <unnamed>: u32, %[[VALUE3:[0-9]+]] <unnamed>: ptr<u32>) -> u32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_add_with_carry:[0-9]+]] @add_with_carry(%[[VALUE_a:[0-9]+]] a: u32, %[[VALUE_b:[0-9]+]] b: u32, %[[VALUE_carry_in:[0-9]+]] carry_in: u32, %[[VALUE_carry_out:[0-9]+]] carry_out: ptr<u32>) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<u32, signature=fn(u32, u32, u32, ptr<u32>) -> u32>(%[[VALUE___builtin_addc]], read<u32>(%[[VALUE_a]]), read<u32>(%[[VALUE_b]]), read<u32>(%[[VALUE_carry_in]]), read<ptr<u32>>(%[[VALUE_carry_out]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @__builtin_subc(%25 <unnamed>: u32, %26 <unnamed>: u32, %27 <unnamed>: u32, %28 <unnamed>: ptr<u32>) -> u32 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @sub_with_borrow(%8 a: u32, %9 b: u32, %10 borrow_in: u32, %11 borrow_out: ptr<u32>) -> u32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<u32, signature=fn(u32, u32, u32, ptr<u32>) -> u32>(%29, read<u32>(%8), read<u32>(%9), read<u32>(%10), read<ptr<u32>>(%11));
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_subc:[0-9]+]] @__builtin_subc(%[[VALUE4:[0-9]+]] <unnamed>: u32, %[[VALUE5:[0-9]+]] <unnamed>: u32, %[[VALUE6:[0-9]+]] <unnamed>: u32, %[[VALUE7:[0-9]+]] <unnamed>: ptr<u32>) -> u32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_sub_with_borrow:[0-9]+]] @sub_with_borrow(%[[VALUE_a_2:[0-9]+]] a: u32, %[[VALUE_b_2:[0-9]+]] b: u32, %[[VALUE_borrow_in:[0-9]+]] borrow_in: u32, %[[VALUE_borrow_out:[0-9]+]] borrow_out: ptr<u32>) -> u32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return call<u32, signature=fn(u32, u32, u32, ptr<u32>) -> u32>(%[[VALUE___builtin_subc]], read<u32>(%[[VALUE_a_2]]), read<u32>(%[[VALUE_b_2]]), read<u32>(%[[VALUE_borrow_in]]), read<ptr<u32>>(%[[VALUE_borrow_out]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %13 carry: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %14 borrow: u32 [storage=automatic];
-// DEFAULT-NEXT:         let %15 sum: u32 [storage=automatic] = call<u32, signature=fn(u32, u32, u32, ptr<u32>) -> u32>(%2, const<u32>(4294967295), const<u32>(1), const<u32>(0), addr_of<ptr<u32>>(%13));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%30)), read<u32>(%15), read<u32>(%13));
-// DEFAULT-NEXT:         let %16 sum2: u32 [storage=automatic] = call<u32, signature=fn(u32, u32, u32, ptr<u32>) -> u32>(%2, const<u32>(1), const<u32>(1), const<u32>(0), addr_of<ptr<u32>>(%13));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%31)), read<u32>(%16), read<u32>(%13));
-// DEFAULT-NEXT:         let %17 diff: u32 [storage=automatic] = call<u32, signature=fn(u32, u32, u32, ptr<u32>) -> u32>(%7, const<u32>(0), const<u32>(1), const<u32>(0), addr_of<ptr<u32>>(%14));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%32)), read<u32>(%17), read<u32>(%14));
-// DEFAULT-NEXT:         let %18 diff2: u32 [storage=automatic] = call<u32, signature=fn(u32, u32, u32, ptr<u32>) -> u32>(%7, const<u32>(5), const<u32>(3), const<u32>(0), addr_of<ptr<u32>>(%14));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%33)), read<u32>(%18), read<u32>(%14));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_carry:[0-9]+]] carry: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_borrow:[0-9]+]] borrow: u32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_sum:[0-9]+]] sum: u32 [storage=automatic] = call<u32, signature=fn(u32, u32, u32, ptr<u32>) -> u32>(%[[VALUE_add_with_carry]], const<u32>(4294967295), const<u32>(1), const<u32>(0), addr_of<ptr<u32>>(%[[VALUE_carry]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])), read<u32>(%[[VALUE_sum]]), read<u32>(%[[VALUE_carry]]));
+// DEFAULT-NEXT:         let %[[VALUE_sum2:[0-9]+]] sum2: u32 [storage=automatic] = call<u32, signature=fn(u32, u32, u32, ptr<u32>) -> u32>(%[[VALUE_add_with_carry]], const<u32>(1), const<u32>(1), const<u32>(0), addr_of<ptr<u32>>(%[[VALUE_carry]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_2]])), read<u32>(%[[VALUE_sum2]]), read<u32>(%[[VALUE_carry]]));
+// DEFAULT-NEXT:         let %[[VALUE_diff:[0-9]+]] diff: u32 [storage=automatic] = call<u32, signature=fn(u32, u32, u32, ptr<u32>) -> u32>(%[[VALUE_sub_with_borrow]], const<u32>(0), const<u32>(1), const<u32>(0), addr_of<ptr<u32>>(%[[VALUE_borrow]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_3]])), read<u32>(%[[VALUE_diff]]), read<u32>(%[[VALUE_borrow]]));
+// DEFAULT-NEXT:         let %[[VALUE_diff2:[0-9]+]] diff2: u32 [storage=automatic] = call<u32, signature=fn(u32, u32, u32, ptr<u32>) -> u32>(%[[VALUE_sub_with_borrow]], const<u32>(5), const<u32>(3), const<u32>(0), addr_of<ptr<u32>>(%[[VALUE_borrow]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str_4]])), read<u32>(%[[VALUE_diff2]]), read<u32>(%[[VALUE_borrow]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

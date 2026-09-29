@@ -26,6 +26,6 @@ int omega = 'Ω';
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     global %0 omega: i32 [storage=static] = const<i32>(52905) [linkage=external];
+// IR-NEXT:     global %[[VALUE_omega:[0-9]+]] omega: i32 [storage=static] = const<i32>(52905) [linkage=external];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

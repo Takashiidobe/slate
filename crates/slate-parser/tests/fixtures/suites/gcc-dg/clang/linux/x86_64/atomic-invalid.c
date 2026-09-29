@@ -61,26 +61,26 @@ main ()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     global %1 i: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 e: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 b: i32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %4 s: u64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %5 x: bool [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %6 @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %7: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=relaxed, failure=seq_cst>(deref(addr_of<ptr<i32>>(%1)), addr_of<ptr<i32>>(%2), const<i32>(1));
-// DEFAULT-NEXT:         let %8: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=seq_cst, failure=release>(deref(addr_of<ptr<i32>>(%1)), addr_of<ptr<i32>>(%2), const<i32>(1));
-// DEFAULT-NEXT:         let %9: bool [synthetic] = compare_exchange<i32, form=write_back, weak=true, success=seq_cst, failure=acq_rel>(deref(addr_of<ptr<i32>>(%1)), addr_of<ptr<i32>>(%2), const<i32>(1));
-// DEFAULT-NEXT:         read<i32, atomic=release>(deref(addr_of<ptr<i32>>(%1)));
-// DEFAULT-NEXT:         read<i32, atomic=acq_rel>(deref(addr_of<ptr<i32>>(%1)));
-// DEFAULT-NEXT:         write<i32, atomic=acquire>(deref(addr_of<ptr<i32>>(%1)), const<i32>(1));
-// DEFAULT-NEXT:         write<i32, atomic=consume>(deref(addr_of<ptr<i32>>(%1)), const<i32>(1));
-// DEFAULT-NEXT:         write<i32, atomic=acq_rel>(deref(addr_of<ptr<i32>>(%1)), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%1, from_bool<i32, reason=assign>(const<bool>(false)));
-// DEFAULT-NEXT:         read<i32, atomic=dynamic(const<i32>(44))>(deref(addr_of<ptr<i32>>(%1)));
-// DEFAULT-NEXT:         write<bool, atomic=consume>(deref(addr_of<ptr<bool>>(%5)), const<bool>(false));
-// DEFAULT-NEXT:         write<bool, atomic=acquire>(deref(addr_of<ptr<bool>>(%5)), const<bool>(false));
-// DEFAULT-NEXT:         write<bool, atomic=acq_rel>(deref(addr_of<ptr<bool>>(%5)), const<bool>(false));
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_e:[0-9]+]] e: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: u64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x:[0-9]+]] x: bool [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=relaxed, failure=seq_cst>(deref(addr_of<ptr<i32>>(%[[VALUE_i]])), addr_of<ptr<i32>>(%[[VALUE_e]]), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic] = compare_exchange<i32, form=write_back, weak=false, success=seq_cst, failure=release>(deref(addr_of<ptr<i32>>(%[[VALUE_i]])), addr_of<ptr<i32>>(%[[VALUE_e]]), const<i32>(1));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic] = compare_exchange<i32, form=write_back, weak=true, success=seq_cst, failure=acq_rel>(deref(addr_of<ptr<i32>>(%[[VALUE_i]])), addr_of<ptr<i32>>(%[[VALUE_e]]), const<i32>(1));
+// DEFAULT-NEXT:         read<i32, atomic=release>(deref(addr_of<ptr<i32>>(%[[VALUE_i]])));
+// DEFAULT-NEXT:         read<i32, atomic=acq_rel>(deref(addr_of<ptr<i32>>(%[[VALUE_i]])));
+// DEFAULT-NEXT:         write<i32, atomic=acquire>(deref(addr_of<ptr<i32>>(%[[VALUE_i]])), const<i32>(1));
+// DEFAULT-NEXT:         write<i32, atomic=consume>(deref(addr_of<ptr<i32>>(%[[VALUE_i]])), const<i32>(1));
+// DEFAULT-NEXT:         write<i32, atomic=acq_rel>(deref(addr_of<ptr<i32>>(%[[VALUE_i]])), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], from_bool<i32, reason=assign>(const<bool>(false)));
+// DEFAULT-NEXT:         read<i32, atomic=dynamic(const<i32>(44))>(deref(addr_of<ptr<i32>>(%[[VALUE_i]])));
+// DEFAULT-NEXT:         write<bool, atomic=consume>(deref(addr_of<ptr<bool>>(%[[VALUE_x]])), const<bool>(false));
+// DEFAULT-NEXT:         write<bool, atomic=acquire>(deref(addr_of<ptr<bool>>(%[[VALUE_x]])), const<bool>(false));
+// DEFAULT-NEXT:         write<bool, atomic=acq_rel>(deref(addr_of<ptr<bool>>(%[[VALUE_x]])), const<bool>(false));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

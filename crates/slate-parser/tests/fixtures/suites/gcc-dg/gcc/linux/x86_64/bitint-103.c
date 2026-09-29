@@ -41,16 +41,16 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 S = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 <anonymous>: i512b : 98;
 // DEFAULT-NEXT:         field1 b: i1225b : 509;
 // DEFAULT-NEXT:     } [size=80, align=8, offsets=[0, 12], bit_offsets=[Some(0), Some(98)], bit_units=[(0, 76)], field_units=[Some(0), Some(0)]];
-// DEFAULT-NEXT:     global %1 s: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 a: i1225b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %4: i1225b [synthetic] = read<i1225b>(%2);
-// DEFAULT-NEXT:         let %5: i1225b [synthetic] = xor<i1225b>(read<i1225b>(%4), reinterpret<i1225b, reason=usual_arith, fits=unknown>(widen<u1225b, reason=usual_arith>(reinterpret<u1025b, reason=explicit, fits=unknown>(truncate<i1025b, reason=explicit, fits=unknown>(read<i1225b>(bitfield1<unit=0, bytes=0..76, bits=98..607>(%1)))))));
-// DEFAULT-NEXT:         write<i1225b>(%2, read<i1225b>(%5));
+// DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i1225b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i1225b [synthetic] = read<i1225b>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i1225b [synthetic] = xor<i1225b>(read<i1225b>(%[[VALUE0]]), reinterpret<i1225b, reason=usual_arith, fits=unknown>(widen<u1225b, reason=usual_arith>(reinterpret<u1025b, reason=explicit, fits=unknown>(truncate<i1025b, reason=explicit, fits=unknown>(read<i1225b>(bitfield1<unit=0, bytes=0..76, bits=98..607>(%[[VALUE_s]])))))));
+// DEFAULT-NEXT:         write<i1225b>(%[[VALUE_a]], read<i1225b>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

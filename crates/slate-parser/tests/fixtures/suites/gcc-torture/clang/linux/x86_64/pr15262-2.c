@@ -61,30 +61,30 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 A = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_A:[0-9]+]] A = struct {
 // DEFAULT-NEXT:         field0 t: i32;
 // DEFAULT-NEXT:         field1 i: i32;
 // DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// DEFAULT-NEXT:     type @type1 B = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = struct {
 // DEFAULT-NEXT:         field0 p: ptr<i32>;
 // DEFAULT-NEXT:         field1 b: f32;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     global %3 X: f32 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %4 @foo(%5 b: @type1, %6 q: ptr<@type0>, %7 h: ptr<f32>) -> i32 [linkage=external] [abi=sysv64(native_c, scalar, scalar) -> scalar] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %11: f32 [synthetic] = read<f32>(%3);
-// DEFAULT-NEXT:         let %12: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%11), read<f32>(deref(read<ptr<f32>>(%7))));
-// DEFAULT-NEXT:         write<f32>(%3, read<f32>(%12));
-// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field0(%5))), const<i32>(3));
-// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type0>>(%6))), const<i32>(2));
-// DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32>>(field0(%5))));
+// DEFAULT-NEXT:     global %[[VALUE_X:[0-9]+]] X: f32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_b:[0-9]+]] b: @type[[TYPE_B]], %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_A]]>, %[[VALUE_h:[0-9]+]] h: ptr<f32>) -> i32 [linkage=external] [abi=sysv64(native_c, scalar, scalar) -> scalar] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: f32 [synthetic] = read<f32>(%[[VALUE_X]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: f32 [synthetic] = add<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%[[VALUE0]]), read<f32>(deref(read<ptr<f32>>(%[[VALUE_h]]))));
+// DEFAULT-NEXT:         write<f32>(%[[VALUE_X]], read<f32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field0(%[[VALUE_b]]))), const<i32>(3));
+// DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_q]]))), const<i32>(2));
+// DEFAULT-NEXT:         return read<i32>(deref(read<ptr<i32>>(field0(%[[VALUE_b]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %9 a: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %10 b: @type1 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<i32>>(field0(%10), addr_of<ptr<i32>>(field0(%9)));
-// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(@type1, ptr<@type0>, ptr<f32>) -> i32, abi=sysv64(native_c, scalar, scalar) -> scalar>(%4, copy<@type1, reason=arg>(read<@type1>(%10)), addr_of<ptr<@type0>>(%9), addr_of<ptr<f32>>(%3)), const<i32>(3))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_A]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b_2:[0-9]+]] b: @type[[TYPE_B]] [storage=automatic];
+// DEFAULT-NEXT:         write<ptr<i32>>(field0(%[[VALUE_b_2]]), addr_of<ptr<i32>>(field0(%[[VALUE_a]])));
+// DEFAULT-NEXT:         if eq<i32>(call<i32, signature=fn(@type[[TYPE_B]], ptr<@type[[TYPE_A]]>, ptr<f32>) -> i32, abi=sysv64(native_c, scalar, scalar) -> scalar>(%[[VALUE_foo]], copy<@type[[TYPE_B]], reason=arg>(read<@type[[TYPE_B]]>(%[[VALUE_b_2]])), addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_a]]), addr_of<ptr<f32>>(%[[VALUE_X]])), const<i32>(3))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

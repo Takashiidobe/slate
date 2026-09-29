@@ -56,27 +56,27 @@ void refers(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
-// IR-NEXT:     type @type0 T = struct incomplete;
-// IR-NEXT:     type @type1 U = struct {
+// IR-NEXT:     type @type[[TYPE_T:[0-9]+]] T = struct incomplete;
+// IR-NEXT:     type @type[[TYPE_U:[0-9]+]] U = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     type @type2 T = struct {
+// IR-NEXT:     type @type[[TYPE_T_2:[0-9]+]] T = struct {
 // IR-NEXT:         field0 b: i64;
 // IR-NEXT:     } [size=8, align=8, offsets=[0]];
-// IR-NEXT:     type @type3 U = struct {
+// IR-NEXT:     type @type[[TYPE_U_2:[0-9]+]] U = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:     } [size=4, align=4, offsets=[0]];
-// IR-NEXT:     global %1 gt: ptr<@type0> [storage=static] [linkage=external];
-// IR-NEXT:     global %3 gu: @type1 [storage=static] [linkage=external];
-// IR-NEXT:     fn %4 @hides() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %6 local: ptr<@type2> [storage=automatic];
-// IR-NEXT:         let %7 completed: @type2 [storage=automatic];
+// IR-NEXT:     global %[[VALUE_gt:[0-9]+]] gt: ptr<@type[[TYPE_T]]> [storage=static] [linkage=external];
+// IR-NEXT:     global %[[VALUE_gu:[0-9]+]] gu: @type[[TYPE_U]] [storage=static] [linkage=external];
+// IR-NEXT:     fn %[[VALUE_hides:[0-9]+]] @hides() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_local:[0-9]+]] local: ptr<@type[[TYPE_T_2]]> [storage=automatic];
+// IR-NEXT:         let %[[VALUE_completed:[0-9]+]] completed: @type[[TYPE_T_2]] [storage=automatic];
 // IR-NEXT:     }
-// IR-NEXT:     fn %8 @hides_complete() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %10 u: @type3 [storage=automatic];
+// IR-NEXT:     fn %[[VALUE_hides_complete:[0-9]+]] @hides_complete() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE_U_2]] [storage=automatic];
 // IR-NEXT:     }
-// IR-NEXT:     fn %11 @refers() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-NEXT:         let %12 outer: ptr<@type1> [storage=automatic] = addr_of<ptr<@type1>>(%3);
+// IR-NEXT:     fn %[[VALUE_refers:[0-9]+]] @refers() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-NEXT:         let %[[VALUE_outer:[0-9]+]] outer: ptr<@type[[TYPE_U]]> [storage=automatic] = addr_of<ptr<@type[[TYPE_U]]>>(%[[VALUE_gu]]);
 // IR-NEXT:     }
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

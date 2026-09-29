@@ -49,9 +49,9 @@ int have_quoted_missing = 0;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 have_angled: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     global %1 have_angled_missing: i32 [storage=static] = const<i32>(0) [linkage=external];
-// DEFAULT-NEXT:     global %2 have_quoted: i32 [storage=static] = const<i32>(1) [linkage=external];
-// DEFAULT-NEXT:     global %3 have_quoted_missing: i32 [storage=static] = const<i32>(0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_have_angled:[0-9]+]] have_angled: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_have_angled_missing:[0-9]+]] have_angled_missing: i32 [storage=static] = const<i32>(0) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_have_quoted:[0-9]+]] have_quoted: i32 [storage=static] = const<i32>(1) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_have_quoted_missing:[0-9]+]] have_quoted_missing: i32 [storage=static] = const<i32>(0) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

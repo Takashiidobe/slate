@@ -31,21 +31,21 @@ int foo(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 c: f64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @bar() -> f64 [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 a: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %4 b: f64 [storage=automatic];
-// DEFAULT-NEXT:         let %5 i: i32 [storage=automatic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(call<f64, signature=fn() -> f64>(%0), call<f64, signature=fn() -> f64>(%0)));
-// DEFAULT-NEXT:         write<f64>(%3, int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%5)));
-// DEFAULT-NEXT:         let %6: i32 [synthetic] = read<i32>(%5);
-// DEFAULT-NEXT:         let %7: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%6), const<i32>(1));
-// DEFAULT-NEXT:         write<i32>(%5, read<i32>(%7));
-// DEFAULT-NEXT:         let %8: f64 [synthetic] = read<f64>(%3);
-// DEFAULT-NEXT:         let %9: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%8), const<f64>(0.1));
-// DEFAULT-NEXT:         write<f64>(%3, read<f64>(%9));
-// DEFAULT-NEXT:         write<i32>(%5, float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%1), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%5)))));
-// DEFAULT-NEXT:         return read<i32>(%5);
+// DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: f64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> f64 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: f64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: f64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(call<f64, signature=fn() -> f64>(%[[VALUE_bar]]), call<f64, signature=fn() -> f64>(%[[VALUE_bar]])));
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_i]])));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: f64 [synthetic] = read<f64>(%[[VALUE_a]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: f64 [synthetic] = add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE2]]), const<f64>(0.1));
+// DEFAULT-NEXT:         write<f64>(%[[VALUE_a]], read<f64>(%[[VALUE3]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], float_to_int<i32, reason=assign, out_of_range=ub, exceptions=observable>(add<f64, rounding=nearest_even, exceptions=observable, contract=fast>(read<f64>(%[[VALUE_c]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_i]])))));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

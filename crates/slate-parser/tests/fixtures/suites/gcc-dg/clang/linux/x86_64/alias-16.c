@@ -71,44 +71,44 @@ f (int *i, double *d, struct s1 *s1, struct s2 *s2, char *c)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 incomplete = struct incomplete;
-// DEFAULT-NEXT:     type @type1 s1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_incomplete:[0-9]+]] incomplete = struct incomplete;
+// DEFAULT-NEXT:     type @type[[TYPE_s1:[0-9]+]] s1 = struct {
 // DEFAULT-NEXT:         field0 i: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 s2 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s2:[0-9]+]] s2 = struct {
 // DEFAULT-NEXT:         field0 d: f64;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %3 @f(%4 i: ptr<i32>, %5 d: ptr<f64>, %6 s1: ptr<@type1>, %7 s2: ptr<@type2>, %8 c: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=explicit>(read<ptr<i32>>(%4));
-// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=explicit>(read<ptr<f64>>(%5));
-// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=explicit>(read<ptr<@type1>>(%6));
-// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=explicit>(read<ptr<@type2>>(%7));
-// DEFAULT-NEXT:         read<ptr<i8>>(%8);
-// DEFAULT-NEXT:         read<ptr<i32>>(%4);
-// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=explicit>(read<ptr<f64>>(%5));
-// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=explicit>(read<ptr<@type1>>(%6));
-// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=explicit>(read<ptr<@type2>>(%7));
-// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=explicit>(read<ptr<i8>>(%8));
-// DEFAULT-NEXT:         pointer_cast<ptr<f64>, reason=explicit>(read<ptr<i32>>(%4));
-// DEFAULT-NEXT:         read<ptr<f64>>(%5);
-// DEFAULT-NEXT:         pointer_cast<ptr<f64>, reason=explicit>(read<ptr<@type1>>(%6));
-// DEFAULT-NEXT:         pointer_cast<ptr<f64>, reason=explicit>(read<ptr<@type2>>(%7));
-// DEFAULT-NEXT:         pointer_cast<ptr<f64>, reason=explicit>(read<ptr<i8>>(%8));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<i32>>(%4));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<f64>>(%5));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<@type1>>(%6));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<@type2>>(%7));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<i8>>(%8));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type1>, reason=explicit>(read<ptr<i32>>(%4));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type1>, reason=explicit>(read<ptr<f64>>(%5));
-// DEFAULT-NEXT:         read<ptr<@type1>>(%6);
-// DEFAULT-NEXT:         pointer_cast<ptr<@type1>, reason=explicit>(read<ptr<@type2>>(%7));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type1>, reason=explicit>(read<ptr<i8>>(%8));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type2>, reason=explicit>(read<ptr<i32>>(%4));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type2>, reason=explicit>(read<ptr<f64>>(%5));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type2>, reason=explicit>(read<ptr<@type1>>(%6));
-// DEFAULT-NEXT:         read<ptr<@type2>>(%7);
-// DEFAULT-NEXT:         pointer_cast<ptr<@type2>, reason=explicit>(read<ptr<i8>>(%8));
+// DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_i:[0-9]+]] i: ptr<i32>, %[[VALUE_d:[0-9]+]] d: ptr<f64>, %[[VALUE_s1:[0-9]+]] s1: ptr<@type[[TYPE_s1]]>, %[[VALUE_s2:[0-9]+]] s2: ptr<@type[[TYPE_s2]]>, %[[VALUE_c:[0-9]+]] c: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=explicit>(read<ptr<i32>>(%[[VALUE_i]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=explicit>(read<ptr<f64>>(%[[VALUE_d]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=explicit>(read<ptr<@type[[TYPE_s1]]>>(%[[VALUE_s1]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=explicit>(read<ptr<@type[[TYPE_s2]]>>(%[[VALUE_s2]]));
+// DEFAULT-NEXT:         read<ptr<i8>>(%[[VALUE_c]]);
+// DEFAULT-NEXT:         read<ptr<i32>>(%[[VALUE_i]]);
+// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=explicit>(read<ptr<f64>>(%[[VALUE_d]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=explicit>(read<ptr<@type[[TYPE_s1]]>>(%[[VALUE_s1]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=explicit>(read<ptr<@type[[TYPE_s2]]>>(%[[VALUE_s2]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=explicit>(read<ptr<i8>>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<f64>, reason=explicit>(read<ptr<i32>>(%[[VALUE_i]]));
+// DEFAULT-NEXT:         read<ptr<f64>>(%[[VALUE_d]]);
+// DEFAULT-NEXT:         pointer_cast<ptr<f64>, reason=explicit>(read<ptr<@type[[TYPE_s1]]>>(%[[VALUE_s1]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<f64>, reason=explicit>(read<ptr<@type[[TYPE_s2]]>>(%[[VALUE_s2]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<f64>, reason=explicit>(read<ptr<i8>>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_incomplete]]>, reason=explicit>(read<ptr<i32>>(%[[VALUE_i]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_incomplete]]>, reason=explicit>(read<ptr<f64>>(%[[VALUE_d]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_incomplete]]>, reason=explicit>(read<ptr<@type[[TYPE_s1]]>>(%[[VALUE_s1]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_incomplete]]>, reason=explicit>(read<ptr<@type[[TYPE_s2]]>>(%[[VALUE_s2]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_incomplete]]>, reason=explicit>(read<ptr<i8>>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_s1]]>, reason=explicit>(read<ptr<i32>>(%[[VALUE_i]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_s1]]>, reason=explicit>(read<ptr<f64>>(%[[VALUE_d]]));
+// DEFAULT-NEXT:         read<ptr<@type[[TYPE_s1]]>>(%[[VALUE_s1]]);
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_s1]]>, reason=explicit>(read<ptr<@type[[TYPE_s2]]>>(%[[VALUE_s2]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_s1]]>, reason=explicit>(read<ptr<i8>>(%[[VALUE_c]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_s2]]>, reason=explicit>(read<ptr<i32>>(%[[VALUE_i]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_s2]]>, reason=explicit>(read<ptr<f64>>(%[[VALUE_d]]));
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_s2]]>, reason=explicit>(read<ptr<@type[[TYPE_s1]]>>(%[[VALUE_s1]]));
+// DEFAULT-NEXT:         read<ptr<@type[[TYPE_s2]]>>(%[[VALUE_s2]]);
+// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_s2]]>, reason=explicit>(read<ptr<i8>>(%[[VALUE_c]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

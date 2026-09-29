@@ -37,11 +37,11 @@ void foo11c(struct s { int (*x)[*]; } *y);	/* { dg-error "a member of a structur
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 x: ptr<vla<i32, *>>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @foo11a(%8 x: ptr<i32> [array=8]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %4 @foo11b(%9 x: u64, %10 y: ptr<i32> [array=*]) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %7 @foo11c(%11 y: ptr<@type0>) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo11a:[0-9]+]] @foo11a(%[[VALUE_x:[0-9]+]] x: ptr<i32> [array=8]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo11b:[0-9]+]] @foo11b(%[[VALUE_x_2:[0-9]+]] x: u64, %[[VALUE_y:[0-9]+]] y: ptr<i32> [array=*]) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo11c:[0-9]+]] @foo11c(%[[VALUE_y_2:[0-9]+]] y: ptr<@type[[TYPE_s]]>) -> void [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

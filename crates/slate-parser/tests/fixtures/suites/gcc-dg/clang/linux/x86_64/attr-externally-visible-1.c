@@ -73,25 +73,25 @@ int main (void) { }
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %6 bar1: ptr<i8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %7 bar2: ptr<i8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %8 bar3: ptr<i8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %9 bar4: ptr<i8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %10 bar5: ptr<i8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %11 bar6: ptr<i8> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @foo1() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     global %[[VALUE_bar1:[0-9]+]] bar1: ptr<i8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bar2:[0-9]+]] bar2: ptr<i8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bar3:[0-9]+]] bar3: ptr<i8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bar4:[0-9]+]] bar4: ptr<i8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bar5:[0-9]+]] bar5: ptr<i8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_bar6:[0-9]+]] bar6: ptr<i8> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo1:[0-9]+]] @foo1() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %1 @foo2() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo2:[0-9]+]] @foo2() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @foo3() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo3:[0-9]+]] @foo3() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %3 @foo4() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo4:[0-9]+]] @foo4() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @foo5() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo5:[0-9]+]] @foo5() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @foo6() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_foo6:[0-9]+]] @foo6() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %12 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

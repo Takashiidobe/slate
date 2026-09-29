@@ -42,11 +42,11 @@ foo (long x)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 b: i1025b [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %1 @foo(%2 x: i64) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3: i1025b [synthetic] = read<i1025b>(%0);
-// DEFAULT-NEXT:         let %4: i1025b [synthetic] = add<i1025b, overflow=ub>(read<i1025b>(%3), reinterpret<i1025b, reason=usual_arith, fits=unknown>(widen<u1025b, reason=usual_arith>(reinterpret<u255b, reason=explicit, fits=unknown>(widen<i255b, reason=explicit>(read<i64>(%2))))));
-// DEFAULT-NEXT:         write<i1025b>(%0, read<i1025b>(%4));
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i1025b [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_x:[0-9]+]] x: i64) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i1025b [synthetic] = read<i1025b>(%[[VALUE_b]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i1025b [synthetic] = add<i1025b, overflow=ub>(read<i1025b>(%[[VALUE0]]), reinterpret<i1025b, reason=usual_arith, fits=unknown>(widen<u1025b, reason=usual_arith>(reinterpret<u255b, reason=explicit, fits=unknown>(widen<i255b, reason=explicit>(read<i64>(%[[VALUE_x]]))))));
+// DEFAULT-NEXT:         write<i1025b>(%[[VALUE_b]], read<i1025b>(%[[VALUE1]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

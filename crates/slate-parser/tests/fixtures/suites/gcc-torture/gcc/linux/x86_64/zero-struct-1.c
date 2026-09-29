@@ -46,36 +46,36 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 g = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_g:[0-9]+]] g = struct {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
-// DEFAULT-NEXT:     global %1 y: array<i8, 3> [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %2 f: ptr<i8> [storage=static] = addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%1), const<i32>(0)))) [linkage=external];
-// DEFAULT-NEXT:     global %3 ff: ptr<i8> [storage=static] = addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%1), const<i32>(0)))) [linkage=external];
-// DEFAULT-NEXT:     fn %4 @h() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 t: @type0 [storage=automatic];
-// DEFAULT-NEXT:         let %9: ptr<i8> [synthetic] = read<ptr<i8>>(%3);
-// DEFAULT-NEXT:         let %10: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%9), const<i32>(1));
-// DEFAULT-NEXT:         write<ptr<i8>>(%3, read<ptr<i8>>(%10));
-// DEFAULT-NEXT:         let %11: ptr<i8> [synthetic] = read<ptr<i8>>(%2);
-// DEFAULT-NEXT:         let %12: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%11), const<i32>(1));
-// DEFAULT-NEXT:         write<ptr<i8>>(%2, read<ptr<i8>>(%12));
-// DEFAULT-NEXT:         write<@type0>(deref(pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<i8>>(%11))), copy<@type0, reason=assign>(read<@type0>(deref(pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<i8>>(%9))))));
-// DEFAULT-NEXT:         let %13: ptr<i8> [synthetic] = read<ptr<i8>>(%2);
-// DEFAULT-NEXT:         let %14: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%13), const<i32>(1));
-// DEFAULT-NEXT:         write<ptr<i8>>(%2, read<ptr<i8>>(%14));
-// DEFAULT-NEXT:         write<@type0>(deref(pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<i8>>(%13))), copy<@type0, reason=assign>(read<@type0>(compound_literal %8 [storage=automatic] = aggregate<@type0, zero_fill=false>())));
-// DEFAULT-NEXT:         let %15: ptr<i8> [synthetic] = read<ptr<i8>>(%3);
-// DEFAULT-NEXT:         let %16: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%15), const<i32>(1));
-// DEFAULT-NEXT:         write<ptr<i8>>(%3, read<ptr<i8>>(%16));
-// DEFAULT-NEXT:         write<@type0>(%5, copy<@type0, reason=assign>(read<@type0>(deref(pointer_cast<ptr<@type0>, reason=explicit>(read<ptr<i8>>(%15))))));
+// DEFAULT-NEXT:     global %[[VALUE_y:[0-9]+]] y: array<i8, 3> [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_f:[0-9]+]] f: ptr<i8> [storage=static] = addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_y]]), const<i32>(0)))) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ff:[0-9]+]] ff: ptr<i8> [storage=static] = addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_y]]), const<i32>(0)))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_h:[0-9]+]] @h() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE_g]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_ff]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_ff]], read<ptr<i8>>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_f]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_f]], read<ptr<i8>>(%[[VALUE3]]));
+// DEFAULT-NEXT:         write<@type[[TYPE_g]]>(deref(pointer_cast<ptr<@type[[TYPE_g]]>, reason=explicit>(read<ptr<i8>>(%[[VALUE2]]))), copy<@type[[TYPE_g]], reason=assign>(read<@type[[TYPE_g]]>(deref(pointer_cast<ptr<@type[[TYPE_g]]>, reason=explicit>(read<ptr<i8>>(%[[VALUE0]]))))));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_f]]);
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE4]]), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_f]], read<ptr<i8>>(%[[VALUE5]]));
+// DEFAULT-NEXT:         write<@type[[TYPE_g]]>(deref(pointer_cast<ptr<@type[[TYPE_g]]>, reason=explicit>(read<ptr<i8>>(%[[VALUE4]]))), copy<@type[[TYPE_g]], reason=assign>(read<@type[[TYPE_g]]>(compound_literal %[[VALUE6:[0-9]+]] [storage=automatic] = aggregate<@type[[TYPE_g]], zero_fill=false>())));
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_ff]]);
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE7]]), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_ff]], read<ptr<i8>>(%[[VALUE8]]));
+// DEFAULT-NEXT:         write<@type[[TYPE_g]]>(%[[VALUE_t]], copy<@type[[TYPE_g]], reason=assign>(read<@type[[TYPE_g]]>(deref(pointer_cast<ptr<@type[[TYPE_g]]>, reason=explicit>(read<ptr<i8>>(%[[VALUE7]]))))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%4);
-// DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%2), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%1), const<i32>(2)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
-// DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%3), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%1), const<i32>(2)))))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%6);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_h]]);
+// DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_f]]), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_y]]), const<i32>(2)))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_ff]]), addr_of<ptr<i8>>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_y]]), const<i32>(2)))))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

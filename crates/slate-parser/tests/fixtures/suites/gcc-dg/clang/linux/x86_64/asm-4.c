@@ -45,27 +45,27 @@ int main()
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %1 x: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %2 y: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %3 z: i32 [storage=automatic];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: i32 [storage=automatic];
 // DEFAULT-NEXT:         asm volatile "test0 X%0Y%[arg]Z" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "test0 X" %0 "Y" %0 "Z";
-// DEFAULT-NEXT:             lateout 0 [arg] "g" [reg | mem | imm | sym] -> reg width 32 place<i32>(%1);
+// DEFAULT-NEXT:             lateout 0 [arg] "g" [reg | mem | imm | sym] -> reg width 32 place<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "test1 X%[out]Y%[in]Z" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "test1 X" %0 "Y" %0 "Z";
-// DEFAULT-NEXT:             inlateout 0 [out] "g" [reg | mem | imm | sym] -> reg width 32 place<i32>(%2) from read<i32>(%2);
+// DEFAULT-NEXT:             inlateout 0 [out] "g" [reg | mem | imm | sym] -> reg width 32 place<i32>(%[[VALUE_y]]) from read<i32>(%[[VALUE_y]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "test2 X%a0Y%a[arg]Z" [dialect=att] [options=nostack] [alternative=none] {
 // DEFAULT-NEXT:             template: "test2 X" %a0 "Y" %a0 "Z";
-// DEFAULT-NEXT:             in 0 [arg] "p" [unresolved("p")] width 64 addr_of<ptr<i32>>(%3);
+// DEFAULT-NEXT:             in 0 [arg] "p" [unresolved("p")] width 64 addr_of<ptr<i32>>(%[[VALUE_z]]);
 // DEFAULT-NEXT:             rejected: 0 (operand 0: unresolved("p"));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         asm volatile "test3 %[in]" [dialect=att] [options=nostack] {
 // DEFAULT-NEXT:             template: "test3 " %1;
-// DEFAULT-NEXT:             inlateout 0 [inout] "g" [reg | mem | imm | sym] -> reg width 32 place<i32>(%1) from read<i32>(%1);
-// DEFAULT-NEXT:             in 1 [in] "g" [reg | mem | imm | sym] -> reg width 32 read<i32>(%2);
+// DEFAULT-NEXT:             inlateout 0 [inout] "g" [reg | mem | imm | sym] -> reg width 32 place<i32>(%[[VALUE_x]]) from read<i32>(%[[VALUE_x]]);
+// DEFAULT-NEXT:             in 1 [in] "g" [reg | mem | imm | sym] -> reg width 32 read<i32>(%[[VALUE_y]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

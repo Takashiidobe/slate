@@ -56,24 +56,24 @@ void floating_offset(void) { __atomic_fetch_add(slots, 1.5, 5); }
 // IR-DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // IR-DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // IR-DEFAULT-NEXT:     }
-// IR-DEFAULT-NEXT:     type @type0 Pair = array<i32, 2>;
-// IR-DEFAULT-NEXT:     global %1 ints: ptr<i32> [storage=static] [linkage=external];
-// IR-DEFAULT-NEXT:     global %2 floats: ptr<f32> [storage=static] [linkage=external];
-// IR-DEFAULT-NEXT:     global %3 slots: ptr<ptr<i32>> [storage=static] [linkage=external];
-// IR-DEFAULT-NEXT:     global %4 bits: i64 [storage=static] [linkage=external];
-// IR-DEFAULT-NEXT:     global %5 flag: i32 [storage=static] [linkage=external];
-// IR-DEFAULT-NEXT:     global %8 pair_size: u64 [storage=static] = const<u64>(8) [linkage=external];
-// IR-DEFAULT-NEXT:     fn %6 @mismatched() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
-// IR-DEFAULT-NEXT:         return conditional<ptr<void>>(ne<i32>(read<i32>(%5), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%1)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<f32>>(%2)));
+// IR-DEFAULT-NEXT:     type @type[[TYPE_Pair:[0-9]+]] Pair = array<i32, 2>;
+// IR-DEFAULT-NEXT:     global %[[VALUE_ints:[0-9]+]] ints: ptr<i32> [storage=static] [linkage=external];
+// IR-DEFAULT-NEXT:     global %[[VALUE_floats:[0-9]+]] floats: ptr<f32> [storage=static] [linkage=external];
+// IR-DEFAULT-NEXT:     global %[[VALUE_slots:[0-9]+]] slots: ptr<ptr<i32>> [storage=static] [linkage=external];
+// IR-DEFAULT-NEXT:     global %[[VALUE_bits:[0-9]+]] bits: i64 [storage=static] [linkage=external];
+// IR-DEFAULT-NEXT:     global %[[VALUE_flag:[0-9]+]] flag: i32 [storage=static] [linkage=external];
+// IR-DEFAULT-NEXT:     global %[[VALUE_pair_size:[0-9]+]] pair_size: u64 [storage=static] = const<u64>(8) [linkage=external];
+// IR-DEFAULT-NEXT:     fn %[[VALUE_mismatched:[0-9]+]] @mismatched() -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// IR-DEFAULT-NEXT:         return conditional<ptr<void>>(ne<i32>(read<i32>(%[[VALUE_flag]]), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%[[VALUE_ints]])), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<f32>>(%[[VALUE_floats]])));
 // IR-DEFAULT-NEXT:     }
-// IR-DEFAULT-NEXT:     fn %7 @ordered() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-DEFAULT-NEXT:         return add<i32, overflow=ub>(from_bool<i32, reason=promotion>(lt<ptr<i32>>(read<ptr<i32>>(%1), int_to_ptr<ptr<i32>, reason=usual_arith>(const<i32>(1)))), from_bool<i32, reason=promotion>(gt<ptr<i32>>(null<ptr<i32>>, read<ptr<i32>>(%1))));
+// IR-DEFAULT-NEXT:     fn %[[VALUE_ordered:[0-9]+]] @ordered() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-DEFAULT-NEXT:         return add<i32, overflow=ub>(from_bool<i32, reason=promotion>(lt<ptr<i32>>(read<ptr<i32>>(%[[VALUE_ints]]), int_to_ptr<ptr<i32>, reason=usual_arith>(const<i32>(1)))), from_bool<i32, reason=promotion>(gt<ptr<i32>>(null<ptr<i32>>, read<ptr<i32>>(%[[VALUE_ints]]))));
 // IR-DEFAULT-NEXT:     }
-// IR-DEFAULT-NEXT:     fn %9 @first_half() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-DEFAULT-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(temporary %11 = bit_cast<array<i32, 2>, reason=explicit>(read<i64>(%4))), const<i32>(0))));
+// IR-DEFAULT-NEXT:     fn %[[VALUE_first_half:[0-9]+]] @first_half() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-DEFAULT-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(temporary %[[VALUE0:[0-9]+]] = bit_cast<array<i32, 2>, reason=explicit>(read<i64>(%[[VALUE_bits]]))), const<i32>(0))));
 // IR-DEFAULT-NEXT:     }
-// IR-DEFAULT-NEXT:     fn %10 @floating_offset() -> void [linkage=external] [fallthrough=ret_void] {
-// IR-DEFAULT-NEXT:         let %12: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=seq_cst>(deref(read<ptr<ptr<i32>>>(%3)), ptr_offset<ptr<i32>, subtract=false, element=u8, overflow=wrap>(old<ptr<i32>>, float_to_int<i64, reason=arg, out_of_range=ub, exceptions=ignore>(const<f64>(1.5))));
+// IR-DEFAULT-NEXT:     fn %[[VALUE_floating_offset:[0-9]+]] @floating_offset() -> void [linkage=external] [fallthrough=ret_void] {
+// IR-DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<i32> [synthetic] = update<ptr<i32>, result=old, atomic=seq_cst>(deref(read<ptr<ptr<i32>>>(%[[VALUE_slots]])), ptr_offset<ptr<i32>, subtract=false, element=u8, overflow=wrap>(old<ptr<i32>>, float_to_int<i64, reason=arg, out_of_range=ub, exceptions=ignore>(const<f64>(1.5))));
 // IR-DEFAULT-NEXT:     }
 // IR-DEFAULT-NEXT: }
 // SLATE-FILECHECK-END IR-DEFAULT

@@ -36,20 +36,20 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 Conditional = struct {
-// DEFAULT-NEXT:         field0 ctx: @type1;
+// DEFAULT-NEXT:     type @type[[TYPE_Conditional:[0-9]+]] Conditional = struct {
+// DEFAULT-NEXT:         field0 ctx: @type[[TYPE0:[0-9]+]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 = enum : u32 {
-// DEFAULT-NEXT:         %0 IN_THEN = const<i32>(0);
-// DEFAULT-NEXT:         %1 IN_ELIF = const<i32>(4);
-// DEFAULT-NEXT:         %2 IN_ELSE = const<i32>(5);
+// DEFAULT-NEXT:     type @type[[TYPE0]] = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_IN_THEN:[0-9]+]] IN_THEN = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_IN_ELIF:[0-9]+]] IN_ELIF = const<i32>(4);
+// DEFAULT-NEXT:         %[[VALUE_IN_ELSE:[0-9]+]] IN_ELSE = const<i32>(5);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     global %10 .str10: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
-// DEFAULT-NEXT:     fn %1 @printf(%9 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %7 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %8 conditional: @type0 [storage=automatic] = aggregate<@type0, zero_fill=false>(field0 = int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         write<@type1>(field0(%8), int_to_enum<@type1, reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(5))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%1, pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%10)), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type1>(field0(%8)))), const<i32>(4));
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_IN_ELIF]] @printf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_conditional:[0-9]+]] conditional: @type[[TYPE_Conditional]] [storage=automatic] = aggregate<@type[[TYPE_Conditional]], zero_fill=false>(field0 = int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(0))));
+// DEFAULT-NEXT:         write<@type[[TYPE0]]>(field0(%[[VALUE_conditional]]), int_to_enum<@type[[TYPE0]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(5))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_IN_ELIF]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[VALUE_str]])), reinterpret<i32, reason=explicit, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE0]]>(field0(%[[VALUE_conditional]])))), const<i32>(4));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

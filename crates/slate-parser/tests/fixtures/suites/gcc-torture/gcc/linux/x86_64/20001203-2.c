@@ -131,112 +131,112 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 obstack = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_obstack:[0-9]+]] obstack = struct {
 // DEFAULT-NEXT:         field0 chunk_size: i64;
-// DEFAULT-NEXT:         field1 chunk: ptr<@type1>;
+// DEFAULT-NEXT:         field1 chunk: ptr<@type[[TYPE__obstack_chunk:[0-9]+]]>;
 // DEFAULT-NEXT:         field2 object_base: ptr<i8>;
 // DEFAULT-NEXT:         field3 next_free: ptr<i8>;
 // DEFAULT-NEXT:         field4 chunk_limit: ptr<i8>;
 // DEFAULT-NEXT:         field5 alignment_mask: i32;
 // DEFAULT-NEXT:         field6 maybe_empty_object: u32;
 // DEFAULT-NEXT:     } [size=48, align=8, offsets=[0, 8, 16, 24, 32, 40, 44]];
-// DEFAULT-NEXT:     type @type1 _obstack_chunk = struct incomplete;
-// DEFAULT-NEXT:     type @type2 objfile = struct {
-// DEFAULT-NEXT:         field0 next: ptr<@type2>;
-// DEFAULT-NEXT:         field1 type_obstack: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE__obstack_chunk]] _obstack_chunk = struct incomplete;
+// DEFAULT-NEXT:     type @type[[TYPE_objfile:[0-9]+]] objfile = struct {
+// DEFAULT-NEXT:         field0 next: ptr<@type[[TYPE_objfile]]>;
+// DEFAULT-NEXT:         field1 type_obstack: @type[[TYPE_obstack]];
 // DEFAULT-NEXT:     } [size=56, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type3 type = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_type:[0-9]+]] type = struct {
 // DEFAULT-NEXT:         field0 length: u32;
-// DEFAULT-NEXT:         field1 objfile: ptr<@type2>;
+// DEFAULT-NEXT:         field1 objfile: ptr<@type[[TYPE_objfile]]>;
 // DEFAULT-NEXT:         field2 nfields: i16;
-// DEFAULT-NEXT:         field3 fields: ptr<@type4>;
+// DEFAULT-NEXT:         field3 fields: ptr<@type[[TYPE_field:[0-9]+]]>;
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 16, 24]];
-// DEFAULT-NEXT:     type @type4 field = struct {
-// DEFAULT-NEXT:         field0 loc: @type5;
+// DEFAULT-NEXT:     type @type[[TYPE_field]] field = struct {
+// DEFAULT-NEXT:         field0 loc: @type[[TYPE_field_location:[0-9]+]];
 // DEFAULT-NEXT:         field1 bitsize: i32;
-// DEFAULT-NEXT:         field2 type: ptr<@type3>;
+// DEFAULT-NEXT:         field2 type: ptr<@type[[TYPE_type]]>;
 // DEFAULT-NEXT:         field3 name: ptr<i8>;
 // DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 8, 16, 24]];
-// DEFAULT-NEXT:     type @type5 field_location = union {
+// DEFAULT-NEXT:     type @type[[TYPE_field_location]] field_location = union {
 // DEFAULT-NEXT:         field0 bitpos: i32;
 // DEFAULT-NEXT:         field1 physaddr: u64;
 // DEFAULT-NEXT:         field2 physname: ptr<i8>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0, 0]];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @exit(%36 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %8 @alloc_type() -> ptr<@type3> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_alloc_type:[0-9]+]] @alloc_type() -> ptr<@type[[TYPE_type]]> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @xmalloc(%28 z: u32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:     fn %[[VALUE_xmalloc:[0-9]+]] @xmalloc(%[[VALUE_z:[0-9]+]] z: u32) -> ptr<void> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return null<ptr<void>>;
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @_obstack_newchunk(%29 o: ptr<@type0>, %30 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE__obstack_newchunk:[0-9]+]] @_obstack_newchunk(%[[VALUE_o:[0-9]+]] o: ptr<@type[[TYPE_obstack]]>, %[[VALUE_i:[0-9]+]] i: i32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %16 @get_discrete_bounds(%31 lowp: ptr<i64>, %32 highp: ptr<i64>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%31)), widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%32)), widen<i64, reason=assign>(const<i32>(2)));
+// DEFAULT-NEXT:     fn %[[VALUE_get_discrete_bounds:[0-9]+]] @get_discrete_bounds(%[[VALUE_lowp:[0-9]+]] lowp: ptr<i64>, %[[VALUE_highp:[0-9]+]] highp: ptr<i64>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%[[VALUE_lowp]])), widen<i64, reason=assign>(const<i32>(0)));
+// DEFAULT-NEXT:         write<i64>(deref(read<ptr<i64>>(%[[VALUE_highp]])), widen<i64, reason=assign>(const<i32>(2)));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @memset(%42 <unnamed>: ptr<void>, %43 <unnamed>: i32, %44 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %18 @create_array_type(%19 result_type: ptr<@type3>, %20 element_type: ptr<@type3>) -> ptr<@type3> [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %21 low_bound: i64 [storage=automatic];
-// DEFAULT-NEXT:         let %22 high_bound: i64 [storage=automatic];
-// DEFAULT-NEXT:         if eq<ptr<@type3>>(read<ptr<@type3>>(%19), null<ptr<@type3>>)
+// DEFAULT-NEXT:     fn %[[VALUE_memset:[0-9]+]] @memset(%[[VALUE1:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE2:[0-9]+]] <unnamed>: i32, %[[VALUE3:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_create_array_type:[0-9]+]] @create_array_type(%[[VALUE_result_type:[0-9]+]] result_type: ptr<@type[[TYPE_type]]>, %[[VALUE_element_type:[0-9]+]] element_type: ptr<@type[[TYPE_type]]>) -> ptr<@type[[TYPE_type]]> [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_low_bound:[0-9]+]] low_bound: i64 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_high_bound:[0-9]+]] high_bound: i64 [storage=automatic];
+// DEFAULT-NEXT:         if eq<ptr<@type[[TYPE_type]]>>(read<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type]]), null<ptr<@type[[TYPE_type]]>>)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<ptr<@type3>>(%19, call<ptr<@type3>, signature=fn() -> ptr<@type3>>(%8));
-// DEFAULT-NEXT:                 call<ptr<@type3>, signature=fn() -> ptr<@type3>>(%8);
+// DEFAULT-NEXT:                 write<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type]], call<ptr<@type[[TYPE_type]]>, signature=fn() -> ptr<@type[[TYPE_type]]>>(%[[VALUE_alloc_type]]));
+// DEFAULT-NEXT:                 call<ptr<@type[[TYPE_type]]>, signature=fn() -> ptr<@type[[TYPE_type]]>>(%[[VALUE_alloc_type]]);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<i64>, ptr<i64>) -> void>(%16, addr_of<ptr<i64>>(%21), addr_of<ptr<i64>>(%22));
-// DEFAULT-NEXT:         write<u32>(field0(deref(read<ptr<@type3>>(%19))), reinterpret<u32, reason=assign, fits=unknown>(truncate<i32, reason=assign, fits=unknown>(mul<i64, overflow=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(read<u32>(field0(deref(read<ptr<@type3>>(%20)))))), add<i64, overflow=ub>(sub<i64, overflow=ub>(read<i64>(%22), read<i64>(%21)), widen<i64, reason=usual_arith>(const<i32>(1)))))));
-// DEFAULT-NEXT:         write<i16>(field2(deref(read<ptr<@type3>>(%19))), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         let %45: ptr<void> [synthetic];
-// DEFAULT-NEXT:         if ne<ptr<@type2>>(read<ptr<@type2>>(field1(deref(read<ptr<@type3>>(%19)))), null<ptr<@type2>>)
-// DEFAULT-NEXT:             let %46: ptr<void> [synthetic];
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<i64>, ptr<i64>) -> void>(%[[VALUE_get_discrete_bounds]], addr_of<ptr<i64>>(%[[VALUE_low_bound]]), addr_of<ptr<i64>>(%[[VALUE_high_bound]]));
+// DEFAULT-NEXT:         write<u32>(field0(deref(read<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type]]))), reinterpret<u32, reason=assign, fits=unknown>(truncate<i32, reason=assign, fits=unknown>(mul<i64, overflow=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(read<u32>(field0(deref(read<ptr<@type[[TYPE_type]]>>(%[[VALUE_element_type]])))))), add<i64, overflow=ub>(sub<i64, overflow=ub>(read<i64>(%[[VALUE_high_bound]]), read<i64>(%[[VALUE_low_bound]])), widen<i64, reason=usual_arith>(const<i32>(1)))))));
+// DEFAULT-NEXT:         write<i16>(field2(deref(read<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type]]))), truncate<i16, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: ptr<void> [synthetic];
+// DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_objfile]]>>(read<ptr<@type[[TYPE_objfile]]>>(field1(deref(read<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type]])))), null<ptr<@type[[TYPE_objfile]]>>)
+// DEFAULT-NEXT:             let %[[VALUE5:[0-9]+]]: ptr<void> [synthetic];
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %23 __h: ptr<@type0> [storage=automatic] = addr_of<ptr<@type0>>(field1(deref(read<ptr<@type2>>(field1(deref(read<ptr<@type3>>(%19)))))));
+// DEFAULT-NEXT:                 let %[[VALUE___h:[0-9]+]] __h: ptr<@type[[TYPE_obstack]]> [storage=automatic] = addr_of<ptr<@type[[TYPE_obstack]]>>(field1(deref(read<ptr<@type[[TYPE_objfile]]>>(field1(deref(read<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type]])))))));
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %24 __o: ptr<@type0> [storage=automatic] = read<ptr<@type0>>(%23);
-// DEFAULT-NEXT:                     let %25 __len: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(32)));
-// DEFAULT-NEXT:                     if lt<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(field4(deref(read<ptr<@type0>>(%24)))), read<ptr<i8>>(field3(deref(read<ptr<@type0>>(%24))))), widen<i64, reason=usual_arith>(read<i32>(%25)))
-// DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type0>, i32) -> void>(%13, read<ptr<@type0>>(%24), read<i32>(%25));
-// DEFAULT-NEXT:                     let %47: ptr<@type0> [synthetic] = read<ptr<@type0>>(%24);
-// DEFAULT-NEXT:                     let %48: ptr<i8> [synthetic] = read<ptr<i8>>(field3(deref(read<ptr<@type0>>(%47))));
-// DEFAULT-NEXT:                     let %49: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%48), read<i32>(%25));
-// DEFAULT-NEXT:                     write<ptr<i8>>(field3(deref(read<ptr<@type0>>(%47))), read<ptr<i8>>(%49));
+// DEFAULT-NEXT:                     let %[[VALUE___o:[0-9]+]] __o: ptr<@type[[TYPE_obstack]]> [storage=automatic] = read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___h]]);
+// DEFAULT-NEXT:                     let %[[VALUE___len:[0-9]+]] __len: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(32)));
+// DEFAULT-NEXT:                     if lt<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(field4(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o]])))), read<ptr<i8>>(field3(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o]]))))), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE___len]])))
+// DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type[[TYPE_obstack]]>, i32) -> void>(%[[VALUE__obstack_newchunk]], read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o]]), read<i32>(%[[VALUE___len]]));
+// DEFAULT-NEXT:                     let %[[VALUE6:[0-9]+]]: ptr<@type[[TYPE_obstack]]> [synthetic] = read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o]]);
+// DEFAULT-NEXT:                     let %[[VALUE7:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(field3(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE6]]))));
+// DEFAULT-NEXT:                     let %[[VALUE8:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE7]]), read<i32>(%[[VALUE___len]]));
+// DEFAULT-NEXT:                     write<ptr<i8>>(field3(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE6]]))), read<ptr<i8>>(%[[VALUE8]]));
 // DEFAULT-NEXT:                     const<i32>(0);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:                 ;
-// DEFAULT-NEXT:                 let %50: ptr<void> [synthetic];
+// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: ptr<void> [synthetic];
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %26 __o1: ptr<@type0> [storage=automatic] = read<ptr<@type0>>(%23);
-// DEFAULT-NEXT:                     let %27 value: ptr<void> [storage=automatic];
-// DEFAULT-NEXT:                     write<ptr<void>>(%27, pointer_cast<ptr<void>, reason=explicit>(read<ptr<i8>>(field2(deref(read<ptr<@type0>>(%26))))));
-// DEFAULT-NEXT:                     if eq<ptr<i8>>(read<ptr<i8>>(field3(deref(read<ptr<@type0>>(%26)))), pointer_cast<ptr<i8>, reason=usual_arith>(read<ptr<void>>(%27)))
-// DEFAULT-NEXT:                         write<u32>(field6(deref(read<ptr<@type0>>(%26))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                     write<ptr<i8>>(field3(deref(read<ptr<@type0>>(%26))), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(null<ptr<i8>>, and<i64>(add<i64, overflow=ub>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(field3(deref(read<ptr<@type0>>(%26)))), null<ptr<i8>>), widen<i64, reason=usual_arith>(read<i32>(field5(deref(read<ptr<@type0>>(%26)))))), widen<i64, reason=usual_arith>(not<i32>(read<i32>(field5(deref(read<ptr<@type0>>(%26)))))))));
-// DEFAULT-NEXT:                     if gt<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(field3(deref(read<ptr<@type0>>(%26)))), pointer_cast<ptr<i8>, reason=explicit>(read<ptr<@type1>>(field1(deref(read<ptr<@type0>>(%26)))))), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(field4(deref(read<ptr<@type0>>(%26)))), pointer_cast<ptr<i8>, reason=explicit>(read<ptr<@type1>>(field1(deref(read<ptr<@type0>>(%26)))))))
-// DEFAULT-NEXT:                         write<ptr<i8>>(field3(deref(read<ptr<@type0>>(%26))), read<ptr<i8>>(field4(deref(read<ptr<@type0>>(%26)))));
-// DEFAULT-NEXT:                     write<ptr<i8>>(field2(deref(read<ptr<@type0>>(%26))), read<ptr<i8>>(field3(deref(read<ptr<@type0>>(%26)))));
-// DEFAULT-NEXT:                     write<ptr<void>>(%50, read<ptr<void>>(%27));
+// DEFAULT-NEXT:                     let %[[VALUE___o1:[0-9]+]] __o1: ptr<@type[[TYPE_obstack]]> [storage=automatic] = read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___h]]);
+// DEFAULT-NEXT:                     let %[[VALUE_value:[0-9]+]] value: ptr<void> [storage=automatic];
+// DEFAULT-NEXT:                     write<ptr<void>>(%[[VALUE_value]], pointer_cast<ptr<void>, reason=explicit>(read<ptr<i8>>(field2(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]]))))));
+// DEFAULT-NEXT:                     if eq<ptr<i8>>(read<ptr<i8>>(field3(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]])))), pointer_cast<ptr<i8>, reason=usual_arith>(read<ptr<void>>(%[[VALUE_value]])))
+// DEFAULT-NEXT:                         write<u32>(field6(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]]))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:                     write<ptr<i8>>(field3(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]]))), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(null<ptr<i8>>, and<i64>(add<i64, overflow=ub>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(field3(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]])))), null<ptr<i8>>), widen<i64, reason=usual_arith>(read<i32>(field5(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]])))))), widen<i64, reason=usual_arith>(not<i32>(read<i32>(field5(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]])))))))));
+// DEFAULT-NEXT:                     if gt<i64>(ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(field3(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]])))), pointer_cast<ptr<i8>, reason=explicit>(read<ptr<@type[[TYPE__obstack_chunk]]>>(field1(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]])))))), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<i8>>(field4(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]])))), pointer_cast<ptr<i8>, reason=explicit>(read<ptr<@type[[TYPE__obstack_chunk]]>>(field1(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]])))))))
+// DEFAULT-NEXT:                         write<ptr<i8>>(field3(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]]))), read<ptr<i8>>(field4(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]])))));
+// DEFAULT-NEXT:                     write<ptr<i8>>(field2(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]]))), read<ptr<i8>>(field3(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o1]])))));
+// DEFAULT-NEXT:                     write<ptr<void>>(%[[VALUE9]], read<ptr<void>>(%[[VALUE_value]]));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:                 write<ptr<void>>(%46, read<ptr<void>>(%50));
+// DEFAULT-NEXT:                 write<ptr<void>>(%[[VALUE5]], read<ptr<void>>(%[[VALUE9]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             write<ptr<void>>(%45, read<ptr<void>>(%46));
+// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE4]], read<ptr<void>>(%[[VALUE5]]));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<ptr<void>>(%45, call<ptr<void>, signature=fn(u32) -> ptr<void>>(%10, truncate<u32, reason=arg, fits=always>(const<u64>(32))));
-// DEFAULT-NEXT:         write<ptr<@type4>>(field3(deref(read<ptr<@type3>>(%19))), pointer_cast<ptr<@type4>, reason=explicit>(read<ptr<void>>(%45)));
-// DEFAULT-NEXT:         return read<ptr<@type3>>(%19);
+// DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE4]], call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE_xmalloc]], truncate<u32, reason=arg, fits=always>(const<u64>(32))));
+// DEFAULT-NEXT:         write<ptr<@type[[TYPE_field]]>>(field3(deref(read<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type]]))), pointer_cast<ptr<@type[[TYPE_field]]>, reason=explicit>(read<ptr<void>>(%[[VALUE4]])));
+// DEFAULT-NEXT:         return read<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %33 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %34 element_type: @type3 [storage=automatic];
-// DEFAULT-NEXT:         let %35 result_type: @type3 [storage=automatic];
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%17, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%34)), const<i32>(0), const<u64>(32));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%17, pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type3>>(%35)), const<i32>(0), const<u64>(32));
-// DEFAULT-NEXT:         write<u32>(field0(%34), reinterpret<u32, reason=assign, fits=always>(const<i32>(4)));
-// DEFAULT-NEXT:         call<ptr<@type3>, signature=fn(ptr<@type3>, ptr<@type3>) -> ptr<@type3>>(%18, addr_of<ptr<@type3>>(%35), addr_of<ptr<@type3>>(%34));
-// DEFAULT-NEXT:         if ne<u32>(read<u32>(field0(%35)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(12)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%1, const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_element_type_2:[0-9]+]] element_type: @type[[TYPE_type]] [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_result_type_2:[0-9]+]] result_type: @type[[TYPE_type]] [storage=automatic];
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_type]]>>(%[[VALUE_element_type_2]])), const<i32>(0), const<u64>(32));
+// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE_memset]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type_2]])), const<i32>(0), const<u64>(32));
+// DEFAULT-NEXT:         write<u32>(field0(%[[VALUE_element_type_2]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(4)));
+// DEFAULT-NEXT:         call<ptr<@type[[TYPE_type]]>, signature=fn(ptr<@type[[TYPE_type]]>, ptr<@type[[TYPE_type]]>) -> ptr<@type[[TYPE_type]]>>(%[[VALUE_create_array_type]], addr_of<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type_2]]), addr_of<ptr<@type[[TYPE_type]]>>(%[[VALUE_element_type_2]]));
+// DEFAULT-NEXT:         if ne<u32>(read<u32>(field0(%[[VALUE_result_type_2]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(12)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

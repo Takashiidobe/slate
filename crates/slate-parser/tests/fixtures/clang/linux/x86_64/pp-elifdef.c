@@ -41,7 +41,7 @@ int fallback;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 not_third: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_not_third:[0-9]+]] not_third: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
 // SLATE-FILECHECK-BEGIN FIRST
@@ -67,7 +67,7 @@ int fallback;
 // FIRST-NEXT:         storage d64 [size=8, align=8];
 // FIRST-NEXT:         storage d128 [size=16, align=16];
 // FIRST-NEXT:     }
-// FIRST-NEXT:     global %0 first: i32 [storage=static] [linkage=external];
+// FIRST-NEXT:     global %[[VALUE_first:[0-9]+]] first: i32 [storage=static] [linkage=external];
 // FIRST-NEXT: }
 // SLATE-FILECHECK-END FIRST
 // SLATE-FILECHECK-BEGIN SECOND
@@ -93,7 +93,7 @@ int fallback;
 // SECOND-NEXT:         storage d64 [size=8, align=8];
 // SECOND-NEXT:         storage d128 [size=16, align=16];
 // SECOND-NEXT:     }
-// SECOND-NEXT:     global %0 second: i32 [storage=static] [linkage=external];
+// SECOND-NEXT:     global %[[VALUE_second:[0-9]+]] second: i32 [storage=static] [linkage=external];
 // SECOND-NEXT: }
 // SLATE-FILECHECK-END SECOND
 // SLATE-FILECHECK-BEGIN THIRD
@@ -119,6 +119,6 @@ int fallback;
 // THIRD-NEXT:         storage d64 [size=8, align=8];
 // THIRD-NEXT:         storage d128 [size=16, align=16];
 // THIRD-NEXT:     }
-// THIRD-NEXT:     global %0 fallback: i32 [storage=static] [linkage=external];
+// THIRD-NEXT:     global %[[VALUE_fallback:[0-9]+]] fallback: i32 [storage=static] [linkage=external];
 // THIRD-NEXT: }
 // SLATE-FILECHECK-END THIRD

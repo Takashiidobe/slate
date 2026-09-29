@@ -48,30 +48,30 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @bump(%1 value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%1), const<i32>(1));
+// DEFAULT-NEXT:     fn %[[VALUE_bump:[0-9]+]] @bump(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_value]]), const<i32>(1));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @maybe_apply(%3 op: ptr<fn(i32) -> i32>, %4 value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(%3), null<ptr<fn(i32) -> i32>>)
+// DEFAULT-NEXT:     fn %[[VALUE_maybe_apply:[0-9]+]] @maybe_apply(%[[VALUE_op:[0-9]+]] op: ptr<fn(i32) -> i32>, %[[VALUE_value_2:[0-9]+]] value: i32) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(%[[VALUE_op]]), null<ptr<fn(i32) -> i32>>)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 return call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%3), read<i32>(%4));
+// DEFAULT-NEXT:                 return call<i32, signature=fn(i32) -> i32>(read<ptr<fn(i32) -> i32>>(%[[VALUE_op]]), read<i32>(%[[VALUE_value_2]]));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<i32>(%4);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_value_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %6 op: ptr<fn(i32) -> i32> [storage=automatic] = null<ptr<fn(i32) -> i32>>;
-// DEFAULT-NEXT:         let %7 total: i32 [storage=automatic] = call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%2, read<ptr<fn(i32) -> i32>>(%6), const<i32>(4));
-// DEFAULT-NEXT:         write<ptr<fn(i32) -> i32>>(%6, function_decay<ptr<fn(i32) -> i32>>(%0));
-// DEFAULT-NEXT:         if ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(%6), null<ptr<fn(i32) -> i32>>)
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_op_2:[0-9]+]] op: ptr<fn(i32) -> i32> [storage=automatic] = null<ptr<fn(i32) -> i32>>;
+// DEFAULT-NEXT:         let %[[VALUE_total:[0-9]+]] total: i32 [storage=automatic] = call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%[[VALUE_maybe_apply]], read<ptr<fn(i32) -> i32>>(%[[VALUE_op_2]]), const<i32>(4));
+// DEFAULT-NEXT:         write<ptr<fn(i32) -> i32>>(%[[VALUE_op_2]], function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_bump]]));
+// DEFAULT-NEXT:         if ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(%[[VALUE_op_2]]), null<ptr<fn(i32) -> i32>>)
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%7, add<i32, overflow=ub>(read<i32>(%7), call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%2, read<ptr<fn(i32) -> i32>>(%6), const<i32>(5))));
-// DEFAULT-NEXT:                 add<i32, overflow=ub>(read<i32>(%7), call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%2, read<ptr<fn(i32) -> i32>>(%6), const<i32>(5)));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_total]], add<i32, overflow=ub>(read<i32>(%[[VALUE_total]]), call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%[[VALUE_maybe_apply]], read<ptr<fn(i32) -> i32>>(%[[VALUE_op_2]]), const<i32>(5))));
+// DEFAULT-NEXT:                 add<i32, overflow=ub>(read<i32>(%[[VALUE_total]]), call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%[[VALUE_maybe_apply]], read<ptr<fn(i32) -> i32>>(%[[VALUE_op_2]]), const<i32>(5)));
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         if eq<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(%6), null<ptr<fn(i32) -> i32>>)
+// DEFAULT-NEXT:         if eq<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(%[[VALUE_op_2]]), null<ptr<fn(i32) -> i32>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(2);
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return conditional<i32>(eq<i32>(read<i32>(%7), const<i32>(10)), const<i32>(0), const<i32>(1));
+// DEFAULT-NEXT:         return conditional<i32>(eq<i32>(read<i32>(%[[VALUE_total]]), const<i32>(10)), const<i32>(0), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

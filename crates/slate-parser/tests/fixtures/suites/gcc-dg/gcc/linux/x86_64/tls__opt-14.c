@@ -53,32 +53,32 @@ int main(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 __res_state = struct {
+// DEFAULT-NEXT:     type @type[[TYPE___res_state:[0-9]+]] __res_state = struct {
 // DEFAULT-NEXT:         field0 options: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     extern %1 __resp: ptr<@type0> [storage=thread] [linkage=external] [tls_model=initial-exec];
-// DEFAULT-NEXT:     fn %2 @foo() -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %4 count: i32 [storage=automatic];
-// DEFAULT-NEXT:         let %5 total: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         for %6
+// DEFAULT-NEXT:     extern %[[VALUE___resp:[0-9]+]] __resp: ptr<@type[[TYPE___res_state]]> [storage=thread] [linkage=external] [tls_model=initial-exec];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_count:[0-9]+]] count: i32 [storage=automatic];
+// DEFAULT-NEXT:         let %[[VALUE_total:[0-9]+]] total: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<i32>(%4, const<i32>(0));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%4), const<i32>(10))
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_count]], const<i32>(0));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_count]]), const<i32>(10))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %7: i32 [synthetic] = read<i32>(%4);
-// DEFAULT-NEXT:                 let %8: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%7), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%4, read<i32>(%8));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_count]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_count]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     if eq<i32>(and<i32>(read<i32>(field0(deref(read<ptr<@type0>>(%1)))), const<i32>(1)), const<i32>(0))
-// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:                     let %9: ptr<@type0> [synthetic] = read<ptr<@type0>>(%1);
-// DEFAULT-NEXT:                     let %10: i32 [synthetic] = read<i32>(field0(deref(read<ptr<@type0>>(%9))));
-// DEFAULT-NEXT:                     let %11: i32 [synthetic] = and<i32>(read<i32>(%10), not<i32>(or<i32>(or<i32>(const<i32>(2), const<i32>(512)), const<i32>(128))));
-// DEFAULT-NEXT:                     write<i32>(field0(deref(read<ptr<@type0>>(%9))), read<i32>(%11));
+// DEFAULT-NEXT:                     if eq<i32>(and<i32>(read<i32>(field0(deref(read<ptr<@type[[TYPE___res_state]]>>(%[[VALUE___resp]])))), const<i32>(1)), const<i32>(0))
+// DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: ptr<@type[[TYPE___res_state]]> [synthetic] = read<ptr<@type[[TYPE___res_state]]>>(%[[VALUE___resp]]);
+// DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(field0(deref(read<ptr<@type[[TYPE___res_state]]>>(%[[VALUE3]]))));
+// DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: i32 [synthetic] = and<i32>(read<i32>(%[[VALUE4]]), not<i32>(or<i32>(or<i32>(const<i32>(2), const<i32>(512)), const<i32>(128))));
+// DEFAULT-NEXT:                     write<i32>(field0(deref(read<ptr<@type[[TYPE___res_state]]>>(%[[VALUE3]]))), read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

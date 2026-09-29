@@ -42,16 +42,16 @@ int main(void) {
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %1 mpy_res: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %0 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %2 @mpy(%3 a: i64, %4 b: i64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return mul<u64, overflow=wrap>(reinterpret<u64, reason=explicit, fits=unknown>(read<i64>(%3)), reinterpret<u64, reason=explicit, fits=unknown>(read<i64>(%4)));
+// DEFAULT-NEXT:     global %[[VALUE_mpy_res:[0-9]+]] mpy_res: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_mpy:[0-9]+]] @mpy(%[[VALUE_a:[0-9]+]] a: i64, %[[VALUE_b:[0-9]+]] b: i64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return mul<u64, overflow=wrap>(reinterpret<u64, reason=explicit, fits=unknown>(read<i64>(%[[VALUE_a]])), reinterpret<u64, reason=explicit, fits=unknown>(read<i64>(%[[VALUE_b]])));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<i64>(%1, reinterpret<i64, reason=assign, fits=unknown>(call<u64, signature=fn(i64, i64) -> u64>(%2, widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))))));
-// DEFAULT-NEXT:         reinterpret<i64, reason=assign, fits=unknown>(call<u64, signature=fn(i64, i64) -> u64>(%2, widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1)))));
-// DEFAULT-NEXT:         if ne<i64>(read<i64>(%1), neg<i64, overflow=ub>(const<i64>(1)))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%0);
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_mpy_res]], reinterpret<i64, reason=assign, fits=unknown>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_mpy]], widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1))))));
+// DEFAULT-NEXT:         reinterpret<i64, reason=assign, fits=unknown>(call<u64, signature=fn(i64, i64) -> u64>(%[[VALUE_mpy]], widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(neg<i32, overflow=ub>(const<i32>(1)))));
+// DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE_mpy_res]]), neg<i64, overflow=ub>(const<i64>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

@@ -41,19 +41,19 @@ redeclaration_error_message (olddecl)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 tree_decl = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_tree_decl:[0-9]+]] tree_decl = struct {
 // DEFAULT-NEXT:         field0 in_system_header_flag: u32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// DEFAULT-NEXT:     type @type1 tree_node = union {
-// DEFAULT-NEXT:         field0 decl: @type0;
+// DEFAULT-NEXT:     type @type[[TYPE_tree_node:[0-9]+]] tree_node = union {
+// DEFAULT-NEXT:         field0 decl: @type[[TYPE_tree_decl]];
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type2 tree = ptr<@type1>;
-// DEFAULT-NEXT:     fn %3 @redeclaration_error_message(%4 olddecl: ptr<@type1>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %5: ptr<@type1> [synthetic];
+// DEFAULT-NEXT:     type @type[[TYPE_tree:[0-9]+]] tree = ptr<@type[[TYPE_tree_node]]>;
+// DEFAULT-NEXT:     fn %[[VALUE_redeclaration_error_message:[0-9]+]] @redeclaration_error_message(%[[VALUE_olddecl:[0-9]+]] olddecl: ptr<@type[[TYPE_tree_node]]>) -> i32 [linkage=internal] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<@type[[TYPE_tree_node]]> [synthetic];
 // DEFAULT-NEXT:         {
-// DEFAULT-NEXT:             write<ptr<@type1>>(%5, read<ptr<@type1>>(%4));
+// DEFAULT-NEXT:             write<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE0]], read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE_olddecl]]));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(field0(deref(read<ptr<@type1>>(%5)))))), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(field0(deref(read<ptr<@type[[TYPE_tree_node]]>>(%[[VALUE0]])))))), const<i32>(0))
 // DEFAULT-NEXT:             ;
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

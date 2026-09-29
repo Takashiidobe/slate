@@ -34,13 +34,13 @@ void baz(void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 _foo = struct {
+// DEFAULT-NEXT:     type @type[[TYPE__foo:[0-9]+]] _foo = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     type @type1 foo = @type0;
-// DEFAULT-NEXT:     extern %2 bar: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %3 @baz() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<i32>(field0(%2), const<i32>(0));
+// DEFAULT-NEXT:     type @type[[TYPE_foo:[0-9]+]] foo = @type[[TYPE__foo]];
+// DEFAULT-NEXT:     extern %[[VALUE_bar:[0-9]+]] bar: @type[[TYPE__foo]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_baz:[0-9]+]] @baz() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_bar]]), const<i32>(0));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

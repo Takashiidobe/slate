@@ -34,12 +34,12 @@ long long negated = -18446744073709551615;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 u64_max: i32 [storage=static] = const<i32>(3) [linkage=external];
-// DEFAULT-NEXT:     global %1 ll_suffix: i32 [storage=static] = const<i32>(3) [linkage=external];
-// DEFAULT-NEXT:     global %2 truncated_decimal: i32 [storage=static] = const<i32>(3) [linkage=external];
-// DEFAULT-NEXT:     global %3 truncated_hex: i32 [storage=static] = const<i32>(4) [linkage=external];
-// DEFAULT-NEXT:     global %4 truncated_unsigned: i32 [storage=static] = const<i32>(4) [linkage=external];
-// DEFAULT-NEXT:     global %5 truncated_value: u64 [storage=static] = reinterpret<u64>(const<i64>(7766279631452241919)) [linkage=external];
-// DEFAULT-NEXT:     global %6 negated: i64 [storage=static] = neg<i64>(const<i64>(-1)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_u64_max:[0-9]+]] u64_max: i32 [storage=static] = const<i32>(3) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ll_suffix:[0-9]+]] ll_suffix: i32 [storage=static] = const<i32>(3) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_truncated_decimal:[0-9]+]] truncated_decimal: i32 [storage=static] = const<i32>(3) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_truncated_hex:[0-9]+]] truncated_hex: i32 [storage=static] = const<i32>(4) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_truncated_unsigned:[0-9]+]] truncated_unsigned: i32 [storage=static] = const<i32>(4) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_truncated_value:[0-9]+]] truncated_value: u64 [storage=static] = reinterpret<u64>(const<i64>(7766279631452241919)) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_negated:[0-9]+]] negated: i64 [storage=static] = neg<i64>(const<i64>(-1)) [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

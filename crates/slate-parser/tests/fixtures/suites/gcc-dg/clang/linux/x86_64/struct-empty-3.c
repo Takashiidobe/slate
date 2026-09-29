@@ -35,14 +35,14 @@ union u1 { int : 1; }; /* { dg-error "union has no named members" } */
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s0:[0-9]+]] s0 = struct {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
-// DEFAULT-NEXT:     type @type1 u0 = union {
+// DEFAULT-NEXT:     type @type[[TYPE_u0:[0-9]+]] u0 = union {
 // DEFAULT-NEXT:     } [size=0, align=1, offsets=[]];
-// DEFAULT-NEXT:     type @type2 s1 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s1:[0-9]+]] s1 = struct {
 // DEFAULT-NEXT:         field0 <anonymous>: i32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
-// DEFAULT-NEXT:     type @type3 u1 = union {
+// DEFAULT-NEXT:     type @type[[TYPE_u1:[0-9]+]] u1 = union {
 // DEFAULT-NEXT:         field0 <anonymous>: i32 : 1;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0], bit_offsets=[Some(0)], bit_units=[(0, 1)], field_units=[Some(0)]];
 // DEFAULT-NEXT: }

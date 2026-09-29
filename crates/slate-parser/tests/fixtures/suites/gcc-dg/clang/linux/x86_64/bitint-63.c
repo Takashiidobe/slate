@@ -49,15 +49,15 @@ foo (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 B = i513b;
-// DEFAULT-NEXT:     fn %5 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %1 @bar(%2 x: i513b) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %3 y: i513b [storage=automatic] = read<i513b>(%2);
-// DEFAULT-NEXT:         if ne<i513b>(read<i513b>(%3), const<i513b>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%5);
+// DEFAULT-NEXT:     type @type[[TYPE_B:[0-9]+]] B = i513b;
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x:[0-9]+]] x: i513b) -> void [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: i513b [storage=automatic] = read<i513b>(%[[VALUE_x]]);
+// DEFAULT-NEXT:         if ne<i513b>(read<i513b>(%[[VALUE_y]]), const<i513b>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @foo() -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i513b) -> void>(%1, widen<i513b, reason=arg>(const<i32>(0)));
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i513b) -> void>(%[[VALUE_bar]], widen<i513b, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

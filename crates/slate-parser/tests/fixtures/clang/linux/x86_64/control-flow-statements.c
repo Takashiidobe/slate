@@ -69,8 +69,8 @@ done:
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @if_else(%1 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(read<i32>(%1), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_if_else:[0-9]+]] @if_else(%[[VALUE_x:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 return const<i32>(1);
 // DEFAULT-NEXT:             }
@@ -79,51 +79,51 @@ done:
 // DEFAULT-NEXT:                 return const<i32>(0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %2 @while_loop(%3 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         while %13 ne<i32>(read<i32>(%3), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_while_loop:[0-9]+]] @while_loop(%[[VALUE_x_2:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] ne<i32>(read<i32>(%[[VALUE_x_2]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 break %13;
+// DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         return read<i32>(%3);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x_2]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %4 @do_while_loop(%5 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         do %14
+// DEFAULT-NEXT:     fn %[[VALUE_do_while_loop:[0-9]+]] @do_while_loop(%[[VALUE_x_3:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 continue %14;
+// DEFAULT-NEXT:                 continue %[[VALUE1]];
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:         while ne<i32>(read<i32>(%5), const<i32>(0));
-// DEFAULT-NEXT:         return read<i32>(%5);
+// DEFAULT-NEXT:         while ne<i32>(read<i32>(%[[VALUE_x_3]]), const<i32>(0));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x_3]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %6 @for_loop(%7 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         for %15
+// DEFAULT-NEXT:     fn %[[VALUE_for_loop:[0-9]+]] @for_loop(%[[VALUE_x_4:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 read<i32>(%7);
-// DEFAULT-NEXT:             condition: ne<i32>(read<i32>(%7), const<i32>(0))
+// DEFAULT-NEXT:                 read<i32>(%[[VALUE_x_4]]);
+// DEFAULT-NEXT:             condition: ne<i32>(read<i32>(%[[VALUE_x_4]]), const<i32>(0))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 read<i32>(%7);
+// DEFAULT-NEXT:                 read<i32>(%[[VALUE_x_4]]);
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     break %15;
+// DEFAULT-NEXT:                     break %[[VALUE2]];
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         return read<i32>(%7);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_x_4]]);
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %8 @switch_stmt(%9 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         switch %16 read<i32>(%9)
+// DEFAULT-NEXT:     fn %[[VALUE_switch_stmt:[0-9]+]] @switch_stmt(%[[VALUE_x_5:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         switch %[[VALUE3:[0-9]+]] read<i32>(%[[VALUE_x_5]])
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 case %16 const<i32>(1):
+// DEFAULT-NEXT:                 case %[[VALUE3]] const<i32>(1):
 // DEFAULT-NEXT:                     return const<i32>(1);
-// DEFAULT-NEXT:                 case %16 const<i32>(2):
+// DEFAULT-NEXT:                 case %[[VALUE3]] const<i32>(2):
 // DEFAULT-NEXT:                     return const<i32>(2);
-// DEFAULT-NEXT:                 default %16:
+// DEFAULT-NEXT:                 default %[[VALUE3]]:
 // DEFAULT-NEXT:                     return const<i32>(0);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @labels_and_goto(%12 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         goto %11;
-// DEFAULT-NEXT:         label %11 done:
-// DEFAULT-NEXT:             return read<i32>(%12);
+// DEFAULT-NEXT:     fn %[[VALUE_labels_and_goto:[0-9]+]] @labels_and_goto(%[[VALUE_x_6:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         goto %[[VALUE_done:[0-9]+]];
+// DEFAULT-NEXT:         label %[[VALUE_done]] done:
+// DEFAULT-NEXT:             return read<i32>(%[[VALUE_x_6]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

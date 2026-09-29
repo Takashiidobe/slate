@@ -39,9 +39,9 @@ x3;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %0 x0: i32 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     global %1 x1: i32 [storage=static] [const] [linkage=external];
-// DEFAULT-NEXT:     global %2 x2: i64 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     global %3 x3: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x0:[0-9]+]] x0: i32 [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x1:[0-9]+]] x1: i32 [storage=static] [const] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x2:[0-9]+]] x2: i64 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_x3:[0-9]+]] x3: i64 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -36,8 +36,8 @@ load2 (int data)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @load2(%1 data: i32) -> i128 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return shl<i128, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i128, reason=explicit>(read<i32>(%1)), const<i32>(50));
+// DEFAULT-NEXT:     fn %[[VALUE_load2:[0-9]+]] @load2(%[[VALUE_data:[0-9]+]] data: i32) -> i128 [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         return shl<i128, overflow=ub, amount_out_of_range=ub, negative_left=ub>(widen<i128, reason=explicit>(read<i32>(%[[VALUE_data]])), const<i32>(50));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

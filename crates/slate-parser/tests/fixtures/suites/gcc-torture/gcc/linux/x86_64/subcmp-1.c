@@ -62,285 +62,285 @@ funcs(funcs1)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %0 @gt_lt_lt_(%1 a: i32, %2 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %3 x: bool [storage=automatic] = gt<i32>(read<i32>(%1), read<i32>(%2));
-// DEFAULT-NEXT:         let %4 y: bool [storage=automatic] = lt<i32>(read<i32>(%1), read<i32>(%2));
-// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%3)), from_bool<i32, reason=promotion>(read<bool>(%4))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_gt_lt_lt_:[0-9]+]] @gt_lt_lt_(%[[VALUE_a:[0-9]+]] a: i32, %[[VALUE_b:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @gt_lt_lt_volatile(%6 a: i32, %7 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %8 x: volatile bool [storage=automatic] = gt<i32>(read<i32>(%6), read<i32>(%7));
-// DEFAULT-NEXT:         let %9 y: volatile bool [storage=automatic] = lt<i32>(read<i32>(%6), read<i32>(%7));
-// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%8)), from_bool<i32, reason=promotion>(read<bool, volatile>(%9))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_gt_lt_lt_volatile:[0-9]+]] @gt_lt_lt_volatile(%[[VALUE_a_2:[0-9]+]] a: i32, %[[VALUE_b_2:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: volatile bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_2]]), read<i32>(%[[VALUE_b_2]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_2:[0-9]+]] y: volatile bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_2]]), read<i32>(%[[VALUE_b_2]]));
+// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_2]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_2]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %10 @gt_lt_le_(%11 a: i32, %12 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %13 x: bool [storage=automatic] = gt<i32>(read<i32>(%11), read<i32>(%12));
-// DEFAULT-NEXT:         let %14 y: bool [storage=automatic] = lt<i32>(read<i32>(%11), read<i32>(%12));
-// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%13)), from_bool<i32, reason=promotion>(read<bool>(%14))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_gt_lt_le_:[0-9]+]] @gt_lt_le_(%[[VALUE_a_3:[0-9]+]] a: i32, %[[VALUE_b_3:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_3:[0-9]+]] x: bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_3]]), read<i32>(%[[VALUE_b_3]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_3:[0-9]+]] y: bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_3]]), read<i32>(%[[VALUE_b_3]]));
+// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_3]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_3]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @gt_lt_le_volatile(%16 a: i32, %17 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %18 x: volatile bool [storage=automatic] = gt<i32>(read<i32>(%16), read<i32>(%17));
-// DEFAULT-NEXT:         let %19 y: volatile bool [storage=automatic] = lt<i32>(read<i32>(%16), read<i32>(%17));
-// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%18)), from_bool<i32, reason=promotion>(read<bool, volatile>(%19))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_gt_lt_le_volatile:[0-9]+]] @gt_lt_le_volatile(%[[VALUE_a_4:[0-9]+]] a: i32, %[[VALUE_b_4:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_4:[0-9]+]] x: volatile bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_4]]), read<i32>(%[[VALUE_b_4]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_4:[0-9]+]] y: volatile bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_4]]), read<i32>(%[[VALUE_b_4]]));
+// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_4]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_4]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %20 @gt_lt_gt_(%21 a: i32, %22 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %23 x: bool [storage=automatic] = gt<i32>(read<i32>(%21), read<i32>(%22));
-// DEFAULT-NEXT:         let %24 y: bool [storage=automatic] = lt<i32>(read<i32>(%21), read<i32>(%22));
-// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%23)), from_bool<i32, reason=promotion>(read<bool>(%24))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_gt_lt_gt_:[0-9]+]] @gt_lt_gt_(%[[VALUE_a_5:[0-9]+]] a: i32, %[[VALUE_b_5:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_5:[0-9]+]] x: bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_5]]), read<i32>(%[[VALUE_b_5]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_5:[0-9]+]] y: bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_5]]), read<i32>(%[[VALUE_b_5]]));
+// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_5]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_5]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @gt_lt_gt_volatile(%26 a: i32, %27 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %28 x: volatile bool [storage=automatic] = gt<i32>(read<i32>(%26), read<i32>(%27));
-// DEFAULT-NEXT:         let %29 y: volatile bool [storage=automatic] = lt<i32>(read<i32>(%26), read<i32>(%27));
-// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%28)), from_bool<i32, reason=promotion>(read<bool, volatile>(%29))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_gt_lt_gt_volatile:[0-9]+]] @gt_lt_gt_volatile(%[[VALUE_a_6:[0-9]+]] a: i32, %[[VALUE_b_6:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_6:[0-9]+]] x: volatile bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_6]]), read<i32>(%[[VALUE_b_6]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_6:[0-9]+]] y: volatile bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_6]]), read<i32>(%[[VALUE_b_6]]));
+// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_6]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_6]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %30 @gt_lt_ge_(%31 a: i32, %32 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %33 x: bool [storage=automatic] = gt<i32>(read<i32>(%31), read<i32>(%32));
-// DEFAULT-NEXT:         let %34 y: bool [storage=automatic] = lt<i32>(read<i32>(%31), read<i32>(%32));
-// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%33)), from_bool<i32, reason=promotion>(read<bool>(%34))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_gt_lt_ge_:[0-9]+]] @gt_lt_ge_(%[[VALUE_a_7:[0-9]+]] a: i32, %[[VALUE_b_7:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_7:[0-9]+]] x: bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_7]]), read<i32>(%[[VALUE_b_7]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_7:[0-9]+]] y: bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_7]]), read<i32>(%[[VALUE_b_7]]));
+// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_7]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_7]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %35 @gt_lt_ge_volatile(%36 a: i32, %37 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %38 x: volatile bool [storage=automatic] = gt<i32>(read<i32>(%36), read<i32>(%37));
-// DEFAULT-NEXT:         let %39 y: volatile bool [storage=automatic] = lt<i32>(read<i32>(%36), read<i32>(%37));
-// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%38)), from_bool<i32, reason=promotion>(read<bool, volatile>(%39))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_gt_lt_ge_volatile:[0-9]+]] @gt_lt_ge_volatile(%[[VALUE_a_8:[0-9]+]] a: i32, %[[VALUE_b_8:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_8:[0-9]+]] x: volatile bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_8]]), read<i32>(%[[VALUE_b_8]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_8:[0-9]+]] y: volatile bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_8]]), read<i32>(%[[VALUE_b_8]]));
+// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_8]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_8]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %40 @ge_le_lt_(%41 a: i32, %42 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %43 x: bool [storage=automatic] = ge<i32>(read<i32>(%41), read<i32>(%42));
-// DEFAULT-NEXT:         let %44 y: bool [storage=automatic] = le<i32>(read<i32>(%41), read<i32>(%42));
-// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%43)), from_bool<i32, reason=promotion>(read<bool>(%44))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_ge_le_lt_:[0-9]+]] @ge_le_lt_(%[[VALUE_a_9:[0-9]+]] a: i32, %[[VALUE_b_9:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_9:[0-9]+]] x: bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_9]]), read<i32>(%[[VALUE_b_9]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_9:[0-9]+]] y: bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_9]]), read<i32>(%[[VALUE_b_9]]));
+// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_9]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_9]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %45 @ge_le_lt_volatile(%46 a: i32, %47 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %48 x: volatile bool [storage=automatic] = ge<i32>(read<i32>(%46), read<i32>(%47));
-// DEFAULT-NEXT:         let %49 y: volatile bool [storage=automatic] = le<i32>(read<i32>(%46), read<i32>(%47));
-// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%48)), from_bool<i32, reason=promotion>(read<bool, volatile>(%49))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_ge_le_lt_volatile:[0-9]+]] @ge_le_lt_volatile(%[[VALUE_a_10:[0-9]+]] a: i32, %[[VALUE_b_10:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_10:[0-9]+]] x: volatile bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_10]]), read<i32>(%[[VALUE_b_10]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_10:[0-9]+]] y: volatile bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_10]]), read<i32>(%[[VALUE_b_10]]));
+// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_10]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_10]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %50 @ge_le_le_(%51 a: i32, %52 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %53 x: bool [storage=automatic] = ge<i32>(read<i32>(%51), read<i32>(%52));
-// DEFAULT-NEXT:         let %54 y: bool [storage=automatic] = le<i32>(read<i32>(%51), read<i32>(%52));
-// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%53)), from_bool<i32, reason=promotion>(read<bool>(%54))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_ge_le_le_:[0-9]+]] @ge_le_le_(%[[VALUE_a_11:[0-9]+]] a: i32, %[[VALUE_b_11:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_11:[0-9]+]] x: bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_11]]), read<i32>(%[[VALUE_b_11]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_11:[0-9]+]] y: bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_11]]), read<i32>(%[[VALUE_b_11]]));
+// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_11]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_11]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %55 @ge_le_le_volatile(%56 a: i32, %57 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %58 x: volatile bool [storage=automatic] = ge<i32>(read<i32>(%56), read<i32>(%57));
-// DEFAULT-NEXT:         let %59 y: volatile bool [storage=automatic] = le<i32>(read<i32>(%56), read<i32>(%57));
-// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%58)), from_bool<i32, reason=promotion>(read<bool, volatile>(%59))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_ge_le_le_volatile:[0-9]+]] @ge_le_le_volatile(%[[VALUE_a_12:[0-9]+]] a: i32, %[[VALUE_b_12:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_12:[0-9]+]] x: volatile bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_12]]), read<i32>(%[[VALUE_b_12]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_12:[0-9]+]] y: volatile bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_12]]), read<i32>(%[[VALUE_b_12]]));
+// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_12]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_12]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %60 @ge_le_gt_(%61 a: i32, %62 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %63 x: bool [storage=automatic] = ge<i32>(read<i32>(%61), read<i32>(%62));
-// DEFAULT-NEXT:         let %64 y: bool [storage=automatic] = le<i32>(read<i32>(%61), read<i32>(%62));
-// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%63)), from_bool<i32, reason=promotion>(read<bool>(%64))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_ge_le_gt_:[0-9]+]] @ge_le_gt_(%[[VALUE_a_13:[0-9]+]] a: i32, %[[VALUE_b_13:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_13:[0-9]+]] x: bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_13]]), read<i32>(%[[VALUE_b_13]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_13:[0-9]+]] y: bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_13]]), read<i32>(%[[VALUE_b_13]]));
+// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_13]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_13]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %65 @ge_le_gt_volatile(%66 a: i32, %67 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %68 x: volatile bool [storage=automatic] = ge<i32>(read<i32>(%66), read<i32>(%67));
-// DEFAULT-NEXT:         let %69 y: volatile bool [storage=automatic] = le<i32>(read<i32>(%66), read<i32>(%67));
-// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%68)), from_bool<i32, reason=promotion>(read<bool, volatile>(%69))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_ge_le_gt_volatile:[0-9]+]] @ge_le_gt_volatile(%[[VALUE_a_14:[0-9]+]] a: i32, %[[VALUE_b_14:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_14:[0-9]+]] x: volatile bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_14]]), read<i32>(%[[VALUE_b_14]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_14:[0-9]+]] y: volatile bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_14]]), read<i32>(%[[VALUE_b_14]]));
+// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_14]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_14]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %70 @ge_le_ge_(%71 a: i32, %72 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %73 x: bool [storage=automatic] = ge<i32>(read<i32>(%71), read<i32>(%72));
-// DEFAULT-NEXT:         let %74 y: bool [storage=automatic] = le<i32>(read<i32>(%71), read<i32>(%72));
-// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%73)), from_bool<i32, reason=promotion>(read<bool>(%74))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_ge_le_ge_:[0-9]+]] @ge_le_ge_(%[[VALUE_a_15:[0-9]+]] a: i32, %[[VALUE_b_15:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_15:[0-9]+]] x: bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_15]]), read<i32>(%[[VALUE_b_15]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_15:[0-9]+]] y: bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_15]]), read<i32>(%[[VALUE_b_15]]));
+// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_15]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_15]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %75 @ge_le_ge_volatile(%76 a: i32, %77 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %78 x: volatile bool [storage=automatic] = ge<i32>(read<i32>(%76), read<i32>(%77));
-// DEFAULT-NEXT:         let %79 y: volatile bool [storage=automatic] = le<i32>(read<i32>(%76), read<i32>(%77));
-// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%78)), from_bool<i32, reason=promotion>(read<bool, volatile>(%79))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_ge_le_ge_volatile:[0-9]+]] @ge_le_ge_volatile(%[[VALUE_a_16:[0-9]+]] a: i32, %[[VALUE_b_16:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_16:[0-9]+]] x: volatile bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_16]]), read<i32>(%[[VALUE_b_16]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_16:[0-9]+]] y: volatile bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_16]]), read<i32>(%[[VALUE_b_16]]));
+// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_16]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_16]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %80 @lt_gt_lt_(%81 a: i32, %82 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %83 x: bool [storage=automatic] = lt<i32>(read<i32>(%81), read<i32>(%82));
-// DEFAULT-NEXT:         let %84 y: bool [storage=automatic] = gt<i32>(read<i32>(%81), read<i32>(%82));
-// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%83)), from_bool<i32, reason=promotion>(read<bool>(%84))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_lt_gt_lt_:[0-9]+]] @lt_gt_lt_(%[[VALUE_a_17:[0-9]+]] a: i32, %[[VALUE_b_17:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_17:[0-9]+]] x: bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_17]]), read<i32>(%[[VALUE_b_17]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_17:[0-9]+]] y: bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_17]]), read<i32>(%[[VALUE_b_17]]));
+// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_17]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_17]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %85 @lt_gt_lt_volatile(%86 a: i32, %87 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %88 x: volatile bool [storage=automatic] = lt<i32>(read<i32>(%86), read<i32>(%87));
-// DEFAULT-NEXT:         let %89 y: volatile bool [storage=automatic] = gt<i32>(read<i32>(%86), read<i32>(%87));
-// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%88)), from_bool<i32, reason=promotion>(read<bool, volatile>(%89))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_lt_gt_lt_volatile:[0-9]+]] @lt_gt_lt_volatile(%[[VALUE_a_18:[0-9]+]] a: i32, %[[VALUE_b_18:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_18:[0-9]+]] x: volatile bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_18]]), read<i32>(%[[VALUE_b_18]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_18:[0-9]+]] y: volatile bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_18]]), read<i32>(%[[VALUE_b_18]]));
+// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_18]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_18]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %90 @lt_gt_le_(%91 a: i32, %92 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %93 x: bool [storage=automatic] = lt<i32>(read<i32>(%91), read<i32>(%92));
-// DEFAULT-NEXT:         let %94 y: bool [storage=automatic] = gt<i32>(read<i32>(%91), read<i32>(%92));
-// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%93)), from_bool<i32, reason=promotion>(read<bool>(%94))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_lt_gt_le_:[0-9]+]] @lt_gt_le_(%[[VALUE_a_19:[0-9]+]] a: i32, %[[VALUE_b_19:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_19:[0-9]+]] x: bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_19]]), read<i32>(%[[VALUE_b_19]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_19:[0-9]+]] y: bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_19]]), read<i32>(%[[VALUE_b_19]]));
+// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_19]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_19]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %95 @lt_gt_le_volatile(%96 a: i32, %97 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %98 x: volatile bool [storage=automatic] = lt<i32>(read<i32>(%96), read<i32>(%97));
-// DEFAULT-NEXT:         let %99 y: volatile bool [storage=automatic] = gt<i32>(read<i32>(%96), read<i32>(%97));
-// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%98)), from_bool<i32, reason=promotion>(read<bool, volatile>(%99))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_lt_gt_le_volatile:[0-9]+]] @lt_gt_le_volatile(%[[VALUE_a_20:[0-9]+]] a: i32, %[[VALUE_b_20:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_20:[0-9]+]] x: volatile bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_20]]), read<i32>(%[[VALUE_b_20]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_20:[0-9]+]] y: volatile bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_20]]), read<i32>(%[[VALUE_b_20]]));
+// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_20]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_20]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %100 @lt_gt_gt_(%101 a: i32, %102 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %103 x: bool [storage=automatic] = lt<i32>(read<i32>(%101), read<i32>(%102));
-// DEFAULT-NEXT:         let %104 y: bool [storage=automatic] = gt<i32>(read<i32>(%101), read<i32>(%102));
-// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%103)), from_bool<i32, reason=promotion>(read<bool>(%104))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_lt_gt_gt_:[0-9]+]] @lt_gt_gt_(%[[VALUE_a_21:[0-9]+]] a: i32, %[[VALUE_b_21:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_21:[0-9]+]] x: bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_21]]), read<i32>(%[[VALUE_b_21]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_21:[0-9]+]] y: bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_21]]), read<i32>(%[[VALUE_b_21]]));
+// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_21]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_21]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %105 @lt_gt_gt_volatile(%106 a: i32, %107 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %108 x: volatile bool [storage=automatic] = lt<i32>(read<i32>(%106), read<i32>(%107));
-// DEFAULT-NEXT:         let %109 y: volatile bool [storage=automatic] = gt<i32>(read<i32>(%106), read<i32>(%107));
-// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%108)), from_bool<i32, reason=promotion>(read<bool, volatile>(%109))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_lt_gt_gt_volatile:[0-9]+]] @lt_gt_gt_volatile(%[[VALUE_a_22:[0-9]+]] a: i32, %[[VALUE_b_22:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_22:[0-9]+]] x: volatile bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_22]]), read<i32>(%[[VALUE_b_22]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_22:[0-9]+]] y: volatile bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_22]]), read<i32>(%[[VALUE_b_22]]));
+// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_22]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_22]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %110 @lt_gt_ge_(%111 a: i32, %112 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %113 x: bool [storage=automatic] = lt<i32>(read<i32>(%111), read<i32>(%112));
-// DEFAULT-NEXT:         let %114 y: bool [storage=automatic] = gt<i32>(read<i32>(%111), read<i32>(%112));
-// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%113)), from_bool<i32, reason=promotion>(read<bool>(%114))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_lt_gt_ge_:[0-9]+]] @lt_gt_ge_(%[[VALUE_a_23:[0-9]+]] a: i32, %[[VALUE_b_23:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_23:[0-9]+]] x: bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_23]]), read<i32>(%[[VALUE_b_23]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_23:[0-9]+]] y: bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_23]]), read<i32>(%[[VALUE_b_23]]));
+// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_23]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_23]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %115 @lt_gt_ge_volatile(%116 a: i32, %117 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %118 x: volatile bool [storage=automatic] = lt<i32>(read<i32>(%116), read<i32>(%117));
-// DEFAULT-NEXT:         let %119 y: volatile bool [storage=automatic] = gt<i32>(read<i32>(%116), read<i32>(%117));
-// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%118)), from_bool<i32, reason=promotion>(read<bool, volatile>(%119))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_lt_gt_ge_volatile:[0-9]+]] @lt_gt_ge_volatile(%[[VALUE_a_24:[0-9]+]] a: i32, %[[VALUE_b_24:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_24:[0-9]+]] x: volatile bool [storage=automatic] = lt<i32>(read<i32>(%[[VALUE_a_24]]), read<i32>(%[[VALUE_b_24]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_24:[0-9]+]] y: volatile bool [storage=automatic] = gt<i32>(read<i32>(%[[VALUE_a_24]]), read<i32>(%[[VALUE_b_24]]));
+// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_24]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_24]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %120 @le_ge_lt_(%121 a: i32, %122 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %123 x: bool [storage=automatic] = le<i32>(read<i32>(%121), read<i32>(%122));
-// DEFAULT-NEXT:         let %124 y: bool [storage=automatic] = ge<i32>(read<i32>(%121), read<i32>(%122));
-// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%123)), from_bool<i32, reason=promotion>(read<bool>(%124))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_le_ge_lt_:[0-9]+]] @le_ge_lt_(%[[VALUE_a_25:[0-9]+]] a: i32, %[[VALUE_b_25:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_25:[0-9]+]] x: bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_25]]), read<i32>(%[[VALUE_b_25]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_25:[0-9]+]] y: bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_25]]), read<i32>(%[[VALUE_b_25]]));
+// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_25]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_25]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %125 @le_ge_lt_volatile(%126 a: i32, %127 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %128 x: volatile bool [storage=automatic] = le<i32>(read<i32>(%126), read<i32>(%127));
-// DEFAULT-NEXT:         let %129 y: volatile bool [storage=automatic] = ge<i32>(read<i32>(%126), read<i32>(%127));
-// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%128)), from_bool<i32, reason=promotion>(read<bool, volatile>(%129))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_le_ge_lt_volatile:[0-9]+]] @le_ge_lt_volatile(%[[VALUE_a_26:[0-9]+]] a: i32, %[[VALUE_b_26:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_26:[0-9]+]] x: volatile bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_26]]), read<i32>(%[[VALUE_b_26]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_26:[0-9]+]] y: volatile bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_26]]), read<i32>(%[[VALUE_b_26]]));
+// DEFAULT-NEXT:         return lt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_26]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_26]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %130 @le_ge_le_(%131 a: i32, %132 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %133 x: bool [storage=automatic] = le<i32>(read<i32>(%131), read<i32>(%132));
-// DEFAULT-NEXT:         let %134 y: bool [storage=automatic] = ge<i32>(read<i32>(%131), read<i32>(%132));
-// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%133)), from_bool<i32, reason=promotion>(read<bool>(%134))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_le_ge_le_:[0-9]+]] @le_ge_le_(%[[VALUE_a_27:[0-9]+]] a: i32, %[[VALUE_b_27:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_27:[0-9]+]] x: bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_27]]), read<i32>(%[[VALUE_b_27]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_27:[0-9]+]] y: bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_27]]), read<i32>(%[[VALUE_b_27]]));
+// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_27]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_27]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %135 @le_ge_le_volatile(%136 a: i32, %137 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %138 x: volatile bool [storage=automatic] = le<i32>(read<i32>(%136), read<i32>(%137));
-// DEFAULT-NEXT:         let %139 y: volatile bool [storage=automatic] = ge<i32>(read<i32>(%136), read<i32>(%137));
-// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%138)), from_bool<i32, reason=promotion>(read<bool, volatile>(%139))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_le_ge_le_volatile:[0-9]+]] @le_ge_le_volatile(%[[VALUE_a_28:[0-9]+]] a: i32, %[[VALUE_b_28:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_28:[0-9]+]] x: volatile bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_28]]), read<i32>(%[[VALUE_b_28]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_28:[0-9]+]] y: volatile bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_28]]), read<i32>(%[[VALUE_b_28]]));
+// DEFAULT-NEXT:         return le<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_28]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_28]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %140 @le_ge_gt_(%141 a: i32, %142 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %143 x: bool [storage=automatic] = le<i32>(read<i32>(%141), read<i32>(%142));
-// DEFAULT-NEXT:         let %144 y: bool [storage=automatic] = ge<i32>(read<i32>(%141), read<i32>(%142));
-// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%143)), from_bool<i32, reason=promotion>(read<bool>(%144))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_le_ge_gt_:[0-9]+]] @le_ge_gt_(%[[VALUE_a_29:[0-9]+]] a: i32, %[[VALUE_b_29:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_29:[0-9]+]] x: bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_29]]), read<i32>(%[[VALUE_b_29]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_29:[0-9]+]] y: bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_29]]), read<i32>(%[[VALUE_b_29]]));
+// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_29]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_29]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %145 @le_ge_gt_volatile(%146 a: i32, %147 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %148 x: volatile bool [storage=automatic] = le<i32>(read<i32>(%146), read<i32>(%147));
-// DEFAULT-NEXT:         let %149 y: volatile bool [storage=automatic] = ge<i32>(read<i32>(%146), read<i32>(%147));
-// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%148)), from_bool<i32, reason=promotion>(read<bool, volatile>(%149))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_le_ge_gt_volatile:[0-9]+]] @le_ge_gt_volatile(%[[VALUE_a_30:[0-9]+]] a: i32, %[[VALUE_b_30:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_30:[0-9]+]] x: volatile bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_30]]), read<i32>(%[[VALUE_b_30]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_30:[0-9]+]] y: volatile bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_30]]), read<i32>(%[[VALUE_b_30]]));
+// DEFAULT-NEXT:         return gt<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_30]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_30]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %150 @le_ge_ge_(%151 a: i32, %152 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %153 x: bool [storage=automatic] = le<i32>(read<i32>(%151), read<i32>(%152));
-// DEFAULT-NEXT:         let %154 y: bool [storage=automatic] = ge<i32>(read<i32>(%151), read<i32>(%152));
-// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%153)), from_bool<i32, reason=promotion>(read<bool>(%154))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_le_ge_ge_:[0-9]+]] @le_ge_ge_(%[[VALUE_a_31:[0-9]+]] a: i32, %[[VALUE_b_31:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_31:[0-9]+]] x: bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_31]]), read<i32>(%[[VALUE_b_31]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_31:[0-9]+]] y: bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_31]]), read<i32>(%[[VALUE_b_31]]));
+// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_x_31]])), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE_y_31]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %155 @le_ge_ge_volatile(%156 a: i32, %157 b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         let %158 x: volatile bool [storage=automatic] = le<i32>(read<i32>(%156), read<i32>(%157));
-// DEFAULT-NEXT:         let %159 y: volatile bool [storage=automatic] = ge<i32>(read<i32>(%156), read<i32>(%157));
-// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%158)), from_bool<i32, reason=promotion>(read<bool, volatile>(%159))), const<i32>(0));
+// DEFAULT-NEXT:     fn %[[VALUE_le_ge_ge_volatile:[0-9]+]] @le_ge_ge_volatile(%[[VALUE_a_32:[0-9]+]] a: i32, %[[VALUE_b_32:[0-9]+]] b: i32) -> bool [linkage=external] [fallthrough=ub_if_used] {
+// DEFAULT-NEXT:         let %[[VALUE_x_32:[0-9]+]] x: volatile bool [storage=automatic] = le<i32>(read<i32>(%[[VALUE_a_32]]), read<i32>(%[[VALUE_b_32]]));
+// DEFAULT-NEXT:         let %[[VALUE_y_32:[0-9]+]] y: volatile bool [storage=automatic] = ge<i32>(read<i32>(%[[VALUE_a_32]]), read<i32>(%[[VALUE_b_32]]));
+// DEFAULT-NEXT:         return ge<i32>(sub<i32, overflow=ub>(from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_x_32]])), from_bool<i32, reason=promotion>(read<bool, volatile>(%[[VALUE_y_32]]))), const<i32>(0));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %166 @__builtin_abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %160 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         for %163
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 let %161 x: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(10));
-// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%161), const<i32>(10))
+// DEFAULT-NEXT:                 let %[[VALUE_x_33:[0-9]+]] x: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(10));
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_x_33]]), const<i32>(10))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %182: i32 [synthetic] = read<i32>(%161);
-// DEFAULT-NEXT:                 let %183: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%182), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%161, read<i32>(%183));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_x_33]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_x_33]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 for %164
+// DEFAULT-NEXT:                 for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:                     init:
-// DEFAULT-NEXT:                         let %162 y: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(10));
-// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%162), const<i32>(10))
+// DEFAULT-NEXT:                         let %[[VALUE_y_33:[0-9]+]] y: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(10));
+// DEFAULT-NEXT:                     condition: lt<i32>(read<i32>(%[[VALUE_y_33]]), const<i32>(10))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %184: i32 [synthetic] = read<i32>(%162);
-// DEFAULT-NEXT:                         let %185: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%184), const<i32>(1));
-// DEFAULT-NEXT:                         write<i32>(%162, read<i32>(%185));
+// DEFAULT-NEXT:                         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_y_33]]);
+// DEFAULT-NEXT:                         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_y_33]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             do %165
+// DEFAULT-NEXT:                             do %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%0, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%5, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_gt_lt_lt_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_gt_lt_lt_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %167
+// DEFAULT-NEXT:                             do %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%10, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%15, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_gt_lt_le_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_gt_lt_le_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %168
+// DEFAULT-NEXT:                             do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%20, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%25, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_gt_lt_gt_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_gt_lt_gt_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %169
+// DEFAULT-NEXT:                             do %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%30, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%35, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_gt_lt_ge_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_gt_lt_ge_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %170
+// DEFAULT-NEXT:                             do %[[VALUE10:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%40, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%45, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_ge_le_lt_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_ge_le_lt_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %171
+// DEFAULT-NEXT:                             do %[[VALUE11:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%50, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%55, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_ge_le_le_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_ge_le_le_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %172
+// DEFAULT-NEXT:                             do %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%60, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%65, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_ge_le_gt_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_ge_le_gt_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %173
+// DEFAULT-NEXT:                             do %[[VALUE13:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%70, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%75, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_ge_le_ge_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_ge_le_ge_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %174
+// DEFAULT-NEXT:                             do %[[VALUE14:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%80, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%85, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_lt_gt_lt_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_lt_gt_lt_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %175
+// DEFAULT-NEXT:                             do %[[VALUE15:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%90, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%95, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_lt_gt_le_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_lt_gt_le_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %176
+// DEFAULT-NEXT:                             do %[[VALUE16:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%100, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%105, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_lt_gt_gt_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_lt_gt_gt_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %177
+// DEFAULT-NEXT:                             do %[[VALUE17:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%110, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%115, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_lt_gt_ge_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_lt_gt_ge_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %178
+// DEFAULT-NEXT:                             do %[[VALUE18:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%120, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%125, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_le_ge_lt_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_le_ge_lt_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %179
+// DEFAULT-NEXT:                             do %[[VALUE19:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%130, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%135, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_le_ge_le_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_le_ge_le_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %180
+// DEFAULT-NEXT:                             do %[[VALUE20:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%140, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%145, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_le_ge_gt_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_le_ge_gt_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:                             do %181
+// DEFAULT-NEXT:                             do %[[VALUE21:[0-9]+]]
 // DEFAULT-NEXT:                                 {
-// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%150, read<i32>(%161), read<i32>(%162))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%155, read<i32>(%161), read<i32>(%162))))
-// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%166);
+// DEFAULT-NEXT:                                     if ne<i32>(from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_le_ge_ge_]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))), from_bool<i32, reason=promotion>(call<bool, signature=fn(i32, i32) -> bool>(%[[VALUE_le_ge_ge_volatile]], read<i32>(%[[VALUE_x_33]]), read<i32>(%[[VALUE_y_33]]))))
+// DEFAULT-NEXT:                                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                             while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:                         }

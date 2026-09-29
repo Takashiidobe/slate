@@ -42,210 +42,210 @@ C(1) C(2) C(3) C(4) C(5)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = struct {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: d32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
-// DEFAULT-NEXT:     global %1 b: @type0 [storage=static] [linkage=external];
-// DEFAULT-NEXT:     fn %2 @foo(%103 <unnamed>: i32, %104 <unnamed>: d32) -> void [linkage=external];
-// DEFAULT-NEXT:     fn %3 @bar10(%105 <unnamed>: i32, %4 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(10), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%4));
+// DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE0]] [storage=static] [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE0:[0-9]+]] <unnamed>: i32, %[[VALUE1:[0-9]+]] <unnamed>: d32) -> void [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_bar10:[0-9]+]] @bar10(%[[VALUE2:[0-9]+]] <unnamed>: i32, %[[VALUE_d:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(10), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %5 @bar11(%106 <unnamed>: i32, %6 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(11), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%6));
+// DEFAULT-NEXT:     fn %[[VALUE_bar11:[0-9]+]] @bar11(%[[VALUE3:[0-9]+]] <unnamed>: i32, %[[VALUE_d_2:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(11), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %7 @bar12(%107 <unnamed>: i32, %8 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(12), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%8));
+// DEFAULT-NEXT:     fn %[[VALUE_bar12:[0-9]+]] @bar12(%[[VALUE4:[0-9]+]] <unnamed>: i32, %[[VALUE_d_3:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(12), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_3]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %9 @bar13(%108 <unnamed>: i32, %10 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(13), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%10));
+// DEFAULT-NEXT:     fn %[[VALUE_bar13:[0-9]+]] @bar13(%[[VALUE5:[0-9]+]] <unnamed>: i32, %[[VALUE_d_4:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(13), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_4]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %11 @bar14(%109 <unnamed>: i32, %12 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(14), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%12));
+// DEFAULT-NEXT:     fn %[[VALUE_bar14:[0-9]+]] @bar14(%[[VALUE6:[0-9]+]] <unnamed>: i32, %[[VALUE_d_5:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(14), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_5]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %13 @bar15(%110 <unnamed>: i32, %14 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(15), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%14));
+// DEFAULT-NEXT:     fn %[[VALUE_bar15:[0-9]+]] @bar15(%[[VALUE7:[0-9]+]] <unnamed>: i32, %[[VALUE_d_6:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(15), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_6]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %15 @bar16(%111 <unnamed>: i32, %16 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(16), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%16));
+// DEFAULT-NEXT:     fn %[[VALUE_bar16:[0-9]+]] @bar16(%[[VALUE8:[0-9]+]] <unnamed>: i32, %[[VALUE_d_7:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(16), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_7]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %17 @bar17(%112 <unnamed>: i32, %18 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(17), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%18));
+// DEFAULT-NEXT:     fn %[[VALUE_bar17:[0-9]+]] @bar17(%[[VALUE9:[0-9]+]] <unnamed>: i32, %[[VALUE_d_8:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(17), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_8]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %19 @bar18(%113 <unnamed>: i32, %20 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(18), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%20));
+// DEFAULT-NEXT:     fn %[[VALUE_bar18:[0-9]+]] @bar18(%[[VALUE10:[0-9]+]] <unnamed>: i32, %[[VALUE_d_9:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(18), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_9]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %21 @bar19(%114 <unnamed>: i32, %22 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(19), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%22));
+// DEFAULT-NEXT:     fn %[[VALUE_bar19:[0-9]+]] @bar19(%[[VALUE11:[0-9]+]] <unnamed>: i32, %[[VALUE_d_10:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(19), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_10]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %23 @bar20(%115 <unnamed>: i32, %24 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(20), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%24));
+// DEFAULT-NEXT:     fn %[[VALUE_bar20:[0-9]+]] @bar20(%[[VALUE12:[0-9]+]] <unnamed>: i32, %[[VALUE_d_11:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(20), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_11]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %25 @bar21(%116 <unnamed>: i32, %26 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(21), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%26));
+// DEFAULT-NEXT:     fn %[[VALUE_bar21:[0-9]+]] @bar21(%[[VALUE13:[0-9]+]] <unnamed>: i32, %[[VALUE_d_12:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(21), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_12]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %27 @bar22(%117 <unnamed>: i32, %28 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(22), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%28));
+// DEFAULT-NEXT:     fn %[[VALUE_bar22:[0-9]+]] @bar22(%[[VALUE14:[0-9]+]] <unnamed>: i32, %[[VALUE_d_13:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(22), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_13]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %29 @bar23(%118 <unnamed>: i32, %30 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(23), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%30));
+// DEFAULT-NEXT:     fn %[[VALUE_bar23:[0-9]+]] @bar23(%[[VALUE15:[0-9]+]] <unnamed>: i32, %[[VALUE_d_14:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(23), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_14]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %31 @bar24(%119 <unnamed>: i32, %32 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(24), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%32));
+// DEFAULT-NEXT:     fn %[[VALUE_bar24:[0-9]+]] @bar24(%[[VALUE16:[0-9]+]] <unnamed>: i32, %[[VALUE_d_15:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(24), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_15]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %33 @bar25(%120 <unnamed>: i32, %34 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(25), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%34));
+// DEFAULT-NEXT:     fn %[[VALUE_bar25:[0-9]+]] @bar25(%[[VALUE17:[0-9]+]] <unnamed>: i32, %[[VALUE_d_16:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(25), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_16]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %35 @bar26(%121 <unnamed>: i32, %36 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(26), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%36));
+// DEFAULT-NEXT:     fn %[[VALUE_bar26:[0-9]+]] @bar26(%[[VALUE18:[0-9]+]] <unnamed>: i32, %[[VALUE_d_17:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(26), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_17]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %37 @bar27(%122 <unnamed>: i32, %38 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(27), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%38));
+// DEFAULT-NEXT:     fn %[[VALUE_bar27:[0-9]+]] @bar27(%[[VALUE19:[0-9]+]] <unnamed>: i32, %[[VALUE_d_18:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(27), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_18]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %39 @bar28(%123 <unnamed>: i32, %40 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(28), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%40));
+// DEFAULT-NEXT:     fn %[[VALUE_bar28:[0-9]+]] @bar28(%[[VALUE20:[0-9]+]] <unnamed>: i32, %[[VALUE_d_19:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(28), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_19]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %41 @bar29(%124 <unnamed>: i32, %42 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(29), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%42));
+// DEFAULT-NEXT:     fn %[[VALUE_bar29:[0-9]+]] @bar29(%[[VALUE21:[0-9]+]] <unnamed>: i32, %[[VALUE_d_20:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(29), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_20]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %43 @bar30(%125 <unnamed>: i32, %44 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(30), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%44));
+// DEFAULT-NEXT:     fn %[[VALUE_bar30:[0-9]+]] @bar30(%[[VALUE22:[0-9]+]] <unnamed>: i32, %[[VALUE_d_21:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(30), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_21]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %45 @bar31(%126 <unnamed>: i32, %46 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(31), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%46));
+// DEFAULT-NEXT:     fn %[[VALUE_bar31:[0-9]+]] @bar31(%[[VALUE23:[0-9]+]] <unnamed>: i32, %[[VALUE_d_22:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(31), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_22]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %47 @bar32(%127 <unnamed>: i32, %48 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(32), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%48));
+// DEFAULT-NEXT:     fn %[[VALUE_bar32:[0-9]+]] @bar32(%[[VALUE24:[0-9]+]] <unnamed>: i32, %[[VALUE_d_23:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(32), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_23]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %49 @bar33(%128 <unnamed>: i32, %50 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(33), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%50));
+// DEFAULT-NEXT:     fn %[[VALUE_bar33:[0-9]+]] @bar33(%[[VALUE25:[0-9]+]] <unnamed>: i32, %[[VALUE_d_24:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(33), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_24]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %51 @bar34(%129 <unnamed>: i32, %52 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(34), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%52));
+// DEFAULT-NEXT:     fn %[[VALUE_bar34:[0-9]+]] @bar34(%[[VALUE26:[0-9]+]] <unnamed>: i32, %[[VALUE_d_25:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(34), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_25]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %53 @bar35(%130 <unnamed>: i32, %54 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(35), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%54));
+// DEFAULT-NEXT:     fn %[[VALUE_bar35:[0-9]+]] @bar35(%[[VALUE27:[0-9]+]] <unnamed>: i32, %[[VALUE_d_26:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(35), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_26]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %55 @bar36(%131 <unnamed>: i32, %56 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(36), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%56));
+// DEFAULT-NEXT:     fn %[[VALUE_bar36:[0-9]+]] @bar36(%[[VALUE28:[0-9]+]] <unnamed>: i32, %[[VALUE_d_27:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(36), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_27]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %57 @bar37(%132 <unnamed>: i32, %58 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(37), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%58));
+// DEFAULT-NEXT:     fn %[[VALUE_bar37:[0-9]+]] @bar37(%[[VALUE29:[0-9]+]] <unnamed>: i32, %[[VALUE_d_28:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(37), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_28]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %59 @bar38(%133 <unnamed>: i32, %60 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(38), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%60));
+// DEFAULT-NEXT:     fn %[[VALUE_bar38:[0-9]+]] @bar38(%[[VALUE30:[0-9]+]] <unnamed>: i32, %[[VALUE_d_29:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(38), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_29]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %61 @bar39(%134 <unnamed>: i32, %62 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(39), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%62));
+// DEFAULT-NEXT:     fn %[[VALUE_bar39:[0-9]+]] @bar39(%[[VALUE31:[0-9]+]] <unnamed>: i32, %[[VALUE_d_30:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(39), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_30]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %63 @bar40(%135 <unnamed>: i32, %64 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(40), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%64));
+// DEFAULT-NEXT:     fn %[[VALUE_bar40:[0-9]+]] @bar40(%[[VALUE32:[0-9]+]] <unnamed>: i32, %[[VALUE_d_31:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(40), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_31]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %65 @bar41(%136 <unnamed>: i32, %66 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(41), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%66));
+// DEFAULT-NEXT:     fn %[[VALUE_bar41:[0-9]+]] @bar41(%[[VALUE33:[0-9]+]] <unnamed>: i32, %[[VALUE_d_32:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(41), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_32]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %67 @bar42(%137 <unnamed>: i32, %68 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(42), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%68));
+// DEFAULT-NEXT:     fn %[[VALUE_bar42:[0-9]+]] @bar42(%[[VALUE34:[0-9]+]] <unnamed>: i32, %[[VALUE_d_33:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(42), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_33]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %69 @bar43(%138 <unnamed>: i32, %70 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(43), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%70));
+// DEFAULT-NEXT:     fn %[[VALUE_bar43:[0-9]+]] @bar43(%[[VALUE35:[0-9]+]] <unnamed>: i32, %[[VALUE_d_34:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(43), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_34]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %71 @bar44(%139 <unnamed>: i32, %72 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(44), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%72));
+// DEFAULT-NEXT:     fn %[[VALUE_bar44:[0-9]+]] @bar44(%[[VALUE36:[0-9]+]] <unnamed>: i32, %[[VALUE_d_35:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(44), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_35]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %73 @bar45(%140 <unnamed>: i32, %74 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(45), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%74));
+// DEFAULT-NEXT:     fn %[[VALUE_bar45:[0-9]+]] @bar45(%[[VALUE37:[0-9]+]] <unnamed>: i32, %[[VALUE_d_36:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(45), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_36]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %75 @bar46(%141 <unnamed>: i32, %76 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(46), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%76));
+// DEFAULT-NEXT:     fn %[[VALUE_bar46:[0-9]+]] @bar46(%[[VALUE38:[0-9]+]] <unnamed>: i32, %[[VALUE_d_37:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(46), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_37]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %77 @bar47(%142 <unnamed>: i32, %78 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(47), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%78));
+// DEFAULT-NEXT:     fn %[[VALUE_bar47:[0-9]+]] @bar47(%[[VALUE39:[0-9]+]] <unnamed>: i32, %[[VALUE_d_38:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(47), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_38]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %79 @bar48(%143 <unnamed>: i32, %80 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(48), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%80));
+// DEFAULT-NEXT:     fn %[[VALUE_bar48:[0-9]+]] @bar48(%[[VALUE40:[0-9]+]] <unnamed>: i32, %[[VALUE_d_39:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(48), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_39]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %81 @bar49(%144 <unnamed>: i32, %82 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(49), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%82));
+// DEFAULT-NEXT:     fn %[[VALUE_bar49:[0-9]+]] @bar49(%[[VALUE41:[0-9]+]] <unnamed>: i32, %[[VALUE_d_40:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(49), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_40]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %83 @bar50(%145 <unnamed>: i32, %84 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(50), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%84));
+// DEFAULT-NEXT:     fn %[[VALUE_bar50:[0-9]+]] @bar50(%[[VALUE42:[0-9]+]] <unnamed>: i32, %[[VALUE_d_41:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(50), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_41]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %85 @bar51(%146 <unnamed>: i32, %86 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(51), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%86));
+// DEFAULT-NEXT:     fn %[[VALUE_bar51:[0-9]+]] @bar51(%[[VALUE43:[0-9]+]] <unnamed>: i32, %[[VALUE_d_42:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(51), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_42]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %87 @bar52(%147 <unnamed>: i32, %88 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(52), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%88));
+// DEFAULT-NEXT:     fn %[[VALUE_bar52:[0-9]+]] @bar52(%[[VALUE44:[0-9]+]] <unnamed>: i32, %[[VALUE_d_43:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(52), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_43]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %89 @bar53(%148 <unnamed>: i32, %90 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(53), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%90));
+// DEFAULT-NEXT:     fn %[[VALUE_bar53:[0-9]+]] @bar53(%[[VALUE45:[0-9]+]] <unnamed>: i32, %[[VALUE_d_44:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(53), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_44]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %91 @bar54(%149 <unnamed>: i32, %92 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(54), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%92));
+// DEFAULT-NEXT:     fn %[[VALUE_bar54:[0-9]+]] @bar54(%[[VALUE46:[0-9]+]] <unnamed>: i32, %[[VALUE_d_45:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(54), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_45]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %93 @bar55(%150 <unnamed>: i32, %94 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(55), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%94));
+// DEFAULT-NEXT:     fn %[[VALUE_bar55:[0-9]+]] @bar55(%[[VALUE47:[0-9]+]] <unnamed>: i32, %[[VALUE_d_46:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(55), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_46]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %95 @bar56(%151 <unnamed>: i32, %96 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(56), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%96));
+// DEFAULT-NEXT:     fn %[[VALUE_bar56:[0-9]+]] @bar56(%[[VALUE48:[0-9]+]] <unnamed>: i32, %[[VALUE_d_47:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(56), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_47]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %97 @bar57(%152 <unnamed>: i32, %98 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(57), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%98));
+// DEFAULT-NEXT:     fn %[[VALUE_bar57:[0-9]+]] @bar57(%[[VALUE49:[0-9]+]] <unnamed>: i32, %[[VALUE_d_48:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(57), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_48]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %99 @bar58(%153 <unnamed>: i32, %100 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(58), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%100));
+// DEFAULT-NEXT:     fn %[[VALUE_bar58:[0-9]+]] @bar58(%[[VALUE50:[0-9]+]] <unnamed>: i32, %[[VALUE_d_49:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(58), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_49]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %101 @bar59(%154 <unnamed>: i32, %102 d: d32) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%2, const<i32>(59), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
-// DEFAULT-NEXT:         write<d32>(field0(%1), read<d32>(%102));
+// DEFAULT-NEXT:     fn %[[VALUE_bar59:[0-9]+]] @bar59(%[[VALUE51:[0-9]+]] <unnamed>: i32, %[[VALUE_d_50:[0-9]+]] d: d32) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         call<void, signature=fn(i32, d32) -> void>(%[[VALUE_foo]], const<i32>(59), int_to_float<d32, reason=arg, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
+// DEFAULT-NEXT:         write<d32>(field0(%[[VALUE_b]]), read<d32>(%[[VALUE_d_50]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

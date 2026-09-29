@@ -67,13 +67,13 @@ int val__BIGGEST_ALIGNMENT__[__BIGGEST_ALIGNMENT__ + 1];
 // NO-FMA-NEXT:         storage d64 [size=8, align=8];
 // NO-FMA-NEXT:         storage d128 [size=16, align=16];
 // NO-FMA-NEXT:     }
-// NO-FMA-NEXT:     global %0 val__SSE4_2__: array<i32, 2> [storage=static] [linkage=external];
-// NO-FMA-NEXT:     global %1 val__AVX__: array<i32, 2> [storage=static] [linkage=external];
-// NO-FMA-NEXT:     global %2 val__AVX2__: array<i32, 2> [storage=static] [linkage=external];
-// NO-FMA-NEXT:     global %3 val__AVX512F__: array<i32, 2> [storage=static] [linkage=external];
-// NO-FMA-NEXT:     global %4 val__XSAVE__: array<i32, 2> [storage=static] [linkage=external];
-// NO-FMA-NEXT:     global %5 val__FP_FAST_FMA: array<i32, 2> [storage=static] [linkage=external];
-// NO-FMA-NEXT:     global %6 val__BIGGEST_ALIGNMENT__: array<i32, 65> [storage=static] [align=16] [linkage=external];
+// NO-FMA-NEXT:     global %[[VALUE_val__SSE4_2__:[0-9]+]] val__SSE4_2__: array<i32, 2> [storage=static] [linkage=external];
+// NO-FMA-NEXT:     global %[[VALUE_val__AVX__:[0-9]+]] val__AVX__: array<i32, 2> [storage=static] [linkage=external];
+// NO-FMA-NEXT:     global %[[VALUE_val__AVX2__:[0-9]+]] val__AVX2__: array<i32, 2> [storage=static] [linkage=external];
+// NO-FMA-NEXT:     global %[[VALUE_val__AVX512F__:[0-9]+]] val__AVX512F__: array<i32, 2> [storage=static] [linkage=external];
+// NO-FMA-NEXT:     global %[[VALUE_val__XSAVE__:[0-9]+]] val__XSAVE__: array<i32, 2> [storage=static] [linkage=external];
+// NO-FMA-NEXT:     global %[[VALUE_val__FP_FAST_FMA:[0-9]+]] val__FP_FAST_FMA: array<i32, 2> [storage=static] [linkage=external];
+// NO-FMA-NEXT:     global %[[VALUE_val__BIGGEST_ALIGNMENT__:[0-9]+]] val__BIGGEST_ALIGNMENT__: array<i32, 65> [storage=static] [align=16] [linkage=external];
 // NO-FMA-NEXT: }
 // SLATE-FILECHECK-END NO-FMA
 // SLATE-FILECHECK-BEGIN V4-NO-F16C
@@ -99,16 +99,16 @@ int val__BIGGEST_ALIGNMENT__[__BIGGEST_ALIGNMENT__ + 1];
 // V4-NO-F16C-NEXT:         storage d64 [size=8, align=8];
 // V4-NO-F16C-NEXT:         storage d128 [size=16, align=16];
 // V4-NO-F16C-NEXT:     }
-// V4-NO-F16C-NEXT:     global %0 val__SSE4_2__: array<i32, 2> [storage=static] [linkage=external];
-// V4-NO-F16C-NEXT:     global %1 val__AVX__: array<i32, 2> [storage=static] [linkage=external];
-// V4-NO-F16C-NEXT:     global %2 val__AVX2__: array<i32, 2> [storage=static] [linkage=external];
-// V4-NO-F16C-NEXT:     global %3 val__FMA__: array<i32, 2> [storage=static] [linkage=external];
-// V4-NO-F16C-NEXT:     global %4 val__AVX512F__: array<i32, 2> [storage=static] [linkage=external];
-// V4-NO-F16C-NEXT:     global %5 val__AVX512VL__: array<i32, 2> [storage=static] [linkage=external];
-// V4-NO-F16C-NEXT:     global %6 val__XSAVE__: array<i32, 2> [storage=static] [linkage=external];
-// V4-NO-F16C-NEXT:     global %7 val__EVEX256__: array<i32, 2> [storage=static] [linkage=external];
-// V4-NO-F16C-NEXT:     global %8 val__FP_FAST_FMA: array<i32, 2> [storage=static] [linkage=external];
-// V4-NO-F16C-NEXT:     global %9 val__BIGGEST_ALIGNMENT__: array<i32, 65> [storage=static] [align=16] [linkage=external];
+// V4-NO-F16C-NEXT:     global %[[VALUE_val__SSE4_2__:[0-9]+]] val__SSE4_2__: array<i32, 2> [storage=static] [linkage=external];
+// V4-NO-F16C-NEXT:     global %[[VALUE_val__AVX__:[0-9]+]] val__AVX__: array<i32, 2> [storage=static] [linkage=external];
+// V4-NO-F16C-NEXT:     global %[[VALUE_val__AVX2__:[0-9]+]] val__AVX2__: array<i32, 2> [storage=static] [linkage=external];
+// V4-NO-F16C-NEXT:     global %[[VALUE_val__FMA__:[0-9]+]] val__FMA__: array<i32, 2> [storage=static] [linkage=external];
+// V4-NO-F16C-NEXT:     global %[[VALUE_val__AVX512F__:[0-9]+]] val__AVX512F__: array<i32, 2> [storage=static] [linkage=external];
+// V4-NO-F16C-NEXT:     global %[[VALUE_val__AVX512VL__:[0-9]+]] val__AVX512VL__: array<i32, 2> [storage=static] [linkage=external];
+// V4-NO-F16C-NEXT:     global %[[VALUE_val__XSAVE__:[0-9]+]] val__XSAVE__: array<i32, 2> [storage=static] [linkage=external];
+// V4-NO-F16C-NEXT:     global %[[VALUE_val__EVEX256__:[0-9]+]] val__EVEX256__: array<i32, 2> [storage=static] [linkage=external];
+// V4-NO-F16C-NEXT:     global %[[VALUE_val__FP_FAST_FMA:[0-9]+]] val__FP_FAST_FMA: array<i32, 2> [storage=static] [linkage=external];
+// V4-NO-F16C-NEXT:     global %[[VALUE_val__BIGGEST_ALIGNMENT__:[0-9]+]] val__BIGGEST_ALIGNMENT__: array<i32, 65> [storage=static] [align=16] [linkage=external];
 // V4-NO-F16C-NEXT: }
 // SLATE-FILECHECK-END V4-NO-F16C
 // SLATE-FILECHECK-BEGIN NO-AVX
@@ -134,9 +134,9 @@ int val__BIGGEST_ALIGNMENT__[__BIGGEST_ALIGNMENT__ + 1];
 // NO-AVX-NEXT:         storage d64 [size=8, align=8];
 // NO-AVX-NEXT:         storage d128 [size=16, align=16];
 // NO-AVX-NEXT:     }
-// NO-AVX-NEXT:     global %0 val__SSE4_2__: array<i32, 2> [storage=static] [linkage=external];
-// NO-AVX-NEXT:     global %1 val__XSAVE__: array<i32, 2> [storage=static] [linkage=external];
-// NO-AVX-NEXT:     global %2 val__BIGGEST_ALIGNMENT__: array<i32, 17> [storage=static] [align=16] [linkage=external];
+// NO-AVX-NEXT:     global %[[VALUE_val__SSE4_2__:[0-9]+]] val__SSE4_2__: array<i32, 2> [storage=static] [linkage=external];
+// NO-AVX-NEXT:     global %[[VALUE_val__XSAVE__:[0-9]+]] val__XSAVE__: array<i32, 2> [storage=static] [linkage=external];
+// NO-AVX-NEXT:     global %[[VALUE_val__BIGGEST_ALIGNMENT__:[0-9]+]] val__BIGGEST_ALIGNMENT__: array<i32, 17> [storage=static] [align=16] [linkage=external];
 // NO-AVX-NEXT: }
 // SLATE-FILECHECK-END NO-AVX
 // SLATE-FILECHECK-BEGIN CANCEL
@@ -162,7 +162,7 @@ int val__BIGGEST_ALIGNMENT__[__BIGGEST_ALIGNMENT__ + 1];
 // CANCEL-NEXT:         storage d64 [size=8, align=8];
 // CANCEL-NEXT:         storage d128 [size=16, align=16];
 // CANCEL-NEXT:     }
-// CANCEL-NEXT:     global %0 val__BIGGEST_ALIGNMENT__: array<i32, 17> [storage=static] [align=16] [linkage=external];
+// CANCEL-NEXT:     global %[[VALUE_val__BIGGEST_ALIGNMENT__:[0-9]+]] val__BIGGEST_ALIGNMENT__: array<i32, 17> [storage=static] [align=16] [linkage=external];
 // CANCEL-NEXT: }
 // SLATE-FILECHECK-END CANCEL
 // SLATE-FILECHECK-BEGIN NO-XSAVE
@@ -188,7 +188,7 @@ int val__BIGGEST_ALIGNMENT__[__BIGGEST_ALIGNMENT__ + 1];
 // NO-XSAVE-NEXT:         storage d64 [size=8, align=8];
 // NO-XSAVE-NEXT:         storage d128 [size=16, align=16];
 // NO-XSAVE-NEXT:     }
-// NO-XSAVE-NEXT:     global %0 val__SSE4_2__: array<i32, 2> [storage=static] [linkage=external];
-// NO-XSAVE-NEXT:     global %1 val__BIGGEST_ALIGNMENT__: array<i32, 17> [storage=static] [align=16] [linkage=external];
+// NO-XSAVE-NEXT:     global %[[VALUE_val__SSE4_2__:[0-9]+]] val__SSE4_2__: array<i32, 2> [storage=static] [linkage=external];
+// NO-XSAVE-NEXT:     global %[[VALUE_val__BIGGEST_ALIGNMENT__:[0-9]+]] val__BIGGEST_ALIGNMENT__: array<i32, 17> [storage=static] [align=16] [linkage=external];
 // NO-XSAVE-NEXT: }
 // SLATE-FILECHECK-END NO-XSAVE

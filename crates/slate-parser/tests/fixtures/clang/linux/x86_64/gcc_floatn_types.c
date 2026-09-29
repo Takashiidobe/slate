@@ -66,11 +66,11 @@ _Static_assert(sizeof(_Float64x) == 16, "");
 // CLANG-NEXT:         storage d64 [size=8, align=8];
 // CLANG-NEXT:         storage d128 [size=16, align=16];
 // CLANG-NEXT:     }
-// CLANG-NEXT:     global %0 _Float32: i32 [storage=static] [linkage=external];
-// CLANG-NEXT:     global %1 _Float64: i32 [storage=static] [linkage=external];
-// CLANG-NEXT:     global %2 _Float32x: i32 [storage=static] [linkage=external];
-// CLANG-NEXT:     global %3 _Float64x: i32 [storage=static] [linkage=external];
-// CLANG-NEXT:     global %4 _Float128: i32 [storage=static] [linkage=external];
-// CLANG-NEXT:     global %5 __float80: i32 [storage=static] [linkage=external];
+// CLANG-NEXT:     global %[[VALUE__Float32:[0-9]+]] _Float32: i32 [storage=static] [linkage=external];
+// CLANG-NEXT:     global %[[VALUE__Float64:[0-9]+]] _Float64: i32 [storage=static] [linkage=external];
+// CLANG-NEXT:     global %[[VALUE__Float32x:[0-9]+]] _Float32x: i32 [storage=static] [linkage=external];
+// CLANG-NEXT:     global %[[VALUE__Float64x:[0-9]+]] _Float64x: i32 [storage=static] [linkage=external];
+// CLANG-NEXT:     global %[[VALUE__Float128:[0-9]+]] _Float128: i32 [storage=static] [linkage=external];
+// CLANG-NEXT:     global %[[VALUE___float80:[0-9]+]] __float80: i32 [storage=static] [linkage=external];
 // CLANG-NEXT: }
 // SLATE-FILECHECK-END CLANG

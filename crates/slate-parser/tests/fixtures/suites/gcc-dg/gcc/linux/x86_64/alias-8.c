@@ -37,11 +37,11 @@ func(struct s *ptr)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 s = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 p: ptr<i8>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
-// DEFAULT-NEXT:     fn %1 @func(%2 ptr: ptr<@type0>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         write<ptr<void>>(deref(pointer_cast<ptr<ptr<void>>, reason=explicit>(addr_of<ptr<ptr<i8>>>(field0(deref(read<ptr<@type0>>(%2)))))), null<ptr<void>>);
+// DEFAULT-NEXT:     fn %[[VALUE_func:[0-9]+]] @func(%[[VALUE_ptr:[0-9]+]] ptr: ptr<@type[[TYPE_s]]>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         write<ptr<void>>(deref(pointer_cast<ptr<ptr<void>>, reason=explicit>(addr_of<ptr<ptr<i8>>>(field0(deref(read<ptr<@type[[TYPE_s]]>>(%[[VALUE_ptr]])))))), null<ptr<void>>);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

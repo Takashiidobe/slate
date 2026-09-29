@@ -39,8 +39,8 @@ f() { return 1; }
 // C89-NEXT:         storage d64 [size=8, align=8];
 // C89-NEXT:         storage d128 [size=16, align=16];
 // C89-NEXT:     }
-// C89-NEXT:     global %0 x: i32 [storage=static] [linkage=internal];
-// C89-NEXT:     fn %1 @f(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// C89-NEXT:     global %[[VALUE_x:[0-9]+]] x: i32 [storage=static] [linkage=internal];
+// C89-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(unprototyped) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // C89-NEXT:         return const<i32>(1);
 // C89-NEXT:     }
 // C89-NEXT: }

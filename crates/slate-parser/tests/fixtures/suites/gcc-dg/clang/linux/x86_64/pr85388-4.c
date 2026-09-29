@@ -94,78 +94,78 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 size_t = u64;
-// DEFAULT-NEXT:     type @type1 __rlim_t = u64;
-// DEFAULT-NEXT:     type @type2 __rlimit_resource = enum : u32 {
-// DEFAULT-NEXT:         %0 RLIMIT_CPU = const<i32>(0);
-// DEFAULT-NEXT:         %1 RLIMIT_FSIZE = const<i32>(1);
-// DEFAULT-NEXT:         %2 RLIMIT_DATA = const<i32>(2);
-// DEFAULT-NEXT:         %3 RLIMIT_STACK = const<i32>(3);
-// DEFAULT-NEXT:         %4 RLIMIT_CORE = const<i32>(4);
-// DEFAULT-NEXT:         %5 __RLIMIT_RSS = const<i32>(5);
-// DEFAULT-NEXT:         %6 RLIMIT_NOFILE = const<i32>(7);
-// DEFAULT-NEXT:         %7 __RLIMIT_OFILE = const<i32>(7);
-// DEFAULT-NEXT:         %8 RLIMIT_AS = const<i32>(9);
-// DEFAULT-NEXT:         %9 __RLIMIT_NPROC = const<i32>(6);
-// DEFAULT-NEXT:         %10 __RLIMIT_MEMLOCK = const<i32>(8);
-// DEFAULT-NEXT:         %11 __RLIMIT_LOCKS = const<i32>(10);
-// DEFAULT-NEXT:         %12 __RLIMIT_SIGPENDING = const<i32>(11);
-// DEFAULT-NEXT:         %13 __RLIMIT_MSGQUEUE = const<i32>(12);
-// DEFAULT-NEXT:         %14 __RLIMIT_NICE = const<i32>(13);
-// DEFAULT-NEXT:         %15 __RLIMIT_RTPRIO = const<i32>(14);
-// DEFAULT-NEXT:         %16 __RLIMIT_RTTIME = const<i32>(15);
-// DEFAULT-NEXT:         %17 __RLIMIT_NLIMITS = const<i32>(16);
-// DEFAULT-NEXT:         %18 __RLIM_NLIMITS = const<i32>(16);
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE___rlim_t:[0-9]+]] __rlim_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE___rlimit_resource:[0-9]+]] __rlimit_resource = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_RLIMIT_CPU:[0-9]+]] RLIMIT_CPU = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_RLIMIT_FSIZE:[0-9]+]] RLIMIT_FSIZE = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_RLIMIT_DATA:[0-9]+]] RLIMIT_DATA = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE_RLIMIT_STACK:[0-9]+]] RLIMIT_STACK = const<i32>(3);
+// DEFAULT-NEXT:         %[[VALUE_RLIMIT_CORE:[0-9]+]] RLIMIT_CORE = const<i32>(4);
+// DEFAULT-NEXT:         %[[VALUE___RLIMIT_RSS:[0-9]+]] __RLIMIT_RSS = const<i32>(5);
+// DEFAULT-NEXT:         %[[VALUE_RLIMIT_NOFILE:[0-9]+]] RLIMIT_NOFILE = const<i32>(7);
+// DEFAULT-NEXT:         %[[VALUE___RLIMIT_OFILE:[0-9]+]] __RLIMIT_OFILE = const<i32>(7);
+// DEFAULT-NEXT:         %[[VALUE_RLIMIT_AS:[0-9]+]] RLIMIT_AS = const<i32>(9);
+// DEFAULT-NEXT:         %[[VALUE___RLIMIT_NPROC:[0-9]+]] __RLIMIT_NPROC = const<i32>(6);
+// DEFAULT-NEXT:         %[[VALUE___RLIMIT_MEMLOCK:[0-9]+]] __RLIMIT_MEMLOCK = const<i32>(8);
+// DEFAULT-NEXT:         %[[VALUE___RLIMIT_LOCKS:[0-9]+]] __RLIMIT_LOCKS = const<i32>(10);
+// DEFAULT-NEXT:         %[[VALUE___RLIMIT_SIGPENDING:[0-9]+]] __RLIMIT_SIGPENDING = const<i32>(11);
+// DEFAULT-NEXT:         %[[VALUE___RLIMIT_MSGQUEUE:[0-9]+]] __RLIMIT_MSGQUEUE = const<i32>(12);
+// DEFAULT-NEXT:         %[[VALUE___RLIMIT_NICE:[0-9]+]] __RLIMIT_NICE = const<i32>(13);
+// DEFAULT-NEXT:         %[[VALUE___RLIMIT_RTPRIO:[0-9]+]] __RLIMIT_RTPRIO = const<i32>(14);
+// DEFAULT-NEXT:         %[[VALUE___RLIMIT_RTTIME:[0-9]+]] __RLIMIT_RTTIME = const<i32>(15);
+// DEFAULT-NEXT:         %[[VALUE___RLIMIT_NLIMITS:[0-9]+]] __RLIMIT_NLIMITS = const<i32>(16);
+// DEFAULT-NEXT:         %[[VALUE___RLIM_NLIMITS:[0-9]+]] __RLIM_NLIMITS = const<i32>(16);
 // DEFAULT-NEXT:     } [size=4, align=4];
-// DEFAULT-NEXT:     type @type3 rlim_t = u64;
-// DEFAULT-NEXT:     type @type4 rlimit = struct {
+// DEFAULT-NEXT:     type @type[[TYPE_rlim_t:[0-9]+]] rlim_t = u64;
+// DEFAULT-NEXT:     type @type[[TYPE_rlimit:[0-9]+]] rlimit = struct {
 // DEFAULT-NEXT:         field0 rlim_cur: u64;
 // DEFAULT-NEXT:         field1 rlim_max: u64;
 // DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8]];
-// DEFAULT-NEXT:     type @type5 __rlimit_resource_t = i32;
-// DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %28 @setrlimit(%42 __resource: i32, %43 __rlimits: ptr<const @type4>) -> i32 [linkage=external];
-// DEFAULT-NEXT:     fn %30 @use_buffer(%31 buf: ptr<i8>, %32 c: u64) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %33 i: u64 [storage=automatic];
-// DEFAULT-NEXT:         for %46
+// DEFAULT-NEXT:     type @type[[TYPE___rlimit_resource_t:[0-9]+]] __rlimit_resource_t = i32;
+// DEFAULT-NEXT:     fn %[[VALUE_RLIMIT_DATA]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_setrlimit:[0-9]+]] @setrlimit(%[[VALUE___resource:[0-9]+]] __resource: i32, %[[VALUE___rlimits:[0-9]+]] __rlimits: ptr<const @type[[TYPE_rlimit]]>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_use_buffer:[0-9]+]] @use_buffer(%[[VALUE_buf:[0-9]+]] buf: ptr<i8>, %[[VALUE_c:[0-9]+]] c: u64) -> void [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: u64 [storage=automatic];
+// DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
-// DEFAULT-NEXT:                 write<u64>(%33, reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
-// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%33), read<u64>(%32))
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_i]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
+// DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_i]]), read<u64>(%[[VALUE_c]]))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %50: u64 [synthetic] = read<u64>(%33);
-// DEFAULT-NEXT:                 let %51: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%50), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                 write<u64>(%33, read<u64>(%51));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE1]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_i]], read<u64>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
-// DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%31), read<u64>(%33))), reinterpret<i8, reason=explicit, fits=unknown>(truncate<u8, reason=explicit, fits=unknown>(read<u64>(%33))));
+// DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_buf]]), read<u64>(%[[VALUE_i]]))), reinterpret<i8, reason=explicit, fits=unknown>(truncate<u8, reason=explicit, fits=unknown>(read<u64>(%[[VALUE_i]]))));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %34 @down1(%35 i: i32) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %47: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%35))));
-// DEFAULT-NEXT:         let %36 buf: vla<i8, %47> [storage=automatic];
-// DEFAULT-NEXT:         if gt<i32>(read<i32>(%35), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE_down1:[0-9]+]] @down1(%[[VALUE_i_2:[0-9]+]] i: i32) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u64 [synthetic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%[[VALUE_i_2]]))));
+// DEFAULT-NEXT:         let %[[VALUE_buf_2:[0-9]+]] buf: vla<i8, %[[VALUE3]]> [storage=automatic];
+// DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_i_2]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<i8>, u64) -> void>(%30, array_decay<ptr<i8>, length=None>(%36), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%35)))));
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%34, sub<i32, overflow=ub>(read<i32>(%35), const<i32>(1)));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<i8>, u64) -> void>(%[[VALUE_use_buffer]], array_decay<ptr<i8>, length=None>(%[[VALUE_buf_2]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%[[VALUE_i_2]])))));
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_down1]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_i_2]]), const<i32>(1)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %49 @__builtin_alloca(%48 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %37 @down2(%38 i: i32) -> void [linkage=internal] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %39 buf: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%49, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%38))))));
-// DEFAULT-NEXT:         if gt<i32>(read<i32>(%38), const<i32>(0))
+// DEFAULT-NEXT:     fn %[[VALUE___builtin_alloca:[0-9]+]] @__builtin_alloca(%[[VALUE4:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_down2:[0-9]+]] @down2(%[[VALUE_i_3:[0-9]+]] i: i32) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_buf_3:[0-9]+]] buf: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%[[VALUE_i_3]]))))));
+// DEFAULT-NEXT:         if gt<i32>(read<i32>(%[[VALUE_i_3]]), const<i32>(0))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 call<void, signature=fn(ptr<i8>, u64) -> void>(%30, read<ptr<i8>>(%39), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%38)))));
-// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%37, sub<i32, overflow=ub>(read<i32>(%38), const<i32>(1)));
+// DEFAULT-NEXT:                 call<void, signature=fn(ptr<i8>, u64) -> void>(%[[VALUE_use_buffer]], read<ptr<i8>>(%[[VALUE_buf_3]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(mul<i32, overflow=ub>(const<i32>(10), read<i32>(%[[VALUE_i_3]])))));
+// DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_down2]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_i_3]]), const<i32>(1)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %40 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %41 r: @type4 [storage=automatic];
-// DEFAULT-NEXT:         write<u64>(field0(%41), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(8192), const<i32>(1024)))));
-// DEFAULT-NEXT:         write<u64>(field1(%41), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(8192), const<i32>(1024)))));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const @type4>) -> i32>(%28, const<i32>(3), pointer_cast<ptr<const @type4>, reason=arg>(addr_of<ptr<@type4>>(%41))), const<i32>(0))
-// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%2);
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%34, const<i32>(1000));
-// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%37, const<i32>(1000));
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: @type[[TYPE_rlimit]] [storage=automatic];
+// DEFAULT-NEXT:         write<u64>(field0(%[[VALUE_r]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(8192), const<i32>(1024)))));
+// DEFAULT-NEXT:         write<u64>(field1(%[[VALUE_r]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(mul<i32, overflow=ub>(const<i32>(8192), const<i32>(1024)))));
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, ptr<const @type[[TYPE_rlimit]]>) -> i32>(%[[VALUE_setrlimit]], const<i32>(3), pointer_cast<ptr<const @type[[TYPE_rlimit]]>, reason=arg>(addr_of<ptr<@type[[TYPE_rlimit]]>>(%[[VALUE_r]]))), const<i32>(0))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_RLIMIT_DATA]]);
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_down1]], const<i32>(1000));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_down2]], const<i32>(1000));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

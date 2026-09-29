@@ -40,9 +40,9 @@ int has__SSE2_MATH__;
 // CLANG-NEXT:         storage d64 [size=8, align=8];
 // CLANG-NEXT:         storage d128 [size=16, align=16];
 // CLANG-NEXT:     }
-// CLANG-NEXT:     global %0 has__pentium4__: i32 [storage=static] [linkage=external];
-// CLANG-NEXT:     global %1 has__tune_pentium4__: i32 [storage=static] [linkage=external];
-// CLANG-NEXT:     global %2 has__SSE2__: i32 [storage=static] [linkage=external];
-// CLANG-NEXT:     global %3 has__SSE2_MATH__: i32 [storage=static] [linkage=external];
+// CLANG-NEXT:     global %[[VALUE_has__pentium4__:[0-9]+]] has__pentium4__: i32 [storage=static] [linkage=external];
+// CLANG-NEXT:     global %[[VALUE_has__tune_pentium4__:[0-9]+]] has__tune_pentium4__: i32 [storage=static] [linkage=external];
+// CLANG-NEXT:     global %[[VALUE_has__SSE2__:[0-9]+]] has__SSE2__: i32 [storage=static] [linkage=external];
+// CLANG-NEXT:     global %[[VALUE_has__SSE2_MATH__:[0-9]+]] has__SSE2_MATH__: i32 [storage=static] [linkage=external];
 // CLANG-NEXT: }
 // SLATE-FILECHECK-END CLANG

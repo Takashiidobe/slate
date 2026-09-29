@@ -31,15 +31,15 @@ void bar (char *s)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     type @type0 = union {
+// DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 val: f64;
 // DEFAULT-NEXT:         field1 a: u32;
 // DEFAULT-NEXT:         field2 b: u32;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0, 0, 0]];
-// DEFAULT-NEXT:     fn %1 @atof(%6 __nptr: ptr<const i8>) -> f64 [linkage=external] [memory=read];
-// DEFAULT-NEXT:     fn %2 @bar(%3 s: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         let %5 u: @type0 [storage=automatic];
-// DEFAULT-NEXT:         write<f64>(field0(%5), call<f64, signature=fn(ptr<const i8>) -> f64>(%1, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%3))));
+// DEFAULT-NEXT:     fn %[[VALUE_atof:[0-9]+]] @atof(%[[VALUE___nptr:[0-9]+]] __nptr: ptr<const i8>) -> f64 [linkage=external] [memory=read];
+// DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_s:[0-9]+]] s: ptr<i8>) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=automatic];
+// DEFAULT-NEXT:         write<f64>(field0(%[[VALUE_u]]), call<f64, signature=fn(ptr<const i8>) -> f64>(%[[VALUE_atof]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_s]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
