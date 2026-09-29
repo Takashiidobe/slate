@@ -19,16 +19,12 @@
 - [Attributes](#attributes)
 <!-- /toc -->
 
-The grammar of the AST dump printed by `slate-parser parse source.c`. It is
-the reference for what each AST node can be and which choices it has.
-[AST Spec](ast-spec.md) explains what the nodes mean and why the AST has this
-shape.
+EBNF of the AST dump printed by `slate-parser parse source.c`. Meaning:
+[AST Spec](ast-spec.md).
 
-The types in `src/ast.rs` and the literal and operator types in
-`src/const_expr.rs` are the source of truth. The dump is their Rust `Debug`
-form (derived, or `custom_debug` where fields are skipped) as laid out by
-`src/render.rs`. **Any change to those types, their `Debug` output or the
-renderer must update this file in the same change.**
+Source of truth: the types in `src/ast.rs` and `src/const_expr.rs`, printed
+as their `Debug` form (derived, or `custom_debug` where fields are skipped)
+through `src/render.rs`. Update this page with any change to them.
 
 ## Notation
 

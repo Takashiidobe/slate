@@ -5,310 +5,232 @@
 - [Rendering](#rendering)
 - [Layout](#layout)
 - [Typed lowering](#typed-lowering)
-- [Compatibility, composite types and
-  conversions](#compatibility-composite-types-and-conversions)
+- [Compatibility and composite
+  types](#compatibility-and-composite-types)
+- [Conversions](#conversions)
 - [Redeclaration merging](#redeclaration-merging)
-- [The invariant, and where it is allowed to
-  bend](#the-invariant-and-where-it-is-allowed-to-bend)
-- [Where personality enters](#where-personality-enters)
+- [Invariant: no IR type decides C
+  identity](#invariant-no-ir-type-decides-c-identity)
+- [Flavor-dependent rules](#flavor-dependent-rules)
 - [Adding a rule](#adding-a-rule)
 <!-- /toc -->
 
-Sema reasons over C types; `ir::Type` is only produced by erasing one through
-`layout`. The layer lives in `src/sema/ctype/` (epic slate-parser-9ve).
+Sema reasons over C types in `src/sema/ctype/`; `ir::Type` is produced only
+by erasing one through `layout`.
 
 ## Representation
 
-- `CTypes` interns `CTypeKind` into `CTypeId`s. A `QualType` is an id plus
+- `CTypes` interns `CTypeKind` into `CTypeId`s. `QualType` = id +
   `Qualifiers` (const, volatile, restrict, `_Atomic`).
-- Sugar kinds: `Typedef{name, underlying}`, `TypeOf{spelling, underlying}`,
-  `AtomicSpecifier(inner)`. They exist for spelling and `typedef_chain` only.
-- Every entry stores its canonical `QualType` at intern time, so
-  `canonical(q) = entry.canonical ∪ q.quals` never mutates the interner.
-  - `_Atomic(T)` canonicalizes to `T` with the atomic qualifier.
-  - Array qualifiers are pulled up (C23 6.7.3p10): a canonical array's quals
-    mean its element's quals and the canonical element is unqualified.
-  - A canonical function type has adjusted (array/function → pointer),
-    top-level-unqualified parameters; the `Function` kind keeps parameters
-    as written for spelling.
-- `unqualified` keeps sugar when no hidden qualifiers exist, otherwise
-  desugars (rebuilding arrays with an unqualified element). This is what
-  `typeof_unqual` and lvalue conversion use.
+- Sugar: `Typedef{name, underlying}`, `TypeOf{spelling, underlying}`,
+  `AtomicSpecifier(inner)`; only for spelling and `typedef_chain`.
+- Each entry stores its canonical `QualType` at intern time;
+  `canonical(q) = entry.canonical ∪ q.quals`.
+  - `_Atomic(T)` canonicalizes to `T` + atomic qualifier.
+  - Array qualifiers move to the element (C23 6.7.3p10); the canonical
+    element is unqualified and the array carries its quals.
+  - Canonical function types have adjusted, top-level-unqualified
+    parameters; `Function` keeps the written ones for spelling.
+- `unqualified` keeps sugar unless hidden qualifiers exist, else desugars
+  (arrays rebuilt with unqualified elements). Used by `typeof_unqual` and
+  lvalue conversion.
 - Integer kinds carry a rank (`Short`..`Int128`), not a width; `char`,
-  `signed char`, `unsigned char`, `long` and `long long` stay distinct even
-  when their widths coincide. `__fp16` is distinct from `_Float16`.
+  `signed char`, `unsigned char`, `long`, `long long` stay distinct at
+  equal widths. `__fp16` ≠ `_Float16`.
 
 ## Rendering
 
-`render.rs` is a clang TypePrinter-style declarator printer with a spelling
-mode and a canonical mode. Conventions: `int *`, `char *const`,
-`int (*)(int)`, `int[3]`, `int(int)`, `(void)`/`()`/`...`, qualifier order
-`const volatile restrict _Atomic`. Tags print by their definition name.
+`render.rs` is a clang TypePrinter-style printer with spelling and
+canonical modes: `int *`, `char *const`, `int (*)(int)`, `int[3]`,
+`int(int)`, `(void)`/`()`/`...`, qualifier order `const volatile restrict
+_Atomic`. Tags print by definition name.
 
 ## Layout
 
-`layout.rs` erases a C type to `ir::Type`. Pointer `is_const`/`access` come
-from the pointee's canonical qualifiers; parameters use the adjusted pointer;
-enums and records map to `Defined(id)`; `long double` follows the target.
-
-`TypeResolver::layout` returns `None` for `void` and `object_type` turns that
-into an error, so any site that needs storage rejects void. `ir_type` does not:
-the places where a void type is legal but has no storage call it directly —
-`define_alias` (`typedef void f;`), the `extern` arm of a global declaration
-(`extern void _text;`, a GNU idiom for a linker symbol) and the two `sizeof` /
-`_Alignof` sites. `sizeof(void)` and `_Alignof(void)` are 1, and
-`require_pointer_element` accepts `void` so `void *` arithmetic works; both are
-the same GNU extension (`-Wgnu-pointer-arith` in clang, `-Wpointer-arith` in
-gcc, pedantic-only in each), and slate-parser does not yet emit that warning.
-Do not give `TargetInfo::storage_of(Type::Void)` a size instead: object,
-field, parameter and `va_arg` paths all reach it and must keep failing
-(slate-parser-dyd.6).
+- `layout.rs` erases a C type to `ir::Type`. Pointer `is_const`/`access`
+  come from the pointee's canonical qualifiers; parameters use the adjusted
+  pointer; enums and records map to `Defined(id)`; `long double` follows
+  the target.
+- `TypeResolver::layout` returns `None` for `void`; `object_type` makes that
+  an error, so storage sites reject void. Sites where void is legal call
+  `ir_type` directly: `define_alias` (`typedef void f;`), the `extern` arm
+  of a global (`extern void _text;`), and the `sizeof` / `_Alignof` sites.
+- `sizeof(void)` = `_Alignof(void)` = 1 and `require_pointer_element`
+  accepts `void` (GNU extension; the `-Wpointer-arith` warning is not
+  emitted).
+- Never give `TargetInfo::storage_of(Type::Void)` a size: object, field,
+  parameter, and `va_arg` paths must keep failing.
 
 ## Typed lowering
 
-`sema::operand::Operand` pairs an IR value with its `QualType`; `Lvalue`
-pairs an IR place with its declared `QualType`. Bit-field storage and width
-remain in the place's `BitFieldAccess`. Binding and enumerator tables carry
-C types directly. The access map needed by effects normalization is derived
-from binding qualifiers once, after lowering.
+- `sema::operand::Operand` = IR value + `QualType`; `Lvalue` = IR place +
+  declared `QualType`. Bit-field storage/width stay in `BitFieldAccess`.
+  Binding and enumerator tables hold C types. The effects access map is
+  derived from binding qualifiers after lowering.
+- An operand's IR type is its C type's layout, except comparisons, `!`,
+  `&&`, `||`: C type `int`, IR `bool`. Integer uses emit `from_bool`.
+  `_Generic(a < b, int: ...)` selects `int`; `sizeof(a < b)` is
+  `sizeof(int)`.
+- Runtime and required-constant expressions share typed arithmetic in
+  `operand.rs`; `ctype/arith.rs` picks C result types, `numeric.rs` emits.
+  No layout→C-type reverse mapping. `typeof` reads the operand's C type.
 
-An operand's IR type is the layout of its C type, except that comparisons,
-`!`, `&&`, and `||` have C type `int` and use IR `bool`. Integer uses emit
-`from_bool`; conditions keep the boolean representation. Consequently
-`_Generic(a < b, int: 1, _Bool: 0)` selects `int`, and `sizeof(a < b)`
-uses the size of `int`.
-
-Runtime expressions and required constant expressions share typed arithmetic
-in `operand.rs`. `ctype/arith.rs` chooses C result types before `numeric.rs`
-emits operations and conversions. There is no reverse mapping from layouts
-to C types, auxiliary binding-type map, or separate scalar cast resolver.
-`typeof` reads the lvalue or operand type without reconstructing it from the AST.
-
-| Rule | Implementation | C23 section |
+| Rule | Implementation | C23 |
 | --- | --- | --- |
-| Lvalue conversion and array/function decay | `CTypes::lvalue_conversion` | 6.3.2.1p2–4 |
+| Lvalue conversion, array/function decay | `CTypes::lvalue_conversion` | 6.3.2.1p2–4 |
 | Address of a qualified object | `Lowerer::expr`, pointer to `Lvalue.c` | 6.5.3.2 |
-| Member qualification | `Lowerer::field_place`, field qualifiers union base qualifiers | 6.5.2.3p3–4 |
+| Member qualification | `Lowerer::field_place`, field ∪ base qualifiers | 6.5.2.3p3–4 |
 | Integer and bit-field promotions | `CTypes::integer_promotion` | 6.3.1.1p2 |
 | Default argument promotions | `CTypes::default_promotion` | 6.5.2.2p6 |
 | Usual arithmetic conversions | `CTypes::usual_real_type` | 6.3.1.8 |
-| Pointer difference | `Lowerer::binary`, unqualified compatible pointees and `ptrdiff_t` result | 6.5.6 |
+| Pointer difference | `Lowerer::binary`, unqualified compatible pointees, `ptrdiff_t` | 6.5.6 |
 
-Standard integer ranks remain distinct at equal widths; a standard integer
-outranks a bit-precise integer of the same width. Enums promote through their
-compatible integer type. Floating components retain their C kind even when
-their layouts coincide. Complex and imaginary result domains are chosen
-separately from component rank.
+- A standard integer outranks a bit-precise one of the same width. Enums
+  promote through their compatible integer type. Floating components keep
+  their C kind. Complex/imaginary domains are chosen separately from
+  component rank.
+- `size_t` / `ptrdiff_t`: `long` on LP64, `long long` on LLP64, `int` on
+  ILP32. Character and string literals keep plain `char`, signed character
+  kinds, and encoding-specific types.
+- Variadic calls: `float` and `__fp16` promote to `double`; `_Float16`
+  stays `half` (clang 22.1.8 IR).
 
-`size_t` and `ptrdiff_t` use the supported targets' predefined integer ranks:
-`long` on LP64, `long long` on LLP64, and `int` on ILP32, with the appropriate
-signedness. Character and string literal types retain plain `char`, signed
-character kinds, and encoding-specific integer types.
+## Compatibility and composite types
 
-Clang 22.1.8's emitted LLVM IR confirms that `_Float16` stays `half` in a
-variadic call; `float` and `__fp16` promote to `double`. The earlier 9ve.2
-design note claiming `_Float16` promotes to `double` was incorrect.
+`ctype/compat.rs` transcribes 6.2.7: `compatible` (qualifiers match at each
+level), `compatible_unqualified`, `composite`.
 
-## Compatibility, composite types and conversions
+- Typedefs are transparent (canonical comparison). Enums are compatible
+  with their underlying integer.
+- Arrays: compatible elements and equal-or-unknown sizes; a VLA is
+  compatible with any array of compatible element (6.7.6.2p6).
+- Functions compare returns; unprototyped matches a non-variadic prototype
+  whose parameters are unchanged by default promotions. Different calling
+  conventions (x86-32 `stdcall`/`fastcall`/`vectorcall`/`thiscall`, x86-64
+  `vectorcall`) are never compatible; `CTypes::with_convention` sets the
+  convention on the first reachable function type.
+- Tags are nominal (one `TypeId` per definition) except C23 N3037: complete
+  same-tag types with matching content are compatible within a TU.
+  `TypeResolver::join_compatible_tag` runs on each named tag completion and
+  puts matching earlier definitions in one class (`CTypes::tag_classes`;
+  `same_tag_shape` for names, access, widths, enumerators;
+  `same_field_types` via `compatible`). The new id joins before the member
+  check, so self-referential members compare coinductively. Anonymous tags
+  never join. Attributes are ignored (gcc; clang rejects an `aligned`
+  difference).
+- `classify_conversion` treats compatible distinct records as `RecordCopy`;
+  IR `copy<T>` may read a layout-identical record of another type.
+- `merge_pointer` (for `?:`): composite pointee, union of qualifiers, `void`
+  wins.
+- `__builtin_types_compatible_p` calls `CTypes::compatible` directly.
 
-`src/sema/ctype/compat.rs` transcribes 6.2.7: `compatible` (qualifiers must
-match at each level), `compatible_unqualified`, and `composite`. Typedefs are
-transparent because comparison is on canonical types; an enum is compatible
-with its underlying integer type; arrays are compatible when their elements
-are and their sizes are equal or either is unknown, which makes a VLA
-compatible with any array of compatible element (6.7.6.2p6); functions compare
-return types, and an unprototyped declaration is compatible with a
-non-variadic prototype whose parameters are unchanged by the default argument
-promotions. Functions with different calling conventions (x86-32
-`stdcall`/`fastcall`/`vectorcall`/`thiscall`, x86-64 `vectorcall`) are never compatible;
-`CTypes::with_convention` rebuilds a type with the convention on its first
-reachable function type.
+## Conversions
 
-Tags are nominal (one `TypeId` per definition) except under C23 (N3037), where
-two complete struct, union or enum types with the same tag and matching
-content are compatible within one translation unit, e.g. a file-scope and a
-block-scope `struct S { int x; }`. `TypeResolver::join_compatible_tag` runs as
-each named tag is completed: it looks for an earlier definition with the same
-name whose content matches (`same_tag_shape` for member names, access, bit
-widths and enumerator values; `same_field_types` for member C types through
-`CTypes::compatible`) and records both in one class
-(`CTypes::tag_classes`). `compatible_unqualified` then compares tag classes,
-not ids. The new id joins the class before the member check so that a
-self-referential member (`struct N *next`) compares as compatible, the
-coinductive reading. Anonymous tags never join. Attributes are ignored:
-clang 22 treats `aligned(16)` on one side as incompatible, gcc does not, and
-slate follows gcc here, the same way as its same-scope redefinition check.
-`classify_conversion` treats compatible distinct records as a `RecordCopy`,
-so the IR `copy<T>` may read a source of a different but layout-identical
-record type.
-
-`merge_pointer` builds the conditional operator's result: the
-composite of the two pointees carrying the union of both qualifier sets, with
-`void` winning.
-
-`src/sema/ctype/convert.rs` holds `classify_conversion`, which is the single
-decision point for whether any conversion is legal. It takes the two C types,
-a `ConversionContext` and whether the source is a null pointer constant, and
-returns a `CastKind` plus an optional warning, or a `ResolveError`. Lowering
-emits the kind and nothing else, so an unhandled case is now a rejection
-rather than a silent `pointer_cast`. `ConversionContext` has no `Init` arm:
-initialization reaches lowering as `ConversionReason::Assign` and the two
-obey the same constraints, so a separate arm would be unreachable.
-
-The static-assertion checker, not lowering, classifies the conversions at
-simple assignment, prototyped and variadic call arguments, `return`, explicit
-casts and a declaration's top-level non-array initializer
-(slate-parser-cc94.5.1). It types the operand with the expression typer, asks
-`TypeResolver::null_pointer_constant`, and records the `Conversion` per operand
-`NodeId` in `TypeResolver::conversions` (`record_conversion`); an ill-formed
-conversion is a `SemaError` from `analyze`, so plain `parse` rejects it.
-Lowering's `convert_recorded` reads the record at those sites and emits its
-kind and warning (warning order is unchanged); a missing record is `Internal`.
-Braced-initializer elements are recorded by the initializer walk (cc94.5.4)
-and atomic value operands by the checker's `arguments` from
-`AtomicBuiltin::operands` (cc94.5.5); the usual arithmetic conversions and the
-remaining builtin arguments (sizes, orders, fetch operands) still classify in
-lowering (`convert_expr`). `record_conversion` also rejects a `Vector` cast
-between types of different storage size, which `vector_convert` otherwise
-only met in lowering. Because the checker sees variably modified types with
-unbound extents (`vla<T, *>`), a pointer-to-VM conversion between types that
-are `same` classifies as `Pointer`, not `Identity`, and `emit_cast` drops a
-`Pointer` cast whose IR types turn out equal; otherwise the checker and
-lowering would disagree about whether two differently bound extents need a
-cast.
-
-The layout-approximation helpers this replaces — `pointer_conversion_warning`,
-`differ_only_in_sign`, `differ_only_in_nested_qualifiers` and
-`compatible_ignoring_qualifiers` — are gone. Because signedness is now
-compared on C types rather than IR widths, plain `char` is distinct from
-`signed char` (slate-parser-4o9) and nested pointer levels are compared as
-carefully as the first.
-
-Taking the address of a `register` variable is rejected by the typer, using
-the storage class recorded on its binding (slate-parser-zm8, cc94.5.5).
-
-Type resolution rejections (`TypeResolver::resolve`, `declarator_type`, tag
-definitions) are reported by the checker, which resolves every declaration
-before lowering exists; lowering only sees memoized successes, and any
-rejection that still reaches it is `Internal` (slate-parser-cc94.5.6).
+- `ctype/convert.rs::classify_conversion` is the only legality decision:
+  (from, to, `ConversionContext`, is-null-pointer-constant) → `CastKind` +
+  optional warning, or `ResolveError`. Lowering emits the kind; an unhandled
+  case is a rejection. There is no `Init` context; initialization is
+  `ConversionReason::Assign`.
+- The static-assertion checker classifies conversions at simple assignment,
+  call arguments (prototyped and variadic), `return`, explicit casts, and
+  top-level non-array initializers. It records a `Conversion` per operand
+  `NodeId` in `TypeResolver::conversions` (`record_conversion`); ill-formed
+  ones are `SemaError`s from `analyze`. Lowering's `convert_recorded` emits
+  the recorded kind and warning; a missing record is `Internal`.
+- Also recorded: braced-initializer elements (initializer walk) and atomic
+  value operands (`AtomicBuiltin::operands`). Still classified in lowering
+  (`convert_expr`): usual arithmetic conversions and other builtin arguments
+  (sizes, orders, fetch operands).
+- `record_conversion` rejects a `Vector` cast between different storage
+  sizes.
+- The checker sees VM types with unbound extents (`vla<T, *>`), so a
+  pointer-to-VM conversion between `same` types classifies as `Pointer`;
+  `emit_cast` drops a `Pointer` cast whose IR types are equal.
+- `differ_only_in_sign` and `compatible_ignoring_qualifiers` in `convert.rs`
+  take `QualType`; signedness and nested qualifiers are compared on C types
+  (plain `char` ≠ `signed char`).
+- Address of a `register` variable is rejected by the typer from the
+  binding's storage class.
+- Type resolution rejections (`TypeResolver::resolve`, `declarator_type`,
+  tag definitions) are reported by the checker; any reaching lowering is
+  `Internal`.
 
 ## Redeclaration merging
 
-`TypeResolver::declared` holds the merged C type of each redeclared entity,
-keyed by `BindingId`, alongside `bindings` (which holds the type currently in
-scope). `merge_redeclaration` is called by both `declare_global` and
-`declare_function` in `src/sema/module.rs`, *before* either looks for an
-existing entry — the first declaration has to register its type, or the second
-one looks like a first and the conflict goes unnoticed.
+- `TypeResolver::declared` holds each entity's merged C type by
+  `BindingId`; `bindings` holds the type in scope.
+- `merge_redeclaration` runs in `declare_global` and `declare_function`
+  (`sema/module.rs`) before the existing-entry lookup, so the first
+  declaration registers its type.
+- Compatible declarations merge into their `composite` (`int a[]; int
+  a[5];`). Otherwise the
+  [conflict table](ir/declarations.md#redeclaration-conflicts) applies;
+  `types::same_layout` (lowered types, signedness ignored) decides
+  warning vs error.
 
-Compatible declarations merge into their `composite`, which is how
-`int a[]; int a[5];` completes without a special case. Otherwise the conflict
-table in [redeclaration conflicts](ir/declarations.md#redeclaration-conflicts) applies, and the only IR-level question
-left is whether the two layouts coincide: `types::same_layout` answers it,
-comparing lowered types while ignoring integer signedness. That is a genuine
-layout question, not a type-identity one, which is why it survives the phase
-that removed `types::compatible`, `same_layout_ignoring_sign` and
-`function_redeclaration_conflict`.
+## Invariant: no IR type decides C identity
 
-`__builtin_types_compatible_p` calls `CTypes::compatible` directly, so it and
-redeclaration merging cannot drift apart.
-
-## The invariant, and where it is allowed to bend
-
-The rule the layer exists to enforce: **no `ir::Type` equality or shape decides
-C type identity**. Compatibility, conversions, redeclaration merging,
-`_Generic` selection and `__builtin_types_compatible_p` all answer through
-`CTypes`, and `ir::Type` is produced only by `layout()`.
-
-The audit behind the table below is
+Compatibility, conversions, redeclaration merging, `_Generic`, and
+`__builtin_types_compatible_p` answer through `CTypes`. Audit:
 
 ```
 grep -rn 'ty ==\|ty !=\|== Type::\|!= Type::' src/sema/
 ```
 
-Every hit is listed here; re-run it after touching sema and account for any new
-one. `ir::Type` is still compared in `src/sema`, and those comparisons are fine
-because they ask a layout or representation question, not an identity one:
+Every hit must be in this table; account for new ones.
 
-| Site | Question | Why it is allowed |
+| Site | Question | Why allowed |
 | --- | --- | --- |
-| `numeric.rs`, `expression.rs::emit_cast` | `value.ty == to`, `ty == Type::Bool` | IR emission: has this value already got the representation we are about to build? `CastKind::Identity` relies on it, because a truth value has IR `Bool` and C type `int` |
-| `fold.rs` | operand vs value type | constant folding over IR values |
-| `effects.rs`, `atomic.rs` | `== Type::Void`, `== Type::Bool` | effect and atomic normalization over IR |
-| `expression.rs` via `types.rs::is_va_list` | lowered type equals the target's `va_list` | `VaList` is an IR marker type with no C-level counterpart; on `char *` va_list targets the place is `ptr<i8>` instead |
-| `types.rs::same_layout` | do two lowered types share a shape, ignoring integer signedness? | deliberately a layout question — it decides warning-vs-error for redeclarations, per MSVC's own C4142/C2371 rule |
+| `numeric.rs`, `expression.rs::emit_cast` | `value.ty == to`, `ty == Type::Bool` | Representation check during emission; `CastKind::Identity` needs it (truth values are IR `Bool`, C `int`) |
+| `fold.rs` | operand vs value type | Folding over IR values |
+| `effects.rs`, `atomic.rs` | `== Type::Void`, `== Type::Bool` | IR normalization |
+| `expression.rs` via `types.rs::is_va_list` | lowered type == target `va_list` | `VaList` is IR-only; `char *` targets use `ptr<i8>` |
+| `types.rs::same_layout` | same shape ignoring signedness | Warning-vs-error for redeclarations (MSVC C4142/C2371) |
 
-C23 same-scope tag redefinitions used to have an `ir::Type` pre-filter
-(`same_tag_content`) in front of `same_field_types`. It is gone
-(`slate-parser-ntb`). A redefinition's members are now compared on C types,
-and the rule is deliberately stricter than compatibility, because neither
-compiler accepts a redefinition whose members are merely compatible
-(`int (*)[]` vs `int (*)[3]`, `void (*)()` vs `void (*)(int)`). The gcc and
-MSVC flavors require `CTypes::same`. The clang flavor uses
-`CTypes::same_or_enum_underlying`, which also equates an enum with its
-underlying integer type at any depth (directly, behind a pointer, as an array
-element, as a function parameter) but still requires equal qualifiers.
-Cross-scope compatibility (`join_compatible_tag`) keeps plain
-`CTypes::compatible`, matching gcc; clang is stricter there (it rejects
-`int (*)[]` vs `int (*)[3]` across scopes), which leaves slate permissive for
-the clang flavor.
+Tag redefinitions:
 
-The enum arm of `same_tag_shape` still compares the underlying types as
-`ir::Type`, so `enum E : long` redefined as `enum E : long long` is accepted on
-LP64 targets, where both lower to `i64`. Both compilers reject it. That is
-permissive, not too strict.
+- Same-scope C23 redefinitions compare members on C types, stricter than
+  compatibility (both compilers reject `int (*)[]` vs `int (*)[3]`). gcc
+  and msvc flavors: `CTypes::same`. clang flavor:
+  `CTypes::same_or_enum_underlying` (enum = underlying integer at any depth,
+  qualifiers must match).
+- Cross-scope (`join_compatible_tag`) uses `compatible`, like gcc; clang is
+  stricter, so the clang flavor is permissive.
+- Known permissive gap: `same_tag_shape`'s enum arm compares underlying
+  types as `ir::Type`, so `enum E : long` vs `: long long` is accepted on
+  LP64.
 
-Two smaller residues worth knowing about:
+Other residues:
 
-- `type_of.rs::with_length` reads an inferred length back out of an
-  `ir::Type::Array` to complete an incomplete C array extent. It flows layout
-  into a C type, but decides no identity.
-- `convert.rs` still has functions named `differ_only_in_sign` and
-  `compatible_ignoring_qualifiers`. These are *not* the deleted layout
-  helpers of the same name — they take `QualType` and answer on C types. The
-  `ir::Type` versions are gone.
+- `type_of.rs::with_length` reads an inferred length from
+  `ir::Type::Array` to complete a C array extent (no identity decision).
 
-## Where personality enters
+## Flavor-dependent rules
 
-`TypeResolver` carries the `Dialect`, cloned once in `with_names` from
-`unit.dialect` (see [configuration-threading](configuration-threading.md)). Since all four resolvers (module lowering,
-`resolve_type_module`, `Sema::lower`, `assertion.rs`) are built through
-that one constructor, they cannot disagree about personality — which matters
-because `static_assert(sizeof(_Atomic struct { char a[3]; }) == 3)` has to
-pass under `--flavor=gcc`, and the assertion checker builds its own resolver.
+`TypeResolver` holds the `Dialect`, cloned once in `with_names`, the only
+constructor for all four resolvers (module lowering, `resolve_type_module`,
+`Sema::lower`, `assertion.rs`), so they agree
+([configuration-threading](configuration-threading.md)).
 
-Two rules read it, both on `TypeResolver`:
-
-- `atomic_layout`, consulted by `qualified_storage`: clang rounds an atomic
-  object up to the next lock-free width, gcc does not promote aggregates at
-  all, and MSVC gives anything that is not already a lock-free width a
-  leading four-byte lock word. It dispatches on the flavor and delegates to
-  `TargetInfo::atomic_storage` or `TargetInfo::msvc_atomic_storage`. See the
-  [`_Atomic` layout](ir/atomics.md#_atomic-layout-per-flavor) for the measured numbers.
-- `effective_alignment`, consulted by `resolve_object_requests`: clang honors
-  an alignment attribute below the type's natural alignment, gcc and MSVC
-  raise it to the natural one.
-
-Keeping both here is the point of the phase: layout decisions do not
-branch on the flavor in `src/sema/module.rs`. Its remaining flavor checks
-are declaration and statement rules, and those in `src/sema/validate.rs`
-are about character literals and specific diagnostics.
-
-`AbiClassifier` reads it too, since it holds a `&TypeResolver`. Argument
-classification runs on `ir::Type`, which has lost `_Atomic` on aggregates, so
-`AbiOperand` carries the qualifier alongside the type: clang makes an atomic
-record argument MEMORY, gcc classifies it as the unqualified record, and MSVC
-classifies the lock-prefixed layout under `win64`'s ordinary size rule, since
-`layout()` is already atomic-aware. `win_arm64` still rejects it
-(`slate-parser-o9q`).
+- `atomic_layout` (via `qualified_storage`): clang rounds up to the next
+  lock-free width, gcc does not promote aggregates, MSVC adds a four-byte
+  lock word to non-lock-free sizes. Delegates to
+  `TargetInfo::atomic_storage` / `msvc_atomic_storage`. Numbers:
+  [`_Atomic` layout](ir/atomics.md#_atomic-layout-per-flavor).
+- `effective_alignment` (via `resolve_object_requests`): clang honors
+  under-alignment attributes; gcc and MSVC raise to natural alignment.
+- `AbiClassifier` holds `&TypeResolver`. `ir::Type` drops `_Atomic` on
+  aggregates, so `AbiOperand` carries the qualifier: clang passes atomic
+  records in MEMORY, gcc as the unqualified record, MSVC by `win64` size
+  rules on the lock-word layout. `win_arm64` rejects it.
+- Layout does not branch on flavor in `sema/module.rs`.
 
 ## Adding a rule
 
-Put it in `ctype/`, as a function over `QualType` that transcribes its
-standard section, and call it from lowering. Do not reach for `ir::Type`: if
-the rule needs a size or an alignment it wants `layout()`/`storage()`, and if
-it needs to know what a type *is* it wants `CTypes`. If the answer differs
-between compilers, it belongs next to `atomic_layout` and
-`effective_alignment` on `TypeResolver`, decided by `CompilerFlavor` — and
-per the project rule, reject only where clang, gcc and MSVC all reject;
-otherwise accept with a named warning from `src/diagnostics.rs`.
+- Write it in `ctype/` as a function over `QualType` transcribing its
+  standard section; call it from the checker/lowering.
+- Sizes and alignments come from `layout()`/`storage()`; type identity from
+  `CTypes`. Never `ir::Type`.
+- Compiler-dependent rules go on `TypeResolver` next to `atomic_layout`,
+  keyed by `CompilerFlavor`. Reject only where clang, gcc, and MSVC all
+  reject; otherwise accept with a named warning (`src/diagnostics.rs`).

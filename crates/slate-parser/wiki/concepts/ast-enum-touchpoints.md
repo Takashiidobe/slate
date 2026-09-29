@@ -8,180 +8,125 @@
 - [Adding a `TypeSpecifier` variant](#adding-a-typespecifier-variant)
 - [Adding an `Attribute` variant](#adding-an-attribute-variant)
 - [The sema and IR half](#the-sema-and-ir-half)
-- [Process note](#process-note)
 <!-- /toc -->
 
-_created 2026-09-12_
+Exhaustive match sites to update when adding an AST variant. Update this
+page when a match site is added or removed.
 
-`src/visit.rs` owns exhaustive recursion over `DeclKind`, `StmtKind`,
-`ExprKind`, `TypeSpecifier`, `Declarator`, `Initializer`, attributes, tag
-bodies, and their auxiliary enums. Validation and name resolution implement
-`Visitor`; adding an expression-bearing field or variant fails in the shared
-walker instead of silently disappearing from one pass. The remaining
-touchpoints below either render nodes or assign semantics to them. See
-[[architecture_single_configuration]] for the single-configuration pipeline
-these enums belong to.
-
-Update this page whenever a new exhaustive match site over one of these
-enums is added or removed.
-
-Parsed nodes are stored as `Span<T>`: translation-unit declarations are
-`Span<Decl>`, function bodies contain `Span<Stmt>`, expression-bearing
-fields contain `Expr = Box<Span<ExprKind>>`, and preprocessor output uses
-`Span<PPNodeKind>`. Exhaustive matches over these collections must match
-the wrapper's `.value`.
+- `src/visit.rs` owns exhaustive recursion over `DeclKind`, `StmtKind`,
+  `ExprKind`, `TypeSpecifier`, `Declarator`, `Initializer`, attributes, and
+  tag bodies. Validation and name resolution implement `Visitor`, so a new
+  expression-bearing field fails in one walker instead of vanishing from a
+  pass.
+- Nodes are `Span<T>` (`Span<Decl>`, `Span<Stmt>`,
+  `Expr = Box<Span<ExprKind>>`, `Span<PPNodeKind>`); matches go through
+  `.value`.
 
 ## Adding a `Decl` variant
 
-- `src/ast.rs` — `Decl::name` and `Decl::provenance` are exhaustive.
-- `src/sema/validate.rs` — typedef/tag collection and the main analysis pass match declarations.
-- `src/reachability.rs` — root dependency marking is exhaustive.
-- `src/sema/module.rs` — `lower_item`'s dispatch is exhaustive: a new
-  variant must lower to IR or be explicitly dropped.
-- `src/sema/pragmas.rs` — `collect`'s dispatch is exhaustive; a variant that can
-  hold a pragma or a tag definition must be walked.
-- `tests/filecheck.rs` — clang-oracle filtering and declaration summaries are exhaustive.
+- `src/ast.rs`: `Decl::name`, `Decl::provenance`.
+- `src/sema/validate.rs`: typedef/tag collection and the main analysis
+  pass.
+- `src/reachability.rs`: root dependency marking.
+- `src/sema/module.rs`: `lower_item`; lower to IR or drop explicitly.
+- `src/sema/pragmas.rs`: `collect`; walk variants that can hold a pragma or
+  tag definition.
+- `tests/filecheck.rs`: clang-oracle filtering and declaration summaries.
 
 ## Adding a `Stmt` variant
 
-Control-flow bodies and if/else branches are `Box<Stmt>`; only `Block` and
-function/statement-expression bodies contain statement lists. `Null` represents
-an empty statement without introducing a compound scope.
+- `src/visit.rs`: shared traversal (attributes, asm operands, static
+  assertions, nested functions, single bodies).
+- `src/sema/names.rs`: scope, binding, and label rules (feature-dependent).
+- `src/render.rs`: comment stripping recurses into bodies and blocks.
+- `src/sema/module.rs`: `Lowerer::statements`, no catch-all.
+- `src/sema/pragmas.rs`: ordered pragma walk; recurse into held
+  statements.
+- `src/reachability.rs`: `Reachability::mark_stmt`; recurse into
+  expressions, declarations, and bodies, or referenced header declarations
+  are pruned.
+- `tests/filecheck.rs`: `summarize_evaluated_decl`; usually add to the
+  `=> None` group.
 
-- `src/visit.rs` — shared statement traversal, including attributes, asm
-  operands, static assertions, nested functions, and single bodies.
-- `src/sema/names.rs` — visitor overrides implement scope, binding, and label
-  rules that depend on the unit's `Dialect` features.
-- `src/render.rs` — comment stripping recurses into single bodies and blocks.
-- `src/sema/module.rs` — `Lowerer::statements` is exhaustive over `StmtKind`
-  (no catch-all since slate-parser-dyd.26), so the compiler flags a new variant.
-- `src/sema/pragmas.rs` — the ordered pragma walk is exhaustive over `StmtKind`:
-  a variant holding statements must recurse or a pragma inside it is missed.
+Shape notes:
 
-- `src/parser/stmt.rs` — every `FunctionDecl` body (top-level and nested) is
-  passed through `reachability::mark_unreachable` when it is built. A new
-  variant that wraps a nested body needs the same call.
-- `tests/filecheck.rs` — `summarize_evaluated_decl`'s inner match over
-  `Stmt` (used to build the clang-oracle comparison). Only matters
-  once the new statement can appear where `Return` is being scanned for;
-  usually just add it to the `=> None` catch-group.
-- `src/reachability.rs` — `Reachability::mark_stmt` is exhaustive: it
-  decides which translation-unit declarations survive filtering, so a
-  variant holding expressions, declarations, or nested bodies must recurse
-  or the header declarations they reference get pruned from the AST.
-  `mark_unreachable_in` and `always_terminates` (dead-code marking, a
-  separate concern) use wildcard arms and only need touching if the new
-  statement always transfers control, like `Goto`.
-- `StmtKind::MsAsm` holds no `Expr`: its C names are `MsAsmExpr::Name`
-  strings, so most walkers treat it as a leaf. The exceptions walk
-  `MsAsmExpr` themselves: name resolution (`src/sema/names.rs`, which also
-  collects asm labels), reachability (`src/reachability.rs`, or a header
-  global referenced only from `__asm` gets pruned) and `src/sema/ms_asm.rs`.
-  A new `MsAsmExpr` variant needs all three.
-- `StmtKind::Attribute` is a standalone GNU or C23 attribute statement.
-  `StmtKind::Attributed { attributes, body }` attaches attributes to a nested
-  statement; all body walkers must recurse through it without adding a scope.
-  Reachability visits both the attributes and body.
-- `Stmt::Labeled { label: String, body: Box<Stmt> }` (goto target) and
-  `Stmt::SwitchLabel { label: SwitchLabel, body: Box<Stmt> }` (`case`/
-  `case ... ...`/`default`) nest their target statement as `body` instead
-  of appearing as a flat list item followed by the labelled statement, so
-  `case 1: case 2: x;` parses as one nested `SwitchLabel`, not three flat
-  `Stmt`s (`lh7.3.9`). Every exhaustive `Stmt` match above must recurse
-  into `body` the same way it recurses into `Block`'s statement list, or
-  whatever the label wraps (a nested `asm`, a `goto`, an expression)
-  becomes invisible to that pass.
+- Control-flow bodies are `Box<Stmt>`; only `Block` and function /
+  statement-expression bodies hold lists. `Null` is an empty statement with
+  no scope.
+- `Labeled { label, body }` and `SwitchLabel { label, body }` nest their
+  target, so `case 1: case 2: x;` is one nested `SwitchLabel`. Walkers must
+  recurse into `body`.
+- `Attribute` is a standalone attribute statement; `Attributed
+  { attributes, body }` wraps a statement without adding a scope.
+- `MsAsm` holds no `Expr`; C names are `MsAsmExpr::Name` strings. Name
+  resolution (`sema/names.rs`, also collects asm labels), reachability, and
+  `sema/ms_asm.rs` walk `MsAsmExpr`; a new `MsAsmExpr` variant needs all
+  three.
 
 ## Adding an `ExprKind` variant
 
-There is one expression type. `const_expr::Parser` builds it for every
-context (statements, initializers, array bounds, bit widths, `typeof`,
-attributes, `#if`), and wraps each node in a `Span` covering its tokens.
+One expression type, built by `const_expr::Parser` in every context
+(statements, initializers, bounds, bit widths, `typeof`, attributes,
+`#if`).
 
-- `src/ast.rs` — `impl Display for ExprKind`: exhaustive.
-- `src/const_expr.rs` — `Parser::evaluate_expr`: exhaustive; decide whether
-  the construct folds to `i64` or returns `ConstExprError::NotConstant`.
-  `evaluate_wide` and `contains_wide` only need touching for new
-  arithmetic forms.
-- `src/visit.rs` — shared recursion reaches expressions in declarations,
-  types, attributes, designators, tag bodies, static assertions, and asm
-  operands.
-- `src/sema/validate.rs` — `is_integer_constant_expression` assigns constant
-  expression semantics and remains exhaustive.
-- `src/sema/expression.rs` — `Lowerer::expr` is exhaustive (no catch-all
-  since `lh7.2.12`); a new variant needs an IR lowering or an explicit
-  `ResolveError`.
-- `src/sema/typer.rs` — `TypeResolver::type_expression` is exhaustive;
-  a new variant needs a typing rule factored out of its lowering (the
-  lowering cross-check returns `Internal` if they disagree), or an explicit
-  `Err(UNTYPED)`, which makes `sizeof`/`typeof`/`_Generic` of it an error.
-- `src/reachability.rs` — `Reachability::mark_expr` is exhaustive; mark
-  identifiers and embedded type names so referenced header declarations
-  survive filtering.
-- `tests/filecheck.rs` — `summarize_evaluated_decl` and `array_size` use
-  wildcards; no touch needed.
+- `src/ast.rs`: `impl Display for ExprKind`.
+- `src/const_expr.rs`: `Parser::evaluate_expr`; fold to `i64` or return
+  `ConstExprError::NotConstant`. `evaluate_wide` / `contains_wide` only for
+  new arithmetic.
+- `src/visit.rs`: shared recursion.
+- `src/sema/validate.rs`: `is_integer_constant_expression`.
+- `src/sema/expression.rs`: `Lowerer::expr`, no catch-all; lower or return
+  a `ResolveError`.
+- `src/sema/typer.rs`: `TypeResolver::type_expression`; a typing rule
+  shared with lowering (mismatch is `Internal`) or `Err(UNTYPED)`, which
+  makes `sizeof`/`typeof`/`_Generic` of it an error.
+- `src/reachability.rs`: `Reachability::mark_expr`; mark identifiers and
+  embedded type names.
+- `tests/filecheck.rs`: wildcards; no change.
 
-A variant shaped `{ ty: TypeName, value: Expr }` (`Cast`, `BitCast`,
-`ConvertVector`, `VaArg`) joins the existing or-patterns in `visit.rs`,
-`reachability.rs`, `sema/names.rs` and `sema/assertion.rs` instead of adding
-an arm, and is parsed like `parse_va_arg`: the type operand is read with
-`try_parse_type_name`, not as an expression.
+Shape notes:
 
-`({ ... })` is parsed by `const_expr::Parser::parse_statement_expression`,
-which calls back into `parser::Parser::parse_statement_expression_body`.
-The callback is the `statements: Option<&parser::Parser>` threaded through
-`const_expr::Parser` and `DeclaratorParser`. It is `None` for `#if`,
-attribute arguments and `_BitInt` widths, where a statement expression is
-an error.
+- `{ ty: TypeName, value: Expr }` variants (`Cast`, `BitCast`,
+  `ConvertVector`, `VaArg`) join the existing or-patterns in `visit.rs`,
+  `reachability.rs`, `sema/names.rs`, `sema/assertion.rs`, and parse the
+  type with `try_parse_type_name` like `parse_va_arg`.
+- `({ ... })`: `const_expr::Parser::parse_statement_expression` calls back
+  into `parser::Parser::parse_statement_expression_body` through the
+  `statements: Option<&parser::Parser>` field of `const_expr::Parser` and
+  `DeclaratorParser`. `None` (`#if`, attribute arguments, `_BitInt` widths)
+  makes it an error.
 
 ## Adding an `ArraySize` variant
 
-- `tests/filecheck.rs` — `array_size`: exhaustive, used only for the
-  clang-oracle comparison path; needs a string rendering.
-- `src/parser/declarator.rs` — wherever `ArraySize` is _constructed_
-  (`DeclaratorParser::parse_declarator`'s `[` handling) — not a match
-  site, but the natural place to add parsing for a new array-size form.
+- `tests/filecheck.rs`: `array_size` (clang-oracle path) needs a rendering.
+- `src/parser/declarator.rs`: construct it in
+  `DeclaratorParser::parse_declarator`'s `[` handling.
 
 ## Adding a `TypeSpecifier` variant
 
-`TypeSpecifier` never holds pointers, arrays or functions; those live in
-`Declarator`. A variant that embeds a `TypeName` (`Atomic`, `TypeOf`) must
-walk its declarator too.
+`TypeSpecifier` never holds pointers, arrays, or functions (those are in
+`Declarator`). A variant embedding a `TypeName` (`Atomic`, `TypeOf`) walks
+its declarator too.
 
-- `src/visit.rs` — shared recursion traverses embedded type names and their
-  declarators.
-- `src/sema/validate.rs` — `check_type` and
-  `is_register_scalar_type` assign type-specific validation semantics.
-- `src/reachability.rs` — `Marker::mark_type` is exhaustive and must mark
-  declarations referenced through the type.
-- `tests/filecheck.rs` — `type_spelling` renders it for declaration summaries.
+- `src/visit.rs`: shared recursion into embedded type names.
+- `src/sema/validate.rs`: `check_type`, `is_register_scalar_type`.
+- `src/reachability.rs`: `mark_type`; mark referenced declarations.
+- `tests/filecheck.rs`: `type_spelling`.
 
 ## Adding an `Attribute` variant
 
-- `src/visit.rs` — shared recursion reaches expression-bearing attributes.
-- `src/parser/attributes.rs` — spelling table and argument parsing.
-- `src/sema/attributes.rs` — `declaration_use` is exhaustive: a new variant must
-  be classified as symbol, layout, ignored, or unsupported with a reason, or an
-  object declaration carrying it is rejected without a name for why.
-- `src/sema/module.rs` — `symbol_attributes` folds the `Symbol` group into
-  `SymbolAttributes`; `function_symbol` keeps its own narrower filter.
-- `src/sema/function.rs` — `record_function` interprets function attributes and
-  retains the rest as `c_attributes` metadata.
-- `src/sema/types.rs` — `requested_alignment` and `field_request` read the
+- `src/visit.rs`: expression-bearing attributes.
+- `src/parser/attributes.rs`: spelling table and argument parsing.
+- `src/sema/attributes.rs`: `declaration_use`; classify as symbol, layout,
+  ignored, or unsupported-with-reason.
+- `src/sema/module.rs`: `symbol_attributes` folds the `Symbol` group;
+  `function_symbol` has its own narrower filter.
+- `src/sema/function.rs`: `record_function` interprets function attributes,
+  keeps the rest as `c_attributes`.
+- `src/sema/types.rs`: `requested_alignment`, `field_request` read the
   `Layout` group.
 
 ## The sema and IR half
 
-This page stops at the AST. Adding a whole type family — a value type with
-its own representation and arithmetic rules, like complex, vector or
-fixed-point — continues through `CTypeKind`, `ir::Type`, target storage, the
-conversion and arithmetic contracts, and the ABI. That walk, and which of its
-match sites the compiler catches, is [[type-family-touchpoints]].
-
-## Process note
-
-This impact map was reconstructed by reading most of `src/` in one session
-(slate-parser-119.3: adding `ComputedGoto`, `NestedFunction`, `LabelAddr`,
-`ArraySize::Star`). Consult it first next time before grepping from
-scratch, and extend it in the same edit as the enum change if a new
-touchpoint appears.
+A new type family continues through `CTypeKind`, `ir::Type`, storage,
+conversions, arithmetic, and ABI: [type-family-touchpoints](type-family-touchpoints.md).

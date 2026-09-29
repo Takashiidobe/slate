@@ -1,92 +1,87 @@
 # Compiler argument rules
 
-Compiler arguments are parsed by the declarative `Opt` parser, then checked by
-the rule pipeline. Add a rule to the narrowest bucket that owns its constraint.
+<!-- toc -->
+- [Option parsing](#option-parsing)
+- [Include search](#include-search)
+- [Forced files and macros](#forced-files-and-macros)
+- [Rule buckets](#rule-buckets)
+- [Adding an option](#adding-an-option)
+<!-- /toc -->
 
-`Opt` is the single source of truth for an option's canonical identity,
-spellings, value form, and opposite spelling. The parser accepts compiler
-spellings such as `-fwrapv`, `--fwrapv`, `-fno-wrapv`, and `--fno-wrapv`,
-normalizes them to one option, and applies occurrences in order. A later
-opposite spelling therefore replaces the earlier value before rules run.
+Arguments are parsed by the declarative `Opt` parser, then checked by the
+rule pipeline. Flag effects are in [compiler-flags](compiler-flags.md).
 
-Value options support both `=value` and a separate following argument. `-m`
-options use the same option definitions; do not add a one-off parser for a
-particular `-m` spelling. Downstream code receives the normalized typed value,
-not the original spelling.
+## Option parsing
 
-Target selection accepts `-target`, `--target`, and their `=` forms. The triple
-must be registered in `src/target_registry.rs`, and the selected `--flavor`
-must be one that entry has predefines for; both are checked when arguments are
-parsed (`TargetInfo::for_triple_and_flavor`), not during preprocessing. See
-[Adding a target](adding-a-target.md). Standard selection accepts `-std` and `--std`
-with either value form. C90 and ISO 9899 aliases normalize to the corresponding
-language mode; `iso9899:199409` is C94, with `__STDC_VERSION__` set to `199409L`
-and otherwise C89 language rules. Unknown triples and standard names are errors.
+- `Opt` owns an option's identity, spellings, value form, and opposite
+  (`-fwrapv`, `--fwrapv`, `-fno-wrapv`, `--fno-wrapv` are one option).
+  Occurrences apply in order; a later opposite replaces the earlier value
+  before rules run.
+- Value options take `=value` or a separate argument. `-m` options use the
+  same definitions; no one-off parsers. Downstream sees typed values, never
+  spellings.
+- `-target` / `--target` (and `=` forms): the triple must be registered in
+  `src/target_registry.rs` and have predefines for `--flavor`; checked at
+  parse time (`TargetInfo::for_triple_and_flavor`). See
+  [adding-a-target](adding-a-target.md).
+- `-std` / `--std`: C90 and ISO 9899 aliases normalize to a language mode.
+  `iso9899:199409` is C94: `__STDC_VERSION__ 199409L`, otherwise C89 rules.
+  Unknown triples and standards are errors.
+- `-masm=att|intel`: picks the `{att|intel}` alternative in x86 GNU asm and
+  is recorded as the asm's `dialect`. gcc flavor rejects it off x86; clang
+  accepts it everywhere (no effect off x86); msvc rejects it.
 
-`-masm=att|intel` sets the dialect that x86 GNU asm lowers with: it picks the
-side of a `{att|intel}` template alternation and is recorded as the asm's
-`dialect`. The GCC flavor rejects it off x86, as gcc does. Clang accepts it
-everywhere, and on other targets it has no effect (clang only warns that the
-argument is unused). MSVC rejects it.
+## Include search
 
-`CompilerArgs::search_paths` constructs the shared include search order.
-Quoted includes search the including file's directory, `-iquote`, `-I`, then
-system directories. Angled includes start at `-I`. System directories search
-explicit `-isystem`, compiler builtin headers, standard headers from the
-selected sysroot, then `-idirafter`. `-I` and `-iquote` headers are user
-headers; the later directories are system headers. `-nostdlibinc` removes
-standard headers while retaining explicit and compiler builtin paths.
-Which directories under the root are standard headers comes from the target's
-`SysrootLayout` (the MSVC flavor always uses the Windows kits layout), and
-the compiler builtin header profile from its `ClangHeaders`.
-`-isysroot` selects the header sysroot over `--sysroot`; either explicit root
-replaces the target-specific default root. An explicit root is used as given,
-without a fallback to another target's or the host's headers. Relative
-directories are resolved against the caller's working directory; Slate's
-compile_commands normalization supplies absolute paths when compilation uses
-a different working directory. Include directory values beginning with `=`
-are resolved under the selected sysroot, as in Clang.
+Built by `CompilerArgs::search_paths`.
 
-Command-line `-D` and `-U` options are applied in occurrence order after target
-predefines. All `-imacros` files are then processed in argument order, followed
-by all `-include` files in argument order. Forced files are searched from the
-working directory before the quote, user, and system include paths. `-imacros`
-discards declarations but retains macro definitions. Direct declarations from
-`-include` files are translation-unit roots, with provenance from their source
-files; macros from either kind of forced file retain their definition spans.
+- Quoted: including file's directory, `-iquote`, `-I`, system. Angled:
+  `-I`, system. `-I`/`-iquote` headers are user headers; the rest are
+  system headers.
+- System order: `-isystem`, compiler builtin headers, sysroot standard
+  headers, `-idirafter`. `-nostdlibinc` drops only the sysroot standard
+  headers.
+- Standard header directories come from the target's `SysrootLayout` (msvc
+  flavor always uses Windows kits); builtin headers from `ClangHeaders`.
+- `-isysroot` beats `--sysroot`; either replaces the target default root,
+  with no fallback to other targets or the host.
+- Relative directories resolve against the working directory. A leading
+  `=` resolves under the sysroot, as in clang.
+
+## Forced files and macros
+
+- `-D`/`-U` apply in order after target predefines, then every `-imacros`
+  file in order, then every `-include` file in order.
+- Forced files are searched from the working directory before the include
+  paths.
+- `-imacros` keeps macros and discards declarations. Declarations from
+  `-include` files are translation-unit roots with their own provenance.
+  Macros from both keep their definition spans.
 
 ## Rule buckets
 
-- `common_rules`: applies regardless of compiler flavor or target. Use this
-  for shared constraints, such as mutually exclusive options.
-- `flavor_rules`: select one branch with `Rules::branch`. Put GCC, Clang, and
-  MSVC behavior in their respective branches. Do not repeat `is_gcc()` or
-  `is_clang()` inside those branches.
-- target rules: use the borrowed `TargetInfo` for architecture, ABI, and
-  target-triple constraints. Keep target selection separate from flavor
-  selection.
-- `Rules::when`: use when an option is optional and its value rules apply only
-  when the option is present. Do not make absence fail unless the option is
-  conditionally required.
-- `Rules::any`: use for genuine alternatives. Use `Rules::pipeline` or
-  `Rules::all` when every constraint in a path must hold.
+Put a rule in the narrowest bucket that owns the constraint.
 
-Shared option semantics belong in one common rule. A flavor branch should only
-add the differences for that compiler. A target-dependent rule should report
-the target and offending value in its diagnostic.
+- `common_rules`: flavor- and target-independent (e.g. mutually exclusive
+  options). Shared semantics go here once.
+- `flavor_rules`: one branch per flavor via `Rules::branch`; add only that
+  compiler's differences. No `is_gcc()`/`is_clang()` inside a branch.
+- Target rules: use the borrowed `TargetInfo`; report the target and the
+  offending value.
+- `Rules::when`: value rules for an optional option, applied only if
+  present.
+- `Rules::any` for real alternatives; `Rules::pipeline` / `Rules::all` when
+  all must hold.
+- Leaf rules use `Rule::validate` for dynamic messages. Failures are
+  `thiserror` errors with miette diagnostics; combinators keep nested
+  failures.
+- Rules never re-parse strings or spellings. They may use presence to
+  reject incompatible options (gcc's preferred stack boundary vs clang's
+  stack alignment); both normalize to one `TargetInfo` value.
 
-Leaf rules should use `Rule::validate` when the failure needs a useful or
-dynamic message. Rule failures are `thiserror` errors and implement miette's
-diagnostic interface; combinators preserve nested failures.
+## Adding an option
 
-The parser owns option spelling, typed values, missing-value errors,
-repetition, opposite handling, and `=` versus separate arguments. Rule code
-should not parse strings or compiler spellings again. Rules can use option
-presence to reject genuinely incompatible options, such as GCC's preferred
-stack boundary and Clang's stack alignment. Once validated, both forms produce
-the same normalized stack-alignment value for `TargetInfo`.
-
-When adding a compiler option, add an `Opt` definition first, then place its
-validation in `common_rules`, the appropriate flavor branch, or a target rule.
-Add a FileCheck fixture for accepted and rejected configurations when the
-option changes observable target or diagnostic behavior.
+1. Add an `Opt` definition.
+2. Add validation to `common_rules`, a flavor branch, or a target rule.
+3. Add a FileCheck fixture for accepted and rejected configurations if it
+   changes target or diagnostic behavior.

@@ -18,16 +18,14 @@
 - [Compact form](#compact-form)
 <!-- /toc -->
 
-The grammar of the IR text form printed by `slate-parser ir source.c` (also
-`parse source.c --dump-ir`). It is the reference for what each IR construct
-can be and which choices it has. [IR Spec](ir-spec.md) explains why the IR has
-this shape.
+EBNF of the IR printed by `slate-parser ir source.c` (also
+`parse source.c --dump-ir`). Meaning: [IR Spec](ir-spec.md).
 
-The printer is the source of truth: `src/ir/module_print.rs` (module,
-declarations, statements), `Value::format` in `src/ir/mod.rs` (values),
-`Place::format` in `src/ir/declarations.rs` (places), and the `Display` impls
-in `src/ir/numeric.rs`, `src/ir/abi.rs` and `src/ir/module.rs`. **Any change to
-what those print must update this file in the same change.**
+Source of truth: `src/ir/module_print.rs` (module, declarations,
+statements), `Value::format` in `src/ir/mod.rs`, `Place::format` in
+`src/ir/declarations.rs`, and the `Display` impls in `src/ir/numeric.rs`,
+`src/ir/abi.rs`, `src/ir/module.rs`. Update this page with any change to
+what they print.
 
 ## Notation
 
@@ -80,17 +78,14 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
            | "d32" | "d64" | "d128" ;
 ```
 
-The list is exhaustive over the scalar formats a module can name directly:
-every `bool`, standard integer width and floating format appears, in that
-order. A `storage` line is printed only for types the target supports, so a
-target that drops `f80` or `i128, u128` simply omits that line. Bit-precise
-integers, pointers, `va_list` and the composite types are not listed; their
-layouts are derived and printed at the use site.
-
-A module-level [`asm`](#statements) is a file-scope `asm("...")`, printed in
-source order before the types. It never carries qualifiers or goto labels, and
-only the GNU personality accepts operands there, so it is almost always the
-single-`;` form.
+- `storage` lines cover every scalar format a module can name (`bool`,
+  standard integers, floats, in that order), only for formats the target
+  supports. Bit-precise integers, pointers, `va_list`, and composites are
+  derived at the use site.
+- A module-level [`asm`](#statements) is a file-scope `asm("...")`, in
+  source order before the types. No qualifiers or goto labels; operands
+  only under the GNU personality, so it is almost always the single-`;`
+  form.
 
 ## Types
 
@@ -237,12 +232,12 @@ abi_pass      = "void" | "scalar" | "direct" | "native_c"
 chunk         = "i" digits | float_type | "pair<" float_type ">" | "quad<" float_type ">" ;
 ```
 
-`native_c` means rustc's `extern "C"` passes the value exactly as the C
-compiler does, given a `repr(C)` type of the same layout; every other record
-and complex shape is explicit because rustc would pass it differently.
-`pair<T>`/`quad<T>` are two or four `T` lanes in one SSE eightbyte. `direct` is the opposite: the value is passed in registers
-as its own type, with no coercion and no memory copy. It is what vectors that
-fit the target's vector registers use, where `scalar` would misdescribe them.
+- `native_c`: rustc's `extern "C"` passes a same-layout `repr(C)` type
+  exactly as the C compiler does. Other record and complex shapes are
+  explicit because rustc would differ.
+- `pair<T>` / `quad<T>`: two or four `T` lanes in one SSE eightbyte.
+- `direct`: passed in registers as its own type, no coercion or memory
+  copy; used by vectors that fit the target's vector registers.
 
 ## Statements
 
@@ -442,11 +437,9 @@ scope    = "device" | "workgroup" | "wavefront" | "single" | "cluster"
   distinct, since a repeated component is not assignable; a repeated or
   out-of-range selection is a `shuffle<..>` value instead.
 - `compound_literal %N` is a distinct object with its own storage duration.
-- `temporary %N = v` is the materialized result of an aggregate rvalue, such
-  as the struct returned by `f()` in `f().x`. It exists so a member can be
-  projected out of a value that has no storage of its own; unlike a compound
-  literal it is not an object, so a place rooted in one is neither assignable
-  nor addressable.
+- `temporary %N = v` materializes an aggregate rvalue (`f().x`) so a
+  member can be projected. Not an object: places rooted in one are neither
+  assignable nor addressable.
 - Lowering does not produce `index(..)` yet: all indexing is
   `deref(ptr_offset(..))`, including arrays through `array_decay`.
 - Values printed inside a place never carry metadata.
@@ -630,12 +623,11 @@ exceptions        = "ignore" | "observable" ;
 metadata = "[" key "=" string "]" ;          (* only with --show-metadata *)
 ```
 
-Metadata is source context keyed by node: the C type (`c`, `c_canon`,
-`typedef_chain`, `c_const`, ...), storage class (`c_storage`), folded layout
-queries (`size_of`, ...). It is never needed to reproduce the semantics.
-Everything in `[...]` outside this production (storage, linkage, symbol
-attributes, `restrict`, `synthetic`, ABI, fallthrough) is required semantics
-and is always printed.
+- Metadata is source context keyed by node: C type (`c`, `c_canon`,
+  `typedef_chain`, `c_const`, …), storage class (`c_storage`), folded
+  layout queries (`size_of`, …). Never needed for semantics.
+- Every other `[...]` (storage, linkage, symbol attributes, `restrict`,
+  `synthetic`, ABI, fallthrough) is semantics and always printed.
 
 ## Compact form
 
@@ -648,5 +640,4 @@ and is always printed.
   the type on `ptr_diff`;
 - `, signature=...` on calls.
 
-Compact mode is a reading aid. FileCheck fixtures and consumers use the
-default form.
+Reading aid only; fixtures and consumers use the default form.
