@@ -72,6 +72,12 @@ re-deriving something from scratch:
   walk from `TypeSpecifier` down to storage and ABI, and — the part that
   costs a session to rediscover — which match sites the compiler catches
   and which accept a new type silently and do the wrong thing.
+- `wiki/concepts/configuration-threading.md` — before adding anything
+  that behaves differently per compiler flavor (gcc/clang/MSVC), language
+  standard, or target: how `Dialect` carries flags and target info from
+  argv through the preprocessor, parser, and sema, the accessor to use at
+  each stage, which table owns which kind of per-flavor rule, and the
+  checker-vs-lowering trap where a rule has to change in two places.
 - `wiki/index.md` and `wiki/log/` — chronological log of past changes and
   decisions; `llog search <keyword>` to query it.
 - If working on adding a compiler arg, refer to

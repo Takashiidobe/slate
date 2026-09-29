@@ -6,7 +6,7 @@ both halves: the `Warning` enum (identity, default severity, pedantic
 membership) and `DiagnosticOptions` (the resolved severity map).
 
 `DiagnosticOptions` lives on `CompilerOptions`, so it reaches sema through
-`unit.options` without new plumbing.
+`unit.dialect.options()` without new plumbing.
 
 ## Severity resolution
 

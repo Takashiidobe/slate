@@ -256,8 +256,8 @@ Two smaller residues worth knowing about:
 
 ## Where personality enters
 
-`TypeResolver` carries a `CompilerFlavor`, set once in `with_names` from
-`unit.flavor`. Since all four resolvers (module lowering,
+`TypeResolver` carries the `Dialect`, cloned once in `with_names` from
+`unit.dialect` (see [configuration-threading](configuration-threading.md)). Since all four resolvers (module lowering,
 `resolve_type_module`, `Sema::lower`, `assertion.rs`) are built through
 that one constructor, they cannot disagree about personality — which matters
 because `static_assert(sizeof(_Atomic struct { char a[3]; }) == 3)` has to
@@ -275,10 +275,10 @@ Two rules read it, both on `TypeResolver`:
   an alignment attribute below the type's natural alignment, gcc and MSVC
   raise it to the natural one.
 
-Keeping both here is the point of the phase: `src/sema/module.rs` no longer
-mentions `CompilerFlavor` at all. The flavor checks that remain in
-`src/sema/validate.rs` are about character literals and specific diagnostics,
-not layout, so they stay where they are.
+Keeping both here is the point of the phase: layout decisions do not
+branch on the flavor in `src/sema/module.rs`. Its remaining flavor checks
+are declaration and statement rules, and those in `src/sema/validate.rs`
+are about character literals and specific diagnostics.
 
 `AbiClassifier` reads it too, since it holds a `&TypeResolver`. Argument
 classification runs on `ir::Type`, which has lost `_Atomic` on aggregates, so
