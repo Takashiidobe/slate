@@ -25,11 +25,11 @@ void zzz (char *s1, char *s2, int len, int *q)
 // SLATE-FILECHECK-BEGIN DEFAULT
 // DEFAULT: Error:   × semantic analysis failed
 // DEFAULT: Error:
-// DEFAULT: × unresolved ordinary name `foo`
-// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20030224-1.c:19:3]
-// DEFAULT: 18 │
-// DEFAULT: 19 │   foo (x, x);
-// DEFAULT: ·   ───
-// DEFAULT: 20 │ }
+// DEFAULT: × nonconstant or unknown identifier
+// DEFAULT: ╭─[tests/fixtures/suites/gcc-torture/clang/linux/x86_64/20030224-1.c:8:3]
+// DEFAULT: 7 │   unsigned int i,  b;
+// DEFAULT: 8 │   struct { char a[z]; } x;
+// DEFAULT: ·   ────────────────────────
+// DEFAULT: 9 │
 // DEFAULT: ╰────
 // SLATE-FILECHECK-END DEFAULT

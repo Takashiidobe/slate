@@ -81,7 +81,11 @@ fn resolve_module(
             let uses_poisoned = lower.names.references[item.references]
                 .iter()
                 .any(|reference| poisoned.contains(&reference.binding));
-            if uses_poisoned { vec![] } else { vec![error] }
+            if uses_poisoned {
+                vec![]
+            } else {
+                vec![error.checked()]
+            }
         } else {
             item.errors.into_iter().map(ResolveError::Names).collect()
         };
@@ -120,7 +124,9 @@ fn resolve_module(
             *length = Some(1);
         }
     }
-    lower.finish_module(unit).map_err(unlocated)?;
+    lower
+        .finish_module(unit)
+        .map_err(|error| unlocated(error.checked()))?;
     let diagnostics = with_sources(lower.types.diagnostics, files)?;
     Ok((lower.module, diagnostics))
 }

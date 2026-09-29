@@ -20,7 +20,7 @@ int read_item(Item *p) {
     p->value;
   });
   return x +
-    _Pragma("STDC FENV_ACCESS OFF")
+    _Pragma("GCC diagnostic push")
     DONE;
 }
 /* trailing comment */

@@ -338,7 +338,12 @@ Both IR-stage passes continue item by item over the top-level declarations:
   typedef, label, MS asm label) and keeps visiting, so declarations after it are still
   bound and `int a = undeclared, b;` does not cascade into errors on `b`. Any
   other names error ends that item and resets the resolver to file scope.
-- `Sema::lower` does not lower an item with names errors. A lowering error
+- `Sema::lower` does not lower an item with names errors, and does not run
+  at all when `analyze` (the checker) reported an error. So every rejection
+  is the checker's; a `Rejected`/`InvalidOperand(s)` that still escapes a
+  lowered item or `finish_module` is turned into `Internal` by
+  `ResolveError::checked` in `resolve_module` (slate-parser-cc94.5.6): it
+  marks a checker gap, not an ill-formed program. A lowering error
   resets per-function `Lowerer` state and moves on. Raise sites don't carry a
   span; instead `Lowerer::expr`, `Lowerer::place` and `Lowerer::statements`
   wrap an error with `ResolveError::at(loc)`, which only sets `Located` when no

@@ -170,8 +170,13 @@ compared on C types rather than IR widths, plain `char` is distinct from
 `signed char` (slate-parser-4o9) and nested pointer levels are compared as
 carefully as the first.
 
-Taking the address of a `register` variable is rejected during expression
-lowering, using the storage class recorded on its binding (slate-parser-zm8).
+Taking the address of a `register` variable is rejected by the typer, using
+the storage class recorded on its binding (slate-parser-zm8, cc94.5.5).
+
+Type resolution rejections (`TypeResolver::resolve`, `declarator_type`, tag
+definitions) are reported by the checker, which resolves every declaration
+before lowering exists; lowering only sees memoized successes, and any
+rejection that still reaches it is `Internal` (slate-parser-cc94.5.6).
 
 ## Redeclaration merging
 

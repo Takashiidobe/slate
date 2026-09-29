@@ -67,10 +67,10 @@ enum E { B };
 // RETURN_KIND: Error:   × semantic analysis failed
 // RETURN_KIND: Error:
 // RETURN_KIND: × conflicting types for function redeclaration
-// RETURN_KIND: ╭─[tests/fixtures/clang/linux/x86_64/ir_redeclaration_conflicts.c:4:1]
+// RETURN_KIND: ╭─[tests/fixtures/clang/linux/x86_64/ir_redeclaration_conflicts.c:4:8]
 // RETURN_KIND: 3 │ int f(int);
 // RETURN_KIND: 4 │ double f(int);
-// RETURN_KIND: · ──────────────
+// RETURN_KIND: ·        ──────
 // RETURN_KIND: 5 │ #elif defined(RETURN_SIZE)
 // RETURN_KIND: ╰────
 // SLATE-FILECHECK-END RETURN_KIND
@@ -78,10 +78,10 @@ enum E { B };
 // RETURN_SIZE: Error:   × semantic analysis failed
 // RETURN_SIZE: Error:
 // RETURN_SIZE: × conflicting types for function redeclaration
-// RETURN_SIZE: ╭─[tests/fixtures/clang/linux/x86_64/ir_redeclaration_conflicts.c:7:1]
+// RETURN_SIZE: ╭─[tests/fixtures/clang/linux/x86_64/ir_redeclaration_conflicts.c:7:7]
 // RETURN_SIZE: 6 │ int f(int);
 // RETURN_SIZE: 7 │ short f(int);
-// RETURN_SIZE: · ─────────────
+// RETURN_SIZE: ·       ──────
 // RETURN_SIZE: 8 │ #elif defined(RETURN_INDIRECTION)
 // RETURN_SIZE: ╰────
 // SLATE-FILECHECK-END RETURN_SIZE
@@ -89,10 +89,10 @@ enum E { B };
 // RETURN_INDIRECTION: Error:   × semantic analysis failed
 // RETURN_INDIRECTION: Error:
 // RETURN_INDIRECTION: × conflicting types for function redeclaration
-// RETURN_INDIRECTION: ╭─[tests/fixtures/clang/linux/x86_64/ir_redeclaration_conflicts.c:10:1]
+// RETURN_INDIRECTION: ╭─[tests/fixtures/clang/linux/x86_64/ir_redeclaration_conflicts.c:10:6]
 // RETURN_INDIRECTION: 9 │ int f(void);
 // RETURN_INDIRECTION: 10 │ char *f(void);
-// RETURN_INDIRECTION: · ──────────────
+// RETURN_INDIRECTION: ·      ────────
 // RETURN_INDIRECTION: 11 │ #elif defined(RETURN_SIGN)
 // RETURN_INDIRECTION: ╰────
 // SLATE-FILECHECK-END RETURN_INDIRECTION

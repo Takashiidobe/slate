@@ -15,7 +15,8 @@ use super::ctype::{Extent, QualType};
 use super::entity::ObjectRequest;
 use super::initializer::ElementError;
 use super::module::{applies, function_symbol, linkage as declared_linkage, symbol_attributes};
-use super::numeric::ResolveError;
+use super::numeric::{Context, ResolveError};
+use super::pragmas::{FloatingPragmas, FloatingRegion, PragmaPlacement};
 use super::types::TypeResolver;
 use super::validate::{SemaError, error};
 use std::collections::{HashMap, HashSet};
@@ -26,6 +27,7 @@ pub(super) fn validate(
     names: &NameResolution,
     items: &[ItemResolution],
 ) -> Vec<SemaError> {
+    let region = Context::for_dialect(&unit.dialect).region;
     let mut checker = Checker {
         unit,
         types,
@@ -34,6 +36,9 @@ pub(super) fn validate(
         initialized: HashSet::new(),
         inlining: HashMap::new(),
         rejected: HashSet::new(),
+        pragmas: FloatingPragmas::new(unit.dialect.flavor(), region),
+        region,
+        compound_start: false,
     };
     for (declaration, item) in unit.decls.iter().zip(items) {
         for id in item.declared.clone().map(BindingId) {
@@ -51,7 +56,12 @@ pub(super) fn validate(
         }
         match &declaration.value {
             DeclKind::StaticAssert(assertion) => checker.assertion(assertion),
-            DeclKind::Declaration(declaration) => checker.declaration(declaration, true),
+            DeclKind::Pragma(pragma) => {
+                checker.pragma(declaration, &pragma.kind, PragmaPlacement::File)
+            }
+            DeclKind::Declaration(inner) => {
+                checker.declaration(&declaration.derive(()), inner, true)
+            }
             DeclKind::Function(function) => checker.function(
                 declaration.id,
                 declaration.derive(()),
@@ -79,6 +89,9 @@ struct Checker<'a> {
     initialized: HashSet<BindingId>,
     inlining: HashMap<BindingId, bool>,
     rejected: HashSet<NodeId>,
+    pragmas: FloatingPragmas,
+    region: FloatingRegion,
+    compound_start: bool,
 }
 
 #[derive(Default)]
@@ -145,19 +158,14 @@ impl Checker<'_> {
         alignment: Option<u64>,
         linkage: Option<Linkage>,
         register: bool,
-    ) {
+    ) -> Result<(), ResolveError> {
         let Some(&id) = self.types.declarations.get(&node) else {
-            return;
+            return Ok(());
         };
-        let ty = match self.types.entities.ty(&id) {
-            Some(previous) => self
-                .types
-                .ctypes
-                .composite(previous, ty)
-                .unwrap_or(previous),
-            None => ty,
-        };
+        let ty = self.types.inherit_convention(id, ty);
+        let previous = self.types.entities.ty(&id);
         self.types.entities.declare(id, ty, register);
+        let merged = self.types.merge_redeclaration(id, previous, ty).map(drop);
         if let Some(linkage) = linkage {
             self.types.entities.merge_declaration(
                 id,
@@ -174,6 +182,7 @@ impl Checker<'_> {
                 common: None,
             },
         );
+        merged
     }
 
     fn function(
@@ -197,9 +206,12 @@ impl Checker<'_> {
             .types
             .resolve(&function.specifiers, &function.declarator);
         self.types.owner = owner;
+        self.resolution(&at, &resolved);
         if let Ok(ty) = resolved {
+            let ty = self.types.apply_convention(ty, &function.attributes);
             let linkage = owner_linkage.then(|| linkage(function.specifiers.storage));
-            self.declare_object(node, ty, None, linkage.flatten(), false);
+            let declared = self.declare_object(node, ty, None, linkage.flatten(), false);
+            self.report(&at, declared);
             names = function
                 .declarator
                 .name()
@@ -236,6 +248,7 @@ impl Checker<'_> {
                 .resolve(&parameter.specifiers, &parameter.declarator);
             self.types.provisional_extents = provisional;
             self.types.owner = owner;
+            self.resolution(parameter, &resolved);
             if let Ok(resolved) = resolved
                 && !self.types.ctypes.is_void(resolved)
             {
@@ -244,23 +257,23 @@ impl Checker<'_> {
                     .types
                     .adjusted_parameter(resolved, declared_array.qualifiers.into());
                 let register = parameter.specifiers.storage == StorageClass::Register;
-                self.declare_object(parameter.id, adjusted, None, None, register);
+                let declared = self.declare_object(parameter.id, adjusted, None, None, register);
+                self.report(parameter, declared);
             }
         }
-        for stmt in &function.body {
-            self.statement(stmt);
-        }
+        self.compound(&function.body);
         self.types.function_names = enclosing;
         self.context = enclosing_context;
     }
 
-    fn declaration(&mut self, declaration: &Declaration, global: bool) {
+    fn declaration(&mut self, at: &Span<()>, declaration: &Declaration, global: bool) {
         if declaration.declarators.is_empty() {
             if !self.types.declare_forward_tag(&declaration.specifiers) {
                 self.tag(&declaration.specifiers.ty);
-                let _ = self
+                let resolved = self
                     .types
                     .resolve(&declaration.specifiers, &Declarator::Abstract);
+                self.resolution(at, &resolved);
             }
             return;
         }
@@ -297,6 +310,7 @@ impl Checker<'_> {
                 .types
                 .declarator_type(&declaration.specifiers, declarator);
             self.types.provisional_extents = provisional;
+            self.resolution(at, &resolved);
             if let Ok(resolved) = resolved
                 && declaration.specifiers.storage == StorageClass::Typedef
             {
@@ -358,7 +372,9 @@ impl Checker<'_> {
                     None
                 };
                 let register = storage == StorageClass::Register;
-                self.declare_object(declarator.id, completed, requested, linkage, register);
+                let declared =
+                    self.declare_object(declarator.id, completed, requested, linkage, register);
+                self.report(declarator, declared);
                 if !self.types.ctypes.is_function(completed) && !self.variable_array(completed) {
                     initialized = Some(completed);
                 }
@@ -615,6 +631,14 @@ impl Checker<'_> {
         }
     }
 
+    fn resolution<T>(&mut self, at: &Span<T>, result: &Result<QualType, ResolveError>) {
+        if let Err(ResolveError::Rejected(reason)) = result
+            && self.rejected.insert(at.id)
+        {
+            self.reject(at, reason);
+        }
+    }
+
     fn report<T>(&mut self, at: &Span<T>, result: Result<(), ResolveError>) {
         if let Err(ResolveError::Rejected(reason)) = result {
             self.reject(at, reason);
@@ -690,15 +714,37 @@ impl Checker<'_> {
         let _ = self.types.resolve(&specifiers, &Declarator::Abstract);
     }
 
+    fn compound(&mut self, body: &[Stmt]) {
+        let region = self.region;
+        self.compound_start = true;
+        for stmt in body {
+            self.statement(stmt);
+        }
+        self.region = region;
+    }
+
+    fn pragma<T>(&mut self, at: &Span<T>, pragma: &PragmaKind, placement: PragmaPlacement) {
+        let result = self.pragmas.apply(&mut self.region, pragma, placement);
+        self.report(at, result);
+    }
+
     fn statement(&mut self, stmt: &Stmt) {
         match &stmt.value {
-            StmtKind::StaticAssert(assertion) => self.assertion(assertion),
-            StmtKind::Decl(declaration) => self.declaration(declaration, false),
-            StmtKind::Block(body) => {
-                for stmt in body {
-                    self.statement(stmt);
-                }
+            StmtKind::Pragma(pragma) => {
+                let placement = if self.compound_start {
+                    PragmaPlacement::CompoundStart
+                } else {
+                    PragmaPlacement::Misplaced
+                };
+                return self.pragma(stmt, &pragma.kind, placement);
             }
+            StmtKind::Comment(_) => return,
+            _ => self.compound_start = false,
+        }
+        match &stmt.value {
+            StmtKind::StaticAssert(assertion) => self.assertion(assertion),
+            StmtKind::Decl(declaration) => self.declaration(&stmt.derive(()), declaration, false),
+            StmtKind::Block(body) => self.compound(body),
             StmtKind::NestedFunction(function) => {
                 if self.types.compiler_flavor() != CompilerFlavor::Gcc {
                     self.reject(stmt, "function definition is not allowed here");
@@ -896,11 +942,7 @@ impl Checker<'_> {
 
     fn subexpressions(&mut self, expr: &Expr) {
         match &expr.value {
-            ExprKind::StatementExpression(body) => {
-                for stmt in body {
-                    self.statement(stmt);
-                }
-            }
+            ExprKind::StatementExpression(body) => self.compound(body),
             ExprKind::Cast { ty, value } => {
                 self.type_name(ty);
                 self.expression(value);
@@ -1097,12 +1139,16 @@ impl Checker<'_> {
     }
 
     fn specifier(&mut self, ty: &TypeSpecifier) {
-        if let TypeSpecifier::TypeOf(TypeOfOperand::Expression(operand))
-        | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(operand)) = ty
-        {
-            self.expression(operand);
-            let result = self.types.typeof_expression(operand).map(drop);
-            self.report(operand, result);
+        match ty {
+            TypeSpecifier::TypeOf(TypeOfOperand::Expression(operand))
+            | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(operand)) => {
+                self.expression(operand);
+                let result = self.types.typeof_expression(operand).map(drop);
+                self.report(operand, result);
+            }
+            TypeSpecifier::TypeOf(TypeOfOperand::Type(operand))
+            | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Type(operand)) => self.type_name(operand),
+            _ => {}
         }
     }
 

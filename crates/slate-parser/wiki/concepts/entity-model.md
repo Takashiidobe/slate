@@ -256,6 +256,26 @@ definition failed (`failed_definition`) is left unreported, since
 lowering diagnoses the definition itself. Lowering's copies in
 `expression.rs`, `atomic.rs`, `asm.rs` and `numeric.rs` are `Internal`.
 
+Type resolution errors are the checker's too (slate-parser-cc94.5.6). It
+used to resolve every declarator and discard the `Rejected`, leaving tag
+redefinitions and kind mismatches, vector and `__ptr32` attribute errors,
+`ms_struct` layout, unsupported `_FloatN` and the like for lowering to report.
+`Checker::resolution` now reports the first rejection per declaration (at the
+declaration, or the function or parameter), and `declare_object` merges a
+redeclaration through the shared `merge_redeclaration`, after
+`inherit_convention` (and, for a definition, `apply_convention` of its
+attributes) exactly as lowering does, so conflicting function types and
+calling conventions are reported at the declarator. The floating-point pragma
+state machine runs in the checker too: its own `FloatingPragmas` and
+`FloatingRegion`, file-scope and statement placement, the region restored at
+each compound. Lowering leaked `compound_start` out of a statement
+expression's value, so a pragma right after `({ ... })` was accepted; the
+checker rejects it, as clang does. `typeof(type-name)` operands are walked
+like any type name, so an assignment in a VLA size inside one has its
+conversion recorded. Lowering's item and `finish_module` errors pass through
+`ResolveError::checked`, so lowering returns no `Rejected`; a hook that logged
+every rejection reaching lowering over the whole gate found none after this.
+
 Anything that scans all tags must bound itself by position:
 `__asm` member lookup only sees tag bindings below the watermark names.rs
 records for it (`NameResolution.ms_asm_members`), because the checker has

@@ -1150,6 +1150,12 @@ impl Lowerer {
                 let selected = self.generic_selected(controlling, associations)?;
                 self.place(selected)
             }
+            ExprKind::Call { callee, arguments }
+                if choose_expr_operands(callee, arguments).is_some() =>
+            {
+                let chosen = self.types.chosen_expr(callee, arguments)?;
+                self.place(chosen)
+            }
             ExprKind::Identifier(name) if predefined_function_name(name) => {
                 let text = self.types.predefined_name(name).to_owned();
                 self.string_global(e, &text)
