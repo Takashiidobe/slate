@@ -93,7 +93,10 @@ impl<'a> Reachability<'a> {
             })
             .collect::<Vec<_>>();
         roots.extend(self.nodes.iter().enumerate().filter_map(|(id, decl)| {
-            (self.has_retention_attribute(decl) || self.defines_external_symbol(decl)).then_some(id)
+            (matches!(decl.value, DeclKind::Pragma(_))
+                || self.has_retention_attribute(decl)
+                || self.defines_external_symbol(decl))
+            .then_some(id)
         }));
         for id in roots {
             self.mark(id);

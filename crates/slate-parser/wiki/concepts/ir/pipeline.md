@@ -145,6 +145,7 @@ surfaces only once something uses the declaration (e.g. glibc
 Roots today:
 
 - every declaration in the main file or a `-include` file;
+- every file-scope pragma;
 - declarations with a retention attribute: `used`, `retain`,
   `constructor`, `destructor`, `alias`, `weakref`, `ifunc`;
 - from any file, every definition clang would emit: non-`static` function
@@ -173,6 +174,7 @@ expression operands (`aligned`, `vector_size`, `alloc_size`, ...).
 Keeping a declaration keeps every declaration of its name, since
 redeclarations change emission and attributes.
 
-Pragmas in headers are not roots and are pruned, so a header's
-`#pragma pack` is lost (slate-parser-mvaj). Adding an AST variant means
+Every file-scope pragma is a root, since pack, `ms_struct`, visibility,
+and FP pragmas in a header affect later declarations in any file
+(`pruning-header-pragmas.c`). Adding an AST variant means
 extending the walk: [ast-enum-touchpoints](../ast-enum-touchpoints.md).
