@@ -46,7 +46,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_retained_fn:[0-9]+]] @retained_fn() -> void [linkage=internal] [retain] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE_value_2:[0-9]+]] value: i32 [storage=automatic] [cleanup=cleanup_fn] = const<i32>(0);
+// DEFAULT-NEXT:         let %[[VALUE_value_2:[0-9]+]] value: i32 [storage=automatic] [cleanup=%[[VALUE_cleanup_fn]]] = const<i32>(0);
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_alias_entry]]);
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_value_2]]);
 // DEFAULT-NEXT:     }

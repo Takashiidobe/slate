@@ -88,7 +88,7 @@ int main()
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     let %[[VALUE_dummy:[0-9]+]] dummy: i32 [storage=automatic] [cleanup=handler] = read<i32>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                     let %[[VALUE_dummy:[0-9]+]] dummy: i32 [storage=automatic] [cleanup=%[[VALUE_handler]]] = read<i32>(%[[VALUE_i]]);
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_n2]]))
 // DEFAULT-NEXT:                         break %[[VALUE3]];
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_bar]]);

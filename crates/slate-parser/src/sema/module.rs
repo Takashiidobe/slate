@@ -1193,10 +1193,12 @@ impl Lowerer {
                 },
                 constexpr: item.specifiers.is_constexpr,
                 alignment: automatic_alignment,
-                cleanup: attributes().find_map(|attribute| match &attribute.value {
-                    ast::Attribute::Cleanup(function) => Some(function.clone()),
-                    _ => None,
-                }),
+                cleanup: attributes()
+                    .find_map(|attribute| match &attribute.value {
+                        ast::Attribute::Cleanup(function) => Some(self.reference(function)),
+                        _ => None,
+                    })
+                    .transpose()?,
                 register: declarator
                     .asm_label
                     .as_ref()

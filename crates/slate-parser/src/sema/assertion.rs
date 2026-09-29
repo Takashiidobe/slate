@@ -2,6 +2,7 @@ use super::names::ItemResolution;
 use crate::ast::*;
 use crate::compiler_args::CompilerFlavor;
 use crate::const_expr::{AssignOp, BinaryOp, UnaryOp};
+use crate::diagnostics::Warning;
 use crate::ir::{
     BindingId, Linkage, NameResolution, Number, NumericType, SymbolAttributes, Type, Value,
     ValueKind,
@@ -523,6 +524,13 @@ impl Checker<'_> {
         let subject = Subject::Object { automatic };
         let result = self.types.attribute_error(attributes.clone(), subject);
         self.report(declarator, result);
+        if automatic {
+            for attribute in attributes.clone() {
+                if let Attribute::Cleanup(function) = &attribute.value {
+                    self.cleanup(function, resolved);
+                }
+            }
+        }
         if !global && linked && initializer.is_some() {
             self.reject(declarator, "block scope extern initializer");
         }
@@ -577,6 +585,45 @@ impl Checker<'_> {
             && !self.initialized.insert(id)
         {
             self.reject(declarator, "multiple global initializers");
+        }
+    }
+
+    fn cleanup(&mut self, function: &Expr, object: QualType) {
+        if !self.types.function_references.contains(&function.id) {
+            return self.reject(function, "'cleanup' argument is not a function");
+        }
+        let Ok(ty) = self.types.expression_type(function) else {
+            return;
+        };
+        let clang = self.types.compiler_flavor() == CompilerFlavor::Clang;
+        let parameter = match self.types.ctypes.function_parts(ty) {
+            Some((_, &[parameter], _, true)) => parameter,
+            Some((_, _, _, false)) if !clang => return,
+            _ => return self.reject(function, "'cleanup' function must take 1 parameter"),
+        };
+        let parameter = self.types.ctypes.unqualified(parameter);
+        let address = self.types.ctypes.pointer(object);
+        let conversion = self.types.ctypes.classify_conversion(
+            address,
+            parameter,
+            ConversionContext::Arg,
+            false,
+        );
+        match conversion {
+            Err(reason) => self.errors.push(error(
+                function.provenance,
+                function.expansion,
+                reason.to_string(),
+            )),
+            Ok(conversion) => match conversion.warning {
+                Some((Warning::IncompatiblePointerTypesDiscardsQualifiers, _)) if clang => {}
+                Some(_) if clang => self.reject(
+                    function,
+                    "'cleanup' function parameter type is incompatible with the variable's address",
+                ),
+                Some((warning, message)) => self.types.warn(warning, message, function),
+                None => {}
+            },
         }
     }
 

@@ -175,8 +175,8 @@ impl DisplayModule<'_> {
         if let Some(alignment) = variable.alignment {
             write!(f, " [align={alignment}]")?;
         }
-        if let Some(function) = &variable.cleanup {
-            write!(f, " [cleanup={function}]")?;
+        if let Some(function) = variable.cleanup {
+            write!(f, " [cleanup=%{}]", function.0)?;
         }
         if let Some(register) = &variable.register {
             write!(f, " [register={:?}]", register.spelling)?;

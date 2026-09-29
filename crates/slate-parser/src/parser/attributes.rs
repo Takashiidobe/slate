@@ -392,9 +392,10 @@ fn parse_attribute_value(
             Ok(value) if !arguments.is_empty() => Attribute::AllocAlign(value),
             _ => invalid_attribute(name, arguments),
         }),
-        "cleanup" => Ok(single_ident()
-            .map(Attribute::Cleanup)
-            .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "cleanup" => Ok(match (single_ident(), parse_expression(arguments)) {
+            (Some(_), Ok(function)) => Attribute::Cleanup(function),
+            _ => invalid_attribute(name, arguments),
+        }),
         "weak" if arguments.is_empty() => Ok(Attribute::Weak),
         "used" if arguments.is_empty() => Ok(Attribute::Used),
         "retain" if arguments.is_empty() => Ok(Attribute::Retain),

@@ -540,7 +540,7 @@ Attribute = (* no arguments *)
           | "Visibility(" string ")" | "Section(" string ")"
           | "Annotate(" string ")" | "Target(" string ")"
           | "Alias(" string ")" | "WeakRef(" string ")"
-          | "Cleanup(" string ")" | "Ifunc(" string ")"
+          | "Cleanup(" expr ")" | "Ifunc(" string ")"
           | "TlsModel(" string ")" | "ScalarStorageOrder(" string ")"
           | "Optimize(" vec<string> ")" | "CpuDispatch(" vec<string> ")"
           | "CpuSpecific(" vec<string> ")" | "TargetClones(" vec<string> ")"

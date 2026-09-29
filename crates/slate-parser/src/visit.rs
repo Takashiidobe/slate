@@ -421,6 +421,7 @@ pub fn walk_attribute<V: Visitor + ?Sized>(
         | Attribute::Aligned(value)
         | Attribute::VectorSize(value)
         | Attribute::AllocAlign(value)
+        | Attribute::Cleanup(value)
         | Attribute::ExtVectorType(value)
         | Attribute::PassObjectSize {
             size_type: value, ..
@@ -464,7 +465,6 @@ pub fn walk_attribute<V: Visitor + ?Sized>(
         | Attribute::Alias(_)
         | Attribute::WeakRef(_)
         | Attribute::Malloc
-        | Attribute::Cleanup(_)
         | Attribute::ReturnsNonNull
         | Attribute::WarnUnusedResult
         | Attribute::Sentinel(_)

@@ -115,9 +115,8 @@ position without resolving names:
 - `general_use` is exhaustive over `Attribute`.
 - `Ignored` includes `mode`, `address_space`, `cleanup`,
   `scalar_storage_order`, `transparent_union` (the calling convention is
-  not modeled; a call needing it fails in argument conversion). `cleanup`
-  is still read by lowering into `Variable.cleanup` as an unresolved,
-  unchecked name (slate-parser-6147).
+  not modeled; a call needing it fails in argument conversion). `Ignored`
+  only means no symbol or layout effect; `cleanup` has its own consumer.
 - Attributes before the tag keyword of a declarator-less declaration
   (`__attribute__((packed)) struct S {...};`) never reach the tag; ignored
   with a warning, as clang does.
@@ -162,6 +161,12 @@ Fixtures: `sema/ir_attribute_applicability.c`,
   with `module::applies`.
 - Rule functions shared by both passes: `symbol_attributes`,
   `function_symbol` ([sema-passes](sema-passes.md#checker-owned-rules)).
+- `cleanup(f)`: the argument is an identifier `Expr`, name-resolved like
+  any reference. `Checker::cleanup` (automatic objects) requires a
+  function with one prototyped parameter (variadic allowed; gcc also takes
+  an unprototyped one) and classifies `&var` → parameter as an argument
+  conversion: clang rejects every mismatch except dropped qualifiers, gcc
+  applies the conversion warning's default severity.
 - Known duplicate: the `always_inline` / `noinline` conflict is checked in
   `Checker::inlining` and again in `record_function`.
 
@@ -179,6 +184,7 @@ Fixtures: `sema/ir_attribute_applicability.c`,
 | record layout (`define_tag`) | `packed`, `ms_struct`, `gcc_struct`, `aligned` on the tag, plus `#pragma pack` / `ms_struct` | offsets and alignment |
 | entity request | `common`, `nocommon` | `[common]` |
 | `TypeResolver::resolve_declarator` | declarator-position `vector_size`, `ext_vector_type`, `mode` | the declarator's type |
+| `Lowerer` local declaration | `cleanup` on an automatic object | `Variable.cleanup`, the function's `BindingId` (`[cleanup=%N]`) |
 | function type | `CallingConvention` | x86 conventions in the type ([calling conventions](ir/calls-abi.md#calling-conventions)) |
 
 Statement attributes: the checker validates `[[fallthrough]]` placement;

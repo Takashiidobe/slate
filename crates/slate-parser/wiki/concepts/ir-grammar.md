@@ -163,7 +163,7 @@ global       = ( "global" | "extern" ) variable linkage symbol_attrs
                [ "[common]" ] { metadata } ";" ;
 variable     = binding name ":" [ access_prefix ] type "[storage=" storage "]"
                [ "[restrict]" ] [ "[const]" ] [ "[constexpr]" ]
-               [ "[align=" int "]" ] [ "[cleanup=" name "]" ]
+               [ "[align=" int "]" ] [ "[cleanup=%" int "]" ]
                [ "[register=" string "]" ] [ "=" value ] ;
 storage      = "automatic" | "static" | "thread" ;
 linkage      = "[linkage=" ( "internal" | "external" ) "]" ;

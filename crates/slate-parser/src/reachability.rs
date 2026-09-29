@@ -542,10 +542,9 @@ impl<'a> Reachability<'a> {
     fn mark_attributes(&mut self, attributes: &[Span<Attribute>]) {
         for attribute in attributes {
             match &attribute.value {
-                Attribute::Alias(name)
-                | Attribute::WeakRef(name)
-                | Attribute::Ifunc(name)
-                | Attribute::Cleanup(name) => self.mark_name(name),
+                Attribute::Alias(name) | Attribute::WeakRef(name) | Attribute::Ifunc(name) => {
+                    self.mark_name(name)
+                }
                 Attribute::AddressSpace(value)
                 | Attribute::PassObjectSize {
                     size_type: value, ..
@@ -553,6 +552,7 @@ impl<'a> Reachability<'a> {
                 | Attribute::Aligned(value)
                 | Attribute::VectorSize(value)
                 | Attribute::AllocAlign(value)
+                | Attribute::Cleanup(value)
                 | Attribute::ExtVectorType(value)
                 | Attribute::CallingConvention(CallingConvention::RegParm(value))
                 | Attribute::AlignAs(AlignAsOperand::Expr(value)) => self.mark_expr(value),

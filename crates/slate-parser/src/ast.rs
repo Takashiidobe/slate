@@ -983,7 +983,7 @@ pub enum Attribute {
     AssumeAligned(Vec<Expr>),
     AllocSize(Vec<Expr>),
     AllocAlign(Expr),
-    Cleanup(String),
+    Cleanup(Expr),
     ReturnsNonNull,
     WarnUnusedResult,
     Sentinel(Option<i64>),
