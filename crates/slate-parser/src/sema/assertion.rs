@@ -198,11 +198,10 @@ impl Checker<'_> {
         function: &FunctionDefinition,
     ) {
         let owner_linkage = owner.is_some();
-        let attributes = super::function::attributes(
-            &function.specifiers,
-            &function.declarator,
-            &function.attributes,
-        );
+        let attributes = function
+            .specifiers
+            .attributes_with(&function.declarator, &function.attributes)
+            .collect::<Vec<_>>();
         self.function_rules(&at, node, &function.specifiers, &attributes, None);
         self.weakref(&at, attributes.iter().copied(), true, false);
         let mut names = None;
@@ -328,9 +327,7 @@ impl Checker<'_> {
             {
                 let attributes = declaration
                     .specifiers
-                    .attributes
-                    .iter()
-                    .chain(&declarator.attributes);
+                    .attributes_with(&declarator.declarator, &declarator.attributes);
                 let result = self
                     .types
                     .attribute_error(attributes.clone(), Subject::Typedef);
@@ -367,9 +364,7 @@ impl Checker<'_> {
                     .completed_array(resolved, declarator.initializer.as_ref());
                 let attributes = declaration
                     .specifiers
-                    .attributes
-                    .iter()
-                    .chain(&declarator.attributes);
+                    .attributes_with(&declarator.declarator, &declarator.attributes);
                 let requested = match super::types::requested_alignment(self.types, attributes) {
                     Ok(requested) => requested,
                     Err(error) => {
@@ -477,7 +472,7 @@ impl Checker<'_> {
     ) {
         let specifiers = &declaration.specifiers;
         let storage = specifiers.storage;
-        let attributes = specifiers.attributes.iter().chain(&declarator.attributes);
+        let attributes = specifiers.attributes_with(&declarator.declarator, &declarator.attributes);
         let thread = specifiers.is_thread_local
             || attributes
                 .clone()
@@ -500,11 +495,9 @@ impl Checker<'_> {
             if !global && storage == StorageClass::Static {
                 self.reject(declarator, "block scope static function");
             }
-            let attributes = super::function::attributes(
-                specifiers,
-                &declarator.declarator,
-                &declarator.attributes,
-            );
+            let attributes = specifiers
+                .attributes_with(&declarator.declarator, &declarator.attributes)
+                .collect::<Vec<_>>();
             self.function_rules(
                 declarator,
                 declarator.id,
@@ -723,9 +716,7 @@ impl Checker<'_> {
     fn parameter_rules(&mut self, parameter: &ParameterDeclaration) {
         let attributes = parameter
             .specifiers
-            .attributes
-            .iter()
-            .chain(&parameter.attributes);
+            .attributes_with(&parameter.declarator, &parameter.attributes);
         let result = self.types.attribute_error(attributes, Subject::Parameter);
         self.report(parameter, result);
     }
@@ -934,7 +925,9 @@ impl Checker<'_> {
                 self.reject(stmt, "continue outside loop")
             }
             StmtKind::Attribute(attributes)
-                if self.context.switches == 0 && is_fallthrough(attributes) =>
+                if self.context.switches == 0
+                    && is_fallthrough(attributes)
+                    && self.types.compiler_flavor() != CompilerFlavor::Gcc =>
             {
                 self.reject(stmt, "fallthrough outside switch")
             }

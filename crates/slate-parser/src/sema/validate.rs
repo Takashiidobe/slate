@@ -100,6 +100,7 @@ fn analyze(
         }
         match &decl.value {
             DeclKind::Comment(_) | DeclKind::Asm { .. } | DeclKind::Pragma(_) => {}
+            DeclKind::Attribute(attributes) => check_attributes(attributes, &mut errors),
             DeclKind::StaticAssert { .. } => {
                 visit_literals(decl, literals, &mut errors);
             }

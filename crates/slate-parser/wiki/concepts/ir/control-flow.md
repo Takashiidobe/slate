@@ -51,7 +51,9 @@ form was.
 ### Statement attributes
 
 - `[[fallthrough]];` is a null statement with source metadata; an
-  attribute statement without it is a null statement.
+  attribute statement without it is a null statement. Outside a switch it
+  is an error except under gcc, which accepts it (a pedwarn) and gets no
+  metadata.
 - `[[x]] stmt` lowers to `stmt`, dropping the attributes (clang and gcc only
   warn). `fallthrough` on a non-empty statement is an error except under
   gcc, which ignores it.

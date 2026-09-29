@@ -1090,6 +1090,10 @@ fn expand_has_checks(
     let has_attribute = |name: &str| attribute_support::has_attribute(name, flavor, target) as i64;
     let has_c_attribute =
         |name: &str| attribute_support::has_c_attribute(name, flavor, standard, target);
+    let has_cpp_attribute = |name: &str| match has_c_attribute(name) {
+        0 if !name.contains("::") => has_attribute(name),
+        value => value,
+    };
     let has_builtin = |name: &str| has_checks::has_builtin(name) as i64;
     let has_feature = |name: &str| has_checks::has_feature(name) as i64;
     let has_extension = |name: &str| has_checks::has_extension(name) as i64;
@@ -1099,6 +1103,11 @@ fn expand_has_checks(
         let check: Option<&dyn Fn(&str) -> i64> = match tokens.value_at(index) {
             Some(Token::Ident(name)) if name == "__has_attribute" => Some(&has_attribute),
             Some(Token::Ident(name)) if name == "__has_c_attribute" => Some(&has_c_attribute),
+            Some(Token::Ident(name))
+                if name == "__has_cpp_attribute" && flavor == CompilerFlavor::Gcc =>
+            {
+                Some(&has_cpp_attribute)
+            }
             Some(Token::Ident(name)) if name == "__has_builtin" => Some(&has_builtin),
             Some(Token::Ident(name)) if name == "__has_feature" => Some(&has_feature),
             Some(Token::Ident(name)) if name == "__has_extension" => Some(&has_extension),
@@ -1106,7 +1115,7 @@ fn expand_has_checks(
         };
         let scoped = matches!(
             tokens.value_at(index),
-            Some(Token::Ident(name)) if name == "__has_c_attribute"
+            Some(Token::Ident(name)) if name == "__has_c_attribute" || name == "__has_cpp_attribute"
         );
         if let Some(check) = check
             && let Some((name, end)) = has_check_argument(tokens, index + 1, scoped)

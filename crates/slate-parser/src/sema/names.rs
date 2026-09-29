@@ -104,7 +104,7 @@ impl Resolver {
 
     fn declaration_node(&mut self, declaration: &Decl) -> Result<(), ResolveError> {
         match &declaration.value {
-            DeclKind::Comment(_) | DeclKind::Pragma(_) => Ok(()),
+            DeclKind::Comment(_) | DeclKind::Pragma(_) | DeclKind::Attribute(_) => Ok(()),
             DeclKind::Asm(asm) => {
                 let Some(operands) = &asm.operands else {
                     return Ok(());

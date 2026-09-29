@@ -75,6 +75,7 @@ pub fn walk_decl<V: Visitor + ?Sized>(visitor: &mut V, decl: &Decl) -> Result<()
         DeclKind::Declaration(declaration) => visitor.visit_declaration(declaration),
         DeclKind::StaticAssert(assertion) => visitor.visit_expr(&assertion.condition),
         DeclKind::Asm(asm) => walk_asm(visitor, asm),
+        DeclKind::Attribute(attributes) => walk_attributes(visitor, attributes),
         DeclKind::Comment(_) | DeclKind::Pragma(_) => Ok(()),
     }
 }

@@ -389,6 +389,17 @@ impl Parser {
                 .map(DeclKind::Asm)
                 .ok_or_else(|| self.error_at_tokens(tokens, start, "expected asm"));
         }
+        if tokens.value_at(start) == Some(&Token::LBracket)
+            && tokens.value_at(start + 1) == Some(&Token::LBracket)
+        {
+            let (attributes, end) = self
+                .parse_attribute_groups(tokens, start)
+                .map_err(|error| self.error_at_tokens(tokens, start, error))?;
+            if tokens.value_at(end) == Some(&Token::Semi) {
+                *position = end + 1;
+                return Ok(DeclKind::Attribute(attributes));
+            }
+        }
         let mut parser = self.declarator_parser(tokens, start);
         parser.identifier_list = IdentifierList::Accepted;
         let mut specifiers = self.parse_declaration_specifiers(

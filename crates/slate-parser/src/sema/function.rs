@@ -4,9 +4,7 @@ use super::ctype::QualType;
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
-use crate::ast::{
-    Attribute, DeclarationSpecifiers, Declarator, Expr, ExprKind, Span, StorageClass,
-};
+use crate::ast::{Attribute, DeclarationSpecifiers, Expr, ExprKind, Span, StorageClass};
 use crate::compiler_args::CompilerFlavor;
 use crate::compiler_options::InlineSemantics;
 use crate::ir::{
@@ -79,36 +77,6 @@ enum DefinitionSpecifiers {
     Ordinary,
     Inline,
     ExternInline,
-}
-
-pub(crate) fn attributes<'a>(
-    specifiers: &'a DeclarationSpecifiers,
-    declarator: &'a Declarator,
-    trailing: &'a [Span<Attribute>],
-) -> Vec<&'a Span<Attribute>> {
-    let mut attributes = specifiers
-        .attributes
-        .iter()
-        .chain(trailing)
-        .collect::<Vec<_>>();
-    let mut current = Some(declarator);
-    while let Some(declarator) = current {
-        if let Declarator::Attributed {
-            attributes: nested, ..
-        } = declarator
-        {
-            attributes.extend(nested);
-        }
-        current = match declarator {
-            Declarator::Grouped(inner)
-            | Declarator::Attributed { inner, .. }
-            | Declarator::Pointer { inner, .. }
-            | Declarator::Array { inner, .. }
-            | Declarator::Function { inner, .. } => Some(inner),
-            Declarator::Name(_) | Declarator::Abstract => None,
-        };
-    }
-    attributes
 }
 
 impl Lowerer {

@@ -28,6 +28,11 @@ impl<'a> AttrCursor<'a> {
         self.tokens.value_at(self.pos)
     }
 
+    fn at_c23_group(&self) -> bool {
+        self.peek() == Some(&Token::LBracket)
+            && self.tokens.value_at(self.pos + 1) == Some(&Token::LBracket)
+    }
+
     pub(super) fn consume(&mut self, token: &Token) -> bool {
         if self.peek() == Some(token) {
             self.pos += 1;
@@ -181,53 +186,71 @@ pub(super) fn parse_attribute_groups(
                 cursor.expect(Token::RParen, "expected `))` after attributes")?;
                 break;
             }
-        } else if cursor.peek() == Some(&Token::LBracket)
-            && cursor.tokens.value_at(cursor.pos + 1) == Some(&Token::LBracket)
-        {
-            cursor.pos += 2;
-            loop {
-                if cursor.consume(&Token::RBracket) {
-                    cursor.expect(Token::RBracket, "expected `]]` after C23 attributes")?;
-                    break;
-                }
-                if cursor.consume(&Token::Comma) {
-                    continue;
-                }
-                let start = cursor.pos;
-                let mut name = cursor.expect_ident("expected C23 attribute name")?;
-                if cursor.consume(&Token::Colon) {
-                    cursor.expect(Token::Colon, "expected `::` in attribute name")?;
-                    let last = cursor.expect_ident("expected attribute name after `::`")?;
-                    name.push_str("::");
-                    name.push_str(&last);
-                }
-                let end = cursor.pos;
-                let arguments = cursor
-                    .parse_parenthesized_arguments("expected `)` after attribute arguments")?;
-                let attribute =
-                    match c23_attribute_name(&name).filter(|_| c23_registered(&name, context)) {
-                        Some(canonical) => parse_attribute_spelling(
-                            &name,
-                            canonical,
-                            arguments,
-                            biggest_alignment,
-                            context,
-                        )?,
-                        None => unknown_attribute(&name, arguments),
-                    };
-                attributes.push(locate_attribute(tokens, start, end, attribute));
-                if cursor.consume(&Token::Comma) {
-                    continue;
-                }
-                cursor.expect(Token::RBracket, "expected `]]` after C23 attributes")?;
-                cursor.expect(Token::RBracket, "expected `]]` after C23 attributes")?;
-                break;
-            }
+        } else if cursor.at_c23_group() {
+            parse_c23_group(&mut cursor, &mut attributes, biggest_alignment, context)?;
         } else {
             break;
         }
     }
     Ok((attributes, cursor.pos))
+}
+
+pub(super) fn parse_c23_attribute_groups(
+    tokens: &[Span<Token>],
+    position: usize,
+    biggest_alignment: i64,
+    context: ParseContext<'_>,
+) -> Result<(Vec<Span<Attribute>>, usize), String> {
+    let mut cursor = AttrCursor::new(tokens, position);
+    let mut attributes = Vec::new();
+    while cursor.at_c23_group() {
+        parse_c23_group(&mut cursor, &mut attributes, biggest_alignment, context)?;
+    }
+    Ok((attributes, cursor.pos))
+}
+
+fn parse_c23_group(
+    cursor: &mut AttrCursor<'_>,
+    attributes: &mut Vec<Span<Attribute>>,
+    biggest_alignment: i64,
+    context: ParseContext<'_>,
+) -> Result<(), String> {
+    let tokens = cursor.tokens;
+    cursor.pos += 2;
+    loop {
+        if cursor.consume(&Token::RBracket) {
+            cursor.expect(Token::RBracket, "expected `]]` after C23 attributes")?;
+            break;
+        }
+        if cursor.consume(&Token::Comma) {
+            continue;
+        }
+        let start = cursor.pos;
+        let mut name = cursor.expect_ident("expected C23 attribute name")?;
+        if cursor.consume(&Token::Colon) {
+            cursor.expect(Token::Colon, "expected `::` in attribute name")?;
+            let last = cursor.expect_ident("expected attribute name after `::`")?;
+            name.push_str("::");
+            name.push_str(&last);
+        }
+        let end = cursor.pos;
+        let arguments =
+            cursor.parse_parenthesized_arguments("expected `)` after attribute arguments")?;
+        let attribute = match c23_attribute_name(&name).filter(|_| c23_registered(&name, context)) {
+            Some(canonical) => {
+                parse_attribute_spelling(&name, canonical, arguments, biggest_alignment, context)?
+            }
+            None => unknown_attribute(&name, arguments),
+        };
+        attributes.push(locate_attribute(tokens, start, end, attribute));
+        if cursor.consume(&Token::Comma) {
+            continue;
+        }
+        cursor.expect(Token::RBracket, "expected `]]` after C23 attributes")?;
+        cursor.expect(Token::RBracket, "expected `]]` after C23 attributes")?;
+        break;
+    }
+    Ok(())
 }
 
 fn locate_attribute(

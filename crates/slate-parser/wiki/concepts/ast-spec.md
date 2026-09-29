@@ -131,6 +131,7 @@ ExternalItem =
     | StaticAssert
     | Asm(GnuAsm)                   // file-scope asm("...")
     | Pragma(Pragma)
+    | Attribute(Vec<Span<Attribute>>)  // file-scope `[[attr]];`
     | CommentGroup
 ```
 
@@ -321,6 +322,18 @@ ParameterDeclaration { specifiers, declarator: Declarator, attributes, provenanc
 
 `int (*fp)(int)` is
 `Function { inner: Grouped(Pointer { inner: Name("fp") }), parameters: [int] }`.
+
+`Attributed` holds attributes written inside a declarator:
+
+| Source | AST |
+| --- | --- |
+| `(__attribute__((x)) *p)`, `(__cdecl *p)` | `Grouped(Attributed { inner: Pointer {..} })` |
+| `a [[x]]` (after the identifier) | `Attributed { inner: Name("a") }` |
+| `f(void) [[x]]`, `v[2] [[x]]` (after a suffix) | `Attributed { inner: Function {..} }` / `Array {..}` |
+
+Only `[[...]]` is read after the identifier or a suffix; GNU attributes
+there end the declarator and become `InitDeclarator.attributes`. `[[` never
+starts an array bound.
 
 K&R definitions (`f(a, b) int a; char b; { ... }`):
 

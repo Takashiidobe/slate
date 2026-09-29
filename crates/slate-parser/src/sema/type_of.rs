@@ -352,7 +352,9 @@ impl TypeResolver {
 fn plain_identifier(declarator: &Declarator) -> bool {
     match declarator {
         Declarator::Name(_) => true,
-        Declarator::Attributed { inner, .. } => plain_identifier(inner),
+        Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } => {
+            plain_identifier(inner)
+        }
         _ => false,
     }
 }

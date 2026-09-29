@@ -1,4 +1,4 @@
-use super::attributes::parse_attribute_groups;
+use super::attributes::{parse_attribute_groups, parse_c23_attribute_groups};
 use super::decl::{bare_identifier_names, matching_paren, set_qualifier, specifiers_with_type};
 use super::{Cursor, FALLBACK_BIGGEST_ALIGNMENT, ParseContext, Parser, span_tokens};
 use crate::ast::*;
@@ -512,6 +512,9 @@ impl<'a> DeclaratorParser<'a> {
             _ if allow_abstract => Declarator::Abstract,
             _ => return Err(DeclaratorError::ExpectedDeclarator),
         };
+        if matches!(declarator, Declarator::Name(_)) {
+            declarator = self.wrap_c23_attributes(declarator)?;
+        }
 
         for (qualifiers, attributes) in pointers.into_iter().rev() {
             declarator = Declarator::Pointer {
@@ -523,6 +526,11 @@ impl<'a> DeclaratorParser<'a> {
 
         loop {
             declarator = match self.peek() {
+                Some(Token::LBracket)
+                    if self.tokens.value_at(self.pos + 1) == Some(&Token::LBracket) =>
+                {
+                    self.wrap_c23_attributes(declarator)?
+                }
                 Some(Token::LBracket) => {
                     self.pos += 1;
                     let mut is_static = self.matches(Token::Keyword(Keyword::Static));
@@ -741,6 +749,24 @@ impl<'a> DeclaratorParser<'a> {
                 return Ok((qualifiers, attributes));
             }
         }
+    }
+
+    fn wrap_c23_attributes(&mut self, inner: Declarator) -> Result<Declarator, DeclaratorError> {
+        let (attributes, position) = parse_c23_attribute_groups(
+            self.tokens,
+            self.pos,
+            self.biggest_alignment,
+            self.context,
+        )?;
+        self.pos = position;
+        Ok(if attributes.is_empty() {
+            inner
+        } else {
+            Declarator::Attributed {
+                inner: Box::new(inner),
+                attributes,
+            }
+        })
     }
 
     fn opens_parameter_list(&self, pos: usize) -> bool {

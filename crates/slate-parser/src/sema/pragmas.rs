@@ -253,7 +253,10 @@ pub fn collect(unit: &TranslationUnit) -> Pragmas {
             DeclKind::Pragma(pragma) => walk.pragma(pragma),
             DeclKind::Function(function) => walk.function(function),
             DeclKind::Declaration(inner) => walk.declaration(inner),
-            DeclKind::Comment(_) | DeclKind::StaticAssert(_) | DeclKind::Asm(_) => {}
+            DeclKind::Comment(_)
+            | DeclKind::StaticAssert(_)
+            | DeclKind::Asm(_)
+            | DeclKind::Attribute(_) => {}
         }
         for name in declaration.value.names() {
             walk.symbol(name);

@@ -95,7 +95,8 @@ DeclKind = "Comment(" CommentGroup ")"
          | "Declaration(" Declaration ")"
          | "StaticAssert(" StaticAssert ")"
          | "Asm(" GnuAsm ")"
-         | "Pragma(" Pragma ")" ;
+         | "Pragma(" Pragma ")"
+         | "Attribute(" vec<span<Attribute>> ")" ;
 
 FunctionDefinition = FunctionDefinition {
                        specifiers: DeclarationSpecifiers,
@@ -226,7 +227,10 @@ ParameterDeclarationKind = ParameterDeclarationKind {
   `int *a[3]` (an array of pointers) is
   `Array { inner: Pointer { inner: Name("a") } }`, and `int (*fp)(int)` is
   `Function { inner: Grouped(Pointer { inner: Name("fp") }) }`. `Grouped` is
-  a parenthesized declarator.
+  a parenthesized declarator. `Attributed` is attributes written inside
+  the declarator: GNU or keyword attributes after `(`, or `[[...]]` after
+  the identifier or an array/function suffix (`f(void) [[x]]` is
+  `Attributed { inner: Function {..} }`).
 - `Void` is `(void)`; `Empty` is `()`, an unprototyped list.
 - `IdentifierList` is a K&R definition; its parameters keep the declared
   types, and promotion happens in sema.

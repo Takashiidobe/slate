@@ -764,7 +764,8 @@ fn summarize_evaluated_decl(decl: &DeclKind) -> Vec<DeclSummary> {
         DeclKind::Comment(_)
         | DeclKind::StaticAssert { .. }
         | DeclKind::Asm { .. }
-        | DeclKind::Pragma(_) => Vec::new(),
+        | DeclKind::Pragma(_)
+        | DeclKind::Attribute(_) => Vec::new(),
         DeclKind::Function(function) => vec![DeclSummary::Function {
             name: declarator_identifier(&function.declarator),
             returns: function

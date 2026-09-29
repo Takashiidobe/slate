@@ -1943,9 +1943,7 @@ impl TypeResolver {
                         self.check_attributes(
                             declaration
                                 .specifiers
-                                .attributes
-                                .iter()
-                                .chain(&declarator.attributes),
+                                .attributes_with(&declarator.declarator, &declarator.attributes),
                             Subject::Field,
                         )?;
                         let resolved = self.resolve_declarator(
@@ -1971,10 +1969,15 @@ impl TypeResolver {
                             bit_width,
                         }));
                         field_types.push(resolved);
+                        let field = declarator
+                            .attributes
+                            .iter()
+                            .chain(declarator.declarator.grouped_attributes())
+                            .collect::<Vec<_>>();
                         requests.push(field_request(
                             self,
                             &declaration.specifiers.attributes,
-                            &declarator.attributes,
+                            &field,
                         )?);
                     }
                 }
@@ -3135,14 +3138,14 @@ pub(super) fn requested_alignment<'a>(
 fn field_request(
     resolver: &mut TypeResolver,
     declaration: &[Span<Attribute>],
-    field: &[Span<Attribute>],
+    field: &[&Span<Attribute>],
 ) -> Result<(bool, Option<u64>), ResolveError> {
     let packed = declaration
         .iter()
-        .chain(field)
+        .chain(field.iter().copied())
         .any(|attribute| matches!(&attribute.value, Attribute::Packed));
     let first = requested_alignment(resolver, declaration)?;
-    let second = requested_alignment(resolver, field)?;
+    let second = requested_alignment(resolver, field.iter().copied())?;
     Ok((packed, first.into_iter().chain(second).max()))
 }
 
@@ -3276,9 +3279,7 @@ pub(super) fn resolve_type_module(
                         name,
                         resolved,
                         item.specifiers
-                            .attributes
-                            .iter()
-                            .chain(&declarator.attributes),
+                            .attributes_with(&declarator.declarator, &declarator.attributes),
                     )?;
                     for definition in &resolver.definitions[start..] {
                         let span = declarator.derive(definition.clone());

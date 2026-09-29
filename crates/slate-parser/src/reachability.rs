@@ -1,6 +1,5 @@
 use crate::ast::*;
 use crate::compiler_options::InlineSemantics;
-use crate::sema::function::attributes;
 use crate::target_info::TargetEnvironment;
 use std::collections::{HashMap, HashSet};
 
@@ -109,6 +108,7 @@ impl<'a> Reachability<'a> {
         }
         match &self.nodes[id].value {
             DeclKind::Comment(_) | DeclKind::Pragma(_) => {}
+            DeclKind::Attribute(attributes) => self.mark_attributes(attributes),
             DeclKind::Asm(asm) => self.mark_gnu_asm(asm),
             DeclKind::StaticAssert(assertion) => self.mark_expr(&assertion.condition),
             DeclKind::Function(function) => self.mark_function(function),
@@ -507,7 +507,8 @@ impl<'a> Reachability<'a> {
             DeclKind::Comment(_)
             | DeclKind::StaticAssert(_)
             | DeclKind::Asm(_)
-            | DeclKind::Pragma(_) => false,
+            | DeclKind::Pragma(_)
+            | DeclKind::Attribute(_) => false,
         }
     }
 
@@ -598,7 +599,8 @@ impl<'a> Reachability<'a> {
             DeclKind::Comment(_)
             | DeclKind::StaticAssert(_)
             | DeclKind::Asm(_)
-            | DeclKind::Pragma(_) => false,
+            | DeclKind::Pragma(_)
+            | DeclKind::Attribute(_) => false,
         }
     }
 
@@ -647,11 +649,10 @@ impl<'a> Reachability<'a> {
                 DeclKind::Function(function) if function.declarator.name() == Some(name) => {
                     redeclarations.push((
                         &function.specifiers,
-                        attributes(
-                            &function.specifiers,
-                            &function.declarator,
-                            &function.attributes,
-                        ),
+                        function
+                            .specifiers
+                            .attributes_with(&function.declarator, &function.attributes)
+                            .collect(),
                     ))
                 }
                 DeclKind::Declaration(declaration)
@@ -661,11 +662,10 @@ impl<'a> Reachability<'a> {
                         if declarator.declarator.name() == Some(name) {
                             redeclarations.push((
                                 &declaration.specifiers,
-                                attributes(
-                                    &declaration.specifiers,
-                                    &declarator.declarator,
-                                    &declarator.attributes,
-                                ),
+                                declaration
+                                    .specifiers
+                                    .attributes_with(&declarator.declarator, &declarator.attributes)
+                                    .collect(),
                             ));
                         }
                     }

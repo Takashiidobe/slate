@@ -1332,6 +1332,21 @@ impl TypeSpecifier {
     }
 }
 
+impl DeclarationSpecifiers {
+    pub fn attributes_with<'a>(
+        &'a self,
+        declarator: &'a Declarator,
+        trailing: &'a [Span<Attribute>],
+    ) -> impl Iterator<Item = &'a Span<Attribute>> + Clone {
+        self.attributes.iter().chain(trailing).chain(
+            declarator
+                .grouped_attributes()
+                .into_iter()
+                .filter(|attribute| !matches!(attribute.value, Attribute::CallingConvention(_))),
+        )
+    }
+}
+
 impl Declarator {
     pub fn name(&self) -> Option<&str> {
         match self {
@@ -1647,12 +1662,17 @@ pub enum DeclKind {
     StaticAssert(StaticAssert),
     Asm(GnuAsm),
     Pragma(Pragma),
+    Attribute(Vec<Span<Attribute>>),
 }
 
 impl DeclKind {
     pub fn names(&self) -> Vec<&str> {
         match self {
-            Self::Comment(_) | Self::StaticAssert(_) | Self::Asm(_) | Self::Pragma(_) => Vec::new(),
+            Self::Comment(_)
+            | Self::StaticAssert(_)
+            | Self::Asm(_)
+            | Self::Pragma(_)
+            | Self::Attribute(_) => Vec::new(),
             Self::Function(function) => function.declarator.name().into_iter().collect(),
             Self::Declaration(declaration) => declaration.names().collect(),
         }

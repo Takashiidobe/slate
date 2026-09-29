@@ -247,6 +247,13 @@ fn lower_item(
 ) -> Result<(), ResolveError> {
     match &declaration.value {
         DeclKind::Comment(_) | DeclKind::StaticAssert(_) => {}
+        DeclKind::Attribute(attributes) => {
+            if lower.types.compiler_flavor() == CompilerFlavor::Gcc {
+                for attribute in attributes {
+                    lower.warn(Warning::IgnoredAttributes, "attribute ignored", attribute);
+                }
+            }
+        }
         DeclKind::Pragma(pragma) => {
             lower.floating_pragmas.apply(
                 &mut lower.context.region,
@@ -262,11 +269,10 @@ fn lower_item(
             lower.declaration(item, true)?;
         }
         DeclKind::Function(function) => {
-            let attributes = super::function::attributes(
-                &function.specifiers,
-                &function.declarator,
-                &function.attributes,
-            );
+            let attributes = function
+                .specifiers
+                .attributes_with(&function.declarator, &function.attributes)
+                .collect::<Vec<_>>();
             lower
                 .types
                 .check_attributes(attributes.iter().copied(), Subject::Function)
@@ -782,9 +788,7 @@ impl Lowerer {
             let attributes = || {
                 parameter
                     .specifiers
-                    .attributes
-                    .iter()
-                    .chain(&parameter.attributes)
+                    .attributes_with(&parameter.declarator, &parameter.attributes)
             };
             self.types
                 .check_attributes(attributes(), Subject::Parameter)
@@ -956,9 +960,7 @@ impl Lowerer {
         for (index, declarator) in item.declarators.iter().enumerate() {
             let attributes = item
                 .specifiers
-                .attributes
-                .iter()
-                .chain(&declarator.attributes);
+                .attributes_with(&declarator.declarator, &declarator.attributes);
             if storage_class == StorageClass::Typedef {
                 self.types
                     .check_attributes(attributes.clone(), Subject::Typedef)
@@ -1065,11 +1067,10 @@ impl Lowerer {
                 if !global && storage_class == StorageClass::Static {
                     return Err(ResolveError::Internal("block scope static function"));
                 }
-                let attributes = super::function::attributes(
-                    &item.specifiers,
-                    &declarator.declarator,
-                    &declarator.attributes,
-                );
+                let attributes = item
+                    .specifiers
+                    .attributes_with(&declarator.declarator, &declarator.attributes)
+                    .collect::<Vec<_>>();
                 self.types
                     .check_attributes(attributes.iter().copied(), Subject::Function)
                     .map_err(ResolveError::checked)?;
@@ -1617,10 +1618,11 @@ impl Lowerer {
                     .iter()
                     .any(|a| matches!(&a.value, ast::Attribute::Fallthrough)) =>
             {
-                if self.switches.is_empty() {
+                if !self.switches.is_empty() {
+                    annotations.push(("c_attribute".into(), "fallthrough".into()));
+                } else if self.types.compiler_flavor() != CompilerFlavor::Gcc {
                     return Err(ResolveError::Internal("fallthrough outside switch"));
                 }
-                annotations.push(("c_attribute".into(), "fallthrough".into()));
                 Statement::Null
             }
             StmtKind::Attribute(_) => Statement::Null,

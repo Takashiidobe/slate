@@ -3,6 +3,7 @@
 <!-- toc -->
 - [Stages](#stages)
 - [Parsing](#parsing)
+  - [C23 placement](#c23-placement)
 - [Registration](#registration)
 - [Early validation](#early-validation)
 - [Applicability](#applicability)
@@ -48,10 +49,39 @@ How an attribute gets from source to the IR. AST shape:
 - Bare `aligned` reads `__BIGGEST_ALIGNMENT__` in the parser
   (`biggest_alignment`).
 - Every attribute keeps its span and placement (specifiers, declarator,
-  init-declarator, tag, enumerator, statement). `vector_size`,
+  init-declarator, tag, enumerator, statement, file-scope attribute
+  declaration). `vector_size`,
   `ext_vector_type`, and `mode` in specifier position wrap the type
   specifier ([ast-spec](ast-spec.md#vector_size-and-mode)).
 - Which syntax was used is not kept.
+
+### C23 placement
+
+`[[...]]` is accepted wherever C23 allows it, in every mode (gcc and clang
+only warn before C23; see
+[ast-spec](ast-spec.md#post-c89-constructs-in-older-modes)):
+
+| Written | C23 appertains to | AST | slate treats it as |
+| --- | --- | --- | --- |
+| `[[x]] int a;` | the declared entities | `specifiers.attributes` | declaration |
+| `int [[x]] a;` | the type specifier | `specifiers.attributes` | declaration |
+| `int a [[x]];`, `void f [[x]] (void);` | the entity | `Attributed { Name }` | declaration |
+| `int *[[x]] p;` | the pointer type | `Pointer.attributes` | as GNU `* __attribute__` |
+| `int f(void) [[x]];`, `int v[2] [[x]];` | the function/array type | `Attributed { Function \| Array }` | declaration |
+| `[[x]];` at file scope | nothing | `DeclKind::Attribute` | gcc: `-Wignored-attributes` per attribute; clang, msvc: silent |
+
+- Type-position attributes are treated like GNU declaration attributes
+  (permissive, decided 2026-09-29). gcc and clang drop declaration-only
+  attributes there with "ignored" (clang errors on some, e.g.
+  `int [[deprecated]] v`), and honor type ones (`format`, `nonnull`,
+  `access`, `reproducible`, `unsequenced`, `aligned`, conventions). slate
+  applies both kinds and emits none of those warnings. A layout attribute
+  on a nested position (`int *[[gnu::aligned(16)]] *pp`) applies to the
+  declaration, as GNU `*__attribute__` already does.
+- `DeclarationSpecifiers::attributes_with(declarator, trailing)` is the one
+  declaration list: specifiers, trailing, then every `Attributed` layer
+  except calling conventions, which `derive` applies to the type. Field
+  layout reads the same layers through `field_request`.
 
 ## Registration
 
@@ -213,6 +243,10 @@ lowering drops statement attributes
   cl: only in C23, 202311 for `fallthrough`, `maybe_unused`, `nodiscard`,
   else 0. Pre-C23 cl rejects scoped operands (C2278); slate answers 0
   (permissive). Fixtures: `has-c-attribute-{clang,gcc,msvc-c23,msvc-c17}.c`.
+- `__has_cpp_attribute` (gcc only): `__has_c_attribute`, falling back to
+  `__has_attribute` for an unscoped name (`packed` 1, `__packed__` 1,
+  `gnu::packed` 1, `nodiscard` 202311, unknown 0; gcc 16.2 in C11 and C89).
+  clang leaves it undefined in C. Fixture: `gcc-dg/.../c23-attr-syntax-8.c`.
 - Visible to `#ifdef` / `defined`: clang and gcc define
   `__has_include(_next)`, `__has_embed`, `__has_attribute`,
   `__has_c_attribute`, `__has_builtin`, `__has_feature`,
