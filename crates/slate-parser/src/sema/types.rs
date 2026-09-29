@@ -343,7 +343,8 @@ impl TypeResolver {
                     "XF" | "TF" => {
                         return Err(ResolveError::Rejected("unsupported machine mode"));
                     }
-                    "QI" | "HI" | "SI" | "DI" | "TI" | "byte" | "word" | "pointer" => {
+                    "QI" | "HI" | "SI" | "DI" | "TI" | "byte" | "word" | "unwind_word"
+                    | "pointer" => {
                         return Err(mismatch);
                     }
                     _ => return Err(ResolveError::Rejected("machine mode")),
@@ -377,7 +378,7 @@ impl TypeResolver {
                     "SI" => 32,
                     "DI" => 64,
                     "TI" => 128,
-                    "word" | "pointer" => self.dialect.target().pointer_width,
+                    "word" | "unwind_word" | "pointer" => self.dialect.target().pointer_width,
                     "SF" | "DF" | "XF" | "TF" => return Err(mismatch),
                     _ => return Err(ResolveError::Rejected("machine mode")),
                 };
