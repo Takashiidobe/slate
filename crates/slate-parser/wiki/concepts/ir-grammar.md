@@ -169,6 +169,7 @@ storage      = "automatic" | "static" | "thread" ;
 linkage      = "[linkage=" ( "internal" | "external" ) "]" ;
 symbol_attrs = [ "[asm_name=" string "]" ] [ "[visibility=" visibility "]" ]
                [ "[weak]" ] [ "[alias=" string "]" ] [ "[weakref=" string "]" ]
+               [ "[ifunc=" string "]" ]
                [ "[section=" string "]" ] [ "[used]" ] [ "[retain]" ]
                [ "[tls_model=" tls_model "]" ] [ "[dllimport]" | "[dllexport]" ]
                [ "[selectany]" ] ;

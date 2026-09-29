@@ -23,37 +23,50 @@ __attribute__((common, nocommon)) int common_value;
 
 // SLATE-FILECHECK-DEFINES DEFAULT
 
-// SLATE-FILECHECK-IR-ERROR DEFAULT
-
 // SLATE-FILECHECK-BEGIN DEFAULT
-// DEFAULT: Error:   × semantic analysis failed
-// DEFAULT: Error:
-// DEFAULT: × not implemented: ifunc attribute
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/target-type-attributes.c:4:1]
-// DEFAULT: 3 │ __attribute__((target_clones("default", "arch=x86-64-v2"))) int cloned(void);
-// DEFAULT: 4 │ __attribute__((ifunc("resolver"))) int indirect(void);
-// DEFAULT: · ──────────────────────────────────────────────────────
-// DEFAULT: 5 │ __attribute__((dllimport)) int imported;
-// DEFAULT: ╰────
-// DEFAULT: ⚠ unknown attribute 'dllimport' ignored
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/target-type-attributes.c:5:16]
-// DEFAULT: 4 │ __attribute__((ifunc("resolver"))) int indirect(void);
-// DEFAULT: 5 │ __attribute__((dllimport)) int imported;
-// DEFAULT: ·                ─────────
-// DEFAULT: 6 │ __attribute__((weak_import)) extern int weak_platform;
-// DEFAULT: ╰────
-// DEFAULT: ⚠ unknown attribute 'nomips16' ignored
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/target-type-attributes.c:7:25]
-// DEFAULT: 6 │ __attribute__((weak_import)) extern int weak_platform;
-// DEFAULT: 7 │ __attribute__((stdcall, nomips16)) int calling_convention(void);
-// DEFAULT: ·                         ────────
-// DEFAULT: 8 │ __attribute__((availability(macos, introduced=12.0))) int platform_api;
-// DEFAULT: ╰────
-// DEFAULT: ⚠ unknown attribute 'scalar_storage_order' ignored
-// DEFAULT: ╭─[tests/fixtures/clang/linux/x86_64/target-type-attributes.c:10:16]
-// DEFAULT: 9 │ typedef int vector_type __attribute__((ext_vector_type(2)));
-// DEFAULT: 10 │ __attribute__((scalar_storage_order("big-endian"))) int ordered;
-// DEFAULT: ·                ────────────────────
-// DEFAULT: 11 │ union union_value {
-// DEFAULT: ╰────
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=8, align=8];
+// DEFAULT-NEXT:         stack_alignment = 16;
+// DEFAULT-NEXT:         long_double = f80;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f80 [size=16, align=16];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     type @type[[TYPE_vector_type:[0-9]+]] vector_type = vector<i32, 2>;
+// DEFAULT-NEXT:     type @type[[TYPE_union_value:[0-9]+]] union_value = union {
+// DEFAULT-NEXT:         field0 value: i32;
+// DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
+// DEFAULT-NEXT:     type @type[[TYPE_ms_platform_struct:[0-9]+]] ms_platform_struct = struct {
+// DEFAULT-NEXT:         field0 value: i32;
+// DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
+// DEFAULT-NEXT:     type @type[[TYPE_gcc_platform_struct:[0-9]+]] gcc_platform_struct = struct {
+// DEFAULT-NEXT:         field0 value: i32;
+// DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
+// DEFAULT-NEXT:     global %[[VALUE_imported:[0-9]+]] imported: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     extern %[[VALUE_weak_platform:[0-9]+]] weak_platform: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_platform_api:[0-9]+]] platform_api: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_ordered:[0-9]+]] ordered: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_common_value:[0-9]+]] common_value: i32 [storage=static] [linkage=external] [common];
+// DEFAULT-NEXT:     fn %[[VALUE_dispatched:[0-9]+]] @dispatched() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_specific:[0-9]+]] @specific() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_cloned:[0-9]+]] @cloned() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_indirect:[0-9]+]] @indirect() -> i32 [linkage=external] [ifunc="resolver"];
+// DEFAULT-NEXT:     fn %[[VALUE_calling_convention:[0-9]+]] @calling_convention() -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_formatted:[0-9]+]] @formatted(%[[VALUE_format:[0-9]+]] format: ptr<i8>, ...) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_format_argument:[0-9]+]] @format_argument(%[[VALUE_value:[0-9]+]] value: ptr<i8>) -> ptr<i8> [linkage=external];
+// DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

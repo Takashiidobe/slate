@@ -105,6 +105,7 @@ fn general_use(attribute: &Attribute) -> Use {
         | Attribute::Weak
         | Attribute::Alias(_)
         | Attribute::WeakRef(_)
+        | Attribute::Ifunc(_)
         | Attribute::Section(_)
         | Attribute::Used
         | Attribute::Retain
@@ -128,7 +129,6 @@ fn general_use(attribute: &Attribute) -> Use {
         Attribute::Cleanup(_) => Use::Ignored,
         Attribute::ScalarStorageOrder(_) => Use::Ignored,
         Attribute::TransparentUnion => Use::Ignored,
-        Attribute::Ifunc(_) => Use::Unimplemented("ifunc attribute"),
         Attribute::CodeSeg(_) => Use::Unimplemented("code segment attribute"),
         Attribute::Invalid { .. } => Use::Rejected("invalid attribute"),
 

@@ -429,6 +429,7 @@ pub(super) fn symbol_attributes<'a>(
             ast::Attribute::DllImport => symbol.dll_storage = Some(DllStorage::Import),
             ast::Attribute::DllExport => symbol.dll_storage = Some(DllStorage::Export),
             ast::Attribute::WeakRef(target) => symbol.weakref = Some(target.clone()),
+            ast::Attribute::Ifunc(resolver) => symbol.ifunc = Some(resolver.clone()),
             ast::Attribute::SelectAny => symbol.selectany = true,
             ast::Attribute::ThreadLocal
             | ast::Attribute::Aligned(_)
@@ -466,6 +467,7 @@ pub(super) fn function_symbol<'a>(
                     | ast::Attribute::Weak
                     | ast::Attribute::Alias(_)
                     | ast::Attribute::WeakRef(_)
+                    | ast::Attribute::Ifunc(_)
                     | ast::Attribute::Section(_)
                     | ast::Attribute::Used
                     | ast::Attribute::Retain

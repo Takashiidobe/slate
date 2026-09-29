@@ -71,11 +71,15 @@ reject; where one only warns (always MSVC), accept with
 linkage and merged across redeclarations (first value wins, flags OR):
 `asm_name` (from `asm("sym")`), `visibility`, `weak`, `alias`, `section`,
 `used`, `retain`, `tls_model`, `dllimport`/`dllexport`, `weakref`,
-`selectany`.
+`ifunc`, `selectany`.
 
 - `weakref("t")` is not `weak` + `alias`: it defines no symbol, and its
   uses resolve to an `extern_weak` reference to `t`. It prints as `extern`
   with `[weakref="t"]`, needs internal linkage, and applies to functions.
+- `ifunc("r")` names the resolver's assembler symbol; the declaration is
+  printed as a bodiless `fn` with `[ifunc="r"]`. Resolver semantics are
+  left to Slate. Not checked (both oracles reject): an undefined resolver,
+  a body on the same function, `weak` (gcc).
 - `selectany` (clang: `weak_odr` + COMDAT) needs external linkage.
 
 ## Object properties

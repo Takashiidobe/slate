@@ -81,6 +81,9 @@ impl fmt::Display for SymbolAttributes {
         if let Some(target) = &self.weakref {
             write!(f, " [weakref={target:?}]")?;
         }
+        if let Some(resolver) = &self.ifunc {
+            write!(f, " [ifunc={resolver:?}]")?;
+        }
         if let Some(section) = &self.section {
             write!(f, " [section={section:?}]")?;
         }

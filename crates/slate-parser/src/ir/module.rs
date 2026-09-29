@@ -53,6 +53,7 @@ pub struct SymbolAttributes {
     pub weak: bool,
     pub alias: Option<String>,
     pub weakref: Option<String>,
+    pub ifunc: Option<String>,
     pub section: Option<String>,
     pub used: bool,
     pub retain: bool,
@@ -68,6 +69,7 @@ impl SymbolAttributes {
         self.weak |= later.weak;
         self.alias = self.alias.take().or(later.alias);
         self.weakref = self.weakref.take().or(later.weakref);
+        self.ifunc = self.ifunc.take().or(later.ifunc);
         self.section = self.section.take().or(later.section);
         self.used |= later.used;
         self.retain |= later.retain;

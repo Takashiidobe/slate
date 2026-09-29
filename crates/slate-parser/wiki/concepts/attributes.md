@@ -111,7 +111,7 @@ position without resolving names:
 | `Unknown` | `Attribute::Unknown` | `-Wunknown-attributes` unless the fallback lists register it |
 | `UnsupportedDeclspec` | `Attribute::IgnoredDeclspec` | `-Wignored-attributes` |
 | `Rejected(reason)` | error in every oracle (e.g. `section` on a field, `_Alignas` on a typedef) | `ResolveError::Rejected` |
-| `Unimplemented(reason)` | valid but not modeled (`ifunc`, `code_seg`, other attributes on a parameter) | `ResolveError::Unimplemented` |
+| `Unimplemented(reason)` | valid but not modeled (`code_seg`, other attributes on a parameter) | `ResolveError::Unimplemented` |
 
 - Order: `inapplicable` first, then per-subject rules (`parameter_use`,
   `member_use`), then `general_use`.
@@ -177,7 +177,7 @@ Fixtures: `sema/ir_attribute_applicability.c`,
 
 | Consumer | Reads | IR result |
 | --- | --- | --- |
-| `module::symbol_attributes` | `visibility`, `tls_model`, `weak`, `alias`, `section`, `used`, `retain`, `dllimport`/`dllexport`, `weakref`, `selectany`, `asm("sym")` | `SymbolAttributes` on `Global` / `Function` ([ir/declarations](ir/declarations.md#symbol-attributes)) |
+| `module::symbol_attributes` | `visibility`, `tls_model`, `weak`, `alias`, `section`, `used`, `retain`, `dllimport`/`dllexport`, `weakref`, `ifunc`, `selectany`, `asm("sym")` | `SymbolAttributes` on `Global` / `Function` ([ir/declarations](ir/declarations.md#symbol-attributes)) |
 | `module::function_symbol` | same, filtered to function-relevant ones; rejects a register asm label or `__declspec(thread)` on a function | function `SymbolAttributes` |
 | `Pragmas::apply` | `#pragma visibility`, `#pragma weak`, `#pragma redefine_extname` | fills unset `SymbolAttributes` fields |
 | `Lowerer::record_function` | `gnu_inline`, `always_inline`, `noinline`, `noreturn`, `naked`, `const`, `pure` | `FunctionSemantics`; every attribute is also kept |
