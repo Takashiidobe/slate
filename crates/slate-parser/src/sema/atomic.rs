@@ -272,6 +272,44 @@ fn sync_operation(operation: &str) -> Option<SyncBuiltin> {
     })
 }
 
+#[derive(Default)]
+pub(super) struct AtomicOperands<'e> {
+    pub objects: Vec<&'e Expr>,
+    pub pointers: Vec<&'e Expr>,
+    pub values: Vec<(&'e Expr, &'e Expr)>,
+    pub fetch: Option<(FetchOp, &'e Expr, &'e Expr)>,
+}
+
+// the operand checks atomic lowering relies on: the loaded object's type and the fetch operand
+pub(super) fn fetch_rule(object: &Type, op: FetchOp, operand: &Type) -> Result<(), ResolveError> {
+    if matches!(object, Type::Pointer { .. }) {
+        if !matches!(op, FetchOp::Add | FetchOp::Sub) {
+            return Err(ResolveError::Rejected(
+                "atomic bitwise operation on pointer",
+            ));
+        }
+        if !matches!(operand, Type::Numeric(NumericType::Integer { .. })) {
+            return Err(ResolveError::Rejected("noninteger atomic pointer offset"));
+        }
+        return Ok(());
+    }
+    match (object, op) {
+        (
+            Type::Numeric(NumericType::Float(_)),
+            FetchOp::Add
+            | FetchOp::Sub
+            | FetchOp::Min { signed: None }
+            | FetchOp::Max { signed: None }
+            | FetchOp::FloatExtremum(_),
+        ) => Ok(()),
+        (_, FetchOp::FloatExtremum(_)) => Err(ResolveError::Rejected(
+            "atomic floating extremum on a non-floating object",
+        )),
+        (Type::Numeric(NumericType::Integer { .. }) | Type::Bool, _) => Ok(()),
+        _ => Err(ResolveError::Rejected("atomic arithmetic on non-integer")),
+    }
+}
+
 pub(super) enum AtomicResult<'e> {
     Void,
     Bool,
@@ -281,6 +319,75 @@ pub(super) enum AtomicResult<'e> {
 }
 
 impl AtomicBuiltin {
+    pub(super) fn operands(self, arguments: &[Expr]) -> AtomicOperands<'_> {
+        let arguments = match arguments.split_last() {
+            Some((_, rest)) if self.scoped => rest,
+            _ => arguments,
+        };
+        let mut operands = AtomicOperands::default();
+        match (self.operation, arguments) {
+            (AtomicOperation::Init, [object, desired])
+            | (AtomicOperation::Exchange { generic: false }, [object, desired, _])
+            | (AtomicOperation::Store { generic: false }, [object, desired, _])
+            | (
+                AtomicOperation::Sync(SyncBuiltin::LockTestAndSet | SyncBuiltin::Swap),
+                [object, desired, ..],
+            ) => {
+                operands.objects.push(object);
+                operands.values.push((object, desired));
+            }
+            (AtomicOperation::Load { generic: false }, [object, _])
+            | (AtomicOperation::Sync(SyncBuiltin::LockRelease), [object, ..]) => {
+                operands.objects.push(object);
+            }
+            (AtomicOperation::Load { generic: true }, [object, other, _])
+            | (AtomicOperation::Store { generic: true }, [object, other, _]) => {
+                operands.objects.extend([object, other]);
+            }
+            (AtomicOperation::Exchange { generic: true }, [object, desired, result, _]) => {
+                operands.objects.extend([object, desired, result]);
+            }
+            (
+                AtomicOperation::CompareExchange(CompareExchangeSource::C11 { .. }),
+                [object, expected, desired, _, _],
+            )
+            | (
+                AtomicOperation::CompareExchange(CompareExchangeSource::Gnu { generic: false }),
+                [object, expected, desired, _, _, _],
+            ) => {
+                operands.objects.push(object);
+                operands.pointers.push(expected);
+                operands.values.push((object, desired));
+            }
+            (
+                AtomicOperation::CompareExchange(CompareExchangeSource::Gnu { generic: true }),
+                [object, expected, desired, _, _, _],
+            ) => {
+                operands.objects.extend([object, desired]);
+                operands.pointers.push(expected);
+            }
+            (AtomicOperation::Fetch { op, .. }, [object, operand, _])
+            | (AtomicOperation::Sync(SyncBuiltin::Fetch { op, .. }), [object, operand, ..]) => {
+                operands.objects.push(object);
+                operands.fetch = Some((op, object, operand));
+            }
+            (
+                AtomicOperation::Sync(SyncBuiltin::CompareAndSwap(_)),
+                [object, expected, desired, ..],
+            ) => {
+                operands.objects.push(object);
+                operands
+                    .values
+                    .extend([(object, expected), (object, desired)]);
+            }
+            (AtomicOperation::TestAndSet | AtomicOperation::Clear, [object, _]) => {
+                operands.pointers.push(object);
+            }
+            _ => {}
+        }
+        operands
+    }
+
     pub(super) fn result(self, arguments: &[Expr]) -> Option<AtomicResult<'_>> {
         let arguments = match arguments.split_last() {
             Some((_, rest)) if self.scoped => rest,
@@ -534,7 +641,7 @@ impl Lowerer {
                     },
                 ))
             }
-            _ => Err(ResolveError::Rejected("atomic builtin argument count")),
+            _ => Err(ResolveError::Internal("atomic builtin argument count")),
         }
     }
 
@@ -542,7 +649,7 @@ impl Lowerer {
         let pointer = self.expr(object)?;
         let place = self.deref(pointer)?;
         if matches!(place.ty, Type::Void | Type::Function { .. }) {
-            return Err(ResolveError::Rejected(
+            return Err(ResolveError::Internal(
                 "atomic builtin on non-object pointer",
             ));
         }
@@ -600,7 +707,7 @@ impl Lowerer {
 
     fn atomic_operand(&mut self, operand: &Expr, place: &Lvalue) -> Result<Operand, ResolveError> {
         let value = self.expr(operand)?;
-        self.convert_expr(operand, value, place.c, ConversionReason::Arg)
+        self.convert_recorded(operand, value, place.c, ConversionReason::Arg)
     }
 
     fn desired(
@@ -781,7 +888,7 @@ impl Lowerer {
                     scope: FenceScope::Thread,
                 },
             )),
-            _ => Err(ResolveError::Rejected("atomic builtin argument count")),
+            _ => Err(ResolveError::Internal("atomic builtin argument count")),
         }
     }
 
@@ -797,7 +904,7 @@ impl Lowerer {
             (LockFreeQuery::Always | LockFreeQuery::Runtime, [size, pointer]) => {
                 (size, Some(pointer))
             }
-            _ => return Err(ResolveError::Rejected("atomic builtin argument count")),
+            _ => return Err(ResolveError::Internal("atomic builtin argument count")),
         };
         let size = self.expr(size)?;
         let pointer = pointer.map(|pointer| self.expr(pointer)).transpose()?;
@@ -879,7 +986,7 @@ impl Lowerer {
             return Ok(function.value.id);
         }
         let Type::Function { parameters, .. } = signature else {
-            return Err(ResolveError::Rejected("libatomic signature"));
+            return Err(ResolveError::Internal("libatomic signature"));
         };
         let fixed = parameters
             .iter()
@@ -932,20 +1039,10 @@ impl Lowerer {
         byte_offsets: bool,
     ) -> Result<Operand, ResolveError> {
         let operand = self.expr(e)?;
+        fetch_rule(&place.ty, op, &operand.ty).map_err(ResolveError::checked)?;
         let old = self.operand(e, place.c, ValueKind::OldValue);
         if let Type::Pointer { pointee, .. } = &place.ty {
-            let subtract = match op {
-                FetchOp::Add => false,
-                FetchOp::Sub => true,
-                _ => {
-                    return Err(ResolveError::Rejected(
-                        "atomic bitwise operation on pointer",
-                    ));
-                }
-            };
-            if !matches!(operand.ty, Type::Numeric(NumericType::Integer { .. })) {
-                return Err(ResolveError::Rejected("noninteger atomic pointer offset"));
-            }
+            let subtract = matches!(op, FetchOp::Sub);
             let element = if byte_offsets {
                 Type::integer(8, false)
             } else {
@@ -973,15 +1070,8 @@ impl Lowerer {
                 | FetchOp::Max { signed: None }
                 | FetchOp::FloatExtremum(_),
             ) => true,
-            (_, FetchOp::FloatExtremum(_)) => {
-                return Err(ResolveError::Rejected(
-                    "atomic floating extremum on a non-floating object",
-                ));
-            }
             (Type::Numeric(NumericType::Integer { .. }), _) => false,
-            _ => {
-                return Err(ResolveError::Rejected("atomic arithmetic on non-integer"));
-            }
+            _ => return Err(ResolveError::Internal("atomic arithmetic on non-integer")),
         };
         // the builtin's value parameter has the object's declared type, so a
         // `_Bool` object converts the operand to `_Bool` before widening it

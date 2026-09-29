@@ -350,7 +350,8 @@ impl TypeResolver {
                 c: self.ctypes.int(),
             });
         }
-        super::numeric::reject_mixed_decimal(op.into(), &left.value, &right.value)?;
+        super::numeric::reject_mixed_decimal(op.into(), &left.value.ty, &right.value.ty)
+            .map_err(ResolveError::checked)?;
         let left = self.promote_operand(context, left, None)?;
         let right = self.promote_operand(context, right, None)?;
         let types = self.binary_types(op, left.c, right.c)?;

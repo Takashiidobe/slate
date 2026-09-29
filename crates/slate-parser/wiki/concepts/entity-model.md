@@ -230,6 +230,32 @@ modified types with provisional extents. `inferred_array_length` runs the same
 walk without checking, so an array's inferred length and lowering's always
 agree.
 
+Expression operand rules belong to the typer (slate-parser-cc94.5.5). The
+checker calls `TypeResolver::typed` on every expression it walks, children
+first, and reports a rejection (`ResolveError::is_rejection`: `Rejected`,
+`InvalidOperands`, `InvalidOperand`) once, at the innermost expression that
+raised it (`TypeResolver::rejected_at`, set by `typed`). The typer rejects
+what lowering used to: non-lvalue or const assignment and increment targets,
+`&` of a bit-field / register variable / vector element / rvalue, unknown and
+non-record members, `->` on a non-pointer, non-function callees and
+prototyped argument counts, subscripts and pointer arithmetic
+(`pointer_offset`, `require_pointer_element`), non-scalar conditions,
+conditional operand mismatches, `sizeof`/`_Alignof` of incomplete types and
+bit-fields, bit casts, `__builtin_convertvector`, `va_arg` and the `va_*`
+builtins, and the custom and atomic builtins' arity and operand types.
+Binary and unary arithmetic share one rule with the emitters:
+`numeric::binary_rule` / `unary_rule` check the converted IR operand types
+and `Context::emit_binary` / `emit_unary_arith` call them through
+`ResolveError::checked` first, so their own error arms are `Internal`. Atomic
+fetches share `atomic::fetch_rule` the same way, and
+`AtomicBuiltin::operands` names which arguments are objects, pointers, values
+(whose `Arg` conversions the checker records) and fetch operands. Asm operand
+lvalue, bit-field and register rules are `TypeResolver::asm_operand_rule`;
+`typeof` of a bit-field is `typeof_expression`. A `sizeof` of a record whose
+definition failed (`failed_definition`) is left unreported, since
+lowering diagnoses the definition itself. Lowering's copies in
+`expression.rs`, `atomic.rs`, `asm.rs` and `numeric.rs` are `Internal`.
+
 Anything that scans all tags must bound itself by position:
 `__asm` member lookup only sees tag bindings below the watermark names.rs
 records for it (`NameResolution.ms_asm_members`), because the checker has

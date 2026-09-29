@@ -53,19 +53,51 @@ void post_decrement(int x) {
 #endif
 
 // SLATE-FILECHECK-BEGIN FLOAT_REM
-// FLOAT_REM: Error:   × invalid operands to binary expression: f64 % f64
+// FLOAT_REM: Error:   × semantic analysis failed
+// FLOAT_REM: Error:
+// FLOAT_REM: × invalid operands to binary expression: f64 % f64
+// FLOAT_REM: ╭─[tests/fixtures/error/clang/linux/x86_64/unsupported.c:7:5]
+// FLOAT_REM: 6 │ #ifdef FLOAT_REM
+// FLOAT_REM: 7 │     1.0 % 2.0;
+// FLOAT_REM: ·     ─────────
+// FLOAT_REM: 8 │ #endif
+// FLOAT_REM: ╰────
 // SLATE-FILECHECK-END FLOAT_REM
 // SLATE-FILECHECK-BEGIN FLOAT_BITAND
-// FLOAT_BITAND: Error:   × invalid operands to binary expression: f64 & f64
+// FLOAT_BITAND: Error:   × semantic analysis failed
+// FLOAT_BITAND: Error:
+// FLOAT_BITAND: × invalid operands to binary expression: f64 & f64
+// FLOAT_BITAND: ╭─[tests/fixtures/error/clang/linux/x86_64/unsupported.c:10:5]
+// FLOAT_BITAND: 9 │ #ifdef FLOAT_BITAND
+// FLOAT_BITAND: 10 │     1.0 & 2.0;
+// FLOAT_BITAND: ·     ─────────
+// FLOAT_BITAND: 11 │ #endif
+// FLOAT_BITAND: ╰────
 // SLATE-FILECHECK-END FLOAT_BITAND
 // SLATE-FILECHECK-BEGIN FLOAT_SHIFT
-// FLOAT_SHIFT: Error:   × invalid operands to binary expression: i32 << f64
+// FLOAT_SHIFT: Error:   × semantic analysis failed
+// FLOAT_SHIFT: Error:
+// FLOAT_SHIFT: × invalid operands to binary expression: i32 << f64
+// FLOAT_SHIFT: ╭─[tests/fixtures/error/clang/linux/x86_64/unsupported.c:13:5]
+// FLOAT_SHIFT: 12 │ #ifdef FLOAT_SHIFT
+// FLOAT_SHIFT: 13 │     1 << 2.0;
+// FLOAT_SHIFT: ·     ────────
+// FLOAT_SHIFT: 14 │ #endif
+// FLOAT_SHIFT: ╰────
 // SLATE-FILECHECK-END FLOAT_SHIFT
 // SLATE-FILECHECK-BEGIN COMPOUND_ASSIGN
 // COMPOUND_ASSIGN: Error:   × nonliteral numeric expression
 // SLATE-FILECHECK-END COMPOUND_ASSIGN
 // SLATE-FILECHECK-BEGIN FLOAT_BITNOT
-// FLOAT_BITNOT: Error:   × invalid argument type to unary expression: ~f64
+// FLOAT_BITNOT: Error:   × semantic analysis failed
+// FLOAT_BITNOT: Error:
+// FLOAT_BITNOT: × invalid argument type to unary expression: ~f64
+// FLOAT_BITNOT: ╭─[tests/fixtures/error/clang/linux/x86_64/unsupported.c:16:5]
+// FLOAT_BITNOT: 15 │ #ifdef FLOAT_BITNOT
+// FLOAT_BITNOT: 16 │     ~1.0;
+// FLOAT_BITNOT: ·     ────
+// FLOAT_BITNOT: 17 │ #endif
+// FLOAT_BITNOT: ╰────
 // SLATE-FILECHECK-END FLOAT_BITNOT
 // SLATE-FILECHECK-BEGIN PRE_INCREMENT
 // PRE_INCREMENT: Error:   × nonconstant or unknown identifier

@@ -49,7 +49,7 @@ impl Lowerer {
             .types
             .ctypes
             .function_parts(signature)
-            .ok_or(ResolveError::Rejected("non-function callee"))?;
+            .ok_or(ResolveError::Internal("non-function callee"))?;
         let params = params.to_vec();
         let ty = self.types.ir_type(signature);
         let Type::Function {
@@ -59,13 +59,13 @@ impl Lowerer {
             ..
         } = &ty
         else {
-            return Err(ResolveError::Rejected("non-function callee"));
+            return Err(ResolveError::Internal("non-function callee"));
         };
         if *prototyped
             && (arguments.len() < parameters.len()
                 || (!*variadic && arguments.len() != parameters.len()))
         {
-            return Err(ResolveError::Rejected("call argument count"));
+            return Err(ResolveError::Internal("call argument count"));
         }
         let mut lowered = Vec::new();
         for (index, argument) in arguments.iter().enumerate() {
@@ -215,7 +215,7 @@ impl Lowerer {
             CustomBuiltin::Overflow(op) => self.overflow_builtin(e, op, arguments),
             CustomBuiltin::FloatClass(test) => {
                 let [operand] = arguments else {
-                    return Err(ResolveError::Rejected("float class builtin arity"));
+                    return Err(ResolveError::Internal("float class builtin arity"));
                 };
                 let operand = self.real_floating_operand(operand)?;
                 Ok(self.truth(
@@ -253,7 +253,7 @@ impl Lowerer {
             }
             CustomBuiltin::InfSign => {
                 let [operand] = arguments else {
-                    return Err(ResolveError::Rejected("float class builtin arity"));
+                    return Err(ResolveError::Internal("float class builtin arity"));
                 };
                 let operand = self.real_floating_operand(operand)?;
                 let c = self.types.ctypes.int();
@@ -327,7 +327,7 @@ impl Lowerer {
             }
             CustomBuiltin::FloatClassify => {
                 let [nan, infinite, normal, subnormal, zero, value] = arguments else {
-                    return Err(ResolveError::Rejected("classification builtin arity"));
+                    return Err(ResolveError::Internal("classification builtin arity"));
                 };
                 let value = self.real_floating_operand(value)?;
                 let c = self.types.ctypes.int();
@@ -366,21 +366,21 @@ impl Lowerer {
             CustomBuiltin::Shuffle => self.shuffle_builtin(e, arguments),
             CustomBuiltin::AddressOf => {
                 let [operand] = arguments else {
-                    return Err(ResolveError::Rejected("addressof builtin arity"));
+                    return Err(ResolveError::Internal("addressof builtin arity"));
                 };
                 let place = self.place(operand)?;
                 if matches!(place.kind, PlaceKind::Field { bits: Some(_), .. }) {
-                    return Err(ResolveError::Rejected("address of a bit-field"));
+                    return Err(ResolveError::Internal("address of a bit-field"));
                 }
                 if temporary_rooted(&place.place) {
-                    return Err(ResolveError::Rejected("address of a temporary"));
+                    return Err(ResolveError::Internal("address of a temporary"));
                 }
                 let c = self.types.ctypes.pointer(place.c);
                 Ok(self.operand(e, c, ValueKind::AddressOf(place.place)))
             }
             CustomBuiltin::ClassifyType => {
                 let [operand] = arguments else {
-                    return Err(ResolveError::Rejected("classify builtin arity"));
+                    return Err(ResolveError::Internal("classify builtin arity"));
                 };
                 let (resolved, _) = self.operand_type(operand)?;
                 let resolved = self.types.ctypes.lvalue_conversion(resolved);
@@ -521,7 +521,7 @@ impl Lowerer {
         arguments: &[Expr],
     ) -> Result<Operand, ResolveError> {
         let [left, right, result] = arguments else {
-            return Err(ResolveError::Rejected("overflow builtin argument count"));
+            return Err(ResolveError::Internal("overflow builtin argument count"));
         };
         let left = self.expr(left)?;
         let right = self.expr(right)?;
@@ -531,7 +531,7 @@ impl Lowerer {
             || !self.types.ctypes.is_integer(right.c)
             || !self.types.ctypes.is_integer(result.c)
         {
-            return Err(ResolveError::Rejected("overflow builtin operand type"));
+            return Err(ResolveError::Internal("overflow builtin operand type"));
         }
         let c = self.types.ctypes.qual(CTypeKind::Bool);
         Ok(self.operand(
@@ -615,7 +615,7 @@ impl Lowerer {
         arguments: &[Expr],
     ) -> Result<(Operand, Operand), ResolveError> {
         let [left, right] = arguments else {
-            return Err(ResolveError::Rejected("float class builtin arity"));
+            return Err(ResolveError::Internal("float class builtin arity"));
         };
         let left = self.real_floating_operand(left)?;
         let right = self.real_floating_operand(right)?;
@@ -1064,12 +1064,28 @@ impl Lowerer {
                     },
                 )
             }
-            _ => return Err(ResolveError::Rejected("non-scalar condition")),
+            _ => return Err(ResolveError::Internal("non-scalar condition")),
         };
         if let ValueKind::Compare { reason: why, .. } = &mut result.node.value {
             *why = reason;
         }
         Ok(result)
+    }
+
+    fn voided(&mut self, e: &Expr, value: Operand) -> Operand {
+        if self.types.ctypes.is_void(value.c) {
+            return value;
+        }
+        let void = self.types.ctypes.qual(CTypeKind::Void);
+        let end = self.value(e, Type::Void, ValueKind::Void);
+        self.operand(
+            e,
+            void,
+            ValueKind::Sequence {
+                left: Box::new(value.value),
+                right: Box::new(end),
+            },
+        )
     }
 
     fn enum_underlying(&self, ty: &Type) -> Option<Type> {
@@ -1100,13 +1116,13 @@ impl Lowerer {
     pub(super) fn addressable(&self, place: &Place) -> Result<(), ResolveError> {
         match &place.kind {
             PlaceKind::Binding(id) if self.types.entities.is_register(id) => Err(
-                ResolveError::Rejected("address of register variable requested"),
+                ResolveError::Internal("address of register variable requested"),
             ),
             PlaceKind::Field { bits: Some(_), .. } => {
-                Err(ResolveError::Rejected("address of a bit-field"))
+                Err(ResolveError::Internal("address of a bit-field"))
             }
-            PlaceKind::Lane { .. } => Err(ResolveError::Rejected("address of a vector element")),
-            _ if temporary_rooted(place) => Err(ResolveError::Rejected("address of a temporary")),
+            PlaceKind::Lane { .. } => Err(ResolveError::Internal("address of a vector element")),
+            _ if temporary_rooted(place) => Err(ResolveError::Internal("address of a temporary")),
             _ => Ok(()),
         }
     }
@@ -1135,11 +1151,7 @@ impl Lowerer {
                 self.place(selected)
             }
             ExprKind::Identifier(name) if predefined_function_name(name) => {
-                let text = self
-                    .types
-                    .predefined_name(name)
-                    .ok_or(ResolveError::Rejected("predefined name outside a function"))?
-                    .to_owned();
+                let text = self.types.predefined_name(name).to_owned();
                 self.string_global(e, &text)
             }
             ExprKind::Identifier(_) => {
@@ -1234,19 +1246,19 @@ impl Lowerer {
             }
             ExprKind::Index { base, index } => match self.subscript(e, base, index)? {
                 Projection::Place(place) => Ok(place),
-                Projection::Value(_) => Err(ResolveError::Rejected(
+                Projection::Value(_) => Err(ResolveError::Internal(
                     "vector element of a value is not a place",
                 )),
             },
             ExprKind::Member { base, field, arrow } => {
                 match self.member(e, base, &field.value, *arrow)? {
                     Projection::Place(place) => Ok(place),
-                    Projection::Value(_) => Err(ResolveError::Rejected(
+                    Projection::Value(_) => Err(ResolveError::Internal(
                         "vector components of a value are not a place",
                     )),
                 }
             }
-            _ => Err(ResolveError::Rejected(
+            _ => Err(ResolveError::Internal(
                 "expression is not a supported place",
             )),
         }
@@ -1285,13 +1297,13 @@ impl Lowerer {
     fn vector_parts(&mut self, vector: QualType) -> Result<(QualType, u32), ResolveError> {
         match self.types.ctypes.canonical_kind(vector) {
             CTypeKind::Vector { element, lanes, .. } => Ok((*element, *lanes)),
-            _ => Err(ResolveError::Rejected("expected a vector operand")),
+            _ => Err(ResolveError::Internal("expected a vector operand")),
         }
     }
 
     fn shuffle_builtin(&mut self, e: &Expr, arguments: &[Expr]) -> Result<Operand, ResolveError> {
         let [left, right, indices @ ..] = arguments else {
-            return Err(ResolveError::Rejected("shuffle builtin arity"));
+            return Err(ResolveError::Internal("shuffle builtin arity"));
         };
         let left = self.expr(left)?;
         let right = self.expr(right)?;
@@ -1366,7 +1378,7 @@ impl Lowerer {
             return self
                 .project(object, field)?
                 .map(Projection::Place)
-                .ok_or(ResolveError::Rejected("unknown member"));
+                .ok_or(ResolveError::Internal("unknown member"));
         }
         let (c, mask) = self.types.swizzle(object.c, field)?;
         let lanes: Option<Vec<u32>> = mask.iter().copied().collect();
@@ -1434,7 +1446,7 @@ impl Lowerer {
         index: &Operand,
     ) -> Result<QualType, ResolveError> {
         if !self.types.ctypes.is_integer(index.c) {
-            return Err(ResolveError::Rejected("vector index is not an integer"));
+            return Err(ResolveError::Internal("vector index is not an integer"));
         }
         match self.types.ctypes.canonical_kind(vector) {
             CTypeKind::Vector { element, .. } => Ok(*element),
@@ -1523,7 +1535,7 @@ impl Lowerer {
 
     fn project(&self, base: Lvalue, name: &str) -> Result<Option<Lvalue>, ResolveError> {
         let Some((fields, layout)) = self.record_body(&base.ty) else {
-            return Err(ResolveError::Rejected("member of incomplete or non-record"));
+            return Err(ResolveError::Internal("member of incomplete or non-record"));
         };
         if let Some((index, field)) = fields
             .iter()
@@ -1577,9 +1589,9 @@ impl Lowerer {
             .types
             .ctypes
             .pointee(value.c)
-            .ok_or(ResolveError::Rejected("non-function callee"))?;
+            .ok_or(ResolveError::Internal("non-function callee"))?;
         if !self.types.ctypes.is_function(signature) {
-            return Err(ResolveError::Rejected("non-function callee"));
+            return Err(ResolveError::Internal("non-function callee"));
         }
         if let ValueKind::FunctionDecay {
             place:
@@ -1645,7 +1657,7 @@ impl Lowerer {
                 let a = self.types.ctypes.canonical(element).local_unqualified();
                 let b = self.types.ctypes.canonical(other).local_unqualified();
                 if !self.types.ctypes.compatible(a, b) {
-                    return Err(ResolveError::Rejected("incompatible pointer subtraction"));
+                    return Err(ResolveError::Internal("incompatible pointer subtraction"));
                 }
                 let element = self.types.ir_type(element);
                 self.types.require_pointer_element(&element)?;
@@ -1682,7 +1694,7 @@ impl Lowerer {
         self.types.require_pointer_element(&element)?;
         let amount = self.promote(amount)?;
         if !matches!(amount.ty, Type::Numeric(NumericType::Integer { .. })) {
-            return Err(ResolveError::Rejected("noninteger pointer offset"));
+            return Err(ResolveError::Internal("noninteger pointer offset"));
         }
         Ok(self.operand(
             e,
@@ -1712,7 +1724,7 @@ impl Lowerer {
         let place = self.place(target)?;
         self.types.require_modifiable_lvalue(place.c)?;
         if temporary_rooted(&place.place) {
-            return Err(ResolveError::Rejected("expression is not assignable"));
+            return Err(ResolveError::Internal("expression is not assignable"));
         }
         let c = self.types.ctypes.unqualified(place.c);
         let old = self.operand(target, c, ValueKind::OldValue);
@@ -1753,7 +1765,7 @@ impl Lowerer {
         }
         let typed = self.types.typed(operand)?;
         if typed.bits.is_some() {
-            return Err(ResolveError::Rejected(
+            return Err(ResolveError::Internal(
                 "application of sizeof or alignof to a bit-field",
             ));
         }
@@ -1831,7 +1843,7 @@ impl Lowerer {
             return Ok(self.operand(e, c, ValueKind::Constant(Number::Integer(size.into()))));
         };
         let VariableExtent::Captured(extent) = *extent else {
-            return Err(ResolveError::Rejected(
+            return Err(ResolveError::Internal(
                 "size of an unspecified variable length array",
             ));
         };
@@ -2089,9 +2101,14 @@ impl Lowerer {
                     UnaryOp::Plus => {
                         if !matches!(
                             value.ty,
-                            Type::Bool | Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_)
+                            Type::Bool
+                                | Type::Numeric(_)
+                                | Type::Complex(_)
+                                | Type::Imaginary(_)
+                                | Type::FixedPoint(_)
+                                | Type::Vector { .. }
                         ) {
-                            return Err(ResolveError::Rejected("non-numeric unary plus"));
+                            return Err(ResolveError::Internal("non-numeric unary plus"));
                         }
                         self.promote(value)
                     }
@@ -2206,7 +2223,7 @@ impl Lowerer {
                     let place = self.place(target)?;
                     self.types.require_modifiable_lvalue(place.c)?;
                     if temporary_rooted(&place.place) {
-                        return Err(ResolveError::Rejected("expression is not assignable"));
+                        return Err(ResolveError::Internal("expression is not assignable"));
                     }
                     let value = self.convert_recorded(
                         value_expr,
@@ -2279,7 +2296,10 @@ impl Lowerer {
                     }
                 };
                 let mut right = self.expr(else_value)?;
-                if matches!(
+                if self.types.ctypes.is_void(left.c) || self.types.ctypes.is_void(right.c) {
+                    left = self.voided(then_value, left);
+                    right = self.voided(else_value, right);
+                } else if matches!(
                     left.ty,
                     Type::Bool | Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_)
                 ) && matches!(
@@ -2299,7 +2319,7 @@ impl Lowerer {
                         self.types
                             .ctypes
                             .merge_pointer(left.c, right.c, rules)
-                            .ok_or(ResolveError::Rejected(
+                            .ok_or(ResolveError::Internal(
                                 "conditional operands are pointers to incompatible types",
                             ))?
                     };
@@ -2315,7 +2335,7 @@ impl Lowerer {
                         self.convert_expr(then_value, left, right.c, ConversionReason::UsualArith)?;
                 }
                 if !self.types.ctypes.compatible_unqualified(left.c, right.c) {
-                    return Err(ResolveError::Rejected(
+                    return Err(ResolveError::Internal(
                         "conditional operands have incompatible types",
                     ));
                 }
@@ -2416,14 +2436,8 @@ impl Lowerer {
                 }
                 let layout = self
                     .types
-                    .sizeof_storage(fixed_element(&ty).clone(), atomic)
-                    .map_err(|error| {
-                        if matches!(e.value, ExprKind::SizeOfType { .. }) {
-                            sizeof_error(error)
-                        } else {
-                            error
-                        }
-                    })?;
+                    .sizeof_storage(super::typer::fixed_element(&ty).clone(), atomic)
+                    .map_err(ResolveError::checked)?;
                 let layout = self.types.declared_storage(resolved, layout)?;
                 let value = if matches!(e.value, ExprKind::SizeOfType { .. }) {
                     layout.size_bytes
@@ -2464,14 +2478,8 @@ impl Lowerer {
                 }
                 let layout = self
                     .types
-                    .qualified_storage(fixed_element(&ty).clone(), access.atomic)
-                    .map_err(|error| {
-                        if matches!(e.value, ExprKind::SizeOfExpr(_)) {
-                            sizeof_error(error)
-                        } else {
-                            error
-                        }
-                    })?;
+                    .qualified_storage(super::typer::fixed_element(&ty).clone(), access.atomic)
+                    .map_err(ResolveError::checked)?;
                 let layout = self.types.declared_storage(c, layout)?;
                 let amount = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
@@ -2509,15 +2517,15 @@ impl Lowerer {
                 let ty = self
                     .types
                     .layout(resolved)
-                    .ok_or(ResolveError::Rejected("bit cast to void"))?;
+                    .ok_or(ResolveError::Internal("bit cast to void"))?;
                 if matches!(ty, Type::Array { .. } | Type::VariableArray { .. }) {
-                    return Err(ResolveError::Rejected("bit cast to an array type"));
+                    return Err(ResolveError::Internal("bit cast to an array type"));
                 }
                 let value = self.expr(value)?;
                 if self.types.storage(ty.clone())?.size_bytes
                     != self.types.storage(value.ty.clone())?.size_bytes
                 {
-                    return Err(ResolveError::Rejected(
+                    return Err(ResolveError::Internal(
                         "bit cast between types of different sizes",
                     ));
                 }
@@ -2534,7 +2542,7 @@ impl Lowerer {
             }
             ExprKind::StatementExpression(body) => {
                 if !self.in_function {
-                    return Err(ResolveError::Rejected(
+                    return Err(ResolveError::Internal(
                         "statement expression outside a function",
                     ));
                 }
@@ -2573,7 +2581,7 @@ impl Lowerer {
                 let (element, lanes) = self.vector_parts(value.c)?;
                 let (target, target_lanes) = self.vector_parts(resolved)?;
                 if lanes != target_lanes {
-                    return Err(ResolveError::Rejected(
+                    return Err(ResolveError::Internal(
                         "convertvector operands differ in lane count",
                     ));
                 }
@@ -2594,7 +2602,7 @@ impl Lowerer {
             ExprKind::VaArg { list, ty } => {
                 let list = self.place(list)?;
                 if !self.types.is_va_list(&list.ty) {
-                    return Err(ResolveError::Rejected("va_arg of non-va_list"));
+                    return Err(ResolveError::Internal("va_arg of non-va_list"));
                 }
                 let resolved = self.resolve_type_name(ty)?;
                 let ty = self.types.object_type(resolved, "va_arg of void")?;
@@ -2638,22 +2646,6 @@ fn labeled_result(statement: &crate::ast::Stmt) -> Option<(crate::ast::Stmt, &Ex
             ))
         }
         _ => None,
-    }
-}
-
-fn sizeof_error(error: ResolveError) -> ResolveError {
-    match error {
-        ResolveError::Rejected("incomplete field type") => {
-            ResolveError::Rejected("sizeof of incomplete type")
-        }
-        error => error,
-    }
-}
-
-fn fixed_element(ty: &Type) -> &Type {
-    match ty {
-        Type::VariableArray { element, .. } => fixed_element(element),
-        _ => ty,
     }
 }
 
@@ -2747,7 +2739,7 @@ impl Lowerer {
     fn va_list_place(&mut self, argument: &Expr) -> Result<Place, ResolveError> {
         let place = self.place(argument)?;
         if !self.types.is_va_list(&place.ty) {
-            return Err(ResolveError::Rejected("va builtin on non-va_list"));
+            return Err(ResolveError::Internal("va builtin on non-va_list"));
         }
         Ok(place.place)
     }
@@ -2769,7 +2761,7 @@ impl Lowerer {
                 destination: self.va_list_place(destination)?,
                 source: self.va_list_place(source)?,
             },
-            _ => return Err(ResolveError::Rejected("va builtin argument count")),
+            _ => return Err(ResolveError::Internal("va builtin argument count")),
         };
         let c = self.types.ctypes.qual(CTypeKind::Void);
         Ok(self.operand(e, c, kind))
@@ -2790,7 +2782,7 @@ fn temporary_rooted(place: &Place) -> bool {
     }
 }
 
-fn assignment_operator(op: AssignOp) -> Result<BinaryOp, ResolveError> {
+pub(super) fn assignment_operator(op: AssignOp) -> Result<BinaryOp, ResolveError> {
     Ok(match op {
         AssignOp::AddAssign => BinaryOp::Add,
         AssignOp::SubAssign => BinaryOp::Sub,

@@ -9,10 +9,10 @@ void f(int x) {
 // SEMANTIC: Error:   × semantic analysis failed
 // SEMANTIC: Error:
 // SEMANTIC: × asm input with a memory-only constraint is not an lvalue
-// SEMANTIC: ╭─[tests/fixtures/error/clang/linux/x86_64/asm-memory-not-lvalue.c:2:5]
+// SEMANTIC: ╭─[tests/fixtures/error/clang/linux/x86_64/asm-memory-not-lvalue.c:2:24]
 // SEMANTIC: 1 │ void f(int x) {
 // SEMANTIC: 2 │     asm("# %0" : : "m"(x + 1));
-// SEMANTIC: ·     ───────────────────────────
+// SEMANTIC: ·                        ─────
 // SEMANTIC: 3 │ }
 // SEMANTIC: ╰────
 // SLATE-FILECHECK-END SEMANTIC

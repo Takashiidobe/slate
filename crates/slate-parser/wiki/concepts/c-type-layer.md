@@ -150,9 +150,13 @@ casts and a declaration's top-level non-array initializer
 conversion is a `SemaError` from `analyze`, so plain `parse` rejects it.
 Lowering's `convert_recorded` reads the record at those sites and emits its
 kind and warning (warning order is unchanged); a missing record is `Internal`.
-Conversions inside braced initializers, atomic/builtin arguments and the
-usual arithmetic conversions still classify in lowering (`convert_expr`)
-until cc94.5.4/.5.5. Because the checker sees variably modified types with
+Braced-initializer elements are recorded by the initializer walk (cc94.5.4)
+and atomic value operands by the checker's `arguments` from
+`AtomicBuiltin::operands` (cc94.5.5); the usual arithmetic conversions and the
+remaining builtin arguments (sizes, orders, fetch operands) still classify in
+lowering (`convert_expr`). `record_conversion` also rejects a `Vector` cast
+between types of different storage size, which `vector_convert` otherwise
+only met in lowering. Because the checker sees variably modified types with
 unbound extents (`vla<T, *>`), a pointer-to-VM conversion between types that
 are `same` classifies as `Pointer`, not `Identity`, and `emit_cast` drops a
 `Pointer` cast whose IR types turn out equal; otherwise the checker and

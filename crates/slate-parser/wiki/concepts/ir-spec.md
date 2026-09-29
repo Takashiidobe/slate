@@ -251,8 +251,10 @@ as the bare name in C, while Clang spells the whole declaration
 (`unsigned long n(int)`), which sema renders with
 `CTypes::declaration_spelling`. None of the three is a declared entity, so
 they are bound in `Lowerer::place` ahead of name resolution and each
-occurrence emits its own `.strN`; a use outside a function is rejected, where
-Clang warns and recovers. `tests/fixtures/clang/linux/x86_64/ir_function_name_builtins.c`
+occurrence emits its own `.strN`. Outside a function `__func__` and
+`__FUNCTION__` are `""` and `__PRETTY_FUNCTION__` is `"top level"`, as clang
+emits (gcc agrees on the pretty spelling; fixture
+`tests/fixtures/clang/linux/x86_64/expression_operand_extensions.c`). `tests/fixtures/clang/linux/x86_64/ir_function_name_builtins.c`
 pins the Clang spelling together with `sizeof`, indexing and a static
 initializer, and `ir_function_name_builtins_gcc.c` pins the GCC one.
 
@@ -2187,6 +2189,10 @@ conditional walk above, so the result type is still the usual-arithmetic or
 composite-pointer type of `a` and `b`. This is the IR's answer to clang's
 `BinaryConditionalOperator`/`OpaqueValueExpr` pair. Fixture:
 `tests/fixtures/clang/linux/x86_64/ir_gnu_conditional.c`.
+
+If either operand is `void`, the result is `void`, which clang and gcc accept
+as an extension (`c ? f() : 0`). The non-void operand lowers as
+`sequence(operand, void)`, so both arms are `void`.
 
 ### Promotions
 

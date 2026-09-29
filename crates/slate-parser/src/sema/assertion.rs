@@ -33,6 +33,7 @@ pub(super) fn validate(
         context: StatementContext::default(),
         initialized: HashSet::new(),
         inlining: HashMap::new(),
+        rejected: HashSet::new(),
     };
     for (declaration, item) in unit.decls.iter().zip(items) {
         for id in item.declared.clone().map(BindingId) {
@@ -77,6 +78,7 @@ struct Checker<'a> {
     context: StatementContext,
     initialized: HashSet<BindingId>,
     inlining: HashMap<BindingId, bool>,
+    rejected: HashSet<NodeId>,
 }
 
 #[derive(Default)]
@@ -142,6 +144,7 @@ impl Checker<'_> {
         ty: QualType,
         alignment: Option<u64>,
         linkage: Option<Linkage>,
+        register: bool,
     ) {
         let Some(&id) = self.types.declarations.get(&node) else {
             return;
@@ -154,7 +157,7 @@ impl Checker<'_> {
                 .unwrap_or(previous),
             None => ty,
         };
-        self.types.entities.declare(id, ty, false);
+        self.types.entities.declare(id, ty, register);
         if let Some(linkage) = linkage {
             self.types.entities.merge_declaration(
                 id,
@@ -196,7 +199,7 @@ impl Checker<'_> {
         self.types.owner = owner;
         if let Ok(ty) = resolved {
             let linkage = owner_linkage.then(|| linkage(function.specifiers.storage));
-            self.declare_object(node, ty, None, linkage.flatten());
+            self.declare_object(node, ty, None, linkage.flatten(), false);
             names = function
                 .declarator
                 .name()
@@ -240,7 +243,8 @@ impl Checker<'_> {
                 let adjusted = self
                     .types
                     .adjusted_parameter(resolved, declared_array.qualifiers.into());
-                self.declare_object(parameter.id, adjusted, None, None);
+                let register = parameter.specifiers.storage == StorageClass::Register;
+                self.declare_object(parameter.id, adjusted, None, None, register);
             }
         }
         for stmt in &function.body {
@@ -353,7 +357,8 @@ impl Checker<'_> {
                 } else {
                     None
                 };
-                self.declare_object(declarator.id, completed, requested, linkage);
+                let register = storage == StorageClass::Register;
+                self.declare_object(declarator.id, completed, requested, linkage, register);
                 if !self.types.ctypes.is_function(completed) && !self.variable_array(completed) {
                     initialized = Some(completed);
                 }
@@ -775,12 +780,17 @@ impl Checker<'_> {
                 self.reject(stmt, "fallthrough outside switch")
             }
             StmtKind::Asm(asm) => {
-                for operand in asm
-                    .operands
-                    .iter()
-                    .flat_map(|operands| operands.outputs.iter().chain(&operands.inputs))
-                {
-                    self.expression(&operand.expr);
+                if let Some(operands) = &asm.operands {
+                    for (operand, output) in operands
+                        .outputs
+                        .iter()
+                        .map(|operand| (operand, true))
+                        .chain(operands.inputs.iter().map(|operand| (operand, false)))
+                    {
+                        self.expression(&operand.expr);
+                        let result = self.types.asm_operand_rule(operand, output);
+                        self.report(&operand.expr, result);
+                    }
                 }
             }
             StmtKind::Attributed { attributes, body } => {
@@ -872,6 +882,19 @@ impl Checker<'_> {
     }
 
     fn expression(&mut self, expr: &Expr) {
+        self.subexpressions(expr);
+        self.types.rejected_at = None;
+        if let Err(rejection) = self.types.typed(expr)
+            && rejection.is_rejection()
+            && let Some(at) = self.types.rejected_at.take()
+            && self.rejected.insert(at.id)
+        {
+            self.errors
+                .push(error(at.provenance, at.expansion, rejection.to_string()));
+        }
+    }
+
+    fn subexpressions(&mut self, expr: &Expr) {
         match &expr.value {
             ExprKind::StatementExpression(body) => {
                 for stmt in body {
@@ -1015,6 +1038,16 @@ impl Checker<'_> {
     }
 
     fn arguments(&mut self, callee: &Expr, arguments: &[Expr]) {
+        if let Some(builtin) = super::atomic::atomic_builtin(callee) {
+            for (object, value) in builtin.operands(arguments).values {
+                if let Ok(pointer) = self.types.operand_type(object)
+                    && let Some(pointee) = self.types.ctypes.pointee(pointer)
+                {
+                    self.convert(value, pointee, ConversionContext::Arg);
+                }
+            }
+            return;
+        }
         let Ok(Some(signature)) = self.types.argument_signature(callee, arguments) else {
             return;
         };
@@ -1068,6 +1101,8 @@ impl Checker<'_> {
         | TypeSpecifier::TypeOfUnqual(TypeOfOperand::Expression(operand)) = ty
         {
             self.expression(operand);
+            let result = self.types.typeof_expression(operand).map(drop);
+            self.report(operand, result);
         }
     }
 

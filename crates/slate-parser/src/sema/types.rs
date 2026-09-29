@@ -58,6 +58,7 @@ pub struct TypeResolver {
     pub(super) expression_types: HashMap<crate::ast::NodeId, super::typer::Typed>,
     pub(super) conversions: HashMap<crate::ast::NodeId, super::ctype::convert::Conversion>,
     pub(super) element_targets: HashMap<crate::ast::NodeId, QualType>,
+    pub(super) rejected_at: Option<crate::ast::Span<()>>,
     pub(super) inferred: Option<QualType>,
     pub(super) function_names: Option<FunctionNames>,
     pub(super) locals: HashMap<BindingId, QualType>,
@@ -99,6 +100,7 @@ impl TypeResolver {
             expression_types: HashMap::new(),
             conversions: HashMap::new(),
             element_targets: HashMap::new(),
+            rejected_at: None,
             inferred: None,
             function_names: None,
             locals: HashMap::new(),
@@ -149,10 +151,16 @@ impl TypeResolver {
         }
     }
 
-    pub(super) fn predefined_name(&self, name: &str) -> Option<&str> {
-        let names = self.function_names.as_ref()?;
+    pub(super) fn predefined_name(&self, name: &str) -> &str {
+        let Some(names) = self.function_names.as_ref() else {
+            return if name == "__PRETTY_FUNCTION__" {
+                "top level"
+            } else {
+                ""
+            };
+        };
         let pretty = name == "__PRETTY_FUNCTION__" && self.compiler_flavor() != CompilerFlavor::Gcc;
-        Some(if pretty { &names.pretty } else { &names.plain })
+        if pretty { &names.pretty } else { &names.plain }
     }
 
     pub(super) fn compiler_flavor(&self) -> CompilerFlavor {
@@ -1534,9 +1542,20 @@ impl TypeResolver {
                 if let Some(resolved) = self.typeof_operands.get(&expr.id) {
                     return Ok(*resolved);
                 }
-                self.expression_type(expr)
+                self.typeof_expression(expr)
             }
         }
+    }
+
+    pub(super) fn typeof_expression(
+        &mut self,
+        e: &crate::ast::Expr,
+    ) -> Result<QualType, ResolveError> {
+        let typed = self.typed(e)?;
+        if typed.bits.is_some() {
+            return Err(ResolveError::Rejected("typeof applied to a bit-field"));
+        }
+        Ok(typed.c)
     }
 
     fn derive(
@@ -1793,6 +1812,19 @@ impl TypeResolver {
         self.definitions[id.0 as usize].name = Some(name.value.clone());
         self.tag_bindings.insert(binding, id);
         true
+    }
+
+    pub(super) fn failed_definition(&self, c: QualType) -> bool {
+        let mut c = c;
+        while let Some((element, _)) = self.ctypes.element(c) {
+            c = element;
+        }
+        let CTypeKind::Record { id, .. } = self.ctypes.canonical_kind(c) else {
+            return false;
+        };
+        self.tag_ids
+            .iter()
+            .any(|(tag, defined)| defined == id && self.tag_failures.contains_key(tag))
     }
 
     fn define_tag(&mut self, tag: &TagDefinition) -> Result<TypeId, ResolveError> {

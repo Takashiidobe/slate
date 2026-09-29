@@ -197,10 +197,9 @@ impl Lowerer {
     }
 
     pub(super) fn typeof_operand(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
-        match self.operand_type(e)? {
-            (_, true) => Err(ResolveError::Rejected("typeof applied to a bit-field")),
-            (resolved, false) => Ok(resolved),
-        }
+        self.types
+            .typeof_expression(e)
+            .map_err(ResolveError::checked)
     }
 
     pub(super) fn operand_type(&mut self, e: &Expr) -> Result<(QualType, bool), ResolveError> {

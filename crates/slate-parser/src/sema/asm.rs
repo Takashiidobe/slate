@@ -2,6 +2,7 @@ use super::expression::Lowerer;
 use super::fold::{integer_number, integer_with_objects, read_with_objects};
 use super::numeric::ResolveError;
 use super::operand::Lvalue;
+use super::types::TypeResolver;
 use crate::ast;
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::*;
@@ -121,7 +122,7 @@ impl Lowerer {
                     ..
                 }) = lowered.operands.get(output)
                 else {
-                    return Err(ResolveError::Rejected("asm input tied to a non-output"));
+                    return Err(ResolveError::Internal("asm input tied to a non-output"));
                 };
                 // x86 prints a tied input at its own width, not its output's.
                 let view = match input_width {
@@ -283,7 +284,7 @@ impl Lowerer {
         let lvalue = match self.place(expr) {
             Ok(lvalue) => lvalue,
             Err(_) if memory_only => {
-                return Err(ResolveError::Rejected(
+                return Err(ResolveError::Internal(
                     "asm input with a memory-only constraint is not an lvalue",
                 ));
             }
@@ -402,14 +403,14 @@ impl Lowerer {
     fn memory_place(&self, place: &Place, memory_only: bool) -> Result<bool, ResolveError> {
         match &place.kind {
             PlaceKind::Field { bits: Some(_), .. } if memory_only => {
-                Err(ResolveError::Rejected("address of a bit-field"))
+                Err(ResolveError::Internal("address of a bit-field"))
             }
             PlaceKind::Binding(id)
                 if memory_only
                     && self.types.compiler_flavor() == CompilerFlavor::Gcc
                     && self.types.entities.is_register(id) =>
             {
-                Err(ResolveError::Rejected(
+                Err(ResolveError::Internal(
                     "address of register variable requested",
                 ))
             }
@@ -663,6 +664,50 @@ fn view(modifier: char, family: TargetFamily) -> Option<AsmRegisterView> {
         _ => return None,
     };
     Some(AsmRegisterView::Bits(bits))
+}
+
+impl TypeResolver {
+    pub(super) fn asm_operand_rule(
+        &mut self,
+        operand: &ast::AsmOperand,
+        output: bool,
+    ) -> Result<(), ResolveError> {
+        let constraint = constraint(&operand.constraint.value, self.target_info().family);
+        if !output && !constraint.allows_memory() {
+            return Ok(());
+        }
+        let memory_only = constraint.memory_only();
+        let typed = self.typed(&operand.expr)?;
+        if !output && !typed.lvalue {
+            return if memory_only {
+                Err(ResolveError::Rejected(
+                    "asm input with a memory-only constraint is not an lvalue",
+                ))
+            } else {
+                Ok(())
+            };
+        }
+        if memory_only && typed.bits.is_some() {
+            return Err(ResolveError::Rejected("address of a bit-field"));
+        }
+        let mut expr = &operand.expr;
+        while let ast::ExprKind::Paren(inner) = &expr.value {
+            expr = inner;
+        }
+        if memory_only
+            && self.compiler_flavor() == CompilerFlavor::Gcc
+            && matches!(expr.value, ast::ExprKind::Identifier(_))
+            && self
+                .references
+                .get(&expr.id)
+                .is_some_and(|id| self.entities.is_register(id))
+        {
+            return Err(ResolveError::Rejected(
+                "address of register variable requested",
+            ));
+        }
+        Ok(())
+    }
 }
 
 fn constraint(constraint: &ast::AsmConstraint, family: TargetFamily) -> AsmConstraint {

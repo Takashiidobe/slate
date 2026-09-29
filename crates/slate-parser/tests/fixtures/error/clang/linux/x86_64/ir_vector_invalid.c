@@ -125,10 +125,10 @@ v4si invalid(v4si a, v2si b, v4sf c) {
 // RESIZE: Error:   × semantic analysis failed
 // RESIZE: Error:
 // RESIZE: × conversion between vector types of different size
-// RESIZE: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_vector_invalid.c:29:5]
+// RESIZE: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_vector_invalid.c:29:12]
 // RESIZE: 28 │ #ifdef RESIZE
 // RESIZE: 29 │     return b;
-// RESIZE: ·     ─────────
+// RESIZE: ·            ─
 // RESIZE: 30 │ #endif
 // RESIZE: ╰────
 // SLATE-FILECHECK-END RESIZE

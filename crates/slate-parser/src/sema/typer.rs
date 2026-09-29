@@ -1,15 +1,15 @@
 use super::atomic::{AtomicBuiltin, AtomicResult, atomic_builtin};
 use super::builtins::{CustomBuiltin, DerivedSignature};
-use super::ctype::convert::ConversionContext;
+use super::ctype::convert::{CastKind, ConversionContext};
 use super::ctype::{CTypeKind, Extent, QualType};
 use super::expression::{
-    SourceLocationBuiltin, choose_expr_operands, constant_p_operand, source_location_builtin,
-    va_builtin,
+    SourceLocationBuiltin, VaBuiltin, choose_expr_operands, constant_p_operand,
+    source_location_builtin, va_builtin,
 };
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
 use crate::ast::{
-    DeclarationSpecifiers, Expr, ExprKind, InitDeclarator, Initializer, Stmt, StmtKind,
+    DeclarationSpecifiers, Expr, ExprKind, InitDeclarator, Initializer, Span, Stmt, StmtKind,
     StorageClass, TypeName, TypeSpecifier,
 };
 use crate::const_expr::{AssignOp, BinaryOp, UnaryOp};
@@ -43,13 +43,26 @@ impl Typed {
 pub(super) type Lanes = Vec<Option<u32>>;
 
 const UNTYPED: ResolveError = ResolveError::Unimplemented("expression without a typing rule");
+const NON_SCALAR_CONDITION: ResolveError = ResolveError::Rejected("non-scalar condition");
+const NOT_ASSIGNABLE: ResolveError = ResolveError::Rejected("expression is not assignable");
+const NON_FUNCTION_CALLEE: ResolveError = ResolveError::Rejected("non-function callee");
+const FLOAT_CLASS_ARITY: ResolveError = ResolveError::Rejected("float class builtin arity");
+// the definition's own error is diagnosed where it is declared
+const FAILED_DEFINITION: ResolveError = ResolveError::Unimplemented("type whose definition failed");
 
 impl TypeResolver {
     pub(super) fn typed(&mut self, e: &Expr) -> Result<Typed, ResolveError> {
         if let Some(typed) = self.expression_types.get(&e.id) {
             return Ok(*typed);
         }
-        let typed = self.type_expression(e)?;
+        let typed = self.type_expression(e).inspect_err(|error| {
+            if error.is_rejection() && self.rejected_at.is_none() {
+                self.rejected_at = Some(Span {
+                    id: e.id,
+                    ..e.derive(())
+                });
+            }
+        })?;
         if !self.ctypes.has_unbound_extent(typed.c) {
             self.expression_types.insert(e.id, typed);
         }
@@ -92,14 +105,6 @@ impl TypeResolver {
         let resolved = self.resolve(&ty.specifiers, &ty.declarator);
         self.provisional_extents = provisional;
         resolved
-    }
-
-    fn is_decimal(&self, c: QualType) -> Option<bool> {
-        match self.ir_type(c) {
-            Type::Numeric(NumericType::Float(format))
-            | Type::Complex(NumericType::Float(format)) => Some(format.is_decimal()),
-            _ => None,
-        }
     }
 
     fn member_type(&self, record: QualType, name: &str) -> Option<(QualType, Option<u32>)> {
@@ -292,7 +297,7 @@ impl TypeResolver {
         Ok(match &e.value {
             ExprKind::Paren(inner) => self.typed(inner)?,
             ExprKind::Identifier(name) if super::expression::predefined_function_name(name) => {
-                let length = self.predefined_name(name).ok_or(UNTYPED)?.len() as u64 + 1;
+                let length = self.predefined_name(name).len() as u64 + 1;
                 let element = self.ctypes.qual(CTypeKind::Char);
                 Typed::lvalue(self.ctypes.qual(CTypeKind::Array {
                     element,
@@ -330,16 +335,18 @@ impl TypeResolver {
                 operand,
             } => {
                 let pointer = self.operand_type(operand)?;
-                Typed::lvalue(self.ctypes.pointee(pointer).ok_or(UNTYPED)?)
+                Typed::lvalue(
+                    self.ctypes
+                        .pointee(pointer)
+                        .ok_or(ResolveError::Rejected("indirection of a non-pointer"))?,
+                )
             }
             ExprKind::Unary {
                 op: UnaryOp::AddrOf,
                 operand,
             } => {
                 let typed = self.typed(operand)?;
-                if !typed.lvalue || typed.bits.is_some() {
-                    return Err(UNTYPED);
-                }
+                self.addressable(operand, typed)?;
                 Typed::rvalue(self.ctypes.pointer(typed.c))
             }
             ExprKind::Unary {
@@ -347,24 +354,22 @@ impl TypeResolver {
                 operand,
             } => {
                 let c = self.operand_type(operand)?;
-                if *op != UnaryOp::Plus
-                    && let Some(element) = self.vector_element(c)
-                {
-                    if *op == UnaryOp::BitNot && self.ctypes.is_floating(element) {
-                        return Err(UNTYPED);
+                if *op == UnaryOp::Plus {
+                    if self.ctypes.is_vector(c) {
+                        return Ok(Typed::rvalue(c));
                     }
-                    return Ok(Typed::rvalue(c));
+                    if !self.ctypes.is_arithmetic(c) {
+                        return Err(ResolveError::Rejected("non-numeric unary plus"));
+                    }
+                    return Ok(Typed::rvalue(self.promoted(c)));
                 }
-                let accepted = if *op == UnaryOp::BitNot {
-                    self.ctypes.is_integer(c)
-                        || matches!(self.ctypes.canonical_kind(c), CTypeKind::Complex(_))
+                let c = if self.vector_element(c).is_some() {
+                    c
                 } else {
-                    self.ctypes.is_arithmetic(c)
+                    self.promoted(c)
                 };
-                if !accepted {
-                    return Err(UNTYPED);
-                }
-                Typed::rvalue(self.promoted(c))
+                super::numeric::unary_rule(*op, &self.ir_type(c))?;
+                Typed::rvalue(c)
             }
             ExprKind::Unary {
                 op: UnaryOp::Not,
@@ -372,7 +377,7 @@ impl TypeResolver {
             } => {
                 let c = self.operand_type(operand)?;
                 if !self.ctypes.is_scalar(c) {
-                    return Err(UNTYPED);
+                    return Err(NON_SCALAR_CONDITION);
                 }
                 Typed::rvalue(self.ctypes.int())
             }
@@ -386,14 +391,23 @@ impl TypeResolver {
                 if *op == AssignOp::Assign {
                     let typed = self.typed(target)?;
                     if !typed.lvalue {
-                        return Err(UNTYPED);
+                        return Err(NOT_ASSIGNABLE);
                     }
                     self.require_modifiable_lvalue(typed.c)?;
                     Typed::rvalue(self.ctypes.unqualified(typed.c))
-                } else if self.ctypes.is_arithmetic(value) || self.ctypes.is_vector(value) {
-                    self.updated(target)?
                 } else {
-                    return Err(UNTYPED);
+                    let updated = self.updated(target)?;
+                    let current = self.operand_type(target)?;
+                    let current = self.promoted(current);
+                    let op = super::expression::assignment_operator(*op)?;
+                    let computed = self.binary_type(op, current, value)?;
+                    self.ctypes.classify_conversion(
+                        computed,
+                        updated.c,
+                        ConversionContext::Assign,
+                        false,
+                    )?;
+                    updated
                 }
             }
             ExprKind::Comma { left, right } => {
@@ -424,7 +438,7 @@ impl TypeResolver {
                 if let Some(element) = self.vector_element(typed.c) {
                     let index = self.operand_type(index)?;
                     if !self.ctypes.is_integer(index) {
-                        return Err(UNTYPED);
+                        return Err(ResolveError::Rejected("vector index is not an integer"));
                     }
                     return Ok(if typed.lvalue {
                         Typed::lvalue(element.with(self.ctypes.quals(typed.c)))
@@ -439,15 +453,19 @@ impl TypeResolver {
                 } else {
                     (index, base)
                 };
-                if !self.ctypes.is_integer(index) {
-                    return Err(UNTYPED);
-                }
-                Typed::lvalue(self.ctypes.pointee(pointer).ok_or(UNTYPED)?)
+                let element = self.ctypes.pointee(pointer).ok_or(ResolveError::Rejected(
+                    "subscripted value is not an array, pointer, or vector",
+                ))?;
+                self.pointer_offset(element, index)?;
+                Typed::lvalue(element)
             }
             ExprKind::Member { base, field, arrow } => {
                 let (record, lvalue) = if *arrow {
                     let pointer = self.operand_type(base)?;
-                    (self.ctypes.pointee(pointer).ok_or(UNTYPED)?, true)
+                    let record = self.ctypes.pointee(pointer).ok_or(ResolveError::Rejected(
+                        "member reference base is not a pointer",
+                    ))?;
+                    (record, true)
                 } else {
                     let typed = self.typed(base)?;
                     (typed.c, typed.lvalue)
@@ -468,7 +486,13 @@ impl TypeResolver {
                         bits: None,
                     });
                 }
-                let (c, bits) = self.member_type(record, &field.value).ok_or(UNTYPED)?;
+                let Some((c, bits)) = self.member_type(record, &field.value) else {
+                    return Err(ResolveError::Rejected(if self.is_complete_record(record) {
+                        "unknown member"
+                    } else {
+                        "member of incomplete or non-record"
+                    }));
+                };
                 Typed { c, lvalue, bits }
             }
             ExprKind::Binary { op, left, right } => {
@@ -483,7 +507,7 @@ impl TypeResolver {
             } => {
                 let tested = self.operand_type(condition)?;
                 if !self.ctypes.is_scalar(tested) {
-                    return Err(UNTYPED);
+                    return Err(NON_SCALAR_CONDITION);
                 }
                 let left = match then_value {
                     Some(then_value) => self.operand_type(then_value)?,
@@ -492,7 +516,9 @@ impl TypeResolver {
                 let right = self.operand_type(else_value)?;
                 let lp = self.ctypes.is_pointer(left);
                 let rp = self.ctypes.is_pointer(right);
-                if self.ctypes.is_arithmetic(left) && self.ctypes.is_arithmetic(right) {
+                if self.ctypes.is_void(left) || self.ctypes.is_void(right) {
+                    Typed::rvalue(self.ctypes.qual(CTypeKind::Void))
+                } else if self.ctypes.is_arithmetic(left) && self.ctypes.is_arithmetic(right) {
                     let left = self.promoted(left);
                     let right = self.promoted(right);
                     Typed::rvalue(self.arithmetic_type(left, right)?)
@@ -509,9 +535,11 @@ impl TypeResolver {
                         right
                     } else {
                         let rules = self.features().conditional_pointers;
-                        self.ctypes
-                            .merge_pointer(left, right, rules)
-                            .ok_or(UNTYPED)?
+                        self.ctypes.merge_pointer(left, right, rules).ok_or(
+                            ResolveError::Rejected(
+                                "conditional operands are pointers to incompatible types",
+                            ),
+                        )?
                     })
                 } else if lp {
                     Typed::rvalue(left)
@@ -520,15 +548,25 @@ impl TypeResolver {
                 } else if self.ctypes.compatible_unqualified(left, right) {
                     Typed::rvalue(left)
                 } else {
-                    return Err(UNTYPED);
+                    return Err(ResolveError::Rejected(
+                        "conditional operands have incompatible types",
+                    ));
                 }
             }
             ExprKind::Call { callee, arguments } => self.call_type(callee, arguments)?,
-            ExprKind::SizeOfType { .. }
-            | ExprKind::AlignOf { .. }
-            | ExprKind::SizeOfExpr(_)
-            | ExprKind::AlignOfExpr(_)
-            | ExprKind::OffsetOf { .. } => {
+            ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
+                let resolved = self.type_name(ty)?;
+                let sizeof = matches!(e.value, ExprKind::SizeOfType { .. });
+                self.layout_query(resolved, sizeof, self.ctypes.quals(resolved).is_atomic)?;
+                let target = self.target_info().clone();
+                Typed::rvalue(self.ctypes.size_type(&target))
+            }
+            ExprKind::SizeOfExpr(operand) | ExprKind::AlignOfExpr(operand) => {
+                self.operand_layout(operand, matches!(e.value, ExprKind::SizeOfExpr(_)))?;
+                let target = self.target_info().clone();
+                Typed::rvalue(self.ctypes.size_type(&target))
+            }
+            ExprKind::OffsetOf { .. } => {
                 let target = self.target_info().clone();
                 Typed::rvalue(self.ctypes.size_type(&target))
             }
@@ -537,15 +575,43 @@ impl TypeResolver {
                 let void = self.ctypes.qual(CTypeKind::Void);
                 Typed::rvalue(self.ctypes.pointer(void))
             }
-            ExprKind::BitCast { ty, value } | ExprKind::ConvertVector { ty, value } => {
-                self.typed(value)?;
-                Typed::rvalue(self.type_name(ty)?)
+            ExprKind::BitCast { ty, value } => {
+                let from = self.operand_type(value)?;
+                let to = self.type_name(ty)?;
+                let target = self
+                    .layout(to)
+                    .ok_or(ResolveError::Rejected("bit cast to void"))?;
+                if matches!(target, Type::Array { .. } | Type::VariableArray { .. }) {
+                    return Err(ResolveError::Rejected("bit cast to an array type"));
+                }
+                if self.storage(target)?.size_bytes != self.storage(self.ir_type(from))?.size_bytes
+                {
+                    return Err(ResolveError::Rejected(
+                        "bit cast between types of different sizes",
+                    ));
+                }
+                Typed::rvalue(to)
+            }
+            ExprKind::ConvertVector { ty, value } => {
+                let from = self.operand_type(value)?;
+                let to = self.type_name(ty)?;
+                let lanes = |c| match self.ctypes.canonical_kind(c) {
+                    CTypeKind::Vector { lanes, .. } => Ok(*lanes),
+                    _ => Err(ResolveError::Rejected("expected a vector operand")),
+                };
+                if lanes(from)? != lanes(to)? {
+                    return Err(ResolveError::Rejected(
+                        "convertvector operands differ in lane count",
+                    ));
+                }
+                Typed::rvalue(to)
             }
             ExprKind::VaArg { list, ty } => {
-                if !self.typed(list)?.lvalue {
-                    return Err(UNTYPED);
-                }
-                Typed::rvalue(self.type_name(ty)?)
+                self.va_list(list, "va_arg of non-va_list")?;
+                let to = self.type_name(ty)?;
+                let object = self.object_type(to, "va_arg of void")?;
+                self.storage(object)?;
+                Typed::rvalue(to)
             }
             ExprKind::Unary {
                 op: UnaryOp::Real | UnaryOp::Imag,
@@ -563,11 +629,16 @@ impl TypeResolver {
                     } else if self.ctypes.is_arithmetic(c) {
                         Typed::rvalue(self.promoted(c))
                     } else {
-                        return Err(UNTYPED);
+                        return Err(ResolveError::Rejected("non-numeric operand"));
                     }
                 }
             }
             ExprKind::StatementExpression(body) => {
+                if self.function_names.is_none() {
+                    return Err(ResolveError::Rejected(
+                        "statement expression outside a function",
+                    ));
+                }
                 match super::expression::statement_expression_parts(body) {
                     (statements, _, Some(result)) => {
                         self.declare_statement_locals(statements);
@@ -617,7 +688,17 @@ impl TypeResolver {
             let chosen = self.chosen_expr(callee, arguments)?;
             return self.typed(chosen);
         }
-        if va_builtin(callee).is_some() {
+        if let Some(builtin) = va_builtin(callee) {
+            let lists = match (builtin, arguments) {
+                (VaBuiltin::Start, [list] | [list, _]) | (VaBuiltin::End, [list]) => {
+                    std::slice::from_ref(list)
+                }
+                (VaBuiltin::Copy, lists @ [_, _]) => lists,
+                _ => return Err(ResolveError::Rejected("va builtin argument count")),
+            };
+            for list in lists {
+                self.va_list(list, "va builtin on non-va_list")?;
+            }
             return Ok(Typed::rvalue(self.ctypes.qual(CTypeKind::Void)));
         }
         if let Some((builtin, _)) = self.builtin_callee(callee, arguments)
@@ -626,7 +707,16 @@ impl TypeResolver {
             return self.custom_builtin_type(custom, arguments);
         }
         let signature = self.call_signature(callee, arguments)?;
-        let (returned, ..) = self.ctypes.function_parts(signature).ok_or(UNTYPED)?;
+        let (returned, parameters, variadic, prototyped) = self
+            .ctypes
+            .function_parts(signature)
+            .ok_or(NON_FUNCTION_CALLEE)?;
+        if prototyped
+            && (arguments.len() < parameters.len()
+                || (!variadic && arguments.len() != parameters.len()))
+        {
+            return Err(ResolveError::Rejected("call argument count"));
+        }
         Ok(Typed::rvalue(returned))
     }
 
@@ -673,7 +763,10 @@ impl TypeResolver {
             }
         }
         let pointer = self.operand_type(callee)?;
-        self.ctypes.pointee(pointer).ok_or(UNTYPED)
+        self.ctypes
+            .pointee(pointer)
+            .filter(|&signature| self.ctypes.is_function(signature))
+            .ok_or(NON_FUNCTION_CALLEE)
     }
 
     fn atomic_type(
@@ -682,7 +775,26 @@ impl TypeResolver {
         arguments: &[Expr],
     ) -> Result<Typed, ResolveError> {
         let boolean = self.ctypes.qual(CTypeKind::Bool);
-        let result = builtin.result(arguments).ok_or(UNTYPED)?;
+        let result = builtin
+            .result(arguments)
+            .ok_or(ResolveError::Rejected("atomic builtin argument count"))?;
+        let operands = builtin.operands(arguments);
+        for pointer in operands.pointers {
+            self.atomic_pointee(pointer)?;
+        }
+        for object in operands.objects {
+            let pointee = self.atomic_pointee(object)?;
+            if matches!(self.ir_type(pointee), Type::Void | Type::Function { .. }) {
+                return Err(ResolveError::Rejected(
+                    "atomic builtin on non-object pointer",
+                ));
+            }
+        }
+        if let Some((op, object, operand)) = operands.fetch {
+            let pointee = self.atomic_pointee(object)?;
+            let operand = self.operand_type(operand)?;
+            super::atomic::fetch_rule(&self.ir_type(pointee), op, &self.ir_type(operand))?;
+        }
         Ok(Typed::rvalue(match result {
             AtomicResult::Void => self.ctypes.qual(CTypeKind::Void),
             AtomicResult::Bool => boolean,
@@ -709,45 +821,77 @@ impl TypeResolver {
         }))
     }
 
+    fn atomic_pointee(&mut self, pointer: &Expr) -> Result<QualType, ResolveError> {
+        let pointer = self.operand_type(pointer)?;
+        self.ctypes.pointee(pointer).ok_or(ResolveError::Rejected(
+            "address argument to atomic builtin must be a pointer",
+        ))
+    }
+
     fn custom_builtin_type(
         &mut self,
         custom: CustomBuiltin,
         arguments: &[Expr],
     ) -> Result<Typed, ResolveError> {
         Ok(Typed::rvalue(match custom {
-            CustomBuiltin::Overflow(_) => self.ctypes.qual(CTypeKind::Bool),
-            CustomBuiltin::FloatClass(_)
-            | CustomBuiltin::QuietCompare(_)
+            CustomBuiltin::Overflow(_) => {
+                let [left, right, result] = arguments else {
+                    return Err(ResolveError::Rejected("overflow builtin argument count"));
+                };
+                let left = self.operand_type(left)?;
+                let right = self.operand_type(right)?;
+                let result = self.operand_type(result)?;
+                let result = self.ctypes.pointee(result);
+                if !self.ctypes.is_integer(left)
+                    || !self.ctypes.is_integer(right)
+                    || !result.is_some_and(|result| self.ctypes.is_integer(result))
+                {
+                    return Err(ResolveError::Rejected("overflow builtin operand type"));
+                }
+                self.ctypes.qual(CTypeKind::Bool)
+            }
+            CustomBuiltin::FloatClass(_) | CustomBuiltin::InfSign => {
+                self.real_floating_operand(arguments)?;
+                self.ctypes.int()
+            }
+            CustomBuiltin::QuietCompare(_)
             | CustomBuiltin::Unordered
-            | CustomBuiltin::LessGreater
-            | CustomBuiltin::InfSign
-            | CustomBuiltin::FloatClassify
-            | CustomBuiltin::ClassifyType => self.ctypes.int(),
+            | CustomBuiltin::LessGreater => {
+                self.real_floating_pair(arguments)?;
+                self.ctypes.int()
+            }
+            CustomBuiltin::FloatClassify => {
+                let [.., value] = arguments else {
+                    return Err(ResolveError::Rejected("classification builtin arity"));
+                };
+                if arguments.len() != 6 {
+                    return Err(ResolveError::Rejected("classification builtin arity"));
+                }
+                let value = self.operand_type(value)?;
+                self.real_floating_component(value)?;
+                self.ctypes.int()
+            }
+            CustomBuiltin::ClassifyType => {
+                if arguments.len() != 1 {
+                    return Err(ResolveError::Rejected("classify builtin arity"));
+                }
+                self.ctypes.int()
+            }
             CustomBuiltin::AddressOf => {
                 let [operand] = arguments else {
-                    return Err(UNTYPED);
+                    return Err(ResolveError::Rejected("addressof builtin arity"));
                 };
                 let typed = self.typed(operand)?;
-                if !typed.lvalue || typed.bits.is_some() {
-                    return Err(UNTYPED);
-                }
+                self.addressable(operand, typed)?;
                 self.ctypes.pointer(typed.c)
             }
             CustomBuiltin::Complex => {
-                let [real, imaginary] = arguments else {
-                    return Err(UNTYPED);
-                };
-                let real = self.operand_type(real)?;
-                let real = self.real_floating_component(real)?;
-                let imaginary = self.operand_type(imaginary)?;
-                let imaginary = self.real_floating_component(imaginary)?;
-                let target = self.target_info().clone();
-                let common = self.ctypes.usual_real_type(real, imaginary, &target)?;
+                let common = self.real_floating_pair(arguments)?;
                 self.complex_of(common)
             }
             CustomBuiltin::Shuffle => {
                 let [left, right, indices @ ..] = arguments else {
-                    return Err(UNTYPED);
+                    return Err(ResolveError::Rejected("shuffle builtin arity"));
                 };
                 let left = self.operand_type(left)?;
                 let right = self.operand_type(right)?;
@@ -815,6 +959,14 @@ impl TypeResolver {
         let to = self.ctypes.unqualified(to);
         let null = self.null_pointer_constant(e);
         let conversion = self.ctypes.classify_conversion(from, to, context, null)?;
+        if conversion.kind == CastKind::Vector
+            && self.storage(self.ir_type(from))?.size_bytes
+                != self.storage(self.ir_type(to))?.size_bytes
+        {
+            return Err(ResolveError::Rejected(
+                "conversion between vector types of different size",
+            ));
+        }
         self.conversions.insert(e.id, conversion);
         Ok(())
     }
@@ -900,11 +1052,168 @@ impl TypeResolver {
 
     fn updated(&mut self, target: &Expr) -> Result<Typed, ResolveError> {
         let typed = self.typed(target)?;
-        if !typed.lvalue || !(self.ctypes.is_scalar(typed.c) || self.ctypes.is_vector(typed.c)) {
-            return Err(UNTYPED);
+        if !typed.lvalue {
+            return Err(NOT_ASSIGNABLE);
         }
         self.require_modifiable_lvalue(typed.c)?;
+        if !(self.ctypes.is_scalar(typed.c) || self.ctypes.is_vector(typed.c)) {
+            return Err(ResolveError::Rejected("non-arithmetic operand"));
+        }
+        if let Some(element) = self.ctypes.pointee(typed.c) {
+            let element = self.ir_type(element);
+            self.require_pointer_element(&element)?;
+        }
         Ok(Typed::rvalue(self.ctypes.unqualified(typed.c)))
+    }
+
+    fn pointer_offset(&mut self, pointer: QualType, amount: QualType) -> Result<(), ResolveError> {
+        if let Some(element) = self.ctypes.pointee(pointer) {
+            let element = self.ir_type(element);
+            self.require_pointer_element(&element)?;
+        }
+        let amount = self.promoted(amount);
+        if !matches!(
+            self.ir_type(amount),
+            Type::Numeric(NumericType::Integer { .. })
+        ) {
+            return Err(ResolveError::Rejected("noninteger pointer offset"));
+        }
+        Ok(())
+    }
+
+    fn addressable(&mut self, operand: &Expr, typed: Typed) -> Result<(), ResolveError> {
+        if let ExprKind::Paren(inner) = &operand.value {
+            return self.addressable(inner, typed);
+        }
+        if matches!(operand.value, ExprKind::Identifier(_))
+            && self
+                .references
+                .get(&operand.id)
+                .is_some_and(|id| self.entities.is_register(id))
+        {
+            return Err(ResolveError::Rejected(
+                "address of register variable requested",
+            ));
+        }
+        if typed.bits.is_some() {
+            return Err(ResolveError::Rejected("address of a bit-field"));
+        }
+        if self.vector_component(operand) {
+            return Err(ResolveError::Rejected("address of a vector element"));
+        }
+        if !typed.lvalue {
+            return Err(ResolveError::Rejected("address of an rvalue"));
+        }
+        Ok(())
+    }
+
+    fn vector_component(&mut self, e: &Expr) -> bool {
+        let base = match &e.value {
+            ExprKind::Paren(inner) => return self.vector_component(inner),
+            ExprKind::Index { base, .. }
+            | ExprKind::Member {
+                base, arrow: false, ..
+            } => self.typed(base).map(|typed| typed.c),
+            ExprKind::Member {
+                base, arrow: true, ..
+            } => self
+                .operand_type(base)
+                .map(|pointer| self.ctypes.pointee(pointer).unwrap_or(pointer)),
+            _ => return false,
+        };
+        base.is_ok_and(|base| self.vector_element(base).is_some())
+    }
+
+    fn is_complete_record(&self, record: QualType) -> bool {
+        let CTypeKind::Record { id, .. } = self.ctypes.canonical_kind(record) else {
+            return false;
+        };
+        matches!(
+            self.definitions[id.0 as usize].kind,
+            TypeDefinitionKind::Record {
+                fields: Some(_),
+                ..
+            }
+        )
+    }
+
+    fn layout_query(
+        &mut self,
+        c: QualType,
+        sizeof: bool,
+        atomic: bool,
+    ) -> Result<(), ResolveError> {
+        let ty = self.ir_type(c);
+        if sizeof && matches!(ty, Type::VariableArray { .. }) {
+            return Ok(());
+        }
+        if self.failed_definition(c) {
+            return Err(FAILED_DEFINITION);
+        }
+        let layout = self
+            .sizeof_storage(fixed_element(&ty).clone(), atomic)
+            .map_err(|error| if sizeof { sizeof_error(error) } else { error })?;
+        self.declared_storage(c, layout)?;
+        Ok(())
+    }
+
+    fn operand_layout(&mut self, operand: &Expr, sizeof: bool) -> Result<(), ResolveError> {
+        let c = match &operand.value {
+            ExprKind::Paren(inner) => return self.operand_layout(inner, sizeof),
+            ExprKind::StringLiteral(literal) => self.string_type(literal),
+            _ => {
+                let typed = self.typed(operand)?;
+                if typed.bits.is_some() {
+                    return Err(ResolveError::Rejected(
+                        "application of sizeof or alignof to a bit-field",
+                    ));
+                }
+                typed.c
+            }
+        };
+        let ty = self.ir_type(c);
+        if sizeof && (self.ctypes.is_function(c) || matches!(ty, Type::VariableArray { .. })) {
+            return Ok(());
+        }
+        if self.failed_definition(c) {
+            return Err(FAILED_DEFINITION);
+        }
+        let atomic = self.access_of(c).atomic;
+        let layout = self
+            .qualified_storage(fixed_element(&ty).clone(), atomic)
+            .map_err(|error| if sizeof { sizeof_error(error) } else { error })?;
+        self.declared_storage(c, layout)?;
+        Ok(())
+    }
+
+    fn va_list(&mut self, list: &Expr, reason: &'static str) -> Result<(), ResolveError> {
+        let typed = self.typed(list)?;
+        let ty = self.ir_type(typed.c);
+        if !typed.lvalue || !self.is_va_list(&ty) {
+            return Err(ResolveError::Rejected(reason));
+        }
+        Ok(())
+    }
+
+    fn real_floating_pair(&mut self, arguments: &[Expr]) -> Result<QualType, ResolveError> {
+        let [left, right] = arguments else {
+            return Err(FLOAT_CLASS_ARITY);
+        };
+        let left = self.operand_type(left)?;
+        let left = self.real_floating_component(left)?;
+        let right = self.operand_type(right)?;
+        let right = self.real_floating_component(right)?;
+        let target = self.target_info().clone();
+        self.ctypes.usual_real_type(left, right, &target)
+    }
+
+    fn real_floating_operand(&mut self, arguments: &[Expr]) -> Result<(), ResolveError> {
+        let [operand] = arguments else {
+            return Err(FLOAT_CLASS_ARITY);
+        };
+        let operand = self.operand_type(operand)?;
+        self.real_floating_component(operand)?;
+        Ok(())
     }
 
     fn binary_type(
@@ -918,7 +1227,7 @@ impl TypeResolver {
         match op {
             BinaryOp::And | BinaryOp::Or => {
                 if !self.ctypes.is_scalar(left) || !self.ctypes.is_scalar(right) {
-                    return Err(UNTYPED);
+                    return Err(NON_SCALAR_CONDITION);
                 }
                 return Ok(self.ctypes.int());
             }
@@ -933,32 +1242,51 @@ impl TypeResolver {
                 else {
                     return Err(UNTYPED);
                 };
-                let a = self.ctypes.canonical(a).local_unqualified();
-                let b = self.ctypes.canonical(b).local_unqualified();
-                if !self.ctypes.compatible(a, b) {
-                    return Err(UNTYPED);
+                let element = self.ctypes.canonical(a).local_unqualified();
+                let other = self.ctypes.canonical(b).local_unqualified();
+                if !self.ctypes.compatible(element, other) {
+                    return Err(ResolveError::Rejected("incompatible pointer subtraction"));
                 }
+                let element = self.ir_type(a);
+                self.require_pointer_element(&element)?;
                 let target = self.target_info().clone();
                 return Ok(self.ctypes.ptrdiff_type(&target));
             }
-            BinaryOp::Add | BinaryOp::Sub
-                if self.ctypes.is_pointer(left) && self.ctypes.is_integer(right) =>
-            {
+            BinaryOp::Add | BinaryOp::Sub if self.ctypes.is_pointer(left) && !rp => {
+                self.pointer_offset(left, right)?;
                 return Ok(left);
             }
-            BinaryOp::Add if self.ctypes.is_pointer(right) && self.ctypes.is_integer(left) => {
+            BinaryOp::Add if self.ctypes.is_pointer(right) && !lp => {
+                self.pointer_offset(right, left)?;
                 return Ok(right);
             }
-            _ if lp || rp => return Err(UNTYPED),
+            _ if lp || rp => return Err(ResolveError::Rejected("non-arithmetic operand")),
             _ => {}
         }
-        if let (Some(a), Some(b)) = (self.is_decimal(left), self.is_decimal(right))
-            && a != b
-        {
-            return Err(UNTYPED);
-        }
+        let operator = <&'static str>::from(op);
+        super::numeric::reject_mixed_decimal(operator, &self.ir_type(left), &self.ir_type(right))?;
         let left = self.promoted(left);
         let right = self.promoted(right);
-        Ok(self.binary_types(op, left, right)?.result)
+        let types = self.binary_types(op, left, right)?;
+        let (lc, rc) = types.operands.unwrap_or((left, right));
+        let target = self.target_info().clone();
+        super::numeric::binary_rule(op, &self.ir_type(lc), &self.ir_type(rc), &target)?;
+        Ok(types.result)
+    }
+}
+
+pub(super) fn sizeof_error(error: ResolveError) -> ResolveError {
+    match error {
+        ResolveError::Rejected("incomplete field type") => {
+            ResolveError::Rejected("sizeof of incomplete type")
+        }
+        error => error,
+    }
+}
+
+pub(super) fn fixed_element(ty: &Type) -> &Type {
+    match ty {
+        Type::VariableArray { element, .. } => fixed_element(element),
+        _ => ty,
     }
 }

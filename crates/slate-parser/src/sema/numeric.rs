@@ -76,8 +76,17 @@ impl ResolveError {
     pub(super) fn checked(self) -> Self {
         match self {
             Self::Rejected(reason) => Self::Internal(reason),
+            Self::InvalidOperands { .. } => Self::Internal("invalid operands"),
+            Self::InvalidOperand { .. } => Self::Internal("invalid operand"),
             error => error,
         }
+    }
+
+    pub(super) fn is_rejection(&self) -> bool {
+        matches!(
+            self,
+            Self::Rejected(_) | Self::InvalidOperands { .. } | Self::InvalidOperand { .. }
+        )
     }
 }
 
@@ -245,7 +254,7 @@ impl Context {
         left: Value,
         right: Value,
     ) -> Result<Resolved, ResolveError> {
-        let operator = <&'static str>::from(op);
+        binary_rule(op, &left.ty, &right.ty, &self.target).map_err(ResolveError::checked)?;
         if matches!(left.ty, Type::Vector { .. }) || matches!(right.ty, Type::Vector { .. }) {
             return self.vector_binary(op, left, right);
         }
@@ -288,14 +297,9 @@ impl Context {
         if matches!(left.ty, Type::Complex(_)) || matches!(right.ty, Type::Complex(_)) {
             return self.complex_binary(op, left, right);
         }
-        reject_mixed_decimal(operator, &left, &right)?;
         let left_ty = numeric(&left)?;
         let right_ty = numeric(&right)?;
-        let invalid = ResolveError::InvalidOperands {
-            left: left_ty,
-            operator,
-            right: right_ty,
-        };
+        let invalid = ResolveError::Internal("invalid operands");
         let semantics = match (left_ty, arith) {
             (NumericType::Float(_), ArithOp::Add | ArithOp::Sub | ArithOp::Mul | ArithOp::Div) => {
                 self.floating_arith()
@@ -365,16 +369,12 @@ impl Context {
         op: UnaryOp,
         operand: Value,
     ) -> Result<Resolved, ResolveError> {
+        unary_rule(op, &operand.ty).map_err(ResolveError::checked)?;
         let arith = match op {
             UnaryOp::Minus => UnaryArithOp::Neg,
             _ => UnaryArithOp::Not,
         };
         if let Type::Vector { element, .. } = operand.ty {
-            if arith == UnaryArithOp::Not && matches!(element, NumericType::Float(_)) {
-                return Err(ResolveError::Rejected(
-                    "bitwise complement of a floating vector",
-                ));
-            }
             let semantics = match (element, arith) {
                 (NumericType::Float(_), _) | (NumericType::Integer { .. }, UnaryArithOp::Not) => {
                     ArithSema::Exact
@@ -394,7 +394,7 @@ impl Context {
         }
         if let Type::FixedPoint(fixed) = operand.ty {
             if arith != UnaryArithOp::Neg {
-                return Err(ResolveError::Rejected(
+                return Err(ResolveError::Internal(
                     "bitwise complement of a fixed-point operand",
                 ));
             }
@@ -410,7 +410,7 @@ impl Context {
         }
         if let Type::Imaginary(_) = operand.ty {
             if arith != UnaryArithOp::Neg {
-                return Err(ResolveError::Rejected(
+                return Err(ResolveError::Internal(
                     "bitwise complement of imaginary operand",
                 ));
             }
@@ -446,11 +446,8 @@ impl Context {
         }
         let semantics = match (numeric(&operand)?, arith) {
             (NumericType::Float(_), UnaryArithOp::Neg) => ArithSema::Exact,
-            (ty @ NumericType::Float(_), UnaryArithOp::Not) => {
-                return Err(ResolveError::InvalidOperand {
-                    operator: <&'static str>::from(op),
-                    operand: ty,
-                });
+            (NumericType::Float(_), UnaryArithOp::Not) => {
+                return Err(ResolveError::Internal("invalid operand"));
             }
             (NumericType::Integer { signed, .. }, UnaryArithOp::Neg) => ArithSema::Integer {
                 overflow: if signed {
@@ -518,7 +515,7 @@ impl Context {
             BinaryOp::BitXor => ArithOp::Xor,
             BinaryOp::ShiftLeft => ArithOp::Shl,
             BinaryOp::ShiftRight => ArithOp::Shr,
-            _ => return Err(ResolveError::Rejected("vector operator")),
+            _ => return Err(ResolveError::Internal("vector operator")),
         };
         // clang emits no nsw for vector arithmetic, so signed lanes wrap
         let semantics = match (element, arith) {
@@ -526,7 +523,7 @@ impl Context {
                 self.floating_arith()
             }
             (NumericType::Float(_), _) => {
-                return Err(ResolveError::Rejected(
+                return Err(ResolveError::Internal(
                     "operator requires integer vector elements",
                 ));
             }
@@ -597,7 +594,7 @@ impl Context {
                 let left = self.splat(left, ty)?;
                 Ok((left, right))
             }
-            _ => Err(ResolveError::Rejected("vector arithmetic conversion")),
+            _ => Err(ResolveError::Internal("vector arithmetic conversion")),
         }
     }
 
@@ -606,7 +603,7 @@ impl Context {
             return Err(ResolveError::Internal("vector arithmetic conversion"));
         };
         if !matches!(value.ty, Type::Numeric(_) | Type::Bool) {
-            return Err(ResolveError::Rejected(
+            return Err(ResolveError::Internal(
                 "vector operand must be a vector or a scalar",
             ));
         }
@@ -636,7 +633,7 @@ impl Context {
         let from_bytes = self.target.storage_of(value.ty.clone())?.size_bytes;
         let to_bytes = self.target.storage_of(to.clone())?.size_bytes;
         if from_bytes != to_bytes {
-            return Err(ResolveError::Rejected(
+            return Err(ResolveError::Internal(
                 "conversion between vector types of different size",
             ));
         }
@@ -655,20 +652,6 @@ impl Context {
     }
 
     fn compare(&self, op: CompareOp, left: Value, right: Value) -> Result<Resolved, ResolveError> {
-        if has_imaginary(&left, &right) {
-            return Err(ResolveError::Rejected(
-                "relational comparison requires real operands",
-            ));
-        }
-        let operator = match op {
-            CompareOp::Eq => "==",
-            CompareOp::Ne => "!=",
-            CompareOp::Lt => "<",
-            CompareOp::Le => "<=",
-            CompareOp::Gt => ">",
-            CompareOp::Ge => ">=",
-        };
-        reject_mixed_decimal(operator, &left, &right)?;
         let left_ty = numeric(&left)?;
         Ok((Type::Bool, self.comparison(op, left_ty, left, right)))
     }
@@ -686,7 +669,7 @@ impl Context {
         let fixed = *fixed;
         if shift {
             if !matches!(right.ty, Type::Numeric(NumericType::Integer { .. })) {
-                return Err(ResolveError::Rejected(
+                return Err(ResolveError::Internal(
                     "fixed-point shift amount must be an integer",
                 ));
             }
@@ -722,7 +705,7 @@ impl Context {
             BinaryOp::ShiftLeft => ArithOp::Shl,
             BinaryOp::ShiftRight => ArithOp::Shr,
             _ => {
-                return Err(ResolveError::Rejected(
+                return Err(ResolveError::Internal(
                     "operator requires integer or real operands",
                 ));
             }
@@ -809,7 +792,7 @@ impl Context {
             BinaryOp::Sub => ArithOp::Sub,
             BinaryOp::Mul => ArithOp::Mul,
             BinaryOp::Div => ArithOp::Div,
-            _ => return Err(ResolveError::Rejected("complex operator")),
+            _ => return Err(ResolveError::Internal("complex operator")),
         };
         let semantics = match component {
             NumericType::Float(_) => self.complex_floating_arith(),
@@ -857,7 +840,7 @@ impl Context {
             .iter()
             .any(|ty| matches!(ty, NumericType::Float(format) if format.is_decimal()))
         {
-            return Err(ResolveError::Rejected(
+            return Err(ResolveError::Internal(
                 "decimal floating operand with imaginary operand",
             ));
         }
@@ -893,7 +876,7 @@ impl Context {
             BinaryOp::Mul => ArithOp::Mul,
             BinaryOp::Div => ArithOp::Div,
             _ => {
-                return Err(ResolveError::Rejected(
+                return Err(ResolveError::Internal(
                     "operator requires integer or real operands",
                 ));
             }
@@ -1391,7 +1374,11 @@ fn fixed_conversion_sema(
 }
 
 fn numeric(value: &Value) -> Result<NumericType, ResolveError> {
-    match value.ty {
+    numeric_type(&value.ty).map_err(ResolveError::checked)
+}
+
+fn numeric_type(ty: &Type) -> Result<NumericType, ResolveError> {
+    match *ty {
         Type::Numeric(ty) => Ok(ty),
         Type::Bool => Err(ResolveError::Internal("unpromoted boolean operand")),
         Type::Defined(_)
@@ -1436,8 +1423,8 @@ fn has_imaginary(left: &Value, right: &Value) -> bool {
 
 pub(super) fn reject_mixed_decimal(
     operator: &'static str,
-    left: &Value,
-    right: &Value,
+    left: &Type,
+    right: &Type,
 ) -> Result<(), ResolveError> {
     let family = |ty: &Type| match ty {
         Type::Numeric(NumericType::Float(format)) | Type::Complex(NumericType::Float(format)) => {
@@ -1445,13 +1432,193 @@ pub(super) fn reject_mixed_decimal(
         }
         _ => None,
     };
-    match (family(&left.ty), family(&right.ty)) {
+    match (family(left), family(right)) {
         (Some(a), Some(b)) if a != b => Err(ResolveError::InvalidOperands {
-            left: numeric(left)?,
+            left: numeric_type(left)?,
             operator,
-            right: numeric(right)?,
+            right: numeric_type(right)?,
         }),
         _ => Ok(()),
+    }
+}
+
+// the operand checks emit_binary relies on, over the converted operand types
+pub(super) fn binary_rule(
+    op: BinaryOp,
+    left: &Type,
+    right: &Type,
+    target: &TargetInfo,
+) -> Result<(), ResolveError> {
+    let operator = <&'static str>::from(op);
+    if matches!(left, Type::Vector { .. }) || matches!(right, Type::Vector { .. }) {
+        return vector_rule(op, left, right, target);
+    }
+    let comparison = matches!(
+        op,
+        BinaryOp::Equal
+            | BinaryOp::NotEqual
+            | BinaryOp::Less
+            | BinaryOp::LessEqual
+            | BinaryOp::Greater
+            | BinaryOp::GreaterEqual
+    );
+    if matches!(op, BinaryOp::And | BinaryOp::Or) {
+        return Ok(());
+    }
+    if matches!(left, Type::FixedPoint(_)) || matches!(right, Type::FixedPoint(_)) {
+        if matches!(op, BinaryOp::ShiftLeft | BinaryOp::ShiftRight) {
+            if !matches!(right, Type::Numeric(NumericType::Integer { .. })) {
+                return Err(ResolveError::Rejected(
+                    "fixed-point shift amount must be an integer",
+                ));
+            }
+        } else if !comparison
+            && !matches!(
+                op,
+                BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div
+            )
+        {
+            return Err(ResolveError::Rejected(
+                "operator requires integer or real operands",
+            ));
+        }
+        return Ok(());
+    }
+    let imaginary = matches!(left, Type::Imaginary(_)) || matches!(right, Type::Imaginary(_));
+    let complex = matches!(left, Type::Complex(_)) || matches!(right, Type::Complex(_));
+    let equality = matches!(op, BinaryOp::Equal | BinaryOp::NotEqual);
+    if imaginary && (equality || !comparison) {
+        let decimal = |ty: &Type| match ty {
+            Type::Numeric(NumericType::Float(format))
+            | Type::Complex(NumericType::Float(format))
+            | Type::Imaginary(format) => format.is_decimal(),
+            _ => false,
+        };
+        if decimal(left) || decimal(right) {
+            return Err(ResolveError::Rejected(
+                "decimal floating operand with imaginary operand",
+            ));
+        }
+        if !equality
+            && !matches!(
+                op,
+                BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div
+            )
+        {
+            return Err(ResolveError::Rejected(
+                "operator requires integer or real operands",
+            ));
+        }
+        return Ok(());
+    }
+    if complex && equality {
+        return Ok(());
+    }
+    if comparison {
+        if imaginary {
+            return Err(ResolveError::Rejected(
+                "relational comparison requires real operands",
+            ));
+        }
+        reject_mixed_decimal(operator, left, right)?;
+        numeric_type(left)?;
+        return Ok(());
+    }
+    if complex {
+        return match op {
+            BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div => Ok(()),
+            _ => Err(ResolveError::Rejected("complex operator")),
+        };
+    }
+    reject_mixed_decimal(operator, left, right)?;
+    let left_ty = numeric_type(left)?;
+    let right_ty = numeric_type(right)?;
+    let invalid = ResolveError::InvalidOperands {
+        left: left_ty,
+        operator,
+        right: right_ty,
+    };
+    match (left_ty, op) {
+        (NumericType::Float(_), BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div) => {
+            Ok(())
+        }
+        (NumericType::Float(_), _) => Err(invalid),
+        (_, BinaryOp::ShiftLeft | BinaryOp::ShiftRight)
+            if matches!(right_ty, NumericType::Float(_)) =>
+        {
+            Err(invalid)
+        }
+        _ => Ok(()),
+    }
+}
+
+fn vector_rule(
+    op: BinaryOp,
+    left: &Type,
+    right: &Type,
+    target: &TargetInfo,
+) -> Result<(), ResolveError> {
+    let element = match (left, right) {
+        (Type::Vector { element, .. }, Type::Vector { .. }) => {
+            if target.storage_of(left.clone())?.size_bytes
+                != target.storage_of(right.clone())?.size_bytes
+            {
+                return Err(ResolveError::Rejected(
+                    "conversion between vector types of different size",
+                ));
+            }
+            element
+        }
+        (Type::Vector { element, .. }, scalar) | (scalar, Type::Vector { element, .. }) => {
+            if !matches!(scalar, Type::Numeric(_) | Type::Bool) {
+                return Err(ResolveError::Rejected(
+                    "vector operand must be a vector or a scalar",
+                ));
+            }
+            element
+        }
+        _ => return Err(ResolveError::Internal("vector arithmetic conversion")),
+    };
+    match op {
+        BinaryOp::Equal
+        | BinaryOp::NotEqual
+        | BinaryOp::Less
+        | BinaryOp::LessEqual
+        | BinaryOp::Greater
+        | BinaryOp::GreaterEqual => Ok(()),
+        BinaryOp::And | BinaryOp::Or => Err(ResolveError::Rejected("vector operator")),
+        BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div => Ok(()),
+        _ if matches!(element, NumericType::Float(_)) => Err(ResolveError::Rejected(
+            "operator requires integer vector elements",
+        )),
+        _ => Ok(()),
+    }
+}
+
+// the operand checks emit_unary_arith relies on, over the promoted operand type
+pub(super) fn unary_rule(op: UnaryOp, operand: &Type) -> Result<(), ResolveError> {
+    let complement = op != UnaryOp::Minus;
+    match operand {
+        Type::Vector {
+            element: NumericType::Float(_),
+            ..
+        } if complement => Err(ResolveError::Rejected(
+            "bitwise complement of a floating vector",
+        )),
+        Type::FixedPoint(_) if complement => Err(ResolveError::Rejected(
+            "bitwise complement of a fixed-point operand",
+        )),
+        Type::Imaginary(_) if complement => Err(ResolveError::Rejected(
+            "bitwise complement of imaginary operand",
+        )),
+        Type::Vector { .. } | Type::FixedPoint(_) | Type::Imaginary(_) | Type::Complex(_) => Ok(()),
+        ty => match numeric_type(ty)? {
+            ty @ NumericType::Float(_) if complement => Err(ResolveError::InvalidOperand {
+                operator: <&'static str>::from(op),
+                operand: ty,
+            }),
+            _ => Ok(()),
+        },
     }
 }
 
