@@ -2202,9 +2202,13 @@ impl Lowerer {
                         | BinaryOp::LessEqual
                         | BinaryOp::Greater
                         | BinaryOp::GreaterEqual
-                ) && (self.pointee(&left.ty).is_ok() && self.pointee(&right.ty).is_ok())
+                ) && (self.pointee(&left.ty).is_ok() || self.pointee(&right.ty).is_ok())
                 {
-                    let ty = left.c;
+                    let ty = if self.pointee(&left.ty).is_ok() {
+                        left.c
+                    } else {
+                        right.c
+                    };
                     self.warn_comparison(e, left_expr, &left, right_expr, &right);
                     let left =
                         self.convert_expr(left_expr, left, ty, ConversionReason::UsualArith)?;
@@ -2322,19 +2326,9 @@ impl Lowerer {
                 } else if self.types.ctypes.is_pointer(left.c)
                     && self.types.ctypes.is_pointer(right.c)
                 {
-                    let merged = if self.is_null_pointer_constant(Some(else_value), &right) {
-                        left.c
-                    } else if self.is_null_pointer_constant(Some(then_value), &left) {
-                        right.c
-                    } else {
-                        let rules = self.types.features().conditional_pointers;
-                        self.types
-                            .ctypes
-                            .merge_pointer(left.c, right.c, rules)
-                            .ok_or(ResolveError::Internal(
-                                "conditional operands are pointers to incompatible types",
-                            ))?
-                    };
+                    let (merged, _) = self
+                        .types
+                        .conditional_pointers(then_value, left.c, else_value, right.c)?;
                     left =
                         self.convert_expr(then_value, left, merged, ConversionReason::UsualArith)?;
                     right =
@@ -2530,8 +2524,10 @@ impl Lowerer {
                     .types
                     .layout(resolved)
                     .ok_or(ResolveError::Internal("bit cast to void"))?;
-                if matches!(ty, Type::Array { .. } | Type::VariableArray { .. }) {
-                    return Err(ResolveError::Internal("bit cast to an array type"));
+                if matches!(ty, Type::VariableArray { .. }) {
+                    return Err(ResolveError::Internal(
+                        "bit cast to a variable length array",
+                    ));
                 }
                 let value = self.expr(value)?;
                 if self.types.storage(ty.clone())?.size_bytes
@@ -2541,7 +2537,7 @@ impl Lowerer {
                         "bit cast between types of different sizes",
                     ));
                 }
-                Ok(self.operand(
+                let cast = self.operand(
                     e,
                     resolved,
                     ValueKind::Convert {
@@ -2550,7 +2546,12 @@ impl Lowerer {
                         reason: ConversionReason::Explicit,
                         semantics: ConversionSema::Exact,
                     },
-                ))
+                );
+                if matches!(ty, Type::Array { .. }) {
+                    let object = self.materialize(cast);
+                    return self.read(e, object);
+                }
+                Ok(cast)
             }
             ExprKind::StatementExpression(body) => {
                 if !self.in_function {

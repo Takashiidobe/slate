@@ -1024,6 +1024,25 @@ impl Checker<'_> {
                     self.expression(expr);
                 }
                 self.expression(else_value);
+                let then_value: &Expr = match then_value {
+                    Some(then_value) => then_value,
+                    None => condition,
+                };
+                if let (Ok(left), Ok(right)) = (
+                    self.types.operand_type(then_value),
+                    self.types.operand_type(else_value),
+                ) && self.types.ctypes.is_pointer(left)
+                    && self.types.ctypes.is_pointer(right)
+                    && let Ok((_, Some(warning))) = self
+                        .types
+                        .conditional_pointers(then_value, left, else_value, right)
+                {
+                    self.types.warn(
+                        warning,
+                        "pointer type mismatch in conditional expression",
+                        expr,
+                    );
+                }
             }
             ExprKind::Call { callee, arguments } => {
                 self.expression(callee);

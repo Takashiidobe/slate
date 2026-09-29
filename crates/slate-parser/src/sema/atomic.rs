@@ -3,6 +3,7 @@ use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use super::operand::{Lvalue, Operand};
 use crate::ast::{Expr, ExprKind, Span};
+use crate::compiler_args::CompilerFlavor;
 use crate::ir::*;
 use num_bigint::BigInt;
 
@@ -281,17 +282,34 @@ pub(super) struct AtomicOperands<'e> {
 }
 
 // the operand checks atomic lowering relies on: the loaded object's type and the fetch operand
-pub(super) fn fetch_rule(object: &Type, op: FetchOp, operand: &Type) -> Result<(), ResolveError> {
+pub(super) fn fetch_rule(
+    object: &Type,
+    op: FetchOp,
+    operand: &Type,
+    flavor: CompilerFlavor,
+) -> Result<(), ResolveError> {
     if matches!(object, Type::Pointer { .. }) {
-        if !matches!(op, FetchOp::Add | FetchOp::Sub) {
-            return Err(ResolveError::Rejected(
+        let integer = matches!(operand, Type::Numeric(NumericType::Integer { .. }));
+        return match op {
+            FetchOp::Add | FetchOp::Sub
+                if integer
+                    || flavor == CompilerFlavor::Clang
+                        && matches!(operand, Type::Numeric(NumericType::Float(_))) =>
+            {
+                Ok(())
+            }
+            FetchOp::Add | FetchOp::Sub => {
+                Err(ResolveError::Rejected("noninteger atomic pointer offset"))
+            }
+            FetchOp::And | FetchOp::Or | FetchOp::Xor | FetchOp::Nand
+                if integer && flavor == CompilerFlavor::Gcc =>
+            {
+                Ok(())
+            }
+            _ => Err(ResolveError::Rejected(
                 "atomic bitwise operation on pointer",
-            ));
-        }
-        if !matches!(operand, Type::Numeric(NumericType::Integer { .. })) {
-            return Err(ResolveError::Rejected("noninteger atomic pointer offset"));
-        }
-        return Ok(());
+            )),
+        };
     }
     match (object, op) {
         (
@@ -1039,9 +1057,54 @@ impl Lowerer {
         byte_offsets: bool,
     ) -> Result<Operand, ResolveError> {
         let operand = self.expr(e)?;
-        fetch_rule(&place.ty, op, &operand.ty).map_err(ResolveError::checked)?;
+        fetch_rule(&place.ty, op, &operand.ty, self.types.flavor())
+            .map_err(ResolveError::checked)?;
         let old = self.operand(e, place.c, ValueKind::OldValue);
+        if matches!(place.ty, Type::Pointer { .. }) && !matches!(op, FetchOp::Add | FetchOp::Sub) {
+            let address = self.types.ctypes.size_type(&self.context.target);
+            let old = self.convert(old, address, ConversionReason::Explicit)?;
+            let operand = self.convert(operand, address, ConversionReason::Arg)?;
+            let (op, not) = match op {
+                FetchOp::And => (ArithOp::And, false),
+                FetchOp::Or => (ArithOp::Or, false),
+                FetchOp::Xor => (ArithOp::Xor, false),
+                FetchOp::Nand => (ArithOp::And, true),
+                _ => {
+                    return Err(ResolveError::Internal(
+                        "atomic bitwise operation on pointer",
+                    ));
+                }
+            };
+            let mut computed = self.operand(
+                e,
+                address,
+                ValueKind::Arith {
+                    op,
+                    left: Box::new(old.value),
+                    right: Box::new(operand.value),
+                    semantics: ArithSema::Exact,
+                },
+            );
+            if not {
+                computed = self.operand(
+                    e,
+                    address,
+                    ValueKind::Unary {
+                        op: UnaryArithOp::Not,
+                        operand: Box::new(computed.value),
+                        semantics: ArithSema::Exact,
+                    },
+                );
+            }
+            return self.convert(computed, place.c, ConversionReason::Explicit);
+        }
         if let Type::Pointer { pointee, .. } = &place.ty {
+            let operand = if matches!(operand.ty, Type::Numeric(NumericType::Float(_))) {
+                let offset = self.types.ctypes.ptrdiff_type(&self.context.target);
+                self.convert(operand, offset, ConversionReason::Arg)?
+            } else {
+                operand
+            };
             let subtract = matches!(op, FetchOp::Sub);
             let element = if byte_offsets {
                 Type::integer(8, false)

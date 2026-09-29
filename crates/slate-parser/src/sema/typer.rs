@@ -12,7 +12,9 @@ use crate::ast::{
     DeclarationSpecifiers, Expr, ExprKind, InitDeclarator, Initializer, Span, Stmt, StmtKind,
     StorageClass, TypeName, TypeSpecifier,
 };
+use crate::compiler_args::CompilerFlavor;
 use crate::const_expr::{AssignOp, BinaryOp, UnaryOp};
+use crate::diagnostics::Warning;
 use crate::ir::{NumericType, Type, TypeDefinitionKind};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -518,20 +520,9 @@ impl TypeResolver {
                         Some(then_value) => then_value,
                         None => condition,
                     };
-                    let else_null = self.null_pointer(else_value)?.ok_or(UNTYPED)?;
-                    let then_null = self.null_pointer(then_value)?.ok_or(UNTYPED)?;
-                    Typed::rvalue(if else_null {
-                        left
-                    } else if then_null {
-                        right
-                    } else {
-                        let rules = self.features().conditional_pointers;
-                        self.ctypes.merge_pointer(left, right, rules).ok_or(
-                            ResolveError::Rejected(
-                                "conditional operands are pointers to incompatible types",
-                            ),
-                        )?
-                    })
+                    let (merged, _) =
+                        self.conditional_pointers(then_value, left, else_value, right)?;
+                    Typed::rvalue(merged)
                 } else if lp {
                     Typed::rvalue(left)
                 } else if rp {
@@ -572,8 +563,10 @@ impl TypeResolver {
                 let target = self
                     .layout(to)
                     .ok_or(ResolveError::Rejected("bit cast to void"))?;
-                if matches!(target, Type::Array { .. } | Type::VariableArray { .. }) {
-                    return Err(ResolveError::Rejected("bit cast to an array type"));
+                if matches!(target, Type::VariableArray { .. }) {
+                    return Err(ResolveError::Rejected(
+                        "bit cast to a variable length array",
+                    ));
                 }
                 if self.storage(target)?.size_bytes != self.storage(self.ir_type(from))?.size_bytes
                 {
@@ -801,7 +794,12 @@ impl TypeResolver {
         if let Some((op, object, operand)) = operands.fetch {
             let pointee = self.atomic_pointee(object)?;
             let operand = self.operand_type(operand)?;
-            super::atomic::fetch_rule(&self.ir_type(pointee), op, &self.ir_type(operand))?;
+            super::atomic::fetch_rule(
+                &self.ir_type(pointee),
+                op,
+                &self.ir_type(operand),
+                self.flavor(),
+            )?;
         }
         Ok(Typed::rvalue(match result {
             AtomicResult::Void => self.ctypes.qual(CTypeKind::Void),
@@ -1062,6 +1060,37 @@ impl TypeResolver {
         }
     }
 
+    pub(super) fn conditional_pointers(
+        &mut self,
+        then_value: &Expr,
+        left: QualType,
+        else_value: &Expr,
+        right: QualType,
+    ) -> Result<(QualType, Option<Warning>), ResolveError> {
+        if self.null_pointer(else_value)?.ok_or(UNTYPED)? {
+            return Ok((left, None));
+        }
+        if self.null_pointer(then_value)?.ok_or(UNTYPED)? {
+            return Ok((right, None));
+        }
+        let rules = self.features().conditional_pointers;
+        if let Some(merged) = self.ctypes.merge_pointer(left, right, rules) {
+            return Ok((merged, None));
+        }
+        let void = self.ctypes.qual(CTypeKind::Void);
+        Ok(match self.flavor() {
+            CompilerFlavor::Msvc => (left, Some(Warning::IncompatiblePointerTypes)),
+            CompilerFlavor::Gcc => (
+                self.ctypes.pointer(void),
+                Some(Warning::IncompatiblePointerTypes),
+            ),
+            CompilerFlavor::Clang => (
+                self.ctypes.pointer(void),
+                Some(Warning::PointerTypeMismatch),
+            ),
+        })
+    }
+
     pub(super) fn compound_conversion(
         &mut self,
         op: AssignOp,
@@ -1270,7 +1299,9 @@ impl TypeResolver {
             }
             BinaryOp::Equal | BinaryOp::NotEqual if lp || rp => return Ok(self.ctypes.int()),
             BinaryOp::Less | BinaryOp::LessEqual | BinaryOp::Greater | BinaryOp::GreaterEqual
-                if lp && rp =>
+                if (lp || self.ctypes.is_integer(left))
+                    && (rp || self.ctypes.is_integer(right))
+                    && (lp || rp) =>
             {
                 return Ok(self.ctypes.int());
             }

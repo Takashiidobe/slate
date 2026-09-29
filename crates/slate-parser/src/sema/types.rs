@@ -171,6 +171,10 @@ impl TypeResolver {
         self.dialect.features()
     }
 
+    pub fn flavor(&self) -> CompilerFlavor {
+        self.dialect.flavor()
+    }
+
     pub fn access_of(&self, q: QualType) -> Access {
         self.ctypes.access(q)
     }

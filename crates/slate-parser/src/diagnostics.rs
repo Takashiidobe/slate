@@ -13,6 +13,7 @@ pub enum Warning {
     PointerSign,
     IncompatiblePointerTypesDiscardsQualifiers,
     IncompatiblePointerTypes,
+    PointerTypeMismatch,
     IntConversion,
     PointerIntegerCompare,
     CompareDistinctPointerTypes,
@@ -25,7 +26,7 @@ pub enum Warning {
 }
 
 impl Warning {
-    pub const ALL: [Self; 18] = [
+    pub const ALL: [Self; 19] = [
         Self::LongLong,
         Self::C99Compat,
         Self::ImplicitlyUnsignedLiteral,
@@ -35,6 +36,7 @@ impl Warning {
         Self::PointerSign,
         Self::IncompatiblePointerTypesDiscardsQualifiers,
         Self::IncompatiblePointerTypes,
+        Self::PointerTypeMismatch,
         Self::IntConversion,
         Self::PointerIntegerCompare,
         Self::CompareDistinctPointerTypes,
@@ -59,6 +61,7 @@ impl Warning {
                 "incompatible-pointer-types-discards-qualifiers"
             }
             Self::IncompatiblePointerTypes => "incompatible-pointer-types",
+            Self::PointerTypeMismatch => "pointer-type-mismatch",
             Self::IntConversion => "int-conversion",
             Self::PointerIntegerCompare => "pointer-integer-compare",
             Self::CompareDistinctPointerTypes => "compare-distinct-pointer-types",
