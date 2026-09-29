@@ -177,7 +177,7 @@ function    = "fn" binding "@" c_identifier "(" [ params ] ")" "->" type
               [ "[definition=" ( "emitted" | "inline_only" ) "]" ] [ "[noreturn]" ]
               [ "[naked]" ]
               [ "[memory=" ( "none" | "read" ) "]" ]
-              [ "[abi=" abi_signature "]" ]
+              [ "[abi=" ( abi_signature | "incomplete" ) "]" ]
               [ "[fallthrough=" fallthrough "]" ] { metadata }
               ( ";" | "{" { statement } "}" ) ;
 params      = "unprototyped" | param { ", " param } [ ", ..." ] | "..." ;
@@ -193,6 +193,8 @@ fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub"
   or else the first prototype.
 - `[abi=...]` is printed only when some argument or the result is not passed
   as a plain scalar, or the calling convention is not the default C one.
+  `[abi=incomplete]` marks a declaration whose parameter or result type is a
+  record still incomplete at the end of the translation unit.
 - `fallthrough` is present only on definitions and says what reaching the end
   of the body means. `ret(value)` evaluates the value only when control reaches
   that point; its local bindings belong to the function body.

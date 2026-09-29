@@ -849,8 +849,10 @@ impl fmt::Display for DisplayModule<'_> {
                 Some(MemoryEffects::Read) => f.write_str(" [memory=read]")?,
                 None => {}
             }
-            if function.abi.has_nontrivial_pass() {
-                write!(f, " [abi={}]", function.abi)?;
+            match &function.abi {
+                Some(abi) if abi.has_nontrivial_pass() => write!(f, " [abi={abi}]")?,
+                Some(_) => {}
+                None => f.write_str(" [abi=incomplete]")?,
             }
             if let Some(fallthrough) = &function.fallthrough {
                 f.write_str(" [fallthrough=")?;

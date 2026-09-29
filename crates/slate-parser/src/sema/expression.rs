@@ -150,7 +150,7 @@ impl Lowerer {
             name: builtin.name.into(),
             parameters,
             return_type: return_type.as_deref().cloned(),
-            abi: self.abi_signature(&ty, None)?,
+            abi: Some(self.abi_signature(&ty, None)?),
             linkage: Linkage::External,
             symbol: SymbolAttributes::default(),
             semantics: FunctionSemantics {

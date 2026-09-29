@@ -83,7 +83,7 @@ pub struct Function {
     pub name: String,
     pub parameters: Parameters,
     pub return_type: Option<Type>,
-    pub abi: AbiSignature,
+    pub abi: Option<AbiSignature>,
     pub linkage: Linkage,
     pub symbol: SymbolAttributes,
     pub semantics: FunctionSemantics,

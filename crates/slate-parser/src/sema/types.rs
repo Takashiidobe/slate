@@ -3221,25 +3221,25 @@ pub(super) fn resolve_type_module(
                     ty,
                     atomic: resolver.ctypes.quals(return_c).is_atomic,
                 });
-                let abi = super::abi::AbiClassifier::new(&resolver, &module.target).from_parts(
-                    result.as_ref(),
-                    &parameter_operands,
-                    matches!(
-                        &parameters,
-                        crate::ir::Parameters::Prototype { variadic: true, .. }
-                    ),
-                    parameter_operands.len(),
-                    view_convention(
-                        &resolver,
-                        &parameters,
-                        function
-                            .specifiers
-                            .attributes
-                            .iter()
-                            .chain(function.declarator.grouped_attributes())
-                            .chain(&function.attributes),
-                    ),
-                )?;
+                let abi = super::abi::AbiClassifier::new(&resolver, &module.target)
+                    .declaration_parts(
+                        result.as_ref(),
+                        &parameter_operands,
+                        matches!(
+                            &parameters,
+                            crate::ir::Parameters::Prototype { variadic: true, .. }
+                        ),
+                        view_convention(
+                            &resolver,
+                            &parameters,
+                            function
+                                .specifiers
+                                .attributes
+                                .iter()
+                                .chain(function.declarator.grouped_attributes())
+                                .chain(&function.attributes),
+                        ),
+                    )?;
                 let lowered = declaration.derive(Function {
                     id: BindingId(next_binding),
                     name: name.into(),
@@ -3286,14 +3286,13 @@ pub(super) fn resolve_type_module(
                         atomic: resolver.ctypes.quals(return_c).is_atomic,
                     });
                     let abi = super::abi::AbiClassifier::new(&resolver, &module.target)
-                        .from_parts(
+                        .declaration_parts(
                             result.as_ref(),
                             &parameter_operands,
                             matches!(
                                 &parameters,
                                 crate::ir::Parameters::Prototype { variadic: true, .. }
                             ),
-                            parameter_operands.len(),
                             view_convention(
                                 &resolver,
                                 &parameters,

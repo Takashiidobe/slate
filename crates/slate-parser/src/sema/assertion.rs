@@ -220,6 +220,9 @@ impl Checker<'_> {
                 .name()
                 .map(|name| self.types.function_names(ty, name));
             if let Some((returned, ..)) = self.types.ctypes.function_parts(ty) {
+                if self.types.is_incomplete_record(returned) {
+                    self.reject(&at, "incomplete result type in function definition");
+                }
                 returns = if self.types.ctypes.is_void(returned) {
                     Returns::Void
                 } else {
@@ -259,6 +262,9 @@ impl Checker<'_> {
                 let adjusted = self
                     .types
                     .adjusted_parameter(resolved, declared_array.qualifiers.into());
+                if self.types.is_incomplete_record(adjusted) {
+                    self.reject(parameter, "variable has incomplete type");
+                }
                 let register = parameter.specifiers.storage == StorageClass::Register;
                 let declared = self.declare_object(parameter.id, adjusted, None, None, register);
                 self.report(parameter, declared);

@@ -1443,6 +1443,12 @@ records direct value pieces, `direct` a value passed in registers as its own
 type, `byval` a copied memory argument, `byref` an indirect argument, and
 `sret` an indirect result. Call nodes keep their own ABI signature because an
 indirect callee or a variadic call can differ from the enclosing function.
+A declaration may name a record that is incomplete where it is declared
+(`struct S; void f(struct S);`). Its ABI is computed at the end of the
+translation unit, from the declared type once the record may be complete.
+A record that is never completed prints `[abi=incomplete]` (`Function::abi`
+is `None`). Only a definition or a call with an incomplete parameter or result
+is ill-formed, and the checker rejects those.
 
 **`native_c` means trust rustc.** The signature is a label for Slate, not a
 lowering: rustc's `extern "C"` (and `"stdcall"` etc.) computes coerce, sret and

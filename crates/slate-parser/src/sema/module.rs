@@ -149,12 +149,30 @@ impl Lowerer {
     fn finish_module(&mut self, unit: &TranslationUnit) -> Result<(), ResolveError> {
         self.resolve_object_requests(unit)?;
         self.finish_functions(unit.dialect.inline_semantics())?;
+        self.complete_declaration_abis()?;
         let declared: Vec<_> = self.types.entities.types().collect();
         let access = declared
             .into_iter()
             .map(|(id, c)| (id, self.types.access_of(c)))
             .collect();
         super::effects_statements::normalize(&mut self.module, self.next_id, access)
+    }
+
+    fn complete_declaration_abis(&mut self) -> Result<(), ResolveError> {
+        for index in 0..self.module.functions.len() {
+            let function = &self.module.functions[index].value;
+            if function.abi.is_some() {
+                continue;
+            }
+            let signature = self
+                .types
+                .entities
+                .ty(&function.id)
+                .ok_or(ResolveError::Internal("missing function type"))?;
+            let ty = self.types.ir_type(signature);
+            self.module.functions[index].value.abi = self.declaration_abi(signature, &ty)?;
+        }
+        Ok(())
     }
 
     fn declare_implicit_functions(
@@ -179,7 +197,7 @@ impl Lowerer {
             .clone();
         let resolved = self.types.ctypes.implicit_function();
         let ty = self.types.ir_type(resolved);
-        let abi = self.c_abi_signature(resolved, &ty, None)?;
+        let abi = Some(self.c_abi_signature(resolved, &ty, None)?);
         let previous = self.types.entities.declare(id, resolved, false);
         self.record_implicit_function(id);
         let mut symbol = SymbolAttributes::default();
@@ -279,7 +297,7 @@ fn lower_item(
                 return Err(ResolveError::Internal("function definition declarator"));
             };
             let return_type = return_type.as_ref().map(|ty| (**ty).clone());
-            let abi = lower.c_abi_signature(resolved, &ty, None)?;
+            let abi = Some(lower.c_abi_signature(resolved, &ty, None)?);
             let previous = lower.types.entities.declare(id, resolved, false);
             let mut metadata = vec![
                 (
@@ -1043,7 +1061,7 @@ impl Lowerer {
                         variadic: *variadic,
                     },
                 };
-                let abi = self.c_abi_signature(resolved, &ty, None)?;
+                let abi = self.declaration_abi(resolved, &ty)?;
                 let lowered = declarator.derive(Function {
                     id,
                     name: name.into(),

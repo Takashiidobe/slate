@@ -708,6 +708,23 @@ impl TypeResolver {
         {
             return Err(ResolveError::Rejected("call argument count"));
         }
+        if self.is_incomplete_record(returned) {
+            return Err(ResolveError::Rejected(
+                "calling function with incomplete return type",
+            ));
+        }
+        let parameters = parameters.to_vec();
+        for (index, argument) in arguments.iter().enumerate() {
+            let incomplete = parameters
+                .get(index)
+                .is_some_and(|parameter| self.is_incomplete_record(*parameter))
+                || self
+                    .operand_type(argument)
+                    .is_ok_and(|argument| self.is_incomplete_record(argument));
+            if incomplete {
+                return Err(ResolveError::Rejected("argument type is incomplete"));
+            }
+        }
         Ok(Typed::rvalue(returned))
     }
 
@@ -1132,6 +1149,16 @@ impl TypeResolver {
             _ => return false,
         };
         base.is_ok_and(|base| self.vector_element(base).is_some())
+    }
+
+    pub(super) fn is_incomplete_record(&self, c: QualType) -> bool {
+        let CTypeKind::Record { id, .. } = self.ctypes.canonical_kind(c) else {
+            return false;
+        };
+        matches!(
+            self.definitions[id.0 as usize].kind,
+            TypeDefinitionKind::Record { fields: None, .. }
+        )
     }
 
     fn is_complete_record(&self, record: QualType) -> bool {

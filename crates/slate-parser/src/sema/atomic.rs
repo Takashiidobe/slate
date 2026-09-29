@@ -1009,7 +1009,7 @@ impl Lowerer {
             })
             .collect();
         let id = self.fresh();
-        let abi = self.abi_signature(signature, None)?;
+        let abi = Some(self.abi_signature(signature, None)?);
         let function = Function {
             id,
             name: NAME.into(),

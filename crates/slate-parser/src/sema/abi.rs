@@ -34,6 +34,31 @@ impl Lowerer {
             actual_arguments,
         )
     }
+
+    pub(super) fn declaration_abi(
+        &self,
+        signature: crate::sema::ctype::QualType,
+        ir: &Type,
+    ) -> Result<Option<AbiSignature>, ResolveError> {
+        let classifier = AbiClassifier::new(&self.types, &self.context.target);
+        let Type::Function {
+            return_type,
+            parameters,
+            ..
+        } = ir
+        else {
+            return Err(ResolveError::Internal("ABI of non-function type"));
+        };
+        if return_type
+            .iter()
+            .map(|ty| &**ty)
+            .chain(parameters)
+            .any(|ty| classifier.is_incomplete(ty))
+        {
+            return Ok(None);
+        }
+        classifier.signature(ir, Some(signature), None).map(Some)
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -100,6 +125,35 @@ impl<'a> AbiClassifier<'a> {
             parameters.len(),
             *convention,
         )
+    }
+
+    pub(super) fn is_incomplete(&self, ty: &Type) -> bool {
+        let Type::Defined(id) = ty else {
+            return false;
+        };
+        match &self.types.definitions[id.0 as usize].kind {
+            TypeDefinitionKind::Alias(inner) => self.is_incomplete(inner),
+            TypeDefinitionKind::Record { fields, .. } => fields.is_none(),
+            TypeDefinitionKind::Enum { .. } => false,
+        }
+    }
+
+    pub(super) fn declaration_parts(
+        &self,
+        return_type: Option<&AbiOperand>,
+        parameters: &[AbiOperand],
+        variadic: bool,
+        calling: CallConv,
+    ) -> Result<Option<AbiSignature>, ResolveError> {
+        if return_type
+            .into_iter()
+            .chain(parameters)
+            .any(|operand| self.is_incomplete(&operand.ty))
+        {
+            return Ok(None);
+        }
+        self.from_parts(return_type, parameters, variadic, parameters.len(), calling)
+            .map(Some)
     }
 
     #[expect(clippy::wrong_self_convention, reason = "ok for now")]
