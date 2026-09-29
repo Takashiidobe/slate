@@ -15,6 +15,7 @@ use super::attributes::Subject;
 use super::ctype::convert::ConversionContext;
 use super::ctype::{Extent, QualType};
 use super::entity::ObjectRequest;
+use super::function::{builtin_deallocator, deallocator_argument};
 use super::initializer::ElementError;
 use super::module::{applies, function_symbol, linkage as declared_linkage, symbol_attributes};
 use super::numeric::{Context, ResolveError};
@@ -633,6 +634,20 @@ impl Checker<'_> {
         }
     }
 
+    fn deallocator(&mut self, function: &Expr, argument: Option<&Expr>) {
+        let ty = if self.types.function_references.contains(&function.id) {
+            self.types.expression_type(function)
+        } else if let Some((_, signature)) = builtin_deallocator(self.types, function) {
+            Ok(signature)
+        } else {
+            return self.reject(function, "'malloc' argument is not a function");
+        };
+        let result = ty.and_then(|ty| deallocator_argument(self.types, ty, argument));
+        if self.types.compiler_flavor() == CompilerFlavor::Clang {
+            self.report(function, result.map(drop));
+        }
+    }
+
     fn weakref<'a, T>(
         &mut self,
         at: &Span<T>,
@@ -676,6 +691,15 @@ impl Checker<'_> {
             at,
             function_symbol(attributes.iter().copied(), asm_label).map(drop),
         );
+        for attribute in attributes {
+            if let Attribute::Malloc {
+                deallocator: Some(function),
+                argument,
+            } = &attribute.value
+            {
+                self.deallocator(function, argument.as_ref());
+            }
+        }
         self.report(at, declared_linkage(specifiers.storage).map(drop));
         let Some(&id) = self.types.declarations.get(&node) else {
             return;

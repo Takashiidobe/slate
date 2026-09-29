@@ -521,7 +521,7 @@ Attribute = (* no arguments *)
             "Packed" | "LifetimeBound" | "Overloadable" | "GnuInline"
           | "NoThrow" | "SelectAny" | "ThreadLocal" | "NoAlias"
           | "RestrictReturn" | "OptimizeNone" | "Weak" | "Used" | "Retain"
-          | "NoInline" | "AlwaysInline" | "NoReturn" | "Malloc"
+          | "NoInline" | "AlwaysInline" | "NoReturn"
           | "ReturnsNonNull" | "WarnUnusedResult" | "Cold" | "Flatten"
           | "Hot" | "Leaf" | "NoIpa" | "NoClone" | "Naked" | "Interrupt"
           | "NoSplitStack" | "ReturnsTwice" | "DllImport" | "DllExport"
@@ -534,6 +534,7 @@ Attribute = (* no arguments *)
           | "ExtVectorType(" expr ")"
           | "AssumeAligned(" vec<expr> ")" | "AllocSize(" vec<expr> ")"
           | PassObjectSize { size_type: expr, dynamic: bool }
+          | Malloc { deallocator: opt<expr>, argument: opt<expr> }
           | "AlignAs(" AlignAsOperand ")"
             (* string arguments *)
           | "CodeSeg(" string ")" | "Mode(" string ")"

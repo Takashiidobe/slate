@@ -583,6 +583,16 @@ impl Lowerer {
             ast::Attribute::AllocAlign(expression) => {
                 ast::Attribute::AllocAlign(fold(self, expression)?)
             }
+            ast::Attribute::Malloc {
+                deallocator,
+                argument,
+            } => ast::Attribute::Malloc {
+                deallocator: deallocator.clone(),
+                argument: argument
+                    .as_ref()
+                    .map(|argument| fold(self, argument))
+                    .transpose()?,
+            },
             ast::Attribute::ExtVectorType(expression) => {
                 ast::Attribute::ExtVectorType(fold(self, expression)?)
             }

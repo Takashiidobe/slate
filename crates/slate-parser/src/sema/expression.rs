@@ -114,7 +114,7 @@ impl Lowerer {
         ))
     }
 
-    fn builtin_declaration(
+    pub(super) fn builtin_declaration(
         &mut self,
         e: &Expr,
         builtin: &'static ClangBuiltin,

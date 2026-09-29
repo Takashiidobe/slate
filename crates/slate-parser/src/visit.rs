@@ -428,6 +428,15 @@ pub fn walk_attribute<V: Visitor + ?Sized>(
         } => visitor.visit_expr(value),
         Attribute::AlignAs(AlignAsOperand::Expr(value)) => visitor.visit_expr(value),
         Attribute::AlignAs(AlignAsOperand::Type { ty }) => visitor.visit_type_name(ty),
+        Attribute::Malloc {
+            deallocator,
+            argument,
+        } => {
+            for value in deallocator.iter().chain(argument) {
+                visitor.visit_expr(value)?;
+            }
+            Ok(())
+        }
         Attribute::AssumeAligned(values) | Attribute::AllocSize(values) => {
             for value in values {
                 visitor.visit_expr(value)?;
@@ -464,7 +473,6 @@ pub fn walk_attribute<V: Visitor + ?Sized>(
         | Attribute::Target(_)
         | Attribute::Alias(_)
         | Attribute::WeakRef(_)
-        | Attribute::Malloc
         | Attribute::ReturnsNonNull
         | Attribute::WarnUnusedResult
         | Attribute::Sentinel(_)

@@ -979,7 +979,10 @@ pub enum Attribute {
     Target(String),
     Alias(String),
     WeakRef(Option<String>),
-    Malloc,
+    Malloc {
+        deallocator: Option<Expr>,
+        argument: Option<Expr>,
+    },
     AssumeAligned(Vec<Expr>),
     AllocSize(Vec<Expr>),
     AllocAlign(Expr),

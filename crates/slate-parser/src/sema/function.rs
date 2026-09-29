@@ -1,10 +1,17 @@
 use super::builtins::BuiltinAttribute;
+use super::builtins::ClangBuiltin;
+use super::ctype::QualType;
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
-use crate::ast::{Attribute, DeclarationSpecifiers, Declarator, Span, StorageClass};
+use super::types::TypeResolver;
+use crate::ast::{
+    Attribute, DeclarationSpecifiers, Declarator, Expr, ExprKind, Span, StorageClass,
+};
 use crate::compiler_args::CompilerFlavor;
 use crate::compiler_options::InlineSemantics;
-use crate::ir::{BindingId, Fallthrough, FunctionSemantics, Inlining, Linkage, MemoryEffects};
+use crate::ir::{
+    BindingId, Deallocator, Fallthrough, FunctionSemantics, Inlining, Linkage, MemoryEffects, Type,
+};
 use crate::target_info::TargetEnvironment;
 
 #[derive(Default)]
@@ -16,12 +23,55 @@ pub(super) struct FunctionDeclarations {
     noreturn: bool,
     naked: bool,
     memory: Option<MemoryEffects>,
+    deallocators: Vec<Deallocator>,
     attributes: Vec<Attribute>,
 }
 
 impl FunctionDeclarations {
     fn restrict_memory(&mut self, memory: MemoryEffects) {
         self.memory = Some(self.memory.map_or(memory, |current| current.min(memory)));
+    }
+}
+
+/// An undeclared builtin named as a `malloc` deallocator, with its signature.
+pub(super) fn builtin_deallocator(
+    types: &mut TypeResolver,
+    function: &Expr,
+) -> Option<(&'static ClangBuiltin, QualType)> {
+    let ExprKind::Identifier(name) = &function.value else {
+        return None;
+    };
+    if types.references.contains_key(&function.id) {
+        return None;
+    }
+    let builtin = super::builtins::clang_builtin(name, types.compiler_flavor())?;
+    Some((builtin, types.builtin_signature(builtin)?))
+}
+
+/// The 0-based parameter of a `malloc` deallocator of type `ty` that takes the pointer.
+pub(super) fn deallocator_argument(
+    types: &mut TypeResolver,
+    ty: QualType,
+    argument: Option<&Expr>,
+) -> Result<u32, ResolveError> {
+    const OUT_OF_BOUNDS: ResolveError =
+        ResolveError::Rejected("'malloc' attribute parameter is out of bounds");
+    let index = match argument {
+        Some(argument) => u32::try_from(types.constant_integer(argument)?)
+            .ok()
+            .and_then(|position| position.checked_sub(1))
+            .ok_or(OUT_OF_BOUNDS)?,
+        None => 0,
+    };
+    match types.ctypes.function_parts(ty) {
+        Some((_, parameters, _, true)) => match parameters.get(index as usize) {
+            Some(&parameter) if types.ctypes.is_pointer(parameter) => Ok(index),
+            Some(_) => Err(ResolveError::Rejected(
+                "'malloc' argument refers to a non-pointer parameter",
+            )),
+            None => Err(OUT_OF_BOUNDS),
+        },
+        _ => Ok(index),
     }
 }
 
@@ -77,7 +127,38 @@ impl Lowerer {
         definition: bool,
         file_scope: bool,
     ) -> Result<(), ResolveError> {
+        let mut deallocators = Vec::new();
+        for attribute in attributes {
+            let Attribute::Malloc {
+                deallocator: Some(function),
+                argument,
+            } = &attribute.value
+            else {
+                continue;
+            };
+            let (binding, ty) = match builtin_deallocator(&mut self.types, function) {
+                Some((builtin, signature)) => (
+                    self.builtin_declaration(function, builtin, signature)?,
+                    signature,
+                ),
+                None => (
+                    self.reference(function)?,
+                    self.types.expression_type(function)?,
+                ),
+            };
+            if let Ok(argument) = deallocator_argument(&mut self.types, ty, argument.as_ref()) {
+                deallocators.push(Deallocator {
+                    function: binding,
+                    argument,
+                });
+            }
+        }
         let state = self.function_declarations.entry(id).or_default();
+        for deallocator in deallocators {
+            if !state.deallocators.contains(&deallocator) {
+                state.deallocators.push(deallocator);
+            }
+        }
         if specifiers.is_inline && state.inlining.is_none() {
             state.inlining = Some(Inlining::Hint);
         }
@@ -201,6 +282,11 @@ impl Lowerer {
                 noreturn: state.noreturn,
                 naked: state.naked,
                 memory: state.memory,
+                deallocators: if matches!(function.return_type, Some(Type::Pointer { .. })) {
+                    state.deallocators.clone()
+                } else {
+                    Vec::new()
+                },
             };
             // a naked function has no epilogue: clang ends its body in `unreachable`.
             if (state.noreturn || state.naked) && function.body.is_some() {

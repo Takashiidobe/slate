@@ -421,7 +421,42 @@ fn parse_attribute_value(
                 .unwrap_or_else(|| invalid_attribute(name, arguments)),
             _ => invalid_attribute(name, arguments),
         }),
-        "malloc" if arguments.is_empty() => Ok(Attribute::Malloc),
+        "malloc" if arguments.is_empty() => Ok(Attribute::Malloc {
+            deallocator: None,
+            argument: None,
+        }),
+        "malloc" => Ok(
+            match arguments
+                .split(|token| token.value == Token::Comma)
+                .collect::<Vec<_>>()
+                .as_slice()
+            {
+                [
+                    function @ [
+                        Span {
+                            value: Token::Ident(_),
+                            ..
+                        },
+                    ],
+                    argument @ ..,
+                ] if argument.len() <= 1 => {
+                    match (
+                        parse_expression(function),
+                        argument
+                            .first()
+                            .map(|argument| parse_expression(argument))
+                            .transpose(),
+                    ) {
+                        (Ok(function), Ok(argument)) => Attribute::Malloc {
+                            deallocator: Some(function),
+                            argument,
+                        },
+                        _ => invalid_attribute(name, arguments),
+                    }
+                }
+                _ => invalid_attribute(name, arguments),
+            },
+        ),
         "returns_nonnull" if arguments.is_empty() => Ok(Attribute::ReturnsNonNull),
         "warn_unused_result" if arguments.is_empty() => Ok(Attribute::WarnUnusedResult),
         "sentinel" if arguments.is_empty() => Ok(Attribute::Sentinel(None)),

@@ -363,36 +363,8 @@ impl Resolver {
                 self.visit_expr(value)
             }
             ExprKind::Call { callee, arguments } => {
-                let implicit_builtin = match &callee.value {
-                    ExprKind::Identifier(name) if self.lookup_ordinary(name).is_none() => {
-                        super::builtins::clang_builtin(name, self.flavor)
-                    }
-                    _ => None,
-                };
-                // GCC's `__builtin_exit` calls whatever `exit` is declared
-                // in scope, so bind the prefixed spelling to it.
-                if let (Some(builtin), ExprKind::Identifier(name)) =
-                    (implicit_builtin, &callee.value)
-                {
-                    let visible = (builtin.name != name)
-                        .then(|| self.lookup_ordinary(builtin.name))
-                        .flatten();
-                    match visible
-                        .or_else(|| self.linked.get(builtin.name))
-                        .filter(|entry| entry.kind == BindingKind::Function)
-                        .cloned()
-                    {
-                        Some(entry) => self.push_reference(builtin.name, entry, callee),
-                        None => self
-                            .implicit_builtin_calls
-                            .entry(builtin.name)
-                            .or_default()
-                            .push(copy_span(callee, ())),
-                    }
-                }
-                if implicit_builtin.is_none()
-                    && !super::expression::specially_lowered(callee, arguments)
-                {
+                let implicit_builtin = self.implicit_builtin(callee);
+                if !implicit_builtin && !super::expression::specially_lowered(callee, arguments) {
                     match &callee.value {
                         ExprKind::Identifier(name)
                             if self.flavor == CompilerFlavor::Msvc
@@ -463,10 +435,52 @@ impl Resolver {
         }
     }
 
+    /// Binds an undeclared builtin named by `function` as a call would.
+    fn implicit_builtin(&mut self, function: &Expr) -> bool {
+        let ExprKind::Identifier(name) = &function.value else {
+            return false;
+        };
+        if self.lookup_ordinary(name).is_some() {
+            return false;
+        }
+        let Some(builtin) = super::builtins::clang_builtin(name, self.flavor) else {
+            return false;
+        };
+        // GCC's `__builtin_exit` calls whatever `exit` is declared
+        // in scope, so bind the prefixed spelling to it.
+        let visible = (builtin.name != name)
+            .then(|| self.lookup_ordinary(builtin.name))
+            .flatten();
+        match visible
+            .or_else(|| self.linked.get(builtin.name))
+            .filter(|entry| entry.kind == BindingKind::Function)
+            .cloned()
+        {
+            Some(entry) => self.push_reference(builtin.name, entry, function),
+            None => self
+                .implicit_builtin_calls
+                .entry(builtin.name)
+                .or_default()
+                .push(copy_span(function, ())),
+        }
+        true
+    }
+
     fn attributes(&mut self, attributes: &[Span<Attribute>]) -> Result<(), ResolveError> {
         for attribute in attributes {
             match &attribute.value {
                 Attribute::AlignAs(AlignAsOperand::Type { ty }) => self.type_name(ty, attribute)?,
+                Attribute::Malloc {
+                    deallocator: Some(function),
+                    argument,
+                } => {
+                    if !self.implicit_builtin(function) {
+                        self.visit_expr(function)?;
+                    }
+                    if let Some(argument) = argument {
+                        self.visit_expr(argument)?;
+                    }
+                }
                 value => self.visit_attribute(value)?,
             }
         }

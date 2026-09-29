@@ -565,6 +565,14 @@ impl<'a> Reachability<'a> {
                         self.mark_expr(value);
                     }
                 }
+                Attribute::Malloc {
+                    deallocator,
+                    argument,
+                } => {
+                    for value in deallocator.iter().chain(argument) {
+                        self.mark_expr(value);
+                    }
+                }
                 _ => {}
             }
         }

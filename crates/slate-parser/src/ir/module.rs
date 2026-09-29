@@ -100,6 +100,14 @@ pub struct FunctionSemantics {
     pub noreturn: bool,
     pub naked: bool,
     pub memory: Option<MemoryEffects>,
+    pub deallocators: Vec<Deallocator>,
+}
+
+/// `malloc(function, argument)`: `argument` is the 0-based parameter taking the pointer.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Deallocator {
+    pub function: BindingId,
+    pub argument: u32,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

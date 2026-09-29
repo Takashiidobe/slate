@@ -191,6 +191,7 @@ function    = "fn" binding "@" c_identifier "(" [ params ] ")" "->" type
               [ "[definition=" ( "emitted" | "inline_only" ) "]" ] [ "[noreturn]" ]
               [ "[naked]" ]
               [ "[memory=" ( "none" | "read" ) "]" ]
+              { "[deallocator=%" int ", argument=" int "]" }
               [ "[abi=" ( abi_signature | "incomplete" ) "]" ]
               [ "[fallthrough=" fallthrough "]" ] { metadata }
               ( ";" | "{" { statement } "}" ) ;

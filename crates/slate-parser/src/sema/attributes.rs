@@ -148,7 +148,7 @@ fn general_use(attribute: &Attribute) -> Use {
         | Attribute::NonNull(_)
         | Attribute::Annotate(_)
         | Attribute::Target(_)
-        | Attribute::Malloc
+        | Attribute::Malloc { .. }
         | Attribute::AssumeAligned(_)
         | Attribute::AllocSize(_)
         | Attribute::AllocAlign(_)
@@ -208,7 +208,7 @@ fn inapplicable(
             (!record).then_some(("gcc_struct", Some("structs, unions, and classes")))
         }
         Attribute::Ifunc(_) => function_only("ifunc"),
-        Attribute::Malloc => function_only("malloc"),
+        Attribute::Malloc { .. } => function_only("malloc"),
         Attribute::Cold => function_only("cold"),
         Attribute::Hot => function_only("hot"),
         Attribute::Flatten => function_only("flatten"),

@@ -147,5 +147,12 @@ control-flow facts:
 - `noreturn` merges `_Noreturn`, `[[noreturn]]`, and the GNU attribute
   across declarations. GNU `const`/`pure` become `[memory=none]`/
   `[memory=read]` (`const` wins).
+- `malloc(f[, n])` on a function returning a pointer becomes
+  `[deallocator=%f, argument=n-1]`, one per distinct pair across
+  declarations. `f` resolves like a callee (an undeclared builtin such as
+  `__builtin_free` gets its builtin declaration). A non-function `f` is
+  rejected; a bad `n` (out of range, non-pointer parameter) is rejected
+  under clang and dropped under gcc. clang ignores the attribute but
+  validates it; it is kept for Slate either way.
 - `naked` is in [asm](asm.md#naked-functions).
 - Fixtures: `ir_inline*.c`, `ir_function_specifiers.c`.

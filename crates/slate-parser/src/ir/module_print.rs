@@ -852,6 +852,13 @@ impl fmt::Display for DisplayModule<'_> {
                 Some(MemoryEffects::Read) => f.write_str(" [memory=read]")?,
                 None => {}
             }
+            for deallocator in &function.semantics.deallocators {
+                write!(
+                    f,
+                    " [deallocator=%{}, argument={}]",
+                    deallocator.function.0, deallocator.argument
+                )?;
+            }
             match &function.abi {
                 Some(abi) if abi.has_nontrivial_pass() => write!(f, " [abi={abi}]")?,
                 Some(_) => {}

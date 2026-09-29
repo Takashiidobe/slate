@@ -170,6 +170,12 @@ Fixtures: `sema/ir_attribute_applicability.c`,
   an unprototyped one) and classifies `&var` → parameter as an argument
   conversion: clang rejects every mismatch except dropped qualifiers, gcc
   applies the conversion warning's default severity.
+- Name arguments are resolved references (`Expr` → `BindingId`) when they
+  name a C entity (`cleanup`, `malloc` deallocator), and strings only when
+  they name an assembler symbol (`alias`, `weakref`, `ifunc`).
+- `malloc(f[, n])`: `f` resolves like a callee (`Resolver::implicit_builtin`
+  for undeclared builtins); `deallocator_argument` (shared) validates `n`
+  ([ir/declarations](ir/declarations.md#function-semantics)).
 - Known duplicate: the `always_inline` / `noinline` conflict is checked in
   `Checker::inlining` and again in `record_function`.
 
@@ -180,7 +186,7 @@ Fixtures: `sema/ir_attribute_applicability.c`,
 | `module::symbol_attributes` | `visibility`, `tls_model`, `weak`, `alias`, `section`, `used`, `retain`, `dllimport`/`dllexport`, `weakref`, `ifunc`, `selectany`, `asm("sym")` | `SymbolAttributes` on `Global` / `Function` ([ir/declarations](ir/declarations.md#symbol-attributes)) |
 | `module::function_symbol` | same, filtered to function-relevant ones; rejects a register asm label or `__declspec(thread)` on a function | function `SymbolAttributes` |
 | `Pragmas::apply` | `#pragma visibility`, `#pragma weak`, `#pragma redefine_extname` | fills unset `SymbolAttributes` fields |
-| `Lowerer::record_function` | `gnu_inline`, `always_inline`, `noinline`, `noreturn`, `naked`, `const`, `pure` | `FunctionSemantics`; every attribute is also kept |
+| `Lowerer::record_function` | `gnu_inline`, `always_inline`, `noinline`, `noreturn`, `naked`, `const`, `pure`, `malloc(f[, n])` | `FunctionSemantics`; every attribute is also kept |
 | `render_c_attributes` | the kept attributes, integer constant arguments folded | `c_attributes` metadata |
 | `types::requested_alignment` | `aligned`, `_Alignas` | object request → `[align=N]` ([object properties](ir/declarations.md#object-properties)) |
 | `types::field_request` | `packed`, `aligned` on field and its declaration | record layout |

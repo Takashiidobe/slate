@@ -79,7 +79,7 @@ the occurrence id.
 | alias, ifunc resolver | function implementation |
 | noreturn (done), returns_twice | control-flow facts |
 | constructor/destructor priority, target features, interrupt | execution requirements |
-| nonnull, access, alloc_size, alloc_align, malloc | parameter/result contracts (`alloc_size(1, 2)` → `Product(Argument(0), Argument(1))`) |
+| nonnull, access, alloc_size, alloc_align, malloc (deallocator done) | parameter/result contracts (`alloc_size(1, 2)` → `Product(Argument(0), Argument(1))`) |
 | pure/const | function contracts (done as `memory=`) |
 | inline, hot/cold, optimize | hints |
 | deprecated, nodiscard, format | hints/metadata |
