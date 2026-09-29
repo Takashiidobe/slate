@@ -22,7 +22,7 @@ stream of `PPNode`s (`Code`, `Comment`, `Pragma`) that the parser reads as
 | `expand.rs` | macro expansion, builtin macros, `#if` operand protection |
 | `define.rs` | `#define` / `#undef` parsing |
 | `include.rs` | include resolution, `#pragma once`, depth limit, outermost system header |
-| `has_checks.rs` | generated; `__has_builtin` / `__has_feature` / … answers ([attributes](attributes.md#preprocessor-queries)) |
+| `has_checks.rs` | hand-maintained `__has_builtin` / `__has_feature` / … answers, seeded from clang tablegen and extended per flavor ([attributes](attributes.md#preprocessor-queries)) |
 
 Include directories come from `compiler_headers.rs` and `sysroot.rs`,
 which point at headers installed by `../slate-sysroots`.

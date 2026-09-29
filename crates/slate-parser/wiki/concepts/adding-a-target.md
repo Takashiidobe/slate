@@ -19,7 +19,7 @@ Nothing else matches on the triple string.
 
 1. Capture predefines into `src/predefines/` from the oracle
    (`clang --target=<triple> -dM -E -x c /dev/null`, the target's gcc,
-   `tools/cl.exe`). Delete the macros the ISA generator in `src/target/`
+   `tools/cl.exe`; see [generated-sources](generated-sources.md#predefines)). Delete the macros the ISA generator in `src/target/`
    emits (arch, FPU, float-ABI, CPU) and the GNU-namespace ones (`linux`,
    `unix`, `i386`). Check with `tools/gcc_macro_diff.py '<cc> <flags>'
    '--flavor=... -target=<triple> <flags>'`; only `__SLATE_*` may differ.
