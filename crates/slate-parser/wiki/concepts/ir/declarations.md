@@ -106,20 +106,9 @@ alignment):
 
 ## Declaration attribute classification
 
-Every attribute on an object or typedef declaration is classified once by
-the exhaustive `sema::attributes::declaration_use`:
-
-| Class | Meaning | Examples |
-| --- | --- | --- |
-| `Symbol` | folded into `SymbolAttributes` | `section`, `weak`, `used` |
-| `Layout` | consumed by type resolution or the object request | `aligned`, `packed` |
-| `Ignored` | nothing the IR must carry | `deprecated`, `nodiscard`, `maybe_unused`, `may_alias`, unknown and vendor attributes, function attributes with no object meaning |
-| `Unsupported(reason)` | named gap | machine mode, address space, scalar storage order, record layout, `ifunc`, code segment |
-
-- Function attributes are not classified this way: `function_symbol` has
-  its own filter and `record_function` keeps the rest as `c_attributes`
-  metadata (integer constant arguments folded). Keeping an attribute is not
-  implementing it.
+- Classification (`declaration_use`) and consumers: [attribute pipeline](../attributes.md).
+- Function attributes are kept as `c_attributes` metadata (integer
+  constant arguments folded). Keeping an attribute is not implementing it.
 - `asm("sym")` is ignored on a typedef and an automatic local (as clang); a
   register label (`register int x asm("eax")`) keeps the register spelling
   on the binding.

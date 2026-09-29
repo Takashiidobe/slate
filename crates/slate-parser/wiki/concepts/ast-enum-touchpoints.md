@@ -115,6 +115,8 @@ its declarator too.
 
 ## Adding an `Attribute` variant
 
+Full pipeline and steps: [attributes](attributes.md).
+
 - `src/visit.rs`: expression-bearing attributes.
 - `src/parser/attributes.rs`: spelling table and argument parsing.
 - `src/sema/attributes.rs`: `declaration_use`; classify as symbol, layout,

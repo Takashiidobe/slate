@@ -57,7 +57,7 @@ Only `context.region` (FP pragmas) changes within a translation unit.
 | --- | --- |
 | Macro predefined, and its value | `src/predefines/` snapshot; computed macros in `Preprocessor::configure` |
 | Keyword or grammar exists in this mode | `StandardFeatures` field |
-| Attribute name exists (`__has_attribute`, unknown-attribute warning) | `Gate` table, `src/attribute_support.rs` |
+| Attribute name exists (`__has_attribute`, unknown-attribute warning) | `Gate` table, `src/attribute_support.rs` ([attributes](attributes.md)) |
 | Attribute argument forms | `parse_attribute_value` (`parser/attributes.rs`); flavor-blind, accepts the union |
 | Where an attribute applies | `declaration_use` / `inapplicable` (`sema/attributes.rs`); flavor-blind |
 | What an attribute means for this flavor | its checker rule, then its lowering consumer (`symbol_attributes`, `record_function`, layout requests) |

@@ -118,6 +118,8 @@ Before changing these, read:
 
 Subsystems:
 
+- [attributes](wiki/concepts/attributes.md): attribute pipeline from
+  parsing and registration to applicability and IR consumers.
 - [sema-passes](wiki/concepts/sema-passes.md): pass order, which
   `src/sema/` file belongs to which pass, `ResolveError` policy.
 - [c-type-layer](wiki/concepts/c-type-layer.md): interned C types in
