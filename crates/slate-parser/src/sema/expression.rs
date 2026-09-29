@@ -685,7 +685,7 @@ impl Lowerer {
             .ok_or(ResolveError::Internal(
                 "conversion not recorded by the checker",
             ))?;
-        self.apply_conversion(Some(e), conversion, value, to, reason)
+        self.apply_conversion(conversion, value, to, reason)
     }
 
     fn convert_classified(
@@ -701,18 +701,6 @@ impl Lowerer {
             self.types
                 .ctypes
                 .classify_conversion(value.c, c, conversion_context(reason), null)?;
-        self.apply_conversion(e, conversion, value, c, reason)
-    }
-
-    fn apply_conversion(
-        &mut self,
-        e: Option<&Expr>,
-        conversion: Conversion,
-        value: Operand,
-        to: QualType,
-        reason: ConversionReason,
-    ) -> Result<Operand, ResolveError> {
-        let c = self.types.ctypes.unqualified(to);
         if let Some((warning, message)) = conversion.warning {
             if let Some(e) = e {
                 self.warn(warning, message, e);
@@ -720,6 +708,17 @@ impl Lowerer {
                 self.warn(warning, message, &value.value.node);
             }
         }
+        self.apply_conversion(conversion, value, c, reason)
+    }
+
+    fn apply_conversion(
+        &mut self,
+        conversion: Conversion,
+        value: Operand,
+        to: QualType,
+        reason: ConversionReason,
+    ) -> Result<Operand, ResolveError> {
+        let c = self.types.ctypes.unqualified(to);
         Ok(Operand {
             value: self.emit_cast(conversion.kind, value, c, reason)?,
             c,
@@ -1746,7 +1745,14 @@ impl Lowerer {
             old
         };
         let computation = self.binary(e, op, old, rhs)?;
-        let computation = self.convert(computation, c, ConversionReason::Assign)?;
+        let conversion = self.types.ctypes.classify_conversion(
+            computation.c,
+            c,
+            ConversionContext::Assign,
+            false,
+        )?;
+        let computation =
+            self.apply_conversion(conversion, computation, c, ConversionReason::Assign)?;
         Ok(self.operand(
             e,
             c,

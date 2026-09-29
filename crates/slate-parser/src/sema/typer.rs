@@ -1,6 +1,6 @@
 use super::atomic::{AtomicBuiltin, AtomicResult, atomic_builtin};
 use super::builtins::{CustomBuiltin, DerivedSignature};
-use super::ctype::convert::{CastKind, ConversionContext};
+use super::ctype::convert::{CastKind, Conversion, ConversionContext};
 use super::ctype::{CTypeKind, Extent, QualType};
 use super::expression::{
     SourceLocationBuiltin, VaBuiltin, choose_expr_operands, constant_p_operand,
@@ -397,16 +397,7 @@ impl TypeResolver {
                     Typed::rvalue(self.ctypes.unqualified(typed.c))
                 } else {
                     let updated = self.updated(target)?;
-                    let current = self.operand_type(target)?;
-                    let current = self.promoted(current);
-                    let op = super::expression::assignment_operator(*op)?;
-                    let computed = self.binary_type(op, current, value)?;
-                    self.ctypes.classify_conversion(
-                        computed,
-                        updated.c,
-                        ConversionContext::Assign,
-                        false,
-                    )?;
+                    self.compound_conversion(*op, target, value, updated.c)?;
                     updated
                 }
             }
@@ -967,7 +958,11 @@ impl TypeResolver {
                 "conversion between vector types of different size",
             ));
         }
-        self.conversions.insert(e.id, conversion);
+        if self.conversions.insert(e.id, conversion).is_none()
+            && let Some((warning, message)) = conversion.warning
+        {
+            self.warn(warning, message, e);
+        }
         Ok(())
     }
 
@@ -1048,6 +1043,21 @@ impl TypeResolver {
             }
             _ => false,
         }
+    }
+
+    pub(super) fn compound_conversion(
+        &mut self,
+        op: AssignOp,
+        target: &Expr,
+        value: QualType,
+        updated: QualType,
+    ) -> Result<Conversion, ResolveError> {
+        let current = self.operand_type(target)?;
+        let current = self.promoted(current);
+        let op = super::expression::assignment_operator(op)?;
+        let computed = self.binary_type(op, current, value)?;
+        self.ctypes
+            .classify_conversion(computed, updated, ConversionContext::Assign, false)
     }
 
     fn updated(&mut self, target: &Expr) -> Result<Typed, ResolveError> {

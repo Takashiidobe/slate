@@ -7,6 +7,7 @@ use crate::ir::{
     ValueKind,
 };
 use crate::visit::{self, Visitor};
+use miette::Severity;
 use num_bigint::{BigInt, Sign};
 
 use super::attributes::Subject;
@@ -71,7 +72,9 @@ pub(super) fn validate(
             _ => {}
         }
         let diagnostics = std::mem::take(&mut checker.types.diagnostics);
-        if !diagnostics.is_empty() {
+        if diagnostics.iter().any(|d| d.severity == Severity::Error) {
+            checker.errors.extend(diagnostics);
+        } else if !diagnostics.is_empty() {
             checker
                 .types
                 .item_diagnostics
@@ -972,6 +975,7 @@ impl Checker<'_> {
             | ExprKind::AlignOfExpr(expr)
             | ExprKind::Member { base: expr, .. } => self.expression(expr),
             ExprKind::Assign { op, target, value } => {
+                let target_expr = target;
                 self.expression(target);
                 self.expression(value);
                 if *op == AssignOp::Assign
@@ -980,6 +984,19 @@ impl Checker<'_> {
                     && self.types.require_modifiable_lvalue(target.c).is_ok()
                 {
                     self.convert(value, target.c, ConversionContext::Assign);
+                } else if *op != AssignOp::Assign
+                    && let Ok(target) = self.types.typed(target)
+                    && target.lvalue
+                    && let Ok(from) = self.types.operand_type(value)
+                {
+                    let updated = self.types.ctypes.unqualified(target.c);
+                    if let Ok(conversion) =
+                        self.types
+                            .compound_conversion(*op, target_expr, from, updated)
+                        && let Some((warning, message)) = conversion.warning
+                    {
+                        self.types.warn(warning, message, expr);
+                    }
                 }
             }
             ExprKind::Binary { left, right, .. }

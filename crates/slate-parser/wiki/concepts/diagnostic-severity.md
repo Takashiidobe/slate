@@ -248,12 +248,19 @@ the IR), `sema/attribute_applicability_warnings.c` (the diagnostics),
 `sema/record_attribute_applicability.c` (fields and tags, with the layouts)
 and `error/field-section-attribute.c`.
 
-The two qualifier/sign pointer warnings are clang `ExtWarn`s and need resolved
-types, so they come from IR lowering rather than `Sema::analyze`.
-So do the four above. So does
+The implicit-conversion warnings (`pointer-sign`, both
+`incompatible-pointer-types` forms, `int-conversion`) come from the checker
+(slate-parser-cc94.5.7): `TypeResolver::record_conversion` warns the first
+time it records an expression's conversion, and the checker classifies a
+compound assignment's computed result back to the target through
+`TypeResolver::compound_conversion` (lowering's `update` re-classifies it
+without warning). The checker stashes an item's warnings in
+`item_diagnostics` for lowering to emit in order, but an item whose
+diagnostics include an error (a default-error or `-Werror` warning) moves them
+all into the checker's errors, so plain `parse` rejects `i = p` as clang does.
 `conflicting-types`, which has no clang counterpart (clang errors) and is
-named after clang's "conflicting types" error. `Lowerer`
-collects them in `diagnostics` through `Lowerer::warn`, and `resolve_module`
+named after clang's "conflicting types" error, still comes from IR lowering.
+`Lowerer` collects lowering's warnings in `diagnostics` through `Lowerer::warn`, and `resolve_module`
 passes them through `with_sources`, the same function `analyze` uses, before
 returning them next to the `Module`. A promoted warning
 fails `ir --dump-ir` exactly like an `analyze` error. A warning is reported on
