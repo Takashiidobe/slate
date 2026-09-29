@@ -214,6 +214,22 @@ weakref/selectany linkage, multiple initializers of one linked object
 keeps a syntactic check for it. A conversion to or from an incomplete enum is
 rejected by `classify_conversion`.
 
+Initializers are checked by one current-object walk over types
+(slate-parser-cc94.5.4): `TypeResolver::check_initializer` / `check_braced`
+in `initializer.rs` mirror lowering's `braced` / `fill` / `init_into` /
+`item_entry` / `designate` / `resume` step for step, including the item a
+designator already claimed (brace elision ignores its designator) and a union
+being full once any member is written. The walk reports designator, shape,
+incomplete-record and string-element errors, and records each element's
+conversion together with its target (`TypeResolver::element_targets`).
+Lowering's `convert_element` consumes the recorded conversion and fails
+`Internal` if its own target is not compatible with the checker's, so a
+divergence between the two walks is loud rather than a silently wrong cast.
+Types are compared by compatibility because the checker resolves variably
+modified types with provisional extents. `inferred_array_length` runs the same
+walk without checking, so an array's inferred length and lowering's always
+agree.
+
 Anything that scans all tags must bound itself by position:
 `__asm` member lookup only sees tag bindings below the watermark names.rs
 records for it (`NameResolution.ms_asm_members`), because the checker has

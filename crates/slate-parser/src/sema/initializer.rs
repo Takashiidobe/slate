@@ -1,10 +1,11 @@
+use super::ctype::convert::ConversionContext;
 use super::ctype::{CTypeKind, Extent, QualType};
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use super::operand::Operand;
 use super::types::TypeResolver;
 use crate::ast::{Designator, Expr, ExprKind, Initializer, InitializerItem, Span};
-use crate::const_expr::Encoding;
+use crate::const_expr::{Encoding, StringLiteral};
 use crate::ir::*;
 
 #[derive(Clone)]
@@ -111,7 +112,7 @@ impl Builder {
     }
 
     fn next_target(&self) -> Result<Step, ResolveError> {
-        shape_next_target(&self.shape, self.next)
+        shape_next_target(&self.shape, self.next).map_err(ResolveError::checked)
     }
 
     fn advance(&mut self, target: AggregateTarget) {
@@ -262,10 +263,7 @@ impl Builder {
                     None => self
                         .members
                         .last()
-                        .map(|(target, _)| bounds(*target).1 + 1)
-                        .ok_or(ResolveError::Rejected(
-                            "empty initializer for array of unknown length",
-                        ))?,
+                        .map_or(0, |(target, _)| bounds(*target).1 + 1),
                 };
                 let ty = if *vector {
                     self.ty.clone()
@@ -277,7 +275,7 @@ impl Builder {
                 };
                 (ty, covered < length)
             }
-            Shape::Scalar => return Err(ResolveError::Rejected("initializer list for scalar")),
+            Shape::Scalar => (self.ty.clone(), true),
         };
         let mut members = Vec::new();
         for (target, entry) in self.members {
@@ -306,17 +304,34 @@ impl<'a> Cursor<'a> {
     }
 }
 
+pub(super) struct ElementError {
+    pub(super) at: Option<Span<()>>,
+    pub(super) error: ResolveError,
+}
+
+impl From<ResolveError> for ElementError {
+    fn from(error: ResolveError) -> Self {
+        Self { at: None, error }
+    }
+}
+
 struct Walk {
     c: QualType,
     shape: Shape,
     next: u64,
     reach: u64,
+    written: bool,
 }
 
 impl Walk {
+    fn full(&self) -> bool {
+        shape_full(&self.shape, self.next, usize::from(self.written))
+    }
+
     fn advance(&mut self, target: AggregateTarget) {
         self.next = bounds(target).1 + 1;
         self.reach = self.reach.max(self.next);
+        self.written = true;
     }
 }
 
@@ -341,6 +356,7 @@ impl TypeResolver {
             shape: self.shape(&self.ir_type(c))?,
             next: 0,
             reach: 0,
+            written: false,
         })
     }
 
@@ -520,8 +536,87 @@ impl TypeResolver {
         });
         let mut walk = self.walk(c)?;
         let mut index = 0;
-        self.walk_fill(&mut walk, items, &mut index, true)?;
+        self.walk_fill(&mut walk, items, &mut index, true, false, false)
+            .map_err(|error| error.error)?;
         Ok(walk.reach)
+    }
+
+    // lowering's current-object walk over types alone, recording each element's conversion
+    pub(super) fn check_initializer(
+        &mut self,
+        c: QualType,
+        initializer: &Initializer,
+    ) -> Result<(), ElementError> {
+        match initializer {
+            Initializer::List(items) => self.check_braced(c, items),
+            Initializer::Expr(expr) => {
+                let ty = self.ir_type(c);
+                if matches!(self.shape(&ty)?, Shape::Array { .. })
+                    && self.string_array(expr, &ty)?.is_some()
+                {
+                    return Ok(());
+                }
+                self.record_element(expr, c)
+            }
+        }
+    }
+
+    pub(super) fn check_braced(
+        &mut self,
+        c: QualType,
+        items: &[InitializerItem],
+    ) -> Result<(), ElementError> {
+        let ty = self.ir_type(c);
+        let shape = self.shape(&ty)?;
+        if let (Type::Complex(_), [real, imaginary]) = (self.unaliased(&ty), items)
+            && real.designators.is_empty()
+            && imaginary.designators.is_empty()
+        {
+            let component = self.ctypes.arithmetic_component(c);
+            self.check_initializer(component, &real.value)?;
+            return self.check_initializer(component, &imaginary.value);
+        }
+        if matches!(shape, Shape::Scalar) {
+            return match items {
+                [] => Ok(()),
+                [first, ..] if first.designators.is_empty() => {
+                    self.check_initializer(c, &first.value)
+                }
+                _ => {
+                    Err(ResolveError::Rejected("designator in initializer for scalar type").into())
+                }
+            };
+        }
+        if let (
+            Shape::Array { .. },
+            [
+                InitializerItem {
+                    designators,
+                    value: Initializer::Expr(expr),
+                },
+            ],
+        ) = (&shape, items)
+            && designators.is_empty()
+            && self.string_array(expr, &ty)?.is_some()
+        {
+            return Ok(());
+        }
+        let mut walk = self.walk(c)?;
+        let mut index = 0;
+        self.walk_fill(&mut walk, items, &mut index, true, false, true)
+    }
+
+    fn record_element(&mut self, expr: &Expr, to: QualType) -> Result<(), ElementError> {
+        let at = |error| ElementError {
+            at: Some(expr.derive(())),
+            error,
+        };
+        let from = self.operand_type(expr).map_err(at)?;
+        self.record_conversion(expr, from, to, ConversionContext::Assign)
+            .map_err(at)?;
+        let to = self.ctypes.unqualified(to);
+        self.element_targets.insert(expr.id, to);
+        Ok(())
     }
 
     fn walk_fill(
@@ -530,49 +625,36 @@ impl TypeResolver {
         items: &[InitializerItem],
         index: &mut usize,
         braced: bool,
-    ) -> Result<(), ResolveError> {
+        pending: bool,
+        check: bool,
+    ) -> Result<(), ElementError> {
+        let mut pending = pending;
         while *index < items.len() {
             let designators = &items[*index].designators;
-            if !designators.is_empty() {
+            if !designators.is_empty() && !pending {
                 if !braced {
                     break;
                 }
-                let steps = self.walk_steps(walk, designators)?;
-                self.walk_place(walk, &steps, items, index)?;
+                let ty = self.ir_type(walk.c);
+                let steps = self.designator_steps(&ty, designators)?;
+                self.walk_place(walk, &steps, items, index, check)?;
                 continue;
             }
-            if shape_full(&walk.shape, walk.next, 0) {
+            if walk.full() {
                 if !braced {
                     break;
                 }
                 *index += 1;
+                pending = false;
                 continue;
             }
             let (target, _) = shape_next_target(&walk.shape, walk.next)?;
             let c = self.subobject_type(walk.c, target)?;
-            *index = self.consumed(c, items, *index)?;
+            *index = self.walk_item(c, items, *index, check)?;
+            pending = false;
             walk.advance(target);
         }
         Ok(())
-    }
-
-    fn walk_steps(
-        &mut self,
-        walk: &Walk,
-        designators: &[Designator],
-    ) -> Result<Vec<Step>, ResolveError> {
-        let (first, rest) = designators
-            .split_first()
-            .ok_or(ResolveError::Internal("empty designator list"))?;
-        let mut steps = self.designator_step(&walk.shape, first)?;
-        if !rest.is_empty() {
-            let current = steps
-                .last()
-                .map(|(_, ty)| ty.clone())
-                .ok_or(ResolveError::Internal("empty designator path"))?;
-            steps.extend(self.designator_steps(&current, rest)?);
-        }
-        Ok(steps)
     }
 
     fn walk_place(
@@ -581,80 +663,120 @@ impl TypeResolver {
         steps: &[Step],
         items: &[InitializerItem],
         index: &mut usize,
-    ) -> Result<(), ResolveError> {
+        check: bool,
+    ) -> Result<(), ElementError> {
         let (target, _) = steps
             .first()
             .cloned()
             .ok_or(ResolveError::Internal("empty designator path"))?;
         let c = self.subobject_type(walk.c, target)?;
         if steps.len() == 1 {
-            *index = self.consumed(c, items, *index)?;
+            *index = self.walk_item(c, items, *index, check)?;
         } else {
             let mut sub = self.walk(c)?;
-            self.walk_place(&mut sub, &steps[1..], items, index)?;
-            self.walk_fill(&mut sub, items, index, false)?;
+            self.walk_place(&mut sub, &steps[1..], items, index, check)?;
+            self.walk_fill(&mut sub, items, index, false, false, check)?;
         }
         walk.advance(target);
         Ok(())
     }
 
-    fn consumed(
+    fn walk_item(
         &mut self,
         c: QualType,
         items: &[InitializerItem],
         index: usize,
-    ) -> Result<usize, ResolveError> {
-        let Initializer::Expr(expr) = &items[index].value else {
-            return Ok(index + 1);
-        };
-        let children: Vec<AggregateTarget> = match self.shape(&self.ir_type(c))? {
-            Shape::Scalar => return Ok(index + 1),
-            Shape::Array {
-                element, length, ..
-            } => {
-                if matches!(expr.value, ExprKind::StringLiteral(_))
-                    && matches!(element, Type::Numeric(NumericType::Integer { .. }))
-                {
-                    return Ok(index + 1);
+        check: bool,
+    ) -> Result<usize, ElementError> {
+        let expr = match &items[index].value {
+            Initializer::List(inner) => {
+                if check {
+                    self.check_braced(c, inner)?;
                 }
-                let length = length.ok_or(ResolveError::Unimplemented(
-                    "flexible array member initializer",
-                ))?;
-                (0..length).map(AggregateTarget::Index).collect()
+                return Ok(index + 1);
             }
-            shape @ (Shape::Struct(_) | Shape::Union(_)) => {
-                let (Shape::Struct(fields) | Shape::Union(fields)) = &shape else {
-                    return Ok(index + 1);
-                };
-                let value = self.expression_type(expr)?;
-                if self.initializes_whole(value, c) {
-                    return Ok(index + 1);
-                }
-                let take = if matches!(shape, Shape::Union(_)) {
-                    1
-                } else {
-                    usize::MAX
-                };
-                fields
-                    .iter()
-                    .enumerate()
-                    .filter(|(_, field)| initializable(field))
-                    .take(take)
-                    .map(|(position, _)| AggregateTarget::Field(position))
-                    .collect()
-            }
+            Initializer::Expr(expr) => expr,
         };
-        if children.is_empty() {
+        let ty = self.ir_type(c);
+        let shape = self.shape(&ty)?;
+        if matches!(shape, Shape::Array { .. }) && self.string_array(expr, &ty)?.is_some() {
             return Ok(index + 1);
         }
-        let mut index = index;
-        for (position, child) in children.into_iter().enumerate() {
-            if position > 0 && (index >= items.len() || !items[index].designators.is_empty()) {
-                break;
+        let value = match self.operand_type(expr) {
+            Ok(value) => Some(value),
+            Err(error) if check => {
+                return Err(ElementError {
+                    at: Some(expr.derive(())),
+                    error,
+                });
             }
-            index = self.consumed(self.subobject_type(c, child)?, items, index)?;
+            Err(_) => None,
+        };
+        let whole = match shape {
+            Shape::Scalar => true,
+            Shape::Struct(_) | Shape::Union(_) => {
+                value.is_some_and(|value| self.initializes_whole(value, c))
+            }
+            Shape::Array { vector, .. } => {
+                vector && value.is_some_and(|value| self.initializes_whole(value, c))
+            }
+        };
+        if whole {
+            if check {
+                self.record_element(expr, c)?;
+            }
+            return Ok(index + 1);
         }
-        Ok(index)
+        let mut sub = self.walk(c)?;
+        let reached = if sub.full() { index + 1 } else { index };
+        let mut next = index;
+        // the elided walk ignores the designator an outer walk already applied to this item
+        self.walk_fill(&mut sub, items, &mut next, false, true, check)?;
+        Ok(reached.max(next))
+    }
+
+    fn string_array<'e>(
+        &mut self,
+        e: &'e Expr,
+        ty: &Type,
+    ) -> Result<Option<&'e StringLiteral>, ResolveError> {
+        let ExprKind::StringLiteral(literal) = &e.value else {
+            return Ok(None);
+        };
+        let Type::Array { element, .. } = ty else {
+            return Ok(None);
+        };
+        let Type::Numeric(NumericType::Integer {
+            width,
+            signed,
+            bit_precise: false,
+        }) = element.as_ref()
+        else {
+            return Ok(None);
+        };
+        let literal_c = self.string_type(literal);
+        let Type::Array {
+            element: literal_element,
+            ..
+        } = self.ir_type(literal_c)
+        else {
+            return Err(ResolveError::Internal("string literal type"));
+        };
+        let any_signedness = matches!(literal.encoding, Encoding::Plain | Encoding::Utf8);
+        let compatible = matches!(
+            literal_element.as_ref(),
+            Type::Numeric(NumericType::Integer {
+                width: literal_width,
+                signed: literal_signed,
+                ..
+            }) if width == literal_width && (any_signedness || signed == literal_signed)
+        );
+        if !compatible {
+            return Err(ResolveError::Rejected(
+                "string literal initializer for incompatible array element",
+            ));
+        }
+        Ok(Some(literal))
     }
 }
 
@@ -671,10 +793,14 @@ impl Lowerer {
         }
     }
 
+    fn shape(&self, ty: &Type) -> Result<Shape, ResolveError> {
+        self.types.shape(ty).map_err(ResolveError::checked)
+    }
+
     fn builder(&self, c: QualType) -> Result<Builder, ResolveError> {
         let ty = self.types.ir_type(c);
-        match self.types.shape(&ty)? {
-            Shape::Scalar => Err(ResolveError::Rejected(
+        match self.shape(&ty)? {
+            Shape::Scalar => Err(ResolveError::Internal(
                 "braced initializer or designator for scalar",
             )),
             shape => Ok(Builder {
@@ -696,13 +822,13 @@ impl Lowerer {
             Initializer::List(items) => self.braced(c, items),
             Initializer::Expr(expr) => {
                 let ty = self.types.ir_type(c);
-                if matches!(self.types.shape(&ty)?, Shape::Array { .. })
-                    && let Some((_, value)) = self.string_array_initializer(expr, &ty)?
+                if matches!(self.shape(&ty)?, Shape::Array { .. })
+                    && let Some(value) = self.string_array_initializer(expr, &ty)?
                 {
                     return Ok(Entry::Leaf(value));
                 }
                 let value = self.expr(expr)?;
-                let value = self.convert_expr(expr, value, c, ConversionReason::Assign)?;
+                let value = self.convert_element(expr, value, c)?;
                 Ok(Entry::Leaf(value.value))
             }
         }
@@ -710,7 +836,7 @@ impl Lowerer {
 
     fn braced(&mut self, c: QualType, items: &[InitializerItem]) -> Result<Entry, ResolveError> {
         let ty = &self.types.ir_type(c);
-        let shape = self.types.shape(ty)?;
+        let shape = self.shape(ty)?;
         if let (Type::Complex(_component), [real, imaginary]) = (self.types.unaliased(ty), items)
             && real.designators.is_empty()
             && imaginary.designators.is_empty()
@@ -719,7 +845,7 @@ impl Lowerer {
             let mut members = Vec::new();
             for (index, item) in [real, imaginary].into_iter().enumerate() {
                 let Entry::Leaf(value) = self.init_initializer(component, &item.value)? else {
-                    return Err(ResolveError::Rejected(
+                    return Err(ResolveError::Internal(
                         "braced initializer for complex component",
                     ));
                 };
@@ -739,9 +865,18 @@ impl Lowerer {
         }
         if matches!(shape, Shape::Scalar) {
             return match items {
-                [item] if item.designators.is_empty() => self.init_initializer(c, &item.value),
-                _ => Err(ResolveError::Rejected(
-                    "scalar initializer list must hold exactly one element",
+                [] => Ok(Entry::Sub(Builder {
+                    c,
+                    ty: ty.clone(),
+                    shape,
+                    members: Vec::new(),
+                    next: 0,
+                })),
+                [first, ..] if first.designators.is_empty() => {
+                    self.init_initializer(c, &first.value)
+                }
+                _ => Err(ResolveError::Internal(
+                    "designator in initializer for scalar type",
                 )),
             };
         }
@@ -755,7 +890,7 @@ impl Lowerer {
             ],
         ) = (&shape, items)
             && designators.is_empty()
-            && let Some((_, value)) = self.string_array_initializer(expr, ty)?
+            && let Some(value) = self.string_array_initializer(expr, ty)?
         {
             return Ok(Entry::Leaf(value));
         }
@@ -778,7 +913,10 @@ impl Lowerer {
                 if !braced {
                     break;
                 }
-                let steps = self.types.designator_steps(&builder.ty, designators)?;
+                let steps = self
+                    .types
+                    .designator_steps(&builder.ty, designators)
+                    .map_err(ResolveError::checked)?;
                 let start = cursor.index;
                 self.designate(builder, &steps, cursor)?;
                 self.resume(builder, &steps, cursor)?;
@@ -852,9 +990,9 @@ impl Lowerer {
             Initializer::Expr(expr) => expr,
         };
         let ty = self.types.ir_type(c);
-        let shape = self.types.shape(&ty)?;
+        let shape = self.shape(&ty)?;
         if matches!(shape, Shape::Array { .. })
-            && let Some((_, value)) = self.string_array_initializer(expr, &ty)?
+            && let Some(value) = self.string_array_initializer(expr, &ty)?
         {
             cursor.index += 1;
             return Ok(Some(Entry::Leaf(value)));
@@ -870,7 +1008,7 @@ impl Lowerer {
         };
         if whole {
             cursor.index += 1;
-            let value = self.convert_expr(expr, value, c, ConversionReason::Assign)?;
+            let value = self.convert_element(expr, value, c)?;
             return Ok(Some(Entry::Leaf(value.value)));
         }
         cursor.pending = Some(value);
@@ -936,48 +1074,21 @@ impl Lowerer {
         Ok(())
     }
 
-    pub(super) fn string_array_initializer(
+    fn string_array_initializer(
         &mut self,
         e: &Expr,
         ty: &Type,
-    ) -> Result<Option<(Type, Value)>, ResolveError> {
-        let ExprKind::StringLiteral(literal) = &e.value else {
+    ) -> Result<Option<Value>, ResolveError> {
+        let Some(literal) = self
+            .types
+            .string_array(e, ty)
+            .map_err(ResolveError::checked)?
+        else {
             return Ok(None);
         };
         let Type::Array { element, length } = ty else {
-            return Ok(None);
+            return Err(ResolveError::Internal("string initializer for non-array"));
         };
-        let Type::Numeric(NumericType::Integer {
-            width,
-            signed,
-            bit_precise: false,
-        }) = element.as_ref()
-        else {
-            return Ok(None);
-        };
-        let literal_c = self.types.string_type(literal);
-        let literal_ty = self.types.ir_type(literal_c);
-        let Type::Array {
-            element: literal_element,
-            ..
-        } = &literal_ty
-        else {
-            return Err(ResolveError::Internal("string literal type"));
-        };
-        let any_signedness = matches!(literal.encoding, Encoding::Plain | Encoding::Utf8);
-        let compatible = matches!(
-            literal_element.as_ref(),
-            Type::Numeric(NumericType::Integer {
-                width: literal_width,
-                signed: literal_signed,
-                ..
-            }) if width == literal_width && (any_signedness || signed == literal_signed)
-        );
-        if !compatible {
-            return Err(ResolveError::Rejected(
-                "string literal initializer for incompatible array element",
-            ));
-        }
         let mut units = literal.execution_units(self.context.target.wchar_width);
         units.push(0);
         let length = length.unwrap_or(units.len() as u64);
@@ -986,7 +1097,26 @@ impl Lowerer {
             element: element.clone(),
             length: Some(length),
         };
-        let value = self.value(e, ty.clone(), ValueKind::CodeUnits(units));
-        Ok(Some((ty, value)))
+        Ok(Some(self.value(e, ty, ValueKind::CodeUnits(units))))
+    }
+
+    fn convert_element(
+        &mut self,
+        e: &Expr,
+        value: Operand,
+        to: QualType,
+    ) -> Result<Operand, ResolveError> {
+        let to = self.types.ctypes.unqualified(to);
+        if !self
+            .types
+            .element_targets
+            .get(&e.id)
+            .is_some_and(|&checked| self.types.initializes_whole(checked, to))
+        {
+            return Err(ResolveError::Internal(
+                "initializer element target differs from the checker",
+            ));
+        }
+        self.convert_recorded(e, value, to, ConversionReason::Assign)
     }
 }

@@ -13,6 +13,7 @@ use super::attributes::Subject;
 use super::ctype::convert::ConversionContext;
 use super::ctype::{Extent, QualType};
 use super::entity::ObjectRequest;
+use super::initializer::ElementError;
 use super::module::{applies, function_symbol, linkage as declared_linkage, symbol_attributes};
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
@@ -353,9 +354,7 @@ impl Checker<'_> {
                     None
                 };
                 self.declare_object(declarator.id, completed, requested, linkage);
-                if !self.types.ctypes.is_array(completed)
-                    && !self.types.ctypes.is_function(completed)
-                {
+                if !self.types.ctypes.is_function(completed) && !self.variable_array(completed) {
                     initialized = Some(completed);
                 }
                 if declaration.specifiers.is_constexpr
@@ -381,8 +380,9 @@ impl Checker<'_> {
                     ));
                 }
                 self.initializer(initializer);
-                if let (Some(to), Initializer::Expr(expr)) = (initialized, initializer) {
-                    self.convert(expr, to, ConversionContext::Assign);
+                if let Some(to) = initialized {
+                    let result = self.types.check_initializer(to, initializer);
+                    self.element(declarator, result);
                 }
             }
         }
@@ -594,6 +594,20 @@ impl Checker<'_> {
             .chain(&parameter.attributes);
         let result = self.types.attribute_error(attributes, Subject::Parameter);
         self.report(parameter, result);
+    }
+
+    fn variable_array(&self, c: QualType) -> bool {
+        matches!(self.types.ctypes.element(c), Some((_, Extent::Variable(_))))
+    }
+
+    fn element<T>(&mut self, at: &Span<T>, result: Result<(), ElementError>) {
+        let Err(ElementError { at: element, error }) = result else {
+            return;
+        };
+        match element {
+            Some(element) => self.report(&element, Err(error)),
+            None => self.report(at, Err(error)),
+        }
     }
 
     fn report<T>(&mut self, at: &Span<T>, result: Result<(), ResolveError>) {
@@ -934,6 +948,12 @@ impl Checker<'_> {
                 self.type_name(ty);
                 for item in initializer {
                     self.initializer(&item.value);
+                }
+                if let Ok(literal) = self.types.typed(expr)
+                    && !self.variable_array(literal.c)
+                {
+                    let result = self.types.check_braced(literal.c, initializer);
+                    self.element(expr, result);
                 }
             }
             ExprKind::Generic {

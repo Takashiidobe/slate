@@ -2004,8 +2004,10 @@ printed `aggregate<T, zero_fill=..>(field0 = v, index2 = v, index3..=5 = v)`.
   itself has size zero (`int[][0][2]`, `struct {}[][0]`), gcc's inferred
   length follows internal quirks (`{1}` gives 2) that are visible only via
   `typeof`; slate keeps the one-item rule there.
+- A braced scalar initializer uses its first item; `{}` lowers to
+  `aggregate<T, zero_fill=true>()` on the scalar type.
 - `T a[] = ...` completes the array length from the last initialized
-  element. `char`-like arrays from string literals (also `{"..."}`) stay
+  element; `T a[] = {}` is the GNU zero-length `array<T, 0>`. `char`-like arrays from string literals (also `{"..."}`) stay
   `CodeUnits` on the declared array type, zero-padded or truncated to length.
 - Compound literals lower to `PlaceKind::CompoundLiteral { object, storage,
 initializer }`, printed `compound_literal %id [storage=..] = <initializer>`.
