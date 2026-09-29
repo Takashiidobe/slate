@@ -1,5 +1,32 @@
 # AST Spec
 
+<!-- toc -->
+- [Pipeline and responsibilities](#pipeline-and-responsibilities)
+- [Invariants](#invariants)
+- [Locations and provenance](#locations-and-provenance)
+- [Translation unit](#translation-unit)
+- [Declarations](#declarations)
+  - [`Declaration`](#declaration)
+  - [`DeclarationSpecifiers`](#declarationspecifiers)
+  - [`TypeSpecifier`](#typespecifier)
+  - [`Declarator`](#declarator)
+  - [`TypeName`](#typename)
+  - [`FunctionDefinition`](#functiondefinition)
+- [Tags](#tags)
+- [Statements](#statements)
+- [Comments](#comments)
+- [Expressions](#expressions)
+- [Literals](#literals)
+- [Initializers](#initializers)
+- [Attributes and asm](#attributes-and-asm)
+- [Validation (`sema.rs`)](#validation-semars)
+- [Post-C89 constructs in older standard
+  modes](#post-c89-constructs-in-older-standard-modes)
+- [Migration](#migration)
+- [Calling conventions and Microsoft declaration
+  attributes](#calling-conventions-and-microsoft-declaration-attributes)
+<!-- /toc -->
+
 _created 2026-09-13 — evergreen: update in the same change as any `src/ast.rs` or parser change_
 
 What the parser produces and what it means. The AST is the **syntactic**
@@ -93,7 +120,7 @@ increment and body, then the enclosing bindings are restored.
   `Loc` can't provide: every token from one macro expansion shares an
   `expansion` `Loc`, but each gets a distinct `NodeId`, which is what lets
   `src/sema/` preserve identity rather than keying nodes by location (see
-  [[ir-spec]]). `slate-parser parse --show-ids` prints it on every `Span`
+  [node identity](ir/pipeline.md#node-identity-and-metadata)). `slate-parser parse --show-ids` prints it on every `Span`
   in the debug dump; `tests/fixtures/clang/linux/x86_64/node_ids_macro_expansion.c` (enabled via
   `// SLATE-FILECHECK-SHOW-IDS <prefix>`) checks that nodes sharing an
   expansion `Loc` still get distinct ids.
@@ -250,8 +277,8 @@ parse. Under the same gate:
 - `__ptr32`, `__ptr64`, `__sptr` and `__uptr` are recorded as
   `Qualifiers::is_ptr32`, `is_ptr64`, `is_sptr` and `is_uptr`, after `*` or in
   specifier position. Sema turns them into the pointer's representation
-  against the target width, so the AST keeps only what was written (see "MS
-  mixed-size pointers" in `ir-spec.md`).
+  against the target width, so the AST keeps only what was written (see [MS mixed-size
+  pointers](ir/places-pointers.md#ms-mixed-size-pointers)).
 - `__unaligned` is `Qualifiers::is_unaligned`, a real qualifier for
   compatibility and discard warnings. It lowers the alignment of `_Alignof` and
   of declared objects to 1 but never changes record member layout. clang
@@ -662,7 +689,7 @@ and standard, and reports failures before those items can lower to IR.
 For the IR pipeline, declaration pruning happens after name resolution,
 using resolved dependencies and explicit translation/linkage/attribute
 roots. The parser preserves declarations for that resolution. See
-[IR validation and pruning](ir-spec.md#validation-and-declaration-pruning).
+[reachability pruning](ir/pipeline.md#reachability-pruning).
 
 ## Post-C89 constructs in older standard modes
 
@@ -670,7 +697,7 @@ slate-parser accepts these in every standard mode. Checked with clang 22.1
 and gcc 16.2 over `c89 gnu89 c99 c11 c17 gnu17 c23`, plain and
 `-pedantic`. `ok` = silent, `warn` = only under `-pedantic`, `err` = hard
 error. Where a compiler accepts a construct as an extension, slate-parser
-records it as an extension (like `_BitInt`, see [ir-spec](ir-spec.md)) and
+records it as an extension (like `_BitInt`, see [`_BitInt`](ir/types.md#_bitint)) and
 does not reject; input is assumed to have compiled with the real compiler.
 
 | Construct                                                        | Introduced | clang before intro.         | gcc before intro.         | slate-parser                        |
@@ -726,7 +753,7 @@ whole declaration; nested declarator positions remain on `Attributed` or
 `Pointer` nodes, and trailing positions remain in declarator attributes.
 `regparm` keeps its expression unevaluated. Target support, conflicts, and
 the effective ABI are sema responsibilities; sema turns the x86
-conventions into part of the function type (see `ir-spec.md`).
+conventions into part of the function type (see [calling conventions](ir/calls-abi.md#calling-conventions)).
 
 `__declspec(...)` accepts single-parenthesis attribute groups, including
 space-separated entries. `dllimport` and `dllexport` become `DllImport` and

@@ -1,5 +1,15 @@
 # Declared-entity model
 
+<!-- toc -->
+- [What an entity holds](#what-an-entity-holds)
+- [Merging](#merging)
+- [Prototype scope](#prototype-scope)
+- [Identifier lookup](#identifier-lookup)
+- [Tags](#tags)
+- [Audit](#audit)
+- [Declaration sites](#declaration-sites)
+<!-- /toc -->
+
 One record per declared object, keyed by `BindingId`, merged across
 redeclarations. The table lives in `src/sema/entity.rs` and hangs off
 `TypeResolver` as `types.entities` (epic slate-parser-8lv).
@@ -42,7 +52,7 @@ record:
 | `Global` storage duration and definition state | merged declaration state on the entity |
 
 Two alignment rules read the one request, because they genuinely differ: see
-the `lh7.2.31` paragraph in [`ir-spec.md`](ir-spec.md).
+[object properties](ir/declarations.md#object-properties).
 
 ## Merging
 

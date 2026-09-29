@@ -1,5 +1,12 @@
 # Configuration threading
 
+<!-- toc -->
+- [`Dialect` owns it](#dialect-owns-it)
+- [Accessors](#accessors)
+- [Where a rule goes](#where-a-rule-goes)
+- [Checker vs lowering](#checker-vs-lowering)
+<!-- /toc -->
+
 How flavor, standard, target, and flags reach each stage, and where a
 per-flavor or per-target rule belongs. The meaning of individual flags is
 in [compiler-arg-rules](compiler-arg-rules.md),

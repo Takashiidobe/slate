@@ -1,5 +1,18 @@
 # MSVC inline asm
 
+<!-- toc -->
+- [Why it matters](#why-it-matters)
+- [Oracle behavior](#oracle-behavior)
+- [Design](#design)
+  - [Recognition and gating](#recognition-and-gating)
+  - [Parser and AST](#parser-and-ast)
+  - [Sema: names and folding](#sema-names-and-folding)
+  - [IR](#ir)
+  - [Effects table](#effects-table)
+  - [Implicit return](#implicit-return)
+- [Rust-side notes for Slate](#rust-side-notes-for-slate)
+<!-- /toc -->
+
 MSVC `__asm` is the one asm frontend that has to read instructions. It
 supplies no constraints, so the frontend must infer reads, writes and
 clobbers itself. The instruction body still stays text: it lowers into the
@@ -191,8 +204,7 @@ reference does, matching cl.exe's `DWORD PTR [ebx+8]`.
 
 ### IR
 
-Lowers into `ir::InlineAsm` with `dialect = Some(Intel)` (see `ir-spec.md`,
-Inline asm, for the node and `ir-grammar.md` for how it prints).
+Lowers into `ir::InlineAsm` with `dialect = Some(Intel)` (see [ir/asm.md](ir/asm.md#msvc-__asm) for the node and `ir-grammar.md` for how it prints).
 
 - `AsmOperandKind::Memory { place, access: Read | Write | ReadWrite }`: the
   asm receives the object's address, one operand per object however often

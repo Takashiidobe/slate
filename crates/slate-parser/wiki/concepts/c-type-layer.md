@@ -1,5 +1,19 @@
 # C type layer
 
+<!-- toc -->
+- [Representation](#representation)
+- [Rendering](#rendering)
+- [Layout](#layout)
+- [Typed lowering](#typed-lowering)
+- [Compatibility, composite types and
+  conversions](#compatibility-composite-types-and-conversions)
+- [Redeclaration merging](#redeclaration-merging)
+- [The invariant, and where it is allowed to
+  bend](#the-invariant-and-where-it-is-allowed-to-bend)
+- [Where personality enters](#where-personality-enters)
+- [Adding a rule](#adding-a-rule)
+<!-- /toc -->
+
 Sema reasons over C types; `ir::Type` is only produced by erasing one through
 `layout`. The layer lives in `src/sema/ctype/` (epic slate-parser-9ve).
 
@@ -189,7 +203,7 @@ one looks like a first and the conflict goes unnoticed.
 
 Compatible declarations merge into their `composite`, which is how
 `int a[]; int a[5];` completes without a special case. Otherwise the conflict
-table in [`ir-spec.md`](ir-spec.md) applies, and the only IR-level question
+table in [redeclaration conflicts](ir/declarations.md#redeclaration-conflicts) applies, and the only IR-level question
 left is whether the two layouts coincide: `types::same_layout` answers it,
 comparing lowered types while ignoring integer signedness. That is a genuine
 layout question, not a type-identity one, which is why it survives the phase
@@ -270,7 +284,7 @@ Two rules read it, both on `TypeResolver`:
   all, and MSVC gives anything that is not already a lock-free width a
   leading four-byte lock word. It dispatches on the flavor and delegates to
   `TargetInfo::atomic_storage` or `TargetInfo::msvc_atomic_storage`. See the
-  `_Atomic` entry in [`ir-spec.md`](ir-spec.md) for the measured numbers.
+  [`_Atomic` layout](ir/atomics.md#_atomic-layout-per-flavor) for the measured numbers.
 - `effective_alignment`, consulted by `resolve_object_requests`: clang honors
   an alignment attribute below the type's natural alignment, gcc and MSVC
   raise it to the natural one.

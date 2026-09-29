@@ -1,5 +1,15 @@
 # Architecture and principles
 
+<!-- toc -->
+- [Pipeline](#pipeline)
+- [Checker first, lowering trusts](#checker-first-lowering-trusts)
+- [What goes in the IR](#what-goes-in-the-ir)
+- [`Unimplemented`](#unimplemented)
+- [Strictness policy](#strictness-policy)
+- [Priorities](#priorities)
+- [Oracles and inputs](#oracles-and-inputs)
+<!-- /toc -->
+
 The decisions every change is judged against. The detail lives in the
 linked pages.
 

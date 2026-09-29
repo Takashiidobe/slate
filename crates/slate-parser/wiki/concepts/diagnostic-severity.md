@@ -1,5 +1,25 @@
 # Diagnostic severity
 
+<!-- toc -->
+- [Severity resolution](#severity-resolution)
+- [Severity never changes the AST or
+  IR](#severity-never-changes-the-ast-or-ir)
+- [Three ways to answer a severity
+  question](#three-ways-to-answer-a-severity-question)
+- [Warnings in use](#warnings-in-use)
+- [Attribute applicability](#attribute-applicability)
+- [Where type-level extension warnings come
+  from](#where-type-level-extension-warnings-come-from)
+- [One warning per specifier, not per
+  declarator](#one-warning-per-specifier-not-per-declarator)
+- [Unrecognized `-W` names](#unrecognized--w-names)
+- [Preprocessing directive
+  diagnostics](#preprocessing-directive-diagnostics)
+- [Reporting more than the first
+  error](#reporting-more-than-the-first-error)
+- [Testing](#testing)
+<!-- /toc -->
+
 Extension and compatibility acceptances carry a named identity so command-line
 flags can suppress them or promote them to errors. `src/diagnostics.rs` owns
 both halves: the `Warning` enum (identity, default severity, pedantic
@@ -82,7 +102,7 @@ to (1) needs no justification beyond the measurement. (3) is always a bug.
 | `int-conversion`              | error, warning under msvc and gcc c89 | no | an implicit conversion between an integer and a pointer across an assignment, argument, return or initializer                                                  |
 | `pointer-integer-compare`     | on        | no       | a comparison between a pointer and an integer that is not a null pointer constant                                                                               |
 | `compare-distinct-pointer-types` | on     | no       | a comparison between pointers whose pointees have no composite type and neither is `void`                                                                       |
-| `conflicting-types`           | on        | no       | a redeclaration conflict that clang and gcc reject but MSVC accepts: same-size integer types differing in sign, or differing prototyped parameter lists; see [`ir-spec.md`](ir-spec.md) |
+| `conflicting-types`           | on        | no       | a redeclaration conflict that clang and gcc reject but MSVC accepts: same-size integer types differing in sign, or differing prototyped parameter lists; see [redeclaration conflicts](ir/declarations.md#redeclaration-conflicts) |
 | `parameter-alignment`         | on        | no       | an alignment attribute on a function parameter, which no two of the three compilers agree to reject |
 | `ignored-attributes`          | on        | no       | an attribute written on a subject outside clang's subject list for it; see [attribute applicability](#attribute-applicability) |
 | `unknown-attributes`          | on        | no       | a `__attribute__` or `[[scope::name]]` spelling the flavor does not register for the target (gcc calls it `-Wattributes`, cl C5030); see [attribute applicability](#attribute-applicability) |
@@ -277,7 +297,7 @@ C23 silently, but the flavor does not change whether the warning is raised.
 
 Both literal warnings are derived from the candidate the selection actually
 picked, so they cannot drift from the typing rules in
-[`ir-spec.md`](ir-spec.md). `select_integer_candidate` in `sema/validate.rs`
+[integer literals](ir/types.md#integer-literals). `select_integer_candidate` in `sema/validate.rs`
 is the one selection point, shared with the IR lowering in `sema/numeric.rs`.
 
 ## Where type-level extension warnings come from

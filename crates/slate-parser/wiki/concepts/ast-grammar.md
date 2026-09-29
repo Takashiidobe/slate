@@ -1,5 +1,24 @@
 # AST Grammar
 
+<!-- toc -->
+- [Notation](#notation)
+- [Lexical](#lexical)
+- [Dump](#dump)
+- [Spans](#spans)
+- [Declarations](#declarations)
+- [Specifiers](#specifiers)
+- [Type specifiers](#type-specifiers)
+- [Declarators](#declarators)
+- [Tags](#tags)
+- [Statements](#statements)
+- [Expressions](#expressions)
+- [Literals](#literals)
+- [Initializers](#initializers)
+- [Pragmas](#pragmas)
+- [Inline assembly](#inline-assembly)
+- [Attributes](#attributes)
+<!-- /toc -->
+
 The grammar of the AST dump printed by `slate-parser parse source.c`. It is
 the reference for what each AST node can be and which choices it has.
 [AST Spec](ast-spec.md) explains what the nodes mean and why the AST has this

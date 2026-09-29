@@ -1,5 +1,13 @@
 # MSVC oracle
 
+<!-- toc -->
+- [Install](#install)
+- [What it can answer](#what-it-can-answer)
+- [Corpus sweep](#corpus-sweep)
+- [clang/test MS-mode sweep](#clangtest-ms-mode-sweep)
+- [Gotchas](#gotchas)
+<!-- /toc -->
+
 Real `cl.exe` runs on Linux under native Wine via
 [mstorsjo/msvc-wine](https://github.com/mstorsjo/msvc-wine). `tools/cl.exe`
 is a thin wrapper over its generated `bin/x64/cl`. The optional corpus sweep

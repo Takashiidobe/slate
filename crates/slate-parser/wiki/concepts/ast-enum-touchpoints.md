@@ -1,5 +1,16 @@
 # AST Enum Touchpoints
 
+<!-- toc -->
+- [Adding a `Decl` variant](#adding-a-decl-variant)
+- [Adding a `Stmt` variant](#adding-a-stmt-variant)
+- [Adding an `ExprKind` variant](#adding-an-exprkind-variant)
+- [Adding an `ArraySize` variant](#adding-an-arraysize-variant)
+- [Adding a `TypeSpecifier` variant](#adding-a-typespecifier-variant)
+- [Adding an `Attribute` variant](#adding-an-attribute-variant)
+- [The sema and IR half](#the-sema-and-ir-half)
+- [Process note](#process-note)
+<!-- /toc -->
+
 _created 2026-09-12_
 
 `src/visit.rs` owns exhaustive recursion over `DeclKind`, `StmtKind`,

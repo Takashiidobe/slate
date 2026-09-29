@@ -49,42 +49,92 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 
 ### Wiki
 
-Non-obvious project context lives in `wiki/` (see `llog`). Check it before
-re-deriving something from scratch:
+Non-obvious project context lives in `wiki/`. Check it before re-deriving
+something from scratch. Every concept page opens with a table of contents,
+so jump straight to the heading you need. After adding or renaming headings,
+run `python3 tools/wiki_toc.py` (`--check` reports stale pages).
 
-- `wiki/concepts/architecture.md` — read first: checker-vs-lowering
-  split, what belongs in the IR, the strictness policy, priorities, and
-  oracle versions and provenance.
-- `wiki/concepts/ast-spec.md` and `wiki/concepts/ir-spec.md` — evergreen
-  specs of what the AST means and what it lowers into. Update them in the
-  same change as any AST or IR change.
-- `wiki/concepts/ir-grammar.md` — EBNF of the printed IR, derived from
-  the printers in `src/ir/`. Update it in the same change as anything that
-  alters what the IR printer emits.
-- `wiki/concepts/ast-grammar.md` — EBNF of the printed AST, derived from
-  the types in `src/ast.rs` and `src/const_expr.rs`. Update it in the same
-  change as any AST type change or anything that alters what
-  `slate-parser parse` prints.
-- `wiki/concepts/ast-enum-touchpoints.md` — before adding a variant to
-  `Stmt`, `Expr`, `ConstExpr`, or `ArraySize`: every file that matches it
-  exhaustively, so you don't have to grep the whole crate to find out
-  where a new variant needs handling.
-- `wiki/concepts/type-family-touchpoints.md` — before adding a type family
-  (a value type with its own representation and arithmetic, like complex,
-  vector, or fixed-point) or a variant to `ir::Type` or `CTypeKind`: the
-  walk from `TypeSpecifier` down to storage and ABI, and — the part that
-  costs a session to rediscover — which match sites the compiler catches
-  and which accept a new type silently and do the wrong thing.
-- `wiki/concepts/configuration-threading.md` — before adding anything
-  that behaves differently per compiler flavor (gcc/clang/MSVC), language
-  standard, or target: how `Dialect` carries flags and target info from
-  argv through the preprocessor, parser, and sema, the accessor to use at
-  each stage, which table owns which kind of per-flavor rule, and the
-  checker-vs-lowering trap where a rule has to change in two places.
-- `wiki/index.md` and `wiki/log/` — chronological log of past changes and
-  decisions; `llog search <keyword>` to query it.
-- If working on adding a compiler arg, refer to
-  [`wiki/concepts/compiler-arg-rules.md`](wiki/concepts/compiler-arg-rules.md).
+Start here:
+
+- [architecture](wiki/concepts/architecture.md): read first. Checker vs
+  lowering, what belongs in the IR, strictness policy, priorities, oracles.
+
+Specs and grammars (update in the same change as the code they describe):
+
+- [ast-spec](wiki/concepts/ast-spec.md): what the AST means. Update with
+  any AST change.
+- [ast-grammar](wiki/concepts/ast-grammar.md): EBNF of `slate-parser parse`
+  output, from `src/ast.rs` and `src/const_expr.rs`.
+- [ir-spec](wiki/concepts/ir-spec.md): what the IR means and what is
+  implemented; a map of the `ir/` subpages below. Update the matching
+  subpage with any IR change.
+  - [ir/pipeline](wiki/concepts/ir/pipeline.md): failure kinds, node ids
+    and metadata, dump commands, required constant folding, reachability.
+  - [ir/types](wiki/concepts/ir/types.md): scalar formats, literals,
+    `_BitInt`, tags, enums, record layout (pack, `ms_struct`, Microsoft).
+  - [ir/type-families](wiki/concepts/ir/type-families.md): complex,
+    imaginary, vector, fixed-point.
+  - [ir/operations](wiki/concepts/ir/operations.md): UB and rounding
+    policies, floating pragmas, conversions, `?:`.
+  - [ir/places-pointers](wiki/concepts/ir/places-pointers.md): places,
+    bit-fields, pointer arithmetic and conversions, qualified access.
+  - [ir/atomics](wiki/concepts/ir/atomics.md): `_Atomic` layout and ABI per
+    flavor, atomic builtins.
+  - [ir/control-flow](wiki/concepts/ir/control-flow.md): structured
+    control flow, side-effect hoisting, unsequenced order, pragmas.
+  - [ir/declarations](wiki/concepts/ir/declarations.md): linkage,
+    redeclaration conflicts, symbol and object attributes, inline.
+  - [ir/initialization](wiki/concepts/ir/initialization.md): aggregate
+    initializers, compound literals, flexible arrays, VLAs.
+  - [ir/calls-abi](wiki/concepts/ir/calls-abi.md): call signatures,
+    `AbiSignature` and `native_c`, calling conventions, targets.
+  - [ir/builtins](wiki/concepts/ir/builtins.md): builtin registry, implicit
+    declarations, custom lowering, `va_list`.
+  - [ir/asm](wiki/concepts/ir/asm.md): GNU and MSVC inline asm, operand
+    selection, Rust `asm!` options.
+  - [ir/open-design](wiki/concepts/ir/open-design.md): agreed but
+    unimplemented shapes and open questions.
+- [ir-grammar](wiki/concepts/ir-grammar.md): EBNF of the printed IR, from
+  the printers in `src/ir/`. Update with anything that changes IR output.
+
+Before changing these, read:
+
+- [ast-enum-touchpoints](wiki/concepts/ast-enum-touchpoints.md): adding a
+  variant to `Stmt`, `Expr`, `ConstExpr`, or `ArraySize`.
+- [type-family-touchpoints](wiki/concepts/type-family-touchpoints.md):
+  adding a type family or an `ir::Type`/`CTypeKind` variant, including the
+  match sites that accept a new type silently.
+- [configuration-threading](wiki/concepts/configuration-threading.md):
+  anything that differs per flavor, standard, or target; how `Dialect`
+  reaches each stage.
+- [compiler-arg-rules](wiki/concepts/compiler-arg-rules.md): adding a
+  compiler argument.
+- [compiler-flags](wiki/concepts/compiler-flags.md): which flags are
+  emulated and their resolved effect.
+- [adding-a-target](wiki/concepts/adding-a-target.md): wiring a new triple
+  through `TargetSpec`.
+- [diagnostic-severity](wiki/concepts/diagnostic-severity.md): named
+  warnings, default severities, `-W` handling.
+
+Subsystems:
+
+- [c-type-layer](wiki/concepts/c-type-layer.md): interned C types in
+  `src/sema/ctype/` and how they erase to `ir::Type`.
+- [entity-model](wiki/concepts/entity-model.md): per-`BindingId` declared
+  entities merged across redeclarations.
+- [pp-logical-line-merging](wiki/concepts/pp-logical-line-merging.md): why
+  macro invocations spanning lines are merged before expansion.
+- [msvc-asm](wiki/concepts/msvc-asm.md): parsing MSVC `__asm` and inferring
+  its reads, writes, and clobbers.
+
+Testing:
+
+- [fixture-layout](wiki/concepts/fixture-layout.md): how a fixture's
+  directory sets its flavor and target.
+- [msvc-oracle](wiki/concepts/msvc-oracle.md): running `cl.exe` under Wine.
+
+History: `wiki/index.md` and `wiki/log/` hold the chronological log of
+changes and decisions; query it with `llog search <keyword>`.
 
 ### Goal
 
@@ -133,7 +183,7 @@ Oracle compilers: `clang` and `gcc` are installed natively; MSVC is `tools/cl.ex
 
 A fixture's directory sets its compiler and target
 (`tests/fixtures/<flavor>/<os>/<arch>/`, with `error/` and `suites/`
-variants); see `wiki/concepts/fixture-layout.md`.
+variants); see [fixture-layout](wiki/concepts/fixture-layout.md).
 
 FileCheck expectations are generated. After changing a fixture or its
 renderer, run `python3 tools/update_filecheck.py --in-place <fixture>`;

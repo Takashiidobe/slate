@@ -33,7 +33,7 @@ impl Hoister {
 
     /// C11 6.5p2 leaves the relative order of these operands unspecified, so the
     /// order hoisting commits to is arbitrary. Slate follows Clang; see
-    /// `wiki/concepts/ir-spec.md`.
+    /// `wiki/concepts/ir/control-flow.md`.
     fn grouped<T>(&mut self, unsequenced: bool, hoist: impl FnOnce(&mut Self) -> T) -> T {
         let outer = self.unsequenced;
         self.unsequenced = outer || unsequenced;

@@ -1,5 +1,14 @@
 # Type Family Touchpoints
 
+<!-- toc -->
+- [The layer chain](#the-layer-chain)
+- [What the compiler catches](#what-the-compiler-catches)
+- [What the compiler does not catch](#what-the-compiler-does-not-catch)
+- [Order of work](#order-of-work)
+- [Precedent](#precedent)
+- [Process note](#process-note)
+<!-- /toc -->
+
 _created 2026-09-20_
 
 A **type family** is a kind of value type with its own representation and its
@@ -170,9 +179,9 @@ Each step builds and is worth verifying before the next:
    must be *rejected* — before generating a fixture.
 5. **Fixtures and docs.** A `tests/fixtures/clang/linux/x86_64/ir_<family>.c` and an
    `ir_<family>_invalid.c`, both generated, never hand-written. Then
-   `ir-spec.md`, `ir-grammar.md`, and the AST pages in the same commit.
+   [`ir/type-families.md`](ir/type-families.md), `ir-grammar.md`, and the AST pages in the same commit.
 
-When sema knowingly departs from clang, say so in `ir-spec.md` in the same
+When sema knowingly departs from clang, say so in the matching `ir/` subpage in the same
 change, with the reason. Input is assumed to already compile, so a deliberate
 simplification is fine; an unrecorded one reads as a bug later.
 
@@ -180,7 +189,7 @@ simplification is fine; an unrecorded one reads as a bug later.
 
 Four families exist, all following this walk: complex and imaginary
 (`Type::Complex`, `Type::Imaginary`), vector (`Type::Vector`), and fixed-point
-(`Type::FixedPoint`). `ir-spec.md` has a section per family covering the shape
+(`Type::FixedPoint`). [`ir/type-families.md`](ir/type-families.md) has a section per family covering the shape
 decision and what is implemented.
 
 `CTypeKind::NullPtr` (C23 `nullptr_t`) is the smallest example of a

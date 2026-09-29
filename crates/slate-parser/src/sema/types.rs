@@ -817,7 +817,7 @@ impl TypeResolver {
         Ok(Some(message))
     }
 
-    /// The conflict table in ir-spec.md: a return or object type may differ only
+    /// The conflict table in wiki/concepts/ir/declarations.md: a return or object type may differ only
     /// where the layouts coincide, but a prototyped parameter list may always
     /// differ, because MSVC warns (C4028/C4030/C4031/C4052) rather than rejecting.
     fn conflict_message(

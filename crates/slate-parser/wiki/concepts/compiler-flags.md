@@ -1,5 +1,12 @@
 # Compiler flags
 
+<!-- toc -->
+- [Contract](#contract)
+- [Implemented](#implemented)
+- [ISA gotchas](#isa-gotchas)
+- [Not implemented](#not-implemented)
+<!-- /toc -->
+
 Each supported flag emulates the same flag of the selected flavor's
 compiler. Parsing and validation live in
 [compiler-arg-rules](compiler-arg-rules.md), and how the result reaches

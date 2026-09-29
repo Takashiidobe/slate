@@ -1,5 +1,5 @@
 //! Which objects an expression reads and writes, for the unsequenced check in
-//! `effects`. See `wiki/concepts/ir-spec.md`.
+//! `effects`. See `wiki/concepts/ir/control-flow.md`.
 
 use crate::ir::*;
 

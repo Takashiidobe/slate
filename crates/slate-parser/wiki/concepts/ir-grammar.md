@@ -1,5 +1,23 @@
 # IR Grammar
 
+<!-- toc -->
+- [Notation](#notation)
+- [Lexical](#lexical)
+- [Module](#module)
+- [Types](#types)
+- [Type definitions](#type-definitions)
+- [Globals](#globals)
+- [Functions](#functions)
+- [ABI signatures](#abi-signatures)
+- [Statements](#statements)
+- [Places](#places)
+- [Values](#values)
+  - [Operations](#operations)
+  - [Operation policies](#operation-policies)
+- [Metadata](#metadata)
+- [Compact form](#compact-form)
+<!-- /toc -->
+
 The grammar of the IR text form printed by `slate-parser ir source.c` (also
 `parse source.c --dump-ir`). It is the reference for what each IR construct
 can be and which choices it has. [IR Spec](ir-spec.md) explains why the IR has
@@ -376,8 +394,8 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   values, short-circuit results, VLA extents). They have no source variable.
 - `unsequenced` on a temporary or a write marks a statement whose position
   commits to an evaluation order C leaves unspecified, so a different C
-  compiler may order it differently. See the unsequenced section in
-  [`ir-spec.md`](ir-spec.md).
+  compiler may order it differently. See
+  [unsequenced effects](ir/control-flow.md#unsequenced-effects-follow-clang).
 - A local `let` always has `storage=automatic`.
 
 ## Places
