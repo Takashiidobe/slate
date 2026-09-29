@@ -11,7 +11,6 @@
 - [Type-level extension warnings](#type-level-extension-warnings)
 - [Unrecognized `-W` names](#unrecognized--w-names)
 - [`#warning` and `#error`](#warning-and-error)
-- [Multiple errors](#multiple-errors)
 - [Testing](#testing)
 <!-- /toc -->
 
@@ -20,6 +19,8 @@ can silence or promote them. `src/diagnostics.rs` holds the `Warning` enum
 (identity, default severity, pedantic membership) and `DiagnosticOptions`
 (resolved map, on `CompilerOptions`, read via `unit.dialect.options()`).
 Strictness policy: [architecture](architecture.md#strictness-policy).
+Error limit, poisoning, and locations:
+[sema-passes](sema-passes.md#error-reporting).
 
 ## Severity resolution
 
@@ -238,30 +239,6 @@ Accepted and ignored, as clang does. Only `Warning` names have effect.
 - `tools/corpus_sweep.py` `DIAGNOSTIC_TIERS` picks a failure label: an
   indented `× …` first, then `Error:   × …`, then `⚠ …` only without any
   error.
-
-## Multiple errors
-
-- Up to 20 errors (clang's `-ferror-limit` default), then "too many errors
-  emitted, stopping now". Any error means no IR. Limit lives in
-  `with_sources` (shared by `analyze` and `lower`). `-ferror-limit` is not
-  accepted.
-- `names::resolve_items` runs once in `Sema::new`. `analyze` reports
-  unresolved typedef names; lowering the rest. Unresolved references are
-  recorded and visiting continues (`int a = undeclared, b;` binds `b`);
-  other names errors end the item and reset to file scope.
-- `Sema::lower` skips items with names errors and doesn't run if `analyze`
-  reported an error. A lowering error resets per-function state and moves
-  on.
-- Locations: `Lowerer::expr`, `place`, `statements` wrap errors with
-  `ResolveError::at(loc)` (set only if unset), so the innermost failing
-  node wins. Others fall back to the top-level declaration.
-- Poisoning: bindings declared by a failed item are poisoned; a later
-  item's lowering error is dropped if it references one. Checked before
-  poisoning the failed item's own bindings (recursive functions still
-  report). Names errors are never dropped. `finish_module` runs only on an
-  error-free unit.
-- Fixtures: `sema_reports_all_errors.c`, `sema_poisoned_declaration.c`,
-  `sema_error_limit.c`.
 
 ## Testing
 

@@ -69,13 +69,10 @@ Only `context.region` (FP pragmas) changes within a translation unit.
 
 ## Checker vs lowering
 
-The checker validates and lowering trusts it ([architecture](architecture.md)).
-Lowering wraps its failures in `ResolveError::checked`, which turns
-`Rejected` into `Internal`. A per-flavor rule therefore belongs in the
-checker, or in a rule function that both call (`function_symbol`,
-`declared_linkage`). Some rules are still duplicated. For example, the
-`always_inline`/`noinline` conflict is checked in both `record_function`
-and `assertion.rs`. Change both copies, or better, merge them.
+A per-flavor rule belongs in the checker, or in a rule function both
+passes call (`function_symbol`, `declared_linkage`); lowering maps
+rejections to `Internal`
+([sema-passes](sema-passes.md#resolveerror-policy)).
 
 Oracles disagree often. Check all three before encoding a rule. The
 fixture directory picks the flavor ([fixture-layout](fixture-layout.md)),

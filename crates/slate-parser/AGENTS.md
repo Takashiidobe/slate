@@ -118,6 +118,8 @@ Before changing these, read:
 
 Subsystems:
 
+- [sema-passes](wiki/concepts/sema-passes.md): pass order, which
+  `src/sema/` file belongs to which pass, `ResolveError` policy.
 - [c-type-layer](wiki/concepts/c-type-layer.md): interned C types in
   `src/sema/ctype/` and how they erase to `ir::Type`.
 - [entity-model](wiki/concepts/entity-model.md): per-`BindingId` declared

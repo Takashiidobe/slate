@@ -26,7 +26,7 @@ argv → Dialect → preprocess → parse → sema: names → check → lower �
 
 ## Checker first, lowering trusts
 
-- The checker (`sema/assertion.rs` and friends) decides whether a
+- The checker (`sema/assertion.rs` and friends; [sema-passes](sema-passes.md)) decides whether a
   declaration or expression is valid. Put as much logic as possible there.
 - Lowering assumes checked input. A failure there is an `Internal` error,
   which marks a gap in the checker, never a user diagnostic.

@@ -35,14 +35,10 @@ AST ──sema (check + lower)──▶ IR ──analysis pass(es)──▶ IR +
 
 ## Failure kinds
 
-`sema::numeric::ResolveError` has three variants, so a sweep can triage by
-variant (`tools/corpus_sweep.py` tags each failure group with it):
-
-| Variant | Meaning | Printed as |
-| --- | --- | --- |
-| `Rejected` | ill-formed C. An oracle accepting it is a fidelity bug | the bare message |
-| `Unimplemented` | valid C that isn't lowered yet (LLVM's NYI) | `not implemented: …` |
-| `Internal` | an invariant sema should guarantee; always a slate bug | `internal error: …` |
+`tools/corpus_sweep.py` triages failures by `ResolveError` variant:
+`Rejected` prints the bare message, `Unimplemented` prints
+`not implemented: …`, `Internal` prints `internal error: …`. Full policy:
+[sema-passes](../sema-passes.md#resolveerror-policy).
 
 ## Node identity and metadata
 

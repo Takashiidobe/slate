@@ -20,6 +20,7 @@
   - [Builtins](concepts/ir/builtins.md)
   - [Asm](concepts/ir/asm.md)
   - [Open design](concepts/ir/open-design.md)
+- [Sema passes](concepts/sema-passes.md)
 - [C type layer](concepts/c-type-layer.md)
 - [Declared-entity model](concepts/entity-model.md)
 - [Compiler flags](concepts/compiler-flags.md)
