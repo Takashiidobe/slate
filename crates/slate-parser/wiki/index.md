@@ -5,6 +5,7 @@
 - [AST Grammar](concepts/ast-grammar.md)
 - [AST Enum Touchpoints](concepts/ast-enum-touchpoints.md)
 - [Type Family Touchpoints](concepts/type-family-touchpoints.md)
+- [Preprocessor](concepts/preprocessor.md)
 - [Preprocessor logical-line merging](concepts/pp-logical-line-merging.md)
 - [IR Spec](concepts/ir-spec.md)
   - [Pipeline](concepts/ir/pipeline.md)

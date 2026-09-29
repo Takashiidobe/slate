@@ -1,5 +1,7 @@
 # Preprocessor logical-line merging
 
+Part of the [preprocessor](preprocessor.md) pipeline.
+
 `src/pp/syntax.rs::logical_lines` splits a file into one `LogicalLine` per
 physical line; `GroupParser::group` turns them into `Item::Text` /
 `Item::Directive` / `Item::Conditional`, and `Preprocessor::expand_line`

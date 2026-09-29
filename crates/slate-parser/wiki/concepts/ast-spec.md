@@ -113,7 +113,8 @@ pp ──▶ parser ──▶ AST ──▶ src/sema/ (validation + resolution +
   `name`/`definition` are the outermost macro at the use site (`INT_MAX`);
   `inner` chains through its replacement (`__INT_MAX__`). Set in
   `pp/expand.rs::expand_macros`; `Span::cover` keeps it only when all
-  covered tokens agree. Not printed by any dump.
+  covered tokens agree. Not printed by any dump. How both are computed:
+  [preprocessor](preprocessor.md#provenance).
 
 ## Translation unit
 
