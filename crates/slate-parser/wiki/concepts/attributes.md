@@ -115,7 +115,9 @@ position without resolving names:
 - `general_use` is exhaustive over `Attribute`.
 - `Ignored` includes `mode`, `address_space`, `cleanup`,
   `scalar_storage_order`, `transparent_union` (the calling convention is
-  not modeled; a call needing it fails in argument conversion).
+  not modeled; a call needing it fails in argument conversion). `cleanup`
+  is still read by lowering into `Variable.cleanup` as an unresolved,
+  unchecked name (slate-parser-6147).
 - Attributes before the tag keyword of a declarator-less declaration
   (`__attribute__((packed)) struct S {...};`) never reach the tag; ignored
   with a warning, as clang does.
