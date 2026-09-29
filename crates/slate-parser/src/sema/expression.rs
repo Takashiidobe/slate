@@ -1193,9 +1193,12 @@ impl Lowerer {
                     },
                 })
             }
-            ExprKind::CompoundLiteral { ty, initializer } => {
-                let extents = self.type_name_extents(ty)?;
-                let resolved = self.resolve_type_name(ty)?;
+            ExprKind::CompoundLiteral {
+                ty: ty_name,
+                initializer,
+            } => {
+                let extents = self.type_name_extents(ty_name)?;
+                let resolved = self.resolve_type_name(ty_name)?;
                 let access = self.types.access_of(resolved);
                 let _declared = self.types.object_type(resolved, "void compound literal")?;
                 let anchor = e.derive(());
@@ -1214,6 +1217,16 @@ impl Lowerer {
                 } else {
                     StorageDuration::Static
                 };
+                let alignment = match super::types::requested_alignment(
+                    &mut self.types,
+                    &ty_name.specifiers.attributes,
+                )? {
+                    Some(requested) => {
+                        self.types
+                            .object_alignment_override(&ty, Some(c), Some(requested))?
+                    }
+                    None => None,
+                };
                 Ok(Lvalue {
                     c,
                     place: Place {
@@ -1221,6 +1234,7 @@ impl Lowerer {
                         kind: PlaceKind::CompoundLiteral {
                             object,
                             storage,
+                            alignment,
                             initializer: Box::new(value),
                         },
                         access,

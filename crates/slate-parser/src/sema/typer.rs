@@ -449,7 +449,7 @@ impl TypeResolver {
                 let element = self.ctypes.pointee(pointer).ok_or(ResolveError::Rejected(
                     "subscripted value is not an array, pointer, or vector",
                 ))?;
-                self.pointer_offset(element, index)?;
+                self.pointer_offset(pointer, index)?;
                 Typed::lvalue(element)
             }
             ExprKind::Member { base, field, arrow } => {

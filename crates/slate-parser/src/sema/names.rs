@@ -489,6 +489,7 @@ impl Resolver {
 
     fn type_name<T>(&mut self, ty: &TypeName, span: &Span<T>) -> Result<(), ResolveError> {
         self.type_specifier(&ty.specifiers.ty, span)?;
+        self.attributes(&ty.specifiers.attributes)?;
         self.visit_declarator(&ty.declarator)
     }
 

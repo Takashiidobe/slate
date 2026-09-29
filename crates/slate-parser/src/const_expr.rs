@@ -1505,7 +1505,9 @@ impl<'a> Parser<'a> {
         let Some(next) = self.peek_at(1) else {
             return Ok(None);
         };
-        if !starts_type_name(next, self.context) {
+        let alignas =
+            matches!(next, Token::Ident(name) if matches!(name.as_str(), "_Alignas" | "alignas"));
+        if !alignas && !starts_type_name(next, self.context) {
             return Ok(None);
         }
         let Some((ty, end)) = self.try_parse_type_name(self.position + 1, |end| {

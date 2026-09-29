@@ -100,10 +100,12 @@ impl Hoister {
             PlaceKind::CompoundLiteral {
                 object,
                 storage,
+                alignment,
                 initializer,
             } => PlaceKind::CompoundLiteral {
                 object,
                 storage,
+                alignment,
                 initializer: Box::new(self.value(*initializer, out)?),
             },
             PlaceKind::Temporary {
@@ -156,10 +158,12 @@ impl Hoister {
             PlaceKind::CompoundLiteral {
                 object,
                 storage,
+                alignment,
                 initializer,
             } => PlaceKind::CompoundLiteral {
                 object,
                 storage,
+                alignment,
                 initializer: Box::new(self.value(*initializer, out)?),
             },
             PlaceKind::Temporary {

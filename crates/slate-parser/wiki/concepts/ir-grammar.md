@@ -407,7 +407,8 @@ place  = binding
        | ( "real(" | "imag(" ) place ")"
        | "lane(" place ", " value ")"
        | "swizzle<lanes=[" digits { ", " digits } "]>(" place ")"
-       | "compound_literal" binding "[storage=" storage "]" "=" value
+       | "compound_literal" binding "[storage=" storage "]"
+         [ "[align=" int "]" ] "=" value
        | "temporary" binding "=" value ;
 access   = [ ", volatile" ] ;
 ordering = ", atomic=" order [ sync_scope ] ;
@@ -439,6 +440,8 @@ scope    = "device" | "workgroup" | "wavefront" | "single" | "cluster"
   distinct, since a repeated component is not assignable; a repeated or
   out-of-range selection is a `shuffle<..>` value instead.
 - `compound_literal %N` is a distinct object with its own storage duration.
+  `[align=N]` is printed only when an `_Alignas` in its type name changes
+  the natural alignment.
 - `temporary %N = v` materializes an aggregate rvalue (`f().x`) so a
   member can be projected. Not an object: places rooted in one are neither
   assignable nor addressable.

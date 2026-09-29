@@ -245,6 +245,7 @@ pub enum PlaceKind {
     CompoundLiteral {
         object: BindingId,
         storage: StorageDuration,
+        alignment: Option<u64>,
         initializer: Box<Value>,
     },
     Temporary {
@@ -313,20 +314,30 @@ impl Place {
             PlaceKind::CompoundLiteral {
                 object,
                 storage,
+                alignment,
                 initializer,
-            } => write!(
-                f,
-                "compound_literal %{} [storage={}] = {}",
-                object.0,
-                match storage {
-                    StorageDuration::Automatic => "automatic",
-                    StorageDuration::Static => "static",
-                    StorageDuration::Thread => "thread",
-                },
-                initializer
-                    .display_metadata(false, None)
-                    .with_compact(compact)
-            ),
+            } => {
+                write!(
+                    f,
+                    "compound_literal %{} [storage={}]",
+                    object.0,
+                    match storage {
+                        StorageDuration::Automatic => "automatic",
+                        StorageDuration::Static => "static",
+                        StorageDuration::Thread => "thread",
+                    },
+                )?;
+                if let Some(alignment) = alignment {
+                    write!(f, " [align={alignment}]")?;
+                }
+                write!(
+                    f,
+                    " = {}",
+                    initializer
+                        .display_metadata(false, None)
+                        .with_compact(compact)
+                )
+            }
             PlaceKind::Temporary {
                 object,
                 initializer,
