@@ -203,6 +203,7 @@ impl Checker<'_> {
             &function.attributes,
         );
         self.function_rules(&at, node, &function.specifiers, &attributes, None);
+        self.weakref(&at, attributes.iter().copied(), true, false);
         let mut names = None;
         let mut returns = Returns::Unknown;
         let owner = std::mem::replace(&mut self.types.owner, owner);
@@ -510,6 +511,7 @@ impl Checker<'_> {
                 &attributes,
                 declarator.asm_label.as_ref(),
             );
+            self.weakref(declarator, attributes.iter().copied(), false, false);
             for parameter in declarator
                 .declarator
                 .function_parameters()
@@ -537,6 +539,7 @@ impl Checker<'_> {
         if !global && linked && initializer.is_some() {
             self.reject(declarator, "block scope extern initializer");
         }
+        self.weakref(declarator, attributes.clone(), initializer.is_some(), true);
         let symbol = symbol_attributes(
             attributes.filter(|attribute| applies(attribute, subject)),
             declarator.asm_label.as_ref(),
@@ -627,6 +630,33 @@ impl Checker<'_> {
                 Some((warning, message)) => self.types.warn(warning, message, function),
                 None => {}
             },
+        }
+    }
+
+    fn weakref<'a, T>(
+        &mut self,
+        at: &Span<T>,
+        attributes: impl Iterator<Item = &'a Span<Attribute>> + Clone,
+        defined: bool,
+        object: bool,
+    ) {
+        if !attributes
+            .clone()
+            .any(|attribute| matches!(attribute.value, Attribute::WeakRef(_)))
+        {
+            return;
+        }
+        let target = attributes.clone().any(|attribute| {
+            matches!(
+                attribute.value,
+                Attribute::WeakRef(Some(_)) | Attribute::Alias(_)
+            )
+        });
+        let clang = self.types.compiler_flavor() == CompilerFlavor::Clang;
+        if clang && !target {
+            self.reject(at, "weakref declaration must also have an alias attribute");
+        } else if defined && (clang || (target && object)) {
+            self.reject(at, "weakref declaration cannot be a definition");
         }
     }
 

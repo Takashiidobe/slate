@@ -545,9 +545,9 @@ impl<'a> Reachability<'a> {
     fn mark_attributes(&mut self, attributes: &[Span<Attribute>]) {
         for attribute in attributes {
             match &attribute.value {
-                Attribute::Alias(name) | Attribute::WeakRef(name) | Attribute::Ifunc(name) => {
-                    self.mark_name(name)
-                }
+                Attribute::Alias(name)
+                | Attribute::WeakRef(Some(name))
+                | Attribute::Ifunc(name) => self.mark_name(name),
                 Attribute::AddressSpace(value)
                 | Attribute::PassObjectSize {
                     size_type: value, ..

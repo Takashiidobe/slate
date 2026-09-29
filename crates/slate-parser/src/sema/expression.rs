@@ -8,7 +8,7 @@ use crate::ast::{Expr, ExprKind, Initializer, NodeId, Span, StmtKind};
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::diagnostics::Warning;
 use crate::ir::*;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 enum Projection {
     Place(Lvalue),
@@ -35,6 +35,7 @@ pub(super) struct Lowerer {
     pub floating_pragmas: super::pragmas::FloatingPragmas,
     pub compound_start: bool,
     pub reserved_extents: HashMap<NodeId, BindingId>,
+    pub bare_weakrefs: HashSet<BindingId>,
 }
 
 impl Lowerer {

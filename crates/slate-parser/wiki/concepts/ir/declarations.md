@@ -75,7 +75,15 @@ linkage and merged across redeclarations (first value wins, flags OR):
 
 - `weakref("t")` is not `weak` + `alias`: it defines no symbol, and its
   uses resolve to an `extern_weak` reference to `t`. It prints as `extern`
-  with `[weakref="t"]`, needs internal linkage, and applies to functions.
+  with `[weakref="t"]`, needs internal linkage, and applies to functions
+  and objects.
+- A bare `weakref` takes its target from `alias("t")` (which then defines
+  nothing). clang: the alias must be in the same declaration, and a
+  definition is rejected. gcc: from any redeclaration (`bare_weakrefs`,
+  resolved in `resolve_object_requests`); without a target, or on a
+  function body or initialized object, it is ignored (with a target on an
+  initialized object, rejected). With both `weakref("t")` and `alias("s")`
+  the IR uses `t` (clang); gcc uses `s`.
 - `ifunc("r")` names the resolver's assembler symbol; the declaration is
   printed as a bodiless `fn` with `[ifunc="r"]`. Resolver semantics are
   left to Slate. Not checked (both oracles reject): an undefined resolver,

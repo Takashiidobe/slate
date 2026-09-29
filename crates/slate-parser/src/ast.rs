@@ -978,7 +978,7 @@ pub enum Attribute {
     Annotate(String),
     Target(String),
     Alias(String),
-    WeakRef(String),
+    WeakRef(Option<String>),
     Malloc,
     AssumeAligned(Vec<Expr>),
     AllocSize(Vec<Expr>),

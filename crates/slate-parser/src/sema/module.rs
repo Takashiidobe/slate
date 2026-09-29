@@ -62,6 +62,7 @@ fn resolve_module(
         floating_pragmas: FloatingPragmas::new(unit.dialect.flavor(), context.region),
         compound_start: false,
         reserved_extents: HashMap::new(),
+        bare_weakrefs: HashSet::new(),
         context,
     };
     let mut poisoned = HashSet::new();
@@ -396,6 +397,7 @@ pub(super) fn symbol_attributes<'a>(
     asm_label: Option<&Span<ast::AsmLabel>>,
 ) -> Result<SymbolAttributes, ResolveError> {
     let mut symbol = SymbolAttributes::default();
+    let mut weakref = false;
     if let Some(label) = asm_label
         && let ast::AsmLabel::Symbol(name) = &label.value
     {
@@ -428,7 +430,10 @@ pub(super) fn symbol_attributes<'a>(
             ast::Attribute::Retain => symbol.retain = true,
             ast::Attribute::DllImport => symbol.dll_storage = Some(DllStorage::Import),
             ast::Attribute::DllExport => symbol.dll_storage = Some(DllStorage::Export),
-            ast::Attribute::WeakRef(target) => symbol.weakref = Some(target.clone()),
+            ast::Attribute::WeakRef(target) => {
+                weakref = true;
+                symbol.weakref = symbol.weakref.take().or(target.clone());
+            }
             ast::Attribute::Ifunc(resolver) => symbol.ifunc = Some(resolver.clone()),
             ast::Attribute::SelectAny => symbol.selectany = true,
             ast::Attribute::ThreadLocal
@@ -439,7 +444,25 @@ pub(super) fn symbol_attributes<'a>(
             _ => {}
         }
     }
+    if weakref {
+        let alias = symbol.alias.take();
+        symbol.weakref = symbol.weakref.take().or(alias);
+    }
     Ok(symbol)
+}
+
+fn is_bare_weakref(attribute: &Span<ast::Attribute>) -> bool {
+    matches!(attribute.value, ast::Attribute::WeakRef(None))
+}
+
+// gcc: a bare weakref takes an alias from any redeclaration; ignored on a definition.
+fn weak_reference(mut symbol: SymbolAttributes, bare: bool, defined: bool) -> SymbolAttributes {
+    if defined {
+        symbol.weakref = None;
+    } else if bare && symbol.weakref.is_none() {
+        symbol.weakref = symbol.alias.take();
+    }
+    symbol
 }
 
 pub(super) fn function_symbol<'a>(
@@ -580,7 +603,11 @@ impl Lowerer {
                 function.value.linkage = linkage;
             }
             if let Some(symbol) = self.types.entities.symbol(id) {
-                function.value.symbol = symbol.clone();
+                function.value.symbol = weak_reference(
+                    symbol.clone(),
+                    self.bare_weakrefs.contains(&id),
+                    function.value.body.is_some(),
+                );
             }
         }
         for global in &mut self.module.globals {
@@ -593,7 +620,12 @@ impl Lowerer {
                 }
                 global.definition = self.types.entities.definition(id);
                 if let Some(symbol) = self.types.entities.symbol(id) {
-                    global.symbol = symbol.clone();
+                    global.symbol = weak_reference(
+                        symbol.clone(),
+                        self.bare_weakrefs.contains(&id),
+                        global.variable.initializer.is_some(),
+                    );
+                    global.definition &= global.symbol.weakref.is_none();
                 }
             }
             let request = self.types.entities.request(&global.variable.id);
@@ -1034,6 +1066,9 @@ impl Lowerer {
                 let mut symbol =
                     function_symbol(attributes.iter().copied(), declarator.asm_label.as_ref())
                         .map_err(ResolveError::checked)?;
+                if attributes.iter().copied().any(is_bare_weakref) {
+                    self.bare_weakrefs.insert(id);
+                }
                 self.types.pragmas.apply(name, &mut symbol);
                 self.record_function(id, &item.specifiers, &attributes, false, global)
                     .map_err(ResolveError::checked)?;
@@ -1106,6 +1141,9 @@ impl Lowerer {
             }
             let mut symbol = symbol_attributes(attributes(), declarator.asm_label.as_ref())
                 .map_err(ResolveError::checked)?;
+            if attributes().any(is_bare_weakref) {
+                self.bare_weakrefs.insert(id);
+            }
             self.types.pragmas.apply(name, &mut symbol);
             let request = super::entity::ObjectRequest {
                 alignment: super::types::requested_alignment(&mut self.types, attributes())?,

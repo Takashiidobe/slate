@@ -539,7 +539,7 @@ Attribute = (* no arguments *)
           | "CodeSeg(" string ")" | "Mode(" string ")"
           | "Visibility(" string ")" | "Section(" string ")"
           | "Annotate(" string ")" | "Target(" string ")"
-          | "Alias(" string ")" | "WeakRef(" string ")"
+          | "Alias(" string ")" | "WeakRef(" opt<string> ")"
           | "Cleanup(" expr ")" | "Ifunc(" string ")"
           | "TlsModel(" string ")" | "ScalarStorageOrder(" string ")"
           | "Optimize(" vec<string> ")" | "CpuDispatch(" vec<string> ")"

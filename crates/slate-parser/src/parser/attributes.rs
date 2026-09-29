@@ -361,8 +361,9 @@ fn parse_attribute_value(
         "alias" => Ok(string_argument()
             .map(Attribute::Alias)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
+        "weakref" if arguments.is_empty() => Ok(Attribute::WeakRef(None)),
         "weakref" => Ok(string_argument()
-            .map(Attribute::WeakRef)
+            .map(|target| Attribute::WeakRef(Some(target)))
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "nonnull" if arguments.is_empty() => Ok(Attribute::NonNull(Vec::new())),
         "nonnull" => Ok(integers()
