@@ -22,7 +22,7 @@ How an attribute gets from source to the IR. AST shape:
 | --- | --- | --- | --- |
 | 1 | Parse | `parser/attributes.rs::parse_attribute_groups` | spelling → `Attribute` variant with parsed arguments |
 | 2 | Registration | `attribute_support.rs` (called by the parser) | does this flavor know the spelling on this target; if not, `Unknown` / `IgnoredDeclspec` |
-| 3 | Early validation | `validate.rs::check_attributes` | `Invalid` arguments, non-ICE layout operands, `alloc_size` arity |
+| 3 | Early validation | `validate.rs::check_attributes` | `Invalid` arguments, `alloc_size` arity |
 | 4 | Applicability | `sema/attributes.rs::declaration_use` | what the attribute does on this `Subject` |
 | 5 | Check | `TypeResolver::attribute_error` (checker), `check_attributes` (lowering, `define_tag`) | reject, warn, or accept |
 | 6 | Consume | `symbol_attributes`, `function_symbol`, `record_function`, `requested_alignment`, `field_request`, record layout, `c_attributes` metadata | IR effect |
@@ -89,9 +89,12 @@ How an attribute gets from source to the IR. AST shape:
 position without resolving names:
 
 - `Invalid` → "invalid arguments for attribute".
-- `aligned`, `vector_size`, `_Alignas(expr)` operands must be integer
-  constant expressions.
 - `alloc_size` takes one or two arguments.
+- Layout operands (`aligned`, `vector_size`, `_Alignas`) are not checked
+  here: an enumerator or typedef operand needs name resolution. They are
+  folded where consumed (`requested_alignment`, `resolve_declarator`), and
+  the checker reports a non-constant operand. Name resolution walks every
+  attribute position, including tag, field, and `_Alignas(type)` operands.
 
 ## Applicability
 

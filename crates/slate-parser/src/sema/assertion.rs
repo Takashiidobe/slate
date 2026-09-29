@@ -337,12 +337,11 @@ impl Checker<'_> {
                     self.types
                         .declare_provisional_alias(declarator.id, name.to_owned(), resolved);
                 } else {
-                    let _ = self.types.define_alias(
-                        declarator.id,
-                        name.to_owned(),
-                        resolved,
-                        attributes,
-                    );
+                    let result = self
+                        .types
+                        .define_alias(declarator.id, name.to_owned(), resolved, attributes)
+                        .map(drop);
+                    self.report(declarator, result);
                 }
             }
             self.types.owner = owner;
@@ -369,9 +368,13 @@ impl Checker<'_> {
                     .attributes
                     .iter()
                     .chain(&declarator.attributes);
-                let requested = super::types::requested_alignment(self.types, attributes)
-                    .ok()
-                    .flatten();
+                let requested = match super::types::requested_alignment(self.types, attributes) {
+                    Ok(requested) => requested,
+                    Err(error) => {
+                        self.report(declarator, Err(error));
+                        None
+                    }
+                };
                 let storage = declaration.specifiers.storage;
                 let linkage = if global
                     || storage == StorageClass::Extern

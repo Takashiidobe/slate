@@ -1,7 +1,7 @@
 use crate::ast::{
-    ArraySize, Decl, DeclKind, Declaration, Declarator, EnumItemKind, Expr, ExprKind, Initializer,
-    InitializerItem, Loc, Span, Stmt, StmtKind, StorageClass, TagBody, TagId as AstTagId,
-    TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
+    AlignAsOperand, ArraySize, Attribute, Decl, DeclKind, Declaration, Declarator, EnumItemKind,
+    Expr, ExprKind, Initializer, InitializerItem, Loc, Span, Stmt, StmtKind, StorageClass, TagBody,
+    TagId as AstTagId, TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{Binding, BindingId, BindingKind, NameResolution, Reference};
@@ -118,7 +118,7 @@ impl Resolver {
             DeclKind::Declaration(inner) => self.declaration(inner, declaration),
             DeclKind::Function(function) => {
                 self.type_specifier(&function.specifiers.ty, declaration)?;
-                crate::visit::walk_attributes(self, &function.specifiers.attributes)?;
+                self.attributes(&function.specifiers.attributes)?;
                 let name = function.declarator.name().unwrap_or("<anonymous>");
                 self.bind_ordinary(name, BindingKind::Function, true, declaration)?;
                 let outer_labels = std::mem::take(&mut self.labels);
@@ -165,7 +165,7 @@ impl Resolver {
             return Ok(());
         }
         self.type_specifier(&declaration.specifiers.ty, span)?;
-        crate::visit::walk_attributes(self, &declaration.specifiers.attributes)?;
+        self.attributes(&declaration.specifiers.attributes)?;
         let base_kind = if declaration.specifiers.storage == StorageClass::Typedef {
             BindingKind::Typedef
         } else {
@@ -173,7 +173,7 @@ impl Resolver {
         };
         for declarator in &declaration.declarators {
             self.visit_declarator(&declarator.declarator)?;
-            crate::visit::walk_attributes(self, &declarator.attributes)?;
+            self.attributes(&declarator.attributes)?;
             let kind = if base_kind == BindingKind::Object
                 && declarator.declarator.function_parameters().is_some()
             {
@@ -463,6 +463,16 @@ impl Resolver {
         }
     }
 
+    fn attributes(&mut self, attributes: &[Span<Attribute>]) -> Result<(), ResolveError> {
+        for attribute in attributes {
+            match &attribute.value {
+                Attribute::AlignAs(AlignAsOperand::Type { ty }) => self.type_name(ty, attribute)?,
+                value => self.visit_attribute(value)?,
+            }
+        }
+        Ok(())
+    }
+
     fn type_name<T>(&mut self, ty: &TypeName, span: &Span<T>) -> Result<(), ResolveError> {
         self.type_specifier(&ty.specifiers.ty, span)?;
         self.visit_declarator(&ty.declarator)
@@ -477,7 +487,7 @@ impl Resolver {
                 inner, attributes, ..
             } => {
                 self.visit_declarator(inner)?;
-                crate::visit::walk_attributes(self, attributes)
+                self.attributes(attributes)
             }
             Declarator::Array { inner, size, .. } => {
                 self.visit_declarator(inner)?;
@@ -587,6 +597,7 @@ impl Resolver {
             self.resolution.tags.insert(id, entry.id);
             self.tag_ids.insert(id, entry);
         }
+        self.attributes(&tag.attributes)?;
         match &tag.body {
             TagBody::Enum {
                 enumerators,
@@ -615,11 +626,13 @@ impl Resolver {
                 for field in fields {
                     if let crate::ast::FieldItemKind::Field(field) = &field.value {
                         self.type_specifier(&field.specifiers.ty, &tag)?;
+                        self.attributes(&field.specifiers.attributes)?;
                         for declarator in &field.declarators {
                             self.visit_declarator(&declarator.declarator)?;
                             if let Some(width) = &declarator.bit_width {
                                 self.visit_expr(width)?;
                             }
+                            self.attributes(&declarator.attributes)?;
                         }
                     }
                 }

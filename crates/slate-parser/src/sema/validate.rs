@@ -385,17 +385,6 @@ fn check_attributes(attributes: &[Span<Attribute>], errors: &mut Vec<SemaError>)
                 format!("invalid arguments for attribute `{name}`"),
             ));
         }
-        if let Attribute::Aligned(expression)
-        | Attribute::VectorSize(expression)
-        | Attribute::AlignAs(AlignAsOperand::Expr(expression)) = &attribute.value
-            && !is_integer_constant_expression(expression)
-        {
-            errors.push(error(
-                attribute.provenance,
-                attribute.expansion,
-                "layout attribute requires an integer constant expression",
-            ));
-        }
         if let Attribute::AllocSize(expressions) = &attribute.value
             && !(1..=2).contains(&expressions.len())
         {
@@ -405,65 +394,6 @@ fn check_attributes(attributes: &[Span<Attribute>], errors: &mut Vec<SemaError>)
                 "alloc_size expects one or two arguments",
             ));
         }
-    }
-}
-
-fn is_integer_constant_expression(expression: &Expr) -> bool {
-    match &expression.value {
-        ExprKind::IntegerLiteral(_)
-        | ExprKind::CharLiteral(_)
-        | ExprKind::SizeOfExpr(_)
-        | ExprKind::SizeOfType { .. }
-        | ExprKind::AlignOf { .. }
-        | ExprKind::AlignOfExpr(_)
-        | ExprKind::BoolLiteral(_) => true,
-        ExprKind::Unary { op, operand } => {
-            matches!(
-                op,
-                UnaryOp::Plus
-                    | UnaryOp::Minus
-                    | UnaryOp::BitNot
-                    | UnaryOp::Not
-                    | UnaryOp::Real
-                    | UnaryOp::Imag
-            ) && is_integer_constant_expression(operand)
-        }
-        ExprKind::Paren(value) | ExprKind::Cast { value, .. } => {
-            is_integer_constant_expression(value)
-        }
-        ExprKind::Binary { left, right, .. } => {
-            is_integer_constant_expression(left) && is_integer_constant_expression(right)
-        }
-        ExprKind::Conditional {
-            condition,
-            then_value,
-            else_value,
-        } => {
-            is_integer_constant_expression(condition)
-                && then_value
-                    .as_ref()
-                    .is_none_or(is_integer_constant_expression)
-                && is_integer_constant_expression(else_value)
-        }
-        ExprKind::Identifier(_)
-        | ExprKind::StringLiteral(_)
-        | ExprKind::Generic { .. }
-        | ExprKind::FloatLiteral(_)
-        | ExprKind::Call { .. }
-        | ExprKind::Assign { .. }
-        | ExprKind::Comma { .. }
-        | ExprKind::Member { .. }
-        | ExprKind::Index { .. }
-        | ExprKind::OffsetOf { .. }
-        | ExprKind::TypesCompatible { .. }
-        | ExprKind::Postfix { .. }
-        | ExprKind::CompoundLiteral { .. }
-        | ExprKind::BitCast { .. }
-        | ExprKind::ConvertVector { .. }
-        | ExprKind::VaArg { .. }
-        | ExprKind::LabelAddress(_)
-        | ExprKind::StatementExpression(_)
-        | ExprKind::NullPtrLiteral => false,
     }
 }
 
