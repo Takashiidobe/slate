@@ -132,14 +132,21 @@ Macro expansion chains are not in the IR yet (only atomic builtins record
 
 ## Reachability pruning
 
-`filter_translation_unit` (`src/reachability.rs`) runs before resolution and
-indexes declarations by name. The target design resolves first and prunes on
-resolved dependencies, so Rust emission never repeats name lookup.
+`filter_translation_unit` (`src/reachability.rs`) runs in the parser, before
+sema, and drops every file-scope declaration and tag not reachable from a
+root, so unused header contents are never resolved or emitted. The target
+design resolves first and prunes on resolved dependencies, so Rust emission
+never repeats name lookup.
+
+Consequence: unreachable declarations are never validated. A header error
+surfaces only once something uses the declaration (e.g. glibc
+`__attr_dealloc` under the gcc flavor); clang and gcc reject it on include.
 
 Roots today:
 
 - every declaration in the main file or a `-include` file;
-- declarations with a retention attribute (constructors, `used`, ...);
+- declarations with a retention attribute: `used`, `retain`,
+  `constructor`, `destructor`, `alias`, `weakref`, `ifunc`;
 - from any file, every definition clang would emit: non-`static` function
   definitions, file-scope object definitions without `extern` (tentative
   ones included, function-typedef declarations excluded), and `extern`
@@ -154,5 +161,18 @@ Roots today:
   - everything else is `linkonce_odr` in clang and kept only if used
     (`reachable_inline_from_include*.c`).
 
+Edges are by name, not scope. Each file-scope declaration is indexed under
+its declared names, the names of tags it defines or first references, and
+its enumerators. Marking a declaration walks its types, declarators,
+initializers, bodies, attributes, and asm operands; every identifier, typedef
+name, or tag name found marks every declaration indexed under it. A local
+that shadows a global keeps the global: over-approximation is harmless.
+Attribute edges: `alias`, `weakref`, `ifunc`, `cleanup` targets, and
+expression operands (`aligned`, `vector_size`, `alloc_size`, ...).
+
 Keeping a declaration keeps every declaration of its name, since
 redeclarations change emission and attributes.
+
+Pragmas in headers are not roots and are pruned, so a header's
+`#pragma pack` is lost (slate-parser-mvaj). Adding an AST variant means
+extending the walk: [ast-enum-touchpoints](../ast-enum-touchpoints.md).
