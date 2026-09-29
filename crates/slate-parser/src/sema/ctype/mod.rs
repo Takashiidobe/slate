@@ -4,7 +4,7 @@ pub(super) mod convert;
 mod layout;
 mod render;
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 pub(super) use layout::rank_width;
 
@@ -270,13 +270,27 @@ impl CTypes {
                 }))
     }
 
-    pub fn join_tag_class(&mut self, id: TypeId, existing: TypeId) {
-        let class = self.tag_class(existing);
-        self.tag_classes.insert(id, class);
+    pub fn tag_classes(&self) -> HashMap<TypeId, TypeId> {
+        self.tag_classes.clone()
     }
 
-    pub fn leave_tag_class(&mut self, id: TypeId) {
-        self.tag_classes.remove(&id);
+    pub fn restore_tag_classes(&mut self, saved: HashMap<TypeId, TypeId>) {
+        self.tag_classes = saved;
+    }
+
+    pub fn merge_tag_classes(&mut self, id: TypeId, others: &[TypeId]) {
+        let class = self.tag_class(id);
+        let merged: HashSet<TypeId> = others.iter().map(|other| self.tag_class(*other)).collect();
+        for value in self.tag_classes.values_mut() {
+            if merged.contains(value) {
+                *value = class;
+            }
+        }
+        for representative in merged {
+            if representative != class {
+                self.tag_classes.insert(representative, class);
+            }
+        }
     }
 
     pub fn tag_class(&self, id: TypeId) -> TypeId {

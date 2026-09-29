@@ -243,6 +243,9 @@ pub(super) fn fold_msvc_static_divisions(value: &mut Value) {
 
 fn evaluate(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
     let depth = depth.checked_sub(1)?;
+    if matches!(value.ty, Type::Defined(_)) {
+        return enumerated(value, depth, env);
+    }
     let (width, signed) = integer_type(&value.ty)?;
     let result = match &value.node.value {
         ValueKind::Constant(Number::Bool(value)) => BigInt::from(u8::from(*value)),

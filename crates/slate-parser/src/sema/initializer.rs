@@ -382,7 +382,7 @@ impl TypeResolver {
         }
     }
 
-    fn unaliased(&self, ty: &Type) -> Type {
+    pub(super) fn unaliased(&self, ty: &Type) -> Type {
         let mut ty = ty.clone();
         while let Some(TypeDefinitionKind::Alias(inner)) = self.kind(&ty) {
             ty = inner.clone();
@@ -521,7 +521,7 @@ impl TypeResolver {
         if let [item] = items
             && item.designators.is_empty()
             && let Initializer::Expr(expr) = &item.value
-            && let ExprKind::StringLiteral(literal) = &expr.value
+            && let Some(literal) = string_literal(expr)
             && self.ctypes.is_integer(element)
             && let Some((_, Extent::Fixed(length))) = {
                 let string = self.string_type(literal);
@@ -550,6 +550,9 @@ impl TypeResolver {
         match initializer {
             Initializer::List(items) => self.check_braced(c, items),
             Initializer::Expr(expr) => {
+                if let Some((target, items)) = self.array_compound_literal(c, expr) {
+                    return self.check_braced(target, items);
+                }
                 let ty = self.ir_type(c);
                 if matches!(self.shape(&ty)?, Shape::Array { .. })
                     && self.string_array(expr, &ty)?.is_some()
@@ -559,6 +562,30 @@ impl TypeResolver {
                 self.record_element(expr, c)
             }
         }
+    }
+
+    // gcc and clang initialize an array object from an array compound literal as from its braces
+    pub(super) fn array_compound_literal<'e>(
+        &mut self,
+        c: QualType,
+        e: &'e Expr,
+    ) -> Option<(QualType, &'e [InitializerItem])> {
+        let ExprKind::CompoundLiteral { initializer, .. } = &e.value else {
+            return None;
+        };
+        let literal = self.expression_type(e).ok()?;
+        let literal = self.ctypes.unqualified(literal);
+        let target = self.ctypes.unqualified(c);
+        if !self.ctypes.is_array(target) || !self.ctypes.compatible(target, literal) {
+            return None;
+        }
+        let complete = matches!(self.ctypes.element(target), Some((_, Extent::Fixed(_))));
+        let target = if complete {
+            c
+        } else {
+            literal.with(self.ctypes.quals(c))
+        };
+        Some((target, initializer))
     }
 
     pub(super) fn check_braced(
@@ -740,7 +767,7 @@ impl TypeResolver {
         e: &'e Expr,
         ty: &Type,
     ) -> Result<Option<&'e StringLiteral>, ResolveError> {
-        let ExprKind::StringLiteral(literal) = &e.value else {
+        let Some(literal) = string_literal(e) else {
             return Ok(None);
         };
         let Type::Array { element, .. } = ty else {
@@ -821,6 +848,9 @@ impl Lowerer {
         match value {
             Initializer::List(items) => self.braced(c, items),
             Initializer::Expr(expr) => {
+                if let Some((target, items)) = self.types.array_compound_literal(c, expr) {
+                    return self.braced(target, items);
+                }
                 let ty = self.types.ir_type(c);
                 if matches!(self.shape(&ty)?, Shape::Array { .. })
                     && let Some(value) = self.string_array_initializer(expr, &ty)?
@@ -1118,5 +1148,14 @@ impl Lowerer {
             ));
         }
         self.convert_recorded(e, value, to, ConversionReason::Assign)
+    }
+}
+
+// gcc and clang accept a parenthesized string literal wherever a bare one initializes an array
+fn string_literal(e: &Expr) -> Option<&StringLiteral> {
+    match &e.value {
+        ExprKind::Paren(inner) => string_literal(inner),
+        ExprKind::StringLiteral(literal) => Some(literal),
+        _ => None,
     }
 }

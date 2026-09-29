@@ -48,7 +48,7 @@ int main(void) {
 // DEFAULT-NEXT:         field9 _IO_save_base: ptr<i8>;
 // DEFAULT-NEXT:         field10 _IO_backup_base: ptr<i8>;
 // DEFAULT-NEXT:         field11 _IO_save_end: ptr<i8>;
-// DEFAULT-NEXT:         field12 _markers: ptr<@type6>;
+// DEFAULT-NEXT:         field12 _markers: ptr<@type5>;
 // DEFAULT-NEXT:         field13 _chain: ptr<@type3>;
 // DEFAULT-NEXT:         field14 _fileno: i32;
 // DEFAULT-NEXT:         field15 _flags2: i32 : 24;
@@ -59,8 +59,8 @@ int main(void) {
 // DEFAULT-NEXT:         field20 _shortbuf: array<i8, 1>;
 // DEFAULT-NEXT:         field21 _lock: ptr<void>;
 // DEFAULT-NEXT:         field22 _offset: i64;
-// DEFAULT-NEXT:         field23 _codecvt: ptr<@type7>;
-// DEFAULT-NEXT:         field24 _wide_data: ptr<@type8>;
+// DEFAULT-NEXT:         field23 _codecvt: ptr<@type6>;
+// DEFAULT-NEXT:         field24 _wide_data: ptr<@type7>;
 // DEFAULT-NEXT:         field25 _freeres_list: ptr<@type3>;
 // DEFAULT-NEXT:         field26 _freeres_buf: ptr<void>;
 // DEFAULT-NEXT:         field27 _prevchain: ptr<ptr<@type3>>;
@@ -70,10 +70,10 @@ int main(void) {
 // DEFAULT-NEXT:         field31 _unused2: array<i8, 8>;
 // DEFAULT-NEXT:     } [size=216, align=8, offsets=[0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 116, 119, 120, 128, 130, 131, 136, 144, 152, 160, 168, 176, 184, 192, 196, 200, 208], bit_offsets=[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, Some(928), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], bit_units=[(116, 3)], field_units=[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, Some(0), None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]];
 // DEFAULT-NEXT:     type @type4 FILE = @type3;
-// DEFAULT-NEXT:     type @type5 _IO_lock_t = void;
-// DEFAULT-NEXT:     type @type6 _IO_marker = struct incomplete;
-// DEFAULT-NEXT:     type @type7 _IO_codecvt = struct incomplete;
-// DEFAULT-NEXT:     type @type8 _IO_wide_data = struct incomplete;
+// DEFAULT-NEXT:     type @type5 _IO_marker = struct incomplete;
+// DEFAULT-NEXT:     type @type6 _IO_codecvt = struct incomplete;
+// DEFAULT-NEXT:     type @type7 _IO_wide_data = struct incomplete;
+// DEFAULT-NEXT:     type @type8 _IO_lock_t = void;
 // DEFAULT-NEXT:     extern %9 stderr: ptr<@type3> [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %16 .str16: array<i8, 11> [storage=static] = code_units<array<i8, 11>>([101, 114, 114, 111, 114, 58, 32, 37, 100, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %12 @fprintf(%14 __stream: ptr<@type3> [restrict], %15 __format: ptr<const i8> [restrict], ...) -> i32 [linkage=external];

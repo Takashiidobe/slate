@@ -127,6 +127,27 @@ impl<'a> AbiClassifier<'a> {
         )
     }
 
+    // gcc and clang pass a transparent union as its first member
+    fn transparent_first_member(&self, ty: &Type) -> Option<AbiOperand> {
+        let Type::Defined(id) = self.types.unaliased(ty) else {
+            return None;
+        };
+        if !self.types.transparent_unions.contains(&id) {
+            return None;
+        }
+        let TypeDefinitionKind::Record {
+            fields: Some(fields),
+            ..
+        } = &self.types.definitions[id.0 as usize].kind
+        else {
+            return None;
+        };
+        fields.first().map(|field| AbiOperand {
+            ty: field.ty.clone(),
+            atomic: false,
+        })
+    }
+
     pub(super) fn is_incomplete(&self, ty: &Type) -> bool {
         let Type::Defined(id) = ty else {
             return false;
@@ -171,6 +192,10 @@ impl<'a> AbiClassifier<'a> {
             .iter()
             .enumerate()
             .map(|(index, operand)| -> Result<AbiPass, ResolveError> {
+                let first_member = (index < fixed_count)
+                    .then(|| self.transparent_first_member(&operand.ty))
+                    .flatten();
+                let operand = &first_member.unwrap_or_else(|| operand.clone());
                 let pass = self.abi_pass(operand, false, convention)?;
                 if convention == AbiConvention::X86Win32 {
                     self.win32_argument(

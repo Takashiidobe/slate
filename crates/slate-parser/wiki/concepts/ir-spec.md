@@ -1450,6 +1450,18 @@ A record that is never completed prints `[abi=incomplete]` (`Function::abi`
 is `None`). Only a definition or a call with an incomplete parameter or result
 is ill-formed, and the checker rejects those.
 
+A fixed parameter whose type is a `transparent_union` keeps the union as its
+source type, but its ABI pass is classified from the union's first member, as
+clang and gcc do (`AbiClassifier::transparent_first_member`), so a pointer or
+scalar first member usually makes the signature trivial. At a call, an argument
+that is not already the union converts to the first member it reaches without
+a diagnostic (`TypeResolver::transparent_member`) and lowers as
+`aggregate<U, zero_fill=false>(fieldN = value)`. The attribute is dropped, as in
+both compilers, when the first member is floating or vector or a member differs
+in size or needs more alignment. A Rust `repr(C)` union does not pass like its
+first member, so the Rust side must pass that member's type at the boundary.
+Fixture: `tests/fixtures/clang/linux/x86_64/transparent_union_call.c`.
+
 **`native_c` means trust rustc.** The signature is a label for Slate, not a
 lowering: rustc's `extern "C"` (and `"stdcall"` etc.) computes coerce, sret and
 byval from a `repr(C)` type's layout and field kinds the same way clang does.

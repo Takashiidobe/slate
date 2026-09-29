@@ -78,8 +78,8 @@ foo (void)
 // DEFAULT-NEXT:     fn %3 @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(%1, read<i32>(deref(conditional<ptr<i32>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<i32>>(%0), null<ptr<i32>>))));
 // DEFAULT-NEXT:         write<i32>(%1, read<i32>(deref(conditional<ptr<i32>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<i32>>(%0), null<ptr<i32>>))));
-// DEFAULT-NEXT:         write<ptr<i64>>(%2, pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<i32>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<i32>>(%0), null<ptr<i32>>)));
-// DEFAULT-NEXT:         write<ptr<i64>>(%2, pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<i32>>(ne<i32>(const<i32>(1), const<i32>(0)), read<ptr<i32>>(%0), null<ptr<i32>>)));
+// DEFAULT-NEXT:         write<ptr<i64>>(%2, pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%0)), null<ptr<void>>)));
+// DEFAULT-NEXT:         write<ptr<i64>>(%2, pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<void>>(ne<i32>(const<i32>(1), const<i32>(0)), pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%0)), pointer_cast<ptr<void>, reason=explicit>(null<ptr<i8>>))));
 // DEFAULT-NEXT:         let %6: ptr<void> [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(const<i32>(1), const<i32>(0))
 // DEFAULT-NEXT:             write<ptr<void>>(%6, pointer_cast<ptr<void>, reason=usual_arith>(read<ptr<i32>>(%0)));

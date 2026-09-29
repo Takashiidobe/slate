@@ -66,16 +66,16 @@ int main() {
 // DEFAULT-NEXT:     fn %1 @strcpy(%12 <unnamed>: ptr<i8>, %13 <unnamed>: ptr<const i8>) -> ptr<i8> [linkage=external];
 // DEFAULT-NEXT:     fn %2 @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %3 @exit(%14 <unnamed>: i32) -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %17 @__builtin_longjmp(%15 <unnamed>: ptr<ptr<void>>, %16 <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %17 @__builtin_longjmp(%15 <unnamed>: ptr<void>, %16 <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %5 @sub2() -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>, i32) -> void>(%17, array_decay<ptr<ptr<void>>, length=Some(20)>(%4), const<i32>(1));
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, i32) -> void>(%17, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<ptr<void>>, length=Some(20)>(%4)), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %19 @__builtin_alloca(%18 <unnamed>: u64) -> ptr<void> [linkage=external];
-// DEFAULT-NEXT:     fn %22 @__builtin_setjmp(%21 <unnamed>: ptr<ptr<void>>) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %22 @__builtin_setjmp(%21 <unnamed>: ptr<void>) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %6 @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %7 p: ptr<i8> [storage=automatic] = pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%19, reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(20)))));
 // DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%1, read<ptr<i8>>(%7), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%20)));
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<ptr<void>>) -> i32>(%22, array_decay<ptr<ptr<void>>, length=Some(20)>(%4)), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<void>) -> i32>(%22, pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<ptr<void>>, length=Some(20)>(%4))), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%0, pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%7)), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%23))), const<i32>(0))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%2);

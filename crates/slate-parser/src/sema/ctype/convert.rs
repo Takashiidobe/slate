@@ -133,6 +133,9 @@ impl CTypes {
             ));
         }
         if self.enum_underlying(from).is_some() {
+            if is_null_pointer_constant && self.is_pointer(to) {
+                return Ok(Conversion::plain(CastKind::NullPointer));
+            }
             return Ok(Conversion::plain(CastKind::EnumToInt));
         }
         if self.enum_underlying(to).is_some() {
@@ -207,18 +210,18 @@ impl CTypes {
         let to_pointee = self
             .pointee(to)
             .ok_or(ResolveError::Internal("pointer without a pointee"))?;
+        let void = self.is_void(from_pointee) || self.is_void(to_pointee);
         let dropped = self
             .quals(from_pointee)
             .without(self.quals(to_pointee))
             .without(super::Qualifiers {
                 is_restrict: true,
+                is_atomic: void,
                 ..super::Qualifiers::NONE
             });
         let unqualified_from = self.unqualified(from_pointee);
         let unqualified_to = self.unqualified(to_pointee);
-        let related = self.is_void(from_pointee)
-            || self.is_void(to_pointee)
-            || self.compatible_unqualified(unqualified_from, unqualified_to);
+        let related = void || self.compatible_unqualified(unqualified_from, unqualified_to);
         if related && dropped.is_empty() {
             return Ok(Conversion::plain(CastKind::Pointer));
         }

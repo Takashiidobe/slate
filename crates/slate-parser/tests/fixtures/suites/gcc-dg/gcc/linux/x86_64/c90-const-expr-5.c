@@ -74,7 +74,7 @@ f (void)
 // DEFAULT-NEXT:         write<ptr<i64>>(%2, pointer_cast<ptr<i64>, reason=assign>(conditional<ptr<i32>>(ne<i32>(read<i32>(%3), const<i32>(0)), read<ptr<i32>>(%1), null<ptr<i32>>)));
 // DEFAULT-NEXT:         null<ptr<fn() -> void>>;
 // DEFAULT-NEXT:         null<ptr<fn() -> void>>;
-// DEFAULT-NEXT:         write<ptr<fn() -> void>>(%4, null<ptr<fn() -> void>>);
+// DEFAULT-NEXT:         write<ptr<fn() -> void>>(%4, pointer_cast<ptr<fn() -> void>, reason=assign>(null<ptr<const void>>));
 // DEFAULT-NEXT:         write<ptr<fn() -> void>>(%4, null<ptr<fn() -> void>>);
 // DEFAULT-NEXT:         write<ptr<fn() -> void>>(%4, null<ptr<fn() -> void>>);
 // DEFAULT-NEXT:         write<ptr<fn() -> void>>(%4, null<ptr<fn() -> void>>);

@@ -102,7 +102,7 @@ impl TypeResolver {
         self.ctypes.integer_promotion(c, None, &target)
     }
 
-    fn type_name(&mut self, ty: &TypeName) -> Result<QualType, ResolveError> {
+    pub(super) fn type_name(&mut self, ty: &TypeName) -> Result<QualType, ResolveError> {
         let provisional = std::mem::replace(&mut self.provisional_extents, true);
         let resolved = self.resolve(&ty.specifiers, &ty.declarator);
         self.provisional_extents = provisional;
@@ -930,12 +930,18 @@ impl TypeResolver {
                 self.null_pointer(chosen)?
             }
             ExprKind::NullPtrLiteral => Some(true),
-            ExprKind::Cast { value, .. } => {
+            ExprKind::Cast { ty, value } => {
+                let to = self.type_name(ty)?;
+                let void_pointer = self.ctypes.pointee(to).is_some_and(|pointee| {
+                    self.ctypes.is_void(pointee) && self.ctypes.quals(pointee).is_empty()
+                });
                 let from = self.operand_type(value)?;
                 if self.ctypes.is_integer(from) {
-                    Some(self.integer_constant_zero(value))
-                } else if self.ctypes.is_pointer(from) || self.ctypes.is_nullptr(from) {
+                    Some(void_pointer && self.integer_constant_zero(value))
+                } else if self.ctypes.is_nullptr(from) {
                     self.null_pointer(value)?
+                } else if self.ctypes.is_pointer(from) {
+                    Some(false)
                 } else {
                     None
                 }
@@ -981,6 +987,30 @@ impl TypeResolver {
         Ok(())
     }
 
+    // clang and gcc pass the argument as the first member it converts to without a diagnostic
+    pub(super) fn transparent_member(
+        &mut self,
+        to: QualType,
+        argument: &Expr,
+        from: QualType,
+    ) -> Option<(usize, QualType)> {
+        let CTypeKind::Record { id, union: true } = *self.ctypes.canonical_kind(to) else {
+            return None;
+        };
+        if !self.transparent_unions.contains(&id) || self.ctypes.compatible_unqualified(from, to) {
+            return None;
+        }
+        let null = self.null_pointer_constant(argument);
+        let members = self.record_fields.get(&id)?.clone();
+        members.into_iter().enumerate().find_map(|(index, member)| {
+            let member = self.ctypes.unqualified(member);
+            self.ctypes
+                .classify_conversion(from, member, ConversionContext::Arg, null)
+                .is_ok_and(|conversion| conversion.warning.is_none())
+                .then_some((index, member))
+        })
+    }
+
     pub(super) fn integer_constant_zero(&mut self, e: &Expr) -> bool {
         self.integer_constant_expression(e)
             && self
@@ -1000,7 +1030,9 @@ impl TypeResolver {
             | ExprKind::BoolLiteral(_)
             | ExprKind::OffsetOf { .. }
             | ExprKind::TypesCompatible { .. } => true,
-            ExprKind::Identifier(_) => self.object(e).is_none() && self.constant(e).is_some(),
+            ExprKind::Identifier(_) => self
+                .constant(e)
+                .is_some_and(|constant| self.ctypes.is_integer(constant.c)),
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => self
                 .type_name(ty)
                 .is_ok_and(|c| !matches!(self.ir_type(c), Type::VariableArray { .. })),
@@ -1028,11 +1060,20 @@ impl TypeResolver {
                 then_value,
                 else_value,
             } => {
-                self.integer_constant_expression(condition)
-                    && then_value
-                        .as_ref()
-                        .is_none_or(|value| self.integer_constant_expression(value))
-                    && self.integer_constant_expression(else_value)
+                if !self.integer_constant_expression(condition) {
+                    return false;
+                }
+                // c99 6.6p3: an operand that is not evaluated may hold a comma or call
+                let taken = self
+                    .standard()
+                    .stdc_version()
+                    .is_some_and(|version| version >= 199901)
+                    .then(|| self.constant_integer(condition).ok())
+                    .flatten()
+                    .map(|value| value.sign() != num_bigint::Sign::NoSign);
+                then_value.as_ref().is_none_or(|value| {
+                    taken == Some(false) || self.integer_constant_expression(value)
+                }) && (taken == Some(true) || self.integer_constant_expression(else_value))
             }
             ExprKind::Generic {
                 controlling,

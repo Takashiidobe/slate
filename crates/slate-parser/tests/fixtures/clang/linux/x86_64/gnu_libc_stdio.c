@@ -139,7 +139,7 @@ int main(void) {
 // DEFAULT-NEXT:         field9 _IO_save_base: ptr<i8>;
 // DEFAULT-NEXT:         field10 _IO_backup_base: ptr<i8>;
 // DEFAULT-NEXT:         field11 _IO_save_end: ptr<i8>;
-// DEFAULT-NEXT:         field12 _markers: ptr<@type9>;
+// DEFAULT-NEXT:         field12 _markers: ptr<@type8>;
 // DEFAULT-NEXT:         field13 _chain: ptr<@type0>;
 // DEFAULT-NEXT:         field14 _fileno: i32;
 // DEFAULT-NEXT:         field15 _flags2: i32 : 24;
@@ -150,8 +150,8 @@ int main(void) {
 // DEFAULT-NEXT:         field20 _shortbuf: array<i8, 1>;
 // DEFAULT-NEXT:         field21 _lock: ptr<void>;
 // DEFAULT-NEXT:         field22 _offset: i64;
-// DEFAULT-NEXT:         field23 _codecvt: ptr<@type10>;
-// DEFAULT-NEXT:         field24 _wide_data: ptr<@type11>;
+// DEFAULT-NEXT:         field23 _codecvt: ptr<@type9>;
+// DEFAULT-NEXT:         field24 _wide_data: ptr<@type10>;
 // DEFAULT-NEXT:         field25 _freeres_list: ptr<@type0>;
 // DEFAULT-NEXT:         field26 _freeres_buf: ptr<void>;
 // DEFAULT-NEXT:         field27 _prevchain: ptr<ptr<@type0>>;
@@ -177,10 +177,10 @@ int main(void) {
 // DEFAULT-NEXT:     type @type5 __off_t = i64;
 // DEFAULT-NEXT:     type @type6 __off64_t = i64;
 // DEFAULT-NEXT:     type @type7 __ssize_t = i64;
-// DEFAULT-NEXT:     type @type8 _IO_lock_t = void;
-// DEFAULT-NEXT:     type @type9 _IO_marker = struct incomplete;
-// DEFAULT-NEXT:     type @type10 _IO_codecvt = struct incomplete;
-// DEFAULT-NEXT:     type @type11 _IO_wide_data = struct incomplete;
+// DEFAULT-NEXT:     type @type8 _IO_marker = struct incomplete;
+// DEFAULT-NEXT:     type @type9 _IO_codecvt = struct incomplete;
+// DEFAULT-NEXT:     type @type10 _IO_wide_data = struct incomplete;
+// DEFAULT-NEXT:     type @type11 _IO_lock_t = void;
 // DEFAULT-NEXT:     type @type12 cookie_read_function_t = fn(ptr<void>, ptr<i8>, u64) -> i64;
 // DEFAULT-NEXT:     type @type13 cookie_write_function_t = fn(ptr<void>, ptr<const i8>, u64) -> i64;
 // DEFAULT-NEXT:     type @type14 cookie_seek_function_t = fn(ptr<void>, ptr<i64>, i32) -> i32;

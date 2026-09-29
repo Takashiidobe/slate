@@ -81,7 +81,24 @@ impl Lowerer {
                     .default_promotion(value.c, &self.context.target);
                 (value, to, ConversionReason::Vararg)
             };
-            lowered.push(self.convert_recorded(argument, value, to, reason)?.value);
+            let value = match self.types.transparent_arguments.get(&argument.id).copied() {
+                Some((index, member)) => {
+                    let member = self.convert_recorded(argument, value, member, reason)?;
+                    self.value(
+                        argument,
+                        self.types.ir_type(to),
+                        ValueKind::Aggregate {
+                            members: vec![AggregateMember {
+                                target: AggregateTarget::Field(index),
+                                value: member.value,
+                            }],
+                            zero_fill: false,
+                        },
+                    )
+                }
+                None => self.convert_recorded(argument, value, to, reason)?.value,
+            };
+            lowered.push(value);
         }
         let abi = self.c_abi_signature(signature, &ty, Some(&lowered))?;
         Ok(self.operand(
@@ -2323,6 +2340,15 @@ impl Lowerer {
                     Type::Bool | Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_)
                 ) {
                     (left, right) = self.types.arithmetic_operands(&self.context, left, right)?;
+                } else if self.types.ctypes.is_arithmetic(left.c)
+                    && self.types.ctypes.is_arithmetic(right.c)
+                    && !self.types.ctypes.compatible_unqualified(left.c, right.c)
+                {
+                    let (enum_left, enum_right) =
+                        (self.enum_operand(left), self.enum_operand(right));
+                    (left, right) =
+                        self.types
+                            .arithmetic_operands(&self.context, enum_left, enum_right)?;
                 } else if self.types.ctypes.is_pointer(left.c)
                     && self.types.ctypes.is_pointer(right.c)
                 {

@@ -1145,7 +1145,14 @@ impl Checker<'_> {
             };
             match parameters.get(index) {
                 Some(&parameter) => {
-                    let to = self.types.ctypes.adjust_parameter(parameter);
+                    let mut to = self.types.ctypes.adjust_parameter(parameter);
+                    if let Some((index, member)) = self.types.transparent_member(to, argument, from)
+                    {
+                        self.types
+                            .transparent_arguments
+                            .insert(argument.id, (index, member));
+                        to = member;
+                    }
                     self.convert_at(argument, argument, from, to, ConversionContext::Arg);
                 }
                 None => {

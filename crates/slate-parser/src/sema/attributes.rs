@@ -197,8 +197,10 @@ fn inapplicable(
     let record = matches!(subject, Subject::Record { .. });
     match attribute {
         Attribute::Packed => (!record && subject != Subject::Field).then_some(("packed", None)),
-        Attribute::TransparentUnion => (subject != Subject::Record { union: true })
-            .then_some(("transparent_union", Some("unions"))),
+        Attribute::TransparentUnion => {
+            (!matches!(subject, Subject::Record { union: true } | Subject::Typedef))
+                .then_some(("transparent_union", Some("unions")))
+        }
         Attribute::MsStruct => {
             (!record).then_some(("ms_struct", Some("structs, unions, and classes")))
         }

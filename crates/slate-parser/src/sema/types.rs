@@ -6,7 +6,7 @@ use crate::ast::{
     IntegerType, ParameterList, Span, TagBody, TagDefinition, TagId, TagKind, TagSpecifier,
     TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
 };
-use crate::compiler_args::CompilerFlavor;
+use crate::compiler_args::{CompilerFlavor, LanguageStandard};
 use crate::diagnostics::{DiagnosticContext, Warning};
 use crate::ir::{
     Access, ArrayExtent, ArrayParameter, BindingId, BitFieldUnit, CallConv, Enumerator, Field,
@@ -58,6 +58,8 @@ pub struct TypeResolver {
     pub(super) expression_types: HashMap<crate::ast::NodeId, super::typer::Typed>,
     pub(super) conversions: HashMap<crate::ast::NodeId, super::ctype::convert::Conversion>,
     pub(super) element_targets: HashMap<crate::ast::NodeId, QualType>,
+    pub(super) transparent_unions: HashSet<TypeId>,
+    pub(super) transparent_arguments: HashMap<crate::ast::NodeId, (usize, QualType)>,
     pub(super) rejected_at: Option<crate::ast::Span<()>>,
     pub(super) inferred: Option<QualType>,
     pub(super) function_names: Option<FunctionNames>,
@@ -100,6 +102,8 @@ impl TypeResolver {
             expression_types: HashMap::new(),
             conversions: HashMap::new(),
             element_targets: HashMap::new(),
+            transparent_unions: HashSet::new(),
+            transparent_arguments: HashMap::new(),
             rejected_at: None,
             inferred: None,
             function_names: None,
@@ -165,6 +169,10 @@ impl TypeResolver {
 
     pub(super) fn compiler_flavor(&self) -> CompilerFlavor {
         self.dialect.flavor()
+    }
+
+    pub(super) fn standard(&self) -> LanguageStandard {
+        self.dialect.standard()
     }
 
     pub fn features(&self) -> StandardFeatures {
@@ -1150,6 +1158,12 @@ impl TypeResolver {
             .declarations
             .get(&node)
             .ok_or(ResolveError::Internal("unresolved typedef declaration"))?;
+        let attributes: Vec<_> = attributes.into_iter().collect();
+        if transparent(attributes.iter().copied())
+            && let CTypeKind::Record { id, union: true } = *self.ctypes.canonical_kind(resolved)
+        {
+            self.mark_transparent(id);
+        }
         if let Some((id, alias)) = self.alias_definitions.get(&node).copied() {
             self.aliases.insert(binding, alias);
             return Ok(id);
@@ -2160,39 +2174,82 @@ impl TypeResolver {
             ));
         }
         self.definitions[id.0 as usize].kind = kind;
+        if tag.kind == TagKind::Union && transparent(&tag.attributes) {
+            self.mark_transparent(id);
+        }
         if self.dialect.features().compatible_tag_redefinitions {
             self.join_compatible_tag(id);
         }
         Ok(id)
     }
 
+    // clang and gcc ignore the attribute unless every member is laid out like a non-floating first
+    fn mark_transparent(&mut self, id: TypeId) {
+        let TypeDefinitionKind::Record {
+            fields: Some(fields),
+            ..
+        } = &self.definitions[id.0 as usize].kind
+        else {
+            return;
+        };
+        let types: Vec<Type> = fields.iter().map(|field| field.ty.clone()).collect();
+        let Some(first) = types.first() else {
+            return;
+        };
+        if matches!(
+            self.unaliased(first),
+            Type::Numeric(NumericType::Float(_)) | Type::Vector { .. }
+        ) {
+            return;
+        }
+        let layouts: Result<Vec<_>, _> = types
+            .iter()
+            .map(|ty| self.qualified_storage(ty.clone(), false))
+            .collect();
+        let Ok(layouts) = layouts else {
+            return;
+        };
+        if layouts.iter().all(|layout| {
+            layout.size_bytes == layouts[0].size_bytes
+                && layout.alignment_bytes <= layouts[0].alignment_bytes
+        }) {
+            self.transparent_unions.insert(id);
+        }
+    }
+
+    // c23 tags that name each other compatible only as a group, so drop failures until the rest agree
     fn join_compatible_tag(&mut self, id: TypeId) {
         let Some(name) = self.definitions[id.0 as usize].name.clone() else {
             return;
         };
-        let candidates: Vec<TypeId> = self
+        let current = &self.definitions[id.0 as usize].kind;
+        let mut candidates: Vec<TypeId> = self
             .definitions
             .iter()
-            .filter(|definition| definition.id != id && definition.name.as_ref() == Some(&name))
+            .filter(|definition| {
+                definition.id != id
+                    && definition.name.as_ref() == Some(&name)
+                    && same_tag_shape(&definition.kind, current)
+            })
             .map(|definition| definition.id)
             .collect();
-        for candidate in candidates {
-            self.ctypes.join_tag_class(id, candidate);
-            let (earlier, current) = (
-                &self.definitions[candidate.0 as usize].kind,
-                &self.definitions[id.0 as usize].kind,
-            );
-            if same_tag_shape(earlier, current)
-                && self.same_field_types(
+        let saved = self.ctypes.tag_classes();
+        let fields = self.record_fields.get(&id).cloned();
+        while !candidates.is_empty() {
+            self.ctypes.merge_tag_classes(id, &candidates);
+            let before = candidates.len();
+            candidates.retain(|&candidate| {
+                self.same_field_types(
                     candidate,
-                    self.record_fields.get(&id).map(Vec::as_slice),
-                    current,
+                    fields.as_deref(),
+                    &self.definitions[id.0 as usize].kind,
                     CTypes::compatible,
                 )
-            {
+            });
+            if candidates.len() == before {
                 return;
             }
-            self.ctypes.leave_tag_class(id);
+            self.ctypes.restore_tag_classes(saved.clone());
         }
     }
 
@@ -2923,6 +2980,12 @@ fn same_tag_shape(a: &TypeDefinitionKind, b: &TypeDefinitionKind) -> bool {
         }
         _ => false,
     }
+}
+
+fn transparent<'a>(attributes: impl IntoIterator<Item = &'a Span<Attribute>>) -> bool {
+    attributes
+        .into_iter()
+        .any(|attribute| matches!(attribute.value, Attribute::TransparentUnion))
 }
 
 fn incomplete_tag(kind: TagKind) -> TypeDefinitionKind {

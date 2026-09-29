@@ -40,6 +40,7 @@ struct Reachability<'a> {
 impl<'a> Reachability<'a> {
     fn new(tu: &'a TranslationUnit) -> Self {
         let mut symbols: HashMap<String, Vec<usize>> = HashMap::new();
+        let mut introduced_tags = HashSet::new();
         for (id, decl) in tu.decls.iter().enumerate() {
             for name in decl.names() {
                 symbols.entry(name.to_string()).or_default().push(id);
@@ -47,6 +48,12 @@ impl<'a> Reachability<'a> {
             let DeclKind::Declaration(declaration) = &decl.value else {
                 continue;
             };
+            if let TypeSpecifier::Tag(TagSpecifier::Reference { name, .. }) =
+                &declaration.specifiers.ty
+                && introduced_tags.insert(name.value.as_str())
+            {
+                symbols.entry(name.value.clone()).or_default().push(id);
+            }
             let TypeSpecifier::Tag(TagSpecifier::Definition(tag_id)) = &declaration.specifiers.ty
             else {
                 continue;
@@ -55,6 +62,7 @@ impl<'a> Reachability<'a> {
                 continue;
             };
             if let Some(name) = &tag.value.name {
+                introduced_tags.insert(name.as_str());
                 symbols.entry(name.clone()).or_default().push(id);
             }
             if let TagBody::Enum { enumerators, .. } = &tag.value.body {

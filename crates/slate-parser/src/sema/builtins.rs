@@ -1,3 +1,4 @@
+use super::ctype::convert::ConversionContext;
 use super::ctype::{CTypeKind, FloatKind, IntRank, QualType, Qualifiers};
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
@@ -274,6 +275,62 @@ pub(super) fn clang_builtin(name: &str, flavor: CompilerFlavor) -> Option<&'stat
     })
 }
 
+const VOID_POINTER: BuiltinParam = BuiltinParam {
+    ty: &BuiltinType::Pointer(&BuiltinParam {
+        ty: &BuiltinType::Void,
+        quals: Qualifiers::NONE,
+        constant: false,
+    }),
+    quals: Qualifiers::NONE,
+    constant: false,
+};
+
+static GCC_SETJMP: BuiltinPrototype = BuiltinPrototype {
+    spelling: "int(void*)",
+    ret: BuiltinParam {
+        ty: &BuiltinType::Int {
+            rank: IntRank::Int,
+            signed: true,
+        },
+        quals: Qualifiers::NONE,
+        constant: false,
+    },
+    params: &[VOID_POINTER],
+    variadic: false,
+};
+
+static GCC_LONGJMP: BuiltinPrototype = BuiltinPrototype {
+    spelling: "void(void*, int)",
+    ret: BuiltinParam {
+        ty: &BuiltinType::Void,
+        quals: Qualifiers::NONE,
+        constant: false,
+    },
+    params: &[
+        VOID_POINTER,
+        BuiltinParam {
+            ty: &BuiltinType::Int {
+                rank: IntRank::Int,
+                signed: true,
+            },
+            quals: Qualifiers::NONE,
+            constant: false,
+        },
+    ],
+    variadic: false,
+};
+
+fn gcc_prototype(
+    builtin: &ClangBuiltin,
+    flavor: CompilerFlavor,
+) -> Option<&'static BuiltinPrototype> {
+    match (flavor, builtin.name) {
+        (CompilerFlavor::Gcc, "__builtin_setjmp") => Some(&GCC_SETJMP),
+        (CompilerFlavor::Gcc, "__builtin_longjmp") => Some(&GCC_LONGJMP),
+        _ => None,
+    }
+}
+
 fn registered_builtin(name: &str) -> Option<&'static ClangBuiltin> {
     CLANG_BUILTINS
         .binary_search_by_key(&name, |builtin| builtin.name)
@@ -299,12 +356,50 @@ impl TypeResolver {
         };
         if self.function_references.contains(&callee.id)
             && (self.entities.ty(&binding).is_none() || self.declares_builtin(binding, builtin))
+            && !self.unprototyped_mismatch(binding, builtin, arguments)
         {
             return Some((builtin, Some(binding)));
         }
         // A prefixed spelling (`__builtin_exit`) names the builtin even
         // when the `exit` in scope was declared with another type.
         (builtin.name != name).then_some((builtin, None))
+    }
+
+    // gcc calls an unprototyped declaration of a builtin as declared when an argument cannot convert
+    fn unprototyped_mismatch(
+        &mut self,
+        binding: BindingId,
+        builtin: &ClangBuiltin,
+        arguments: &[Expr],
+    ) -> bool {
+        if self.compiler_flavor() != CompilerFlavor::Gcc
+            || !self
+                .entities
+                .ty(&binding)
+                .and_then(|declared| self.ctypes.function_parts(declared))
+                .is_some_and(|(.., prototyped)| !prototyped)
+        {
+            return false;
+        }
+        let Some((_, parameters, ..)) = self
+            .builtin_signature(builtin)
+            .and_then(|signature| self.ctypes.function_parts(signature))
+        else {
+            return false;
+        };
+        let parameters = parameters.to_vec();
+        arguments
+            .iter()
+            .zip(parameters)
+            .any(|(argument, parameter)| {
+                let null = self.null_pointer_constant(argument);
+                let parameter = self.ctypes.adjust_parameter(parameter);
+                self.operand_type(argument).is_ok_and(|from| {
+                    self.ctypes
+                        .classify_conversion(from, parameter, ConversionContext::Arg, null)
+                        .is_err()
+                })
+            })
     }
 
     pub(super) fn declares_builtin(&mut self, binding: BindingId, builtin: &ClangBuiltin) -> bool {
@@ -392,7 +487,7 @@ impl TypeResolver {
     }
 
     pub(super) fn builtin_signature(&mut self, builtin: &ClangBuiltin) -> Option<QualType> {
-        let prototype = builtin.prototype?;
+        let prototype = gcc_prototype(builtin, self.compiler_flavor()).or(builtin.prototype)?;
         if builtin.has(BuiltinAttribute::CustomTypeChecking)
             || (prototype.params.is_empty() && prototype.variadic)
         {
