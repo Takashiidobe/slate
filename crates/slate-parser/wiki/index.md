@@ -1,5 +1,6 @@
 # Index
 
+- [Architecture and principles](concepts/architecture.md)
 - [AST Spec](concepts/ast-spec.md)
 - [AST Grammar](concepts/ast-grammar.md)
 - [AST Enum Touchpoints](concepts/ast-enum-touchpoints.md)

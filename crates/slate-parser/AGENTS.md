@@ -52,6 +52,9 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 Non-obvious project context lives in `wiki/` (see `llog`). Check it before
 re-deriving something from scratch:
 
+- `wiki/concepts/architecture.md` — read first: checker-vs-lowering
+  split, what belongs in the IR, the strictness policy, priorities, and
+  oracle versions and provenance.
 - `wiki/concepts/ast-spec.md` and `wiki/concepts/ir-spec.md` — evergreen
   specs of what the AST means and what it lowers into. Update them in the
   same change as any AST or IR change.
