@@ -3,6 +3,7 @@ mod error;
 mod expand;
 mod has_checks;
 mod include;
+mod print;
 mod syntax;
 
 use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
@@ -16,6 +17,7 @@ pub use error::{DirectiveDiagnostic, DirectiveErrors, PPError};
 use error::{PPErrorKind, PPFailure};
 use include::{include_target, read_source};
 use miette::Severity;
+pub use print::write_preprocessed;
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};

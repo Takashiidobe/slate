@@ -2,7 +2,7 @@ use miette::Severity;
 use slate_parser::compiler_args::CompilerArgParser;
 use slate_parser::dialect::Dialect;
 use slate_parser::parser::Parser;
-use slate_parser::pp::{DirectiveDiagnostic, DirectiveErrors};
+use slate_parser::pp::{DirectiveDiagnostic, DirectiveErrors, write_preprocessed};
 use slate_parser::render::Renderer;
 use std::env;
 use std::fs;
@@ -24,9 +24,9 @@ fn main() -> miette::Result<()> {
 fn run() -> miette::Result<()> {
     let mut args = env::args().skip(1);
     let command = args.next();
-    if !matches!(command.as_deref(), Some("parse" | "ir")) {
+    if !matches!(command.as_deref(), Some("parse" | "ir" | "pp")) {
         return Err(miette::miette!(
-            "usage: slate-parser <parse|ir> <source.c> [-DNAME] [-UNAME] [-include <file>] [-imacros <file>] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-I<dir>] [-iquote <dir>] [-isystem <dir>] [-idirafter <dir>] [-nostdlibinc] [-isysroot <dir>|--sysroot=<dir>] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
+            "usage: slate-parser <parse|ir|pp> <source.c> [-DNAME] [-UNAME] [-include <file>] [-imacros <file>] [-target=<triple>|-target <triple>] [--flavor=gcc|clang|msvc] [-std=<C standard>] [-I<dir>] [-iquote <dir>] [-isystem <dir>] [-idirafter <dir>] [-nostdlibinc] [-isysroot <dir>|--sysroot=<dir>] [--show-comments] [--show-ids] [--dump-ir] [--dump-ir-types] [--dump-ir-expressions] [--dump-ir-names] [--show-spans] [--show-metadata] [--compact-ir]"
         ));
     }
     let path = args
@@ -109,6 +109,14 @@ fn run() -> miette::Result<()> {
     );
     let mut parser =
         Parser::new(search, dialect).with_preprocessor_inputs(compiler_args.preprocessor_inputs);
+    if command.as_deref() == Some("pp") {
+        let preprocessed = parser.preprocess_file(Path::new(&path));
+        report_directives(parser.directive_diagnostics())?;
+        let (nodes, files) = preprocessed?;
+        let stdout = io::stdout();
+        return write_preprocessed(&nodes, &files, &mut io::BufWriter::new(stdout.lock()))
+            .map_err(|error| miette::miette!(error));
+    }
     let parsed = parser.parse_file(Path::new(&path));
     report_directives(parser.directive_diagnostics())?;
     let (ast, files) = parsed?;

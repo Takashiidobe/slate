@@ -438,6 +438,17 @@ impl Parser {
         ast.map(|ast| (ast, pp.files)).map_err(FrontendError::Parse)
     }
 
+    pub fn preprocess_file(&mut self, path: &Path) -> Result<(Vec<PPNode>, Files), FrontendError> {
+        let search = self.search.clone();
+        let dialect = self.dialect.clone();
+        let mut pp = Preprocessor::new(&search, &dialect).map_err(FrontendError::PP)?;
+        let mut nodes = self.prepare_preprocessor(&mut pp)?;
+        let main = pp.parse_file(path);
+        self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
+        nodes.extend(main.map_err(FrontendError::PP)?);
+        Ok((nodes, pp.files))
+    }
+
     fn error_at_tokens(
         &self,
         tokens: &[Span<Token>],

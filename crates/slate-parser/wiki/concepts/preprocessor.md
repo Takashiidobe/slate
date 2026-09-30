@@ -9,6 +9,7 @@
 - [Expansion](#expansion)
 - [Conditionals](#conditionals)
 - [Pragmas and line control](#pragmas-and-line-control)
+- [Oracle](#oracle)
 <!-- /toc -->
 
 `src/pp/`: one preprocessing run per configuration, producing a flat
@@ -133,3 +134,23 @@ named Rust constant (`CHAR_MAX`) instead of its value.
 - `#line` and GNU line markers set `line_overrides`, read by
   `presumed_location` for `__LINE__` / `__FILE__`.
 - `#error` / `#warning` go to `directive_diagnostics`.
+
+## Oracle
+
+`slate-parser pp <file> [args]` prints the preprocessed stream: one line
+per `Code` node, `Pragma` nodes as `#pragma ...`, comments dropped. Keywords
+print with their source spelling (`__inline__`, not `inline`), and a space is
+inserted wherever adjacent tokens would otherwise relex as one.
+
+`tools/pp_diff.py` compares it with `clang -E -P`, token by token, ignoring
+whitespace and line breaks (`--corpus [project ...]`, `--compdb`, or
+`--file x.c -- args`). The report goes to `target/pp-diff.md`. Both sides
+are run under matching conditions:
+
+- clang runs with `-nostdinc` over slate's own compiler headers and sysroot,
+  so both preprocess the same headers.
+- Without a `-std` in the compile command, both get `-std=gnu17`, which is
+  clang's default. Slate defaults to gnu23 (slate-parser-6x05.6).
+- Pragmas that clang consumes (`once`, `push_macro`, `pop_macro`, `region`,
+  `GCC system_header`/`poison`, `clang deprecated`/`final`/`diagnostic`) are
+  skipped on both sides.

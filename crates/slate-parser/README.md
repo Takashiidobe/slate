@@ -89,11 +89,12 @@ the printer also emits source-level metadata in brackets, such as
 ## Command-line usage
 
 ```text
-slate-parser <parse|ir> <source.c> [options]
+slate-parser <parse|ir|pp> <source.c> [options]
 ```
 
 `parse` prints the parsed AST. `ir` lowers the AST through sema and prints the
-textual IR. The current flags are:
+textual IR. `pp` prints the preprocessed token stream, which
+[`tools/pp_diff.py`](tools/pp_diff.py) compares with `clang -E -P`. The current flags are:
 
 - `-DNAME` or `-D NAME`: define a preprocessor macro.
 - `-std=c89|gnu89|c99|gnu99|c11|gnu11|c17|gnu17|c23|gnu23`: select the C
