@@ -854,6 +854,16 @@ fn lower_value(
                 }
             }
         }
+        ValueKind::Logical { op, left, right } if matches!(value.ty, ir::Type::Bool) => {
+            Expr::Binary {
+                op: match op {
+                    ir::LogicalOp::And => BinOp::And,
+                    ir::LogicalOp::Or => BinOp::Or,
+                },
+                lhs: Box::new(lower_condition(left, names, bindings, strings)?),
+                rhs: Box::new(lower_condition(right, names, bindings, strings)?),
+            }
+        }
         ValueKind::Compare {
             op, left, right, ..
         } => Expr::Binary {
