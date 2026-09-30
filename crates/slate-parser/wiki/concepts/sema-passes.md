@@ -139,7 +139,7 @@ Rules:
   conversion; `lvalue_conversion` of the place a `read` loads; literal,
   character-constant, `__builtin_types_compatible_p` and
   `__builtin_classify_type` values, decoded from the facts. Declaration
-  entities are merged by both passes (`merge_redeclaration`).
+  types are merged by the checker only; lowering reads `declared_types`.
 - A typed `sizeof` operand is not lowered unless it is a VLA.
 - Null pointer constants: `integer_constant_zero`, an ICE by 6.6p6
   operand rules that folds to zero (`(void *)(1 - 1)` yes; `(void *)(0,
@@ -217,7 +217,11 @@ The checker rejects; lowering's copies are `Internal`.
 - **Type resolution**: `Checker::resolution` reports the first rejection
   per declaration. `declare_object` merges through `merge_redeclaration`
   after `inherit_convention` (and `apply_convention` for definitions), so
-  conflicting types and conventions are reported at the declarator.
+  conflicting types and conventions are reported at the declarator. The
+  merged type per declaration node goes to `declared_types`. A definition's
+  parameters are declared (under `provisional_extents`, tags included)
+  before its function type resolves, so `int f(int T, int a[sizeof(T)])`
+  sees the parameter `T`.
 - **FP pragmas**: the checker runs its own `FloatingPragmas` /
   `FloatingRegion`, restored at each compound; a pragma right after
   `({ ... })` is rejected, as clang does.

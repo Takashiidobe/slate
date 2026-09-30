@@ -95,9 +95,9 @@ severity(w) =
   (lowering's `update` re-classifies silently).
 - An item whose stashed diagnostics (`item_diagnostics`) include an error
   moves them all into the checker's errors, so `parse` rejects `i = p`.
-- `conflicting-types` comes from lowering: `Lowerer::warn` →
-  `diagnostics` → `with_sources` (shared with `analyze`), returned next to
-  the `Module`. A promoted warning fails `ir --dump-ir`.
+- `conflicting-types` comes from the checker (`declare_object`), stashed in
+  `item_diagnostics` like other checker warnings, so a promoted warning is
+  a checker error.
 - Warnings point at the converted value's node (`take((unsigned *)p)` →
   `p`).
 - Fixtures: `error/conversion_default_errors.c`,

@@ -201,7 +201,7 @@ impl Lowerer {
         let resolved = self.types.ctypes.implicit_function();
         let ty = self.types.ir_type(resolved);
         let abi = Some(self.c_abi_signature(resolved, &ty, None)?);
-        let previous = self.types.entities.declare(id, resolved, false);
+        self.types.entities.declare(id, resolved, false);
         self.record_implicit_function(id);
         let mut symbol = SymbolAttributes::default();
         self.types.pragmas.apply(&binding.name, &mut symbol);
@@ -225,7 +225,7 @@ impl Lowerer {
         let mut metadata = vec![("c_implicit".into(), "true".into())];
         metadata.extend(self.types.render(resolved).entries());
         self.module.annotate(&function, metadata);
-        self.declare_function(function, previous)
+        self.declare_function(function)
     }
 
     fn reset_after_failed_item(&mut self) {
@@ -307,10 +307,7 @@ fn lower_item(
             };
             let return_type = return_type.as_ref().map(|ty| (**ty).clone());
             let abi = Some(lower.c_abi_signature(resolved, &ty, None)?);
-            let previous = lower.types.entities.declare(id, resolved, false);
-            if let Some(message) = lower.types.merge_redeclaration(id, previous, resolved)? {
-                lower.warn(Warning::ConflictingTypes, message, declaration);
-            }
+            lower.redeclared(declaration.id, id)?;
             let mut metadata = vec![
                 (
                     "c_storage".into(),
@@ -382,7 +379,7 @@ fn lower_item(
                 fallthrough: Some(fallthrough),
             });
             lower.module.annotate(&lowered, metadata);
-            lower.declare_function(lowered, None)?;
+            lower.declare_function(lowered)?;
         }
     }
     Ok(())
@@ -670,11 +667,19 @@ impl Lowerer {
         Ok(())
     }
 
-    fn declare_global(
-        &mut self,
-        global: Span<Global>,
-        previous: Option<QualType>,
-    ) -> Result<(), ResolveError> {
+    fn redeclared(&mut self, node: ast::NodeId, id: BindingId) -> Result<(), ResolveError> {
+        let recorded = *self
+            .types
+            .declared_types
+            .get(&node)
+            .ok_or(ResolveError::Internal(
+                "declaration type not recorded by the checker",
+            ))?;
+        self.types.entities.declare(id, recorded, false);
+        Ok(())
+    }
+
+    fn declare_global(&mut self, global: Span<Global>) -> Result<(), ResolveError> {
         let id = global.value.variable.id;
         self.types.entities.merge_declaration(
             id,
@@ -683,14 +688,6 @@ impl Lowerer {
             global.value.definition,
             global.value.symbol.clone(),
         );
-        let declared = self
-            .types
-            .entities
-            .ty(&id)
-            .ok_or(ResolveError::Internal("untyped global redeclaration"))?;
-        if let Some(message) = self.types.merge_redeclaration(id, previous, declared)? {
-            self.warn(Warning::ConflictingTypes, message, &global);
-        }
         let Some(index) = self
             .module
             .globals
@@ -723,11 +720,7 @@ impl Lowerer {
         Ok(())
     }
 
-    fn declare_function(
-        &mut self,
-        function: Span<Function>,
-        previous: Option<QualType>,
-    ) -> Result<(), ResolveError> {
+    fn declare_function(&mut self, function: Span<Function>) -> Result<(), ResolveError> {
         let id = function.value.id;
         self.types.entities.merge_declaration(
             id,
@@ -736,11 +729,6 @@ impl Lowerer {
             function.value.body.is_some(),
             function.value.symbol.clone(),
         );
-        if let Some(declared) = self.types.entities.ty(&id)
-            && let Some(message) = self.types.merge_redeclaration(id, previous, declared)?
-        {
-            self.warn(Warning::ConflictingTypes, message, &function);
-        }
         let Some(index) = self
             .module
             .functions
@@ -1045,10 +1033,9 @@ impl Lowerer {
                 None => return Err(ResolveError::Internal("object cannot have type void")),
             };
             let id = self.declaration_id(declarator.id, name)?;
-            let previous =
-                self.types
-                    .entities
-                    .declare(id, resolved, storage_class == StorageClass::Register);
+            self.types
+                .entities
+                .declare(id, resolved, storage_class == StorageClass::Register);
             if let Type::Function {
                 return_type,
                 parameters: parameter_types,
@@ -1122,7 +1109,8 @@ impl Lowerer {
                     fallthrough: None,
                 });
                 self.module.annotate(&lowered, c_entries);
-                self.declare_function(lowered, previous)?;
+                self.redeclared(declarator.id, id)?;
+                self.declare_function(lowered)?;
                 continue;
             }
             let linked = global || storage_class == StorageClass::Extern;
@@ -1318,7 +1306,8 @@ impl Lowerer {
                     common: false,
                 });
                 self.module.annotate(&global, c_entries);
-                self.declare_global(global, previous)?;
+                self.redeclared(declarator.id, id)?;
+                self.declare_global(global)?;
             } else if storage == StorageDuration::Automatic {
                 let binding = declarator.derive(Statement::Let(variable));
                 self.module.annotate(&binding, c_entries);

@@ -199,9 +199,9 @@ level), `compatible_unqualified`, `composite`.
 
 - `TypeResolver::declared` holds each entity's merged C type by
   `BindingId`; `bindings` holds the type in scope.
-- `merge_redeclaration` runs in `declare_global` and `declare_function`
-  (`sema/module.rs`) before the existing-entry lookup, so the first
-  declaration registers its type.
+- `merge_redeclaration` runs in the checker's `declare_object`, which
+  records the result per declaration in `declared_types`; lowering's
+  `declare_global` / `declare_function` only read it (`redeclared`).
 - Compatible declarations merge into their `composite` (`int a[]; int
   a[5];`). Otherwise the
   [conflict table](ir/declarations.md#redeclaration-conflicts) applies;

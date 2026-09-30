@@ -157,8 +157,9 @@ impl Checker<'_> {
             .push(error(condition.provenance, condition.expansion, message));
     }
 
-    fn declare_object(
+    fn declare_object<T>(
         &mut self,
+        at: &Span<T>,
         node: NodeId,
         ty: QualType,
         alignment: Option<u64>,
@@ -171,7 +172,16 @@ impl Checker<'_> {
         let ty = self.types.inherit_convention(id, ty);
         let previous = self.types.entities.ty(&id);
         self.types.entities.declare(id, ty, register);
-        let merged = self.types.merge_redeclaration(id, previous, ty).map(drop);
+        let merged = match self.types.merge_redeclaration(id, previous, ty) {
+            Ok(Some(message)) => {
+                self.types.warn(Warning::ConflictingTypes, message, at);
+                Ok(())
+            }
+            merged => merged.map(drop),
+        };
+        if let Some(declared) = self.types.entities.ty(&id) {
+            self.types.declared_types.insert(node, declared);
+        }
         if let Some(linkage) = linkage {
             self.types.entities.merge_declaration(
                 id,
@@ -205,6 +215,50 @@ impl Checker<'_> {
             .collect::<Vec<_>>();
         self.function_rules(&at, node, &function.specifiers, &attributes, None);
         self.weakref(&at, attributes.iter().copied(), true, false);
+        let identifier_list = matches!(
+            function.declarator.function_parameters(),
+            Some(ParameterList::IdentifierList { .. })
+        );
+        for parameter in function
+            .declarator
+            .function_parameters()
+            .map_or(&[][..], ParameterList::parameters)
+        {
+            self.parameter_rules(parameter);
+            self.specifier(&parameter.specifiers.ty);
+            self.declarator(&parameter.declarator);
+            let owner = self.types.owner.replace(parameter.derive(()));
+            let provisional = std::mem::replace(&mut self.types.provisional_extents, true);
+            self.tag(&parameter.specifiers.ty);
+            let resolved = self
+                .types
+                .resolve(&parameter.specifiers, &parameter.declarator);
+            self.types.provisional_extents = provisional;
+            self.types.owner = owner;
+            self.resolution(parameter, &resolved);
+            if let Ok(resolved) = resolved
+                && !self.types.ctypes.is_void(resolved)
+            {
+                let declared_array = parameter.declarator.array_parameter().unwrap_or_default();
+                let adjusted = self
+                    .types
+                    .adjusted_parameter(resolved, declared_array.qualifiers.into());
+                if self.types.is_incomplete_record(adjusted) {
+                    self.reject(parameter, "variable has incomplete type");
+                }
+                let register = parameter.specifiers.storage == StorageClass::Register;
+                let declared =
+                    self.declare_object(parameter, parameter.id, adjusted, None, None, register);
+                self.report(parameter, declared);
+                if identifier_list
+                    && let Err(rejection) = self
+                        .types
+                        .record_promoted_parameter(parameter, resolved, adjusted)
+                {
+                    self.reject_with(parameter, rejection);
+                }
+            }
+        }
         let mut names = None;
         let mut returns = Returns::Unknown;
         let owner = std::mem::replace(&mut self.types.owner, owner);
@@ -216,7 +270,7 @@ impl Checker<'_> {
         if let Ok(ty) = resolved {
             let ty = self.types.apply_convention(ty, &function.attributes);
             let linkage = owner_linkage.then(|| linkage(function.specifiers.storage));
-            let declared = self.declare_object(node, ty, None, linkage.flatten(), false);
+            let declared = self.declare_object(&at, node, ty, None, linkage.flatten(), false);
             self.report(&at, declared);
             names = function
                 .declarator
@@ -241,49 +295,6 @@ impl Checker<'_> {
             },
         );
         let enclosing = std::mem::replace(&mut self.types.function_names, names);
-        let identifier_list = matches!(
-            function.declarator.function_parameters(),
-            Some(ParameterList::IdentifierList { .. })
-        );
-        for parameter in function
-            .declarator
-            .function_parameters()
-            .map_or(&[][..], ParameterList::parameters)
-        {
-            self.parameter_rules(parameter);
-            self.specifier(&parameter.specifiers.ty);
-            self.declarator(&parameter.declarator);
-            let owner = self.types.owner.replace(parameter.derive(()));
-            self.tag(&parameter.specifiers.ty);
-            let provisional = std::mem::replace(&mut self.types.provisional_extents, true);
-            let resolved = self
-                .types
-                .resolve(&parameter.specifiers, &parameter.declarator);
-            self.types.provisional_extents = provisional;
-            self.types.owner = owner;
-            self.resolution(parameter, &resolved);
-            if let Ok(resolved) = resolved
-                && !self.types.ctypes.is_void(resolved)
-            {
-                let declared_array = parameter.declarator.array_parameter().unwrap_or_default();
-                let adjusted = self
-                    .types
-                    .adjusted_parameter(resolved, declared_array.qualifiers.into());
-                if self.types.is_incomplete_record(adjusted) {
-                    self.reject(parameter, "variable has incomplete type");
-                }
-                let register = parameter.specifiers.storage == StorageClass::Register;
-                let declared = self.declare_object(parameter.id, adjusted, None, None, register);
-                self.report(parameter, declared);
-                if identifier_list
-                    && let Err(rejection) = self
-                        .types
-                        .record_promoted_parameter(parameter, resolved, adjusted)
-                {
-                    self.reject_with(parameter, rejection);
-                }
-            }
-        }
         self.compound(&function.body);
         self.types.function_names = enclosing;
         self.context = enclosing_context;
@@ -394,8 +405,14 @@ impl Checker<'_> {
                     None
                 };
                 let register = storage == StorageClass::Register;
-                let declared =
-                    self.declare_object(declarator.id, completed, requested, linkage, register);
+                let declared = self.declare_object(
+                    declarator,
+                    declarator.id,
+                    completed,
+                    requested,
+                    linkage,
+                    register,
+                );
                 self.report(declarator, declared);
                 if !self.types.ctypes.is_function(completed) && !self.variable_array(completed) {
                     initialized = Some(completed);

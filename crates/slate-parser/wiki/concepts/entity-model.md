@@ -53,10 +53,14 @@ bodies stay on IR declarations; they are payloads, not entity properties.
 
 ## Merging
 
-- `TypeResolver::merge_redeclaration` is the only merge point: writes the
-  composite back, or keeps the old type and returns a conflict.
-- It must run above the "already declared?" early return in
-  `declare_global` / `declare_function`, or `int x; long x;` is accepted.
+- `TypeResolver::merge_redeclaration` is the only merge point, called only
+  by the checker's `declare_object`: writes the composite back, or keeps
+  the old type and returns a conflict (warned as `conflicting-types`).
+- The checker records the merged type after each declaration in
+  `declared_types` (by declarator or definition `NodeId`). Lowering's
+  `redeclared` reads it into its entity table; it never merges. The type is
+  point-in-time: `int a[]; ... int a[10];` keeps `int[]` for uses between
+  the two.
 - `names.rs::redeclares` treats `Object` and `Function` as one kind (a
   declarator only looks like a function when written with parameters, e.g.
   `extern __typeof(f) f`). Type agreement is `merge_redeclaration`'s job;
