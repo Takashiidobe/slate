@@ -6,34 +6,78 @@ use std::collections::HashMap;
 
 type Result<T> = std::result::Result<T, super::Error>;
 
-pub fn lower(module: &ir::Module) -> Result<rust::Program> {
-    if !module.types.is_empty() || !module.asm.is_empty() {
-        return Err(super::Error::Unsupported("types or module assembly".into()));
+pub struct Report {
+    pub module: Vec<super::Error>,
+    pub functions: Vec<(String, Option<super::Error>)>,
+}
+
+impl Report {
+    pub fn is_clean(&self) -> bool {
+        self.module.is_empty() && self.functions.iter().all(|(_, barrier)| barrier.is_none())
     }
-    let strings = module
-        .globals
-        .iter()
-        .map(|global| {
-            let Some(ir::ValueKind::CodeUnits(units)) = global
-                .variable
-                .initializer
-                .as_ref()
-                .map(|value| &value.node.value)
-            else {
-                return Err(super::Error::Unsupported(format!(
-                    "global {}",
-                    global.variable.name
-                )));
-            };
-            let bytes = units
-                .iter()
-                .map(|unit| {
-                    u8::try_from(*unit).map_err(|_| super::Error::Unsupported("wide string".into()))
-                })
-                .collect::<Result<Vec<_>>>()?;
-            Ok((global.variable.id, bytes))
-        })
-        .collect::<Result<HashMap<_, _>>>()?;
+}
+
+pub fn lower(module: &ir::Module) -> Result<rust::Program> {
+    lower_module(module, None)
+}
+
+pub fn report(module: &ir::Module) -> Report {
+    let mut report = Report {
+        module: Vec::new(),
+        functions: Vec::new(),
+    };
+    lower_module(module, Some(&mut report)).expect("report mode records barriers");
+    report
+}
+
+fn module_barrier(report: &mut Option<&mut Report>, error: super::Error) -> Result<()> {
+    match report {
+        Some(report) => {
+            report.module.push(error);
+            Ok(())
+        }
+        None => Err(error),
+    }
+}
+
+fn function_barrier<T>(
+    report: &mut Option<&mut Report>,
+    name: &str,
+    defined: bool,
+    result: Result<T>,
+) -> Result<Option<T>> {
+    match (result, report) {
+        (Ok(value), Some(report)) => {
+            if defined {
+                report.functions.push((name.to_owned(), None));
+            }
+            Ok(Some(value))
+        }
+        (Ok(value), None) => Ok(Some(value)),
+        (Err(error), Some(report)) => {
+            report.functions.push((name.to_owned(), Some(error)));
+            Ok(None)
+        }
+        (Err(error), None) => Err(error),
+    }
+}
+
+fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<rust::Program> {
+    if !module.asm.is_empty() {
+        module_barrier(
+            &mut report,
+            super::Error::Unsupported("module assembly".into()),
+        )?;
+    }
+    let mut strings = HashMap::new();
+    for global in &module.globals {
+        match lower_string_global(global) {
+            Ok(bytes) => {
+                strings.insert(global.variable.id, bytes);
+            }
+            Err(error) => module_barrier(&mut report, error)?,
+        }
+    }
     let names: HashMap<_, _> = module
         .functions
         .iter()
@@ -77,78 +121,16 @@ pub fn lower(module: &ir::Module) -> Result<rust::Program> {
     let mut externs = Vec::new();
     for function in &module.functions {
         let Some(body) = &function.body else {
-            let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
-                return Err(super::Error::Unsupported(format!(
-                    "unprototyped declaration {}",
-                    function.name
-                )));
-            };
-            externs.push(rust::ExternDecl::Fn(rust::ExternFnDecl {
-                attrs: Vec::new(),
-                name: function.name.clone(),
-                identity: FunctionIdentity::Unknown,
-                declared_type: None,
-                trusted_headers: Default::default(),
-                params: fixed
-                    .iter()
-                    .map(|parameter| {
-                        Ok(FnParam {
-                            name: binding_name(parameter.value.id, &bindings),
-                            mutable: false,
-                            ty: lower_type(&parameter.ty)?,
-                        })
-                    })
-                    .collect::<Result<Vec<_>>>()?,
-                variadic: *variadic,
-                ret: function.return_type.as_ref().map(lower_type).transpose()?,
-                safe: false,
-            }));
+            let decl = lower_extern(function, &bindings);
+            if let Some(decl) = function_barrier(&mut report, &function.name, false, decl)? {
+                externs.push(decl);
+            }
             continue;
         };
-        let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
-            return Err(super::Error::Unsupported(format!(
-                "unprototyped function {}",
-                function.name
-            )));
-        };
-        if *variadic {
-            return Err(super::Error::Unsupported(format!(
-                "variadic definition {}",
-                function.name
-            )));
+        let item = lower_function(function, body, &names, &bindings, &strings);
+        if let Some(item) = function_barrier(&mut report, &function.name, true, item)? {
+            items.push(item);
         }
-        let params = fixed
-            .iter()
-            .map(|param| {
-                Ok(FnParam {
-                    name: binding_name(param.value.id, &bindings),
-                    mutable: true,
-                    ty: lower_type(&param.ty)?,
-                })
-            })
-            .collect::<Result<Vec<_>>>()?;
-        let mut continue_labels = Vec::new();
-        let mut statements = body
-            .iter()
-            .map(|statement| {
-                lower_statement(statement, &names, &bindings, &strings, &mut continue_labels)
-            })
-            .collect::<Result<Vec<_>>>()?;
-        if matches!(function.fallthrough, Some(ir::Fallthrough::ReturnZero))
-            && !matches!(statements.last(), Some(Stmt::Return(_)))
-        {
-            statements.push(Stmt::Return(Some(Expr::Value(rust::RustValue::I64(0)))));
-        }
-        items.push(Item::Fn(FnDef {
-            attrs: Vec::new(),
-            vis: rust::Visibility::Private,
-            unsafe_: false,
-            abi: None,
-            name: names[&function.value.id].clone(),
-            params,
-            ret: function.return_type.as_ref().map(lower_type).transpose()?,
-            body: statements,
-        }));
     }
     if !externs.is_empty() {
         items.insert(
@@ -180,6 +162,109 @@ pub fn lower(module: &ir::Module) -> Result<rust::Program> {
         }));
     }
     Ok(rust::Program { items })
+}
+
+fn lower_string_global(global: &ir::Global) -> Result<Vec<u8>> {
+    let Some(ir::ValueKind::CodeUnits(units)) = global
+        .variable
+        .initializer
+        .as_ref()
+        .map(|value| &value.node.value)
+    else {
+        return Err(super::Error::Unsupported(format!(
+            "global {}",
+            global.variable.name
+        )));
+    };
+    units
+        .iter()
+        .map(|unit| {
+            u8::try_from(*unit).map_err(|_| super::Error::Unsupported("wide string".into()))
+        })
+        .collect()
+}
+
+fn lower_extern(
+    function: &ir::Function,
+    bindings: &HashMap<BindingId, String>,
+) -> Result<rust::ExternDecl> {
+    let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
+        return Err(super::Error::Unsupported(format!(
+            "unprototyped declaration {}",
+            function.name
+        )));
+    };
+    Ok(rust::ExternDecl::Fn(rust::ExternFnDecl {
+        attrs: Vec::new(),
+        name: function.name.clone(),
+        identity: FunctionIdentity::Unknown,
+        declared_type: None,
+        trusted_headers: Default::default(),
+        params: fixed
+            .iter()
+            .map(|parameter| {
+                Ok(FnParam {
+                    name: binding_name(parameter.value.id, bindings),
+                    mutable: false,
+                    ty: lower_type(&parameter.ty)?,
+                })
+            })
+            .collect::<Result<Vec<_>>>()?,
+        variadic: *variadic,
+        ret: function.return_type.as_ref().map(lower_type).transpose()?,
+        safe: false,
+    }))
+}
+
+fn lower_function(
+    function: &ir::Function,
+    body: &[slate_parser::ast::Span<ir::Statement>],
+    names: &HashMap<BindingId, String>,
+    bindings: &HashMap<BindingId, String>,
+    strings: &HashMap<BindingId, Vec<u8>>,
+) -> Result<Item> {
+    let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
+        return Err(super::Error::Unsupported(format!(
+            "unprototyped function {}",
+            function.name
+        )));
+    };
+    if *variadic {
+        return Err(super::Error::Unsupported(format!(
+            "variadic definition {}",
+            function.name
+        )));
+    }
+    let params = fixed
+        .iter()
+        .map(|param| {
+            Ok(FnParam {
+                name: binding_name(param.value.id, bindings),
+                mutable: true,
+                ty: lower_type(&param.ty)?,
+            })
+        })
+        .collect::<Result<Vec<_>>>()?;
+    let mut continue_labels = Vec::new();
+    let mut statements = body
+        .iter()
+        .map(|statement| lower_statement(statement, names, bindings, strings, &mut continue_labels))
+        .collect::<Result<Vec<_>>>()?;
+    if matches!(function.fallthrough, Some(ir::Fallthrough::ReturnZero))
+        && !matches!(statements.last(), Some(Stmt::Return(_)))
+    {
+        statements.push(Stmt::Return(Some(Expr::Value(rust::RustValue::I64(0)))));
+    }
+    Ok(Item::Fn(FnDef {
+        attrs: Vec::new(),
+        vis: rust::Visibility::Private,
+        unsafe_: false,
+        abi: None,
+        name: names[&function.id].clone(),
+        params,
+        ret: function.return_type.as_ref().map(lower_type).transpose()?,
+        body: statements,
+    }))
 }
 
 fn rust_binding_name(name: &str) -> String {

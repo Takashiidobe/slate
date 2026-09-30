@@ -19,6 +19,9 @@ fn usage() -> ExitCode {
         "  translate   [--frontend=cir|slate] [--targets=<t1>,<t2>,...] [compiler args...] <file.c>  C -> Rust"
     );
     eprintln!("  translate-lowered [--frontend=cir|slate] <file.c>  C -> raw Rust");
+    eprintln!(
+        "  lowering-barriers [compiler args...] <file.c>  first slate lowering barrier per function"
+    );
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
     eprintln!(
         "  translate-project --compile-commands <file>... <project_dir> <crate_dir>  cross-TU C project -> Cargo crate (bin if a unit defines main, else lib)"
@@ -45,6 +48,10 @@ fn main() -> ExitCode {
             Some((path, compiler_args)) => {
                 run(lowered_rust_with_args(Path::new(path), compiler_args))
             }
+            None => usage(),
+        },
+        Some("lowering-barriers") => match args[2..].split_last() {
+            Some((path, compiler_args)) => lowering_barriers(Path::new(path), compiler_args),
             None => usage(),
         },
         Some("record-cfg") => match args.get(2) {
@@ -151,6 +158,28 @@ fn emit_cir(path: &Path) -> Result<String, String> {
 fn emit_slate_ir(path: &Path, compiler_args: &[String]) -> Result<String, String> {
     let module = cli_result(api::slate_ir_with_args(path, compiler_args))?;
     Ok(module.display(false).to_string())
+}
+
+fn lowering_barriers(path: &Path, compiler_args: &[String]) -> ExitCode {
+    let module = match cli_result(api::slate_ir_with_args(path, compiler_args)) {
+        Ok(module) => module,
+        Err(error) => return run(Err(error)),
+    };
+    let report = slate::slate_parser_frontend::lowerer::report(&module);
+    for error in &report.module {
+        println!("<module>\t{error}");
+    }
+    for (function, barrier) in &report.functions {
+        match barrier {
+            Some(error) => println!("{function}\t{error}"),
+            None => println!("{function}\tok"),
+        }
+    }
+    if report.is_clean() {
+        ExitCode::SUCCESS
+    } else {
+        ExitCode::FAILURE
+    }
 }
 
 fn translate_with_clang_args(path: &Path, clang_args: &[String]) -> Result<String, String> {

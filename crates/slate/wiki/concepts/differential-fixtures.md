@@ -55,6 +55,14 @@ cargo nextest r --release --test differential \
   -E 'test(fixtures_unsupported_triage_report)' --run-ignored ignored-only --nocapture
 ```
 
+`slate lowering-barriers [compiler args] <file.c>` lists every function
+defined in one translation unit with `ok` or its first lowering barrier, plus
+`<module>` lines for top-level barriers (unsupported globals, top-level asm).
+It never emits Rust and exits non-zero when any barrier exists. Strict
+translation (`translate-lowered --frontend=slate`) still fails on the first
+barrier. Record and enum definitions only block the functions that use them;
+sema already resolves typedefs, so the module's type list is not a gate.
+
 Generate raw Slate lowerer checks with `@slate-lowerer-fn-begin` and
 `@slate-lowerer-fn-end` around each function whose emitted form matters, then
 run:
