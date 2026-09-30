@@ -211,11 +211,7 @@ impl Preprocessor<'_> {
                 origin: origin_for_expansion(name, macro_entry.provenance, token),
             };
             let Some(parameters) = &macro_def.parameters else {
-                let replacement = macro_def
-                    .replacement
-                    .iter()
-                    .map(|replacement| stamp.apply(replacement))
-                    .collect::<Vec<_>>();
+                let replacement = self.substitute_object_macro(macro_def, &stamp);
                 disabled.insert(name.clone());
                 let (produced, used) = self.rescan(&replacement, rest, tail, disabled);
                 disabled.remove(name);
@@ -587,29 +583,7 @@ impl Preprocessor<'_> {
                     stamp,
                     false,
                 );
-                if let Some(right) = right_tokens.first() {
-                    let pasted = self.lex(&format!(
-                        "{}{}",
-                        String::from(&left.value),
-                        String::from(&right.value)
-                    ));
-                    if pasted.len() == 1 {
-                        output.push(
-                            Span::new(
-                                pasted[0].clone(),
-                                left.spelling.through(right.spelling),
-                                left.expansion.through(right.expansion),
-                            )
-                            .with_leading_space(left.leading_space),
-                        );
-                        output.extend(right_tokens.into_iter().skip(1));
-                    } else {
-                        output.push(left);
-                        output.extend(right_tokens);
-                    }
-                } else {
-                    output.push(left);
-                }
+                output.extend(self.paste(left, right_tokens));
                 i += 2;
                 continue;
             }
@@ -624,6 +598,46 @@ impl Preprocessor<'_> {
             i += 1;
         }
         output
+    }
+
+    fn substitute_object_macro(&self, definition: &MacroDef, stamp: &Stamp) -> Vec<Span<Token>> {
+        let mut output = Vec::new();
+        let mut tokens = definition.replacement.iter();
+        while let Some(token) = tokens.next() {
+            if token.value == Token::HashHash
+                && !output.is_empty()
+                && let Some(right) = tokens.next()
+                && let Some(left) = output.pop()
+            {
+                output.extend(self.paste(left, vec![stamp.apply(right)]));
+                continue;
+            }
+            output.push(stamp.apply(token));
+        }
+        output
+    }
+
+    fn paste(&self, left: Span<Token>, right_tokens: Vec<Span<Token>>) -> Vec<Span<Token>> {
+        let Some(right) = right_tokens.first() else {
+            return vec![left];
+        };
+        let pasted = self.lex(&format!(
+            "{}{}",
+            String::from(&left.value),
+            String::from(&right.value)
+        ));
+        if pasted.len() != 1 {
+            return std::iter::once(left).chain(right_tokens).collect();
+        }
+        let joined = Span::new(
+            pasted[0].clone(),
+            left.spelling.through(right.spelling),
+            left.expansion.through(right.expansion),
+        )
+        .with_leading_space(left.leading_space);
+        std::iter::once(joined)
+            .chain(right_tokens.into_iter().skip(1))
+            .collect()
     }
 }
 

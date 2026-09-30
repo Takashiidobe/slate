@@ -77,10 +77,14 @@ impl Preprocessor<'_> {
             }
             _ => (None, false, rest),
         };
+        let mut replacement = replacement.to_vec();
+        replacement.dedup_by(|next, previous| {
+            next.value == Token::HashHash && previous.value == Token::HashHash
+        });
         let definition = MacroDef {
             parameters,
             variadic,
-            replacement: replacement.to_vec(),
+            replacement,
         };
         let provenance = self.provenance(directive.loc);
         self.macros.insert(

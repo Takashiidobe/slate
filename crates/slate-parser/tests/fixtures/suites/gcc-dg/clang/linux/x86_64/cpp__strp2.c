@@ -48,12 +48,12 @@ main (void)
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: array<i8, 11> [storage=static] [const] = code_units<array<i8, 11>>([120, 32, 35, 32, 35, 35, 32, 35, 32, 121, 0]) [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_p:[0-9]+]] p: array<i8, 7> [storage=static] [const] = code_units<array<i8, 7>>([120, 32, 35, 35, 32, 121, 0]) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_q:[0-9]+]] q: array<i8, 7> [storage=static] [const] = code_units<array<i8, 7>>([120, 32, 35, 35, 32, 121, 0]) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_strcmp:[0-9]+]] @strcmp(%[[VALUE___s1:[0-9]+]] __s1: ptr<const i8>, %[[VALUE___s2:[0-9]+]] __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE_strcmp]], array_decay<ptr<const i8>, length=Some(11)>(%[[VALUE_p]]), array_decay<ptr<const i8>, length=Some(7)>(%[[VALUE_q]])), const<i32>(0))
+// DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE_strcmp]], array_decay<ptr<const i8>, length=Some(7)>(%[[VALUE_p]]), array_decay<ptr<const i8>, length=Some(7)>(%[[VALUE_q]])), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
