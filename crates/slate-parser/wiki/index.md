@@ -28,6 +28,7 @@
 - [Compiler flags](concepts/compiler-flags.md)
 - [Compiler argument rules](concepts/compiler-arg-rules.md)
 - [Adding a target](concepts/adding-a-target.md)
+- [C corpus](concepts/c-corpus.md)
 - [Configuration threading](concepts/configuration-threading.md)
 - [Diagnostic severity](concepts/diagnostic-severity.md)
 - [MSVC oracle](concepts/msvc-oracle.md)

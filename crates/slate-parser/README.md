@@ -121,26 +121,27 @@ validation logic is in [`src/compiler_args.rs`](src/compiler_args.rs) and
 Popular C projects that slate-parser can parse with `--flavor=clang` on
 `x86_64-unknown-linux-gnu`.
 
-| Project                                              | Revision               |
-| ---------------------------------------------------- | ---------------------- |
-| [musl](https://musl.libc.org)                        | `v1.2.6-20-gf21a9653`  |
-| [SQLite](https://sqlite.org)                         | `0eaef28cf2`           |
-| [Lua](https://www.lua.org)                           | `v5.5.1`               |
-| [PCRE2](https://github.com/PCRE2Project/pcre2)       | `a2b146a`              |
-| [giflib](https://giflib.sourceforge.net)             | `6.1.3-4-ga8e3114`     |
-| [cJSON](https://github.com/DaveGamble/cJSON)         | `fb16e5c`              |
-| [libyaml](https://github.com/yaml/libyaml)           | `0.2.5-16-g893682b`    |
-| [libexpat](https://libexpat.github.io)               | `R_2_8_2-51-gdfdbaadf` |
-| [zlib](https://zlib.net)                             | `e3dc0a8`              |
-| [QuickJS](https://bellard.org/quickjs/)              | `04be246`              |
-| [LZ4](https://github.com/lz4/lz4)                    | `0774d05`              |
-| [TinyCC](https://bellard.org/tcc/)                   | `2ba12e8`              |
-| [chibicc](https://github.com/rui314/chibicc)         | `90d1f7f`              |
-| [yyjson](https://github.com/ibireme/yyjson)          | `757305b`              |
-| [utf8proc](https://github.com/JuliaStrings/utf8proc) | `0075ed7`              |
+| Project                                              | Revision                         |
+| ---------------------------------------------------- | -------------------------------- |
+| [musl](https://musl.libc.org)                        | `v1.2.6-20-gf21a9653`            |
+| [Mbed TLS](https://github.com/Mbed-TLS/mbedtls)      | `522e2e4`                        |
+| [SQLite](https://sqlite.org)                         | `version-3.53.0-768-g0eaef28cf2` |
+| [Lua](https://www.lua.org)                           | `v5.5.1`                         |
+| [libexpat](https://libexpat.github.io)               | `R_2_8_2-51-gdfdbaadf`           |
+| [giflib](https://giflib.sourceforge.net)             | `6.1.3-4-ga8e3114`               |
+| [cJSON](https://github.com/DaveGamble/cJSON)         | `fb16e5c`                        |
+| [libyaml](https://github.com/yaml/libyaml)           | `0.2.5-16-g893682b`              |
+| [zlib](https://zlib.net)                             | `e3dc0a8`                        |
+| [QuickJS](https://bellard.org/quickjs/)              | `04be246`                        |
+| [LZ4](https://github.com/lz4/lz4)                    | `0774d05`                        |
+| [TinyCC](https://bellard.org/tcc/)                   | `2ba12e8`                        |
+| [chibicc](https://github.com/rui314/chibicc)         | `90d1f7f`                        |
+| [utf8proc](https://github.com/JuliaStrings/utf8proc) | `0075ed7`                        |
+| [yyjson](https://github.com/ibireme/yyjson)          | `757305b`                        |
 
-Last swept 2026-09-30. Work toward the rest of the corpus is tracked in
-the `bd` epic `slate-parser-6x05`.
+Every translation unit of each project's clang build passes. Last swept
+2026-09-30 with `tools/c_corpus_sweep.py --trophies`. Work toward the rest
+of the corpus is tracked in the `bd` epic `slate-parser-6x05`.
 
 ## Development
 

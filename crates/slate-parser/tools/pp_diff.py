@@ -46,9 +46,9 @@ CONSUMED_PRAGMA = re.compile(
     r"|GCC\s+(?:system_header|poison)|clang\s+(?:deprecated|final|diagnostic))\b"
 )
 
-KEEP_JOINED = ("-D", "-U", "-I", "-std=", "-isystem", "-iquote")
-KEEP_SEPARATE = {"-D", "-U", "-I", "-isystem", "-iquote", "-include"}
-PATH_FLAGS = {"-I", "-isystem", "-iquote", "-include"}
+KEEP_JOINED = ("-D", "-U", "-I", "-std=", "-isystem", "-iquote", "-idirafter", "-include", "-imacros")
+KEEP_SEPARATE = {"-D", "-U", "-I", "-isystem", "-iquote", "-idirafter", "-include", "-imacros"}
+PATH_FLAGS = {"-I", "-isystem", "-iquote", "-idirafter", "-include", "-imacros"}
 
 
 @dataclass
@@ -99,7 +99,7 @@ def kept_args(argv: list[str], directory: str) -> list[str]:
             kept += [arg, value]
             index += 2
             continue
-        flag = next((flag for flag in ("-isystem", "-iquote", "-I") if arg.startswith(flag)), None)
+        flag = next((flag for flag in ("-isystem", "-iquote", "-idirafter", "-I") if arg.startswith(flag)), None)
         if flag and len(arg) > len(flag):
             arg = flag + absolute(directory, arg[len(flag):])
         if arg.startswith(KEEP_JOINED):

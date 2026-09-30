@@ -138,6 +138,8 @@ Testing:
 - [fixture-layout](wiki/concepts/fixture-layout.md): how a fixture's
   directory sets its flavor and target.
 - [msvc-oracle](wiki/concepts/msvc-oracle.md): running `cl.exe` under Wine.
+- [c-corpus](wiki/concepts/c-corpus.md): real-world projects in
+  `~/c-corpus`, per-flavor compile databases, the corpus sweep.
 
 History: `wiki/index.md` and `wiki/log/` hold the chronological log of
 changes and decisions; query it with `llog search <keyword>`.

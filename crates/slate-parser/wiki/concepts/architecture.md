@@ -79,8 +79,8 @@ records work still to do, not accepted behavior.
 - The yardstick is real-world C. zstd is a deliberately hard target.
   Parse it under clang, then under gcc and MSVC.
 - Rerun the sweeps (`tools/gcc_dg_sweep.py`, `tools/llvm_lit_sweep.py`,
-  `tools/corpus_sweep.py`) once a good share of an epic's beads is closed,
-  not after every fix.
+  `tools/corpus_sweep.py`, `tools/c_corpus_sweep.py`) once a good share of
+  an epic's beads is closed, not after every fix.
 
 ## Oracles and inputs
 
@@ -90,6 +90,7 @@ records work still to do, not accepted behavior.
 | gcc | 16.2, native |
 | MSVC | `tools/cl.exe` ([msvc-oracle](msvc-oracle.md)), 19.51.36257 (VS 2026) for x86, x64 and ARM64 (`MSVC_ARCH=x86\|arm64`). Arm32 predefines come from 19.44.35228, the last toolset that targets Arm32. They are frozen, and no local compiler exists to recheck them |
 | Predefined macros | `src/predefines/*.h`, captured by hand with each oracle's `-dM -E`. Macros that vary with arch, ISA, or version are removed from the snapshots and defined by `Preprocessor::configure` |
+| Real-world C | `~/c-corpus` ([c-corpus](c-corpus.md)): per-flavor compile databases from `tools/c_corpus_setup.py` |
 | Sysroots and compiler headers | `../slate-sysroots` (`cargo run -- install <triple>`, `install compiler-headers <flavor>`), found through `SLATE_SYSROOTS`. Fix broken or missing headers (for example missing intrinsics headers) there, not here |
 
 Differences between versions of the same compiler are out of scope.
