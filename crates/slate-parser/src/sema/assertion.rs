@@ -1080,6 +1080,55 @@ impl Checker<'_> {
         }
     }
 
+    fn comparison_warning(&mut self, expr: &Expr, left: &Expr, right: &Expr) {
+        let (Ok(lc), Ok(rc)) = (
+            self.types.operand_type(left),
+            self.types.operand_type(right),
+        ) else {
+            return;
+        };
+        if self.types.ctypes.is_nullptr(lc) || self.types.ctypes.is_nullptr(rc) {
+            return;
+        }
+        match (
+            self.types.ctypes.is_pointer(lc),
+            self.types.ctypes.is_pointer(rc),
+        ) {
+            (true, true) => {
+                if self.types.ctypes.is_void(lc) || self.types.ctypes.is_void(rc) {
+                    return;
+                }
+                if self
+                    .types
+                    .ctypes
+                    .merge_pointer(lc, rc, super::PointerMerge::EXACT)
+                    .is_none()
+                {
+                    self.types.warn(
+                        Warning::CompareDistinctPointerTypes,
+                        "comparison of distinct pointer types",
+                        expr,
+                    );
+                }
+            }
+            (true, false) | (false, true) => {
+                let (other, oc) = if self.types.ctypes.is_pointer(lc) {
+                    (right, rc)
+                } else {
+                    (left, lc)
+                };
+                if !(self.types.ctypes.is_integer(oc) && self.types.integer_constant_zero(other)) {
+                    self.types.warn(
+                        Warning::PointerIntegerCompare,
+                        "comparison between pointer and integer",
+                        expr,
+                    );
+                }
+            }
+            (false, false) => {}
+        }
+    }
+
     fn expression(&mut self, expr: &Expr) {
         self.subexpressions(expr);
         self.types.rejected_at = None;
@@ -1148,6 +1197,21 @@ impl Checker<'_> {
                         self.types.warn(warning, message, expr);
                     }
                 }
+            }
+            ExprKind::Binary {
+                op:
+                    BinaryOp::Equal
+                    | BinaryOp::NotEqual
+                    | BinaryOp::Less
+                    | BinaryOp::LessEqual
+                    | BinaryOp::Greater
+                    | BinaryOp::GreaterEqual,
+                left,
+                right,
+            } => {
+                self.expression(left);
+                self.expression(right);
+                self.comparison_warning(expr, left, right);
             }
             ExprKind::Binary { left, right, .. }
             | ExprKind::Comma { left, right }

@@ -144,8 +144,13 @@ Rules:
 - Null pointer constants: `integer_constant_zero`, an ICE by 6.6p6
   operand rules that folds to zero (`(void *)(1 - 1)` yes; `(void *)(0,
   0)`, `(int)(0.0 + 0.0)`, `(size_t)(void *)0` no). Used by
-  `is_null_pointer_constant` and pointer `?:`; a cast of a zero ICE lowers
-  to `null<ptr<T>>`.
+  `null_pointer_constant`, pointer `?:` and `Checker::comparison_warning`
+  (`-Wpointer-integer-compare`, `-Wcompare-distinct-pointer-types`, also
+  in unevaluated operands, as clang); a cast of a zero ICE lowers to
+  `null<ptr<T>>`.
+- The constant folder (`constant_value_with_context`) types each
+  operator node and applies its recorded `operand_conversions` through
+  `folded_operand`; it has no operand rules of its own.
 - `__func__` reads `function_names`. Locals declared inside a statement
   expression are typed into `locals` (`declarator_type` +
   `completed_array`), consulted after `entities`.

@@ -759,73 +759,6 @@ impl Lowerer {
         })
     }
 
-    fn warn_comparison(
-        &mut self,
-        e: &Expr,
-        left_expr: &Expr,
-        left: &Operand,
-        right_expr: &Expr,
-        right: &Operand,
-    ) {
-        if self.types.ctypes.is_nullptr(left.c) || self.types.ctypes.is_nullptr(right.c) {
-            return;
-        }
-        let pointers = (
-            self.types.ctypes.is_pointer(left.c),
-            self.types.ctypes.is_pointer(right.c),
-        );
-        match pointers {
-            (true, true) => {
-                let (a, b) = (left.c, right.c);
-                if self.types.ctypes.is_void(a) || self.types.ctypes.is_void(b) {
-                    return;
-                }
-                if self
-                    .types
-                    .ctypes
-                    .merge_pointer(a, b, super::PointerMerge::EXACT)
-                    .is_none()
-                {
-                    self.warn(
-                        Warning::CompareDistinctPointerTypes,
-                        "comparison of distinct pointer types",
-                        e,
-                    );
-                }
-            }
-            (true, false) | (false, true) => {
-                let (other_expr, other) = if pointers.0 {
-                    (right_expr, right)
-                } else {
-                    (left_expr, left)
-                };
-                if !self.is_null_pointer_constant(Some(other_expr), other) {
-                    self.warn(
-                        Warning::PointerIntegerCompare,
-                        "comparison between pointer and integer",
-                        e,
-                    );
-                }
-            }
-            _ => {}
-        }
-    }
-
-    fn is_null_pointer_constant(&mut self, e: Option<&Expr>, value: &Operand) -> bool {
-        if matches!(value.value.node.value, ValueKind::Null) {
-            return true;
-        }
-        if !self.types.ctypes.is_integer(value.c) {
-            return false;
-        }
-        match e {
-            Some(e) => self.types.integer_constant_zero(e),
-            None => {
-                matches!(&value.value.node.value, ValueKind::Constant(Number::Integer(n)) if *n == num_bigint::BigUint::default())
-            }
-        }
-    }
-
     fn emit_cast(
         &mut self,
         kind: CastKind,
@@ -2187,8 +2120,6 @@ impl Lowerer {
                 }
             }
             ExprKind::Binary { op, left, right } => {
-                let left_expr = left;
-                let right_expr = right;
                 let left = self.expr(left)?;
                 let right = self.expr(right)?;
                 if matches!(op, BinaryOp::And | BinaryOp::Or) {
@@ -2217,9 +2148,6 @@ impl Lowerer {
                     _ => None,
                 }
                 .filter(|_| self.pointee(&left.ty).is_ok() || self.pointee(&right.ty).is_ok());
-                if compare.is_some() {
-                    self.warn_comparison(e, left_expr, &left, right_expr, &right);
-                }
                 let left = self.converted(e, Slot::Left, left)?;
                 let right = self.converted(e, Slot::Right, right)?;
                 if let Some(op) = compare {

@@ -25,6 +25,7 @@ use super::ctype::{
 };
 use super::numeric::ResolveError;
 use super::operand::Operand;
+use super::typer::Slot;
 use crate::dialect::Dialect;
 use crate::standard_features::StandardFeatures;
 
@@ -559,24 +560,21 @@ impl TypeResolver {
                     None => Ok(condition.clone()),
                 };
                 let right = self.constant_value_with_context(context, else_value);
+                self.typed(e)?;
                 let (left, right) = match (left, right) {
-                    (Ok(left), Ok(right)) => self.arithmetic_operands(context, left, right)?,
+                    (Ok(left), Ok(right)) => (
+                        self.folded_operand(context, e, Slot::Then, left)?,
+                        self.folded_operand(context, e, Slot::Else, right)?,
+                    ),
                     (left, right) => {
                         let truth = context.condition(condition.value.clone());
-                        let chosen =
-                            match super::fold::integer_constant(&truth, self.dialect.flavor()) {
-                                Some(truth) if truth.sign() == Sign::NoSign => right?,
-                                Some(_) => left?,
-                                None => return left.and(right),
-                            };
-                        let c = self.operand_type(e)?;
-                        let chosen = self.promote_operand(context, chosen, None)?;
-                        return self.arithmetic_conversion(
-                            context,
-                            chosen,
-                            c,
-                            crate::ir::ConversionReason::UsualArith,
-                        );
+                        return match super::fold::integer_constant(&truth, self.dialect.flavor()) {
+                            Some(truth) if truth.sign() == Sign::NoSign => {
+                                self.folded_operand(context, e, Slot::Else, right?)
+                            }
+                            Some(_) => self.folded_operand(context, e, Slot::Then, left?),
+                            None => left.and(right),
+                        };
                     }
                 };
                 (
@@ -647,14 +645,45 @@ impl TypeResolver {
             ExprKind::Binary { op, left, right } => {
                 let left = self.constant_value_with_context(context, left)?;
                 let right = self.constant_value_with_context(context, right)?;
-                return self.binary_operand(context, e, *op, left, right);
+                let c = self.typed(e)?.c;
+                let (left, right) = if matches!(
+                    op,
+                    crate::const_expr::BinaryOp::And | crate::const_expr::BinaryOp::Or
+                ) {
+                    (left, right)
+                } else {
+                    (
+                        self.folded_operand(context, e, Slot::Left, left)?,
+                        self.folded_operand(context, e, Slot::Right, right)?,
+                    )
+                };
+                let (ty, kind) = context.emit_binary(*op, left.value, right.value)?;
+                return Ok(Operand {
+                    value: Value {
+                        ty,
+                        node: e.derive(kind),
+                    },
+                    c,
+                });
             }
             ExprKind::Unary { op, operand } => {
                 use crate::const_expr::UnaryOp;
                 let operand = self.constant_value_with_context(context, operand)?;
                 match op {
                     UnaryOp::Plus | UnaryOp::Minus | UnaryOp::BitNot => {
-                        return self.unary_operand(context, e, *op, operand);
+                        self.typed(e)?;
+                        let operand = self.folded_operand(context, e, Slot::Operand, operand)?;
+                        if *op == UnaryOp::Plus {
+                            return Ok(operand);
+                        }
+                        let (ty, kind) = context.emit_unary_arith(*op, operand.value)?;
+                        return Ok(Operand {
+                            value: Value {
+                                ty,
+                                node: e.derive(kind),
+                            },
+                            c: operand.c,
+                        });
                     }
                     UnaryOp::Not => (
                         self.ctypes.int(),
@@ -665,7 +694,8 @@ impl TypeResolver {
                         },
                     ),
                     UnaryOp::Real | UnaryOp::Imag if !self.ctypes.is_complex_domain(operand.c) => {
-                        let operand = self.promote_operand(context, operand, None)?;
+                        self.typed(e)?;
+                        let operand = self.folded_operand(context, e, Slot::Operand, operand)?;
                         if *op == UnaryOp::Real {
                             return Ok(operand);
                         }
@@ -719,6 +749,25 @@ impl TypeResolver {
             operand.value.ty = Type::Bool;
         }
         Ok(operand)
+    }
+
+    fn folded_operand(
+        &mut self,
+        context: &super::numeric::Context,
+        owner: &crate::ast::Expr,
+        slot: Slot,
+        operand: Operand,
+    ) -> Result<Operand, ResolveError> {
+        let steps = self
+            .operand_conversions
+            .get(&(owner.id, slot))
+            .cloned()
+            .ok_or(ResolveError::Internal(
+                "operand conversion not recorded by the typer",
+            ))?;
+        steps.into_iter().try_fold(operand, |operand, step| {
+            self.arithmetic_conversion(context, operand, step.to, step.reason)
+        })
     }
 
     pub(super) fn object_alignment(&mut self, e: &crate::ast::Expr, natural: u64) -> u64 {

@@ -72,10 +72,12 @@ Promotion and common type (`sema/ctype/arith.rs`):
   common-type rule needs its own function (model: `usual_fixed_type`).
 
 Operand conversion (`sema/operand.rs`):
-- `binary_operand` is ordered: vector, shift, family-specific, then
+- `binary_types` is ordered: vector, shift, family-specific, then
   real/complex. Place the new branch before anything that would capture
   its operands.
-- `arithmetic_operands`, `arithmetic_domain`: same.
+- `arithmetic_type`, `arithmetic_domain`: same. The typer records the
+  resulting steps; lowering and the constant folder (`folded_operand`) only
+  apply them.
 
 Arithmetic (`sema/numeric.rs`, `sema/expression.rs`):
 - `emit_binary`, `emit_unary_arith` (`-`, `~`), `condition()` in
@@ -119,7 +121,7 @@ Printing (`ir/mod.rs`):
   reuses `ir::Type::Pointer`. Silent sites it needed: `classify_conversion`
   (guard before vectors), `is_scalar`, equality lowering in
   `expression.rs` (picks the comparison type by IR pointer-ness),
-  `warn_comparison`, `type_class`.
+  `Checker::comparison_warning`, `type_class`.
 - Fixed-point is the fullest example (new `ArithSema`, five
   `ConversionKind`s, own common type): `git log --grep "lower fixed-point
   types" -p`. Cite commits by subject; the beads post-commit hook amends

@@ -3,7 +3,7 @@ use super::ctype::{CTypeKind, FixedKind, FixedRank, FixedType, FloatKind, IntRan
 use super::numeric::{Context, ResolveError};
 use super::types::TypeResolver;
 use crate::ast::{Expr, ExprKind, FixedPointKind, FixedPointRank, IntegerRank};
-use crate::const_expr::{BinaryOp, FloatSuffix, UnaryOp};
+use crate::const_expr::{BinaryOp, FloatSuffix};
 use crate::ir::{ConversionReason, ValueKind};
 use crate::ir::{Place, Value};
 use crate::standard_features::StandardFeatures;
@@ -265,34 +265,6 @@ impl TypeResolver {
         })
     }
 
-    pub(super) fn promote_operand(
-        &mut self,
-        context: &Context,
-        operand: Operand,
-        bits: Option<u32>,
-    ) -> Result<Operand, ResolveError> {
-        let operand = self.enum_operand(operand);
-        let c = self
-            .ctypes
-            .integer_promotion(operand.c, bits, &context.target);
-        self.arithmetic_conversion(context, operand, c, ConversionReason::Promotion)
-    }
-
-    pub(super) fn arithmetic_operands(
-        &mut self,
-        context: &Context,
-        left: Operand,
-        right: Operand,
-    ) -> Result<(Operand, Operand), ResolveError> {
-        let left = self.promote_operand(context, left, None)?;
-        let right = self.promote_operand(context, right, None)?;
-        let c = self.arithmetic_type(left.c, right.c)?;
-        Ok((
-            self.arithmetic_conversion(context, left, c, ConversionReason::UsualArith)?,
-            self.arithmetic_conversion(context, right, c, ConversionReason::UsualArith)?,
-        ))
-    }
-
     pub(super) fn arithmetic_type(
         &mut self,
         left: QualType,
@@ -329,46 +301,6 @@ impl TypeResolver {
                 self.ctypes.qual(CTypeKind::Imaginary(*kind))
             }
             _ => component,
-        })
-    }
-
-    pub(super) fn binary_operand(
-        &mut self,
-        context: &Context,
-        e: &Expr,
-        op: BinaryOp,
-        left: Operand,
-        right: Operand,
-    ) -> Result<Operand, ResolveError> {
-        if matches!(op, BinaryOp::And | BinaryOp::Or) {
-            let (ty, kind) = context.emit_binary(op, left.value, right.value)?;
-            return Ok(Operand {
-                value: Value {
-                    ty,
-                    node: e.derive(kind),
-                },
-                c: self.ctypes.int(),
-            });
-        }
-        super::numeric::reject_mixed_decimal(op.into(), &left.value.ty, &right.value.ty)
-            .map_err(ResolveError::checked)?;
-        let left = self.promote_operand(context, left, None)?;
-        let right = self.promote_operand(context, right, None)?;
-        let types = self.binary_types(op, left.c, right.c)?;
-        let (left, right) = match types.operands {
-            Some((lc, rc)) => (
-                self.arithmetic_conversion(context, left, lc, ConversionReason::UsualArith)?,
-                self.arithmetic_conversion(context, right, rc, ConversionReason::UsualArith)?,
-            ),
-            None => (left, right),
-        };
-        let (ty, kind) = context.emit_binary(op, left.value, right.value)?;
-        Ok(Operand {
-            value: Value {
-                ty,
-                node: e.derive(kind),
-            },
-            c: types.result,
         })
     }
 
@@ -470,28 +402,6 @@ impl TypeResolver {
             result
         };
         Ok(BinaryTypes { operands, result })
-    }
-
-    pub(super) fn unary_operand(
-        &mut self,
-        context: &Context,
-        e: &Expr,
-        op: UnaryOp,
-        operand: Operand,
-    ) -> Result<Operand, ResolveError> {
-        let operand = self.promote_operand(context, operand, None)?;
-        if op == UnaryOp::Plus {
-            return Ok(operand);
-        }
-        let c = operand.c;
-        let (ty, kind) = context.emit_unary_arith(op, operand.value)?;
-        Ok(Operand {
-            value: Value {
-                ty,
-                node: e.derive(kind),
-            },
-            c,
-        })
     }
 
     pub(super) fn enum_operand(&self, operand: Operand) -> Operand {
