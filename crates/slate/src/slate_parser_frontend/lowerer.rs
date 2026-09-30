@@ -411,6 +411,8 @@ fn lower_type(ty: &ir::Type) -> Result<rust::Type> {
                 _ => return Err(super::Error::Unsupported(format!("integer type {ty}"))),
             }
         }
+        ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => Prim::F32,
+        ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => Prim::F64,
         ir::Type::Pointer {
             pointee, is_const, ..
         } => {
@@ -795,6 +797,22 @@ fn lower_value(
             rhs: Box::new(lower_value(right, names, bindings, strings)?),
         },
         ValueKind::Unary {
+            op: ir::UnaryArithOp::Neg,
+            operand,
+            ..
+        } if matches!(
+            value.ty,
+            ir::Type::Numeric(ir::NumericType::Float(
+                ir::FloatType::F32 | ir::FloatType::F64
+            ))
+        ) =>
+        {
+            Expr::Unary {
+                op: rust::UnaryOp::Neg,
+                expr: Box::new(lower_value(operand, names, bindings, strings)?),
+            }
+        }
+        ValueKind::Unary {
             op,
             operand,
             semantics,
@@ -954,6 +972,29 @@ fn lower_number(number: &Number, ty: &ir::Type) -> Result<Expr> {
                 .parse()
                 .map_err(|_| super::Error::Unsupported(format!("integer constant {value}")))?,
         ),
+        Number::FloatBits(bits) => {
+            let (literal, finite, name) = match ty {
+                ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => {
+                    let value = f32::from_bits(*bits as u32);
+                    (format!("{value:?}"), value.is_finite(), "f32")
+                }
+                ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => {
+                    let value = f64::from_bits(*bits as u64);
+                    (format!("{value:?}"), value.is_finite(), "f64")
+                }
+                _ => return Err(super::Error::Unsupported(format!("constant {number:?}"))),
+            };
+            if !finite {
+                return Ok(Expr::HexFloat(format!("{name}::from_bits({bits:#x})")));
+            }
+            return Ok(match literal.strip_prefix('-') {
+                Some(magnitude) => Expr::Unary {
+                    op: rust::UnaryOp::Neg,
+                    expr: Box::new(Expr::HexFloat(format!("{magnitude}{name}"))),
+                },
+                None => Expr::HexFloat(format!("{literal}{name}")),
+            });
+        }
         _ => return Err(super::Error::Unsupported(format!("constant {number:?}"))),
     };
     Ok(Expr::Cast {
