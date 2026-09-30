@@ -18,9 +18,32 @@ new assertions alongside each newly ported rewrite.
 fixups and no CIR fallback. They gate only on runtime parity with the C
 oracle; FileCheck is not enforced for them while the frontend is unstable.
 Every fixture in `tests/fixtures` (plus `tests/fixtures/x86_64` on x86_64
-hosts) runs, regardless of FileCheck blocks. Headers come from slate-sysroots;
+hosts) runs. Headers come from slate-sysroots;
 there are no cross-target fixture flavors. Select one fixture with
 `SLATE_DIFF_FIXTURE=<stem> cargo nextest r --release --profile lowering --test differential -E 'test(=generated_differential)'`.
+
+## Promotion gate while the frontend is unstable
+
+Runtime parity of raw lowering (stdout + exit code) is the only promotion
+gate. All `SLATE-FILECHECK` blocks and `@lowering`/`@rewrite` markers were
+stripped from `tests/fixtures`, gcc-torture, gcc-dg, c-testsuite and chibicc;
+do not add new ones until the slate frontend is stable. The FileCheck
+material below documents the tooling for when it returns.
+
+Every single-file suite is a supported/unsupported ratchet. A fixture that
+fails raw-lowering parity lives in the unsupported bucket; when it starts
+passing, `*_unsupported_tests_still_fail` fails with the `git mv` that
+promotes it.
+
+| Suite       | Supported                  | Unsupported                            |
+| ----------- | -------------------------- | -------------------------------------- |
+| fixtures    | `tests/fixtures`           | `tests/fixtures.unsupported`           |
+| gcc-torture | `tests/fixtures.gcc-torture` | `tests/fixtures.gcc-torture.unsupported` |
+| gcc-dg      | `tests/fixtures.gcc-dg`    | `tests/fixtures.gcc-dg.unsupported`    |
+| c-testsuite | `tests/fixtures.c-testsuite` | `tests/fixtures.c-testsuite.unsupported` |
+| chibicc     | `tests/fixtures.chibicc/supported` | `tests/fixtures.chibicc/unsupported` |
+
+`*.ignored` buckets hold only features Slate will never support.
 
 Generate raw Slate lowerer checks with `@slate-lowerer-fn-begin` and
 `@slate-lowerer-fn-end` around each function whose emitted form matters, then

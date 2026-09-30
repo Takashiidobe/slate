@@ -32,6 +32,7 @@ default-filter = '''
     + test(generated_cross_tu_filecheck)
     + test(generated_library_filecheck)
     + test(c_testsuite_supported_tests_match_c)
+    + test(c_testsuite_unsupported_tests_still_fail)
     + test(chibicc_supported_tests_match_c)
     + test(chibicc_unsupported_tests_still_fail)
     + test(gcc_torture_supported_tests_match_c)

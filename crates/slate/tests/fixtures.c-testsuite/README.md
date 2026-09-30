@@ -8,7 +8,8 @@ The supported cases in this directory run under
 `cargo nextest r --release --profile lowering`
 through `tests/c_testsuite_suite.rs`.
 
-`../fixtures.c-testsuite.unsupported/TRIAGE.md` records why each unsupported
-case currently fails. The unsupported regression guard also runs by default;
-run its ignored triage report with
+Cases that fail raw-lowering parity live in
+`../fixtures.c-testsuite.unsupported/`. The unsupported regression guard
+runs by default; select one case with `SLATE_C_TESTSUITE_FIXTURE=<stem>` and
+run the ignored triage report with
 `cargo nextest r --release --test c_testsuite_suite -E 'test(c_testsuite_unsupported_triage_report)' --run-ignored ignored-only --nocapture`.
