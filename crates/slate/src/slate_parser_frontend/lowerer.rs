@@ -6,14 +6,18 @@ use std::collections::HashMap;
 
 type Result<T> = std::result::Result<T, super::Error>;
 
+#[derive(Default)]
 pub struct Report {
-    pub module: Vec<super::Error>,
-    pub functions: Vec<(String, Option<super::Error>)>,
+    pub module: Vec<String>,
+    pub declarations: Vec<(String, String)>,
+    pub functions: Vec<(String, Option<String>)>,
 }
 
 impl Report {
     pub fn is_clean(&self) -> bool {
-        self.module.is_empty() && self.functions.iter().all(|(_, barrier)| barrier.is_none())
+        self.module.is_empty()
+            && self.declarations.is_empty()
+            && self.functions.iter().all(|(_, barrier)| barrier.is_none())
     }
 }
 
@@ -22,18 +26,65 @@ pub fn lower(module: &ir::Module) -> Result<rust::Program> {
 }
 
 pub fn report(module: &ir::Module) -> Report {
-    let mut report = Report {
-        module: Vec::new(),
-        functions: Vec::new(),
-    };
+    let mut report = Report::default();
     lower_module(module, Some(&mut report)).expect("report mode records barriers");
+    let describe = |error: &mut String| *error = describe_types(error, module);
+    report.module.iter_mut().for_each(describe);
     report
+        .declarations
+        .iter_mut()
+        .for_each(|(_, error)| describe(error));
+    report
+        .functions
+        .iter_mut()
+        .filter_map(|(_, error)| error.as_mut())
+        .for_each(describe);
+    report
+}
+
+fn describe_types(message: &str, module: &ir::Module) -> String {
+    let mut out = String::with_capacity(message.len());
+    let mut rest = message;
+    while let Some(start) = rest.find("@type") {
+        let digits = rest[start + 5..]
+            .find(|c: char| !c.is_ascii_digit())
+            .unwrap_or(rest.len() - start - 5);
+        let end = start + 5 + digits;
+        out.push_str(&rest[..end]);
+        let definition = rest[start + 5..end].parse::<u32>().ok().and_then(|id| {
+            module
+                .types
+                .iter()
+                .find(|definition| definition.value.id.0 == id)
+        });
+        if let Some(definition) = definition {
+            let kind = match &definition.kind {
+                ir::TypeDefinitionKind::Alias(_) => "typedef",
+                ir::TypeDefinitionKind::Record {
+                    kind: ir::RecordKind::Struct,
+                    ..
+                } => "struct",
+                ir::TypeDefinitionKind::Record {
+                    kind: ir::RecordKind::Union,
+                    ..
+                } => "union",
+                ir::TypeDefinitionKind::Enum { .. } => "enum",
+            };
+            out.push_str(&format!(
+                "({kind} {})",
+                definition.name.as_deref().unwrap_or("<anonymous>")
+            ));
+        }
+        rest = &rest[end..];
+    }
+    out.push_str(rest);
+    out
 }
 
 fn module_barrier(report: &mut Option<&mut Report>, error: super::Error) -> Result<()> {
     match report {
         Some(report) => {
-            report.module.push(error);
+            report.module.push(error.to_string());
             Ok(())
         }
         None => Err(error),
@@ -54,8 +105,16 @@ fn function_barrier<T>(
             Ok(Some(value))
         }
         (Ok(value), None) => Ok(Some(value)),
+        (Err(error), Some(report)) if defined => {
+            report
+                .functions
+                .push((name.to_owned(), Some(error.to_string())));
+            Ok(None)
+        }
         (Err(error), Some(report)) => {
-            report.functions.push((name.to_owned(), Some(error)));
+            report
+                .declarations
+                .push((name.to_owned(), error.to_string()));
             Ok(None)
         }
         (Err(error), None) => Err(error),
@@ -171,8 +230,13 @@ fn lower_string_global(global: &ir::Global) -> Result<Vec<u8>> {
         .as_ref()
         .map(|value| &value.node.value)
     else {
+        let kind = match (global.definition, &global.variable.initializer) {
+            (false, _) => "extern",
+            (true, None) => "zero-initialized",
+            (true, Some(_)) => "initialized",
+        };
         return Err(super::Error::Unsupported(format!(
-            "global {}",
+            "{kind} global {}",
             global.variable.name
         )));
     };

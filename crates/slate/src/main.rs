@@ -169,6 +169,9 @@ fn lowering_barriers(path: &Path, compiler_args: &[String]) -> ExitCode {
     for error in &report.module {
         println!("<module>\t{error}");
     }
+    for (declaration, error) in &report.declarations {
+        println!("<declaration {declaration}>\t{error}");
+    }
     for (function, barrier) in &report.functions {
         match barrier {
             Some(error) => println!("{function}\t{error}"),
