@@ -9,7 +9,7 @@ mod syntax;
 
 use crate::ast::{FileId, HeaderKind, Loc, Provenance, Span};
 use crate::attribute_support;
-use crate::compiler_args::{CompilerFlavor, LanguageStandard};
+use crate::compiler_args::CompilerFlavor;
 use crate::const_expr;
 use crate::dialect::Dialect;
 use crate::files::{Files, SearchPaths, display_path};
@@ -1124,12 +1124,7 @@ impl<'a> Preprocessor<'a> {
         let expanded = self.expand_condition(&directive.arguments)?;
         let expanded = self.expand_has_embed(&expanded, directive.loc.file);
         let expanded = self.expand_has_include(&expanded, directive.loc.file);
-        let expanded = expand_has_checks(
-            &expanded,
-            self.dialect.flavor(),
-            self.dialect.standard(),
-            self.dialect.target(),
-        );
+        let expanded = expand_has_checks(&expanded, self.dialect);
         const_expr::Parser::evaluate_with_defined(&expanded, self.dialect, &|macro_name| {
             self.is_defined(macro_name)
         })
@@ -1318,12 +1313,9 @@ fn parse_header_name(tokens: &[Span<Token>], start: usize) -> Option<(HeaderName
         .then_some((HeaderName::Angled(text), index + 2))
 }
 
-fn expand_has_checks(
-    tokens: &[Span<Token>],
-    flavor: CompilerFlavor,
-    standard: LanguageStandard,
-    target: &crate::target_info::TargetInfo,
-) -> Vec<Span<Token>> {
+fn expand_has_checks(tokens: &[Span<Token>], dialect: &Dialect) -> Vec<Span<Token>> {
+    let (flavor, standard, target) = (dialect.flavor(), dialect.standard(), dialect.target());
+    let microsoft = dialect.features().microsoft_extensions;
     let has_attribute = |name: &str| attribute_support::has_attribute(name, flavor, target) as i64;
     let has_c_attribute =
         |name: &str| attribute_support::has_c_attribute(name, flavor, standard, target);
@@ -1334,6 +1326,11 @@ fn expand_has_checks(
     let has_builtin = |name: &str| has_checks::has_builtin(name) as i64;
     let has_feature = |name: &str| has_checks::has_feature(name) as i64;
     let has_extension = |name: &str| has_checks::has_extension(name) as i64;
+    let has_declspec_attribute = |name: &str| {
+        (microsoft && attribute_support::declspec_registered(name, flavor, target)) as i64
+    };
+    let has_warning = |option: &str| has_checks::has_warning(option) as i64;
+    let is_identifier = |name: &str| has_checks::is_identifier(name, standard, microsoft) as i64;
     let mut expanded = Vec::with_capacity(tokens.len());
     let mut index = 0;
     while index < tokens.len() {
@@ -1348,14 +1345,25 @@ fn expand_has_checks(
             Some(Token::Ident(name)) if name == "__has_builtin" => Some(&has_builtin),
             Some(Token::Ident(name)) if name == "__has_feature" => Some(&has_feature),
             Some(Token::Ident(name)) if name == "__has_extension" => Some(&has_extension),
+            Some(Token::Ident(name)) if flavor == CompilerFlavor::Clang => match name.as_ref() {
+                "__has_declspec_attribute" => Some(&has_declspec_attribute),
+                "__has_warning" => Some(&has_warning),
+                "__is_identifier" => Some(&is_identifier),
+                _ => None,
+            },
             _ => None,
         };
         let scoped = matches!(
             tokens.value_at(index),
             Some(Token::Ident(name)) if name == "__has_c_attribute" || name == "__has_cpp_attribute"
         );
+        let argument = if tokens.value_at(index) == Some(&Token::Ident("__has_warning".into())) {
+            has_check_string_argument(tokens, index + 1)
+        } else {
+            has_check_argument(tokens, index + 1, scoped)
+        };
         if let Some(check) = check
-            && let Some((name, end)) = has_check_argument(tokens, index + 1, scoped)
+            && let Some((name, end)) = argument
         {
             expanded.push(
                 tokens[index]
@@ -1387,10 +1395,29 @@ fn is_defined_operator(name: &str, flavor: CompilerFlavor) -> bool {
                     | "__has_feature"
                     | "__has_extension"
             ) || match flavor {
-                CompilerFlavor::Clang => name == "__building_module",
+                CompilerFlavor::Clang => matches!(
+                    name,
+                    "__building_module"
+                        | "__has_declspec_attribute"
+                        | "__has_warning"
+                        | "__is_identifier"
+                ),
                 _ => name == "__has_cpp_attribute",
             }
         }
+    }
+}
+
+fn has_check_string_argument(tokens: &[Span<Token>], start: usize) -> Option<(String, usize)> {
+    match (
+        tokens.value_at(start),
+        tokens.value_at(start + 1),
+        tokens.value_at(start + 2),
+    ) {
+        (Some(Token::LParen), Some(Token::StringLit(option)), Some(Token::RParen)) => {
+            Some((option.to_string(), start + 3))
+        }
+        _ => None,
     }
 }
 
@@ -1402,6 +1429,7 @@ fn has_check_argument(
     let word = |index: usize| match tokens.value_at(index) {
         Some(Token::Ident(name)) => Some(name.to_string()),
         Some(Token::Keyword(keyword)) => Some(<&str>::from(*keyword).to_string()),
+        Some(token @ (Token::Sizeof | Token::Alignof)) => Some(String::from(token)),
         _ => None,
     };
     if tokens.value_at(start) != Some(&Token::LParen) {

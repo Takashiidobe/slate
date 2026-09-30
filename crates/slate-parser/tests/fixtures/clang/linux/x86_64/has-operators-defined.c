@@ -1,7 +1,6 @@
 // SLATE-FILECHECK-DEFINES DEFAULT
 // SLATE-FILECHECK-ARGS --dump-ir --compact-ir
 
-// __has_declspec_attribute, __has_warning and __is_identifier are clang operators slate does not evaluate yet, so they stay undefined
 #ifdef __has_include
 int defines__has_include;
 #endif
@@ -73,6 +72,9 @@ int defines__building_module;
 // DEFAULT-NEXT:     global %[[VALUE_defines__has_builtin:[0-9]+]] defines__has_builtin: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_defines__has_feature:[0-9]+]] defines__has_feature: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_defines__has_extension:[0-9]+]] defines__has_extension: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines__has_declspec_attribute:[0-9]+]] defines__has_declspec_attribute: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines__has_warning:[0-9]+]] defines__has_warning: i32 [storage=static] [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_defines__is_identifier:[0-9]+]] defines__is_identifier: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_defines__building_module:[0-9]+]] defines__building_module: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

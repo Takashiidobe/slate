@@ -180,6 +180,13 @@ token plus an interned `HideSet`; file tokens start empty.
   `defined` or `__has_*` name takes its operand unexpanded from the stream.
   That includes a `defined` an expansion produced, with its operand from
   the expansion or from the directive after it, as gcc and clang do.
+- clang only: `__has_declspec_attribute` answers from
+  `attribute_support::declspec_registered`, and only with
+  `microsoft_extensions` (0 on Linux, as clang without `-fms-extensions`).
+  `__has_warning("-Wx")` and `__is_identifier(x)` answer from
+  `has_checks/clang.rs` (generated, [generated-sources](generated-sources.md)):
+  clang's warning groups, and its keywords sorted by the C modes that
+  reserve them (`asm` gnu only, `typeof` gnu or C23, `restrict` C99+).
 
 ## Pragmas and line control
 

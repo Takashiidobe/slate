@@ -347,6 +347,12 @@ impl Preprocessor<'_> {
             let operator = match &token.token.value {
                 Token::Ident(name) if name == "defined" => Some(true),
                 Token::Ident(name) if name.starts_with("__has_") => Some(false),
+                Token::Ident(name)
+                    if name == "__is_identifier"
+                        && self.dialect.flavor() == CompilerFlavor::Clang =>
+                {
+                    Some(false)
+                }
                 _ => None,
             };
             let Some(defined) = operator else {

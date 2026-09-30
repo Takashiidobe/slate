@@ -1,3 +1,42 @@
+use crate::compiler_args::LanguageStandard;
+
+mod clang;
+
+#[derive(Debug, Clone, Copy)]
+enum KeywordModes {
+    Always,
+    Microsoft,
+    C99,
+    C23,
+    Gnu,
+    GnuOrC99,
+    GnuOrC23,
+}
+
+pub(super) fn has_warning(option: &str) -> bool {
+    option
+        .strip_prefix("-W")
+        .is_some_and(|group| clang::WARNING_GROUPS.binary_search(&group).is_ok())
+}
+
+pub(super) fn is_identifier(name: &str, standard: LanguageStandard, microsoft: bool) -> bool {
+    let Ok(index) = clang::KEYWORDS.binary_search_by(|(keyword, _)| (*keyword).cmp(name)) else {
+        return true;
+    };
+    let c99 = standard.stdc_version() >= Some(199901);
+    let c23 = standard.stdc_version() >= Some(202311);
+    let gnu = standard.is_gnu();
+    !match clang::KEYWORDS[index].1 {
+        KeywordModes::Always => true,
+        KeywordModes::Microsoft => microsoft,
+        KeywordModes::C99 => c99,
+        KeywordModes::C23 => c23,
+        KeywordModes::Gnu => gnu,
+        KeywordModes::GnuOrC99 => gnu || c99,
+        KeywordModes::GnuOrC23 => gnu || c23,
+    }
+}
+
 fn normalize(name: &str) -> &str {
     if name.len() >= 4 && name.starts_with("__") && name.ends_with("__") {
         &name[2..name.len() - 2]

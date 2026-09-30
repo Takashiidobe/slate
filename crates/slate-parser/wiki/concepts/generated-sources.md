@@ -14,6 +14,7 @@ instead of editing by hand.
 | --- | --- | --- | --- |
 | `src/sema/clang_builtins.rs` | `tools/generate_clang_builtins.py --clang-tblgen <bin> --llvm-project <dir> --output src/sema/clang_builtins.rs` | clang's `Builtins.td` via `clang-tblgen --dump-json` | upgrading the clang oracle |
 | `src/attribute_support/registered.rs` | `tools/generate_attribute_lists.py` | installed clang (per `CLANG_TRIPLES`) and gcc drivers, probed with `__has_attribute` / `__has_c_attribute` | upgrading clang or gcc, adding a probed triple |
+| `src/pp/has_checks/clang.rs` | `tools/generate_clang_pp_tables.py` | installed clang, probed with `__has_warning` over `diagtool tree` groups and `__is_identifier` over libclang-cpp identifiers in each C mode | upgrading clang |
 | `src/predefines/<compiler>-<version>_<triple>.h` | `-dM -E` capture ([adding-a-target](adding-a-target.md#steps)) | clang, gcc, `tools/cl.exe` | adding a target, upgrading a compiler |
 | `tests/fixtures/clang/linux/x86_64/parser_scope_combinations.c` | `tools/generate_scope_fixtures.py` | the script | changing the script; keeps existing `CHECK` lines |
 
