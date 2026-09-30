@@ -308,7 +308,6 @@ main (int argc __attribute__ ((unused)), char **argv __attribute__ ((unused)))
 // DEFAULT-NEXT:                 let %[[VALUE_next_sp:[0-9]+]] next_sp: ptr<void> [storage=automatic] = null<ptr<void>>;
 // DEFAULT-NEXT:                 let %[[VALUE_initial_sp:[0-9]+]] initial_sp: ptr<void> [storage=automatic] = null<ptr<void>>;
 // DEFAULT-NEXT:                 write<ptr<void>>(%[[VALUE_stack]], call<ptr<void>, signature=fn(ptr<ptr<void>>, ptr<u64>, ptr<ptr<void>>, ptr<ptr<void>>, ptr<ptr<void>>) -> ptr<void>>(%[[VALUE___splitstack_find_context]], read<ptr<ptr<void>>>(%[[VALUE_mes]]), addr_of<ptr<u64>>(%[[VALUE_stack_size]]), addr_of<ptr<ptr<void>>>(%[[VALUE_next_segment]]), addr_of<ptr<ptr<void>>>(%[[VALUE_next_sp]]), addr_of<ptr<ptr<void>>>(%[[VALUE_initial_sp]])));
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<ptr<void>>, ptr<u64>, ptr<ptr<void>>, ptr<ptr<void>>, ptr<ptr<void>>) -> ptr<void>>(%[[VALUE___splitstack_find_context]], read<ptr<ptr<void>>>(%[[VALUE_mes]]), addr_of<ptr<u64>>(%[[VALUE_stack_size]]), addr_of<ptr<ptr<void>>>(%[[VALUE_next_segment]]), addr_of<ptr<ptr<void>>>(%[[VALUE_next_sp]]), addr_of<ptr<ptr<void>>>(%[[VALUE_initial_sp]]));
 // DEFAULT-NEXT:                 if ne<ptr<void>>(read<ptr<void>>(%[[VALUE_stack]]), null<ptr<void>>)
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         let %[[VALUE16:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
@@ -348,7 +347,6 @@ main (int argc __attribute__ ((unused)), char **argv __attribute__ ((unused)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<@type[[TYPE_ucontext_t]]>(%[[VALUE_c2]], copy<@type[[TYPE_ucontext_t]], reason=assign>(read<@type[[TYPE_ucontext_t]]>(%[[VALUE_c1]])));
 // DEFAULT-NEXT:         write<ptr<void>>(field0(field2(%[[VALUE_c1]])), call<ptr<void>, signature=fn(u64, ptr<ptr<void>>, ptr<u64>) -> ptr<void>>(%[[VALUE___splitstack_makecontext]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8192))), addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%[[VALUE_s1]]), const<i32>(0)))), addr_of<ptr<u64>>(%[[VALUE_size]])));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64, ptr<ptr<void>>, ptr<u64>) -> ptr<void>>(%[[VALUE___splitstack_makecontext]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8192))), addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%[[VALUE_s1]]), const<i32>(0)))), addr_of<ptr<u64>>(%[[VALUE_size]]));
 // DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(field0(field2(%[[VALUE_c1]]))), null<ptr<void>>)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<i32>(field1(field2(%[[VALUE_c1]])), const<i32>(0));
@@ -358,7 +356,6 @@ main (int argc __attribute__ ((unused)), char **argv __attribute__ ((unused)))
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<void>>, ptr<i32>, ptr<i32>) -> void>(%[[VALUE___splitstack_block_signals_context]], addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%[[VALUE_s1]]), const<i32>(0)))), addr_of<ptr<i32>>(%[[VALUE_block_2]]), null<ptr<i32>>);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_ucontext_t]]>, ptr<fn() -> void>, i32, ...) -> void>(%[[VALUE_makecontext]], addr_of<ptr<@type[[TYPE_ucontext_t]]>>(%[[VALUE_c1]]), function_decay<ptr<fn() -> void>>(%[[VALUE_go1]]), const<i32>(0));
 // DEFAULT-NEXT:         write<ptr<void>>(field0(field2(%[[VALUE_c2]])), call<ptr<void>, signature=fn(u64, ptr<ptr<void>>, ptr<u64>) -> ptr<void>>(%[[VALUE___splitstack_makecontext]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8192))), addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%[[VALUE_s2]]), const<i32>(0)))), addr_of<ptr<u64>>(%[[VALUE_size]])));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64, ptr<ptr<void>>, ptr<u64>) -> ptr<void>>(%[[VALUE___splitstack_makecontext]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8192))), addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%[[VALUE_s2]]), const<i32>(0)))), addr_of<ptr<u64>>(%[[VALUE_size]]));
 // DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(field0(field2(%[[VALUE_c2]]))), null<ptr<void>>)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<i32>(field1(field2(%[[VALUE_c2]])), const<i32>(0));
@@ -371,11 +368,9 @@ main (int argc __attribute__ ((unused)), char **argv __attribute__ ((unused)))
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_ucontext_t]]>>(field0(%[[VALUE_tc_2]]), addr_of<ptr<@type[[TYPE_ucontext_t]]>>(%[[VALUE_c1]]));
 // DEFAULT-NEXT:         write<ptr<ptr<void>>>(field1(%[[VALUE_tc_2]]), addr_of<ptr<ptr<void>>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(10)>(%[[VALUE_s1]]), const<i32>(0)))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_err]], call<i32, signature=fn(ptr<u64>, ptr<const @type[[TYPE_pthread_attr_t]]>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%[[VALUE_pthread_create]], addr_of<ptr<u64>>(%[[VALUE_tid]]), null<ptr<const @type[[TYPE_pthread_attr_t]]>>, function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%[[VALUE_start_thread]]), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_thread_context]]>>(%[[VALUE_tc_2]]))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<u64>, ptr<const @type[[TYPE_pthread_attr_t]]>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%[[VALUE_pthread_create]], addr_of<ptr<u64>>(%[[VALUE_tid]]), null<ptr<const @type[[TYPE_pthread_attr_t]]>>, function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%[[VALUE_start_thread]]), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_thread_context]]>>(%[[VALUE_tc_2]])));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_err]]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_err]], call<i32, signature=fn(u64, ptr<ptr<void>>) -> i32>(%[[VALUE_pthread_join]], read<u64>(%[[VALUE_tid]]), null<ptr<ptr<void>>>));
-// DEFAULT-NEXT:         call<i32, signature=fn(u64, ptr<ptr<void>>) -> i32>(%[[VALUE_pthread_join]], read<u64>(%[[VALUE_tid]]), null<ptr<ptr<void>>>);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_err]]), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

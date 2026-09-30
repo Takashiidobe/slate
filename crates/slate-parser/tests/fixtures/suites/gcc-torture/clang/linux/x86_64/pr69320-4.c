@@ -69,7 +69,6 @@ int main() {
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<i16>(%[[VALUE_c]], from_bool<i16, reason=assign>(logical_or<bool>(ne<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_e]]))), const<i32>(5)), ne<i8>(read<i8>(%[[VALUE_d]]), const<i8>(0)))));
 // DEFAULT-NEXT:                     write<i32>(deref(read<ptr<i32>>(%[[VALUE_f]])), widen<i32, reason=assign>(call<i16, signature=fn(i32, i32) -> i16>(%[[VALUE_fn1]], from_bool<i32, reason=arg>(logical_or<bool>(ne<i16>(read<i16>(%[[VALUE_c]]), const<i16>(0)), ne<i8>(read<i8>(%[[VALUE_b]]), const<i8>(0)))), read<i32>(%[[VALUE_a]]))));
-// DEFAULT-NEXT:                     widen<i32, reason=assign>(call<i16, signature=fn(i32, i32) -> i16>(%[[VALUE_fn1]], from_bool<i32, reason=arg>(logical_or<bool>(ne<i16>(read<i16>(%[[VALUE_c]]), const<i16>(0)), ne<i8>(read<i8>(%[[VALUE_b]]), const<i8>(0)))), read<i32>(%[[VALUE_a]])));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<i64>(widen<i64, reason=explicit>(read<i32>(%[[VALUE_a]])), widen<i64, reason=usual_arith>(const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

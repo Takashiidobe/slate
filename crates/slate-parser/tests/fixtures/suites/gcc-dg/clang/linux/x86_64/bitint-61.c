@@ -48,7 +48,6 @@ foo (_BitInt(4058) d)
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_d:[0-9]+]] d: i4058b) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<bool>(%[[VALUE_c]], overflow_add<bool>(read<i8445b>(%[[VALUE_a]]), const<u64>(0), deref(addr_of<ptr<i4058b>>(%[[VALUE_d]]))));
 // DEFAULT-NEXT:         overflow_add<bool>(read<i8445b>(%[[VALUE_a]]), const<u64>(0), deref(addr_of<ptr<i4058b>>(%[[VALUE_d]])));
-// DEFAULT-NEXT:         overflow_add<bool>(read<i8445b>(%[[VALUE_a]]), const<u64>(0), deref(addr_of<ptr<i4058b>>(%[[VALUE_d]])));
 // DEFAULT-NEXT:         write<i8b>(%[[VALUE_b]], truncate<i8b, reason=assign, fits=unknown>(read<i4058b>(%[[VALUE_d]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

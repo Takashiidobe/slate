@@ -80,7 +80,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_c2:[0-9]+]] c2: i8 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<i8> [storage=automatic] = addr_of<ptr<i8>>(%[[VALUE_r]]);
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_s]], call<i8, signature=fn(ptr<ptr<i8>>) -> i8>(%[[VALUE_bar]], addr_of<ptr<ptr<i8>>>(%[[VALUE_p_2]])));
-// DEFAULT-NEXT:         call<i8, signature=fn(ptr<ptr<i8>>) -> i8>(%[[VALUE_bar]], addr_of<ptr<ptr<i8>>>(%[[VALUE_p_2]]));
 // DEFAULT-NEXT:         if ne<i8>(read<i8>(%[[VALUE_s]]), const<i8>(0))
 // DEFAULT-NEXT:             write<i8>(%[[VALUE_c2]], read<i8>(deref(read<ptr<i8>>(%[[VALUE_p_2]]))));
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_c1]], truncate<i8, reason=assign, fits=always>(const<i32>(0)));

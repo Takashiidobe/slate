@@ -97,7 +97,6 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_effectful_case:[0-9]+]] @effectful_case() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_effectful:[0-9]+]] effectful: @type[[TYPE_Aligned]] [storage=automatic];
 // DEFAULT-NEXT:         write<i8>(field0(%[[VALUE_effectful]]), truncate<i8, reason=assign, fits=unknown>(call<i32, signature=fn() -> i32>(%[[VALUE_next_value]])));
-// DEFAULT-NEXT:         truncate<i8, reason=assign, fits=unknown>(call<i32, signature=fn() -> i32>(%[[VALUE_next_value]]));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_effectful]]), const<i32>(7));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8>(field0(%[[VALUE_effectful]]))), read<i32>(field1(%[[VALUE_effectful]])));
 // DEFAULT-NEXT:     }

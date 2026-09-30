@@ -100,7 +100,6 @@ void link_error (void)
 // DEFAULT-NEXT:         let %[[VALUE_ptr2:[0-9]+]] ptr2: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_ptr1]], addr_of<ptr<i32>>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_ptr2]], pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(4))));
-// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(4)));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr1]])), const<i32>(12));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr2]])), const<i32>(8));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr1]]))), const<i32>(12))
@@ -111,7 +110,6 @@ void link_error (void)
 // DEFAULT-NEXT:         let %[[VALUE_ptr2_2:[0-9]+]] ptr2: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_ptr1_2]], addr_of<ptr<i32>>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_ptr2_2]], pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), const<u64>(4))));
-// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), const<u64>(4)));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr1_2]])), const<i32>(12));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr2_2]])), const<i32>(8));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_ptr1_2]]))), const<i32>(12))

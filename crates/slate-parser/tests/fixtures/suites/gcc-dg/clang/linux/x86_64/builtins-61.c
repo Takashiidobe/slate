@@ -72,7 +72,6 @@ double test4(double x, double y)
 // DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4(%[[VALUE_x_4:[0-9]+]] x: f64, %[[VALUE_y:[0-9]+]] y: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: complex<f64> [storage=automatic] = call<complex<f64>, signature=fn(complex<f64>) -> complex<f64>, abi=sysv64(native_c) -> native_c>(%[[VALUE___builtin_cexp]], real_to_complex<complex<f64>, reason=arg>(read<f64>(%[[VALUE_x_4]])));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_x_4]], call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_exp]], read<f64>(%[[VALUE_x_4]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_exp]], read<f64>(%[[VALUE_x_4]]));
 // DEFAULT-NEXT:         return sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_x_4]]), read<f64>(real(%[[VALUE_c_2]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

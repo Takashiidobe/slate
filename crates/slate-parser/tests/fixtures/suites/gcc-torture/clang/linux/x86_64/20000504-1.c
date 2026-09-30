@@ -47,8 +47,9 @@ int func(struct foo *foo, int a)
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_foo]])))), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_ret:[0-9]+]] ret: i32 [storage=automatic];
-// DEFAULT-NEXT:                 write<i32>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_foo]]))), read<i32>(%[[VALUE_a]]));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_ret]], read<i32>(%[[VALUE_a]]));
+// DEFAULT-NEXT:                 let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
+// DEFAULT-NEXT:                 write<i32>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_foo]]))), read<i32>(%[[VALUE0]]));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_ret]], read<i32>(%[[VALUE0]]));
 // DEFAULT-NEXT:                 if ge<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))
 // DEFAULT-NEXT:                     write<i32>(field0(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_foo]]))), read<i32>(%[[VALUE_a]]));
 // DEFAULT-NEXT:                 return read<i32>(%[[VALUE_ret]]);

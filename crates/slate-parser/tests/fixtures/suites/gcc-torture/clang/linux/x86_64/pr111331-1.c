@@ -55,7 +55,6 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: i32 [storage=automatic] = neg<i32, overflow=ub>(const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_a]], call<i32, signature=fn(i32, i32, i32) -> i32>(%[[VALUE_c]], add<i32, overflow=ub>(read<i32>(%[[VALUE_b]]), const<i32>(30)), const<i32>(29), add<i32, overflow=ub>(read<i32>(%[[VALUE_g]]), const<i32>(29))));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, i32, i32) -> i32>(%[[VALUE_c]], add<i32, overflow=ub>(read<i32>(%[[VALUE_b]]), const<i32>(30)), const<i32>(29), add<i32, overflow=ub>(read<i32>(%[[VALUE_g]]), const<i32>(29)));
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: volatile i32 [storage=automatic] = read<i32>(%[[VALUE_a]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%[[VALUE_t]]), const<i32>(28))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

@@ -71,9 +71,7 @@ double test4 (double x)
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: f64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_s]], call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sin]], read<f64>(%[[VALUE_x]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sin]], read<f64>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_c]], call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_cos]], read<f64>(%[[VALUE_x]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_cos]], read<f64>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_s]]), read<f64>(%[[VALUE_c]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_x_2:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
@@ -81,9 +79,7 @@ double test4 (double x)
 // DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_x_2]], mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_x_2]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(2))));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_s_2]], call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sin]], read<f64>(%[[VALUE_x_2]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sin]], read<f64>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_c_2]], call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_cos]], read<f64>(%[[VALUE_x_2]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_cos]], read<f64>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_s_2]]), read<f64>(%[[VALUE_c_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3(%[[VALUE_x_3:[0-9]+]] x: f64, %[[VALUE_b:[0-9]+]] b: i32) -> f64 [linkage=external] [fallthrough=ub_if_used] {
@@ -92,16 +88,13 @@ double test4 (double x)
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0))
 // DEFAULT-NEXT:             write<f64>(%[[VALUE_x_3]], mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_x_3]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(2))));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_s_3]], call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sin]], read<f64>(%[[VALUE_x_3]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sin]], read<f64>(%[[VALUE_x_3]]));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_c_3]], call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_cos]], read<f64>(%[[VALUE_x_3]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_cos]], read<f64>(%[[VALUE_x_3]]));
 // DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_s_3]]), read<f64>(%[[VALUE_c_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4(%[[VALUE_x_4:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_s_4:[0-9]+]] s: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_x_4]], mul<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_x_4]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(const<i32>(2))));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_s_4]], call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sin]], read<f64>(%[[VALUE_x_4]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sin]], read<f64>(%[[VALUE_x_4]]));
 // DEFAULT-NEXT:         return read<f64>(%[[VALUE_s_4]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

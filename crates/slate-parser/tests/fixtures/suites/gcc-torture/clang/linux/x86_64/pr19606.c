@@ -64,11 +64,9 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], call<i32, signature=fn() -> i32>(%[[VALUE_foo]]));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:         if ne<i64>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_r]])), div<i64, by_zero=ub, min_by_neg_one=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))))), const<i64>(2)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], call<i32, signature=fn() -> i32>(%[[VALUE_bar]]));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_bar]]);
 // DEFAULT-NEXT:         if ne<i64>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_r]])), rem<i64, by_zero=ub, min_by_neg_one=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(reinterpret<u32, reason=explicit, fits=unknown>(widen<i32, reason=explicit>(truncate<i8, reason=explicit, fits=unknown>(neg<i32, overflow=ub>(const<i32>(4))))))), const<i64>(5)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

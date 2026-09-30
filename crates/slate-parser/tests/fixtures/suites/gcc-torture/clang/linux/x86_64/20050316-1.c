@@ -123,18 +123,15 @@ int main(void) {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         write<vector<i32, 2>>(field0(%[[VALUE_u]]), call<vector<i32, 2>, signature=fn() -> vector<i32, 2>, abi=sysv64() -> coerce<f64>>(%[[VALUE_test3]]));
-// DEFAULT-NEXT:         call<vector<i32, 2>, signature=fn() -> vector<i32, 2>, abi=sysv64() -> coerce<f64>>(%[[VALUE_test3]]);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%[[VALUE_u]])), const<i32>(0)))), const<i32>(0)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%[[VALUE_u]])), const<i32>(1)))), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: vector<i16, 2> [storage=automatic] = aggregate<vector<i16, 2>, zero_fill=false>(index0 = truncate<i16, reason=assign, fits=always>(const<i32>(4)), index1 = truncate<i16, reason=assign, fits=always>(const<i32>(4)));
 // DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: @type[[TYPE1]] [storage=automatic];
 // DEFAULT-NEXT:         write<vector<i32, 2>>(field0(%[[VALUE_v]]), call<vector<i32, 2>, signature=fn(vector<i16, 2>) -> vector<i32, 2>, abi=sysv64(coerce<i32>) -> coerce<f64>>(%[[VALUE_test4]], read<vector<i16, 2>>(%[[VALUE_y]])));
-// DEFAULT-NEXT:         call<vector<i32, 2>, signature=fn(vector<i16, 2>) -> vector<i32, 2>, abi=sysv64(coerce<i32>) -> coerce<f64>>(%[[VALUE_test4]], read<vector<i16, 2>>(%[[VALUE_y]]));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(field1(%[[VALUE_v]])), widen<i64, reason=usual_arith>(const<i32>(262148)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: vector<u32, 2> [storage=automatic] = aggregate<vector<u32, 2>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(6)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(6)));
 // DEFAULT-NEXT:         write<vector<i32, 2>>(field0(%[[VALUE_u]]), call<vector<i32, 2>, signature=fn(vector<u32, 2>) -> vector<i32, 2>, abi=sysv64(coerce<f64>) -> coerce<f64>>(%[[VALUE_test5]], read<vector<u32, 2>>(%[[VALUE_z]])));
-// DEFAULT-NEXT:         call<vector<i32, 2>, signature=fn(vector<u32, 2>) -> vector<i32, 2>, abi=sysv64(coerce<f64>) -> coerce<f64>>(%[[VALUE_test5]], read<vector<u32, 2>>(%[[VALUE_z]]));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%[[VALUE_u]])), const<i32>(0)))), const<i32>(6)), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%[[VALUE_u]])), const<i32>(1)))), const<i32>(6)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

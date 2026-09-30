@@ -75,7 +75,6 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2:[0-9]+]] @fn2() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<@type[[TYPE_S0]]>(%[[VALUE_b]], copy<@type[[TYPE_S0]], reason=assign>(call<@type[[TYPE_S0]], signature=fn() -> @type[[TYPE_S0]], abi=sysv64() -> native_c>(%[[VALUE_fn1]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE_S0]], reason=assign>(call<@type[[TYPE_S0]], signature=fn() -> @type[[TYPE_S0]], abi=sysv64() -> native_c>(%[[VALUE_fn1]]));
 // DEFAULT-NEXT:         write<i16>(%[[VALUE_a]], truncate<i16, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<@type[[TYPE_S0]]>(%[[VALUE_d]], copy<@type[[TYPE_S0]], reason=assign>(read<@type[[TYPE_S0]]>(%[[VALUE_e]])));
 // DEFAULT-NEXT:     }

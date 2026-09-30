@@ -61,7 +61,8 @@ void foo ()
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..1, bits=0..2>(%[[VALUE_q]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<i32>(bitfield1<unit=0, bytes=0..1, bits=2..4>(%[[VALUE_q]]), const<i32>(2));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..1, bits=0..2>(%[[VALUE_r]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(3)));
-// DEFAULT-NEXT:         write<i32>(bitfield1<unit=0, bytes=0..1, bits=2..4>(%[[VALUE_r]]), neg<i32, overflow=ub>(const<i32>(2)));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = neg<i32, overflow=ub>(const<i32>(2));
+// DEFAULT-NEXT:         write<i32>(bitfield1<unit=0, bytes=0..1, bits=2..4>(%[[VALUE_r]]), read<i32>(%[[VALUE0]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -64,7 +64,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values]]), read<i32>(%[[VALUE_i]]))), add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), call<i32, signature=fn() -> i32>(%[[VALUE_getchar]])));
-// DEFAULT-NEXT:                     add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), call<i32, signature=fn() -> i32>(%[[VALUE_getchar]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: @type[[TYPE_cursor]] [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i32>>(field0(%[[VALUE_c]]), ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values]]), const<i32>(1)));

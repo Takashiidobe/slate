@@ -196,7 +196,6 @@ int main(void) {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(5):
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_foo_arg]], va_arg<i32>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:                     va_arg<i32>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_foo_arg]]);
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%[[VALUE1]])), va_arg<f64>(%[[VALUE_ap]])));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_foo_arg]], read<i32>(%[[VALUE2]]));
@@ -206,14 +205,12 @@ int main(void) {
 // DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(8):
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_foo_arg]], truncate<i32, reason=assign, fits=unknown>(va_arg<i64>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:                     truncate<i32, reason=assign, fits=unknown>(va_arg<i64>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_foo_arg]]);
 // DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%[[VALUE5]])), va_arg<f64>(%[[VALUE_ap]])));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_foo_arg]], read<i32>(%[[VALUE6]]));
 // DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(11):
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_foo_arg]], va_arg<i32>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:                     va_arg<i32>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_foo_arg]]);
 // DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: i32 [synthetic] = float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f80, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32>(%[[VALUE7]])), va_arg<f80>(%[[VALUE_ap]])));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_foo_arg]], read<i32>(%[[VALUE8]]));
@@ -238,7 +235,6 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_f1:[0-9]+]] @f1(%[[VALUE_i:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         va_start(%[[VALUE_gap]]);
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], va_arg<i64>(%[[VALUE_gap]]));
-// DEFAULT-NEXT:         va_arg<i64>(%[[VALUE_gap]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_gap]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_i_2:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -250,7 +246,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_aps:[0-9]+]] aps: array<va_list, 10> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         va_start(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%[[VALUE_aps]]), const<i32>(4))));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], va_arg<i64>(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%[[VALUE_aps]]), const<i32>(4)))));
-// DEFAULT-NEXT:         va_arg<i64>(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%[[VALUE_aps]]), const<i32>(4))));
 // DEFAULT-NEXT:         va_end(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(10)>(%[[VALUE_aps]]), const<i32>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_i_4:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -269,7 +264,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: @type[[TYPE_A]] [storage=automatic];
 // DEFAULT-NEXT:         va_start(field1(%[[VALUE_a]]));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], va_arg<i64>(field1(%[[VALUE_a]])));
-// DEFAULT-NEXT:         va_arg<i64>(field1(%[[VALUE_a]]));
 // DEFAULT-NEXT:         va_end(field1(%[[VALUE_a]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f7:[0-9]+]] @f7(%[[VALUE_i_7:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
@@ -288,7 +282,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_a_4:[0-9]+]] a: @type[[TYPE_A]] [storage=automatic];
 // DEFAULT-NEXT:         va_start(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(2)>(field2(%[[VALUE_a_4]])), const<i32>(1))));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], va_arg<i64>(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(2)>(field2(%[[VALUE_a_4]])), const<i32>(1)))));
-// DEFAULT-NEXT:         va_arg<i64>(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(2)>(field2(%[[VALUE_a_4]])), const<i32>(1))));
 // DEFAULT-NEXT:         va_end(deref(ptr_offset<ptr<va_list>, subtract=false, element=va_list, overflow=ub>(array_decay<ptr<va_list>, length=Some(2)>(field2(%[[VALUE_a_4]])), const<i32>(1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f11:[0-9]+]] @f11(%[[VALUE_i_10:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {

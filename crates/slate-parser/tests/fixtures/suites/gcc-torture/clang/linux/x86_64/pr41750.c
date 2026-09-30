@@ -109,8 +109,9 @@ int main() {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<i32>>(%[[VALUE_dynobj]], read<ptr<i32>>(field1(deref(read<ptr<@type[[TYPE_foo_link_hash_table]]>>(%[[VALUE_hash_2]])))));
 // DEFAULT-NEXT:                 if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_dynobj]]), null<ptr<i32>>))
-// DEFAULT-NEXT:                     write<ptr<i32>>(%[[VALUE_dynobj]], read<ptr<i32>>(%[[VALUE_abfd_3]]));
-// DEFAULT-NEXT:                     write<ptr<i32>>(field1(deref(read<ptr<@type[[TYPE_foo_link_hash_table]]>>(%[[VALUE_hash_2]]))), read<ptr<i32>>(%[[VALUE_abfd_3]]));
+// DEFAULT-NEXT:                     let %[[VALUE0:[0-9]+]]: ptr<i32> [synthetic] = read<ptr<i32>>(%[[VALUE_abfd_3]]);
+// DEFAULT-NEXT:                     write<ptr<i32>>(%[[VALUE_dynobj]], read<ptr<i32>>(%[[VALUE0]]));
+// DEFAULT-NEXT:                     write<ptr<i32>>(field1(deref(read<ptr<@type[[TYPE_foo_link_hash_table]]>>(%[[VALUE_hash_2]]))), read<ptr<i32>>(%[[VALUE0]]));
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(call<i32, signature=fn(ptr<i32>, ptr<@type[[TYPE_foo_link_info]]>) -> i32>(%[[VALUE_foo_create_got_section]], read<ptr<i32>>(%[[VALUE_dynobj]]), read<ptr<@type[[TYPE_foo_link_info]]>>(%[[VALUE_info_2]])), const<i32>(0)))
 // DEFAULT-NEXT:                     return null<ptr<i32>>;
 // DEFAULT-NEXT:                 write<ptr<i32>>(%[[VALUE_got]], read<ptr<i32>>(field2(deref(read<ptr<@type[[TYPE_foo_link_hash_table]]>>(%[[VALUE_hash_2]])))));

@@ -97,7 +97,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<i16>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_bndpsd]]), read<i32>(%[[VALUE_k]]))), call<i16, signature=fn(ptr<i16>, ptr<i16>) -> i16>(%[[VALUE_logadd]], addr_of<ptr<i16>>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_bndpsd]]), read<i32>(%[[VALUE_k]])))), addr_of<ptr<i16>>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_psd]]), read<i32>(%[[VALUE_j]]))))));
-// DEFAULT-NEXT:                     call<i16, signature=fn(ptr<i16>, ptr<i16>) -> i16>(%[[VALUE_logadd]], addr_of<ptr<i16>>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_bndpsd]]), read<i32>(%[[VALUE_k]])))), addr_of<ptr<i16>>(deref(ptr_offset<ptr<i16>, subtract=false, element=i16, overflow=ub>(array_decay<ptr<i16>, length=Some(6)>(%[[VALUE_psd]]), read<i32>(%[[VALUE_j]])))));
 // DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
 // DEFAULT-NEXT:                     let %[[VALUE6:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE5]]), const<i32>(1));
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_j]], read<i32>(%[[VALUE6]]));

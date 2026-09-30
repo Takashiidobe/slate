@@ -70,18 +70,19 @@ int main(void) {
 // DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_pz]]);
 // DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE4]]), const<i32>(1));
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_pz]], read<ptr<i8>>(%[[VALUE5]]));
-// DEFAULT-NEXT:                     write<i8>(deref(read<ptr<i8>>(%[[VALUE4]])), read<i8>(deref(read<ptr<i8>>(%[[VALUE2]]))));
-// DEFAULT-NEXT:                     switch %[[VALUE6:[0-9]+]] widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%[[VALUE2]]))))
+// DEFAULT-NEXT:                     let %[[VALUE6:[0-9]+]]: i8 [synthetic] = read<i8>(deref(read<ptr<i8>>(%[[VALUE2]])));
+// DEFAULT-NEXT:                     write<i8>(deref(read<ptr<i8>>(%[[VALUE4]])), read<i8>(%[[VALUE6]]));
+// DEFAULT-NEXT:                     switch %[[VALUE7:[0-9]+]] widen<i32, reason=promotion>(read<i8>(%[[VALUE6]]))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             case %[[VALUE6]] const<i32>(0):
+// DEFAULT-NEXT:                             case %[[VALUE7]] const<i32>(0):
 // DEFAULT-NEXT:                                 goto %[[VALUE_loopDone2:[0-9]+]];
-// DEFAULT-NEXT:                             case %[[VALUE6]] const<i32>(34):
-// DEFAULT-NEXT:                                 case %[[VALUE6]] const<i32>(92):
+// DEFAULT-NEXT:                             case %[[VALUE7]] const<i32>(34):
+// DEFAULT-NEXT:                                 case %[[VALUE7]] const<i32>(92):
 // DEFAULT-NEXT:                                     write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_pz]]), neg<i32, overflow=ub>(const<i32>(1)))), truncate<i8, reason=assign, fits=always>(const<i32>(92)));
-// DEFAULT-NEXT:                             let %[[VALUE7:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_pz]]);
-// DEFAULT-NEXT:                             let %[[VALUE8:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE7]]), const<i32>(1));
-// DEFAULT-NEXT:                             write<ptr<i8>>(%[[VALUE_pz]], read<ptr<i8>>(%[[VALUE8]]));
-// DEFAULT-NEXT:                             write<i8>(deref(read<ptr<i8>>(%[[VALUE7]])), read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_pzDta]]), neg<i32, overflow=ub>(const<i32>(1))))));
+// DEFAULT-NEXT:                             let %[[VALUE8:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_pz]]);
+// DEFAULT-NEXT:                             let %[[VALUE9:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE8]]), const<i32>(1));
+// DEFAULT-NEXT:                             write<ptr<i8>>(%[[VALUE_pz]], read<ptr<i8>>(%[[VALUE9]]));
+// DEFAULT-NEXT:                             write<i8>(deref(read<ptr<i8>>(%[[VALUE8]])), read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_pzDta]]), neg<i32, overflow=ub>(const<i32>(1))))));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         label %[[VALUE_loopDone2]] loopDone2:

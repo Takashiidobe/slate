@@ -55,8 +55,9 @@ int main() {
 // DEFAULT-NEXT:         return xor<i32>(read<i32>(%[[VALUE_d]]), read<i32>(%[[VALUE_p1_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn4:[0-9]+]] @fn4(%[[VALUE_p1_3:[0-9]+]] p1: i32, %[[VALUE_p2_2:[0-9]+]] p2: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_f]], sub<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_fn1]]), const<i32>(1000)));
-// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_fn3]], from_bool<i32, reason=arg>(gt<i32>(from_bool<i32, reason=promotion>(not<bool>(ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0)))), call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_fn2]], from_bool<i32, reason=arg>(logical_or<bool>(ne<i32>(sub<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_fn1]]), const<i32>(1000)), const<i32>(0)), ne<i32>(read<i32>(%[[VALUE_p2_2]]), const<i32>(0)))), read<i32>(%[[VALUE_p1_3]])))));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_fn1]]), const<i32>(1000));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_f]], read<i32>(%[[VALUE0]]));
+// DEFAULT-NEXT:         return call<i32, signature=fn(i32) -> i32>(%[[VALUE_fn3]], from_bool<i32, reason=arg>(gt<i32>(from_bool<i32, reason=promotion>(not<bool>(ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0)))), call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_fn2]], from_bool<i32, reason=arg>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE0]]), const<i32>(0)), ne<i32>(read<i32>(%[[VALUE_p2_2]]), const<i32>(0)))), read<i32>(%[[VALUE_p1_3]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

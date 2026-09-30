@@ -99,7 +99,6 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_a:[0-9]+]] a: ptr<const i8>) -> ptr<@type[[TYPE_T]]> [linkage=internal] [inline=always] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_T]]> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_T]]>>(%[[VALUE_s]], pointer_cast<ptr<@type[[TYPE_T]]>, reason=assign>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_baz]])));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_T]]>, reason=assign>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_baz]]));
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_s]]))), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(bitfield9<unit=0, bytes=10..12, bits=7..9>(deref(read<ptr<@type[[TYPE_T]]>>(%[[VALUE_s]]))), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_T]]>>(%[[VALUE_s]]);

@@ -118,7 +118,6 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         let %[[VALUE_l0:[0-9]+]] l0: vector<i64, 2> [storage=automatic] = aggregate<vector<i64, 2>, zero_fill=false>(index0 = widen<i64, reason=assign>(read<i32>(%[[VALUE_argc]])), index1 = widen<i64, reason=assign>(const<i32>(1)));
 // DEFAULT-NEXT:         let %[[VALUE_l1:[0-9]+]] l1: vector<i64, 2> [storage=automatic];
 // DEFAULT-NEXT:         write<vector<i8, 16>>(%[[VALUE_c1]], add<vector<i8, 16>, elementwise=true, overflow=wrap>(vector_splat<vector<i8, 16>, reason=usual_arith>(truncate<i8, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(call<i8, signature=fn() -> i8>(%[[VALUE_vchr]])))), read<vector<i8, 16>>(%[[VALUE_c0]])));
-// DEFAULT-NEXT:         add<vector<i8, 16>, elementwise=true, overflow=wrap>(vector_splat<vector<i8, 16>, reason=usual_arith>(truncate<i8, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(call<i8, signature=fn() -> i8>(%[[VALUE_vchr]])))), read<vector<i8, 16>>(%[[VALUE_c0]]));
 // DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___i:[0-9]+]] __i: i32 [storage=automatic];
@@ -140,7 +139,6 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<vector<i16, 8>>(%[[VALUE_s1]], add<vector<i16, 8>, elementwise=true, overflow=wrap>(vector_splat<vector<i16, 8>, reason=usual_arith>(truncate<i16, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(call<i16, signature=fn() -> i16>(%[[VALUE_vsrt]])))), read<vector<i16, 8>>(%[[VALUE_s0]])));
-// DEFAULT-NEXT:         add<vector<i16, 8>, elementwise=true, overflow=wrap>(vector_splat<vector<i16, 8>, reason=usual_arith>(truncate<i16, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(call<i16, signature=fn() -> i16>(%[[VALUE_vsrt]])))), read<vector<i16, 8>>(%[[VALUE_s0]]));
 // DEFAULT-NEXT:         do %[[VALUE4:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___i_2:[0-9]+]] __i: i32 [storage=automatic];
@@ -162,7 +160,6 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<vector<i16, 8>>(%[[VALUE_s1]], add<vector<i16, 8>, elementwise=true, overflow=wrap>(vector_splat<vector<i16, 8>, reason=usual_arith>(truncate<i16, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(call<i8, signature=fn() -> i8>(%[[VALUE_vchr]])))), read<vector<i16, 8>>(%[[VALUE_s0]])));
-// DEFAULT-NEXT:         add<vector<i16, 8>, elementwise=true, overflow=wrap>(vector_splat<vector<i16, 8>, reason=usual_arith>(truncate<i16, reason=usual_arith, fits=unknown>(widen<i32, reason=promotion>(call<i8, signature=fn() -> i8>(%[[VALUE_vchr]])))), read<vector<i16, 8>>(%[[VALUE_s0]]));
 // DEFAULT-NEXT:         do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___i_3:[0-9]+]] __i: i32 [storage=automatic];
@@ -184,7 +181,6 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_i1]], mul<vector<i32, 4>, elementwise=true, overflow=wrap>(vector_splat<vector<i32, 4>, reason=usual_arith>(call<i32, signature=fn() -> i32>(%[[VALUE_vint]])), read<vector<i32, 4>>(%[[VALUE_i0]])));
-// DEFAULT-NEXT:         mul<vector<i32, 4>, elementwise=true, overflow=wrap>(vector_splat<vector<i32, 4>, reason=usual_arith>(call<i32, signature=fn() -> i32>(%[[VALUE_vint]])), read<vector<i32, 4>>(%[[VALUE_i0]]));
 // DEFAULT-NEXT:         do %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___i_4:[0-9]+]] __i: i32 [storage=automatic];
@@ -206,7 +202,6 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_i1]], mul<vector<i32, 4>, elementwise=true, overflow=wrap>(vector_splat<vector<i32, 4>, reason=usual_arith>(widen<i32, reason=promotion>(call<i16, signature=fn() -> i16>(%[[VALUE_vsrt]]))), read<vector<i32, 4>>(%[[VALUE_i0]])));
-// DEFAULT-NEXT:         mul<vector<i32, 4>, elementwise=true, overflow=wrap>(vector_splat<vector<i32, 4>, reason=usual_arith>(widen<i32, reason=promotion>(call<i16, signature=fn() -> i16>(%[[VALUE_vsrt]]))), read<vector<i32, 4>>(%[[VALUE_i0]]));
 // DEFAULT-NEXT:         do %[[VALUE16:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___i_5:[0-9]+]] __i: i32 [storage=automatic];
@@ -228,7 +223,6 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<vector<i32, 4>>(%[[VALUE_i1]], mul<vector<i32, 4>, elementwise=true, overflow=wrap>(vector_splat<vector<i32, 4>, reason=usual_arith>(widen<i32, reason=promotion>(call<i8, signature=fn() -> i8>(%[[VALUE_vchr]]))), read<vector<i32, 4>>(%[[VALUE_i0]])));
-// DEFAULT-NEXT:         mul<vector<i32, 4>, elementwise=true, overflow=wrap>(vector_splat<vector<i32, 4>, reason=usual_arith>(widen<i32, reason=promotion>(call<i8, signature=fn() -> i8>(%[[VALUE_vchr]]))), read<vector<i32, 4>>(%[[VALUE_i0]]));
 // DEFAULT-NEXT:         do %[[VALUE20:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___i_6:[0-9]+]] __i: i32 [storage=automatic];
@@ -250,7 +244,6 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<vector<i64, 2>>(%[[VALUE_l1]], mul<vector<i64, 2>, elementwise=true, overflow=wrap>(vector_splat<vector<i64, 2>, reason=usual_arith>(call<i64, signature=fn() -> i64>(%[[VALUE_vlng]])), read<vector<i64, 2>>(%[[VALUE_l0]])));
-// DEFAULT-NEXT:         mul<vector<i64, 2>, elementwise=true, overflow=wrap>(vector_splat<vector<i64, 2>, reason=usual_arith>(call<i64, signature=fn() -> i64>(%[[VALUE_vlng]])), read<vector<i64, 2>>(%[[VALUE_l0]]));
 // DEFAULT-NEXT:         do %[[VALUE24:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___i_7:[0-9]+]] __i: i32 [storage=automatic];
@@ -272,7 +265,6 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<vector<i64, 2>>(%[[VALUE_l1]], mul<vector<i64, 2>, elementwise=true, overflow=wrap>(vector_splat<vector<i64, 2>, reason=usual_arith>(widen<i64, reason=usual_arith>(call<i32, signature=fn() -> i32>(%[[VALUE_vint]]))), read<vector<i64, 2>>(%[[VALUE_l0]])));
-// DEFAULT-NEXT:         mul<vector<i64, 2>, elementwise=true, overflow=wrap>(vector_splat<vector<i64, 2>, reason=usual_arith>(widen<i64, reason=usual_arith>(call<i32, signature=fn() -> i32>(%[[VALUE_vint]]))), read<vector<i64, 2>>(%[[VALUE_l0]]));
 // DEFAULT-NEXT:         do %[[VALUE28:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___i_8:[0-9]+]] __i: i32 [storage=automatic];
@@ -294,7 +286,6 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<vector<i64, 2>>(%[[VALUE_l1]], mul<vector<i64, 2>, elementwise=true, overflow=wrap>(vector_splat<vector<i64, 2>, reason=usual_arith>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(call<i16, signature=fn() -> i16>(%[[VALUE_vsrt]])))), read<vector<i64, 2>>(%[[VALUE_l0]])));
-// DEFAULT-NEXT:         mul<vector<i64, 2>, elementwise=true, overflow=wrap>(vector_splat<vector<i64, 2>, reason=usual_arith>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(call<i16, signature=fn() -> i16>(%[[VALUE_vsrt]])))), read<vector<i64, 2>>(%[[VALUE_l0]]));
 // DEFAULT-NEXT:         do %[[VALUE32:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___i_9:[0-9]+]] __i: i32 [storage=automatic];
@@ -316,7 +307,6 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<vector<i64, 2>>(%[[VALUE_l1]], mul<vector<i64, 2>, elementwise=true, overflow=wrap>(vector_splat<vector<i64, 2>, reason=usual_arith>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(call<i8, signature=fn() -> i8>(%[[VALUE_vchr]])))), read<vector<i64, 2>>(%[[VALUE_l0]])));
-// DEFAULT-NEXT:         mul<vector<i64, 2>, elementwise=true, overflow=wrap>(vector_splat<vector<i64, 2>, reason=usual_arith>(widen<i64, reason=usual_arith>(widen<i32, reason=promotion>(call<i8, signature=fn() -> i8>(%[[VALUE_vchr]])))), read<vector<i64, 2>>(%[[VALUE_l0]]));
 // DEFAULT-NEXT:         do %[[VALUE36:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE___i_10:[0-9]+]] __i: i32 [storage=automatic];

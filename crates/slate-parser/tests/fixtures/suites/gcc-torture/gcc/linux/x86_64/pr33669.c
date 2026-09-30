@@ -82,7 +82,6 @@ int main() {
 // DEFAULT-NEXT:         write<u32>(field0(%[[VALUE_x]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(8192)));
 // DEFAULT-NEXT:         write<u32>(field1(%[[VALUE_x]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_xx]], call<i64, signature=fn(ptr<@type[[TYPE_foo_t]]>, i64, u32) -> i64>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_x]]), widen<i64, reason=arg>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4096))));
-// DEFAULT-NEXT:         call<i64, signature=fn(ptr<@type[[TYPE_foo_t]]>, i64, u32) -> i64>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_foo_t]]>>(%[[VALUE_x]]), widen<i64, reason=arg>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4096)));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE_xx]]), const<i64>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

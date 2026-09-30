@@ -69,7 +69,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 ;
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_S]]>>(%[[VALUE_n]], pointer_cast<ptr<@type[[TYPE_S]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], const<u64>(16))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_S]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], const<u64>(16)));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_S]]>>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_n]]))), read<ptr<@type[[TYPE_S]]>>(deref(read<ptr<ptr<@type[[TYPE_S]]>>>(%[[VALUE_p]]))));
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_n]]))), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_S]]>>(deref(read<ptr<ptr<@type[[TYPE_S]]>>>(%[[VALUE_p]])), read<ptr<@type[[TYPE_S]]>>(%[[VALUE_n]]));

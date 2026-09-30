@@ -79,7 +79,6 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_suite:[0-9]+]] suite: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<ptr<fn() -> void>>>(field0(%[[VALUE_suite]]), pointer_cast<ptr<ptr<fn() -> void>>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))), const<u64>(8)))));
-// DEFAULT-NEXT:         pointer_cast<ptr<ptr<fn() -> void>>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))), const<u64>(8))));
 // DEFAULT-NEXT:         write<ptr<fn() -> void>>(deref(ptr_offset<ptr<ptr<fn() -> void>>, subtract=false, element=ptr<fn() -> void>, overflow=ub>(read<ptr<ptr<fn() -> void>>>(field0(%[[VALUE_suite]])), const<i32>(0))), function_decay<ptr<fn() -> void>>(%[[VALUE_test_a]]));
 // DEFAULT-NEXT:         write<ptr<fn() -> void>>(deref(ptr_offset<ptr<ptr<fn() -> void>>, subtract=false, element=ptr<fn() -> void>, overflow=ub>(read<ptr<ptr<fn() -> void>>>(field0(%[[VALUE_suite]])), const<i32>(1))), function_decay<ptr<fn() -> void>>(%[[VALUE_test_b]]));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_suite]]), const<i32>(2));

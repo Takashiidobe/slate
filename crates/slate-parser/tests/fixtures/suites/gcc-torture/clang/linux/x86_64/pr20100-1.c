@@ -86,8 +86,9 @@ int  main(void) {
 // DEFAULT-NEXT:         return read<u16>(%[[VALUE_p]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_inc_g:[0-9]+]] @inc_g() -> u16 [linkage=internal] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         write<u16>(%[[VALUE_g]], call<u16, signature=fn() -> u16>(%[[VALUE_next_g]]));
-// DEFAULT-NEXT:         return call<u16, signature=fn() -> u16>(%[[VALUE_next_g]]);
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u16 [synthetic] = call<u16, signature=fn() -> u16>(%[[VALUE_next_g]]);
+// DEFAULT-NEXT:         write<u16>(%[[VALUE_g]], read<u16>(%[[VALUE0]]));
+// DEFAULT-NEXT:         return read<u16>(%[[VALUE0]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_curr_g:[0-9]+]] @curr_g() -> u16 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return read<u16>(%[[VALUE_g]]);
@@ -108,26 +109,25 @@ int  main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: u16 [storage=automatic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         let %[[VALUE_org_g:[0-9]+]] org_g: u16 [storage=automatic];
 // DEFAULT-NEXT:         write<u16>(%[[VALUE_org_g]], call<u16, signature=fn() -> u16>(%[[VALUE_curr_g]]));
-// DEFAULT-NEXT:         call<u16, signature=fn() -> u16>(%[[VALUE_curr_g]]);
-// DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] logical_and<bool>(not<bool>(ne<i8>(call<i8, signature=fn() -> i8>(%[[VALUE_ring_empty]]), const<i8>(0))), lt<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_n]]))), const<i32>(5)))
+// DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] logical_and<bool>(not<bool>(ne<i8>(call<i8, signature=fn() -> i8>(%[[VALUE_ring_empty]]), const<i8>(0))), lt<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_n]]))), const<i32>(5)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<u16, signature=fn() -> u16>(%[[VALUE_inc_g]]);
-// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_n]]);
-// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE1]]))), const<i32>(1))));
-// DEFAULT-NEXT:                 write<u16>(%[[VALUE_n]], read<u16>(%[[VALUE2]]));
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: u16 [synthetic] = read<u16>(%[[VALUE_n]]);
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE2]]))), const<i32>(1))));
+// DEFAULT-NEXT:                 write<u16>(%[[VALUE_n]], read<u16>(%[[VALUE3]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return read<u16>(%[[VALUE_n]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
-// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE3:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE4:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_e]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(3))));
-// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(call<i8, signature=fn(u16, u16) -> i8>(%[[VALUE_frob]], reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0))), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(2))))), const<i32>(0)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_g]]))), const<i32>(1))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_p]]))), const<i32>(2))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_e]]))), const<i32>(3)))
-// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE4]], ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn() -> u16>(%[[VALUE_get_n]]))), const<i32>(1)));
-// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(read<bool>(%[[VALUE4]]), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_g]]))), const<i32>(2))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_p]]))), const<i32>(2)))
+// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(call<u16, signature=fn() -> u16>(%[[VALUE_get_n]]))), const<i32>(1)));
+// DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(read<bool>(%[[VALUE5]]), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_g]]))), const<i32>(2))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_p]]))), const<i32>(2)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

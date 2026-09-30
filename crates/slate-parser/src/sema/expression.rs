@@ -1850,6 +1850,12 @@ impl Lowerer {
     pub fn expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
         let lowered = self.lower_expr(e).map_err(|error| error.at(e.expansion))?;
         let c = self.result(e).map_err(|error| error.at(e.expansion))?;
+        if self.types.typed(e)?.source_bits.is_some() {
+            return self
+                .types
+                .arithmetic_conversion(&self.context, lowered, c, ConversionReason::Promotion)
+                .map_err(|error| error.at(e.expansion));
+        }
         Ok(Operand { c, ..lowered })
     }
 

@@ -94,7 +94,6 @@ int main(void) {
 // DEFAULT-NEXT:                         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=None>(%[[VALUE_values_2]]), read<i32>(%[[VALUE_index_2]]))), add<i32, overflow=ub>(read<i32>(%[[VALUE_index_2]]), const<i32>(3)));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_result]], call<i32, signature=fn(i32, ptr<vla<i32, *>>) -> i32>(%[[VALUE_sum_vla]], read<i32>(%[[VALUE_length_2]]), pointer_cast<ptr<vla<i32, *>>, reason=arg>(addr_of<ptr<vla<i32, %[[VALUE6]]>>>(%[[VALUE_values_2]]))));
-// DEFAULT-NEXT:             call<i32, signature=fn(i32, ptr<vla<i32, *>>) -> i32>(%[[VALUE_sum_vla]], read<i32>(%[[VALUE_length_2]]), pointer_cast<ptr<vla<i32, *>>, reason=arg>(addr_of<ptr<vla<i32, %[[VALUE6]]>>>(%[[VALUE_values_2]])));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), add<i32, overflow=ub>(read<i32>(%[[VALUE_result]]), const<i32>(1)));
 // DEFAULT-NEXT:         return const<i32>(0);

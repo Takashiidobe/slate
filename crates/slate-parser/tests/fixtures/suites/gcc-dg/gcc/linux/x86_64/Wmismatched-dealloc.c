@@ -413,7 +413,6 @@ void test_acquire (void)
 // DEFAULT-NEXT:             if not<bool>(ne<ptr<@type[[TYPE_FILE]]>>(read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_2]]), null<ptr<@type[[TYPE_FILE]]>>))
 // DEFAULT-NEXT:                 return;
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_2]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_2]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_2]])));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_2]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_2]]));
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<@type[[TYPE_FILE]]>) -> i32>(%[[VALUE_fclose]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_2]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
@@ -438,7 +437,6 @@ void test_acquire (void)
 // DEFAULT-NEXT:             let %[[VALUE_q_6:[0-9]+]] q: ptr<@type[[TYPE_FILE]]> [storage=automatic] = call<ptr<@type[[TYPE_FILE]]>, signature=fn(i32) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_fdopen]], const<i32>(0));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_6]]));
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_6]], pointer_cast<ptr<@type[[TYPE_FILE]]>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_6]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7))))));
-// DEFAULT-NEXT:             pointer_cast<ptr<@type[[TYPE_FILE]]>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_6]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7)))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_6]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
@@ -452,7 +450,6 @@ void test_acquire (void)
 // DEFAULT-NEXT:             let %[[VALUE_q_8:[0-9]+]] q: ptr<@type[[TYPE_FILE]]> [storage=automatic] = call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_fopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_5]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_6]])));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_8]]));
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_8]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_7]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_8]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_8]])));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_7]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_8]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_8]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_8]]));
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<@type[[TYPE_FILE]]>) -> i32>(%[[VALUE_fclose]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_8]]));
 // DEFAULT-NEXT:         }
@@ -476,7 +473,6 @@ void test_acquire (void)
 // DEFAULT-NEXT:             let %[[VALUE_q_12:[0-9]+]] q: ptr<@type[[TYPE_FILE]]> [storage=automatic] = call<ptr<@type[[TYPE_FILE]]>, signature=fn(i32) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_fdopen]], const<i32>(0));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_12]]));
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_12]], pointer_cast<ptr<@type[[TYPE_FILE]]>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_12]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7))))));
-// DEFAULT-NEXT:             pointer_cast<ptr<@type[[TYPE_FILE]]>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_12]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7)))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_12]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
@@ -490,17 +486,14 @@ void test_acquire (void)
 // DEFAULT-NEXT:             let %[[VALUE_q_14:[0-9]+]] q: ptr<@type[[TYPE_FILE]]> [storage=automatic] = call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_15]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_16]])), read<ptr<@type[[TYPE_FILE]]>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_FILE]]>>, subtract=false, element=ptr<@type[[TYPE_FILE]]>, overflow=ub>(read<ptr<ptr<@type[[TYPE_FILE]]>>>(%[[VALUE_p]]), const<i32>(1)))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_14]]));
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_14]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_17]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_18]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_14]])));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_17]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_18]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_14]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_14]]));
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<@type[[TYPE_FILE]]>) -> i32>(%[[VALUE_fclose]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_14]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_15:[0-9]+]] q: ptr<@type[[TYPE_FILE]]> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_15]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_19]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_20]])), read<ptr<@type[[TYPE_FILE]]>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_FILE]]>>, subtract=false, element=ptr<@type[[TYPE_FILE]]>, overflow=ub>(read<ptr<ptr<@type[[TYPE_FILE]]>>>(%[[VALUE_p]]), const<i32>(2))))));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_19]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_20]])), read<ptr<@type[[TYPE_FILE]]>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_FILE]]>>, subtract=false, element=ptr<@type[[TYPE_FILE]]>, overflow=ub>(read<ptr<ptr<@type[[TYPE_FILE]]>>>(%[[VALUE_p]]), const<i32>(2)))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_15]]));
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_15]], pointer_cast<ptr<@type[[TYPE_FILE]]>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_15]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7))))));
-// DEFAULT-NEXT:             pointer_cast<ptr<@type[[TYPE_FILE]]>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_15]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7)))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_q_15]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }
@@ -514,7 +507,6 @@ void test_acquire (void)
 // DEFAULT-NEXT:             let %[[VALUE_p_3:[0-9]+]] p: ptr<@type[[TYPE_FILE]]> [storage=automatic] = call<ptr<@type[[TYPE_FILE]]>, signature=fn() -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_tmpfile]]);
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_3]]));
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_3]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_21]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_22]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_3]])));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_21]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_22]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_3]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_3]]));
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<@type[[TYPE_FILE]]>) -> i32>(%[[VALUE_fclose]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_3]]));
 // DEFAULT-NEXT:         }
@@ -534,28 +526,24 @@ void test_acquire (void)
 // DEFAULT-NEXT:             let %[[VALUE_p_6:[0-9]+]] p: ptr<@type[[TYPE_FILE]]> [storage=automatic] = call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<ptr<i8>>, ptr<u64>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_open_memstream]], read<ptr<ptr<i8>>>(%[[VALUE_bufp]]), read<ptr<u64>>(%[[VALUE_sizep]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_6]]));
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_6]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_23]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_24]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_6]])));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_23]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_24]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_6]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_6]]));
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<@type[[TYPE_FILE]]>) -> i32>(%[[VALUE_fclose]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_6]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_p_7:[0-9]+]] p: ptr<@type[[TYPE_FILE]]> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_7]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<ptr<i8>>, ptr<u64>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_open_memstream]], read<ptr<ptr<i8>>>(%[[VALUE_bufp]]), read<ptr<u64>>(%[[VALUE_sizep]])));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<ptr<i8>>, ptr<u64>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_open_memstream]], read<ptr<ptr<i8>>>(%[[VALUE_bufp]]), read<ptr<u64>>(%[[VALUE_sizep]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_7]]));
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<@type[[TYPE_FILE]]>) -> i32>(%[[VALUE_pclose]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_7]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_p_8:[0-9]+]] p: ptr<@type[[TYPE_FILE]]> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_8]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<ptr<i8>>, ptr<u64>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_open_memstream]], read<ptr<ptr<i8>>>(%[[VALUE_bufp]]), read<ptr<u64>>(%[[VALUE_sizep]])));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<ptr<i8>>, ptr<u64>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_open_memstream]], read<ptr<ptr<i8>>>(%[[VALUE_bufp]]), read<ptr<u64>>(%[[VALUE_sizep]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_8]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_8]])));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_p_9:[0-9]+]] p: ptr<@type[[TYPE_FILE]]> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_9]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<ptr<i8>>, ptr<u64>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_open_memstream]], read<ptr<ptr<i8>>>(%[[VALUE_bufp]]), read<ptr<u64>>(%[[VALUE_sizep]])));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<ptr<i8>>, ptr<u64>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_open_memstream]], read<ptr<ptr<i8>>>(%[[VALUE_bufp]]), read<ptr<u64>>(%[[VALUE_sizep]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_9]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_release]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_9]])));
 // DEFAULT-NEXT:         }
@@ -570,28 +558,24 @@ void test_acquire (void)
 // DEFAULT-NEXT:             let %[[VALUE_p_11:[0-9]+]] p: ptr<@type[[TYPE_FILE]]> [storage=automatic] = call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<ptr<i8>>, ptr<u64>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_open_wmemstream]], read<ptr<ptr<i8>>>(%[[VALUE_bufp_2]]), read<ptr<u64>>(%[[VALUE_sizep_2]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_11]]));
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_11]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_25]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_26]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_11]])));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_25]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_26]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_11]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_11]]));
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<@type[[TYPE_FILE]]>) -> i32>(%[[VALUE_fclose]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_11]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_p_12:[0-9]+]] p: ptr<@type[[TYPE_FILE]]> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_12]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<ptr<i8>>, ptr<u64>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_open_wmemstream]], read<ptr<ptr<i8>>>(%[[VALUE_bufp_2]]), read<ptr<u64>>(%[[VALUE_sizep_2]])));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<ptr<i8>>, ptr<u64>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_open_wmemstream]], read<ptr<ptr<i8>>>(%[[VALUE_bufp_2]]), read<ptr<u64>>(%[[VALUE_sizep_2]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_12]]));
 // DEFAULT-NEXT:             call<i32, signature=fn(ptr<@type[[TYPE_FILE]]>) -> i32>(%[[VALUE_pclose]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_12]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_p_13:[0-9]+]] p: ptr<@type[[TYPE_FILE]]> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_13]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<ptr<i8>>, ptr<u64>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_open_wmemstream]], read<ptr<ptr<i8>>>(%[[VALUE_bufp_2]]), read<ptr<u64>>(%[[VALUE_sizep_2]])));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<ptr<i8>>, ptr<u64>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_open_wmemstream]], read<ptr<ptr<i8>>>(%[[VALUE_bufp_2]]), read<ptr<u64>>(%[[VALUE_sizep_2]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_13]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_13]])));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_p_14:[0-9]+]] p: ptr<@type[[TYPE_FILE]]> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_14]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<ptr<i8>>, ptr<u64>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_open_wmemstream]], read<ptr<ptr<i8>>>(%[[VALUE_bufp_2]]), read<ptr<u64>>(%[[VALUE_sizep_2]])));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<ptr<i8>>, ptr<u64>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_open_wmemstream]], read<ptr<ptr<i8>>>(%[[VALUE_bufp_2]]), read<ptr<u64>>(%[[VALUE_sizep_2]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_14]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_release]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_14]])));
 // DEFAULT-NEXT:         }
@@ -606,7 +590,6 @@ void test_acquire (void)
 // DEFAULT-NEXT:             let %[[VALUE_p_16:[0-9]+]] p: ptr<@type[[TYPE_FILE]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_FILE]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(100)))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_16]]));
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_16]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_27]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_28]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_16]])));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_27]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_28]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_16]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_p_17:[0-9]+]] p: ptr<@type[[TYPE_FILE]]> [storage=automatic] = pointer_cast<ptr<@type[[TYPE_FILE]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(100)))));
@@ -638,7 +621,6 @@ void test_acquire (void)
 // DEFAULT-NEXT:             let %[[VALUE_p_22:[0-9]+]] p: ptr<@type[[TYPE_FILE]]> [storage=automatic] = call<ptr<@type[[TYPE_FILE]]>, signature=fn() -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_acquire]]);
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_22]]));
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_22]], call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_29]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_30]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_22]])));
-// DEFAULT-NEXT:             call<ptr<@type[[TYPE_FILE]]>, signature=fn(ptr<const i8>, ptr<const i8>, ptr<@type[[TYPE_FILE]]>) -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_freopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_29]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_30]])), read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_22]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_22]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
@@ -650,7 +632,6 @@ void test_acquire (void)
 // DEFAULT-NEXT:             let %[[VALUE_p_24:[0-9]+]] p: ptr<@type[[TYPE_FILE]]> [storage=automatic] = call<ptr<@type[[TYPE_FILE]]>, signature=fn() -> ptr<@type[[TYPE_FILE]]>>(%[[VALUE_acquire]]);
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_24]]));
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_24]], pointer_cast<ptr<@type[[TYPE_FILE]]>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_24]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(123))))));
-// DEFAULT-NEXT:             pointer_cast<ptr<@type[[TYPE_FILE]]>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_24]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(123)))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<@type[[TYPE_FILE]]>) -> void>(%[[VALUE_sink]], read<ptr<@type[[TYPE_FILE]]>>(%[[VALUE_p_24]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:     }

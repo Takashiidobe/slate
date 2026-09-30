@@ -84,7 +84,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_S]]> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: @type[[TYPE_S]] [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]], pointer_cast<ptr<@type[[TYPE_S]]>, reason=assign>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_foo]])));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_S]]>, reason=assign>(call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_foo]]));
 // DEFAULT-NEXT:         if eq<ptr<@type[[TYPE_S]]>>(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]]), null<ptr<@type[[TYPE_S]]>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]], addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_q]]));

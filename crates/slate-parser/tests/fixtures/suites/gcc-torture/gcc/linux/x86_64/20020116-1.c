@@ -61,22 +61,23 @@ main (int argc, char **argv)
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_d]], const<i32>(1));
 // DEFAULT-NEXT:         while %[[VALUE2:[0-9]+]] {
-// DEFAULT-NEXT:             write<i32>(%[[VALUE_c]], call<i32, signature=fn(i32, ptr<ptr<i8>>) -> i32>(%[[VALUE_foo]], read<i32>(%[[VALUE_argc]]), read<ptr<ptr<i8>>>(%[[VALUE_argv]])));
-// DEFAULT-NEXT:             yield ne<i32>(call<i32, signature=fn(i32, ptr<ptr<i8>>) -> i32>(%[[VALUE_foo]], read<i32>(%[[VALUE_argc]]), read<ptr<ptr<i8>>>(%[[VALUE_argv]])), neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn(i32, ptr<ptr<i8>>) -> i32>(%[[VALUE_foo]], read<i32>(%[[VALUE_argc]]), read<ptr<ptr<i8>>>(%[[VALUE_argv]]));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE3]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE3]]), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             switch %[[VALUE3:[0-9]+]] read<i32>(%[[VALUE_c]])
+// DEFAULT-NEXT:             switch %[[VALUE4:[0-9]+]] read<i32>(%[[VALUE_c]])
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     case %[[VALUE3]] const<i32>(115):
-// DEFAULT-NEXT:                         case %[[VALUE3]] const<i32>(99):
-// DEFAULT-NEXT:                             case %[[VALUE3]] const<i32>(102):
+// DEFAULT-NEXT:                     case %[[VALUE4]] const<i32>(115):
+// DEFAULT-NEXT:                         case %[[VALUE4]] const<i32>(99):
+// DEFAULT-NEXT:                             case %[[VALUE4]] const<i32>(102):
 // DEFAULT-NEXT:                                 write<ptr<i8>>(%[[VALUE_a]], read<ptr<i8>>(%[[VALUE_b]]));
-// DEFAULT-NEXT:                     break %[[VALUE3]];
-// DEFAULT-NEXT:                     case %[[VALUE3]] const<i32>(118):
+// DEFAULT-NEXT:                     break %[[VALUE4]];
+// DEFAULT-NEXT:                     case %[[VALUE4]] const<i32>(118):
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_d]], const<i32>(1));
-// DEFAULT-NEXT:                     break %[[VALUE3]];
-// DEFAULT-NEXT:                     case %[[VALUE3]] const<i32>(86):
+// DEFAULT-NEXT:                     break %[[VALUE4]];
+// DEFAULT-NEXT:                     case %[[VALUE4]] const<i32>(86):
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_d]], const<i32>(0));
-// DEFAULT-NEXT:                     break %[[VALUE3]];
+// DEFAULT-NEXT:                     break %[[VALUE4]];
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_noret]]);
 // DEFAULT-NEXT:         return const<i32>(0);

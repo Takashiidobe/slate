@@ -62,9 +62,7 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_three_char:[0-9]+]] three_char: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         write<u8>(field0(%[[VALUE_three_char]]), call<u8, signature=fn() -> u8>(%[[VALUE_my_set_a]]));
-// DEFAULT-NEXT:         call<u8, signature=fn() -> u8>(%[[VALUE_my_set_a]]);
 // DEFAULT-NEXT:         write<u16>(field1(%[[VALUE_three_char]]), call<u16, signature=fn() -> u16>(%[[VALUE_my_set_b]]));
-// DEFAULT-NEXT:         call<u16, signature=fn() -> u16>(%[[VALUE_my_set_b]]);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(%[[VALUE_three_char]])))), const<i32>(171)), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field1(%[[VALUE_three_char]])))), const<i32>(4660)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

@@ -53,8 +53,9 @@
 // DEFAULT-NEXT:         let %[[VALUE_val:[0-9]+]] val: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_locked:[0-9]+]] locked: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] {
-// DEFAULT-NEXT:             write<i32>(%[[VALUE_val]], read<i32>(deref(read<ptr<i32>>(%[[VALUE_valp]]))));
-// DEFAULT-NEXT:             yield ne<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_valp]]))), const<i32>(0));
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(deref(read<ptr<i32>>(%[[VALUE_valp]])));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_val]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE1]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(%[[VALUE_count]]), const<i32>(0))
@@ -67,9 +68,9 @@
 // DEFAULT-NEXT:                             continue %[[VALUE0]];
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 if not<bool>(ne<i32>(read<i32>(%[[VALUE_count]]), const<i32>(0)))
-// DEFAULT-NEXT:                     let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_count]]);
-// DEFAULT-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
-// DEFAULT-NEXT:                     write<i32>(%[[VALUE_count]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_count]]);
+// DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_count]], read<i32>(%[[VALUE3]]));
 // DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_val]]);

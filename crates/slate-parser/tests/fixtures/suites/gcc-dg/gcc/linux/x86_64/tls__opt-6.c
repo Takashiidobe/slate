@@ -163,11 +163,9 @@ main (void)
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE3]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]], call<ptr<@type[[TYPE_A]]>, signature=fn() -> ptr<@type[[TYPE_A]]>>(%[[VALUE_f5a]]));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_A]]>, signature=fn() -> ptr<@type[[TYPE_A]]>>(%[[VALUE_f5a]]);
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]]))))), const<i32>(16)), ne<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]])))), add<i32, overflow=ub>(const<i32>(16), const<i32>(1)))), ne<i64>(read<i64>(field2(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]])))), widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(16), const<i32>(2)))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]], call<ptr<@type[[TYPE_A]]>, signature=fn() -> ptr<@type[[TYPE_A]]>>(%[[VALUE_f6a]]));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_A]]>, signature=fn() -> ptr<@type[[TYPE_A]]>>(%[[VALUE_f6a]]);
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]]))))), const<i32>(19)), ne<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]])))), add<i32, overflow=ub>(const<i32>(19), const<i32>(1)))), ne<i64>(read<i64>(field2(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]])))), widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(19), const<i32>(2)))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic];
@@ -178,11 +176,9 @@ main (void)
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE4]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]], call<ptr<@type[[TYPE_A]]>, signature=fn() -> ptr<@type[[TYPE_A]]>>(%[[VALUE_f9a]]));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_A]]>, signature=fn() -> ptr<@type[[TYPE_A]]>>(%[[VALUE_f9a]]);
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]]))))), const<i32>(28)), ne<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]])))), add<i32, overflow=ub>(const<i32>(28), const<i32>(1)))), ne<i64>(read<i64>(field2(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]])))), widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(28), const<i32>(2)))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]], call<ptr<@type[[TYPE_A]]>, signature=fn() -> ptr<@type[[TYPE_A]]>>(%[[VALUE_f10a]]));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_A]]>, signature=fn() -> ptr<@type[[TYPE_A]]>>(%[[VALUE_f10a]]);
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]]))))), const<i32>(31)), ne<i32>(read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]])))), add<i32, overflow=ub>(const<i32>(31), const<i32>(1)))), ne<i64>(read<i64>(field2(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_p]])))), widen<i64, reason=usual_arith>(add<i32, overflow=ub>(const<i32>(31), const<i32>(2)))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

@@ -150,7 +150,6 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_f1i:[0-9]+]] @f1i(%[[VALUE_ap:[0-9]+]] ap: va_list) -> void [linkage=external] [inline=always] [definition=inline_only] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE0]]), va_arg<i64>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], read<i64>(%[[VALUE1]]));
@@ -166,7 +165,6 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f2i:[0-9]+]] @f2i(%[[VALUE_ap_3:[0-9]+]] ap: va_list) -> void [linkage=external] [inline=always] [definition=inline_only] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_y]], widen<i64, reason=assign>(va_arg<i32>(%[[VALUE_ap_3]])));
-// DEFAULT-NEXT:         widen<i64, reason=assign>(va_arg<i32>(%[[VALUE_ap_3]]));
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_y]]);
 // DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE4]]), va_arg<i64>(%[[VALUE_ap_3]]));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_y]], read<i64>(%[[VALUE5]]));
@@ -196,43 +194,28 @@ int main(void) {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE8]] const<i32>(0):
 // DEFAULT-NEXT:                     write<i64>(%[[VALUE_t]], call<i64, signature=fn(i32, i64, i64, i64, i64) -> i64>(%[[VALUE_f3h]], read<i32>(%[[VALUE_i_4]]), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:                     call<i64, signature=fn(i32, i64, i64, i64, i64) -> i64>(%[[VALUE_f3h]], read<i32>(%[[VALUE_i_4]]), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:                 break %[[VALUE8]];
 // DEFAULT-NEXT:                 case %[[VALUE8]] const<i32>(1):
 // DEFAULT-NEXT:                     write<i64>(%[[VALUE_arg0_2]], va_arg<i64>(%[[VALUE_ap_5]]));
-// DEFAULT-NEXT:                     va_arg<i64>(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:                 write<i64>(%[[VALUE_t]], call<i64, signature=fn(i32, i64, i64, i64, i64) -> i64>(%[[VALUE_f3h]], read<i32>(%[[VALUE_i_4]]), read<i64>(%[[VALUE_arg0_2]]), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:                 call<i64, signature=fn(i32, i64, i64, i64, i64) -> i64>(%[[VALUE_f3h]], read<i32>(%[[VALUE_i_4]]), read<i64>(%[[VALUE_arg0_2]]), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:                 break %[[VALUE8]];
 // DEFAULT-NEXT:                 case %[[VALUE8]] const<i32>(2):
 // DEFAULT-NEXT:                     write<i64>(%[[VALUE_arg0_2]], va_arg<i64>(%[[VALUE_ap_5]]));
-// DEFAULT-NEXT:                     va_arg<i64>(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:                 write<i64>(%[[VALUE_arg1_2]], va_arg<i64>(%[[VALUE_ap_5]]));
-// DEFAULT-NEXT:                 va_arg<i64>(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:                 write<i64>(%[[VALUE_t]], call<i64, signature=fn(i32, i64, i64, i64, i64) -> i64>(%[[VALUE_f3h]], read<i32>(%[[VALUE_i_4]]), read<i64>(%[[VALUE_arg0_2]]), read<i64>(%[[VALUE_arg1_2]]), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:                 call<i64, signature=fn(i32, i64, i64, i64, i64) -> i64>(%[[VALUE_f3h]], read<i32>(%[[VALUE_i_4]]), read<i64>(%[[VALUE_arg0_2]]), read<i64>(%[[VALUE_arg1_2]]), widen<i64, reason=arg>(const<i32>(0)), widen<i64, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:                 break %[[VALUE8]];
 // DEFAULT-NEXT:                 case %[[VALUE8]] const<i32>(3):
 // DEFAULT-NEXT:                     write<i64>(%[[VALUE_arg0_2]], va_arg<i64>(%[[VALUE_ap_5]]));
-// DEFAULT-NEXT:                     va_arg<i64>(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:                 write<i64>(%[[VALUE_arg1_2]], va_arg<i64>(%[[VALUE_ap_5]]));
-// DEFAULT-NEXT:                 va_arg<i64>(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:                 write<i64>(%[[VALUE_arg2_2]], va_arg<i64>(%[[VALUE_ap_5]]));
-// DEFAULT-NEXT:                 va_arg<i64>(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:                 write<i64>(%[[VALUE_t]], call<i64, signature=fn(i32, i64, i64, i64, i64) -> i64>(%[[VALUE_f3h]], read<i32>(%[[VALUE_i_4]]), read<i64>(%[[VALUE_arg0_2]]), read<i64>(%[[VALUE_arg1_2]]), read<i64>(%[[VALUE_arg2_2]]), widen<i64, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:                 call<i64, signature=fn(i32, i64, i64, i64, i64) -> i64>(%[[VALUE_f3h]], read<i32>(%[[VALUE_i_4]]), read<i64>(%[[VALUE_arg0_2]]), read<i64>(%[[VALUE_arg1_2]]), read<i64>(%[[VALUE_arg2_2]]), widen<i64, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:                 break %[[VALUE8]];
 // DEFAULT-NEXT:                 case %[[VALUE8]] const<i32>(4):
 // DEFAULT-NEXT:                     write<i64>(%[[VALUE_arg0_2]], va_arg<i64>(%[[VALUE_ap_5]]));
-// DEFAULT-NEXT:                     va_arg<i64>(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:                 write<i64>(%[[VALUE_arg1_2]], va_arg<i64>(%[[VALUE_ap_5]]));
-// DEFAULT-NEXT:                 va_arg<i64>(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:                 write<i64>(%[[VALUE_arg2_2]], va_arg<i64>(%[[VALUE_ap_5]]));
-// DEFAULT-NEXT:                 va_arg<i64>(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:                 write<i64>(%[[VALUE_arg3_2]], va_arg<i64>(%[[VALUE_ap_5]]));
-// DEFAULT-NEXT:                 va_arg<i64>(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:                 write<i64>(%[[VALUE_t]], call<i64, signature=fn(i32, i64, i64, i64, i64) -> i64>(%[[VALUE_f3h]], read<i32>(%[[VALUE_i_4]]), read<i64>(%[[VALUE_arg0_2]]), read<i64>(%[[VALUE_arg1_2]]), read<i64>(%[[VALUE_arg2_2]]), read<i64>(%[[VALUE_arg3_2]])));
-// DEFAULT-NEXT:                 call<i64, signature=fn(i32, i64, i64, i64, i64) -> i64>(%[[VALUE_f3h]], read<i32>(%[[VALUE_i_4]]), read<i64>(%[[VALUE_arg0_2]]), read<i64>(%[[VALUE_arg1_2]]), read<i64>(%[[VALUE_arg2_2]]), read<i64>(%[[VALUE_arg3_2]]));
 // DEFAULT-NEXT:                 break %[[VALUE8]];
 // DEFAULT-NEXT:                 default %[[VALUE8]]:
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -247,11 +230,9 @@ int main(void) {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE9]] const<i32>(4):
 // DEFAULT-NEXT:                     write<i64>(%[[VALUE_y]], float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap_6]])));
-// DEFAULT-NEXT:                     float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap_6]]));
 // DEFAULT-NEXT:                 break %[[VALUE9]];
 // DEFAULT-NEXT:                 case %[[VALUE9]] const<i32>(5):
 // DEFAULT-NEXT:                     write<i64>(%[[VALUE_y]], float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap_6]])));
-// DEFAULT-NEXT:                     float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f64>(%[[VALUE_ap_6]]));
 // DEFAULT-NEXT:                 let %[[VALUE10:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_y]]);
 // DEFAULT-NEXT:                 let %[[VALUE11:[0-9]+]]: i64 [synthetic] = float_to_int<i64, reason=assign, out_of_range=ub, exceptions=ignore>(add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(int_to_float<f64, reason=usual_arith, exact=false, rounding=nearest_even, exceptions=ignore>(read<i64>(%[[VALUE10]])), va_arg<f64>(%[[VALUE_ap_6]])));
 // DEFAULT-NEXT:                 write<i64>(%[[VALUE_y]], read<i64>(%[[VALUE11]]));

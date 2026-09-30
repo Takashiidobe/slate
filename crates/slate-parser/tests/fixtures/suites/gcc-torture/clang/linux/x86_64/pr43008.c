@@ -60,9 +60,7 @@ int         main() {
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<@type[[TYPE_X]]> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_X]]> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_X]]>>(%[[VALUE_p_2]], call<ptr<@type[[TYPE_X]]>, signature=fn() -> ptr<@type[[TYPE_X]]>>(%[[VALUE_my_alloc]]));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_X]]>, signature=fn() -> ptr<@type[[TYPE_X]]>>(%[[VALUE_my_alloc]]);
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_X]]>>(%[[VALUE_q]], call<ptr<@type[[TYPE_X]]>, signature=fn() -> ptr<@type[[TYPE_X]]>>(%[[VALUE_my_alloc]]));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_X]]>, signature=fn() -> ptr<@type[[TYPE_X]]>>(%[[VALUE_my_alloc]]);
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field0(deref(read<ptr<@type[[TYPE_X]]>>(%[[VALUE_p_2]]))))), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(field0(deref(read<ptr<@type[[TYPE_X]]>>(%[[VALUE_q]]))))), const<i32>(0));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(read<ptr<i32>>(field0(deref(read<ptr<@type[[TYPE_X]]>>(%[[VALUE_p_2]])))))), const<i32>(0))

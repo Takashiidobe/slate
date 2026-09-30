@@ -57,7 +57,10 @@ Forming a place never reads it.
   field type (it gives the read its signedness).
 - A bit-field rvalue promotes by declared width, not storage type:
   `unsigned low : 3` reads as `reinterpret<i32, reason=promotion>(..)`;
-  compound assignment promotes the old value the same way. `_Generic` sees
+  compound assignment promotes the old value the same way. As in clang's
+  `getSourceBitField`, the result of `=`, compound assignment, and prefix
+  `++`/`--` on a bit-field promotes the same way too (`Typed::source_bits`),
+  so `(s.bf = x) > -1` compares as `i32`; postfix forms do not. `_Generic` sees
   the declared type, since it applies lvalue conversion but not promotion.
 - `&`, `sizeof`, `_Alignof`, and `offsetof` on a bit-field are `Rejected`;
   zero-width bit-fields have no storage and are not members.

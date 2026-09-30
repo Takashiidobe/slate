@@ -170,7 +170,6 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_2]]), read<i32>(%[[VALUE_i_2]]))), va_arg<i32>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_2]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_2]]));
 // DEFAULT-NEXT:     }
@@ -193,7 +192,6 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_3]]), read<i32>(%[[VALUE_i_3]]))), va_arg<i32>(%[[VALUE_ap_2]]));
-// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_3]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_3]]));
 // DEFAULT-NEXT:     }
@@ -217,7 +215,6 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_4]]), read<i32>(%[[VALUE_i_4]]))), va_arg<i32>(%[[VALUE_ap_3]]));
-// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_4]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_4]]));
 // DEFAULT-NEXT:     }
@@ -242,7 +239,6 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_5]]), read<i32>(%[[VALUE_i_5]]))), va_arg<i32>(%[[VALUE_ap_4]]));
-// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_5]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_5]]));
 // DEFAULT-NEXT:     }
@@ -268,7 +264,6 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_6]]), read<i32>(%[[VALUE_i_6]]))), va_arg<i32>(%[[VALUE_ap_5]]));
-// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_6]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_6]]));
 // DEFAULT-NEXT:     }
@@ -295,7 +290,6 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_7]]), read<i32>(%[[VALUE_i_7]]))), va_arg<i32>(%[[VALUE_ap_6]]));
-// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_6]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_6]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_7]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_7]]));
 // DEFAULT-NEXT:     }
@@ -323,7 +317,6 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_8]]), read<i32>(%[[VALUE_i_8]]))), va_arg<i32>(%[[VALUE_ap_7]]));
-// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_7]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_7]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_8]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_8]]));
 // DEFAULT-NEXT:     }
@@ -352,7 +345,6 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_9]]), read<i32>(%[[VALUE_i_9]]))), va_arg<i32>(%[[VALUE_ap_8]]));
-// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_8]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_8]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_9]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_9]]));
 // DEFAULT-NEXT:     }
@@ -382,7 +374,6 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_10]]), read<i32>(%[[VALUE_i_10]]))), va_arg<i32>(%[[VALUE_ap_9]]));
-// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_9]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_9]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_10]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_10]]));
 // DEFAULT-NEXT:     }
@@ -413,7 +404,6 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_11]]), read<i32>(%[[VALUE_i_11]]))), va_arg<i32>(%[[VALUE_ap_10]]));
-// DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_ap_10]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_10]]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ptr<i32>) -> void>(%[[VALUE_verify]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(9)>(%[[VALUE_str_11]])), array_decay<ptr<i32>, length=Some(11)>(%[[VALUE_n_11]]));
 // DEFAULT-NEXT:     }

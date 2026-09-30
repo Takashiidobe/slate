@@ -58,7 +58,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic];
 // DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_b]], va_arg<i32>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:             va_arg<i32>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         while gt<i32>(read<i32>(%[[VALUE_b]]), const<i32>(10));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]]));
 // DEFAULT-NEXT:     }

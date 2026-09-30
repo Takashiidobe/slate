@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = read<i32>(bitfield2<unit=0, bytes=0..4, bits=20..30>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE10]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(bitfield2<unit=0, bytes=0..4, bits=20..30>(%[[VALUE_x]]), read<i32>(%[[VALUE11]]));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_2]])), read<i32>(%[[VALUE7]]), read<i32>(%[[VALUE9]]), read<i32>(%[[VALUE11]]));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(10)>(%[[VALUE_str_2]])), widen<i32, reason=assign>(truncate<i10b, reason=assign, fits=unknown>(read<i32>(%[[VALUE7]]))), widen<i32, reason=assign>(truncate<i10b, reason=assign, fits=unknown>(read<i32>(%[[VALUE9]]))), widen<i32, reason=assign>(truncate<i10b, reason=assign, fits=unknown>(read<i32>(%[[VALUE11]]))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

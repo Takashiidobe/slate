@@ -93,7 +93,6 @@ main (void)
 // DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_r]]), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_d_3]]), read<u32>(%[[VALUE_l_3]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_r]], call<ptr<i8>, signature=fn(ptr<i8>, ptr<i8>, u32) -> ptr<i8>>(%[[VALUE_my_memcpy]], read<ptr<i8>>(%[[VALUE_d_3]]), read<ptr<i8>>(%[[VALUE_s_3]]), read<u32>(%[[VALUE_l_3]])));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<i8>, ptr<i8>, u32) -> ptr<i8>>(%[[VALUE_my_memcpy]], read<ptr<i8>>(%[[VALUE_d_3]]), read<ptr<i8>>(%[[VALUE_s_3]]), read<u32>(%[[VALUE_l_3]]));
 // DEFAULT-NEXT:         if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_r]]), read<ptr<i8>>(%[[VALUE_d_3]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }
@@ -103,10 +102,8 @@ main (void)
 // DEFAULT-NEXT:         let %[[VALUE_foo:[0-9]+]] foo: ptr<const i8> [storage=automatic] [const] = pointer_cast<ptr<const i8>, reason=assign>(array_decay<ptr<i8>, length=Some(12)>(%[[VALUE_str]]));
 // DEFAULT-NEXT:         let %[[VALUE_l_4:[0-9]+]] l: u32 [storage=automatic] = truncate<u32, reason=assign, fits=unknown>(add<u64, overflow=wrap>(call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE___builtin_strlen]], read<ptr<const i8>>(%[[VALUE_foo]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_buffer]], pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(100))))));
-// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(100)))));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<const void>, u64) -> ptr<void>>(%[[VALUE___builtin_memcpy]], pointer_cast<ptr<void>, reason=arg>(read<ptr<i8>>(%[[VALUE_buffer]])), pointer_cast<ptr<const void>, reason=arg>(read<ptr<const i8>>(%[[VALUE_foo]])), widen<u64, reason=arg>(read<u32>(%[[VALUE_l_4]])));
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_test]], pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(100))))));
-// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(100)))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i8>, ptr<i8>, u32) -> void>(%[[VALUE_run_test]], read<ptr<i8>>(%[[VALUE_test]]), read<ptr<i8>>(%[[VALUE_buffer]]), read<u32>(%[[VALUE_l_4]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

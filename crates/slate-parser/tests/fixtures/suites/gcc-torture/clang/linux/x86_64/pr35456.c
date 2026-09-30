@@ -51,7 +51,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: f64 [storage=automatic] = neg<f64>(const<f64>(0.0));
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_y]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_not_fabs]], read<f64>(%[[VALUE_x_2]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE_not_fabs]], read<f64>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:         if not<bool>(float_class<bool, test=sign_bit>(read<f64>(%[[VALUE_y]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

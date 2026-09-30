@@ -60,7 +60,6 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..5, bits=0..8>(%[[VALUE_i]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(12))));
 // DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_i]], copy<@type[[TYPE_s]], reason=assign>(call<@type[[TYPE_s]], signature=fn(@type[[TYPE_s]]) -> @type[[TYPE_s]], abi=sysv64(native_c) -> native_c>(%[[VALUE_f]], copy<@type[[TYPE_s]], reason=arg>(read<@type[[TYPE_s]]>(%[[VALUE_i]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_s]], reason=assign>(call<@type[[TYPE_s]], signature=fn(@type[[TYPE_s]]) -> @type[[TYPE_s]], abi=sysv64(native_c) -> native_c>(%[[VALUE_f]], copy<@type[[TYPE_s]], reason=arg>(read<@type[[TYPE_s]]>(%[[VALUE_i]]))));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..5, bits=0..8>(%[[VALUE_i]])))), const<i32>(12)), ne<u64>(read<u64>(bitfield1<unit=0, bytes=0..5, bits=8..40>(%[[VALUE_i]])), widen<u64, reason=usual_arith>(const<u32>(3454997044))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

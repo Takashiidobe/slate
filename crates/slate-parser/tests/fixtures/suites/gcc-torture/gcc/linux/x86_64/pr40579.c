@@ -72,7 +72,6 @@ int main() {
 // DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE3]]), const<i32>(1));
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_x_2]], read<i32>(%[[VALUE4]]));
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_p]], call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(%[[VALUE_itos]], read<i32>(%[[VALUE_x_2]])));
-// DEFAULT-NEXT:                     call<ptr<i8>, signature=fn(i32) -> ptr<i8>>(%[[VALUE_itos]], read<i32>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:                     call<void, signature=fn(i32, ptr<const i8>) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_i_2]]), pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_p]])));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         return const<i32>(0);

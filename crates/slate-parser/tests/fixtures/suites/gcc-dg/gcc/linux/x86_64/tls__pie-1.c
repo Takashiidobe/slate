@@ -34,8 +34,9 @@ __thread int a; int b; int main() { return a = b; }
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i32 [storage=thread] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE_b]]));
-// DEFAULT-NEXT:         return read<i32>(%[[VALUE_b]]);
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_b]]);
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE0]]));
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE0]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

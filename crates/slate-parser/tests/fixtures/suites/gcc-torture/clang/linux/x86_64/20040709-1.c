@@ -458,7 +458,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE5]]))), read<u32>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_y]]), read<u32>(%[[VALUE6]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_A]]>(%[[VALUE_y]], copy<@type[[TYPE_A]], reason=assign>(call<@type[[TYPE_A]], signature=fn(@type[[TYPE_A]]) -> @type[[TYPE_A]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeA]], copy<@type[[TYPE_A]], reason=arg>(read<@type[[TYPE_A]]>(%[[VALUE_y]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_A]], reason=assign>(call<@type[[TYPE_A]], signature=fn(@type[[TYPE_A]]) -> @type[[TYPE_A]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeA]], copy<@type[[TYPE_A]], reason=arg>(read<@type[[TYPE_A]]>(%[[VALUE_y]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_y]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2A:[0-9]+]] @fn2A(%[[VALUE_x_3:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -503,39 +502,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE17:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE16]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p]], read<ptr<i8>>(%[[VALUE17]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE16]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_sA]]), float_to_int<u32, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sA]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sA]])))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sA]]), read<u32>(%[[VALUE_v]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_A]]>(%[[VALUE_x_5]], copy<@type[[TYPE_A]], reason=assign>(read<@type[[TYPE_A]]>(%[[VALUE_sA]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1A]], read<u32>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1A]], read<u32>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_x_5]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sA]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=7..17>(%[[VALUE_x_5]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=7..17>(%[[VALUE_sA]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_x_5]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sA]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_x_5]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_sA]]))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v]]), read<u32>(%[[VALUE_a]])), read<u32>(%[[VALUE_mask]])), read<u32>(%[[VALUE_r]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sA]]), read<u32>(%[[VALUE_v]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_A]]>(%[[VALUE_x_5]], copy<@type[[TYPE_A]], reason=assign>(read<@type[[TYPE_A]]>(%[[VALUE_sA]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2A]], read<u32>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2A]], read<u32>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_x_5]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sA]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=7..17>(%[[VALUE_x_5]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=7..17>(%[[VALUE_sA]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_x_5]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sA]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_x_5]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_sA]]))))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v]]), read<u32>(%[[VALUE_a]])), read<u32>(%[[VALUE_mask]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask]])), read<u32>(%[[VALUE_r]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sA]]), read<u32>(%[[VALUE_v]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_A]]>(%[[VALUE_x_5]], copy<@type[[TYPE_A]], reason=assign>(read<@type[[TYPE_A]]>(%[[VALUE_sA]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3A]], read<u32>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3A]], read<u32>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_x_5]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sA]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=7..17>(%[[VALUE_x_5]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=7..17>(%[[VALUE_sA]]))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sA]])))), read<u32>(%[[VALUE_r]]))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_x_5]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_sA]]))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v]]), read<u32>(%[[VALUE_a]])), read<u32>(%[[VALUE_mask]])), read<u32>(%[[VALUE_r]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -548,7 +537,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE19:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE18]]))), read<u32>(%[[VALUE_x_7]]));
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_y_3]]), read<u32>(%[[VALUE19]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_B]]>(%[[VALUE_y_3]], copy<@type[[TYPE_B]], reason=assign>(call<@type[[TYPE_B]], signature=fn(@type[[TYPE_B]]) -> @type[[TYPE_B]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeB]], copy<@type[[TYPE_B]], reason=arg>(read<@type[[TYPE_B]]>(%[[VALUE_y_3]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_B]], reason=assign>(call<@type[[TYPE_B]], signature=fn(@type[[TYPE_B]]) -> @type[[TYPE_B]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeB]], copy<@type[[TYPE_B]], reason=arg>(read<@type[[TYPE_B]]>(%[[VALUE_y_3]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_y_3]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2B:[0-9]+]] @fn2B(%[[VALUE_x_8:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -593,39 +581,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE30:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE29]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_2]], read<ptr<i8>>(%[[VALUE30]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE29]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u32>(field3(%[[VALUE_sB]]), float_to_int<u32, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sB]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_2]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sB]])))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_2]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_2]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sB]]), read<u32>(%[[VALUE_v_2]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_B]]>(%[[VALUE_x_10]], copy<@type[[TYPE_B]], reason=assign>(read<@type[[TYPE_B]]>(%[[VALUE_sB]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_2]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1B]], read<u32>(%[[VALUE_a_2]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1B]], read<u32>(%[[VALUE_a_2]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_x_10]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sB]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..17>(%[[VALUE_x_10]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..17>(%[[VALUE_sB]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_x_10]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sB]]))))), ne<u32>(read<u32>(field3(%[[VALUE_x_10]])), read<u32>(field3(%[[VALUE_sB]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_2]]), read<u32>(%[[VALUE_a_2]])), read<u32>(%[[VALUE_mask_2]])), read<u32>(%[[VALUE_r_2]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_2]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_2]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sB]]), read<u32>(%[[VALUE_v_2]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_B]]>(%[[VALUE_x_10]], copy<@type[[TYPE_B]], reason=assign>(read<@type[[TYPE_B]]>(%[[VALUE_sB]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_2]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2B]], read<u32>(%[[VALUE_a_2]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2B]], read<u32>(%[[VALUE_a_2]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_x_10]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sB]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..17>(%[[VALUE_x_10]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..17>(%[[VALUE_sB]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_x_10]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sB]]))))), ne<u32>(read<u32>(field3(%[[VALUE_x_10]])), read<u32>(field3(%[[VALUE_sB]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_2]]), read<u32>(%[[VALUE_a_2]])), read<u32>(%[[VALUE_mask_2]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_2]])), read<u32>(%[[VALUE_r_2]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_2]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_2]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sB]]), read<u32>(%[[VALUE_v_2]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_B]]>(%[[VALUE_x_10]], copy<@type[[TYPE_B]], reason=assign>(read<@type[[TYPE_B]]>(%[[VALUE_sB]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_2]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3B]], read<u32>(%[[VALUE_a_2]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3B]], read<u32>(%[[VALUE_a_2]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_x_10]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sB]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..17>(%[[VALUE_x_10]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..17>(%[[VALUE_sB]]))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sB]])))), read<u32>(%[[VALUE_r_2]]))), ne<u32>(read<u32>(field3(%[[VALUE_x_10]])), read<u32>(field3(%[[VALUE_sB]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_2]]), read<u32>(%[[VALUE_a_2]])), read<u32>(%[[VALUE_mask_2]])), read<u32>(%[[VALUE_r_2]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -638,7 +616,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE32:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE31]]))), read<u32>(%[[VALUE_x_12]]));
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_y_5]]), read<u32>(%[[VALUE32]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_C]]>(%[[VALUE_y_5]], copy<@type[[TYPE_C]], reason=assign>(call<@type[[TYPE_C]], signature=fn(@type[[TYPE_C]]) -> @type[[TYPE_C]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeC]], copy<@type[[TYPE_C]], reason=arg>(read<@type[[TYPE_C]]>(%[[VALUE_y_5]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_C]], reason=assign>(call<@type[[TYPE_C]], signature=fn(@type[[TYPE_C]]) -> @type[[TYPE_C]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeC]], copy<@type[[TYPE_C]], reason=arg>(read<@type[[TYPE_C]]>(%[[VALUE_y_5]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_y_5]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2C:[0-9]+]] @fn2C(%[[VALUE_x_13:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -683,39 +660,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE43:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE42]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_3]], read<ptr<i8>>(%[[VALUE43]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE42]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u32>(field0(%[[VALUE_sC]]), float_to_int<u32, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_sC]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_3]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_sC]])))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_3]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_3]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_sC]]), read<u32>(%[[VALUE_v_3]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_C]]>(%[[VALUE_x_15]], copy<@type[[TYPE_C]], reason=assign>(read<@type[[TYPE_C]]>(%[[VALUE_sC]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_3]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1C]], read<u32>(%[[VALUE_a_3]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1C]], read<u32>(%[[VALUE_a_3]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_x_15]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_sC]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=4..8, bits=6..17>(%[[VALUE_x_15]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=4..8, bits=6..17>(%[[VALUE_sC]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_x_15]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_sC]]))))), ne<u32>(read<u32>(field0(%[[VALUE_x_15]])), read<u32>(field0(%[[VALUE_sC]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_3]]), read<u32>(%[[VALUE_a_3]])), read<u32>(%[[VALUE_mask_3]])), read<u32>(%[[VALUE_r_3]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_3]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_3]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_sC]]), read<u32>(%[[VALUE_v_3]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_C]]>(%[[VALUE_x_15]], copy<@type[[TYPE_C]], reason=assign>(read<@type[[TYPE_C]]>(%[[VALUE_sC]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_3]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2C]], read<u32>(%[[VALUE_a_3]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2C]], read<u32>(%[[VALUE_a_3]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_x_15]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_sC]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=4..8, bits=6..17>(%[[VALUE_x_15]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=4..8, bits=6..17>(%[[VALUE_sC]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_x_15]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_sC]]))))), ne<u32>(read<u32>(field0(%[[VALUE_x_15]])), read<u32>(field0(%[[VALUE_sC]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_3]]), read<u32>(%[[VALUE_a_3]])), read<u32>(%[[VALUE_mask_3]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_3]])), read<u32>(%[[VALUE_r_3]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_3]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_3]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_sC]]), read<u32>(%[[VALUE_v_3]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_C]]>(%[[VALUE_x_15]], copy<@type[[TYPE_C]], reason=assign>(read<@type[[TYPE_C]]>(%[[VALUE_sC]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_3]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3C]], read<u32>(%[[VALUE_a_3]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3C]], read<u32>(%[[VALUE_a_3]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_x_15]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_sC]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=4..8, bits=6..17>(%[[VALUE_x_15]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=4..8, bits=6..17>(%[[VALUE_sC]]))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_sC]])))), read<u32>(%[[VALUE_r_3]]))), ne<u32>(read<u32>(field0(%[[VALUE_x_15]])), read<u32>(field0(%[[VALUE_sC]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_3]]), read<u32>(%[[VALUE_a_3]])), read<u32>(%[[VALUE_mask_3]])), read<u32>(%[[VALUE_r_3]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -728,7 +695,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE45:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(%[[VALUE44]])))), read<u32>(%[[VALUE_x_17]])));
 // DEFAULT-NEXT:         write<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_y_7]]), read<u64>(%[[VALUE45]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_D]]>(%[[VALUE_y_7]], copy<@type[[TYPE_D]], reason=assign>(call<@type[[TYPE_D]], signature=fn(@type[[TYPE_D]]) -> @type[[TYPE_D]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeD]], copy<@type[[TYPE_D]], reason=arg>(read<@type[[TYPE_D]]>(%[[VALUE_y_7]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_D]], reason=assign>(call<@type[[TYPE_D]], signature=fn(@type[[TYPE_D]]) -> @type[[TYPE_D]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeD]], copy<@type[[TYPE_D]], reason=arg>(read<@type[[TYPE_D]]>(%[[VALUE_y_7]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_y_7]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2D:[0-9]+]] @fn2D(%[[VALUE_x_18:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -773,39 +739,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE56:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE55]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_4]], read<ptr<i8>>(%[[VALUE56]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE55]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_sD]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sD]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_4]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sD]]))))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_4]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_4]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sD]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_4]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_D]]>(%[[VALUE_x_20]], copy<@type[[TYPE_D]], reason=assign>(read<@type[[TYPE_D]]>(%[[VALUE_sD]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_4]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1D]], read<u32>(%[[VALUE_a_4]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1D]], read<u32>(%[[VALUE_a_4]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_x_20]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_sD]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_x_20]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_sD]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_x_20]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sD]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_x_20]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_sD]])))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_4]]), read<u32>(%[[VALUE_a_4]])), read<u32>(%[[VALUE_mask_4]])), read<u32>(%[[VALUE_r_4]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_4]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_4]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sD]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_4]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_D]]>(%[[VALUE_x_20]], copy<@type[[TYPE_D]], reason=assign>(read<@type[[TYPE_D]]>(%[[VALUE_sD]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_4]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2D]], read<u32>(%[[VALUE_a_4]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2D]], read<u32>(%[[VALUE_a_4]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_x_20]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_sD]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_x_20]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_sD]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_x_20]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sD]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_x_20]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_sD]])))))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_4]]), read<u32>(%[[VALUE_a_4]])), read<u32>(%[[VALUE_mask_4]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_4]])), read<u32>(%[[VALUE_r_4]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_4]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_4]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sD]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_4]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_D]]>(%[[VALUE_x_20]], copy<@type[[TYPE_D]], reason=assign>(read<@type[[TYPE_D]]>(%[[VALUE_sD]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_4]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3D]], read<u32>(%[[VALUE_a_4]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3D]], read<u32>(%[[VALUE_a_4]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_x_20]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_sD]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_x_20]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_sD]])))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sD]]))))), read<u32>(%[[VALUE_r_4]]))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_x_20]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_sD]])))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_4]]), read<u32>(%[[VALUE_a_4]])), read<u32>(%[[VALUE_mask_4]])), read<u32>(%[[VALUE_r_4]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -818,7 +774,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE58:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(%[[VALUE57]])))), read<u32>(%[[VALUE_x_22]])));
 // DEFAULT-NEXT:         write<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_y_9]]), read<u64>(%[[VALUE58]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_E]]>(%[[VALUE_y_9]], copy<@type[[TYPE_E]], reason=assign>(call<@type[[TYPE_E]], signature=fn(@type[[TYPE_E]]) -> @type[[TYPE_E]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeE]], copy<@type[[TYPE_E]], reason=arg>(read<@type[[TYPE_E]]>(%[[VALUE_y_9]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_E]], reason=assign>(call<@type[[TYPE_E]], signature=fn(@type[[TYPE_E]]) -> @type[[TYPE_E]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeE]], copy<@type[[TYPE_E]], reason=arg>(read<@type[[TYPE_E]]>(%[[VALUE_y_9]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_y_9]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2E:[0-9]+]] @fn2E(%[[VALUE_x_23:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -863,39 +818,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE69:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE68]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_5]], read<ptr<i8>>(%[[VALUE69]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE68]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u64>(field0(%[[VALUE_sE]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_sE]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_5]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_sE]]))))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_5]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_5]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_sE]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_5]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_E]]>(%[[VALUE_x_25]], copy<@type[[TYPE_E]], reason=assign>(read<@type[[TYPE_E]]>(%[[VALUE_sE]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_5]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1E]], read<u32>(%[[VALUE_a_5]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1E]], read<u32>(%[[VALUE_a_5]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_x_25]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_sE]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=8..16, bits=12..35>(%[[VALUE_x_25]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=8..16, bits=12..35>(%[[VALUE_sE]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_x_25]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_sE]])))))), ne<u64>(read<u64>(field0(%[[VALUE_x_25]])), read<u64>(field0(%[[VALUE_sE]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_5]]), read<u32>(%[[VALUE_a_5]])), read<u32>(%[[VALUE_mask_5]])), read<u32>(%[[VALUE_r_5]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_5]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_5]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_sE]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_5]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_E]]>(%[[VALUE_x_25]], copy<@type[[TYPE_E]], reason=assign>(read<@type[[TYPE_E]]>(%[[VALUE_sE]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_5]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2E]], read<u32>(%[[VALUE_a_5]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2E]], read<u32>(%[[VALUE_a_5]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_x_25]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_sE]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=8..16, bits=12..35>(%[[VALUE_x_25]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=8..16, bits=12..35>(%[[VALUE_sE]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_x_25]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_sE]])))))), ne<u64>(read<u64>(field0(%[[VALUE_x_25]])), read<u64>(field0(%[[VALUE_sE]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_5]]), read<u32>(%[[VALUE_a_5]])), read<u32>(%[[VALUE_mask_5]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_5]])), read<u32>(%[[VALUE_r_5]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_5]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_5]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_sE]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_5]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_E]]>(%[[VALUE_x_25]], copy<@type[[TYPE_E]], reason=assign>(read<@type[[TYPE_E]]>(%[[VALUE_sE]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_5]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3E]], read<u32>(%[[VALUE_a_5]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3E]], read<u32>(%[[VALUE_a_5]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_x_25]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_sE]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=8..16, bits=12..35>(%[[VALUE_x_25]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=8..16, bits=12..35>(%[[VALUE_sE]])))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_sE]]))))), read<u32>(%[[VALUE_r_5]]))), ne<u64>(read<u64>(field0(%[[VALUE_x_25]])), read<u64>(field0(%[[VALUE_sE]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_5]]), read<u32>(%[[VALUE_a_5]])), read<u32>(%[[VALUE_mask_5]])), read<u32>(%[[VALUE_r_5]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -908,7 +853,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE71:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(%[[VALUE70]])))), read<u32>(%[[VALUE_x_27]])));
 // DEFAULT-NEXT:         write<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_y_11]]), read<u64>(%[[VALUE71]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_F]]>(%[[VALUE_y_11]], copy<@type[[TYPE_F]], reason=assign>(call<@type[[TYPE_F]], signature=fn(@type[[TYPE_F]]) -> @type[[TYPE_F]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeF]], copy<@type[[TYPE_F]], reason=arg>(read<@type[[TYPE_F]]>(%[[VALUE_y_11]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_F]], reason=assign>(call<@type[[TYPE_F]], signature=fn(@type[[TYPE_F]]) -> @type[[TYPE_F]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeF]], copy<@type[[TYPE_F]], reason=arg>(read<@type[[TYPE_F]]>(%[[VALUE_y_11]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_y_11]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2F:[0-9]+]] @fn2F(%[[VALUE_x_28:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -953,39 +897,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE82:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE81]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_6]], read<ptr<i8>>(%[[VALUE82]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE81]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sF]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sF]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_6]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sF]]))))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_6]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_6]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sF]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_6]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_F]]>(%[[VALUE_x_30]], copy<@type[[TYPE_F]], reason=assign>(read<@type[[TYPE_F]]>(%[[VALUE_sF]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_6]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1F]], read<u32>(%[[VALUE_a_6]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1F]], read<u32>(%[[VALUE_a_6]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_x_30]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_sF]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_x_30]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_sF]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_x_30]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sF]])))))), ne<u64>(read<u64>(field3(%[[VALUE_x_30]])), read<u64>(field3(%[[VALUE_sF]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_6]]), read<u32>(%[[VALUE_a_6]])), read<u32>(%[[VALUE_mask_6]])), read<u32>(%[[VALUE_r_6]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_6]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_6]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sF]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_6]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_F]]>(%[[VALUE_x_30]], copy<@type[[TYPE_F]], reason=assign>(read<@type[[TYPE_F]]>(%[[VALUE_sF]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_6]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2F]], read<u32>(%[[VALUE_a_6]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2F]], read<u32>(%[[VALUE_a_6]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_x_30]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_sF]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_x_30]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_sF]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_x_30]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sF]])))))), ne<u64>(read<u64>(field3(%[[VALUE_x_30]])), read<u64>(field3(%[[VALUE_sF]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_6]]), read<u32>(%[[VALUE_a_6]])), read<u32>(%[[VALUE_mask_6]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_6]])), read<u32>(%[[VALUE_r_6]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_6]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_6]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sF]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_6]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_F]]>(%[[VALUE_x_30]], copy<@type[[TYPE_F]], reason=assign>(read<@type[[TYPE_F]]>(%[[VALUE_sF]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_6]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3F]], read<u32>(%[[VALUE_a_6]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3F]], read<u32>(%[[VALUE_a_6]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_x_30]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_sF]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_x_30]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_sF]])))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sF]]))))), read<u32>(%[[VALUE_r_6]]))), ne<u64>(read<u64>(field3(%[[VALUE_x_30]])), read<u64>(field3(%[[VALUE_sF]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_6]]), read<u32>(%[[VALUE_a_6]])), read<u32>(%[[VALUE_mask_6]])), read<u32>(%[[VALUE_r_6]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -998,7 +932,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE84:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE83]]))), read<u32>(%[[VALUE_x_32]]));
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_y_13]]), read<u32>(%[[VALUE84]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_G]]>(%[[VALUE_y_13]], copy<@type[[TYPE_G]], reason=assign>(call<@type[[TYPE_G]], signature=fn(@type[[TYPE_G]]) -> @type[[TYPE_G]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeG]], copy<@type[[TYPE_G]], reason=arg>(read<@type[[TYPE_G]]>(%[[VALUE_y_13]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_G]], reason=assign>(call<@type[[TYPE_G]], signature=fn(@type[[TYPE_G]]) -> @type[[TYPE_G]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeG]], copy<@type[[TYPE_G]], reason=arg>(read<@type[[TYPE_G]]>(%[[VALUE_y_13]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_y_13]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2G:[0-9]+]] @fn2G(%[[VALUE_x_33:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -1043,39 +976,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE95:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE94]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_7]], read<ptr<i8>>(%[[VALUE95]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE94]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sG]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sG]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_7]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sG]])))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_7]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_7]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sG]]), read<u32>(%[[VALUE_v_7]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_G]]>(%[[VALUE_x_35]], copy<@type[[TYPE_G]], reason=assign>(read<@type[[TYPE_G]]>(%[[VALUE_sG]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_7]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1G]], read<u32>(%[[VALUE_a_7]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1G]], read<u32>(%[[VALUE_a_7]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_x_35]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sG]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_x_35]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_sG]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_x_35]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sG]]))))), ne<u64>(read<u64>(field3(%[[VALUE_x_35]])), read<u64>(field3(%[[VALUE_sG]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_7]]), read<u32>(%[[VALUE_a_7]])), read<u32>(%[[VALUE_mask_7]])), read<u32>(%[[VALUE_r_7]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_7]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_7]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sG]]), read<u32>(%[[VALUE_v_7]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_G]]>(%[[VALUE_x_35]], copy<@type[[TYPE_G]], reason=assign>(read<@type[[TYPE_G]]>(%[[VALUE_sG]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_7]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2G]], read<u32>(%[[VALUE_a_7]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2G]], read<u32>(%[[VALUE_a_7]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_x_35]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sG]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_x_35]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_sG]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_x_35]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sG]]))))), ne<u64>(read<u64>(field3(%[[VALUE_x_35]])), read<u64>(field3(%[[VALUE_sG]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_7]]), read<u32>(%[[VALUE_a_7]])), read<u32>(%[[VALUE_mask_7]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_7]])), read<u32>(%[[VALUE_r_7]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_7]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_7]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sG]]), read<u32>(%[[VALUE_v_7]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_G]]>(%[[VALUE_x_35]], copy<@type[[TYPE_G]], reason=assign>(read<@type[[TYPE_G]]>(%[[VALUE_sG]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_7]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3G]], read<u32>(%[[VALUE_a_7]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3G]], read<u32>(%[[VALUE_a_7]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_x_35]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sG]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_x_35]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_sG]]))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sG]])))), read<u32>(%[[VALUE_r_7]]))), ne<u64>(read<u64>(field3(%[[VALUE_x_35]])), read<u64>(field3(%[[VALUE_sG]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_7]]), read<u32>(%[[VALUE_a_7]])), read<u32>(%[[VALUE_mask_7]])), read<u32>(%[[VALUE_r_7]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -1088,7 +1011,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE97:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE96]]))), read<u32>(%[[VALUE_x_37]]));
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_y_15]]), read<u32>(%[[VALUE97]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_H]]>(%[[VALUE_y_15]], copy<@type[[TYPE_H]], reason=assign>(call<@type[[TYPE_H]], signature=fn(@type[[TYPE_H]]) -> @type[[TYPE_H]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeH]], copy<@type[[TYPE_H]], reason=arg>(read<@type[[TYPE_H]]>(%[[VALUE_y_15]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_H]], reason=assign>(call<@type[[TYPE_H]], signature=fn(@type[[TYPE_H]]) -> @type[[TYPE_H]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeH]], copy<@type[[TYPE_H]], reason=arg>(read<@type[[TYPE_H]]>(%[[VALUE_y_15]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_y_15]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2H:[0-9]+]] @fn2H(%[[VALUE_x_38:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -1133,39 +1055,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE108:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE107]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_8]], read<ptr<i8>>(%[[VALUE108]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE107]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sH]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sH]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_8]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sH]])))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_8]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_8]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sH]]), read<u32>(%[[VALUE_v_8]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_H]]>(%[[VALUE_x_40]], copy<@type[[TYPE_H]], reason=assign>(read<@type[[TYPE_H]]>(%[[VALUE_sH]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_8]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1H]], read<u32>(%[[VALUE_a_8]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1H]], read<u32>(%[[VALUE_a_8]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_x_40]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sH]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_x_40]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_sH]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_x_40]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sH]]))))), ne<u64>(read<u64>(field3(%[[VALUE_x_40]])), read<u64>(field3(%[[VALUE_sH]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_8]]), read<u32>(%[[VALUE_a_8]])), read<u32>(%[[VALUE_mask_8]])), read<u32>(%[[VALUE_r_8]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_8]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_8]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sH]]), read<u32>(%[[VALUE_v_8]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_H]]>(%[[VALUE_x_40]], copy<@type[[TYPE_H]], reason=assign>(read<@type[[TYPE_H]]>(%[[VALUE_sH]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_8]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2H]], read<u32>(%[[VALUE_a_8]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2H]], read<u32>(%[[VALUE_a_8]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_x_40]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sH]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_x_40]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_sH]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_x_40]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sH]]))))), ne<u64>(read<u64>(field3(%[[VALUE_x_40]])), read<u64>(field3(%[[VALUE_sH]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_8]]), read<u32>(%[[VALUE_a_8]])), read<u32>(%[[VALUE_mask_8]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_8]])), read<u32>(%[[VALUE_r_8]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_8]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_8]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sH]]), read<u32>(%[[VALUE_v_8]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_H]]>(%[[VALUE_x_40]], copy<@type[[TYPE_H]], reason=assign>(read<@type[[TYPE_H]]>(%[[VALUE_sH]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_8]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3H]], read<u32>(%[[VALUE_a_8]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3H]], read<u32>(%[[VALUE_a_8]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_x_40]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sH]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_x_40]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_sH]]))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sH]])))), read<u32>(%[[VALUE_r_8]]))), ne<u64>(read<u64>(field3(%[[VALUE_x_40]])), read<u64>(field3(%[[VALUE_sH]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_8]]), read<u32>(%[[VALUE_a_8]])), read<u32>(%[[VALUE_mask_8]])), read<u32>(%[[VALUE_r_8]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -1178,7 +1090,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE110:[0-9]+]]: u16 [synthetic] = truncate<u16, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE109]])))), read<u32>(%[[VALUE_x_42]])));
 // DEFAULT-NEXT:         write<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_y_17]]), read<u16>(%[[VALUE110]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_I]]>(%[[VALUE_y_17]], copy<@type[[TYPE_I]], reason=assign>(call<@type[[TYPE_I]], signature=fn(@type[[TYPE_I]]) -> @type[[TYPE_I]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeI]], copy<@type[[TYPE_I]], reason=arg>(read<@type[[TYPE_I]]>(%[[VALUE_y_17]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_I]], reason=assign>(call<@type[[TYPE_I]], signature=fn(@type[[TYPE_I]]) -> @type[[TYPE_I]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeI]], copy<@type[[TYPE_I]], reason=arg>(read<@type[[TYPE_I]]>(%[[VALUE_y_17]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_y_17]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2I:[0-9]+]] @fn2I(%[[VALUE_x_43:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -1223,39 +1134,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE121:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE120]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_9]], read<ptr<i8>>(%[[VALUE121]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE120]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sI]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sI]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_9]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sI]]))))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_9]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_9]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sI]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_9]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_I]]>(%[[VALUE_x_45]], copy<@type[[TYPE_I]], reason=assign>(read<@type[[TYPE_I]]>(%[[VALUE_sI]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_9]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1I]], read<u32>(%[[VALUE_a_9]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1I]], read<u32>(%[[VALUE_a_9]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_x_45]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sI]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..7>(%[[VALUE_x_45]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..7>(%[[VALUE_sI]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_x_45]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sI]])))))), ne<u64>(read<u64>(field3(%[[VALUE_x_45]])), read<u64>(field3(%[[VALUE_sI]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_9]]), read<u32>(%[[VALUE_a_9]])), read<u32>(%[[VALUE_mask_9]])), read<u32>(%[[VALUE_r_9]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_9]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_9]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sI]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_9]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_I]]>(%[[VALUE_x_45]], copy<@type[[TYPE_I]], reason=assign>(read<@type[[TYPE_I]]>(%[[VALUE_sI]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_9]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2I]], read<u32>(%[[VALUE_a_9]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2I]], read<u32>(%[[VALUE_a_9]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_x_45]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sI]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..7>(%[[VALUE_x_45]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..7>(%[[VALUE_sI]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_x_45]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sI]])))))), ne<u64>(read<u64>(field3(%[[VALUE_x_45]])), read<u64>(field3(%[[VALUE_sI]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_9]]), read<u32>(%[[VALUE_a_9]])), read<u32>(%[[VALUE_mask_9]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_9]])), read<u32>(%[[VALUE_r_9]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_9]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_9]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sI]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_9]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_I]]>(%[[VALUE_x_45]], copy<@type[[TYPE_I]], reason=assign>(read<@type[[TYPE_I]]>(%[[VALUE_sI]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_9]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3I]], read<u32>(%[[VALUE_a_9]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3I]], read<u32>(%[[VALUE_a_9]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_x_45]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sI]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..7>(%[[VALUE_x_45]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..7>(%[[VALUE_sI]])))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sI]]))))), read<u32>(%[[VALUE_r_9]]))), ne<u64>(read<u64>(field3(%[[VALUE_x_45]])), read<u64>(field3(%[[VALUE_sI]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_9]]), read<u32>(%[[VALUE_a_9]])), read<u32>(%[[VALUE_mask_9]])), read<u32>(%[[VALUE_r_9]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -1268,7 +1169,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE123:[0-9]+]]: u16 [synthetic] = truncate<u16, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE122]])))), read<u32>(%[[VALUE_x_47]])));
 // DEFAULT-NEXT:         write<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_y_19]]), read<u16>(%[[VALUE123]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_J]]>(%[[VALUE_y_19]], copy<@type[[TYPE_J]], reason=assign>(call<@type[[TYPE_J]], signature=fn(@type[[TYPE_J]]) -> @type[[TYPE_J]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeJ]], copy<@type[[TYPE_J]], reason=arg>(read<@type[[TYPE_J]]>(%[[VALUE_y_19]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_J]], reason=assign>(call<@type[[TYPE_J]], signature=fn(@type[[TYPE_J]]) -> @type[[TYPE_J]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeJ]], copy<@type[[TYPE_J]], reason=arg>(read<@type[[TYPE_J]]>(%[[VALUE_y_19]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_y_19]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2J:[0-9]+]] @fn2J(%[[VALUE_x_48:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -1313,39 +1213,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE134:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE133]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_10]], read<ptr<i8>>(%[[VALUE134]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE133]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u16>(field3(%[[VALUE_sJ]]), float_to_int<u16, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sJ]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_10]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sJ]]))))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_10]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_10]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sJ]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_10]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_J]]>(%[[VALUE_x_50]], copy<@type[[TYPE_J]], reason=assign>(read<@type[[TYPE_J]]>(%[[VALUE_sJ]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_10]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1J]], read<u32>(%[[VALUE_a_10]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1J]], read<u32>(%[[VALUE_a_10]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_x_50]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sJ]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..9>(%[[VALUE_x_50]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..9>(%[[VALUE_sJ]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_x_50]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sJ]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_x_50]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_sJ]])))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_10]]), read<u32>(%[[VALUE_a_10]])), read<u32>(%[[VALUE_mask_10]])), read<u32>(%[[VALUE_r_10]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_10]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_10]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sJ]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_10]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_J]]>(%[[VALUE_x_50]], copy<@type[[TYPE_J]], reason=assign>(read<@type[[TYPE_J]]>(%[[VALUE_sJ]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_10]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2J]], read<u32>(%[[VALUE_a_10]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2J]], read<u32>(%[[VALUE_a_10]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_x_50]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sJ]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..9>(%[[VALUE_x_50]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..9>(%[[VALUE_sJ]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_x_50]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sJ]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_x_50]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_sJ]])))))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_10]]), read<u32>(%[[VALUE_a_10]])), read<u32>(%[[VALUE_mask_10]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_10]])), read<u32>(%[[VALUE_r_10]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_10]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_10]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sJ]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_10]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_J]]>(%[[VALUE_x_50]], copy<@type[[TYPE_J]], reason=assign>(read<@type[[TYPE_J]]>(%[[VALUE_sJ]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_10]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3J]], read<u32>(%[[VALUE_a_10]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3J]], read<u32>(%[[VALUE_a_10]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_x_50]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sJ]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..9>(%[[VALUE_x_50]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..9>(%[[VALUE_sJ]])))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sJ]]))))), read<u32>(%[[VALUE_r_10]]))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_x_50]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_sJ]])))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_10]]), read<u32>(%[[VALUE_a_10]])), read<u32>(%[[VALUE_mask_10]])), read<u32>(%[[VALUE_r_10]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -1358,7 +1248,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE136:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE135]]))), read<u32>(%[[VALUE_x_52]]));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_y_21]]), read<u32>(%[[VALUE136]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_K]]>(%[[VALUE_y_21]], copy<@type[[TYPE_K]], reason=assign>(call<@type[[TYPE_K]], signature=fn(@type[[TYPE_K]]) -> @type[[TYPE_K]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeK]], copy<@type[[TYPE_K]], reason=arg>(read<@type[[TYPE_K]]>(%[[VALUE_y_21]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_K]], reason=assign>(call<@type[[TYPE_K]], signature=fn(@type[[TYPE_K]]) -> @type[[TYPE_K]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeK]], copy<@type[[TYPE_K]], reason=arg>(read<@type[[TYPE_K]]>(%[[VALUE_y_21]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_y_21]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2K:[0-9]+]] @fn2K(%[[VALUE_x_53:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -1403,39 +1292,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE147:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE146]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_11]], read<ptr<i8>>(%[[VALUE147]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE146]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_sK]]), float_to_int<u32, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sK]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_11]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sK]])))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_11]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_11]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sK]]), read<u32>(%[[VALUE_v_11]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_K]]>(%[[VALUE_x_55]], copy<@type[[TYPE_K]], reason=assign>(read<@type[[TYPE_K]]>(%[[VALUE_sK]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_11]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1K]], read<u32>(%[[VALUE_a_11]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1K]], read<u32>(%[[VALUE_a_11]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_x_55]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sK]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=7..17>(%[[VALUE_x_55]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=7..17>(%[[VALUE_sK]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_x_55]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sK]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_x_55]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_sK]]))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_11]]), read<u32>(%[[VALUE_a_11]])), read<u32>(%[[VALUE_mask_11]])), read<u32>(%[[VALUE_r_11]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_11]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_11]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sK]]), read<u32>(%[[VALUE_v_11]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_K]]>(%[[VALUE_x_55]], copy<@type[[TYPE_K]], reason=assign>(read<@type[[TYPE_K]]>(%[[VALUE_sK]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_11]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2K]], read<u32>(%[[VALUE_a_11]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2K]], read<u32>(%[[VALUE_a_11]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_x_55]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sK]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=7..17>(%[[VALUE_x_55]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=7..17>(%[[VALUE_sK]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_x_55]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sK]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_x_55]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_sK]]))))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_11]]), read<u32>(%[[VALUE_a_11]])), read<u32>(%[[VALUE_mask_11]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_11]])), read<u32>(%[[VALUE_r_11]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_11]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_11]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sK]]), read<u32>(%[[VALUE_v_11]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_K]]>(%[[VALUE_x_55]], copy<@type[[TYPE_K]], reason=assign>(read<@type[[TYPE_K]]>(%[[VALUE_sK]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_11]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3K]], read<u32>(%[[VALUE_a_11]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3K]], read<u32>(%[[VALUE_a_11]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_x_55]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sK]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=7..17>(%[[VALUE_x_55]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=7..17>(%[[VALUE_sK]]))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sK]])))), read<u32>(%[[VALUE_r_11]]))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_x_55]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..7>(%[[VALUE_sK]]))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_11]]), read<u32>(%[[VALUE_a_11]])), read<u32>(%[[VALUE_mask_11]])), read<u32>(%[[VALUE_r_11]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -1448,7 +1327,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE149:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE148]]))), read<u32>(%[[VALUE_x_57]]));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_y_23]]), read<u32>(%[[VALUE149]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_L]]>(%[[VALUE_y_23]], copy<@type[[TYPE_L]], reason=assign>(call<@type[[TYPE_L]], signature=fn(@type[[TYPE_L]]) -> @type[[TYPE_L]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeL]], copy<@type[[TYPE_L]], reason=arg>(read<@type[[TYPE_L]]>(%[[VALUE_y_23]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_L]], reason=assign>(call<@type[[TYPE_L]], signature=fn(@type[[TYPE_L]]) -> @type[[TYPE_L]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeL]], copy<@type[[TYPE_L]], reason=arg>(read<@type[[TYPE_L]]>(%[[VALUE_y_23]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_y_23]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2L:[0-9]+]] @fn2L(%[[VALUE_x_58:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -1493,39 +1371,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE160:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE159]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_12]], read<ptr<i8>>(%[[VALUE160]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE159]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u32>(field3(%[[VALUE_sL]]), float_to_int<u32, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sL]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_12]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sL]])))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_12]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_12]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sL]]), read<u32>(%[[VALUE_v_12]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_L]]>(%[[VALUE_x_60]], copy<@type[[TYPE_L]], reason=assign>(read<@type[[TYPE_L]]>(%[[VALUE_sL]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_12]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1L]], read<u32>(%[[VALUE_a_12]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1L]], read<u32>(%[[VALUE_a_12]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_x_60]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sL]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..17>(%[[VALUE_x_60]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..17>(%[[VALUE_sL]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_x_60]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sL]]))))), ne<u32>(read<u32>(field3(%[[VALUE_x_60]])), read<u32>(field3(%[[VALUE_sL]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_12]]), read<u32>(%[[VALUE_a_12]])), read<u32>(%[[VALUE_mask_12]])), read<u32>(%[[VALUE_r_12]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_12]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_12]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sL]]), read<u32>(%[[VALUE_v_12]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_L]]>(%[[VALUE_x_60]], copy<@type[[TYPE_L]], reason=assign>(read<@type[[TYPE_L]]>(%[[VALUE_sL]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_12]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2L]], read<u32>(%[[VALUE_a_12]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2L]], read<u32>(%[[VALUE_a_12]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_x_60]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sL]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..17>(%[[VALUE_x_60]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..17>(%[[VALUE_sL]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_x_60]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sL]]))))), ne<u32>(read<u32>(field3(%[[VALUE_x_60]])), read<u32>(field3(%[[VALUE_sL]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_12]]), read<u32>(%[[VALUE_a_12]])), read<u32>(%[[VALUE_mask_12]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_12]])), read<u32>(%[[VALUE_r_12]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_12]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_12]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sL]]), read<u32>(%[[VALUE_v_12]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_L]]>(%[[VALUE_x_60]], copy<@type[[TYPE_L]], reason=assign>(read<@type[[TYPE_L]]>(%[[VALUE_sL]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_12]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3L]], read<u32>(%[[VALUE_a_12]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3L]], read<u32>(%[[VALUE_a_12]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_x_60]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=17..32>(%[[VALUE_sL]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..17>(%[[VALUE_x_60]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=6..17>(%[[VALUE_sL]]))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..6>(%[[VALUE_sL]])))), read<u32>(%[[VALUE_r_12]]))), ne<u32>(read<u32>(field3(%[[VALUE_x_60]])), read<u32>(field3(%[[VALUE_sL]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_12]]), read<u32>(%[[VALUE_a_12]])), read<u32>(%[[VALUE_mask_12]])), read<u32>(%[[VALUE_r_12]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -1538,7 +1406,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE162:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE161]]))), read<u32>(%[[VALUE_x_62]]));
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_y_25]]), read<u32>(%[[VALUE162]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_M]]>(%[[VALUE_y_25]], copy<@type[[TYPE_M]], reason=assign>(call<@type[[TYPE_M]], signature=fn(@type[[TYPE_M]]) -> @type[[TYPE_M]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeM]], copy<@type[[TYPE_M]], reason=arg>(read<@type[[TYPE_M]]>(%[[VALUE_y_25]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_M]], reason=assign>(call<@type[[TYPE_M]], signature=fn(@type[[TYPE_M]]) -> @type[[TYPE_M]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeM]], copy<@type[[TYPE_M]], reason=arg>(read<@type[[TYPE_M]]>(%[[VALUE_y_25]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_y_25]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2M:[0-9]+]] @fn2M(%[[VALUE_x_63:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -1583,39 +1450,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE173:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE172]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_13]], read<ptr<i8>>(%[[VALUE173]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE172]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u32>(field0(%[[VALUE_sM]]), float_to_int<u32, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_sM]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_13]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_sM]])))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_13]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_13]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_sM]]), read<u32>(%[[VALUE_v_13]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_M]]>(%[[VALUE_x_65]], copy<@type[[TYPE_M]], reason=assign>(read<@type[[TYPE_M]]>(%[[VALUE_sM]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_13]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1M]], read<u32>(%[[VALUE_a_13]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1M]], read<u32>(%[[VALUE_a_13]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_x_65]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_sM]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=4..8, bits=6..17>(%[[VALUE_x_65]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=4..8, bits=6..17>(%[[VALUE_sM]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_x_65]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_sM]]))))), ne<u32>(read<u32>(field0(%[[VALUE_x_65]])), read<u32>(field0(%[[VALUE_sM]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_13]]), read<u32>(%[[VALUE_a_13]])), read<u32>(%[[VALUE_mask_13]])), read<u32>(%[[VALUE_r_13]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_13]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_13]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_sM]]), read<u32>(%[[VALUE_v_13]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_M]]>(%[[VALUE_x_65]], copy<@type[[TYPE_M]], reason=assign>(read<@type[[TYPE_M]]>(%[[VALUE_sM]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_13]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2M]], read<u32>(%[[VALUE_a_13]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2M]], read<u32>(%[[VALUE_a_13]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_x_65]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_sM]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=4..8, bits=6..17>(%[[VALUE_x_65]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=4..8, bits=6..17>(%[[VALUE_sM]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_x_65]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_sM]]))))), ne<u32>(read<u32>(field0(%[[VALUE_x_65]])), read<u32>(field0(%[[VALUE_sM]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_13]]), read<u32>(%[[VALUE_a_13]])), read<u32>(%[[VALUE_mask_13]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_13]])), read<u32>(%[[VALUE_r_13]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_13]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_13]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_sM]]), read<u32>(%[[VALUE_v_13]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_M]]>(%[[VALUE_x_65]], copy<@type[[TYPE_M]], reason=assign>(read<@type[[TYPE_M]]>(%[[VALUE_sM]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_13]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3M]], read<u32>(%[[VALUE_a_13]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3M]], read<u32>(%[[VALUE_a_13]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_x_65]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=4..8, bits=17..32>(%[[VALUE_sM]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=4..8, bits=6..17>(%[[VALUE_x_65]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=4..8, bits=6..17>(%[[VALUE_sM]]))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=4..8, bits=0..6>(%[[VALUE_sM]])))), read<u32>(%[[VALUE_r_13]]))), ne<u32>(read<u32>(field0(%[[VALUE_x_65]])), read<u32>(field0(%[[VALUE_sM]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_13]]), read<u32>(%[[VALUE_a_13]])), read<u32>(%[[VALUE_mask_13]])), read<u32>(%[[VALUE_r_13]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -1628,7 +1485,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE175:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(%[[VALUE174]])))), read<u32>(%[[VALUE_x_67]])));
 // DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_y_27]]), read<u64>(%[[VALUE175]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_N]]>(%[[VALUE_y_27]], copy<@type[[TYPE_N]], reason=assign>(call<@type[[TYPE_N]], signature=fn(@type[[TYPE_N]]) -> @type[[TYPE_N]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeN]], copy<@type[[TYPE_N]], reason=arg>(read<@type[[TYPE_N]]>(%[[VALUE_y_27]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_N]], reason=assign>(call<@type[[TYPE_N]], signature=fn(@type[[TYPE_N]]) -> @type[[TYPE_N]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeN]], copy<@type[[TYPE_N]], reason=arg>(read<@type[[TYPE_N]]>(%[[VALUE_y_27]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_y_27]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2N:[0-9]+]] @fn2N(%[[VALUE_x_68:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -1673,39 +1529,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE186:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE185]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_14]], read<ptr<i8>>(%[[VALUE186]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE185]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_sN]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_sN]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_14]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_sN]]))))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_14]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_14]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_sN]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_14]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_N]]>(%[[VALUE_x_70]], copy<@type[[TYPE_N]], reason=assign>(read<@type[[TYPE_N]]>(%[[VALUE_sN]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_14]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1N]], read<u32>(%[[VALUE_a_14]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1N]], read<u32>(%[[VALUE_a_14]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_x_70]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sN]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_x_70]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_sN]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_x_70]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_sN]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_x_70]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_sN]])))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_14]]), read<u32>(%[[VALUE_a_14]])), read<u32>(%[[VALUE_mask_14]])), read<u32>(%[[VALUE_r_14]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_14]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_14]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_sN]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_14]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_N]]>(%[[VALUE_x_70]], copy<@type[[TYPE_N]], reason=assign>(read<@type[[TYPE_N]]>(%[[VALUE_sN]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_14]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2N]], read<u32>(%[[VALUE_a_14]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2N]], read<u32>(%[[VALUE_a_14]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_x_70]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sN]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_x_70]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_sN]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_x_70]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_sN]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_x_70]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_sN]])))))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_14]]), read<u32>(%[[VALUE_a_14]])), read<u32>(%[[VALUE_mask_14]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_14]])), read<u32>(%[[VALUE_r_14]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_14]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_14]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_sN]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_14]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_N]]>(%[[VALUE_x_70]], copy<@type[[TYPE_N]], reason=assign>(read<@type[[TYPE_N]]>(%[[VALUE_sN]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_14]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3N]], read<u32>(%[[VALUE_a_14]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3N]], read<u32>(%[[VALUE_a_14]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_x_70]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sN]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_x_70]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_sN]])))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=6..12>(%[[VALUE_sN]]))))), read<u32>(%[[VALUE_r_14]]))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_x_70]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..6>(%[[VALUE_sN]])))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_14]]), read<u32>(%[[VALUE_a_14]])), read<u32>(%[[VALUE_mask_14]])), read<u32>(%[[VALUE_r_14]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -1718,7 +1564,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE188:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(%[[VALUE187]])))), read<u32>(%[[VALUE_x_72]])));
 // DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_y_29]]), read<u64>(%[[VALUE188]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_O]]>(%[[VALUE_y_29]], copy<@type[[TYPE_O]], reason=assign>(call<@type[[TYPE_O]], signature=fn(@type[[TYPE_O]]) -> @type[[TYPE_O]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeO]], copy<@type[[TYPE_O]], reason=arg>(read<@type[[TYPE_O]]>(%[[VALUE_y_29]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_O]], reason=assign>(call<@type[[TYPE_O]], signature=fn(@type[[TYPE_O]]) -> @type[[TYPE_O]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeO]], copy<@type[[TYPE_O]], reason=arg>(read<@type[[TYPE_O]]>(%[[VALUE_y_29]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_y_29]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2O:[0-9]+]] @fn2O(%[[VALUE_x_73:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -1763,39 +1608,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE199:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE198]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_15]], read<ptr<i8>>(%[[VALUE199]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE198]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u64>(field0(%[[VALUE_sO]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_sO]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_15]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_sO]]))))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_15]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_15]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_sO]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_15]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_O]]>(%[[VALUE_x_75]], copy<@type[[TYPE_O]], reason=assign>(read<@type[[TYPE_O]]>(%[[VALUE_sO]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_15]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1O]], read<u32>(%[[VALUE_a_15]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1O]], read<u32>(%[[VALUE_a_15]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_x_75]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_sO]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=8..16, bits=12..35>(%[[VALUE_x_75]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=8..16, bits=12..35>(%[[VALUE_sO]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_x_75]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_sO]])))))), ne<u64>(read<u64>(field0(%[[VALUE_x_75]])), read<u64>(field0(%[[VALUE_sO]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_15]]), read<u32>(%[[VALUE_a_15]])), read<u32>(%[[VALUE_mask_15]])), read<u32>(%[[VALUE_r_15]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_15]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_15]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_sO]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_15]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_O]]>(%[[VALUE_x_75]], copy<@type[[TYPE_O]], reason=assign>(read<@type[[TYPE_O]]>(%[[VALUE_sO]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_15]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2O]], read<u32>(%[[VALUE_a_15]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2O]], read<u32>(%[[VALUE_a_15]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_x_75]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_sO]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=8..16, bits=12..35>(%[[VALUE_x_75]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=8..16, bits=12..35>(%[[VALUE_sO]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_x_75]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_sO]])))))), ne<u64>(read<u64>(field0(%[[VALUE_x_75]])), read<u64>(field0(%[[VALUE_sO]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_15]]), read<u32>(%[[VALUE_a_15]])), read<u32>(%[[VALUE_mask_15]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_15]])), read<u32>(%[[VALUE_r_15]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_15]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_15]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_sO]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_15]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_O]]>(%[[VALUE_x_75]], copy<@type[[TYPE_O]], reason=assign>(read<@type[[TYPE_O]]>(%[[VALUE_sO]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_15]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3O]], read<u32>(%[[VALUE_a_15]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3O]], read<u32>(%[[VALUE_a_15]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_x_75]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield3<unit=0, bytes=8..16, bits=35..64>(%[[VALUE_sO]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=8..16, bits=12..35>(%[[VALUE_x_75]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=8..16, bits=12..35>(%[[VALUE_sO]])))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=8..16, bits=0..12>(%[[VALUE_sO]]))))), read<u32>(%[[VALUE_r_15]]))), ne<u64>(read<u64>(field0(%[[VALUE_x_75]])), read<u64>(field0(%[[VALUE_sO]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_15]]), read<u32>(%[[VALUE_a_15]])), read<u32>(%[[VALUE_mask_15]])), read<u32>(%[[VALUE_r_15]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -1808,7 +1643,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE201:[0-9]+]]: u64 [synthetic] = widen<u64, reason=assign>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(%[[VALUE200]])))), read<u32>(%[[VALUE_x_77]])));
 // DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_y_31]]), read<u64>(%[[VALUE201]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_P]]>(%[[VALUE_y_31]], copy<@type[[TYPE_P]], reason=assign>(call<@type[[TYPE_P]], signature=fn(@type[[TYPE_P]]) -> @type[[TYPE_P]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeP]], copy<@type[[TYPE_P]], reason=arg>(read<@type[[TYPE_P]]>(%[[VALUE_y_31]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_P]], reason=assign>(call<@type[[TYPE_P]], signature=fn(@type[[TYPE_P]]) -> @type[[TYPE_P]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeP]], copy<@type[[TYPE_P]], reason=arg>(read<@type[[TYPE_P]]>(%[[VALUE_y_31]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_y_31]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2P:[0-9]+]] @fn2P(%[[VALUE_x_78:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -1853,39 +1687,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE212:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE211]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_16]], read<ptr<i8>>(%[[VALUE212]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE211]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sP]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_sP]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_16]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_sP]]))))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_16]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_16]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_sP]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_16]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_P]]>(%[[VALUE_x_80]], copy<@type[[TYPE_P]], reason=assign>(read<@type[[TYPE_P]]>(%[[VALUE_sP]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_16]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1P]], read<u32>(%[[VALUE_a_16]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1P]], read<u32>(%[[VALUE_a_16]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_x_80]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sP]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_x_80]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_sP]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_x_80]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_sP]])))))), ne<u64>(read<u64>(field3(%[[VALUE_x_80]])), read<u64>(field3(%[[VALUE_sP]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_16]]), read<u32>(%[[VALUE_a_16]])), read<u32>(%[[VALUE_mask_16]])), read<u32>(%[[VALUE_r_16]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_16]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_16]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_sP]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_16]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_P]]>(%[[VALUE_x_80]], copy<@type[[TYPE_P]], reason=assign>(read<@type[[TYPE_P]]>(%[[VALUE_sP]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_16]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2P]], read<u32>(%[[VALUE_a_16]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2P]], read<u32>(%[[VALUE_a_16]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_x_80]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sP]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_x_80]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_sP]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_x_80]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_sP]])))))), ne<u64>(read<u64>(field3(%[[VALUE_x_80]])), read<u64>(field3(%[[VALUE_sP]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_16]]), read<u32>(%[[VALUE_a_16]])), read<u32>(%[[VALUE_mask_16]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_16]])), read<u32>(%[[VALUE_r_16]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_16]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_16]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_sP]]), widen<u64, reason=assign>(read<u32>(%[[VALUE_v_16]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_P]]>(%[[VALUE_x_80]], copy<@type[[TYPE_P]], reason=assign>(read<@type[[TYPE_P]]>(%[[VALUE_sP]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_16]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3P]], read<u32>(%[[VALUE_a_16]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3P]], read<u32>(%[[VALUE_a_16]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_x_80]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield2<unit=0, bytes=0..8, bits=35..64>(%[[VALUE_sP]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_x_80]])))), reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield1<unit=0, bytes=0..8, bits=12..35>(%[[VALUE_sP]])))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(truncate<u32, reason=promotion, fits=unknown>(read<u64>(bitfield0<unit=0, bytes=0..8, bits=0..12>(%[[VALUE_sP]]))))), read<u32>(%[[VALUE_r_16]]))), ne<u64>(read<u64>(field3(%[[VALUE_x_80]])), read<u64>(field3(%[[VALUE_sP]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_16]]), read<u32>(%[[VALUE_a_16]])), read<u32>(%[[VALUE_mask_16]])), read<u32>(%[[VALUE_r_16]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -1898,7 +1722,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE214:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE213]]))), read<u32>(%[[VALUE_x_82]]));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_y_33]]), read<u32>(%[[VALUE214]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_Q]]>(%[[VALUE_y_33]], copy<@type[[TYPE_Q]], reason=assign>(call<@type[[TYPE_Q]], signature=fn(@type[[TYPE_Q]]) -> @type[[TYPE_Q]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeQ]], copy<@type[[TYPE_Q]], reason=arg>(read<@type[[TYPE_Q]]>(%[[VALUE_y_33]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_Q]], reason=assign>(call<@type[[TYPE_Q]], signature=fn(@type[[TYPE_Q]]) -> @type[[TYPE_Q]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeQ]], copy<@type[[TYPE_Q]], reason=arg>(read<@type[[TYPE_Q]]>(%[[VALUE_y_33]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_y_33]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2Q:[0-9]+]] @fn2Q(%[[VALUE_x_83:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -1943,39 +1766,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE225:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE224]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_17]], read<ptr<i8>>(%[[VALUE225]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE224]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sQ]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sQ]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_17]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sQ]])))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_17]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_17]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sQ]]), read<u32>(%[[VALUE_v_17]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_Q]]>(%[[VALUE_x_85]], copy<@type[[TYPE_Q]], reason=assign>(read<@type[[TYPE_Q]]>(%[[VALUE_sQ]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_17]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1Q]], read<u32>(%[[VALUE_a_17]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1Q]], read<u32>(%[[VALUE_a_17]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_x_85]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sQ]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_x_85]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_sQ]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_x_85]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sQ]]))))), ne<u64>(read<u64>(field3(%[[VALUE_x_85]])), read<u64>(field3(%[[VALUE_sQ]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_17]]), read<u32>(%[[VALUE_a_17]])), read<u32>(%[[VALUE_mask_17]])), read<u32>(%[[VALUE_r_17]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_17]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_17]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sQ]]), read<u32>(%[[VALUE_v_17]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_Q]]>(%[[VALUE_x_85]], copy<@type[[TYPE_Q]], reason=assign>(read<@type[[TYPE_Q]]>(%[[VALUE_sQ]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_17]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2Q]], read<u32>(%[[VALUE_a_17]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2Q]], read<u32>(%[[VALUE_a_17]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_x_85]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sQ]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_x_85]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_sQ]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_x_85]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sQ]]))))), ne<u64>(read<u64>(field3(%[[VALUE_x_85]])), read<u64>(field3(%[[VALUE_sQ]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_17]]), read<u32>(%[[VALUE_a_17]])), read<u32>(%[[VALUE_mask_17]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_17]])), read<u32>(%[[VALUE_r_17]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_17]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_17]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sQ]]), read<u32>(%[[VALUE_v_17]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_Q]]>(%[[VALUE_x_85]], copy<@type[[TYPE_Q]], reason=assign>(read<@type[[TYPE_Q]]>(%[[VALUE_sQ]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_17]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3Q]], read<u32>(%[[VALUE_a_17]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3Q]], read<u32>(%[[VALUE_a_17]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_x_85]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sQ]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_x_85]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_sQ]]))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sQ]])))), read<u32>(%[[VALUE_r_17]]))), ne<u64>(read<u64>(field3(%[[VALUE_x_85]])), read<u64>(field3(%[[VALUE_sQ]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_17]]), read<u32>(%[[VALUE_a_17]])), read<u32>(%[[VALUE_mask_17]])), read<u32>(%[[VALUE_r_17]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -1988,7 +1801,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE227:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE226]]))), read<u32>(%[[VALUE_x_87]]));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_y_35]]), read<u32>(%[[VALUE227]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_R]]>(%[[VALUE_y_35]], copy<@type[[TYPE_R]], reason=assign>(call<@type[[TYPE_R]], signature=fn(@type[[TYPE_R]]) -> @type[[TYPE_R]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeR]], copy<@type[[TYPE_R]], reason=arg>(read<@type[[TYPE_R]]>(%[[VALUE_y_35]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_R]], reason=assign>(call<@type[[TYPE_R]], signature=fn(@type[[TYPE_R]]) -> @type[[TYPE_R]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeR]], copy<@type[[TYPE_R]], reason=arg>(read<@type[[TYPE_R]]>(%[[VALUE_y_35]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_y_35]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2R:[0-9]+]] @fn2R(%[[VALUE_x_88:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2033,39 +1845,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE238:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE237]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_18]], read<ptr<i8>>(%[[VALUE238]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE237]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sR]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sR]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_18]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sR]])))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_18]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_18]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sR]]), read<u32>(%[[VALUE_v_18]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_R]]>(%[[VALUE_x_90]], copy<@type[[TYPE_R]], reason=assign>(read<@type[[TYPE_R]]>(%[[VALUE_sR]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_18]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1R]], read<u32>(%[[VALUE_a_18]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1R]], read<u32>(%[[VALUE_a_18]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_x_90]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sR]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_x_90]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_sR]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_x_90]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sR]]))))), ne<u64>(read<u64>(field3(%[[VALUE_x_90]])), read<u64>(field3(%[[VALUE_sR]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_18]]), read<u32>(%[[VALUE_a_18]])), read<u32>(%[[VALUE_mask_18]])), read<u32>(%[[VALUE_r_18]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_18]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_18]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sR]]), read<u32>(%[[VALUE_v_18]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_R]]>(%[[VALUE_x_90]], copy<@type[[TYPE_R]], reason=assign>(read<@type[[TYPE_R]]>(%[[VALUE_sR]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_18]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2R]], read<u32>(%[[VALUE_a_18]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2R]], read<u32>(%[[VALUE_a_18]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_x_90]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sR]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_x_90]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_sR]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_x_90]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sR]]))))), ne<u64>(read<u64>(field3(%[[VALUE_x_90]])), read<u64>(field3(%[[VALUE_sR]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_18]]), read<u32>(%[[VALUE_a_18]])), read<u32>(%[[VALUE_mask_18]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_18]])), read<u32>(%[[VALUE_r_18]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_18]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_18]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sR]]), read<u32>(%[[VALUE_v_18]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_R]]>(%[[VALUE_x_90]], copy<@type[[TYPE_R]], reason=assign>(read<@type[[TYPE_R]]>(%[[VALUE_sR]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_18]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3R]], read<u32>(%[[VALUE_a_18]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3R]], read<u32>(%[[VALUE_a_18]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_x_90]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sR]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_x_90]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_sR]]))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sR]])))), read<u32>(%[[VALUE_r_18]]))), ne<u64>(read<u64>(field3(%[[VALUE_x_90]])), read<u64>(field3(%[[VALUE_sR]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_18]]), read<u32>(%[[VALUE_a_18]])), read<u32>(%[[VALUE_mask_18]])), read<u32>(%[[VALUE_r_18]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -2078,7 +1880,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE240:[0-9]+]]: u16 [synthetic] = truncate<u16, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE239]])))), read<u32>(%[[VALUE_x_92]])));
 // DEFAULT-NEXT:         write<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_y_37]]), read<u16>(%[[VALUE240]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_y_37]], copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(@type[[TYPE_S]]) -> @type[[TYPE_S]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeS]], copy<@type[[TYPE_S]], reason=arg>(read<@type[[TYPE_S]]>(%[[VALUE_y_37]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_S]], reason=assign>(call<@type[[TYPE_S]], signature=fn(@type[[TYPE_S]]) -> @type[[TYPE_S]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeS]], copy<@type[[TYPE_S]], reason=arg>(read<@type[[TYPE_S]]>(%[[VALUE_y_37]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_y_37]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2S:[0-9]+]] @fn2S(%[[VALUE_x_93:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2123,39 +1924,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE251:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE250]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_19]], read<ptr<i8>>(%[[VALUE251]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE250]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sS]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sS]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_19]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sS]]))))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_19]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_19]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sS]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_19]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_x_95]], copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_sS]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_19]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1S]], read<u32>(%[[VALUE_a_19]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1S]], read<u32>(%[[VALUE_a_19]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_x_95]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sS]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..7>(%[[VALUE_x_95]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..7>(%[[VALUE_sS]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_x_95]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sS]])))))), ne<u64>(read<u64>(field3(%[[VALUE_x_95]])), read<u64>(field3(%[[VALUE_sS]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_19]]), read<u32>(%[[VALUE_a_19]])), read<u32>(%[[VALUE_mask_19]])), read<u32>(%[[VALUE_r_19]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_19]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_19]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sS]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_19]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_x_95]], copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_sS]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_19]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2S]], read<u32>(%[[VALUE_a_19]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2S]], read<u32>(%[[VALUE_a_19]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_x_95]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sS]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..7>(%[[VALUE_x_95]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..7>(%[[VALUE_sS]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_x_95]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sS]])))))), ne<u64>(read<u64>(field3(%[[VALUE_x_95]])), read<u64>(field3(%[[VALUE_sS]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_19]]), read<u32>(%[[VALUE_a_19]])), read<u32>(%[[VALUE_mask_19]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_19]])), read<u32>(%[[VALUE_r_19]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_19]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_19]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sS]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_19]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_S]]>(%[[VALUE_x_95]], copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_sS]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_19]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3S]], read<u32>(%[[VALUE_a_19]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3S]], read<u32>(%[[VALUE_a_19]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_x_95]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sS]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..7>(%[[VALUE_x_95]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..7>(%[[VALUE_sS]])))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sS]]))))), read<u32>(%[[VALUE_r_19]]))), ne<u64>(read<u64>(field3(%[[VALUE_x_95]])), read<u64>(field3(%[[VALUE_sS]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_19]]), read<u32>(%[[VALUE_a_19]])), read<u32>(%[[VALUE_mask_19]])), read<u32>(%[[VALUE_r_19]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -2168,7 +1959,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE253:[0-9]+]]: u16 [synthetic] = truncate<u16, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE252]])))), read<u32>(%[[VALUE_x_97]])));
 // DEFAULT-NEXT:         write<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_y_39]]), read<u16>(%[[VALUE253]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_T]]>(%[[VALUE_y_39]], copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(@type[[TYPE_T]]) -> @type[[TYPE_T]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeT]], copy<@type[[TYPE_T]], reason=arg>(read<@type[[TYPE_T]]>(%[[VALUE_y_39]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_T]], reason=assign>(call<@type[[TYPE_T]], signature=fn(@type[[TYPE_T]]) -> @type[[TYPE_T]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeT]], copy<@type[[TYPE_T]], reason=arg>(read<@type[[TYPE_T]]>(%[[VALUE_y_39]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_y_39]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2T:[0-9]+]] @fn2T(%[[VALUE_x_98:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2213,39 +2003,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE264:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE263]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_20]], read<ptr<i8>>(%[[VALUE264]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE263]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u16>(field3(%[[VALUE_sT]]), float_to_int<u16, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sT]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_20]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sT]]))))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_20]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_20]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sT]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_20]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_T]]>(%[[VALUE_x_100]], copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_sT]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_20]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1T]], read<u32>(%[[VALUE_a_20]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1T]], read<u32>(%[[VALUE_a_20]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_x_100]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sT]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..9>(%[[VALUE_x_100]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..9>(%[[VALUE_sT]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_x_100]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sT]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_x_100]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_sT]])))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_20]]), read<u32>(%[[VALUE_a_20]])), read<u32>(%[[VALUE_mask_20]])), read<u32>(%[[VALUE_r_20]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_20]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_20]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sT]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_20]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_T]]>(%[[VALUE_x_100]], copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_sT]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_20]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2T]], read<u32>(%[[VALUE_a_20]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2T]], read<u32>(%[[VALUE_a_20]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_x_100]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sT]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..9>(%[[VALUE_x_100]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..9>(%[[VALUE_sT]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_x_100]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sT]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_x_100]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_sT]])))))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_20]]), read<u32>(%[[VALUE_a_20]])), read<u32>(%[[VALUE_mask_20]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_20]])), read<u32>(%[[VALUE_r_20]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_20]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_20]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sT]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_20]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_T]]>(%[[VALUE_x_100]], copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_sT]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_20]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3T]], read<u32>(%[[VALUE_a_20]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3T]], read<u32>(%[[VALUE_a_20]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_x_100]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sT]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..9>(%[[VALUE_x_100]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=1..9>(%[[VALUE_sT]])))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..1>(%[[VALUE_sT]]))))), read<u32>(%[[VALUE_r_20]]))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_x_100]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_sT]])))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_20]]), read<u32>(%[[VALUE_a_20]])), read<u32>(%[[VALUE_mask_20]])), read<u32>(%[[VALUE_r_20]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -2258,7 +2038,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE266:[0-9]+]]: u16 [synthetic] = truncate<u16, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE265]])))), read<u32>(%[[VALUE_x_102]])));
 // DEFAULT-NEXT:         write<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%[[VALUE_y_41]]), read<u16>(%[[VALUE266]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_U]]>(%[[VALUE_y_41]], copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(@type[[TYPE_U]]) -> @type[[TYPE_U]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeU]], copy<@type[[TYPE_U]], reason=arg>(read<@type[[TYPE_U]]>(%[[VALUE_y_41]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_U]], reason=assign>(call<@type[[TYPE_U]], signature=fn(@type[[TYPE_U]]) -> @type[[TYPE_U]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeU]], copy<@type[[TYPE_U]], reason=arg>(read<@type[[TYPE_U]]>(%[[VALUE_y_41]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%[[VALUE_y_41]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2U:[0-9]+]] @fn2U(%[[VALUE_x_103:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2303,39 +2082,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE277:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE276]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_21]], read<ptr<i8>>(%[[VALUE277]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE276]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u64>(field3(%[[VALUE_sU]]), float_to_int<u64, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%[[VALUE_sU]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_21]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%[[VALUE_sU]]))))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_21]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_21]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%[[VALUE_sU]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_21]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_U]]>(%[[VALUE_x_105]], copy<@type[[TYPE_U]], reason=assign>(read<@type[[TYPE_U]]>(%[[VALUE_sU]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_21]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1U]], read<u32>(%[[VALUE_a_21]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1U]], read<u32>(%[[VALUE_a_21]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_x_105]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sU]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..6>(%[[VALUE_x_105]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..6>(%[[VALUE_sU]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%[[VALUE_x_105]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%[[VALUE_sU]])))))), ne<u64>(read<u64>(field3(%[[VALUE_x_105]])), read<u64>(field3(%[[VALUE_sU]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_21]]), read<u32>(%[[VALUE_a_21]])), read<u32>(%[[VALUE_mask_21]])), read<u32>(%[[VALUE_r_21]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_21]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_21]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%[[VALUE_sU]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_21]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_U]]>(%[[VALUE_x_105]], copy<@type[[TYPE_U]], reason=assign>(read<@type[[TYPE_U]]>(%[[VALUE_sU]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_21]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2U]], read<u32>(%[[VALUE_a_21]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2U]], read<u32>(%[[VALUE_a_21]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_x_105]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sU]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..6>(%[[VALUE_x_105]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..6>(%[[VALUE_sU]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%[[VALUE_x_105]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%[[VALUE_sU]])))))), ne<u64>(read<u64>(field3(%[[VALUE_x_105]])), read<u64>(field3(%[[VALUE_sU]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_21]]), read<u32>(%[[VALUE_a_21]])), read<u32>(%[[VALUE_mask_21]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_21]])), read<u32>(%[[VALUE_r_21]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_21]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_21]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%[[VALUE_sU]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_21]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_U]]>(%[[VALUE_x_105]], copy<@type[[TYPE_U]], reason=assign>(read<@type[[TYPE_U]]>(%[[VALUE_sU]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_21]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3U]], read<u32>(%[[VALUE_a_21]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3U]], read<u32>(%[[VALUE_a_21]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_x_105]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=7..16>(%[[VALUE_sU]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..6>(%[[VALUE_x_105]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..6>(%[[VALUE_sU]])))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=6..7>(%[[VALUE_sU]]))))), read<u32>(%[[VALUE_r_21]]))), ne<u64>(read<u64>(field3(%[[VALUE_x_105]])), read<u64>(field3(%[[VALUE_sU]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_21]]), read<u32>(%[[VALUE_a_21]])), read<u32>(%[[VALUE_mask_21]])), read<u32>(%[[VALUE_r_21]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -2348,7 +2117,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE279:[0-9]+]]: u16 [synthetic] = truncate<u16, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE278]])))), read<u32>(%[[VALUE_x_107]])));
 // DEFAULT-NEXT:         write<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%[[VALUE_y_43]]), read<u16>(%[[VALUE279]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_V]]>(%[[VALUE_y_43]], copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(@type[[TYPE_V]]) -> @type[[TYPE_V]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeV]], copy<@type[[TYPE_V]], reason=arg>(read<@type[[TYPE_V]]>(%[[VALUE_y_43]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_V]], reason=assign>(call<@type[[TYPE_V]], signature=fn(@type[[TYPE_V]]) -> @type[[TYPE_V]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeV]], copy<@type[[TYPE_V]], reason=arg>(read<@type[[TYPE_V]]>(%[[VALUE_y_43]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%[[VALUE_y_43]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2V:[0-9]+]] @fn2V(%[[VALUE_x_108:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2393,39 +2161,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE290:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE289]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_22]], read<ptr<i8>>(%[[VALUE290]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE289]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(1), const<i32>(8))
 // DEFAULT-NEXT:             write<u16>(field3(%[[VALUE_sV]]), float_to_int<u16, reason=assign, out_of_range=ub, exceptions=ignore>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%[[VALUE_sV]]), reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_22]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%[[VALUE_sV]]))))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_22]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_22]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%[[VALUE_sV]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_22]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_V]]>(%[[VALUE_x_110]], copy<@type[[TYPE_V]], reason=assign>(read<@type[[TYPE_V]]>(%[[VALUE_sV]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_22]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1V]], read<u32>(%[[VALUE_a_22]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1V]], read<u32>(%[[VALUE_a_22]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_x_110]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sV]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..8>(%[[VALUE_x_110]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..8>(%[[VALUE_sV]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%[[VALUE_x_110]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%[[VALUE_sV]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_x_110]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_sV]])))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_22]]), read<u32>(%[[VALUE_a_22]])), read<u32>(%[[VALUE_mask_22]])), read<u32>(%[[VALUE_r_22]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_22]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_22]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%[[VALUE_sV]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_22]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_V]]>(%[[VALUE_x_110]], copy<@type[[TYPE_V]], reason=assign>(read<@type[[TYPE_V]]>(%[[VALUE_sV]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_22]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2V]], read<u32>(%[[VALUE_a_22]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2V]], read<u32>(%[[VALUE_a_22]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_x_110]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sV]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..8>(%[[VALUE_x_110]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..8>(%[[VALUE_sV]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%[[VALUE_x_110]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%[[VALUE_sV]])))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_x_110]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_sV]])))))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_22]]), read<u32>(%[[VALUE_a_22]])), read<u32>(%[[VALUE_mask_22]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_22]])), read<u32>(%[[VALUE_r_22]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_22]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_22]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%[[VALUE_sV]]), truncate<u16, reason=assign, fits=unknown>(read<u32>(%[[VALUE_v_22]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_V]]>(%[[VALUE_x_110]], copy<@type[[TYPE_V]], reason=assign>(read<@type[[TYPE_V]]>(%[[VALUE_sV]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_22]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3V]], read<u32>(%[[VALUE_a_22]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3V]], read<u32>(%[[VALUE_a_22]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_x_110]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield2<unit=0, bytes=0..2, bits=9..16>(%[[VALUE_sV]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..8>(%[[VALUE_x_110]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield0<unit=0, bytes=0..2, bits=0..8>(%[[VALUE_sV]])))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(bitfield1<unit=0, bytes=0..2, bits=8..9>(%[[VALUE_sV]]))))), read<u32>(%[[VALUE_r_22]]))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_x_110]])))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(field3(%[[VALUE_sV]])))))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_22]]), read<u32>(%[[VALUE_a_22]])), read<u32>(%[[VALUE_mask_22]])), read<u32>(%[[VALUE_r_22]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -2438,7 +2196,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE292:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE291]]))), read<u32>(%[[VALUE_x_112]]));
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%[[VALUE_y_45]]), read<u32>(%[[VALUE292]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_W]]>(%[[VALUE_y_45]], copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(@type[[TYPE_W]]) -> @type[[TYPE_W]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeW]], copy<@type[[TYPE_W]], reason=arg>(read<@type[[TYPE_W]]>(%[[VALUE_y_45]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_W]], reason=assign>(call<@type[[TYPE_W]], signature=fn(@type[[TYPE_W]]) -> @type[[TYPE_W]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeW]], copy<@type[[TYPE_W]], reason=arg>(read<@type[[TYPE_W]]>(%[[VALUE_y_45]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%[[VALUE_y_45]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2W:[0-9]+]] @fn2W(%[[VALUE_x_113:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2483,39 +2240,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE303:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE302]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_23]], read<ptr<i8>>(%[[VALUE303]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE302]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(8), const<i32>(8))
 // DEFAULT-NEXT:             write<f80>(field0(%[[VALUE_sW]]), float_widen<f80, reason=assign>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%[[VALUE_sW]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_23]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%[[VALUE_sW]])))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_23]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_23]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%[[VALUE_sW]]), read<u32>(%[[VALUE_v_23]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_W]]>(%[[VALUE_x_115]], copy<@type[[TYPE_W]], reason=assign>(read<@type[[TYPE_W]]>(%[[VALUE_sW]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_23]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1W]], read<u32>(%[[VALUE_a_23]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1W]], read<u32>(%[[VALUE_a_23]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=25..32>(%[[VALUE_x_115]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=25..32>(%[[VALUE_sW]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=16..20, bits=12..25>(%[[VALUE_x_115]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=16..20, bits=12..25>(%[[VALUE_sW]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%[[VALUE_x_115]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%[[VALUE_sW]]))))), ne<f80, exceptions=ignore>(read<f80>(field0(%[[VALUE_x_115]])), read<f80>(field0(%[[VALUE_sW]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_23]]), read<u32>(%[[VALUE_a_23]])), read<u32>(%[[VALUE_mask_23]])), read<u32>(%[[VALUE_r_23]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_23]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_23]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%[[VALUE_sW]]), read<u32>(%[[VALUE_v_23]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_W]]>(%[[VALUE_x_115]], copy<@type[[TYPE_W]], reason=assign>(read<@type[[TYPE_W]]>(%[[VALUE_sW]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_23]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2W]], read<u32>(%[[VALUE_a_23]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2W]], read<u32>(%[[VALUE_a_23]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=25..32>(%[[VALUE_x_115]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=25..32>(%[[VALUE_sW]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=16..20, bits=12..25>(%[[VALUE_x_115]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=16..20, bits=12..25>(%[[VALUE_sW]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%[[VALUE_x_115]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%[[VALUE_sW]]))))), ne<f80, exceptions=ignore>(read<f80>(field0(%[[VALUE_x_115]])), read<f80>(field0(%[[VALUE_sW]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_23]]), read<u32>(%[[VALUE_a_23]])), read<u32>(%[[VALUE_mask_23]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_23]])), read<u32>(%[[VALUE_r_23]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_23]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_23]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%[[VALUE_sW]]), read<u32>(%[[VALUE_v_23]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_W]]>(%[[VALUE_x_115]], copy<@type[[TYPE_W]], reason=assign>(read<@type[[TYPE_W]]>(%[[VALUE_sW]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_23]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3W]], read<u32>(%[[VALUE_a_23]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3W]], read<u32>(%[[VALUE_a_23]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=25..32>(%[[VALUE_x_115]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=25..32>(%[[VALUE_sW]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=16..20, bits=12..25>(%[[VALUE_x_115]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=16..20, bits=12..25>(%[[VALUE_sW]]))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..12>(%[[VALUE_sW]])))), read<u32>(%[[VALUE_r_23]]))), ne<f80, exceptions=ignore>(read<f80>(field0(%[[VALUE_x_115]])), read<f80>(field0(%[[VALUE_sW]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_23]]), read<u32>(%[[VALUE_a_23]])), read<u32>(%[[VALUE_mask_23]])), read<u32>(%[[VALUE_r_23]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -2528,7 +2275,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE305:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE304]]))), read<u32>(%[[VALUE_x_117]]));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_y_47]]), read<u32>(%[[VALUE305]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_X]]>(%[[VALUE_y_47]], copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(@type[[TYPE_X]]) -> @type[[TYPE_X]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeX]], copy<@type[[TYPE_X]], reason=arg>(read<@type[[TYPE_X]]>(%[[VALUE_y_47]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(@type[[TYPE_X]]) -> @type[[TYPE_X]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeX]], copy<@type[[TYPE_X]], reason=arg>(read<@type[[TYPE_X]]>(%[[VALUE_y_47]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_y_47]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2X:[0-9]+]] @fn2X(%[[VALUE_x_118:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2573,39 +2319,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE316:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE315]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_24]], read<ptr<i8>>(%[[VALUE316]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE315]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(8), const<i32>(8))
 // DEFAULT-NEXT:             write<f80>(field3(%[[VALUE_sX]]), float_widen<f80, reason=assign>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sX]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_24]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sX]])))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_24]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_24]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sX]]), read<u32>(%[[VALUE_v_24]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_X]]>(%[[VALUE_x_120]], copy<@type[[TYPE_X]], reason=assign>(read<@type[[TYPE_X]]>(%[[VALUE_sX]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_24]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1X]], read<u32>(%[[VALUE_a_24]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1X]], read<u32>(%[[VALUE_a_24]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_x_120]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sX]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_x_120]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_sX]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_x_120]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sX]]))))), ne<f80, exceptions=ignore>(read<f80>(field3(%[[VALUE_x_120]])), read<f80>(field3(%[[VALUE_sX]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_24]]), read<u32>(%[[VALUE_a_24]])), read<u32>(%[[VALUE_mask_24]])), read<u32>(%[[VALUE_r_24]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_24]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_24]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sX]]), read<u32>(%[[VALUE_v_24]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_X]]>(%[[VALUE_x_120]], copy<@type[[TYPE_X]], reason=assign>(read<@type[[TYPE_X]]>(%[[VALUE_sX]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_24]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2X]], read<u32>(%[[VALUE_a_24]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2X]], read<u32>(%[[VALUE_a_24]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_x_120]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sX]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_x_120]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_sX]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_x_120]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sX]]))))), ne<f80, exceptions=ignore>(read<f80>(field3(%[[VALUE_x_120]])), read<f80>(field3(%[[VALUE_sX]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_24]]), read<u32>(%[[VALUE_a_24]])), read<u32>(%[[VALUE_mask_24]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_24]])), read<u32>(%[[VALUE_r_24]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_24]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_24]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sX]]), read<u32>(%[[VALUE_v_24]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_X]]>(%[[VALUE_x_120]], copy<@type[[TYPE_X]], reason=assign>(read<@type[[TYPE_X]]>(%[[VALUE_sX]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_24]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3X]], read<u32>(%[[VALUE_a_24]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3X]], read<u32>(%[[VALUE_a_24]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_x_120]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=25..32>(%[[VALUE_sX]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_x_120]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..25>(%[[VALUE_sX]]))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sX]])))), read<u32>(%[[VALUE_r_24]]))), ne<f80, exceptions=ignore>(read<f80>(field3(%[[VALUE_x_120]])), read<f80>(field3(%[[VALUE_sX]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_24]]), read<u32>(%[[VALUE_a_24]])), read<u32>(%[[VALUE_mask_24]])), read<u32>(%[[VALUE_r_24]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -2618,7 +2354,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE318:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE317]]))), read<u32>(%[[VALUE_x_122]]));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_y_49]]), read<u32>(%[[VALUE318]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_Y]]>(%[[VALUE_y_49]], copy<@type[[TYPE_Y]], reason=assign>(call<@type[[TYPE_Y]], signature=fn(@type[[TYPE_Y]]) -> @type[[TYPE_Y]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeY]], copy<@type[[TYPE_Y]], reason=arg>(read<@type[[TYPE_Y]]>(%[[VALUE_y_49]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_Y]], reason=assign>(call<@type[[TYPE_Y]], signature=fn(@type[[TYPE_Y]]) -> @type[[TYPE_Y]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeY]], copy<@type[[TYPE_Y]], reason=arg>(read<@type[[TYPE_Y]]>(%[[VALUE_y_49]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_y_49]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2Y:[0-9]+]] @fn2Y(%[[VALUE_x_123:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2663,39 +2398,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE329:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE328]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_25]], read<ptr<i8>>(%[[VALUE329]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE328]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(8), const<i32>(8))
 // DEFAULT-NEXT:             write<f80>(field3(%[[VALUE_sY]]), float_widen<f80, reason=assign>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sY]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_25]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sY]])))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_25]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_25]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sY]]), read<u32>(%[[VALUE_v_25]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_Y]]>(%[[VALUE_x_125]], copy<@type[[TYPE_Y]], reason=assign>(read<@type[[TYPE_Y]]>(%[[VALUE_sY]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_25]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1Y]], read<u32>(%[[VALUE_a_25]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1Y]], read<u32>(%[[VALUE_a_25]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_x_125]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sY]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_x_125]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_sY]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_x_125]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sY]]))))), ne<f80, exceptions=ignore>(read<f80>(field3(%[[VALUE_x_125]])), read<f80>(field3(%[[VALUE_sY]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_25]]), read<u32>(%[[VALUE_a_25]])), read<u32>(%[[VALUE_mask_25]])), read<u32>(%[[VALUE_r_25]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_25]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_25]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sY]]), read<u32>(%[[VALUE_v_25]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_Y]]>(%[[VALUE_x_125]], copy<@type[[TYPE_Y]], reason=assign>(read<@type[[TYPE_Y]]>(%[[VALUE_sY]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_25]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2Y]], read<u32>(%[[VALUE_a_25]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2Y]], read<u32>(%[[VALUE_a_25]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_x_125]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sY]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_x_125]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_sY]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_x_125]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sY]]))))), ne<f80, exceptions=ignore>(read<f80>(field3(%[[VALUE_x_125]])), read<f80>(field3(%[[VALUE_sY]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_25]]), read<u32>(%[[VALUE_a_25]])), read<u32>(%[[VALUE_mask_25]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_25]])), read<u32>(%[[VALUE_r_25]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_25]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_25]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sY]]), read<u32>(%[[VALUE_v_25]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_Y]]>(%[[VALUE_x_125]], copy<@type[[TYPE_Y]], reason=assign>(read<@type[[TYPE_Y]]>(%[[VALUE_sY]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_25]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3Y]], read<u32>(%[[VALUE_a_25]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3Y]], read<u32>(%[[VALUE_a_25]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_x_125]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=0..4, bits=23..32>(%[[VALUE_sY]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_x_125]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=0..4, bits=12..23>(%[[VALUE_sY]]))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..12>(%[[VALUE_sY]])))), read<u32>(%[[VALUE_r_25]]))), ne<f80, exceptions=ignore>(read<f80>(field3(%[[VALUE_x_125]])), read<f80>(field3(%[[VALUE_sY]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_25]]), read<u32>(%[[VALUE_a_25]])), read<u32>(%[[VALUE_mask_25]])), read<u32>(%[[VALUE_r_25]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }
@@ -2708,7 +2433,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE331:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE330]]))), read<u32>(%[[VALUE_x_127]]));
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%[[VALUE_y_51]]), read<u32>(%[[VALUE331]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_Z]]>(%[[VALUE_y_51]], copy<@type[[TYPE_Z]], reason=assign>(call<@type[[TYPE_Z]], signature=fn(@type[[TYPE_Z]]) -> @type[[TYPE_Z]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeZ]], copy<@type[[TYPE_Z]], reason=arg>(read<@type[[TYPE_Z]]>(%[[VALUE_y_51]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_Z]], reason=assign>(call<@type[[TYPE_Z]], signature=fn(@type[[TYPE_Z]]) -> @type[[TYPE_Z]], abi=sysv64(native_c) -> native_c>(%[[VALUE_retmeZ]], copy<@type[[TYPE_Z]], reason=arg>(read<@type[[TYPE_Z]]>(%[[VALUE_y_51]]))));
 // DEFAULT-NEXT:         return reinterpret<u32, reason=return, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%[[VALUE_y_51]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2Z:[0-9]+]] @fn2Z(%[[VALUE_x_128:[0-9]+]] x: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
@@ -2753,39 +2477,29 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE342:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE341]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_p_26]], read<ptr<i8>>(%[[VALUE342]]));
 // DEFAULT-NEXT:                 write<i8>(deref(read<ptr<i8>>(%[[VALUE341]])), reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]))));
-// DEFAULT-NEXT:                 reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]])));
 // DEFAULT-NEXT:         if eq<i32>(const<i32>(8), const<i32>(8))
 // DEFAULT-NEXT:             write<f80>(field0(%[[VALUE_sZ]]), float_widen<f80, reason=assign>(const<f64>(5.25)));
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%[[VALUE_sZ]]), reinterpret<u32, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_mask_26]], reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%[[VALUE_sZ]])))));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_26]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_26]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%[[VALUE_sZ]]), read<u32>(%[[VALUE_v_26]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_Z]]>(%[[VALUE_x_130]], copy<@type[[TYPE_Z]], reason=assign>(read<@type[[TYPE_Z]]>(%[[VALUE_sZ]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_26]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1Z]], read<u32>(%[[VALUE_a_26]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn1Z]], read<u32>(%[[VALUE_a_26]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=16..20, bits=13..20>(%[[VALUE_x_130]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=16..20, bits=13..20>(%[[VALUE_sZ]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..13>(%[[VALUE_x_130]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..13>(%[[VALUE_sZ]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%[[VALUE_x_130]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%[[VALUE_sZ]]))))), ne<f80, exceptions=ignore>(read<f80>(field0(%[[VALUE_x_130]])), read<f80>(field0(%[[VALUE_sZ]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_26]]), read<u32>(%[[VALUE_a_26]])), read<u32>(%[[VALUE_mask_26]])), read<u32>(%[[VALUE_r_26]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_26]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_26]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%[[VALUE_sZ]]), read<u32>(%[[VALUE_v_26]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_Z]]>(%[[VALUE_x_130]], copy<@type[[TYPE_Z]], reason=assign>(read<@type[[TYPE_Z]]>(%[[VALUE_sZ]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_26]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2Z]], read<u32>(%[[VALUE_a_26]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn2Z]], read<u32>(%[[VALUE_a_26]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=16..20, bits=13..20>(%[[VALUE_x_130]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=16..20, bits=13..20>(%[[VALUE_sZ]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..13>(%[[VALUE_x_130]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..13>(%[[VALUE_sZ]]))))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%[[VALUE_x_130]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%[[VALUE_sZ]]))))), ne<f80, exceptions=ignore>(read<f80>(field0(%[[VALUE_x_130]])), read<f80>(field0(%[[VALUE_sZ]])))), ne<u32>(and<u32>(rem<u32, by_zero=ub>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_26]]), read<u32>(%[[VALUE_a_26]])), read<u32>(%[[VALUE_mask_26]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(15))), read<u32>(%[[VALUE_mask_26]])), read<u32>(%[[VALUE_r_26]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_v_26]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_a_26]], call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]));
-// DEFAULT-NEXT:         call<u32, signature=fn() -> u32>(%[[VALUE_myrnd]]);
 // DEFAULT-NEXT:         write<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%[[VALUE_sZ]]), read<u32>(%[[VALUE_v_26]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_Z]]>(%[[VALUE_x_130]], copy<@type[[TYPE_Z]], reason=assign>(read<@type[[TYPE_Z]]>(%[[VALUE_sZ]])));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_r_26]], call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3Z]], read<u32>(%[[VALUE_a_26]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_fn3Z]], read<u32>(%[[VALUE_a_26]]));
 // DEFAULT-NEXT:         if logical_or<bool>(logical_or<bool>(logical_or<bool>(logical_or<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=16..20, bits=13..20>(%[[VALUE_x_130]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield2<unit=0, bytes=16..20, bits=13..20>(%[[VALUE_sZ]])))), ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..13>(%[[VALUE_x_130]]))), reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield1<unit=0, bytes=16..20, bits=0..13>(%[[VALUE_sZ]]))))), ne<u32>(reinterpret<u32, reason=usual_arith, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield3<unit=0, bytes=16..20, bits=20..32>(%[[VALUE_sZ]])))), read<u32>(%[[VALUE_r_26]]))), ne<f80, exceptions=ignore>(read<f80>(field0(%[[VALUE_x_130]])), read<f80>(field0(%[[VALUE_sZ]])))), ne<u32>(and<u32>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_v_26]]), read<u32>(%[[VALUE_a_26]])), read<u32>(%[[VALUE_mask_26]])), read<u32>(%[[VALUE_r_26]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }

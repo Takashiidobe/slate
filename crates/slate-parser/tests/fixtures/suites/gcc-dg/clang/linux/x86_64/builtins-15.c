@@ -45,9 +45,7 @@ double ndtri(double y0)
 // DEFAULT-NEXT:     fn %[[VALUE_ndtri:[0-9]+]] @ndtri(%[[VALUE_y0:[0-9]+]] y0: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_x_2:[0-9]+]] x: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_x_2]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_log]], read<f64>(%[[VALUE_y0]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE_log]], read<f64>(%[[VALUE_y0]]));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_x_2]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_log]], read<f64>(%[[VALUE_x_2]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE_log]], read<f64>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:         return read<f64>(%[[VALUE_x_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

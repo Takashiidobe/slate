@@ -55,12 +55,14 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<u8>(read<u8>(%[[VALUE_a]]), const<u8>(0))
-// DEFAULT-NEXT:             write<i32>(%[[VALUE_b]], reinterpret<i32, reason=assign, fits=unknown>(widen<u32, reason=assign>(read<u8>(%[[VALUE_a]]))));
-// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<i32>(reinterpret<i32, reason=assign, fits=unknown>(widen<u32, reason=assign>(read<u8>(%[[VALUE_a]]))), const<i32>(0)));
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(widen<u32, reason=assign>(read<u8>(%[[VALUE_a]])));
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_b]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<i32>(read<i32>(%[[VALUE1]]), const<i32>(0)));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(false));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE0]])));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_j]], and<i32>(const<i32>(6), from_bool<i32, reason=assign>(read<bool>(%[[VALUE0]]))));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = from_bool<i32, reason=assign>(read<bool>(%[[VALUE0]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_j]], and<i32>(const<i32>(6), read<i32>(%[[VALUE2]])));
 // DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(widen<u32, reason=assign>(read<u8>(%[[VALUE_a]])));
 // DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: i32 [storage=automatic] = not<i32>(read<i32>(%[[VALUE_c]]));

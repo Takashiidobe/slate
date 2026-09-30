@@ -79,7 +79,6 @@ main (void)
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_t]], call<i32, signature=fn() -> i32>(%[[VALUE_sfoo]]));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_sfoo]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_u]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=always>(const<u64>(1))));
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_t]]), read<i32>(%[[VALUE_u]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

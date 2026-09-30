@@ -82,10 +82,8 @@ int main() {
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         if not<bool>(ne<i64>(read<i64>(%[[VALUE_r]]), const<i64>(0)))
 // DEFAULT-NEXT:             write<i64>(%[[VALUE_r]], va_arg<i64>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:             va_arg<i64>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<i64>(%[[VALUE_r]], widen<i64, reason=assign>(va_arg<i32>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:             widen<i64, reason=assign>(va_arg<i32>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
@@ -99,10 +97,8 @@ int main() {
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         if not<bool>(ne<i64>(read<i64>(%[[VALUE_r]]), const<i64>(0)))
 // DEFAULT-NEXT:             write<i64>(%[[VALUE_r]], va_arg<i64>(%[[VALUE_ap_2]]));
-// DEFAULT-NEXT:             va_arg<i64>(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<i64>(%[[VALUE_r]], widen<i64, reason=assign>(va_arg<i32>(%[[VALUE_ap_2]])));
-// DEFAULT-NEXT:             widen<i64, reason=assign>(va_arg<i32>(%[[VALUE_ap_2]]));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_corge:[0-9]+]] @corge() -> void [linkage=external] [fallthrough=ret_void] {

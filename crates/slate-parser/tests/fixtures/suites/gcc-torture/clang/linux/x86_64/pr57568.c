@@ -42,8 +42,9 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0))
-// DEFAULT-NEXT:             write<i32>(deref(read<ptr<i32>>(%[[VALUE_c]])), add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_c]]))), read<i32>(deref(read<ptr<i32>>(%[[VALUE_c]])))));
-// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<i32>(add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_c]]))), read<i32>(deref(read<ptr<i32>>(%[[VALUE_c]])))), const<i32>(0)));
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_c]]))), read<i32>(deref(read<ptr<i32>>(%[[VALUE_c]]))));
+// DEFAULT-NEXT:             write<i32>(deref(read<ptr<i32>>(%[[VALUE_c]])), read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<i32>(read<i32>(%[[VALUE1]]), const<i32>(0)));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(false));
 // DEFAULT-NEXT:         if read<bool>(%[[VALUE0]])

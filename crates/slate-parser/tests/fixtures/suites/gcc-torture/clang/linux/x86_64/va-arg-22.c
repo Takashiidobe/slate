@@ -252,7 +252,6 @@ int main(void) {
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_a0]], copy<@type[[TYPE0]], reason=assign>(va_arg<@type[[TYPE0]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE0]], reason=assign>(va_arg<@type[[TYPE0]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -266,7 +265,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(0), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(0)>(field0(%[[VALUE_a0]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE1]]>(%[[VALUE_a1]], copy<@type[[TYPE1]], reason=assign>(va_arg<@type[[TYPE1]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE1]], reason=assign>(va_arg<@type[[TYPE1]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -280,7 +278,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(1), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1)>(field0(%[[VALUE_a1]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE2]]>(%[[VALUE_a2]], copy<@type[[TYPE2]], reason=assign>(va_arg<@type[[TYPE2]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE2]], reason=assign>(va_arg<@type[[TYPE2]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -294,7 +291,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(2), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(2)>(field0(%[[VALUE_a2]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE3]]>(%[[VALUE_a3]], copy<@type[[TYPE3]], reason=assign>(va_arg<@type[[TYPE3]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE3]], reason=assign>(va_arg<@type[[TYPE3]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -308,7 +304,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(3), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(3)>(field0(%[[VALUE_a3]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE4]]>(%[[VALUE_a4]], copy<@type[[TYPE4]], reason=assign>(va_arg<@type[[TYPE4]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE4]], reason=assign>(va_arg<@type[[TYPE4]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE15:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -322,7 +317,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(4), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(4)>(field0(%[[VALUE_a4]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE5]]>(%[[VALUE_a5]], copy<@type[[TYPE5]], reason=assign>(va_arg<@type[[TYPE5]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE5]], reason=assign>(va_arg<@type[[TYPE5]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE18:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -336,7 +330,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(5), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(5)>(field0(%[[VALUE_a5]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE6]]>(%[[VALUE_a6]], copy<@type[[TYPE6]], reason=assign>(va_arg<@type[[TYPE6]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE6]], reason=assign>(va_arg<@type[[TYPE6]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE21:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -350,7 +343,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(6), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(6)>(field0(%[[VALUE_a6]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE7]]>(%[[VALUE_a7]], copy<@type[[TYPE7]], reason=assign>(va_arg<@type[[TYPE7]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE7]], reason=assign>(va_arg<@type[[TYPE7]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE24:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -364,7 +356,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(7), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(7)>(field0(%[[VALUE_a7]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE8]]>(%[[VALUE_a8]], copy<@type[[TYPE8]], reason=assign>(va_arg<@type[[TYPE8]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE8]], reason=assign>(va_arg<@type[[TYPE8]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE27:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -378,7 +369,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(8), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(8)>(field0(%[[VALUE_a8]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE9]]>(%[[VALUE_a9]], copy<@type[[TYPE9]], reason=assign>(va_arg<@type[[TYPE9]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE9]], reason=assign>(va_arg<@type[[TYPE9]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE30:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -392,7 +382,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(9), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(9)>(field0(%[[VALUE_a9]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE10]]>(%[[VALUE_a10]], copy<@type[[TYPE10]], reason=assign>(va_arg<@type[[TYPE10]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE10]], reason=assign>(va_arg<@type[[TYPE10]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE33:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -406,7 +395,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(10), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(10)>(field0(%[[VALUE_a10]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE11]]>(%[[VALUE_a11]], copy<@type[[TYPE11]], reason=assign>(va_arg<@type[[TYPE11]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE11]], reason=assign>(va_arg<@type[[TYPE11]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE36:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -420,7 +408,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(11), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(11)>(field0(%[[VALUE_a11]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE12]]>(%[[VALUE_a12]], copy<@type[[TYPE12]], reason=assign>(va_arg<@type[[TYPE12]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE12]], reason=assign>(va_arg<@type[[TYPE12]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE39:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -434,7 +421,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(12), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(12)>(field0(%[[VALUE_a12]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE13]]>(%[[VALUE_a13]], copy<@type[[TYPE13]], reason=assign>(va_arg<@type[[TYPE13]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE13]], reason=assign>(va_arg<@type[[TYPE13]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE42:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -448,7 +434,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(13), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(13)>(field0(%[[VALUE_a13]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE14]]>(%[[VALUE_a14]], copy<@type[[TYPE14]], reason=assign>(va_arg<@type[[TYPE14]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE14]], reason=assign>(va_arg<@type[[TYPE14]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE45:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -462,7 +447,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(14), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(14)>(field0(%[[VALUE_a14]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE15]]>(%[[VALUE_a15]], copy<@type[[TYPE15]], reason=assign>(va_arg<@type[[TYPE15]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE15]], reason=assign>(va_arg<@type[[TYPE15]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE48:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -476,7 +460,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(15), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(15)>(field0(%[[VALUE_a15]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE16]]>(%[[VALUE_a16]], copy<@type[[TYPE16]], reason=assign>(va_arg<@type[[TYPE16]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE16]], reason=assign>(va_arg<@type[[TYPE16]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE51:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -490,7 +473,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(16), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(16)>(field0(%[[VALUE_a16]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE17]]>(%[[VALUE_a31]], copy<@type[[TYPE17]], reason=assign>(va_arg<@type[[TYPE17]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE17]], reason=assign>(va_arg<@type[[TYPE17]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE54:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -504,7 +486,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(31), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(31)>(field0(%[[VALUE_a31]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE18]]>(%[[VALUE_a32]], copy<@type[[TYPE18]], reason=assign>(va_arg<@type[[TYPE18]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE18]], reason=assign>(va_arg<@type[[TYPE18]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE57:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -518,7 +499,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(32), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(32)>(field0(%[[VALUE_a32]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE19]]>(%[[VALUE_a35]], copy<@type[[TYPE19]], reason=assign>(va_arg<@type[[TYPE19]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE19]], reason=assign>(va_arg<@type[[TYPE19]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE60:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));
@@ -532,7 +512,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_bar]], const<i32>(35), widen<i32, reason=arg>(read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(35)>(field0(%[[VALUE_a35]])), read<i32>(%[[VALUE_i]]))))));
 // DEFAULT-NEXT:         write<@type[[TYPE20]]>(%[[VALUE_a72]], copy<@type[[TYPE20]], reason=assign>(va_arg<@type[[TYPE20]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE20]], reason=assign>(va_arg<@type[[TYPE20]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         for %[[VALUE63:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));

@@ -68,9 +68,11 @@ int main() {
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_e:[0-9]+]] e: @type[[TYPE_S]] [storage=automatic] = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = const<i32>(1), field1 = const<i32>(1));
-// DEFAULT-NEXT:                 write<@type[[TYPE_S]]>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(1)>(%[[VALUE_a]]), const<i32>(0))), copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_c]])));
-// DEFAULT-NEXT:                 write<@type[[TYPE_S]]>(%[[VALUE_e]], copy<@type[[TYPE_S]], reason=assign>(copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_c]]))));
-// DEFAULT-NEXT:                 write<@type[[TYPE_S]]>(%[[VALUE_d]], copy<@type[[TYPE_S]], reason=assign>(copy<@type[[TYPE_S]], reason=assign>(copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_c]])))));
+// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: @type[[TYPE_S]] [synthetic] = copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE_c]]));
+// DEFAULT-NEXT:                 write<@type[[TYPE_S]]>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(1)>(%[[VALUE_a]]), const<i32>(0))), read<@type[[TYPE_S]]>(%[[VALUE3]]));
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: @type[[TYPE_S]] [synthetic] = copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE3]]));
+// DEFAULT-NEXT:                 write<@type[[TYPE_S]]>(%[[VALUE_e]], read<@type[[TYPE_S]]>(%[[VALUE4]]));
+// DEFAULT-NEXT:                 write<@type[[TYPE_S]]>(%[[VALUE_d]], copy<@type[[TYPE_S]], reason=assign>(read<@type[[TYPE_S]]>(%[[VALUE4]])));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_foo]], read<i32>(bitfield1<unit=0, bytes=4..5, bits=0..2>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(1)>(%[[VALUE_a]]), const<i32>(0))))));
 // DEFAULT-NEXT:         return const<i32>(0);

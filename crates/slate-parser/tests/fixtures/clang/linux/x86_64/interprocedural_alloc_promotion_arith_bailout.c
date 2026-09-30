@@ -52,7 +52,6 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: ptr<i32> [storage=automatic] = null<ptr<i32>>;
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_x]], call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_alloc]]));
-// DEFAULT-NEXT:         call<ptr<i32>, signature=fn() -> ptr<i32>>(%[[VALUE_alloc]]);
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_x]], ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(read<ptr<i32>>(%[[VALUE_x]]), const<i32>(1)));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_x]])), const<i32>(10));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), read<i32>(deref(read<ptr<i32>>(%[[VALUE_x]]))));

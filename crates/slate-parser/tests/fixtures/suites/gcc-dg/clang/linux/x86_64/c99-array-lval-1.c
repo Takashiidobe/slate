@@ -50,7 +50,6 @@ bar (void)
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE0:[0-9]+]] = call<@type[[TYPE_s]], signature=fn() -> @type[[TYPE_s]], abi=sysv64() -> native_c>(%[[VALUE_foo]]))), const<i32>(0))));
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_t]], array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE1:[0-9]+]] = call<@type[[TYPE_s]], signature=fn() -> @type[[TYPE_s]], abi=sysv64() -> native_c>(%[[VALUE_foo]]))));
-// DEFAULT-NEXT:         array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE1]] = call<@type[[TYPE_s]], signature=fn() -> @type[[TYPE_s]], abi=sysv64() -> native_c>(%[[VALUE_foo]])));
 // DEFAULT-NEXT:         ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE2:[0-9]+]] = call<@type[[TYPE_s]], signature=fn() -> @type[[TYPE_s]], abi=sysv64() -> native_c>(%[[VALUE_foo]]))), const<i32>(1));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

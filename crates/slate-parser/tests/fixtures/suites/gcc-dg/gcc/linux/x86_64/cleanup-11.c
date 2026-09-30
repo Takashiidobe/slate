@@ -533,11 +533,9 @@ int main()
 // DEFAULT-NEXT:         let %[[VALUE_ss:[0-9]+]] ss: @type[[TYPE14]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_sigaction]] [storage=automatic];
 // DEFAULT-NEXT:         write<u64>(field2(%[[VALUE_ss]]), reinterpret<u64, reason=assign, fits=unknown>(mul<i64, overflow=ub>(widen<i64, reason=usual_arith>(const<i32>(4)), call<i64, signature=fn(i32) -> i64>(%[[VALUE_sysconf]], const<i32>(30)))));
-// DEFAULT-NEXT:         reinterpret<u64, reason=assign, fits=unknown>(mul<i64, overflow=ub>(widen<i64, reason=usual_arith>(const<i32>(4)), call<i64, signature=fn(i32) -> i64>(%[[VALUE_sysconf]], const<i32>(30))));
 // DEFAULT-NEXT:         if lt<u64>(read<u64>(field2(%[[VALUE_ss]])), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(8192))))
 // DEFAULT-NEXT:             write<u64>(field2(%[[VALUE_ss]]), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(8192))));
 // DEFAULT-NEXT:         write<ptr<void>>(field0(%[[VALUE_ss]]), call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE__SC_MQ_PRIO_MAX]], read<u64>(field2(%[[VALUE_ss]]))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE__SC_MQ_PRIO_MAX]], read<u64>(field2(%[[VALUE_ss]])));
 // DEFAULT-NEXT:         if eq<ptr<void>>(read<ptr<void>>(field0(%[[VALUE_ss]])), null<ptr<void>>)
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE__SC_RTSIG_MAX]], const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_ss]]), const<i32>(0));

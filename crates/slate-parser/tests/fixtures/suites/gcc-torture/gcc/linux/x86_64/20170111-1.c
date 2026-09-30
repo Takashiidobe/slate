@@ -81,7 +81,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_val:[0-9]+]] val: i64 [storage=automatic] = widen<i64, reason=assign>(const<i32>(1));
 // DEFAULT-NEXT:         let %[[VALUE_s_2:[0-9]+]] s: @type[[TYPE_S]] [storage=automatic] = aggregate<@type[[TYPE_S]], zero_fill=false>(field0 = truncate<i16, reason=assign, fits=always>(const<i32>(0)), field1 = widen<i64, reason=assign>(const<i32>(0)), field2 = truncate<i16, reason=assign, fits=always>(const<i32>(0)), field3 = truncate<i8, reason=assign, fits=always>(const<i32>(0)), field4 = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=always>(const<i32>(2))), field5 = addr_of<ptr<i64>>(%[[VALUE_val]]));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_val]], call<i64, signature=fn(ptr<@type[[TYPE_S]]>) -> i64>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_s_2]])));
-// DEFAULT-NEXT:         call<i64, signature=fn(ptr<@type[[TYPE_S]]>) -> i64>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_s_2]]));
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(%[[VALUE_val]]), widen<i64, reason=usual_arith>(const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -66,7 +66,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: i32 [storage=automatic] = read<i32>(bitfield1<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_b]]));
 // DEFAULT-NEXT:         write<u16>(%[[VALUE_d]], reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(conditional<i32>(eq<i32>(read<i32>(%[[VALUE_e]]), const<i32>(0)), read<i32>(field0(%[[VALUE_b]])), const<i32>(0)))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_c]], widen<i32, reason=assign>(call<i16, signature=fn(i16) -> i16>(%[[VALUE_foo]], reinterpret<i16, reason=arg, fits=unknown>(read<u16>(%[[VALUE_d]])))));
-// DEFAULT-NEXT:         widen<i32, reason=assign>(call<i16, signature=fn(i16) -> i16>(%[[VALUE_foo]], reinterpret<i16, reason=arg, fits=unknown>(read<u16>(%[[VALUE_d]]))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_c]]), widen<i32, reason=promotion>(truncate<i16, reason=explicit, fits=unknown>(const<i32>(56374))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -37,8 +37,9 @@ int t(int m)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_t:[0-9]+]] @t(%[[VALUE_m:[0-9]+]] m: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: i32 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_value]], conditional<i32>(ne<i32>(read<i32>(%[[VALUE_m]]), const<i32>(0)), const<i32>(1), const<i32>(2)));
-// DEFAULT-NEXT:         if not<bool>(ne<i32>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_m]]), const<i32>(0)), const<i32>(1), const<i32>(2)), const<i32>(0)))
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = conditional<i32>(ne<i32>(read<i32>(%[[VALUE_m]]), const<i32>(0)), const<i32>(1), const<i32>(2));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_value]], read<i32>(%[[VALUE0]]));
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%[[VALUE0]]), const<i32>(0)))
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_value]], const<i32>(0));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_value]]);
 // DEFAULT-NEXT:     }

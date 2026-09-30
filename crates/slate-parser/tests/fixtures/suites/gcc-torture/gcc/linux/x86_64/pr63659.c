@@ -92,8 +92,9 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(read<i32>(%[[VALUE_c]]));
 // DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         let %[[VALUE_l:[0-9]+]] l: i8 [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_g]], shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_j]])), read<i32>(%[[VALUE_h]])));
-// DEFAULT-NEXT:         write<i8>(%[[VALUE_l]], truncate<i8, reason=assign, fits=unknown>(shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_j]])), read<i32>(%[[VALUE_h]]))));
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = shr<i32, amount_out_of_range=ub, fill=sign_extend>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_j]])), read<i32>(%[[VALUE_h]]));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_g]], read<i32>(%[[VALUE7]]));
+// DEFAULT-NEXT:         write<i8>(%[[VALUE_l]], truncate<i8, reason=assign, fits=unknown>(read<i32>(%[[VALUE7]])));
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_f]], truncate<i8, reason=assign, fits=unknown>(conditional<i32>(eq<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_l]])), const<i32>(0)), widen<i32, reason=promotion>(read<i8>(%[[VALUE_k]])), rem<i32, by_zero=ub, min_by_neg_one=ub>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_k]])), widen<i32, reason=promotion>(read<i8>(%[[VALUE_l]]))))));
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_e]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(conditional<i32>(ne<i32>(const<i32>(0), const<i32>(0)), const<i32>(0), widen<i32, reason=promotion>(read<i8>(%[[VALUE_f]]))))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_d]])), reinterpret<i32, reason=assign, fits=unknown>(widen<u32, reason=assign>(read<u8>(%[[VALUE_e]]))));

@@ -79,8 +79,9 @@ int main() {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             ;
-// DEFAULT-NEXT:                     write<i32>(deref(read<ptr<i32>>(%[[VALUE_h]])), from_bool<i32, reason=assign>(gt<i64>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_p]])), and<i64>(xor<i64>(const<i64>(8589934591), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_a]]))), widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_b]]))))))));
-// DEFAULT-NEXT:                     write<i32>(deref(read<ptr<i32>>(%[[VALUE_f]])), from_bool<i32, reason=assign>(gt<i64>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_p]])), and<i64>(xor<i64>(const<i64>(8589934591), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_a]]))), widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_b]]))))))));
+// DEFAULT-NEXT:                     let %[[VALUE6:[0-9]+]]: i32 [synthetic] = from_bool<i32, reason=assign>(gt<i64>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_p]])), and<i64>(xor<i64>(const<i64>(8589934591), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_a]]))), widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_b]])))))));
+// DEFAULT-NEXT:                     write<i32>(deref(read<ptr<i32>>(%[[VALUE_h]])), read<i32>(%[[VALUE6]]));
+// DEFAULT-NEXT:                     write<i32>(deref(read<ptr<i32>>(%[[VALUE_f]])), read<i32>(%[[VALUE6]]));
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(1)>(%[[VALUE_k]]), read<i32>(%[[VALUE_g]])))), const<i32>(0))
 // DEFAULT-NEXT:                         return const<i32>(0);
 // DEFAULT-NEXT:                 }

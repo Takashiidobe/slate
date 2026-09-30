@@ -113,7 +113,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<@type[[TYPE_tiny]]>(%[[VALUE_x]], copy<@type[[TYPE_tiny]], reason=assign>(va_arg<@type[[TYPE_tiny]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:                     copy<@type[[TYPE_tiny]], reason=assign>(va_arg<@type[[TYPE_tiny]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:                     if ne<i32>(widen<i32, reason=promotion>(read<i8>(field0(%[[VALUE_x]]))), add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(10)))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                     if ne<i32>(widen<i32, reason=promotion>(read<i8>(field1(%[[VALUE_x]]))), add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(20)))

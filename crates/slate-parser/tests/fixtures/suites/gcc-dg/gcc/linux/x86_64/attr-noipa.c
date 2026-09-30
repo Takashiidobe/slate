@@ -259,7 +259,6 @@ fn25 (void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn16:[0-9]+]] @fn16(%[[VALUE_x_11:[0-9]+]] x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_x_11]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_fn15]], read<i32>(%[[VALUE_x_11]])));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_fn15]], read<i32>(%[[VALUE_x_11]]));
 // DEFAULT-NEXT:         if logical_or<bool>(lt<i32>(read<i32>(%[[VALUE_x_11]]), const<i32>(0)), ge<i32>(read<i32>(%[[VALUE_x_11]]), const<i32>(7)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_fn14]]);
 // DEFAULT-NEXT:     }

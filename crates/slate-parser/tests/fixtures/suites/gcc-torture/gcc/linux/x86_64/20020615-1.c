@@ -117,9 +117,11 @@ int main() {
 // DEFAULT-NEXT:                 let %[[VALUE_t:[0-9]+]] t: i64 [storage=automatic] = read<i64>(%[[VALUE_dx]]);
 // DEFAULT-NEXT:                 let %[[VALUE_ti:[0-9]+]] ti: i32 [storage=automatic] = read<i32>(%[[VALUE_xi]]);
 // DEFAULT-NEXT:                 write<i64>(%[[VALUE_dx]], read<i64>(%[[VALUE_dy]]));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_xi]], read<i32>(%[[VALUE_yi]]));
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_yi]]);
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_xi]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:                 write<i64>(%[[VALUE_dy]], read<i64>(%[[VALUE_t]]));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_yi]], read<i32>(%[[VALUE_ti]]));
+// DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_ti]]);
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_yi]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_adx]], conditional<i64>(lt<i64>(read<i64>(%[[VALUE_dx]]), widen<i64, reason=usual_arith>(const<i32>(0))), neg<i64, overflow=ub>(read<i64>(%[[VALUE_dx]])), read<i64>(%[[VALUE_dx]])));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_ady]], conditional<i64>(lt<i64>(read<i64>(%[[VALUE_dy]]), widen<i64, reason=usual_arith>(const<i32>(0))), neg<i64, overflow=ub>(read<i64>(%[[VALUE_dy]])), read<i64>(%[[VALUE_dy]])));
@@ -127,35 +129,35 @@ int main() {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_hints]], conditional<i32>(gt<i64>(read<i64>(%[[VALUE_dy]]), widen<i64, reason=usual_arith>(const<i32>(0))), const<i32>(2), const<i32>(1)));
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(%[[VALUE_xi]]), const<i32>(0))
-// DEFAULT-NEXT:                     let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_hints]]);
-// DEFAULT-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = xor<i32>(read<i32>(%[[VALUE1]]), const<i32>(3));
-// DEFAULT-NEXT:                     write<i32>(%[[VALUE_hints]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_hints]]);
+// DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: i32 [synthetic] = xor<i32>(read<i32>(%[[VALUE3]]), const<i32>(3));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_hints]], read<i32>(%[[VALUE4]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if logical_and<bool>(ne<i64>(read<i64>(%[[VALUE_dx]]), widen<i64, reason=usual_arith>(const<i32>(0))), le<i64>(read<i64>(%[[VALUE_ady]]), shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%[[VALUE_adx]]), const<i32>(4))))
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_hints]], conditional<i32>(lt<i64>(read<i64>(%[[VALUE_dx]]), widen<i64, reason=usual_arith>(const<i32>(0))), const<i32>(8), const<i32>(4)));
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_yi]]), const<i32>(0))
-// DEFAULT-NEXT:                         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_hints]]);
-// DEFAULT-NEXT:                         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = xor<i32>(read<i32>(%[[VALUE3]]), const<i32>(12));
-// DEFAULT-NEXT:                         write<i32>(%[[VALUE_hints]], read<i32>(%[[VALUE4]]));
+// DEFAULT-NEXT:                         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_hints]]);
+// DEFAULT-NEXT:                         let %[[VALUE6:[0-9]+]]: i32 [synthetic] = xor<i32>(read<i32>(%[[VALUE5]]), const<i32>(12));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_hints]], read<i32>(%[[VALUE6]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             else
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_hints]], const<i32>(0));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_hints]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
-// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const @type[[TYPE_font_hints_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>) -> i32>(%[[VALUE_line_hints]], pointer_cast<ptr<const @type[[TYPE_font_hints_s]]>, reason=arg>(array_decay<ptr<@type[[TYPE_font_hints_s]]>, length=Some(3)>(%[[VALUE_fh]])), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]])), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(1)))), const<i32>(1))
-// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE7]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE5]], ne<i32>(call<i32, signature=fn(ptr<const @type[[TYPE_font_hints_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>) -> i32>(%[[VALUE_line_hints]], pointer_cast<ptr<const @type[[TYPE_font_hints_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_font_hints_s]]>, subtract=false, element=@type[[TYPE_font_hints_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_font_hints_s]]>, length=Some(3)>(%[[VALUE_fh]]), const<i32>(1))), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(2))), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(3)))), const<i32>(8)));
-// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic];
-// DEFAULT-NEXT:         if read<bool>(%[[VALUE5]])
-// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], const<bool>(true));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE7]], ne<i32>(call<i32, signature=fn(ptr<const @type[[TYPE_font_hints_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>) -> i32>(%[[VALUE_line_hints]], pointer_cast<ptr<const @type[[TYPE_font_hints_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_font_hints_s]]>, subtract=false, element=@type[[TYPE_font_hints_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_font_hints_s]]>, length=Some(3)>(%[[VALUE_fh]]), const<i32>(1))), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(2))), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(3)))), const<i32>(8)));
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE7]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE8]], const<bool>(true));
 // DEFAULT-NEXT:         else
-// DEFAULT-NEXT:             write<bool>(%[[VALUE6]], ne<i32>(call<i32, signature=fn(ptr<const @type[[TYPE_font_hints_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>) -> i32>(%[[VALUE_line_hints]], pointer_cast<ptr<const @type[[TYPE_font_hints_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_font_hints_s]]>, subtract=false, element=@type[[TYPE_font_hints_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_font_hints_s]]>, length=Some(3)>(%[[VALUE_fh]]), const<i32>(2))), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(2))), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(3)))), const<i32>(4)));
-// DEFAULT-NEXT:         if read<bool>(%[[VALUE6]])
+// DEFAULT-NEXT:             write<bool>(%[[VALUE8]], ne<i32>(call<i32, signature=fn(ptr<const @type[[TYPE_font_hints_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>, ptr<const @type[[TYPE_gs_fixed_point_s]]>) -> i32>(%[[VALUE_line_hints]], pointer_cast<ptr<const @type[[TYPE_font_hints_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_font_hints_s]]>, subtract=false, element=@type[[TYPE_font_hints_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_font_hints_s]]>, length=Some(3)>(%[[VALUE_fh]]), const<i32>(2))), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(2))), pointer_cast<ptr<const @type[[TYPE_gs_fixed_point_s]]>, reason=arg>(ptr_offset<ptr<@type[[TYPE_gs_fixed_point_s]]>, subtract=false, element=@type[[TYPE_gs_fixed_point_s]], overflow=ub>(array_decay<ptr<@type[[TYPE_gs_fixed_point_s]]>, length=Some(4)>(%[[VALUE_gsf]]), const<i32>(3)))), const<i32>(4)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE8]])
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

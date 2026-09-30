@@ -63,7 +63,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_k:[0-9]+]] k: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], call<i32, signature=fn() -> i32>(%[[VALUE_gfbyte]]));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_gfbyte]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], add<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), const<i32>(1)));
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0))
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_k]], neg<i32, overflow=ub>(const<i32>(0)));
@@ -75,7 +74,6 @@ int main(void) {
 // DEFAULT-NEXT:         if le<i32>(read<i32>(%[[VALUE_k]]), read<i32>(%[[VALUE_i]]))
 // DEFAULT-NEXT:             do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_j]], call<i32, signature=fn() -> i32>(%[[VALUE_gfbyte]]));
-// DEFAULT-NEXT:                 call<i32, signature=fn() -> i32>(%[[VALUE_gfbyte]]);
 // DEFAULT-NEXT:             while {
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_k]]);
 // DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), const<i32>(1));

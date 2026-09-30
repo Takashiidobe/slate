@@ -89,7 +89,6 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_q_2:[0-9]+]] q: volatile ptr<void> [storage=automatic] = read<ptr<void>, volatile>(%[[VALUE_p]]);
 // DEFAULT-NEXT:         write<ptr<void>, volatile>(%[[VALUE_p1]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32, volatile>(%[[VALUE_x]])))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32, volatile>(%[[VALUE_x]]))));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test]]);
 // DEFAULT-NEXT:         if ne<ptr<void>>(read<ptr<void>, volatile>(%[[VALUE_p]]), read<ptr<void>, volatile>(%[[VALUE_q_2]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

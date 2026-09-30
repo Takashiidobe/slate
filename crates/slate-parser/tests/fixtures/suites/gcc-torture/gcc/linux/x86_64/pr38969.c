@@ -60,7 +60,6 @@ int main() {
 // DEFAULT-NEXT:         write<f32>(real(%[[VALUE_a]]), int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(9)));
 // DEFAULT-NEXT:         write<f32>(imag(%[[VALUE_a]]), int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(42)));
 // DEFAULT-NEXT:         write<complex<f32>>(%[[VALUE_b]], call<complex<f32>, signature=fn(complex<f32>) -> complex<f32>, abi=sysv64(native_c) -> native_c>(%[[VALUE_bar]], read<complex<f32>>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         call<complex<f32>, signature=fn(complex<f32>) -> complex<f32>, abi=sysv64(native_c) -> native_c>(%[[VALUE_bar]], read<complex<f32>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         if ne<complex<f32>, exceptions=observable>(read<complex<f32>>(%[[VALUE_a]]), read<complex<f32>>(%[[VALUE_b]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

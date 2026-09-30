@@ -65,7 +65,6 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_malloc:[0-9]+]] @__builtin_malloc(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_f:[0-9]+]] f: ptr<ptr<@type[[TYPE_foo]]>>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_foo]]>>(deref(read<ptr<ptr<@type[[TYPE_foo]]>>>(%[[VALUE_f]])), pointer_cast<ptr<@type[[TYPE_foo]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], const<u64>(16))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_foo]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], const<u64>(16)));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_rank:[0-9]+]] rank: i32) -> ptr<@type[[TYPE_foo]]> [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], const<u64>(32));

@@ -75,7 +75,6 @@ int main(void) {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(mul<i32, overflow=ub>(const<i32>(8), const<i32>(8)), const<i32>(64)), ne<i32>(mul<i32, overflow=ub>(const<i32>(4), const<i32>(8)), const<i32>(32)))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_ull3]], call<u64, signature=fn() -> u64>(%[[VALUE_foo]]));
-// DEFAULT-NEXT:         call<u64, signature=fn() -> u64>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_ull3]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(3998784))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

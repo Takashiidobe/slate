@@ -57,7 +57,6 @@ void bar (struct A *x)
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_e]], call<i32, signature=fn() -> i32>(%[[VALUE_foo]]));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_e]], div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_e]]), read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_x]]))))));
 // DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_e]]), const<i32>(1))
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_e]], const<i32>(1));

@@ -106,7 +106,6 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_w_2:[0-9]+]] w: ptr<i8>, %[[VALUE_x_2:[0-9]+]] x: ptr<i8>, %[[VALUE_i_2:[0-9]+]] i: i32, %[[VALUE_result:[0-9]+]] result: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_result]])), call<i32, signature=fn(ptr<i8>, i32, ptr<i8>, i32) -> i32>(%[[VALUE_foo]], read<ptr<i8>>(%[[VALUE_w_2]]), const<i32>(16), read<ptr<i8>>(%[[VALUE_x_2]]), read<i32>(%[[VALUE_i_2]])));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<i8>, i32, ptr<i8>, i32) -> i32>(%[[VALUE_foo]], read<ptr<i8>>(%[[VALUE_w_2]]), const<i32>(16), read<ptr<i8>>(%[[VALUE_x_2]]), read<i32>(%[[VALUE_i_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_m:[0-9]+]] m: array<i8, 256> [storage=automatic] [align=16];

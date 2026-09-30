@@ -114,7 +114,6 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE7]]));
 // DEFAULT-NEXT:                 write<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE_x_2]]), read<i32>(%[[VALUE6]]))), read<i8>(%[[VALUE_c_2]]));
 // DEFAULT-NEXT:                 write<i8>(%[[VALUE_c_2]], truncate<i8, reason=assign, fits=unknown>(call<i32, signature=fn(ptr<ptr<const i8>>) -> i32>(%[[VALUE_bar]], read<ptr<ptr<const i8>>>(%[[VALUE_w]]))));
-// DEFAULT-NEXT:                 truncate<i8, reason=assign, fits=unknown>(call<i32, signature=fn(ptr<ptr<const i8>>) -> i32>(%[[VALUE_bar]], read<ptr<ptr<const i8>>>(%[[VALUE_w]])));
 // DEFAULT-NEXT:                 if logical_and<bool>(read<bool>(%[[VALUE_y]]), eq<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_c_2]])), const<i32>(39)))
 // DEFAULT-NEXT:                     break %[[VALUE5]];
 // DEFAULT-NEXT:                 if logical_and<bool>(read<bool>(%[[VALUE_z]]), eq<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_c_2]])), const<i32>(34)))

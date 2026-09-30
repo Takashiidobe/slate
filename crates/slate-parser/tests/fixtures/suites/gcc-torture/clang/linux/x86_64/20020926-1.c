@@ -54,7 +54,6 @@ float bar(int i1, int i2)
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_i2]]), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i3]], call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_foo1]], read<i32>(%[[VALUE_i1]]), read<i32>(%[[VALUE_gi]])));
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_foo1]], read<i32>(%[[VALUE_i1]]), read<i32>(%[[VALUE_gi]]));
 // DEFAULT-NEXT:                 call<void, signature=fn(i32, i32) -> void>(%[[VALUE_foo2]], read<i32>(%[[VALUE_i1]]), read<i32>(%[[VALUE_i3]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else

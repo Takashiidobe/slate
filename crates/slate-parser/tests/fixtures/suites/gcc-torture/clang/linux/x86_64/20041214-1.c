@@ -122,7 +122,6 @@ int main(void) {
 // DEFAULT-NEXT:                 goto %[[VALUE_end:[0-9]+]];
 // DEFAULT-NEXT:                 label %[[VALUE_do_form_string]] do_form_string:
 // DEFAULT-NEXT:                     write<ptr<const i8>>(%[[VALUE_string]], va_arg<ptr<const i8>>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:                     va_arg<ptr<const i8>>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:                 call<ptr<i8>, signature=fn(ptr<i8>, ptr<const i8>) -> ptr<i8>>(%[[VALUE_strcpy]], read<ptr<i8>>(%[[VALUE_s]]), read<ptr<const i8>>(%[[VALUE_string]]));
 // DEFAULT-NEXT:                 label %[[VALUE_end]] end:
 // DEFAULT-NEXT:                     let %[[VALUE9:[0-9]+]]: ptr<const i8> [synthetic] = read<ptr<const i8>>(%[[VALUE_f]]);

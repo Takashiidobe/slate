@@ -65,7 +65,6 @@ int main(void) {
 // DEFAULT-NEXT:         if ne<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(%[[VALUE_op_2]]), null<ptr<fn(i32) -> i32>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_total]], add<i32, overflow=ub>(read<i32>(%[[VALUE_total]]), call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%[[VALUE_maybe_apply]], read<ptr<fn(i32) -> i32>>(%[[VALUE_op_2]]), const<i32>(5))));
-// DEFAULT-NEXT:                 add<i32, overflow=ub>(read<i32>(%[[VALUE_total]]), call<i32, signature=fn(ptr<fn(i32) -> i32>, i32) -> i32>(%[[VALUE_maybe_apply]], read<ptr<fn(i32) -> i32>>(%[[VALUE_op_2]]), const<i32>(5)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if eq<ptr<fn(i32) -> i32>>(read<ptr<fn(i32) -> i32>>(%[[VALUE_op_2]]), null<ptr<fn(i32) -> i32>>)
 // DEFAULT-NEXT:             {

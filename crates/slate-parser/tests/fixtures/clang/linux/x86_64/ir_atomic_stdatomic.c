@@ -76,13 +76,13 @@ int f(memory_order order, int *expected) {
 // IR-NEXT:     global %[[VALUE_cursor:[0-9]+]] cursor: atomic ptr<i64> [storage=static] [linkage=external] [c="_Atomic(long *)"] [c_atomic="true"];
 // IR-NEXT:     global %[[VALUE_gate:[0-9]+]] gate: @type[[TYPE_atomic_flag]] [storage=static] = aggregate<@type[[TYPE_atomic_flag]], zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(0), const<i32>(0))) [linkage=external] [c="atomic_flag"] [c_canon="struct atomic_flag"] [typedef_chain="atomic_flag"];
 // IR-NEXT:     fn %[[VALUE_f:[0-9]+]] @f(%[[VALUE_order:[0-9]+]] order: @type[[TYPE_memory_order]] [c="memory_order"] [c_canon="enum memory_order"] [typedef_chain="memory_order"], %[[VALUE_expected:[0-9]+]] expected: ptr<i32> [c="int *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(memory_order, int *)"] [c_canon="int(enum memory_order, int *)"] {
-// IR-NEXT:         write<i32>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_counter]])), const<i32>(0)) [c_builtin="__c11_atomic_init"] [c_macro="atomic_init"];
-// IR-NEXT:         write<i32, atomic=relaxed>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_counter]])), const<i32>(1)) [c_builtin="__c11_atomic_store"] [c_macro="atomic_store_explicit"];
+// IR-NEXT:         write<i32>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_counter]])), const<i32>(0));
+// IR-NEXT:         write<i32, atomic=relaxed>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_counter]])), const<i32>(1));
 // IR-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = read<i32, atomic=consume>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_counter]]))) [c_builtin="__c11_atomic_load"] [c_macro="atomic_load_explicit"] [c="int"];
 // IR-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
 // IR-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), read<i32, atomic=acquire>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_counter]]))) [c_builtin="__c11_atomic_load"] [c_macro="atomic_load_explicit"]);
 // IR-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE1]]));
-// IR-NEXT:         write<i32, atomic=release>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_counter]])), const<i32>(2)) [c_builtin="__c11_atomic_store"] [c_macro="atomic_store_explicit"];
+// IR-NEXT:         write<i32, atomic=release>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_counter]])), const<i32>(2));
 // IR-NEXT:         let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
 // IR-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_counter]])), const<i32>(3)) [c_builtin="__c11_atomic_exchange"] [c_macro="atomic_exchange_explicit"];
 // IR-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), read<i32>(%[[VALUE3]]));
@@ -124,7 +124,7 @@ int f(memory_order order, int *expected) {
 // IR-NEXT:         let %[[VALUE31:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=acquire>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_gate]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0))) [c_builtin="__c11_atomic_exchange"] [c_macro="atomic_flag_test_and_set_explicit"];
 // IR-NEXT:         let %[[VALUE32:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE30]]), from_bool<i32, reason=promotion>(read<bool>(%[[VALUE31]])));
 // IR-NEXT:         write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE32]]));
-// IR-NEXT:         write<bool, atomic=release>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_gate]]))))), ne<i32, reason=arg>(const<i32>(0), const<i32>(0))) [c_builtin="__c11_atomic_store"] [c_macro="atomic_flag_clear_explicit"];
+// IR-NEXT:         write<bool, atomic=release>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_gate]]))))), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));
 // IR-NEXT:         fence<scope=thread, order=seq_cst> [c_builtin="__c11_atomic_thread_fence"] [c_macro="atomic_thread_fence"];
 // IR-NEXT:         fence<scope=signal, order=acquire> [c_builtin="__c11_atomic_signal_fence"] [c_macro="atomic_signal_fence"];
 // IR-NEXT:         let %[[VALUE33:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);

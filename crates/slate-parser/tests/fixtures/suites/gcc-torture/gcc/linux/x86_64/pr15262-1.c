@@ -93,11 +93,9 @@ int main(void) {
 // DEFAULT-NEXT:         write<f32>(%[[VALUE_f]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(3)));
 // DEFAULT-NEXT:         write<f32>(%[[VALUE_g]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(2)));
 // DEFAULT-NEXT:         write<ptr<f32>>(%[[VALUE_p]], conditional<ptr<f32>>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_foo]]), const<i32>(0)), addr_of<ptr<f32>>(%[[VALUE_g]]), addr_of<ptr<f32>>(%[[VALUE_f]])));
-// DEFAULT-NEXT:         conditional<ptr<f32>>(ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_foo]]), const<i32>(0)), addr_of<ptr<f32>>(%[[VALUE_g]]), addr_of<ptr<f32>>(%[[VALUE_f]]));
 // DEFAULT-NEXT:         if gt<f64, exceptions=observable>(float_widen<f64, reason=usual_arith>(read<f32>(deref(read<ptr<f32>>(%[[VALUE_p]])))), const<f64>(0.0))
 // DEFAULT-NEXT:             write<f32>(%[[VALUE_g]], int_to_float<f32, reason=assign, exact=false, rounding=nearest_even, exceptions=observable>(const<i32>(1)));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_A]]>>(%[[VALUE_locp]], pointer_cast<ptr<@type[[TYPE_A]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], const<u64>(8))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_A]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], const<u64>(8)));
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_locp]]))), const<i32>(10));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_T355]], read<i32>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_locp]])))));
 // DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_T356]], addr_of<ptr<i32>>(field1(deref(read<ptr<@type[[TYPE_A]]>>(%[[VALUE_locp]])))));

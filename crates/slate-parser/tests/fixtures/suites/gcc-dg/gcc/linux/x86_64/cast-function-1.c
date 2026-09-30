@@ -93,24 +93,16 @@ int foo2(arg)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_d:[0-9]+]] d: f64, %[[VALUE_i:[0-9]+]] i: i32, %[[VALUE_s:[0-9]+]] s: @type[[TYPE0]]) -> void [linkage=external] [abi=sysv64(scalar, scalar, native_c) -> void] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_d]], call<f64, signature=fn(i32) -> f64>(pointer_cast<ptr<fn(i32) -> f64>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_foo1]])), read<i32>(%[[VALUE_i]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(i32) -> f64>(pointer_cast<ptr<fn(i32) -> f64>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_foo1]])), read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], call<i32, signature=fn(f64) -> i32>(pointer_cast<ptr<fn(f64) -> i32>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_foo1]])), read<f64>(%[[VALUE_d]])));
-// DEFAULT-NEXT:         call<i32, signature=fn(f64) -> i32>(pointer_cast<ptr<fn(f64) -> i32>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_foo1]])), read<f64>(%[[VALUE_d]]));
 // DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_s]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(i32) -> @type[[TYPE0]], abi=sysv64(scalar) -> native_c>(pointer_cast<ptr<fn(i32) -> @type[[TYPE0]]>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_foo1]])), read<i32>(%[[VALUE_i]]))));
-// DEFAULT-NEXT:         copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(i32) -> @type[[TYPE0]], abi=sysv64(scalar) -> native_c>(pointer_cast<ptr<fn(i32) -> @type[[TYPE0]]>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_foo1]])), read<i32>(%[[VALUE_i]])));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(pointer_cast<ptr<fn(i32) -> void>, reason=explicit>(function_decay<ptr<fn(i32) -> i32>>(%[[VALUE_foo1]])), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<f64>(%[[VALUE_d]])));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo1]], read<i32>(%[[VALUE_i]])));
 // DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo1]], read<i32>(%[[VALUE_i]]));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo1]], read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_d]], call<f64, signature=fn(i32) -> f64>(pointer_cast<ptr<fn(i32) -> f64>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%[[VALUE_foo2]])), read<i32>(%[[VALUE_i]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(i32) -> f64>(pointer_cast<ptr<fn(i32) -> f64>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%[[VALUE_foo2]])), read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], call<i32, signature=fn(f64) -> i32>(pointer_cast<ptr<fn(f64) -> i32>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%[[VALUE_foo2]])), read<f64>(%[[VALUE_d]])));
-// DEFAULT-NEXT:         call<i32, signature=fn(f64) -> i32>(pointer_cast<ptr<fn(f64) -> i32>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%[[VALUE_foo2]])), read<f64>(%[[VALUE_d]]));
 // DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_s]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(i32) -> @type[[TYPE0]], abi=sysv64(scalar) -> native_c>(pointer_cast<ptr<fn(i32) -> @type[[TYPE0]]>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%[[VALUE_foo2]])), read<i32>(%[[VALUE_i]]))));
-// DEFAULT-NEXT:         copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(i32) -> @type[[TYPE0]], abi=sysv64(scalar) -> native_c>(pointer_cast<ptr<fn(i32) -> @type[[TYPE0]]>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%[[VALUE_foo2]])), read<i32>(%[[VALUE_i]])));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(pointer_cast<ptr<fn(i32) -> void>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%[[VALUE_foo2]])), float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<f64>(%[[VALUE_d]])));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], call<i32, signature=fn(i32) -> i32>(pointer_cast<ptr<fn(i32) -> i32>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%[[VALUE_foo2]])), read<i32>(%[[VALUE_i]])));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(pointer_cast<ptr<fn(i32) -> i32>, reason=explicit>(function_decay<ptr<fn(unprototyped) -> i32>>(%[[VALUE_foo2]])), read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:         call<i32, signature=fn(unprototyped) -> i32>(%[[VALUE_foo2]], read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

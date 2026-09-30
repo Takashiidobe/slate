@@ -38,23 +38,23 @@ void sequencing(void *file, int x, int c) {
 // IR-NEXT:         do %[[VALUE2:[0-9]+]]
 // IR-NEXT:             call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32>(%[[VALUE_c]]));
 // IR-NEXT:         while {
-// IR-NEXT:             write<i32>(%[[VALUE_c]], call<i32, signature=fn(ptr<void>) -> i32>(%[[VALUE_getc]], read<ptr<void>>(%[[VALUE_file]])));
-// IR-NEXT:             yield ne<i32>(call<i32, signature=fn(ptr<void>) -> i32>(%[[VALUE_getc]], read<ptr<void>>(%[[VALUE_file]])), neg<i32, overflow=ub>(const<i32>(1)));
+// IR-NEXT:             let %[[VALUE3:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn(ptr<void>) -> i32>(%[[VALUE_getc]], read<ptr<void>>(%[[VALUE_file]]));
+// IR-NEXT:             write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE3]]));
+// IR-NEXT:             yield ne<i32>(read<i32>(%[[VALUE3]]), neg<i32, overflow=ub>(const<i32>(1)));
 // IR-NEXT:         };
-// IR-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic];
+// IR-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic];
 // IR-NEXT:         if ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0))
-// IR-NEXT:             let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
-// IR-NEXT:             let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), const<i32>(1));
-// IR-NEXT:             write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE5]]));
-// IR-NEXT:             write<i32>(%[[VALUE3]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32>(%[[VALUE4]])));
+// IR-NEXT:             let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
+// IR-NEXT:             let %[[VALUE6:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE5]]), const<i32>(1));
+// IR-NEXT:             write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE6]]));
+// IR-NEXT:             write<i32>(%[[VALUE4]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32>(%[[VALUE5]])));
 // IR-NEXT:         else
-// IR-NEXT:             let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
-// IR-NEXT:             let %[[VALUE7:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE6]]), const<i32>(1));
-// IR-NEXT:             write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE7]]));
-// IR-NEXT:             write<i32>(%[[VALUE3]], read<i32>(%[[VALUE6]]));
-// IR-NEXT:         write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE3]]));
+// IR-NEXT:             let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_c]]);
+// IR-NEXT:             let %[[VALUE8:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE7]]), const<i32>(1));
+// IR-NEXT:             write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE8]]));
+// IR-NEXT:             write<i32>(%[[VALUE4]], read<i32>(%[[VALUE7]]));
+// IR-NEXT:         write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE4]]));
 // IR-NEXT:         write<i32>(%[[VALUE_x]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32>(%[[VALUE_c]])));
-// IR-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32>(%[[VALUE_c]]));
 // IR-NEXT:         write<i32>(%[[VALUE_c]], const<i32>(0));
 // IR-NEXT:     }
 // IR-NEXT: }

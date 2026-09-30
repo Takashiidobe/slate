@@ -104,46 +104,29 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_value:[0-9]+]] value: f128 [storage=automatic] = call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_elementwise_sqrt]], const<f128>(1));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_acoshf128]], read<f128>(%[[VALUE_value]])));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_acoshf128]], read<f128>(%[[VALUE_value]]));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_asinhf128]], read<f128>(%[[VALUE_value]])));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_asinhf128]], read<f128>(%[[VALUE_value]]));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_atanhf128]], read<f128>(%[[VALUE_value]])));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_atanhf128]], read<f128>(%[[VALUE_value]]));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_cbrtf128]], read<f128>(%[[VALUE_value]])));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128, f128) -> f128>(%[[VALUE___builtin_copysignf128]], read<f128>(%[[VALUE_value]]), read<f128>(%[[VALUE_value]])));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_erff128]], read<f128>(%[[VALUE_value]])));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_erff128]], read<f128>(%[[VALUE_value]]));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_erfcf128]], read<f128>(%[[VALUE_value]])));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_erfcf128]], read<f128>(%[[VALUE_value]]));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_expm1f128]], read<f128>(%[[VALUE_value]])));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_expm1f128]], read<f128>(%[[VALUE_value]]));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128, f128) -> f128>(%[[VALUE___builtin_fdimf128]], read<f128>(%[[VALUE_value]]), read<f128>(%[[VALUE_value]])));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128, f128) -> f128>(%[[VALUE___builtin_fdimf128]], read<f128>(%[[VALUE_value]]), read<f128>(%[[VALUE_value]]));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_fabsf128]], read<f128>(%[[VALUE_value]])));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128, f128) -> f128>(%[[VALUE___builtin_hypotf128]], read<f128>(%[[VALUE_value]]), read<f128>(%[[VALUE_value]])));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128, f128) -> f128>(%[[VALUE___builtin_hypotf128]], read<f128>(%[[VALUE_value]]), read<f128>(%[[VALUE_value]]));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_lgammaf128]], read<f128>(%[[VALUE_value]])));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_lgammaf128]], read<f128>(%[[VALUE_value]]));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_log1pf128]], read<f128>(%[[VALUE_value]])));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_log1pf128]], read<f128>(%[[VALUE_value]]));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_nearbyintf128]], read<f128>(%[[VALUE_value]])));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128, f128) -> f128>(%[[VALUE___builtin_nextafterf128]], read<f128>(%[[VALUE_value]]), read<f128>(%[[VALUE_value]])));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128, f128) -> f128>(%[[VALUE___builtin_nextafterf128]], read<f128>(%[[VALUE_value]]), read<f128>(%[[VALUE_value]]));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128, f128) -> f128>(%[[VALUE___builtin_nexttowardf128]], read<f128>(%[[VALUE_value]]), read<f128>(%[[VALUE_value]])));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128, f128) -> f128>(%[[VALUE___builtin_nexttowardf128]], read<f128>(%[[VALUE_value]]), read<f128>(%[[VALUE_value]]));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128, f128) -> f128>(%[[VALUE___builtin_remainderf128]], read<f128>(%[[VALUE_value]]), read<f128>(%[[VALUE_value]])));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128, f128) -> f128>(%[[VALUE___builtin_remainderf128]], read<f128>(%[[VALUE_value]]), read<f128>(%[[VALUE_value]]));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128, i64) -> f128>(%[[VALUE___builtin_scalblnf128]], read<f128>(%[[VALUE_value]]), widen<i64, reason=arg>(const<i32>(0))));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128, i64) -> f128>(%[[VALUE___builtin_scalblnf128]], read<f128>(%[[VALUE_value]]), widen<i64, reason=arg>(const<i32>(0)));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128, i32) -> f128>(%[[VALUE___builtin_scalbnf128]], read<f128>(%[[VALUE_value]]), const<i32>(0)));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128, i32) -> f128>(%[[VALUE___builtin_scalbnf128]], read<f128>(%[[VALUE_value]]), const<i32>(0));
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_integral:[0-9]+]] integral: f128 [storage=automatic];
 // DEFAULT-NEXT:             let %[[VALUE_quotient:[0-9]+]] quotient: i32 [storage=automatic];
 // DEFAULT-NEXT:             write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128, ptr<f128>) -> f128>(%[[VALUE___builtin_modff128]], read<f128>(%[[VALUE_value]]), addr_of<ptr<f128>>(%[[VALUE_integral]])));
-// DEFAULT-NEXT:             call<f128, signature=fn(f128, ptr<f128>) -> f128>(%[[VALUE___builtin_modff128]], read<f128>(%[[VALUE_value]]), addr_of<ptr<f128>>(%[[VALUE_integral]]));
 // DEFAULT-NEXT:             write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128, f128, ptr<i32>) -> f128>(%[[VALUE___builtin_remquof128]], read<f128>(%[[VALUE_value]]), read<f128>(%[[VALUE_value]]), addr_of<ptr<i32>>(%[[VALUE_quotient]])));
-// DEFAULT-NEXT:             call<f128, signature=fn(f128, f128, ptr<i32>) -> f128>(%[[VALUE___builtin_remquof128]], read<f128>(%[[VALUE_value]]), read<f128>(%[[VALUE_value]]), addr_of<ptr<i32>>(%[[VALUE_quotient]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         call<i32, signature=fn(f128) -> i32>(%[[VALUE___builtin_ilogbf128]], const<f128>(1));
 // DEFAULT-NEXT:         call<i64, signature=fn(f128) -> i64>(%[[VALUE___builtin_llrintf128]], const<f128>(1));
@@ -152,7 +135,6 @@ int main(void) {
 // DEFAULT-NEXT:         call<i64, signature=fn(f128) -> i64>(%[[VALUE___builtin_lrintf128]], const<f128>(1));
 // DEFAULT-NEXT:         call<i64, signature=fn(f128) -> i64>(%[[VALUE___builtin_lroundf128]], const<f128>(1));
 // DEFAULT-NEXT:         write<f128>(%[[VALUE_value]], call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_tgammaf128]], read<f128>(%[[VALUE_value]])));
-// DEFAULT-NEXT:         call<f128, signature=fn(f128) -> f128>(%[[VALUE___builtin_tgammaf128]], read<f128>(%[[VALUE_value]]));
 // DEFAULT-NEXT:         if ne<f128, exceptions=ignore>(read<f128>(%[[VALUE_value]]), const<f128>(1))
 // DEFAULT-NEXT:             return const<i32>(1);
 // DEFAULT-NEXT:         return const<i32>(0);

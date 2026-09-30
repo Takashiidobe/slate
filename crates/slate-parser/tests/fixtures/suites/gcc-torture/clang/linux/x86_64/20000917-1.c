@@ -94,7 +94,6 @@ int main(void) {
 // DEFAULT-NEXT:             write<ptr<@type[[TYPE_int3]]>>(%[[VALUE3]], read<ptr<@type[[TYPE_int3]]>>(%[[VALUE4]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<@type[[TYPE_int3]]>(deref(read<ptr<@type[[TYPE_int3]]>>(%[[VALUE3]])), copy<@type[[TYPE_int3]], reason=assign>(call<@type[[TYPE_int3]], signature=fn() -> @type[[TYPE_int3]], abi=sysv64() -> native_c>(%[[VALUE_zero]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE_int3]], reason=assign>(call<@type[[TYPE_int3]], signature=fn() -> @type[[TYPE_int3]], abi=sysv64() -> native_c>(%[[VALUE_zero]]));
 // DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(ne<i32>(read<i32>(field0(%[[VALUE_a]])), const<i32>(0)), ne<i32>(read<i32>(field1(%[[VALUE_a]])), const<i32>(0))), ne<i32>(read<i32>(field2(%[[VALUE_a]])), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

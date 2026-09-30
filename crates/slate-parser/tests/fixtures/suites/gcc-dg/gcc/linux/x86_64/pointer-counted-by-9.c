@@ -150,14 +150,10 @@ int main(int argc, char *argv[])
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_setup:[0-9]+]] @setup(%[[VALUE_normal_count:[0-9]+]] normal_count: i32, %[[VALUE_attr_count:[0-9]+]] attr_count: i32) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_annotated]]>>(%[[VALUE_p_annotated]], pointer_cast<ptr<@type[[TYPE_annotated]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(16))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_annotated]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(16)));
 // DEFAULT-NEXT:         write<ptr<i8>>(field1(deref(read<ptr<@type[[TYPE_annotated]]>>(%[[VALUE_p_annotated]]))), pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_attr_count]])))))));
-// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_attr_count]]))))));
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_annotated]]>>(%[[VALUE_p_annotated]]))), read<i32>(%[[VALUE_attr_count]]));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_nested_annotated]]>>(%[[VALUE_p_nested_annotated]], pointer_cast<ptr<@type[[TYPE_nested_annotated]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(16))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_nested_annotated]]>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(16)));
 // DEFAULT-NEXT:         write<ptr<i8>>(field1(deref(read<ptr<@type[[TYPE_nested_annotated]]>>(%[[VALUE_p_nested_annotated]]))), pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_attr_count]]))), const<u64>(1)))));
-// DEFAULT-NEXT:         pointer_cast<ptr<i8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_attr_count]]))), const<u64>(1))));
 // DEFAULT-NEXT:         write<i32>(field0(field0(field0(deref(read<ptr<@type[[TYPE_nested_annotated]]>>(%[[VALUE_p_nested_annotated]]))))), read<i32>(%[[VALUE_attr_count]]));
 // DEFAULT-NEXT:         return;
 // DEFAULT-NEXT:     }

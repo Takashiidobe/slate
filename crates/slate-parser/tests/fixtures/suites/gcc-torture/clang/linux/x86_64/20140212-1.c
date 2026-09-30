@@ -87,8 +87,9 @@ int main(void) {
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0))
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE_l]]));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<i32>(%[[VALUE_i]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_l]]))), const<u64>(9)))));
-// DEFAULT-NEXT:                         write<i32>(%[[VALUE_h]], reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_l]]))), const<u64>(9)))));
+// DEFAULT-NEXT:                         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(truncate<u32, reason=assign, fits=unknown>(mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_l]]))), const<u64>(9))));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_h]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_f]]), const<i32>(0))
 // DEFAULT-NEXT:                         return;
 // DEFAULT-NEXT:                 }

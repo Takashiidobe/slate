@@ -167,7 +167,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_symtab]] [storage=automatic] = aggregate<@type[[TYPE_symtab]], zero_fill=false>(field0 = addr_of<ptr<@type[[TYPE_blockvector]]>>(%[[VALUE_bv]]));
 // DEFAULT-NEXT:         let %[[VALUE_ret:[0-9]+]] ret: ptr<@type[[TYPE_blockvector]]> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_blockvector]]>>(%[[VALUE_ret]], call<ptr<@type[[TYPE_blockvector]]>, signature=fn(u64, ptr<@type[[TYPE_symtab]]>) -> ptr<@type[[TYPE_blockvector]]>>(%[[VALUE_blockvector_for_pc_sect]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1280))), addr_of<ptr<@type[[TYPE_symtab]]>>(%[[VALUE_s]])));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_blockvector]]>, signature=fn(u64, ptr<@type[[TYPE_symtab]]>) -> ptr<@type[[TYPE_blockvector]]>>(%[[VALUE_blockvector_for_pc_sect]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1280))), addr_of<ptr<@type[[TYPE_symtab]]>>(%[[VALUE_s]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

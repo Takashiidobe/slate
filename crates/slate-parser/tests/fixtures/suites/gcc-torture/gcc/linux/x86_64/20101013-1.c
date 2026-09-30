@@ -70,7 +70,6 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_build_ref_for_offset:[0-9]+]] @build_ref_for_offset(%[[VALUE_base_3:[0-9]+]] base: ptr<void>, %[[VALUE_offset_2:[0-9]+]] offset: i64) -> ptr<void> [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_base_offset:[0-9]+]] base_offset: i64 [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_base_3]], call<ptr<void>, signature=fn(ptr<void>, ptr<i64>) -> ptr<void>>(%[[VALUE_get_addr_base_and_unit_offset]], read<ptr<void>>(%[[VALUE_base_3]]), addr_of<ptr<i64>>(%[[VALUE_base_offset]])));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, ptr<i64>) -> ptr<void>>(%[[VALUE_get_addr_base_and_unit_offset]], read<ptr<void>>(%[[VALUE_base_3]]), addr_of<ptr<i64>>(%[[VALUE_base_offset]]));
 // DEFAULT-NEXT:         return call<ptr<void>, signature=fn(ptr<void>, i64) -> ptr<void>>(%[[VALUE_build_int_cst]], read<ptr<void>>(%[[VALUE_base_3]]), add<i64, overflow=ub>(read<i64>(%[[VALUE_base_offset]]), div<i64, by_zero=ub, min_by_neg_one=ub>(read<i64>(%[[VALUE_offset_2]]), widen<i64, reason=usual_arith>(const<i32>(8)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

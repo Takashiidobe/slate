@@ -89,7 +89,6 @@ int main(void) {
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_foo]]>>(field0(%[[VALUE_a]]), addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_b]]));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_foo]]>>(field0(%[[VALUE_b]]), null<ptr<@type[[TYPE_foo]]>>);
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_foo]]>>(%[[VALUE_c]], call<ptr<@type[[TYPE_foo]]>, signature=fn(ptr<@type[[TYPE_foo]]>) -> ptr<@type[[TYPE_foo]]>>(%[[VALUE_test]], addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_foo]]>, signature=fn(ptr<@type[[TYPE_foo]]>) -> ptr<@type[[TYPE_foo]]>>(%[[VALUE_test]], addr_of<ptr<@type[[TYPE_foo]]>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         if ne<ptr<@type[[TYPE_foo]]>>(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_c]]), null<ptr<@type[[TYPE_foo]]>>)
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

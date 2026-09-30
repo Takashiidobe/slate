@@ -76,7 +76,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: @type[[TYPE_R]] [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn(@type[[TYPE_R]]) -> void, abi=sysv64(native_c) -> void>(%[[VALUE_f]], copy<@type[[TYPE_R]], reason=arg>(read<@type[[TYPE_R]]>(%[[VALUE_R]])));
 // DEFAULT-NEXT:         write<@type[[TYPE_R]]>(%[[VALUE_r_2]], copy<@type[[TYPE_R]], reason=assign>(call<@type[[TYPE_R]], signature=fn() -> @type[[TYPE_R]], abi=sysv64() -> native_c>(%[[VALUE_g]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE_R]], reason=assign>(call<@type[[TYPE_R]], signature=fn() -> @type[[TYPE_R]], abi=sysv64() -> native_c>(%[[VALUE_g]]));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i64>(read<i64>(field0(field0(%[[VALUE_r_2]]))), read<i64>(field0(field0(%[[VALUE_R]])))), ne<i64>(read<i64>(field0(field1(%[[VALUE_r_2]]))), read<i64>(field0(field1(%[[VALUE_R]])))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

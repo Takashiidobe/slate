@@ -70,11 +70,9 @@ int main() {
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%[[VALUE_y_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%[[VALUE_z]])), const<u64>(4)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<vector<u8, 4>>(%[[VALUE_z]], call<vector<u8, 4>, signature=fn(vector<u8, 4>) -> vector<u8, 4>, abi=sysv64(coerce<i32>) -> coerce<i32>>(%[[VALUE_f2]], read<vector<u8, 4>>(%[[VALUE_x_2]])));
-// DEFAULT-NEXT:         call<vector<u8, 4>, signature=fn(vector<u8, 4>) -> vector<u8, 4>, abi=sysv64(coerce<i32>) -> coerce<i32>>(%[[VALUE_f2]], read<vector<u8, 4>>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%[[VALUE_y_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%[[VALUE_z]])), const<u64>(4)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<vector<u8, 4>>(%[[VALUE_z]], call<vector<u8, 4>, signature=fn(vector<u8, 4>, vector<u8, 4>) -> vector<u8, 4>, abi=sysv64(coerce<i32>, coerce<i32>) -> coerce<i32>>(%[[VALUE_f3]], read<vector<u8, 4>>(%[[VALUE_x_2]]), read<vector<u8, 4>>(%[[VALUE_y_2]])));
-// DEFAULT-NEXT:         call<vector<u8, 4>, signature=fn(vector<u8, 4>, vector<u8, 4>) -> vector<u8, 4>, abi=sysv64(coerce<i32>, coerce<i32>) -> coerce<i32>>(%[[VALUE_f3]], read<vector<u8, 4>>(%[[VALUE_x_2]]), read<vector<u8, 4>>(%[[VALUE_y_2]]));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(ptr<const void>, ptr<const void>, u64) -> i32>(%[[VALUE___builtin_memcmp]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%[[VALUE_y_2]])), pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<vector<u8, 4>>>(%[[VALUE_z]])), const<u64>(4)), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

@@ -59,7 +59,6 @@ int    main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_x]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_sqrt]], call<f64, signature=fn() -> f64>(%[[VALUE_foo]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE_sqrt]], call<f64, signature=fn() -> f64>(%[[VALUE_foo]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

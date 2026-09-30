@@ -47,8 +47,9 @@ void foo ()
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: i32 [storage=automatic];
 // DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_x]], call<i32, signature=fn() -> i32>(%[[VALUE_bar]]));
-// DEFAULT-NEXT:                 if eq<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_bar]]), const<i32>(1))
+// DEFAULT-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn() -> i32>(%[[VALUE_bar]]);
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:                 if eq<i32>(read<i32>(%[[VALUE1]]), const<i32>(1))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_baz]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while eq<i32>(read<i32>(%[[VALUE_x]]), const<i32>(1));

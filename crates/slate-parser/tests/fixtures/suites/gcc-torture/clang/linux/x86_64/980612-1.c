@@ -59,7 +59,6 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_f_2:[0-9]+]] f: ptr<@type[[TYPE_fd]]> [storage=automatic] = call<ptr<@type[[TYPE_fd]]>, signature=fn() -> ptr<@type[[TYPE_fd]]>>(%[[VALUE_g]]);
 // DEFAULT-NEXT:         write<u8>(field1(deref(read<ptr<@type[[TYPE_fd]]>>(%[[VALUE_f_2]]))), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(call<i32, signature=fn() -> i32>(%[[VALUE_h]]))));
-// DEFAULT-NEXT:         reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(call<i32, signature=fn() -> i32>(%[[VALUE_h]])));
 // DEFAULT-NEXT:         if le<i32>(and<i32>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(field0(deref(read<ptr<@type[[TYPE_fd]]>>(%[[VALUE_f_2]])))))), const<i32>(127)), not<i32>(const<i32>(16))), const<i32>(2))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

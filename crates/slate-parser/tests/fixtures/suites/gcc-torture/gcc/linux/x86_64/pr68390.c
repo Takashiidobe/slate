@@ -55,7 +55,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_d2:[0-9]+]] d2: f64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(2);
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_d1]], call<f64, signature=fn(ptr<fn(i32, ...) -> f64>, i32) -> f64>(%[[VALUE_broken]], function_decay<ptr<fn(i32, ...) -> f64>>(%[[VALUE_direct]]), read<i32>(%[[VALUE_i]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(ptr<fn(i32, ...) -> f64>, i32) -> f64>(%[[VALUE_broken]], function_decay<ptr<fn(i32, ...) -> f64>>(%[[VALUE_direct]]), read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:         if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_d1]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(mul<i32, overflow=ub>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_i]]))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

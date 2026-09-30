@@ -103,7 +103,6 @@ int main() {
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_j]]), read<i32>(%[[VALUE_k]]))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_j]], call<i32, signature=fn(ptr<i32>, i32) -> i32>(%[[VALUE_foo]], addr_of<ptr<i32>>(%[[VALUE_i]]), const<i32>(7)));
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<i32>, i32) -> i32>(%[[VALUE_foo]], addr_of<ptr<i32>>(%[[VALUE_i]]), const<i32>(7));
 // DEFAULT-NEXT:                     if ge<i32>(read<i32>(%[[VALUE_i]]), const<i32>(7))
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_k]], read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:                     else

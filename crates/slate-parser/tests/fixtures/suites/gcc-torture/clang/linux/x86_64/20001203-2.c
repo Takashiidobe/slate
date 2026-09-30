@@ -184,7 +184,6 @@ int main(void) {
 // DEFAULT-NEXT:         if eq<ptr<@type[[TYPE_type]]>>(read<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type]]), null<ptr<@type[[TYPE_type]]>>)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type]], call<ptr<@type[[TYPE_type]]>, signature=fn() -> ptr<@type[[TYPE_type]]>>(%[[VALUE_alloc_type]]));
-// DEFAULT-NEXT:                 call<ptr<@type[[TYPE_type]]>, signature=fn() -> ptr<@type[[TYPE_type]]>>(%[[VALUE_alloc_type]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i64>, ptr<i64>) -> void>(%[[VALUE_get_discrete_bounds]], addr_of<ptr<i64>>(%[[VALUE_low_bound]]), addr_of<ptr<i64>>(%[[VALUE_high_bound]]));
 // DEFAULT-NEXT:         write<u32>(field0(deref(read<ptr<@type[[TYPE_type]]>>(%[[VALUE_result_type]]))), reinterpret<u32, reason=assign, fits=unknown>(truncate<i32, reason=assign, fits=unknown>(mul<i64, overflow=ub>(reinterpret<i64, reason=usual_arith, fits=unknown>(widen<u64, reason=usual_arith>(read<u32>(field0(deref(read<ptr<@type[[TYPE_type]]>>(%[[VALUE_element_type]])))))), add<i64, overflow=ub>(sub<i64, overflow=ub>(read<i64>(%[[VALUE_high_bound]]), read<i64>(%[[VALUE_low_bound]])), widen<i64, reason=usual_arith>(const<i32>(1)))))));

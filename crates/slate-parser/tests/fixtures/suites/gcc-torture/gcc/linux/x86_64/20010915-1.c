@@ -114,7 +114,6 @@ int r(const char *f) {
 // DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(gt<i32>(read<i32>(%[[VALUE_argc]]), read<i32>(%[[VALUE_o]])), gt<i32>(read<i32>(%[[VALUE_argc]]), const<i32>(2))), ne<ptr<i8>>(read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(read<ptr<ptr<i8>>>(%[[VALUE_argv]]), read<i32>(%[[VALUE_o]])))), null<ptr<i8>>))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_g]], call<ptr<i8>, signature=fn(ptr<i8>, ptr<ptr<i8>>) -> ptr<i8>>(%[[VALUE_s:[0-9]+]], read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(read<ptr<ptr<i8>>>(%[[VALUE_argv]]), read<i32>(%[[VALUE_o]])))), addr_of<ptr<ptr<i8>>>(%[[VALUE_p]])));
-// DEFAULT-NEXT:                 call<ptr<i8>, signature=fn(ptr<i8>, ptr<ptr<i8>>) -> ptr<i8>>(%[[VALUE_s]], read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(read<ptr<ptr<i8>>>(%[[VALUE_argv]]), read<i32>(%[[VALUE_o]])))), addr_of<ptr<ptr<i8>>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:                 if ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_g]]), null<ptr<i8>>)
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         let %[[VALUE1:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_g]]);
@@ -122,16 +121,12 @@ int r(const char *f) {
 // DEFAULT-NEXT:                         write<ptr<i8>>(%[[VALUE_g]], read<ptr<i8>>(%[[VALUE2]]));
 // DEFAULT-NEXT:                         write<i8>(deref(read<ptr<i8>>(%[[VALUE1]])), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:                         write<ptr<i8>>(%[[VALUE_h]], call<ptr<i8>, signature=fn(ptr<i8>, ptr<ptr<i8>>) -> ptr<i8>>(%[[VALUE_s]], read<ptr<i8>>(%[[VALUE_g]]), addr_of<ptr<ptr<i8>>>(%[[VALUE_p]])));
-// DEFAULT-NEXT:                         call<ptr<i8>, signature=fn(ptr<i8>, ptr<ptr<i8>>) -> ptr<i8>>(%[[VALUE_s]], read<ptr<i8>>(%[[VALUE_g]]), addr_of<ptr<ptr<i8>>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:                         if eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_g]]), read<ptr<i8>>(%[[VALUE_p]]))
 // DEFAULT-NEXT:                             write<ptr<i8>>(%[[VALUE_h]], call<ptr<i8>, signature=fn(ptr<i8>) -> ptr<i8>>(%[[VALUE_m:[0-9]+]], read<ptr<i8>>(%[[VALUE_g]])));
-// DEFAULT-NEXT:                             call<ptr<i8>, signature=fn(ptr<i8>) -> ptr<i8>>(%[[VALUE_m]], read<ptr<i8>>(%[[VALUE_g]]));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 write<ptr<i8>>(%[[VALUE_u]], call<ptr<i8>, signature=fn(ptr<i8>, ptr<ptr<i8>>) -> ptr<i8>>(%[[VALUE_s]], read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(read<ptr<ptr<i8>>>(%[[VALUE_argv]]), read<i32>(%[[VALUE_o]])))), addr_of<ptr<ptr<i8>>>(%[[VALUE_p]])));
-// DEFAULT-NEXT:                 call<ptr<i8>, signature=fn(ptr<i8>, ptr<ptr<i8>>) -> ptr<i8>>(%[[VALUE_s]], read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(read<ptr<ptr<i8>>>(%[[VALUE_argv]]), read<i32>(%[[VALUE_o]])))), addr_of<ptr<ptr<i8>>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:                 if eq<ptr<i8>>(read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(read<ptr<ptr<i8>>>(%[[VALUE_argv]]), read<i32>(%[[VALUE_o]])))), read<ptr<i8>>(%[[VALUE_p]]))
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_u]], call<ptr<i8>, signature=fn(ptr<i8>) -> ptr<i8>>(%[[VALUE_m]], read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(read<ptr<ptr<i8>>>(%[[VALUE_argv]]), read<i32>(%[[VALUE_o]]))))));
-// DEFAULT-NEXT:                     call<ptr<i8>, signature=fn(ptr<i8>) -> ptr<i8>>(%[[VALUE_m]], read<ptr<i8>>(deref(ptr_offset<ptr<ptr<i8>>, subtract=false, element=ptr<i8>, overflow=ub>(read<ptr<ptr<i8>>>(%[[VALUE_argv]]), read<i32>(%[[VALUE_o]])))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

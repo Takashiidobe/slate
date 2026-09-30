@@ -99,7 +99,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_data_record]]> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_num:[0-9]+]] num: i32 [storage=automatic] = call<i32, signature=fn() -> i32>(%[[VALUE_num_records]]);
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_data_ptr]], pointer_cast<ptr<@type[[TYPE_data_record]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_num]]))), const<u64>(404)))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE_data_record]]>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_num]]))), const<u64>(404))));
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_data_ptr]])), const<i32>(170), mul<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_num]]))), const<u64>(404)));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fetch]]);
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_p]], read<ptr<@type[[TYPE_data_record]]>>(%[[VALUE_data_ptr]]));

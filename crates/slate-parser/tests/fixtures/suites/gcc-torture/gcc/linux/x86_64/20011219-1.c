@@ -66,7 +66,6 @@ foo (double w[], int x, double y[], double z[])
 // DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: ptr<ptr<f64>> [synthetic] = ptr_offset<ptr<ptr<f64>>, subtract=true, element=ptr<f64>, overflow=ub>(read<ptr<ptr<f64>>>(%[[VALUE3]]), read<i64>(%[[VALUE_w]]));
 // DEFAULT-NEXT:         write<ptr<ptr<f64>>>(%[[VALUE_m]], read<ptr<ptr<f64>>>(%[[VALUE4]]));
 // DEFAULT-NEXT:         write<ptr<f64>>(deref(ptr_offset<ptr<ptr<f64>>, subtract=false, element=ptr<f64>, overflow=ub>(read<ptr<ptr<f64>>>(%[[VALUE_m]]), read<i64>(%[[VALUE_w]]))), pointer_cast<ptr<f64>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_baz]], mul<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(add<i64, overflow=ub>(mul<i64, overflow=ub>(read<i64>(%[[VALUE_a]]), read<i64>(%[[VALUE_b]])), widen<i64, reason=usual_arith>(const<i32>(1))))))));
-// DEFAULT-NEXT:         pointer_cast<ptr<f64>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_baz]], mul<u64, overflow=wrap>(const<u64>(8), reinterpret<u64, reason=usual_arith, fits=unknown>(add<i64, overflow=ub>(mul<i64, overflow=ub>(read<i64>(%[[VALUE_a]]), read<i64>(%[[VALUE_b]])), widen<i64, reason=usual_arith>(const<i32>(1)))))));
 // DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: ptr<ptr<f64>> [synthetic] = ptr_offset<ptr<ptr<f64>>, subtract=false, element=ptr<f64>, overflow=ub>(read<ptr<ptr<f64>>>(%[[VALUE_m]]), read<i64>(%[[VALUE_w]]));
 // DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: ptr<f64> [synthetic] = read<ptr<f64>>(deref(read<ptr<ptr<f64>>>(%[[VALUE5]])));
 // DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: ptr<f64> [synthetic] = ptr_offset<ptr<f64>, subtract=false, element=f64, overflow=ub>(read<ptr<f64>>(%[[VALUE6]]), const<i32>(1));
@@ -93,7 +92,6 @@ foo (double w[], int x, double y[], double z[])
 // DEFAULT-NEXT:         let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: ptr<ptr<f64>> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<ptr<f64>>>(%[[VALUE_a_2]], call<ptr<ptr<f64>>, signature=fn(i64, i64, i64, i64) -> ptr<ptr<f64>>>(%[[VALUE_bar]], widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(const<i32>(50)), widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(const<i32>(50))));
-// DEFAULT-NEXT:         call<ptr<ptr<f64>>, signature=fn(i64, i64, i64, i64) -> ptr<ptr<f64>>>(%[[VALUE_bar]], widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(const<i32>(50)), widen<i64, reason=arg>(const<i32>(1)), widen<i64, reason=arg>(const<i32>(50)));
 // DEFAULT-NEXT:         for %[[VALUE14:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], const<i32>(1));

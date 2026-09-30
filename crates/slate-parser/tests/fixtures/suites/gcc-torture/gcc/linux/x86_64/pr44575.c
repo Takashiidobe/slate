@@ -113,7 +113,6 @@ int main() {
 // DEFAULT-NEXT:                                 case %[[VALUE7]] const<i32>(19):
 // DEFAULT-NEXT:                                     write<ptr<@type[[TYPE_S]]>>(%[[VALUE_p]], addr_of<ptr<@type[[TYPE_S]]>>(deref(ptr_offset<ptr<@type[[TYPE_S]]>, subtract=false, element=@type[[TYPE_S]], overflow=ub>(array_decay<ptr<@type[[TYPE_S]]>, length=Some(5)>(%[[VALUE_a]]), const<i32>(2)))));
 // DEFAULT-NEXT:                             write<@type[[TYPE_S]]>(%[[VALUE_arg]], copy<@type[[TYPE_S]], reason=assign>(va_arg<@type[[TYPE_S]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:                             copy<@type[[TYPE_S]], reason=assign>(va_arg<@type[[TYPE_S]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:                             break %[[VALUE7]];
 // DEFAULT-NEXT:                             default %[[VALUE7]]:
 // DEFAULT-NEXT:                                 let %[[VALUE8:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_fails]]);

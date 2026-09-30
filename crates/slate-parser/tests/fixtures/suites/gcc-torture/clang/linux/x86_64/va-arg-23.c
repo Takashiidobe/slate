@@ -64,7 +64,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_args]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_h]], va_arg<i32>(%[[VALUE_args]]));
-// DEFAULT-NEXT:         va_arg<i32>(%[[VALUE_args]]);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_g]]), const<i32>(1)), ne<i32>(read<i32>(%[[VALUE_h]]), const<i32>(2)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:     }

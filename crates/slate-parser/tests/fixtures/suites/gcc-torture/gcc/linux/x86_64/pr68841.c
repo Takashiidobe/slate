@@ -77,7 +77,6 @@ int main() {
 // DEFAULT-NEXT:                     let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic];
 // DEFAULT-NEXT:                     let %[[VALUE_k:[0-9]+]] k: i32 [storage=automatic];
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_j]], call<i32, signature=fn(ptr<i32>, i32) -> i32>(%[[VALUE_foo]], addr_of<ptr<i32>>(%[[VALUE_i]]), const<i32>(7)));
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<i32>, i32) -> i32>(%[[VALUE_foo]], addr_of<ptr<i32>>(%[[VALUE_i]]), const<i32>(7));
 // DEFAULT-NEXT:                     if ge<i32>(read<i32>(%[[VALUE_i]]), const<i32>(7))
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_k]], read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:                     else

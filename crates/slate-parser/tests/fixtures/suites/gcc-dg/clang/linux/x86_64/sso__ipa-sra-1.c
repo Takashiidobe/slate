@@ -109,11 +109,9 @@ main (int argc, char *argv[])
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_fill]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], call<i32, signature=fn(@type[[TYPE_LE]]) -> i32, abi=sysv64(native_c) -> scalar>(%[[VALUE_readLE]], copy<@type[[TYPE_LE]], reason=arg>(read<@type[[TYPE_LE]]>(%[[VALUE_gle]]))));
-// DEFAULT-NEXT:         call<i32, signature=fn(@type[[TYPE_LE]]) -> i32, abi=sysv64(native_c) -> scalar>(%[[VALUE_readLE]], copy<@type[[TYPE_LE]], reason=arg>(read<@type[[TYPE_LE]]>(%[[VALUE_gle]])));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_r]]), const<i32>(305419896))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], call<i32, signature=fn(@type[[TYPE_BE]]) -> i32, abi=sysv64(native_c) -> scalar>(%[[VALUE_readBE]], copy<@type[[TYPE_BE]], reason=arg>(read<@type[[TYPE_BE]]>(%[[VALUE_gbe]]))));
-// DEFAULT-NEXT:         call<i32, signature=fn(@type[[TYPE_BE]]) -> i32, abi=sysv64(native_c) -> scalar>(%[[VALUE_readBE]], copy<@type[[TYPE_BE]], reason=arg>(read<@type[[TYPE_BE]]>(%[[VALUE_gbe]])));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_r]]), const<i32>(305419896))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

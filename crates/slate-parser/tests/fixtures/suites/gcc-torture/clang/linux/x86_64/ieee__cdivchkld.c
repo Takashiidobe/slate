@@ -229,7 +229,6 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:         if ne<f80, exceptions=ignore>(read<f80>(%[[VALUE_rmax]]), float_widen<f80, reason=usual_arith>(const<f64>(0.0)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_biterr]], add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(f80) -> i32>(%[[VALUE_ilogbl]], read<f80>(%[[VALUE_rmax]])), const<i32>(64)), const<i32>(1)));
-// DEFAULT-NEXT:                 add<i32, overflow=ub>(add<i32, overflow=ub>(call<i32, signature=fn(f80) -> i32>(%[[VALUE_ilogbl]], read<f80>(%[[VALUE_rmax]])), const<i32>(64)), const<i32>(1));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if ge<i32>(read<i32>(%[[VALUE_biterr]]), const<i32>(6))
 // DEFAULT-NEXT:             return const<i32>(0);

@@ -98,14 +98,12 @@ int main(void) {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_k_3]], const<u64>(9697299402072392705));
 // DEFAULT-NEXT:                 write<f64>(%[[VALUE_x_3]], call<f64, signature=fn(u64) -> f64>(%[[VALUE_d]], read<u64>(%[[VALUE_k_3]])));
-// DEFAULT-NEXT:                 call<f64, signature=fn(u64) -> f64>(%[[VALUE_d]], read<u64>(%[[VALUE_k_3]]));
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_k_3]], float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%[[VALUE_x_3]])));
 // DEFAULT-NEXT:                 if ne<u64>(read<u64>(%[[VALUE_k_3]]), const<u64>(9697299402072393728))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_k_3]], const<u64>(9382212434405621761));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_x_3]], float_widen<f64, reason=assign>(call<f32, signature=fn(u64) -> f32>(%[[VALUE_s]], read<u64>(%[[VALUE_k_3]]))));
-// DEFAULT-NEXT:         float_widen<f64, reason=assign>(call<f32, signature=fn(u64) -> f32>(%[[VALUE_s]], read<u64>(%[[VALUE_k_3]])));
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_k_3]], float_to_int<u64, reason=explicit, out_of_range=ub, exceptions=ignore>(read<f64>(%[[VALUE_x_3]])));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_k_3]]), const<u64>(9382212984161435648))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

@@ -79,17 +79,18 @@ int main() {
 // DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: bool [synthetic] = logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0)), lt<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0))), gt<i32>(read<i32>(%[[VALUE_c]]), const<i32>(1)));
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_m]], conditional<i32>(ne<i32>(read<bool>(%[[VALUE3]]), const<i32>(0)), read<bool>(%[[VALUE3]]), read<i32>(%[[VALUE_c]])));
 // DEFAULT-NEXT:                     let %[[VALUE4:[0-9]+]]: bool [synthetic] = logical_or<bool>(logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0)), lt<i32>(read<i32>(%[[VALUE_m]]), const<i32>(0))), gt<i32>(from_bool<i32, reason=promotion>(gt<i32>(read<i32>(%[[VALUE_m]]), const<i32>(1))), shr<i32, amount_out_of_range=ub, fill=sign_extend>(const<i32>(1), read<i32>(%[[VALUE_m]]))));
-// DEFAULT-NEXT:                     write<i32>(%[[VALUE_l]], conditional<i32>(ne<i32>(read<bool>(%[[VALUE4]]), const<i32>(0)), read<bool>(%[[VALUE4]]), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), read<i32>(%[[VALUE_m]]))));
-// DEFAULT-NEXT:                     write<i32>(%[[VALUE_g]], conditional<i32>(ne<i32>(read<bool>(%[[VALUE4]]), const<i32>(0)), read<bool>(%[[VALUE4]]), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), read<i32>(%[[VALUE_m]]))));
+// DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: i32 [synthetic] = conditional<i32>(ne<i32>(read<bool>(%[[VALUE4]]), const<i32>(0)), read<bool>(%[[VALUE4]]), shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(const<i32>(1), read<i32>(%[[VALUE_m]])));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_l]], read<i32>(%[[VALUE5]]));
+// DEFAULT-NEXT:                     write<i32>(%[[VALUE_g]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_l]], add<i32, overflow=ub>(read<i32>(%[[VALUE_b]]), const<i32>(1)));
-// DEFAULT-NEXT:         for %[[VALUE5:[0-9]+]]
+// DEFAULT-NEXT:         for %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_b]]), const<i32>(1))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_b]]);
-// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_b]], read<i32>(%[[VALUE7]]));
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_b]]);
+// DEFAULT-NEXT:                 let %[[VALUE8:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE7]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_b]], read<i32>(%[[VALUE8]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -98,13 +99,13 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i8 [storage=automatic];
-// DEFAULT-NEXT:         for %[[VALUE8:[0-9]+]]
+// DEFAULT-NEXT:         for %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_a]]), const<i32>(1))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %[[VALUE9:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
-// DEFAULT-NEXT:                 let %[[VALUE10:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE9]]), const<i32>(1));
-// DEFAULT-NEXT:                 write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE10]]));
+// DEFAULT-NEXT:                 let %[[VALUE10:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_a]]);
+// DEFAULT-NEXT:                 let %[[VALUE11:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE10]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE11]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:

@@ -72,7 +72,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_s]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32>(%[[VALUE_i_2]])));
-// DEFAULT-NEXT:                     call<i32, signature=fn(i32) -> i32>(%[[VALUE_f]], read<i32>(%[[VALUE_i_2]]));
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%[[VALUE_i_2]]), call<i32, signature=fn() -> i32>(%[[VALUE_g]]))
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_s]], const<i32>(42));
 // DEFAULT-NEXT:                     if logical_or<bool>(eq<i32>(read<i32>(%[[VALUE_i_2]]), const<i32>(0)), eq<i32>(read<i32>(%[[VALUE_s]]), const<i32>(12)))

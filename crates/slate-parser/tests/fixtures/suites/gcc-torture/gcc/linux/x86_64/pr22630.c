@@ -51,8 +51,9 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_bla:[0-9]+]] @bla(%[[VALUE_r:[0-9]+]] r: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_q]], read<ptr<i32>>(%[[VALUE_r]]));
-// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_p]], read<ptr<i32>>(%[[VALUE_r]]));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<i32> [synthetic] = read<ptr<i32>>(%[[VALUE_r]]);
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_q]], read<ptr<i32>>(%[[VALUE0]]));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_p]], read<ptr<i32>>(%[[VALUE0]]));
 // DEFAULT-NEXT:         if not<bool>(ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), null<ptr<i32>>))
 // DEFAULT-NEXT:             write<ptr<i32>>(%[[VALUE_p]], addr_of<ptr<i32>>(%[[VALUE_j]]));
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), read<ptr<i32>>(%[[VALUE_q]]))

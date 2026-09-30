@@ -60,13 +60,14 @@ foo (void)
 // DEFAULT-NEXT:         if ne<i64>(call<i64, signature=fn(i64, i64) -> i64>(%[[VALUE___builtin_expect]], from_bool<i64, reason=arg>(read<bool>(%[[VALUE_a]])), widen<i64, reason=arg>(const<i32>(0))), const<i64>(0))
 // DEFAULT-NEXT:             return;
 // DEFAULT-NEXT:         while %[[VALUE2:[0-9]+]] {
-// DEFAULT-NEXT:             write<ptr<fn() -> void>>(%[[VALUE_f]], read<ptr<fn() -> void>>(deref(read<ptr<ptr<fn() -> void>>>(%[[VALUE_p]]))));
-// DEFAULT-NEXT:             yield ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(deref(read<ptr<ptr<fn() -> void>>>(%[[VALUE_p]]))), null<ptr<fn() -> void>>);
+// DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: ptr<fn() -> void> [synthetic] = read<ptr<fn() -> void>>(deref(read<ptr<ptr<fn() -> void>>>(%[[VALUE_p]])));
+// DEFAULT-NEXT:             write<ptr<fn() -> void>>(%[[VALUE_f]], read<ptr<fn() -> void>>(%[[VALUE3]]));
+// DEFAULT-NEXT:             yield ne<ptr<fn() -> void>>(read<ptr<fn() -> void>>(%[[VALUE3]]), null<ptr<fn() -> void>>);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: ptr<ptr<fn() -> void>> [synthetic] = read<ptr<ptr<fn() -> void>>>(%[[VALUE_p]]);
-// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<ptr<fn() -> void>> [synthetic] = ptr_offset<ptr<ptr<fn() -> void>>, subtract=false, element=ptr<fn() -> void>, overflow=ub>(read<ptr<ptr<fn() -> void>>>(%[[VALUE3]]), const<i32>(1));
-// DEFAULT-NEXT:                 write<ptr<ptr<fn() -> void>>>(%[[VALUE_p]], read<ptr<ptr<fn() -> void>>>(%[[VALUE4]]));
+// DEFAULT-NEXT:                 let %[[VALUE4:[0-9]+]]: ptr<ptr<fn() -> void>> [synthetic] = read<ptr<ptr<fn() -> void>>>(%[[VALUE_p]]);
+// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: ptr<ptr<fn() -> void>> [synthetic] = ptr_offset<ptr<ptr<fn() -> void>>, subtract=false, element=ptr<fn() -> void>, overflow=ub>(read<ptr<ptr<fn() -> void>>>(%[[VALUE4]]), const<i32>(1));
+// DEFAULT-NEXT:                 write<ptr<ptr<fn() -> void>>>(%[[VALUE_p]], read<ptr<ptr<fn() -> void>>>(%[[VALUE5]]));
 // DEFAULT-NEXT:                 call<void, signature=fn() -> void>(read<ptr<fn() -> void>>(%[[VALUE_f]]));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<bool>(%[[VALUE_a]], ne<i32, reason=assign>(const<i32>(1), const<i32>(0)));

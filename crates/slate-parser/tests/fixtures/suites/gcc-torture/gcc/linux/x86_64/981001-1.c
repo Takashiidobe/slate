@@ -70,15 +70,12 @@ int main(void) {
 // DEFAULT-NEXT:                 if eq<i32>(rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_n]]), const<i32>(2)), const<i32>(0))
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_a]], truncate<i32, reason=assign, fits=unknown>(call<i64, signature=fn(i32) -> i64>(%[[VALUE_sub]], div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_n]]), const<i32>(2)))));
-// DEFAULT-NEXT:                         truncate<i32, reason=assign, fits=unknown>(call<i64, signature=fn(i32) -> i64>(%[[VALUE_sub]], div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_n]]), const<i32>(2))));
 // DEFAULT-NEXT:                         return mul<i64, overflow=ub>(add<i64, overflow=ub>(widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_a]])), mul<i64, overflow=ub>(widen<i64, reason=usual_arith>(const<i32>(2)), call<i64, signature=fn(i32) -> i64>(%[[VALUE_sub]], sub<i32, overflow=ub>(div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_n]]), const<i32>(2)), const<i32>(1))))), widen<i64, reason=usual_arith>(read<i32>(%[[VALUE_a]])));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                 else
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_a]], truncate<i32, reason=assign, fits=unknown>(call<i64, signature=fn(i32) -> i64>(%[[VALUE_sub]], add<i32, overflow=ub>(div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_n]]), const<i32>(2)), const<i32>(1)))));
-// DEFAULT-NEXT:                         truncate<i32, reason=assign, fits=unknown>(call<i64, signature=fn(i32) -> i64>(%[[VALUE_sub]], add<i32, overflow=ub>(div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_n]]), const<i32>(2)), const<i32>(1))));
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_b]], truncate<i32, reason=assign, fits=unknown>(call<i64, signature=fn(i32) -> i64>(%[[VALUE_sub]], div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_n]]), const<i32>(2)))));
-// DEFAULT-NEXT:                         truncate<i32, reason=assign, fits=unknown>(call<i64, signature=fn(i32) -> i64>(%[[VALUE_sub]], div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_n]]), const<i32>(2))));
 // DEFAULT-NEXT:                         return widen<i64, reason=return>(add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_a]])), mul<i32, overflow=ub>(read<i32>(%[[VALUE_b]]), read<i32>(%[[VALUE_b]]))));
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:             }

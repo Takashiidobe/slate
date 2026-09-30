@@ -113,27 +113,21 @@ long double test3l(long double x)
 // DEFAULT-NEXT:         let %[[VALUE_y1:[0-9]+]] y1: f64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_y2:[0-9]+]] y2: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_y1]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_sin]], read<f64>(%[[VALUE_x]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE_sin]], read<f64>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_y2]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_cos]], read<f64>(%[[VALUE_x]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE_cos]], read<f64>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         return sub<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_y1]]), read<f64>(%[[VALUE_y2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test1f:[0-9]+]] @test1f(%[[VALUE_x_2:[0-9]+]] x: f32) -> f32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_y1_2:[0-9]+]] y1: f32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_y2_2:[0-9]+]] y2: f32 [storage=automatic];
 // DEFAULT-NEXT:         write<f32>(%[[VALUE_y1_2]], call<f32, signature=fn(f32) -> f32>(%[[VALUE_sinf]], read<f32>(%[[VALUE_x_2]])));
-// DEFAULT-NEXT:         call<f32, signature=fn(f32) -> f32>(%[[VALUE_sinf]], read<f32>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:         write<f32>(%[[VALUE_y2_2]], call<f32, signature=fn(f32) -> f32>(%[[VALUE_cosf]], read<f32>(%[[VALUE_x_2]])));
-// DEFAULT-NEXT:         call<f32, signature=fn(f32) -> f32>(%[[VALUE_cosf]], read<f32>(%[[VALUE_x_2]]));
 // DEFAULT-NEXT:         return sub<f32, rounding=nearest_even, exceptions=ignore, contract=on>(read<f32>(%[[VALUE_y1_2]]), read<f32>(%[[VALUE_y2_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test1l:[0-9]+]] @test1l(%[[VALUE_x_3:[0-9]+]] x: f80) -> f80 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_y1_3:[0-9]+]] y1: f80 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_y2_3:[0-9]+]] y2: f80 [storage=automatic];
 // DEFAULT-NEXT:         write<f80>(%[[VALUE_y1_3]], call<f80, signature=fn(f80) -> f80>(%[[VALUE_sinl]], read<f80>(%[[VALUE_x_3]])));
-// DEFAULT-NEXT:         call<f80, signature=fn(f80) -> f80>(%[[VALUE_sinl]], read<f80>(%[[VALUE_x_3]]));
 // DEFAULT-NEXT:         write<f80>(%[[VALUE_y2_3]], call<f80, signature=fn(f80) -> f80>(%[[VALUE_cosl]], read<f80>(%[[VALUE_x_3]])));
-// DEFAULT-NEXT:         call<f80, signature=fn(f80) -> f80>(%[[VALUE_cosl]], read<f80>(%[[VALUE_x_3]]));
 // DEFAULT-NEXT:         return sub<f80, rounding=nearest_even, exceptions=ignore, contract=on>(read<f80>(%[[VALUE_y1_3]]), read<f80>(%[[VALUE_y2_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2(%[[VALUE_x_4:[0-9]+]] x: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {

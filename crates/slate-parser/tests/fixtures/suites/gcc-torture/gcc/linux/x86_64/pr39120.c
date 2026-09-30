@@ -62,7 +62,6 @@ int         main() {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         write<@type[[TYPE_X]]>(%[[VALUE_x]], copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(ptr<i32>) -> @type[[TYPE_X]], abi=sysv64(scalar) -> native_c>(%[[VALUE_foo]], addr_of<ptr<i32>>(%[[VALUE_i]]))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_X]], reason=assign>(call<@type[[TYPE_X]], signature=fn(ptr<i32>) -> @type[[TYPE_X]], abi=sysv64(scalar) -> native_c>(%[[VALUE_foo]], addr_of<ptr<i32>>(%[[VALUE_i]])));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_bar]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

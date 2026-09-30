@@ -43,11 +43,8 @@ void foo()
 // DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: volatile i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_i]], widen<i32, reason=assign>(va_arg<i8>(%[[VALUE_v]])));
-// DEFAULT-NEXT:         widen<i32, reason=assign>(va_arg<i8>(%[[VALUE_v]]));
 // DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_i]], widen<i32, reason=assign>(va_arg<i16>(%[[VALUE_v]])));
-// DEFAULT-NEXT:         widen<i32, reason=assign>(va_arg<i16>(%[[VALUE_v]]));
 // DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_i]], float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f32>(%[[VALUE_v]])));
-// DEFAULT-NEXT:         float_to_int<i32, reason=assign, out_of_range=ub, exceptions=ignore>(va_arg<f32>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

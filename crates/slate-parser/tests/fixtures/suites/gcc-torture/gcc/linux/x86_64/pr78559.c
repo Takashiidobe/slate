@@ -70,7 +70,6 @@ lbl_2582:
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             write<i32>(%[[VALUE_result]], widen<i32, reason=assign>(call<i16, signature=fn(i32, i32) -> i16>(%[[VALUE_fn2]], const<i32>(1), read<i32>(%[[VALUE_g]]))));
-// DEFAULT-NEXT:                             widen<i32, reason=assign>(call<i16, signature=fn(i32, i32) -> i16>(%[[VALUE_fn2]], const<i32>(1), read<i32>(%[[VALUE_g]])));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             else
 // DEFAULT-NEXT:                 {

@@ -142,14 +142,14 @@ void f0(void) {
 // DEFAULT-NEXT:         let %[[VALUE_x1:[0-9]+]] x1: @type[[TYPE1]] [storage=automatic] = aggregate<@type[[TYPE1]], zero_fill=true>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE2]]>>(%[[VALUE_i]], pointer_cast<ptr<@type[[TYPE2]]>, reason=assign>(read<ptr<void>>(%[[VALUE_port]])));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..16>(%[[VALUE_x1]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(32)));
-// DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..16>(%[[VALUE_x0]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(32)));
+// DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..16>(%[[VALUE_x0]]), reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=assign>(truncate<u16b, reason=assign, fits=unknown>(reinterpret<u32, reason=assign, fits=always>(const<i32>(32)))))));
 // DEFAULT-NEXT:         write<@type[[TYPE0]]>(field0(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_i]]))), copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(%[[VALUE_x0]])));
 // DEFAULT-NEXT:         write<@type[[TYPE1]]>(field1(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_i]]))), copy<@type[[TYPE1]], reason=assign>(read<@type[[TYPE1]]>(%[[VALUE_x1]])));
 // DEFAULT-NEXT:         do %[[VALUE1:[0-9]+]]
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_f0:[0-9]+]]);
 // DEFAULT-NEXT:         while ne<u64>(read<u64>(%[[VALUE_test_t1]]), const<u64>(0));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..16>(%[[VALUE_x1]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(8)));
-// DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..16>(%[[VALUE_x0]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(8)));
+// DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..16>(%[[VALUE_x0]]), reinterpret<u32, reason=assign, fits=unknown>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=assign>(truncate<u16b, reason=assign, fits=unknown>(reinterpret<u32, reason=assign, fits=always>(const<i32>(8)))))));
 // DEFAULT-NEXT:         write<@type[[TYPE0]]>(field0(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_i]]))), copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(%[[VALUE_x0]])));
 // DEFAULT-NEXT:         write<@type[[TYPE1]]>(field1(deref(read<ptr<@type[[TYPE2]]>>(%[[VALUE_i]]))), copy<@type[[TYPE1]], reason=assign>(read<@type[[TYPE1]]>(%[[VALUE_x1]])));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_test]]);

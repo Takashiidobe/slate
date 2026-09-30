@@ -67,7 +67,6 @@ int format_number(char *buffer, size_t size, int value) {
 // IR-NEXT:         let %[[VALUE__ArgList_3:[0-9]+]] _ArgList: ptr<i8> [storage=automatic];
 // IR-NEXT:         write<ptr<i8>>(%[[VALUE__ArgList_3]], ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<const ptr<const i8>>>(%[[VALUE__Format_3]])), and<u32>(sub<u32, overflow=wrap>(add<u32, overflow=wrap>(const<u32>(4), const<u32>(4)), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))), not<u32>(sub<u32, overflow=wrap>(const<u32>(4), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))))));
 // IR-NEXT:         write<i32>(%[[VALUE__Result_2]], call<i32, signature=fn(ptr<i8>, u32, ptr<const i8>, ptr<i8>) -> i32>(%[[VALUE_vsnprintf]], read<ptr<i8>>(%[[VALUE__Buffer_3]]), read<u32>(%[[VALUE__BufferCount_3]]), read<ptr<const i8>>(%[[VALUE__Format_3]]), read<ptr<i8>>(%[[VALUE__ArgList_3]])));
-// IR-NEXT:         call<i32, signature=fn(ptr<i8>, u32, ptr<const i8>, ptr<i8>) -> i32>(%[[VALUE_vsnprintf]], read<ptr<i8>>(%[[VALUE__Buffer_3]]), read<u32>(%[[VALUE__BufferCount_3]]), read<ptr<const i8>>(%[[VALUE__Format_3]]), read<ptr<i8>>(%[[VALUE__ArgList_3]]));
 // IR-NEXT:         write<ptr<i8>>(%[[VALUE__ArgList_3]], null<ptr<i8>>);
 // IR-NEXT:         return read<i32>(%[[VALUE__Result_2]]);
 // IR-NEXT:     }

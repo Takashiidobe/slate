@@ -60,15 +60,18 @@ bar (void)
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         read<i8>(deref(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE0:[0-9]+]] = conditional<@type[[TYPE_s]]>(ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0)), read<@type[[TYPE_s]]>(%[[VALUE_b]]), read<@type[[TYPE_s]]>(%[[VALUE_c]])))), const<i32>(0))));
 // DEFAULT-NEXT:         read<i32>(%[[VALUE_d]]);
-// DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_a]], copy<@type[[TYPE_s]], reason=assign>(read<@type[[TYPE_s]]>(%[[VALUE_b]])));
-// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_t]], array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE1:[0-9]+]] = conditional<@type[[TYPE_s]]>(ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0)), read<@type[[TYPE_s]]>(%[[VALUE_b]]), read<@type[[TYPE_s]]>(%[[VALUE_c]])))));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: @type[[TYPE_s]] [synthetic] = copy<@type[[TYPE_s]], reason=assign>(read<@type[[TYPE_s]]>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_a]], read<@type[[TYPE_s]]>(%[[VALUE1]]));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_t]], array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE2:[0-9]+]] = conditional<@type[[TYPE_s]]>(ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0)), read<@type[[TYPE_s]]>(%[[VALUE_b]]), read<@type[[TYPE_s]]>(%[[VALUE_c]])))));
 // DEFAULT-NEXT:         read<i32>(%[[VALUE_d]]);
-// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_t]], array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE2:[0-9]+]] = read<@type[[TYPE_s]]>(%[[VALUE_b]]))));
-// DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_a]], copy<@type[[TYPE_s]], reason=assign>(read<@type[[TYPE_s]]>(%[[VALUE_b]])));
-// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_t]], array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE3:[0-9]+]] = copy<@type[[TYPE_s]], reason=assign>(read<@type[[TYPE_s]]>(%[[VALUE_b]])))));
-// DEFAULT-NEXT:         ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE4:[0-9]+]] = conditional<@type[[TYPE_s]]>(ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0)), read<@type[[TYPE_s]]>(%[[VALUE_b]]), read<@type[[TYPE_s]]>(%[[VALUE_c]])))), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_t]], array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE3:[0-9]+]] = read<@type[[TYPE_s]]>(%[[VALUE_b]]))));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: @type[[TYPE_s]] [synthetic] = copy<@type[[TYPE_s]], reason=assign>(read<@type[[TYPE_s]]>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_a]], read<@type[[TYPE_s]]>(%[[VALUE4]]));
+// DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_t]], array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE5:[0-9]+]] = read<@type[[TYPE_s]]>(%[[VALUE4]]))));
+// DEFAULT-NEXT:         ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(1)>(field0(temporary %[[VALUE6:[0-9]+]] = conditional<@type[[TYPE_s]]>(ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0)), read<@type[[TYPE_s]]>(%[[VALUE_b]]), read<@type[[TYPE_s]]>(%[[VALUE_c]])))), const<i32>(1));
 // DEFAULT-NEXT:         read<i32>(%[[VALUE_d]]);
-// DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_a]], copy<@type[[TYPE_s]], reason=assign>(read<@type[[TYPE_s]]>(%[[VALUE_b]])));
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: @type[[TYPE_s]] [synthetic] = copy<@type[[TYPE_s]], reason=assign>(read<@type[[TYPE_s]]>(%[[VALUE_b]]));
+// DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_a]], read<@type[[TYPE_s]]>(%[[VALUE7]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

@@ -171,13 +171,11 @@ fn15 (_Complex volatile int *z)
 // DEFAULT-NEXT:     fn %[[VALUE_fn2:[0-9]+]] @fn2() -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_r_2]], int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(from_bool<i32, reason=assign>(lt<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sqrt]], int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0)))), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]])))));
-// DEFAULT-NEXT:         int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(from_bool<i32, reason=assign>(lt<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sqrt]], int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0)))), call<f64, signature=fn() -> f64>(%[[VALUE___builtin_inf]]))));
 // DEFAULT-NEXT:         return read<f64>(%[[VALUE_r_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn3:[0-9]+]] @fn3() -> f64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_r_3:[0-9]+]] r: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_r_3]], int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(from_bool<i32, reason=assign>(lt<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sqrt]], int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0)))), const<f64>(1.3)))));
-// DEFAULT-NEXT:         int_to_float<f64, reason=assign, exact=true, rounding=nearest_even, exceptions=observable>(from_bool<i32, reason=assign>(lt<f64, exceptions=observable>(call<f64, signature=fn(f64) -> f64>(%[[VALUE___builtin_sqrt]], int_to_float<f64, reason=arg, exact=true, rounding=nearest_even, exceptions=observable>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0)))), const<f64>(1.3))));
 // DEFAULT-NEXT:         return read<f64>(%[[VALUE_r_3]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_copysign:[0-9]+]] @__builtin_copysign(%[[VALUE7:[0-9]+]] <unnamed>: f64, %[[VALUE8:[0-9]+]] <unnamed>: f64) -> f64 [linkage=external] [memory=none];
@@ -222,8 +220,9 @@ fn15 (_Complex volatile int *z)
 // DEFAULT-NEXT:             let %[[VALUE13:[0-9]+]]: u32 [synthetic] = mul<u32, overflow=wrap>(read<u32>(%[[VALUE12]]), reinterpret<u32, reason=usual_arith, fits=unknown>(div<i32, by_zero=ub, min_by_neg_one=ub>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0)), const<i32>(0))));
 // DEFAULT-NEXT:             write<u32>(%[[VALUE_u]], read<u32>(%[[VALUE13]]));
 // DEFAULT-NEXT:             write<u32>(%[[VALUE11]], read<u32>(%[[VALUE13]]));
-// DEFAULT-NEXT:         write<u32>(%[[VALUE_u]], reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0))));
-// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<u32>(read<u32>(%[[VALUE11]]), reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0)))));
+// DEFAULT-NEXT:         let %[[VALUE14:[0-9]+]]: u32 [synthetic] = reinterpret<u32, reason=assign, fits=unknown>(conditional<i32>(ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0)), read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_e]]))), const<i32>(0)));
+// DEFAULT-NEXT:         write<u32>(%[[VALUE_u]], read<u32>(%[[VALUE14]]));
+// DEFAULT-NEXT:         return from_bool<i32, reason=return>(ge<u32>(read<u32>(%[[VALUE11]]), read<u32>(%[[VALUE14]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn15:[0-9]+]] @fn15(%[[VALUE_z:[0-9]+]] z: ptr<volatile complex<i32>>) -> complex<i32> [linkage=external] [abi=sysv64(scalar) -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return mul<complex<i32>, complex=true, overflow=ub>(read<complex<i32>, volatile>(deref(read<ptr<volatile complex<i32>>>(%[[VALUE_z]]))), not<complex<i32>, complex=true, overflow=ub>(read<complex<i32>, volatile>(deref(read<ptr<volatile complex<i32>>>(%[[VALUE_z]])))));

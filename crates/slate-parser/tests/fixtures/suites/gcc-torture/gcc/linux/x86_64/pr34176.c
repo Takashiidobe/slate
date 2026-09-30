@@ -130,7 +130,6 @@ int main(void) {
 // DEFAULT-NEXT:                         if ne<u64>(read<u64>(%[[VALUE_new_max]]), read<u64>(%[[VALUE_len2]]))
 // DEFAULT-NEXT:                             break %[[VALUE2]];
 // DEFAULT-NEXT:                         write<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_dest]], call<ptr<@type[[TYPE_mult_index]]>, signature=fn(u64) -> ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_foo]], read<u64>(%[[VALUE_new_max]])));
-// DEFAULT-NEXT:                         call<ptr<@type[[TYPE_mult_index]]>, signature=fn(u64) -> ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_foo]], read<u64>(%[[VALUE_new_max]]));
 // DEFAULT-NEXT:                         write<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_destptr]], read<ptr<@type[[TYPE_mult_index]]>>(%[[VALUE_dest]]));
 // DEFAULT-NEXT:                         while %[[VALUE3:[0-9]+]] {
 // DEFAULT-NEXT:                             let %[[VALUE4:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_len2]]);

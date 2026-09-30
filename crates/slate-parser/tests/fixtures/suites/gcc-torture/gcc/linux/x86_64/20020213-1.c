@@ -67,7 +67,6 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_a]]), call<i32, signature=fn(f32) -> i32>(%[[VALUE_bar]], read<f32>(field0(%[[VALUE_a]]))));
-// DEFAULT-NEXT:         call<i32, signature=fn(f32) -> i32>(%[[VALUE_bar]], read<f32>(field0(%[[VALUE_a]])));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_a]]), conditional<i32>(lt<i32>(read<i32>(field1(%[[VALUE_a]])), sub<i32, overflow=ub>(read<i32>(%[[VALUE_b]]), const<i32>(1))), read<i32>(field1(%[[VALUE_a]])), sub<i32, overflow=ub>(read<i32>(%[[VALUE_b]]), const<i32>(1))));
 // DEFAULT-NEXT:         if ge<i32>(read<i32>(field1(%[[VALUE_a]])), sub<i32, overflow=ub>(read<i32>(%[[VALUE_b]]), const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

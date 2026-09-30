@@ -100,16 +100,13 @@ int main(void) {
 // DEFAULT-NEXT:             yield gt<i32>(read<i32>(%[[VALUE2]]), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             write<@type[[TYPE_CS]]>(%[[VALUE_a_2]], copy<@type[[TYPE_CS]], reason=assign>(call<@type[[TYPE_CS]], signature=fn(@type[[TYPE_CS]]) -> @type[[TYPE_CS]], abi=sysv64(native_c) -> native_c>(%[[VALUE_CCID]], copy<@type[[TYPE_CS]], reason=arg>(read<@type[[TYPE_CS]]>(%[[VALUE_a_2]])))));
-// DEFAULT-NEXT:             copy<@type[[TYPE_CS]], reason=assign>(call<@type[[TYPE_CS]], signature=fn(@type[[TYPE_CS]]) -> @type[[TYPE_CS]], abi=sysv64(native_c) -> native_c>(%[[VALUE_CCID]], copy<@type[[TYPE_CS]], reason=arg>(read<@type[[TYPE_CS]]>(%[[VALUE_a_2]]))));
 // DEFAULT-NEXT:         return copy<@type[[TYPE_CS]], reason=return>(read<@type[[TYPE_CS]]>(%[[VALUE_a_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_c5p:[0-9]+]] @c5p(%[[VALUE_x_3:[0-9]+]] x: @type[[TYPE_CS]]) -> i32 [linkage=internal] [abi=sysv64(native_c) -> scalar] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_a_3:[0-9]+]] a: @type[[TYPE_CS]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: @type[[TYPE_CS]] [storage=automatic];
 // DEFAULT-NEXT:         write<@type[[TYPE_CS]]>(%[[VALUE_a_3]], copy<@type[[TYPE_CS]], reason=assign>(call<@type[[TYPE_CS]], signature=fn(@type[[TYPE_CS]], i32) -> @type[[TYPE_CS]], abi=sysv64(native_c, scalar) -> native_c>(%[[VALUE_CPOW]], copy<@type[[TYPE_CS]], reason=arg>(read<@type[[TYPE_CS]]>(%[[VALUE_x_3]])), const<i32>(2))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_CS]], reason=assign>(call<@type[[TYPE_CS]], signature=fn(@type[[TYPE_CS]], i32) -> @type[[TYPE_CS]], abi=sysv64(native_c, scalar) -> native_c>(%[[VALUE_CPOW]], copy<@type[[TYPE_CS]], reason=arg>(read<@type[[TYPE_CS]]>(%[[VALUE_x_3]])), const<i32>(2)));
 // DEFAULT-NEXT:         write<@type[[TYPE_CS]]>(%[[VALUE_b]], copy<@type[[TYPE_CS]], reason=assign>(call<@type[[TYPE_CS]], signature=fn(@type[[TYPE_CS]]) -> @type[[TYPE_CS]], abi=sysv64(native_c) -> native_c>(%[[VALUE_CCID]], copy<@type[[TYPE_CS]], reason=arg>(call<@type[[TYPE_CS]], signature=fn(@type[[TYPE_CS]], i32) -> @type[[TYPE_CS]], abi=sysv64(native_c, scalar) -> native_c>(%[[VALUE_CPOW]], copy<@type[[TYPE_CS]], reason=arg>(read<@type[[TYPE_CS]]>(%[[VALUE_a_3]])), const<i32>(2))))));
-// DEFAULT-NEXT:         copy<@type[[TYPE_CS]], reason=assign>(call<@type[[TYPE_CS]], signature=fn(@type[[TYPE_CS]]) -> @type[[TYPE_CS]], abi=sysv64(native_c) -> native_c>(%[[VALUE_CCID]], copy<@type[[TYPE_CS]], reason=arg>(call<@type[[TYPE_CS]], signature=fn(@type[[TYPE_CS]], i32) -> @type[[TYPE_CS]], abi=sysv64(native_c, scalar) -> native_c>(%[[VALUE_CPOW]], copy<@type[[TYPE_CS]], reason=arg>(read<@type[[TYPE_CS]]>(%[[VALUE_a_3]])), const<i32>(2)))));
 // DEFAULT-NEXT:         return from_bool<i32, reason=return>(eq<i64>(read<i64>(field0(%[[VALUE_b]])), read<i64>(field1(%[[VALUE_b]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

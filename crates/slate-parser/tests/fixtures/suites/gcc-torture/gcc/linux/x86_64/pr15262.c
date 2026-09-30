@@ -96,7 +96,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_str_2:[0-9]+]] str: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_loc]]), const<i32>(2));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_str_2]], call<i32, signature=fn(ptr<@type[[TYPE_A]]>, i32, i32) -> i32>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_loc]]), const<i32>(10), const<i32>(3)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE_A]]>, i32, i32) -> i32>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_loc]]), const<i32>(10), const<i32>(3));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_str_2]]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

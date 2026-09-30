@@ -76,8 +76,13 @@ Rust has no compact form for C's embedded effects, so a final sema pass
 (`src/sema/effects.rs`) pulls them into statements:
 
 - `a = b`, compound assignment, and `++`/`--` become `Statement::Write` on
-  a place. The written value is the store result, so `x = y = 0` chains
-  through the first store without re-reading `y`.
+  a place. As a statement only the write remains. Where the result is used,
+  a non-constant stored value is bound to a `[synthetic]` temporary first,
+  so `x = y = f()` calls `f` once and `b = (i = i + 1)` does not recompute
+  `i + 1` after the write; `x = y = 0` chains the constant without re-reading
+  `y`. A store to a bit-field yields the value cut to the field's width
+  (C11 6.5.16p3): `widen<u32>(truncate<u8b>(v))` for `unsigned bf : 8`,
+  also for prefix `++`/`--` and compound assignment.
 - Postfix forms snapshot the old value in a `[synthetic]` temporary; the
   write targets the once-evaluated place. `f(i++)` always snapshots;
   removing unneeded temporaries is the analysis pass's job.

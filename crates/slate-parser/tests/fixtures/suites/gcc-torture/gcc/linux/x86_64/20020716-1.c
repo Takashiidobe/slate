@@ -69,7 +69,6 @@ int main(void) {
 // DEFAULT-NEXT:                 let %[[VALUE_t2:[0-9]+]] t2: i32 [storage=automatic] = read<i32>(%[[VALUE_t1]]);
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_flag1]], from_bool<i32, reason=assign>(eq<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_sub1]], read<i32>(%[[VALUE_t2]])), const<i32>(0))));
-// DEFAULT-NEXT:                     from_bool<i32, reason=assign>(eq<i32>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_sub1]], read<i32>(%[[VALUE_t2]])), const<i32>(0)));
 // DEFAULT-NEXT:                     goto %[[VALUE_lab1:[0-9]+]];
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:                 ;

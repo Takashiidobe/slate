@@ -62,7 +62,6 @@ void unions()
 // DEFAULT-NEXT:     fn %[[VALUE_fu2:[0-9]+]] @fu2(unprototyped) -> @type[[TYPE_u2]] [linkage=external] [abi=sysv64() -> native_c];
 // DEFAULT-NEXT:     fn %[[VALUE_unions:[0-9]+]] @unions(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<@type[[TYPE_u2]]>(%[[VALUE_u2a]], copy<@type[[TYPE_u2]], reason=assign>(call<@type[[TYPE_u2]], signature=fn(unprototyped) -> @type[[TYPE_u2]], abi=sysv64() -> native_c>(%[[VALUE_fu2]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE_u2]], reason=assign>(call<@type[[TYPE_u2]], signature=fn(unprototyped) -> @type[[TYPE_u2]], abi=sysv64() -> native_c>(%[[VALUE_fu2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

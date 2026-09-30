@@ -55,7 +55,6 @@ foo (int x, int y, int z)
 // DEFAULT-NEXT:         while %[[VALUE0:[0-9]+]] gt<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_c]], rem<i32, by_zero=ub, min_by_neg_one=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_bar]]), const<i32>(3)));
-// DEFAULT-NEXT:                 rem<i32, by_zero=ub, min_by_neg_one=ub>(call<i32, signature=fn() -> i32>(%[[VALUE_bar]]), const<i32>(3));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_a]], read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(30)>(%[[VALUE_v]]), read<i32>(%[[VALUE_x]])))));
 // DEFAULT-NEXT:                 if lt<i32>(read<i32>(%[[VALUE_x]]), read<i32>(%[[VALUE_y]]))
 // DEFAULT-NEXT:                     for %[[VALUE1:[0-9]+]]

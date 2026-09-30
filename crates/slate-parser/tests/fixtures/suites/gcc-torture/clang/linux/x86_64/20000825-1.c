@@ -64,12 +64,10 @@ u32 fails(u32 *var)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_good:[0-9]+]] @good(%[[VALUE_var:[0-9]+]] var: u32) -> u32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_var]], call<u32, signature=fn(i32) -> u32>(%[[VALUE_foobar]], const<i32>(0)));
-// DEFAULT-NEXT:         call<u32, signature=fn(i32) -> u32>(%[[VALUE_foobar]], const<i32>(0));
 // DEFAULT-NEXT:         return read<u32>(%[[VALUE_var]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fails:[0-9]+]] @fails(%[[VALUE_var_2:[0-9]+]] var: ptr<u32>) -> u32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<u32>(deref(read<ptr<u32>>(%[[VALUE_var_2]])), call<u32, signature=fn(i32) -> u32>(%[[VALUE_foobar]], const<i32>(0)));
-// DEFAULT-NEXT:         call<u32, signature=fn(i32) -> u32>(%[[VALUE_foobar]], const<i32>(0));
 // DEFAULT-NEXT:         return read<u32>(deref(read<ptr<u32>>(%[[VALUE_var_2]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

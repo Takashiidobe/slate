@@ -62,9 +62,7 @@ foo(void *h, unsigned int l)
 // DEFAULT-NEXT:         let %[[VALUE_n_2:[0-9]+]] n: u32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_m:[0-9]+]] m: i64 [storage=automatic];
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_n_2]], call<u32, signature=fn(ptr<void>, u32) -> u32>(%[[VALUE_bar]], read<ptr<void>>(%[[VALUE_h_2]]), reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));
-// DEFAULT-NEXT:         call<u32, signature=fn(ptr<void>, u32) -> u32>(%[[VALUE_bar]], read<ptr<void>>(%[[VALUE_h_2]]), reinterpret<u32, reason=arg, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_n_2]], call<u32, signature=fn(ptr<void>, u32) -> u32>(%[[VALUE_bar]], read<ptr<void>>(%[[VALUE_h_2]]), read<u32>(%[[VALUE_n_2]])));
-// DEFAULT-NEXT:         call<u32, signature=fn(ptr<void>, u32) -> u32>(%[[VALUE_bar]], read<ptr<void>>(%[[VALUE_h_2]]), read<u32>(%[[VALUE_n_2]]));
 // DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<u32>) -> void>(%[[VALUE_baz]], addr_of<ptr<u32>>(%[[VALUE_n_2]]));

@@ -111,9 +111,7 @@ bar (void)
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         write<u128b>(%[[VALUE_b]], va_arg<u128b>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:         va_arg<u128b>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         write<i575b>(%[[VALUE_d]], va_arg<i575b>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:         va_arg<i575b>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         if ne<i32>(va_arg<i32>(%[[VALUE_ap]]), const<i32>(42))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);

@@ -86,14 +86,15 @@ int main() {
 // DEFAULT-NEXT:                                 {
 // DEFAULT-NEXT:                                     write<i16>(%[[VALUE_c]], truncate<i16, reason=assign, fits=unknown>(read<i32>(%[[VALUE_b]])));
 // DEFAULT-NEXT:                                     let %[[VALUE_h:[0-9]+]] h: i32 [storage=automatic];
-// DEFAULT-NEXT:                                     write<i32>(%[[VALUE_o]], read<i32>(%[[VALUE_z]]));
-// DEFAULT-NEXT:                                     write<i32>(%[[VALUE_h]], read<i32>(%[[VALUE_z]]));
-// DEFAULT-NEXT:                                     for %[[VALUE5:[0-9]+]]
+// DEFAULT-NEXT:                                     let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_z]]);
+// DEFAULT-NEXT:                                     write<i32>(%[[VALUE_o]], read<i32>(%[[VALUE5]]));
+// DEFAULT-NEXT:                                     write<i32>(%[[VALUE_h]], read<i32>(%[[VALUE5]]));
+// DEFAULT-NEXT:                                     for %[[VALUE6:[0-9]+]]
 // DEFAULT-NEXT:                                         init:
 // DEFAULT-NEXT:                                         condition: ne<i32>(read<i32>(%[[VALUE_u]]), const<i32>(0))
 // DEFAULT-NEXT:                                         increment: omitted
 // DEFAULT-NEXT:                                         body:
-// DEFAULT-NEXT:                                             for %[[VALUE6:[0-9]+]]
+// DEFAULT-NEXT:                                             for %[[VALUE7:[0-9]+]]
 // DEFAULT-NEXT:                                                 init:
 // DEFAULT-NEXT:                                                 condition: ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))
 // DEFAULT-NEXT:                                                 increment: omitted
@@ -103,12 +104,12 @@ int main() {
 // DEFAULT-NEXT:                     if lt<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_t]])), const<i32>(1))
 // DEFAULT-NEXT:                         write<i8>(%[[VALUE_g]], truncate<i8, reason=assign, fits=unknown>(read<i32>(%[[VALUE_w]])));
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_f]], widen<i32, reason=assign>(read<i8>(%[[VALUE_g]])));
-// DEFAULT-NEXT:                     let %[[VALUE7:[0-9]+]]: bool [synthetic];
+// DEFAULT-NEXT:                     let %[[VALUE8:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:                     if ne<i8>(read<i8>(%[[VALUE_g]]), const<i8>(0))
 // DEFAULT-NEXT:                         write<i16>(%[[VALUE_q]], truncate<i16, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                         write<bool>(%[[VALUE7]], ne<i16>(truncate<i16, reason=assign, fits=always>(const<i32>(1)), const<i16>(0)));
+// DEFAULT-NEXT:                         write<bool>(%[[VALUE8]], ne<i16>(truncate<i16, reason=assign, fits=always>(const<i32>(1)), const<i16>(0)));
 // DEFAULT-NEXT:                     else
-// DEFAULT-NEXT:                         write<bool>(%[[VALUE7]], const<bool>(false));
+// DEFAULT-NEXT:                         write<bool>(%[[VALUE8]], const<bool>(false));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_q]])), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

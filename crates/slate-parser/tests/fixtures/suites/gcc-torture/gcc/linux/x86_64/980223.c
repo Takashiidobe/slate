@@ -75,7 +75,6 @@ int main(void) {
 // DEFAULT-NEXT:                 write<@type[[TYPE0]]>(%[[VALUE_z]], copy<@type[[TYPE0]], reason=assign>(read<@type[[TYPE0]]>(deref(pointer_cast<ptr<@type[[TYPE0]]>, reason=explicit>(read<ptr<i8>>(field0(%[[VALUE_z]])))))));
 // DEFAULT-NEXT:                 if ne<i64>(and<i64>(read<i64>(field1(%[[VALUE_z]])), widen<i64, reason=usual_arith>(const<i32>(64))), const<i64>(0))
 // DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_y]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(@type[[TYPE0]]) -> @type[[TYPE0]], abi=sysv64(native_c) -> native_c>(%[[VALUE_bar]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_y]])))));
-// DEFAULT-NEXT:                     copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(@type[[TYPE0]]) -> @type[[TYPE0]], abi=sysv64(native_c) -> native_c>(%[[VALUE_bar]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_y]]))));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_y]]));
 // DEFAULT-NEXT:     }

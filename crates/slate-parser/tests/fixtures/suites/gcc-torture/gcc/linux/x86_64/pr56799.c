@@ -109,7 +109,6 @@ __attribute__((noinline)) int foo(S *ptr) {
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_a_2]]), const<i32>(65536));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_a_2]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], call<i32, signature=fn(ptr<@type[[TYPE0]]>) -> i32>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_a_2]])));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE0]]>) -> i32>(%[[VALUE_foo]], addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_a_2]]));
 // DEFAULT-NEXT:         if logical_and<bool>(logical_and<bool>(eq<i32>(read<i32>(%[[VALUE_r]]), const<i32>(2)), eq<i32>(read<i32>(%[[VALUE_lo]]), const<i32>(0))), eq<i32>(read<i32>(%[[VALUE_hi]]), const<i32>(1)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

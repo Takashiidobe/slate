@@ -109,7 +109,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_f:[0-9]+]] f: u64 [storage=automatic];
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_f]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=unknown>(sub<u64, overflow=wrap>(read<u64>(%[[VALUE_c]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(field3(deref(ptr_offset<ptr<@type[[TYPE_B]]>, subtract=false, element=@type[[TYPE_B]], overflow=ub>(array_decay<ptr<@type[[TYPE_B]]>, length=Some(1)>(field0(deref(read<ptr<@type[[TYPE_C]]>>(%[[VALUE_x_2]])))), read<i32>(%[[VALUE_d]]))))))))))))));
-// DEFAULT-NEXT:         reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=unknown>(sub<u64, overflow=wrap>(read<u64>(%[[VALUE_c]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(field3(deref(ptr_offset<ptr<@type[[TYPE_B]]>, subtract=false, element=@type[[TYPE_B]], overflow=ub>(array_decay<ptr<@type[[TYPE_B]]>, length=Some(1)>(field0(deref(read<ptr<@type[[TYPE_C]]>>(%[[VALUE_x_2]])))), read<i32>(%[[VALUE_d]])))))))))))));
 // DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if le<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0))
@@ -118,7 +117,6 @@ int main() {
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[VALUE1]]), const<i32>(1));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_d]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_e]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=unknown>(sub<u64, overflow=wrap>(read<u64>(%[[VALUE_c]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(field3(deref(ptr_offset<ptr<@type[[TYPE_B]]>, subtract=false, element=@type[[TYPE_B]], overflow=ub>(array_decay<ptr<@type[[TYPE_B]]>, length=Some(1)>(field0(deref(read<ptr<@type[[TYPE_C]]>>(%[[VALUE_x_2]])))), read<i32>(%[[VALUE_d]]))))))))))))));
-// DEFAULT-NEXT:                 reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=unknown>(sub<u64, overflow=wrap>(read<u64>(%[[VALUE_c]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(field3(deref(ptr_offset<ptr<@type[[TYPE_B]]>, subtract=false, element=@type[[TYPE_B]], overflow=ub>(array_decay<ptr<@type[[TYPE_B]]>, length=Some(1)>(field0(deref(read<ptr<@type[[TYPE_C]]>>(%[[VALUE_x_2]])))), read<i32>(%[[VALUE_d]])))))))))))));
 // DEFAULT-NEXT:                 if lt<u64>(read<u64>(%[[VALUE_e]]), read<u64>(%[[VALUE_f]]))
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_a]], read<i32>(%[[VALUE_d]]));
 // DEFAULT-NEXT:             }
@@ -137,7 +135,6 @@ int main() {
 // DEFAULT-NEXT:         write<i32>(field2(deref(ptr_offset<ptr<@type[[TYPE_B]]>, subtract=false, element=@type[[TYPE_B]], overflow=ub>(array_decay<ptr<@type[[TYPE_B]]>, length=Some(1)>(field0(%[[VALUE_b_2]])), const<i32>(0)))), const<i32>(424242));
 // DEFAULT-NEXT:         write<i32>(field1(%[[VALUE_b_2]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_c_2]], call<i32, signature=fn(ptr<@type[[TYPE_C]]>, ptr<@type[[TYPE_A]]>) -> i32>(%[[VALUE_bar]], addr_of<ptr<@type[[TYPE_C]]>>(%[[VALUE_b_2]]), addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_a_2]])));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE_C]]>, ptr<@type[[TYPE_A]]>) -> i32>(%[[VALUE_bar]], addr_of<ptr<@type[[TYPE_C]]>>(%[[VALUE_b_2]]), addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_a_2]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

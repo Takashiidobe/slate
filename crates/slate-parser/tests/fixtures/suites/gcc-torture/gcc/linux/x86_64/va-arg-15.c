@@ -88,14 +88,12 @@ int main(void) {
 // DEFAULT-NEXT:                     if ne<i32>(and<i32>(read<i32>(%[[VALUE_flag]]), const<i32>(1)), const<i32>(0))
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             write<f64>(%[[VALUE_darg]], va_arg<f64>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:                             va_arg<f64>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:                             if ne<f64, exceptions=observable>(read<f64>(%[[VALUE_darg]]), int_to_float<f64, reason=explicit, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_i]])))
 // DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             write<i32>(%[[VALUE_iarg]], va_arg<i32>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:                             va_arg<i32>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:                             if ne<i32>(read<i32>(%[[VALUE_iarg]]), read<i32>(%[[VALUE_i]]))
 // DEFAULT-NEXT:                                 call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                         }

@@ -154,11 +154,9 @@ plugh (int x, _BitInt(575) y, _BitInt(575) z, _BitInt(575) v, _BitInt(575) w)
 // DEFAULT-NEXT:     fn %[[VALUE_qux:[0-9]+]] @qux(%[[VALUE_x_3:[0-9]+]] x: i32, %[[VALUE_y_3:[0-9]+]] y: i575b) -> i325b [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_x_3]]), const<i32>(25))
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_x_3]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(2)));
-// DEFAULT-NEXT:             call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(2));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if eq<i32>(read<i32>(%[[VALUE_x_3]]), const<i32>(42))
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_x_3]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3))));
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3)));
 // DEFAULT-NEXT:         return call<i325b, signature=fn(i575b) -> i325b>(%[[VALUE_bar]], read<i575b>(%[[VALUE_y_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_corge:[0-9]+]] @corge(%[[VALUE_x_4:[0-9]+]] x: i32, %[[VALUE_y_4:[0-9]+]] y: i575b, %[[VALUE_z_2:[0-9]+]] z: ptr<i325b>) -> void [linkage=external] [fallthrough=ret_void] {
@@ -167,18 +165,15 @@ plugh (int x, _BitInt(575) y, _BitInt(575) z, _BitInt(575) v, _BitInt(575) w)
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 label %[[VALUE_l1]] l1:
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_x_4]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(2)));
-// DEFAULT-NEXT:                     call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(2));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if eq<i32>(read<i32>(%[[VALUE_x_4]]), const<i32>(42))
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     label %[[VALUE_l2]] l2:
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_x_4]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3))));
-// DEFAULT-NEXT:                         call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3)));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         label %[[VALUE_l3]] l3:
 // DEFAULT-NEXT:             write<i325b>(deref(read<ptr<i325b>>(%[[VALUE_z_2]])), call<i325b, signature=fn(i575b) -> i325b>(%[[VALUE_bar]], read<i575b>(%[[VALUE_y_4]])));
-// DEFAULT-NEXT:             call<i325b, signature=fn(i575b) -> i325b>(%[[VALUE_bar]], read<i575b>(%[[VALUE_y_4]]));
 // DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_x_4]]), const<i32>(4))
 // DEFAULT-NEXT:             goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(4)>(%[[VALUE_q]]), and<i32>(read<i32>(%[[VALUE_x_4]]), const<i32>(3)))));
 // DEFAULT-NEXT:     }
@@ -189,11 +184,9 @@ plugh (int x, _BitInt(575) y, _BitInt(575) z, _BitInt(575) v, _BitInt(575) w)
 // DEFAULT-NEXT:         write<i575b>(%[[VALUE_y_5]], read<i575b>(%[[VALUE2]]));
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_x_5]]), const<i32>(25))
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_x_5]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(2)));
-// DEFAULT-NEXT:             call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(2));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if eq<i32>(read<i32>(%[[VALUE_x_5]]), const<i32>(42))
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_x_5]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3))));
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3)));
 // DEFAULT-NEXT:         return call<i325b, signature=fn(i575b) -> i325b>(%[[VALUE_bar]], read<i575b>(%[[VALUE_y_5]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_quux:[0-9]+]] @quux(%[[VALUE_x_6:[0-9]+]] x: i575b, %[[VALUE_y_6:[0-9]+]] y: i575b, %[[VALUE_z_3:[0-9]+]] z: i575b) -> i325b [linkage=external] [fallthrough=ub_if_used] {
@@ -206,11 +199,9 @@ plugh (int x, _BitInt(575) y, _BitInt(575) z, _BitInt(575) v, _BitInt(575) w)
 // DEFAULT-NEXT:         let %[[VALUE_w_3:[0-9]+]] w: i575b [storage=automatic] = sub<i575b, overflow=ub>(widen<i575b, reason=usual_arith>(read<i32>(%[[VALUE_x_7]])), read<i575b>(%[[VALUE_y_7]]));
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_x_7]]), const<i32>(25))
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_x_7]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(2)));
-// DEFAULT-NEXT:             call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(2));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if eq<i32>(read<i32>(%[[VALUE_x_7]]), const<i32>(42))
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_x_7]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3))));
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3)));
 // DEFAULT-NEXT:         return call<i325b, signature=fn(i575b, i575b, i575b, i32, i32, i575b) -> i325b>(%[[VALUE_garply]], read<i575b>(%[[VALUE_y_7]]), read<i575b>(%[[VALUE_z_4]]), read<i575b>(%[[VALUE_v_2]]), const<i32>(0), const<i32>(0), read<i575b>(%[[VALUE_w_3]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_plugh:[0-9]+]] @plugh(%[[VALUE_x_8:[0-9]+]] x: i32, %[[VALUE_y_8:[0-9]+]] y: i575b, %[[VALUE_z_5:[0-9]+]] z: i575b, %[[VALUE_v_3:[0-9]+]] v: i575b, %[[VALUE_w_4:[0-9]+]] w: i575b) -> i325b [linkage=external] [fallthrough=ub_if_used] {
@@ -229,11 +220,9 @@ plugh (int x, _BitInt(575) y, _BitInt(575) z, _BitInt(575) v, _BitInt(575) w)
 // DEFAULT-NEXT:         write<i575b>(%[[VALUE_w_4]], read<i575b>(%[[VALUE10]]));
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_x_8]]), const<i32>(25))
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_x_8]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(2)));
-// DEFAULT-NEXT:             call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(2));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             if eq<i32>(read<i32>(%[[VALUE_x_8]]), const<i32>(42))
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_x_8]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3))));
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3)));
 // DEFAULT-NEXT:         return call<i325b, signature=fn(i575b, i575b, i575b, i32, i32, i575b) -> i325b>(%[[VALUE_garply]], read<i575b>(%[[VALUE_y_8]]), read<i575b>(%[[VALUE_z_5]]), read<i575b>(%[[VALUE_v_3]]), const<i32>(1), const<i32>(2), read<i575b>(%[[VALUE_w_4]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

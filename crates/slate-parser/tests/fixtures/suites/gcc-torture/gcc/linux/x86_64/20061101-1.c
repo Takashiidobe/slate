@@ -72,7 +72,6 @@ int main(void) {
 // DEFAULT-NEXT:                 if gt<i32>(read<i32>(%[[VALUE_outgo]]), sub<i32, overflow=ub>(read<i32>(%[[VALUE_q]]), const<i32>(1)))
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_outgo]], sub<i32, overflow=ub>(read<i32>(%[[VALUE_q]]), const<i32>(1)));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_j]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_tar]], mul<i32, overflow=ub>(read<i32>(%[[VALUE_outgo]]), read<i32>(%[[VALUE_bcount]]))));
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32) -> i32>(%[[VALUE_tar]], mul<i32, overflow=ub>(read<i32>(%[[VALUE_outgo]]), read<i32>(%[[VALUE_bcount]])));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

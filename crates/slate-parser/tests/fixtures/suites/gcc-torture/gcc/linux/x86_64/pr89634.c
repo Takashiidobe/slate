@@ -81,7 +81,6 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<ptr<u64>>(%[[VALUE_f]], call<ptr<u64>, signature=fn(ptr<u64>) -> ptr<u64>>(%[[VALUE_foo]], ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%[[VALUE_x_2]]), const<i32>(1))));
-// DEFAULT-NEXT:                     call<ptr<u64>, signature=fn(ptr<u64>) -> ptr<u64>>(%[[VALUE_foo]], ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(read<ptr<u64>>(%[[VALUE_x_2]]), const<i32>(1)));
 // DEFAULT-NEXT:                     for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:                         init:
 // DEFAULT-NEXT:                             write<u64>(%[[VALUE_i]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1))));
@@ -94,7 +93,6 @@ int main() {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                         body:
 // DEFAULT-NEXT:                             write<ptr<u64>>(%[[VALUE_f]], call<ptr<u64>, signature=fn(ptr<u64>) -> ptr<u64>>(%[[VALUE_foo]], read<ptr<u64>>(%[[VALUE_f]])));
-// DEFAULT-NEXT:                             call<ptr<u64>, signature=fn(ptr<u64>) -> ptr<u64>>(%[[VALUE_foo]], read<ptr<u64>>(%[[VALUE_f]]));
 // DEFAULT-NEXT:                     write<u64>(%[[VALUE_c]], read<u64>(deref(read<ptr<u64>>(%[[VALUE_f]]))));
 // DEFAULT-NEXT:                     if eq<u64>(read<u64>(%[[VALUE_c]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(2))))
 // DEFAULT-NEXT:                         let %[[VALUE6:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_d]]);

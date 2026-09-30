@@ -45,7 +45,6 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_store_to_c:[0-9]+]] @store_to_c(%[[VALUE_p_2:[0-9]+]] p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<ptr<i32>>(deref(read<ptr<ptr<i32>>>(%[[VALUE_ptr2]])), call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(%[[VALUE_identity]], read<ptr<i32>>(%[[VALUE_p_2]])));
-// DEFAULT-NEXT:         call<ptr<i32>, signature=fn(ptr<i32>) -> ptr<i32>>(%[[VALUE_identity]], read<ptr<i32>>(%[[VALUE_p_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

@@ -80,16 +80,17 @@ int baz (void)
 // DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: ptr<@type[[TYPE0]]> [storage=automatic] = addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] {
-// DEFAULT-NEXT:             write<i32>(%[[VALUE_c]], call<i32, signature=fn() -> i32>(%[[VALUE_foo]]));
-// DEFAULT-NEXT:             yield ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_foo]]), const<i32>(0));
+// DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn() -> i32>(%[[VALUE_foo]]);
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE2]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE2]]), const<i32>(0));
 // DEFAULT-NEXT:         }
-// DEFAULT-NEXT:             switch %[[VALUE2:[0-9]+]] read<i32>(%[[VALUE_c]])
+// DEFAULT-NEXT:             switch %[[VALUE3:[0-9]+]] read<i32>(%[[VALUE_c]])
 // DEFAULT-NEXT:                 {
-// DEFAULT-NEXT:                     case %[[VALUE2]] const<i32>(23):
+// DEFAULT-NEXT:                     case %[[VALUE3]] const<i32>(23):
 // DEFAULT-NEXT:                         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], const<i32>(1));
-// DEFAULT-NEXT:                     break %[[VALUE2]];
-// DEFAULT-NEXT:                     default %[[VALUE2]]:
-// DEFAULT-NEXT:                         break %[[VALUE2]];
+// DEFAULT-NEXT:                     break %[[VALUE3]];
+// DEFAULT-NEXT:                     default %[[VALUE3]]:
+// DEFAULT-NEXT:                         break %[[VALUE3]];
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         if logical_or<bool>(eq<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0)), ne<i32>(and<i32>(read<i32>(%[[VALUE_a]]), const<i32>(1)), const<i32>(0)))
 // DEFAULT-NEXT:             {

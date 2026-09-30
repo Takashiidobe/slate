@@ -135,7 +135,6 @@ int main(int argc, char **argv) {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if not<bool>(ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_bh]]), null<ptr<i8>>))
 // DEFAULT-NEXT:                     write<ptr<i8>>(%[[VALUE_bh]], call<ptr<i8>, signature=fn(u32) -> ptr<i8>>(%[[VALUE_isofs_bread]], read<u32>(%[[VALUE_block_2]])));
-// DEFAULT-NEXT:                     call<ptr<i8>, signature=fn(u32) -> ptr<i8>>(%[[VALUE_isofs_bread]], read<u32>(%[[VALUE_block_2]]));
 // DEFAULT-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_hs]]);
 // DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(add<u32, overflow=wrap>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE2]])), shl<u32, overflow=wrap, amount_out_of_range=ub>(read<u32>(%[[VALUE_block_2]]), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_bufbits]]))))));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_hs]], read<i32>(%[[VALUE3]]));

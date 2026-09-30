@@ -65,7 +65,6 @@ int main(void) {
 // DEFAULT-NEXT:         if not<bool>(ne<i32>(read<i32>(%[[VALUE_computed]]), const<i32>(0)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_cached_value]], call<i32, signature=fn() -> i32>(%[[VALUE_compute]]));
-// DEFAULT-NEXT:                 call<i32, signature=fn() -> i32>(%[[VALUE_compute]]);
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_computed]], const<i32>(1));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_cached_value]]);

@@ -141,7 +141,6 @@ main ()
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], read<i64>(%[[VALUE1]]));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_y]], sub<i64, overflow=ub>(and<i64>(read<i64>(%[[VALUE_y]]), widen<i64, reason=usual_arith>(const<i32>(65535))), add<i64, overflow=ub>(div<i64, by_zero=ub, min_by_neg_one=ub>(const<i64>(9223372036854775807), widen<i64, reason=usual_arith>(const<i32>(65535))), widen<i64, reason=usual_arith>(const<i32>(32768)))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ovf]])), from_bool<i32, reason=assign>(overflow_mul<bool>(read<i64>(%[[VALUE_x]]), read<i64>(%[[VALUE_y]]), deref(addr_of<ptr<i64>>(%[[VALUE_res]])))));
-// DEFAULT-NEXT:         from_bool<i32, reason=assign>(overflow_mul<bool>(read<i64>(%[[VALUE_x]]), read<i64>(%[[VALUE_y]]), deref(addr_of<ptr<i64>>(%[[VALUE_res]]))));
 // DEFAULT-NEXT:         return read<i64>(%[[VALUE_res]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn2:[0-9]+]] @fn2(%[[VALUE_x_2:[0-9]+]] x: i64, %[[VALUE_y_2:[0-9]+]] y: i64, %[[VALUE_ovf_2:[0-9]+]] ovf: ptr<i32>) -> i8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
@@ -149,7 +148,6 @@ main ()
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x_2]], add<i64, overflow=ub>(and<i64>(read<i64>(%[[VALUE_x_2]]), widen<i64, reason=usual_arith>(const<i32>(63))), widen<i64, reason=usual_arith>(div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(127), const<i32>(4)))));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_y_2]], add<i64, overflow=ub>(and<i64>(read<i64>(%[[VALUE_y_2]]), widen<i64, reason=usual_arith>(const<i32>(3))), widen<i64, reason=usual_arith>(const<i32>(4))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ovf_2]])), from_bool<i32, reason=assign>(overflow_mul<bool>(read<i64>(%[[VALUE_x_2]]), read<i64>(%[[VALUE_y_2]]), deref(addr_of<ptr<i8>>(%[[VALUE_res_2]])))));
-// DEFAULT-NEXT:         from_bool<i32, reason=assign>(overflow_mul<bool>(read<i64>(%[[VALUE_x_2]]), read<i64>(%[[VALUE_y_2]]), deref(addr_of<ptr<i8>>(%[[VALUE_res_2]]))));
 // DEFAULT-NEXT:         return read<i8>(%[[VALUE_res_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn3:[0-9]+]] @fn3(%[[VALUE_x_3:[0-9]+]] x: u8, %[[VALUE_y_3:[0-9]+]] y: u8, %[[VALUE_ovf_3:[0-9]+]] ovf: ptr<i32>) -> u8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
@@ -157,7 +155,6 @@ main ()
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_x_3]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_x_3]]))), const<i32>(63)), sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(not<i32>(const<i32>(0)))))), const<i32>(65))))));
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_y_3]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_y_3]]))), const<i32>(3)))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ovf_3]])), from_bool<i32, reason=assign>(overflow_add<bool>(read<u8>(%[[VALUE_x_3]]), read<u8>(%[[VALUE_y_3]]), deref(addr_of<ptr<u8>>(%[[VALUE_res_3]])))));
-// DEFAULT-NEXT:         from_bool<i32, reason=assign>(overflow_add<bool>(read<u8>(%[[VALUE_x_3]]), read<u8>(%[[VALUE_y_3]]), deref(addr_of<ptr<u8>>(%[[VALUE_res_3]]))));
 // DEFAULT-NEXT:         return read<u8>(%[[VALUE_res_3]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn4:[0-9]+]] @fn4(%[[VALUE_x_4:[0-9]+]] x: u8, %[[VALUE_y_4:[0-9]+]] y: u8, %[[VALUE_ovf_4:[0-9]+]] ovf: ptr<i32>) -> u8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
@@ -165,14 +162,12 @@ main ()
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_x_4]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_x_4]]))), const<i32>(15)), sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(not<i32>(const<i32>(0)))))), const<i32>(16))))));
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_y_4]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_y_4]]))), const<i32>(3)), const<i32>(16)))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ovf_4]])), from_bool<i32, reason=assign>(overflow_add<bool>(read<u8>(%[[VALUE_x_4]]), read<u8>(%[[VALUE_y_4]]), deref(addr_of<ptr<u8>>(%[[VALUE_res_4]])))));
-// DEFAULT-NEXT:         from_bool<i32, reason=assign>(overflow_add<bool>(read<u8>(%[[VALUE_x_4]]), read<u8>(%[[VALUE_y_4]]), deref(addr_of<ptr<u8>>(%[[VALUE_res_4]]))));
 // DEFAULT-NEXT:         return read<u8>(%[[VALUE_res_4]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn5:[0-9]+]] @fn5(%[[VALUE_x_5:[0-9]+]] x: i64, %[[VALUE_y_5:[0-9]+]] y: u64, %[[VALUE_ovf_5:[0-9]+]] ovf: ptr<i32>) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_res_5:[0-9]+]] res: i64 [storage=automatic];
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_y_5]], add<u64, overflow=wrap>(neg<u64, overflow=wrap>(const<u64>(65536)), and<u64>(read<u64>(%[[VALUE_y_5]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(65535))))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ovf_5]])), from_bool<i32, reason=assign>(overflow_mul<bool>(read<i64>(%[[VALUE_x_5]]), read<u64>(%[[VALUE_y_5]]), deref(addr_of<ptr<i64>>(%[[VALUE_res_5]])))));
-// DEFAULT-NEXT:         from_bool<i32, reason=assign>(overflow_mul<bool>(read<i64>(%[[VALUE_x_5]]), read<u64>(%[[VALUE_y_5]]), deref(addr_of<ptr<i64>>(%[[VALUE_res_5]]))));
 // DEFAULT-NEXT:         return read<i64>(%[[VALUE_res_5]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];

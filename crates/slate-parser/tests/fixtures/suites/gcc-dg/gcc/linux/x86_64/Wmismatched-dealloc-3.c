@@ -331,21 +331,18 @@ void test_canonicalize_filename (void *p)
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_3:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_aligned_alloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_3]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_q_3]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_q_3]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_3]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_3]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_4:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_aligned_alloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_4]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], read<ptr<void>>(%[[VALUE_q_4]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], read<ptr<void>>(%[[VALUE_q_4]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_4]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_4]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_5:[0-9]+]] q: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_5]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_aligned_alloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_aligned_alloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_5]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_dealloc]], read<ptr<void>>(%[[VALUE_q_5]]));
 // DEFAULT-NEXT:         }
@@ -364,14 +361,12 @@ void test_canonicalize_filename (void *p)
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_8:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_aligned_alloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_8]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_q_8]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_q_8]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_8]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_8]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_9:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_aligned_alloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_9]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], read<ptr<void>>(%[[VALUE_q_9]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], read<ptr<void>>(%[[VALUE_q_9]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_9]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_9]]));
 // DEFAULT-NEXT:         }
@@ -389,122 +384,101 @@ void test_canonicalize_filename (void *p)
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_11:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_aligned_alloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_11]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_11]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_11]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_11]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_11]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_12:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_aligned_alloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_12]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_12]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_12]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_12]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_12]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_13:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE___builtin_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_13]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_13]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_13]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_13]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_13]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_14:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_14]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_14]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_14]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_14]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_14]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_15:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_15]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_15]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_15]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_15]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_15]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_16:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_16]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_16]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_16]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_16]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_16]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_17:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_p_3]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_17]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_17]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_17]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_17]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_17]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_3]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]);
 // DEFAULT-NEXT:             let %[[VALUE_q_18:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], read<ptr<void>>(%[[VALUE_p_3]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_18]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_18]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_18]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_18]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_18]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_19:[0-9]+]] q: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE___builtin_strdup]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]]))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_19]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_19]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_19]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_19]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_19]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_20:[0-9]+]] q: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(call<ptr<i8>, signature=fn(ptr<const i8>, u64) -> ptr<i8>>(%[[VALUE___builtin_strndup]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(5)>(%[[VALUE_str_2]])), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_20]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_20]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(5)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_20]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(5))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_20]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_20]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_21:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]);
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_21]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_21]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(5))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(6)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_21]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(5))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(6))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_21]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_21]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_22:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_alloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(1))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_22]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_22]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(6))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_22]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(6))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_22]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_22]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_3]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]);
 // DEFAULT-NEXT:             let %[[VALUE_q_23:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_p_3]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_23]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_q_23]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(9)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_q_23]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(9))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_23]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_23]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_3]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]);
 // DEFAULT-NEXT:             let %[[VALUE_q_24:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_p_3]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(7))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_24]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], read<ptr<void>>(%[[VALUE_q_24]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(9)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], read<ptr<void>>(%[[VALUE_q_24]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(9))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_24]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_24]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_3]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]);
 // DEFAULT-NEXT:             let %[[VALUE_q_25:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_p_3]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(9))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_25]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_25]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_25]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_25]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_25]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_p_3]], call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn() -> ptr<void>>(%[[VALUE_source]]);
 // DEFAULT-NEXT:             let %[[VALUE_q_26:[0-9]+]] q: ptr<void> [storage=automatic] = call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_p_3]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(9))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(10))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_26]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_26]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_26]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_26]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_dealloc]], read<ptr<void>>(%[[VALUE_q_26]]));
 // DEFAULT-NEXT:         }
@@ -523,28 +497,24 @@ void test_canonicalize_filename (void *p)
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_29:[0-9]+]] q: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_canonicalize_file_name]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_5]]))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_29]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_q_29]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_q_29]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(2))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_29]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_29]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_30:[0-9]+]] q: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_canonicalize_file_name]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_6]]))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_30]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], read<ptr<void>>(%[[VALUE_q_30]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE_realloc]], read<ptr<void>>(%[[VALUE_q_30]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(3))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_30]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_30]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_31:[0-9]+]] q: ptr<void> [storage=automatic] = pointer_cast<ptr<void>, reason=assign>(call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_canonicalize_file_name]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_7]]))));
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_31]], call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_31]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(5)))));
-// DEFAULT-NEXT:             call<ptr<void>, signature=fn(ptr<void>, u64, u64) -> ptr<void>>(%[[VALUE_reallocarray]], read<ptr<void>>(%[[VALUE_q_31]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(5))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_31]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_free]], read<ptr<void>>(%[[VALUE_q_31]]));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_q_32:[0-9]+]] q: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:             write<ptr<void>>(%[[VALUE_q_32]], pointer_cast<ptr<void>, reason=assign>(call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_canonicalize_file_name]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_8]])))));
-// DEFAULT-NEXT:             pointer_cast<ptr<void>, reason=assign>(call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_canonicalize_file_name]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(2)>(%[[VALUE_str_8]]))));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_q_32]]));
 // DEFAULT-NEXT:             call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_dealloc]], read<ptr<void>>(%[[VALUE_q_32]]));
 // DEFAULT-NEXT:         }

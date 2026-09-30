@@ -94,7 +94,6 @@
 // DEFAULT-NEXT:         if ne<complex<f128>, exceptions=observable>(read<complex<f128>, volatile>(%[[VALUE_r]]), read<complex<f128>, volatile>(%[[VALUE_b]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<complex<f128>, volatile>(%[[VALUE_r]], call<complex<f128>, signature=fn(complex<f128>) -> complex<f128>, abi=sysv64(byval<align=16>) -> sret<align=16>>(%[[VALUE_fn]], read<complex<f128>, volatile>(%[[VALUE_r]])));
-// DEFAULT-NEXT:         call<complex<f128>, signature=fn(complex<f128>) -> complex<f128>, abi=sysv64(byval<align=16>) -> sret<align=16>>(%[[VALUE_fn]], read<complex<f128>, volatile>(%[[VALUE_r]]));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<f128, exceptions=observable>(read<f128, volatile>(real(%[[VALUE_r]])), const<f128>(0.5)), ne<f128, exceptions=observable>(read<f128, volatile>(imag(%[[VALUE_r]])), const<f128>(0.75)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

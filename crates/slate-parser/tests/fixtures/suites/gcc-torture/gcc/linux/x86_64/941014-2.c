@@ -82,7 +82,6 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_foo_p_2:[0-9]+]] foo_p: ptr<volatile @type[[TYPE0]]> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p_2]], call<ptr<volatile @type[[TYPE0]]>, signature=fn() -> ptr<volatile @type[[TYPE0]]>>(%[[VALUE_f]]));
-// DEFAULT-NEXT:         call<ptr<volatile @type[[TYPE0]]>, signature=fn() -> ptr<volatile @type[[TYPE0]]>>(%[[VALUE_f]]);
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16, volatile>(field1(deref(read<ptr<volatile @type[[TYPE0]]>>(%[[VALUE_foo_p_2]])))))), const<i32>(256))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

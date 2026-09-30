@@ -104,7 +104,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_pi]], copy<@type[[TYPE0]], reason=assign>(va_arg<@type[[TYPE0]]>(%[[VALUE_args]])));
-// DEFAULT-NEXT:                     copy<@type[[TYPE0]], reason=assign>(va_arg<@type[[TYPE0]]>(%[[VALUE_args]]));
 // DEFAULT-NEXT:                     if logical_or<bool>(ne<f64, exceptions=observable>(read<f64>(field0(deref(ptr_offset<ptr<@type[[TYPE0]]>, subtract=false, element=@type[[TYPE0]], overflow=ub>(array_decay<ptr<@type[[TYPE0]]>, length=Some(4)>(%[[VALUE_pts]]), read<i32>(%[[VALUE_i]]))))), read<f64>(field0(%[[VALUE_pi]]))), ne<f64, exceptions=observable>(read<f64>(field1(deref(ptr_offset<ptr<@type[[TYPE0]]>, subtract=false, element=@type[[TYPE0]], overflow=ub>(array_decay<ptr<@type[[TYPE0]]>, length=Some(4)>(%[[VALUE_pts]]), read<i32>(%[[VALUE_i]]))))), read<f64>(field1(%[[VALUE_pi]]))))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
@@ -128,7 +127,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<@type[[TYPE1]]>(%[[VALUE_pi_2]], copy<@type[[TYPE1]], reason=assign>(va_arg<@type[[TYPE1]]>(%[[VALUE_args_2]])));
-// DEFAULT-NEXT:                     copy<@type[[TYPE1]], reason=assign>(va_arg<@type[[TYPE1]]>(%[[VALUE_args_2]]));
 // DEFAULT-NEXT:                     if logical_or<bool>(ne<i32>(read<i32>(field0(deref(ptr_offset<ptr<@type[[TYPE1]]>, subtract=false, element=@type[[TYPE1]], overflow=ub>(array_decay<ptr<@type[[TYPE1]]>, length=Some(4)>(%[[VALUE_ipts]]), read<i32>(%[[VALUE_i_2]]))))), read<i32>(field0(%[[VALUE_pi_2]]))), ne<i32>(read<i32>(field1(deref(ptr_offset<ptr<@type[[TYPE1]]>, subtract=false, element=@type[[TYPE1]], overflow=ub>(array_decay<ptr<@type[[TYPE1]]>, length=Some(4)>(%[[VALUE_ipts]]), read<i32>(%[[VALUE_i_2]]))))), read<i32>(field1(%[[VALUE_pi_2]]))))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }

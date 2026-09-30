@@ -99,10 +99,8 @@ void test_malloc (void)
 // DEFAULT-NEXT:     fn %[[VALUE_test_alloca:[0-9]+]] @test_alloca() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], call<u64, signature=fn() -> u64>(%[[VALUE_alloca_limit]])));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], call<u64, signature=fn() -> u64>(%[[VALUE_alloca_limit]]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], add<u64, overflow=wrap>(call<u64, signature=fn() -> u64>(%[[VALUE_alloca_limit]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], add<u64, overflow=wrap>(call<u64, signature=fn() -> u64>(%[[VALUE_alloca_limit]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_p]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test_vla:[0-9]+]] @test_vla() -> void [linkage=external] [fallthrough=ret_void] {
@@ -117,10 +115,8 @@ void test_malloc (void)
 // DEFAULT-NEXT:     fn %[[VALUE_test_malloc:[0-9]+]] @test_malloc() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p_2]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], call<u64, signature=fn() -> u64>(%[[VALUE_alloc_size_limit]])));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], call<u64, signature=fn() -> u64>(%[[VALUE_alloc_size_limit]]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_p_2]]));
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_p_2]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], add<u64, overflow=wrap>(call<u64, signature=fn() -> u64>(%[[VALUE_alloc_size_limit]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], add<u64, overflow=wrap>(call<u64, signature=fn() -> u64>(%[[VALUE_alloc_size_limit]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>) -> void>(%[[VALUE_sink]], read<ptr<void>>(%[[VALUE_p_2]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

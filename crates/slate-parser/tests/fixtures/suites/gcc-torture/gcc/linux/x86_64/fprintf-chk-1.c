@@ -149,7 +149,6 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_should_optimize]], const<i32>(1));
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_ret]], call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, ptr<const i8>, va_list) -> i32>(%[[VALUE_vfprintf]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f]]), read<ptr<const i8>>(%[[VALUE_fmt]]), read<va_list>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE__IO_FILE]]>, ptr<const i8>, va_list) -> i32>(%[[VALUE_vfprintf]], read<ptr<@type[[TYPE__IO_FILE]]>>(%[[VALUE_f]]), read<ptr<const i8>>(%[[VALUE_fmt]]), read<va_list>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_ret]]);
 // DEFAULT-NEXT:     }

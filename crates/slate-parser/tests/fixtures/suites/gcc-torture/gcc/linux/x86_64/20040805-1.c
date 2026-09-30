@@ -71,9 +71,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: i32 [storage=automatic] = read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_a]]), const<i32>(0))));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_a]]), const<i32>(1))), read<i32>(%[[VALUE_y]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_x_2]], call<i32, signature=fn(i32, ptr<void>) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE_x_2]]), pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(65536)>(%[[VALUE_buf]]))));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<void>) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE_x_2]]), pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(65536)>(%[[VALUE_buf]])));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_y]], call<i32, signature=fn(i32, ptr<void>) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE_y]]), pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(65536)>(%[[VALUE_buf]]))));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<void>) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE_y]]), pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(65536)>(%[[VALUE_buf]])));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE_x_2]]), read<i32>(%[[VALUE_y]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

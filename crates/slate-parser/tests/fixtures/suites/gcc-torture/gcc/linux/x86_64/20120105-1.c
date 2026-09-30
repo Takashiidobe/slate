@@ -63,7 +63,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: array<i8, 13> [storage=automatic];
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>, i32, u64) -> ptr<void>>(%[[VALUE___builtin_memset]], pointer_cast<ptr<void>, reason=arg>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_p_2]])), const<i32>(0), add<u64, overflow=wrap>(const<u64>(12), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1)))));
 // DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_i]], call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_extract]], pointer_cast<ptr<const i8>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_p_2]]), const<i32>(1)))));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>) -> i32>(%[[VALUE_extract]], pointer_cast<ptr<const i8>, reason=arg>(ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_p_2]]), const<i32>(1))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

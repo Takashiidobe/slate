@@ -46,8 +46,9 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_j:[0-9]+]] j: i32 [storage=automatic] = const<i32>(1081);
 // DEFAULT-NEXT:         let %[[VALUE_l:[0-9]+]] l: @type[[TYPE0]] [storage=automatic];
-// DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..2, bits=0..11>(%[[VALUE_l]]), read<i32>(%[[VALUE_j]]));
-// DEFAULT-NEXT:         if eq<i32>(read<i32>(%[[VALUE_j]]), read<i32>(%[[VALUE_j]]))
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_j]]);
+// DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..2, bits=0..11>(%[[VALUE_l]]), read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:         if eq<i32>(widen<i32, reason=assign>(truncate<i11b, reason=assign, fits=unknown>(read<i32>(%[[VALUE1]]))), read<i32>(%[[VALUE_j]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

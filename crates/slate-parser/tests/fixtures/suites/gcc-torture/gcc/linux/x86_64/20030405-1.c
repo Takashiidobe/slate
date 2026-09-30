@@ -64,12 +64,10 @@ bar(void)
 // DEFAULT-NEXT:         let %[[VALUE_c:[0-9]+]] c: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_x:[0-9]+]] x: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_c]], call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlength]], read<ptr<const i8>>(%[[VALUE_str_2]])));
-// DEFAULT-NEXT:         call<u64, signature=fn(ptr<const i8>) -> u64>(%[[VALUE_strlength]], read<ptr<const i8>>(%[[VALUE_str_2]]));
 // DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] lt<u64>(read<u64>(%[[VALUE_c]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(10))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if gt<u64>(read<u64>(%[[VALUE_c]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(5))))
 // DEFAULT-NEXT:                     write<i8>(deref(read<ptr<i8>>(%[[VALUE_x]])), call<i8, signature=fn() -> i8>(%[[VALUE_foo]]));
-// DEFAULT-NEXT:                     call<i8, signature=fn() -> i8>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:                 if lt<i32>(widen<i32, reason=promotion>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_x]])))), const<i32>(97))
 // DEFAULT-NEXT:                     break %[[VALUE1]];
 // DEFAULT-NEXT:             }

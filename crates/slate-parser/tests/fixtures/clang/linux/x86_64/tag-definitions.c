@@ -79,8 +79,9 @@ void takes(struct inner *p, pair q);
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: @type[[TYPE_local]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE_local]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_m:[0-9]+]] m: @type[[TYPE_mode]] [storage=automatic] = int_to_enum<@type[[TYPE_mode]], reason=assign>(reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_u]]), reinterpret<i32, reason=assign, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_mode]]>(%[[VALUE_m]]))));
-// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_t]]), reinterpret<i32, reason=assign, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_mode]]>(%[[VALUE_m]]))));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = reinterpret<i32, reason=assign, fits=unknown>(enum_to_int<u32, reason=promotion>(read<@type[[TYPE_mode]]>(%[[VALUE_m]])));
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_u]]), read<i32>(%[[VALUE0]]));
+// DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_t]]), read<i32>(%[[VALUE0]]));
 // DEFAULT-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(field0(%[[VALUE_t]])))), const<u64>(1))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_takes:[0-9]+]] @takes(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_inner]]>, %[[VALUE_q:[0-9]+]] q: @type[[TYPE2]]) -> void [linkage=external] [abi=sysv64(scalar, native_c) -> void];

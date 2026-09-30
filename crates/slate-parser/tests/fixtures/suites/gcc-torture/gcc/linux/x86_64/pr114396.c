@@ -263,27 +263,19 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_exp:[0-9]+]] exp: i16 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_res:[0-9]+]] res: i16 [storage=automatic];
 // DEFAULT-NEXT:         write<i16>(%[[VALUE_exp]], call<i16, signature=fn(i16) -> i16>(%[[VALUE_foo]], read<i16>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         call<i16, signature=fn(i16) -> i16>(%[[VALUE_foo]], read<i16>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         write<i16>(%[[VALUE_res]], call<i16, signature=fn(i16) -> i16>(%[[VALUE_foo_o3]], read<i16>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         call<i16, signature=fn(i16) -> i16>(%[[VALUE_foo_o3]], read<i16>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_exp]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_res]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<i16>(%[[VALUE_exp]], call<i16, signature=fn(i16) -> i16>(%[[VALUE_foo1]], read<i16>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         call<i16, signature=fn(i16) -> i16>(%[[VALUE_foo1]], read<i16>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         write<i16>(%[[VALUE_res]], call<i16, signature=fn(i16) -> i16>(%[[VALUE_foo1_o3]], read<i16>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         call<i16, signature=fn(i16) -> i16>(%[[VALUE_foo1_o3]], read<i16>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_exp]])), widen<i32, reason=promotion>(read<i16>(%[[VALUE_res]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<u16>(%[[VALUE_uexp]], call<u16, signature=fn(u16) -> u16>(%[[VALUE_foou]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_a]]))));
-// DEFAULT-NEXT:         call<u16, signature=fn(u16) -> u16>(%[[VALUE_foou]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_a]])));
 // DEFAULT-NEXT:         write<u16>(%[[VALUE_ures]], call<u16, signature=fn(u16) -> u16>(%[[VALUE_foou_o3]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_a]]))));
-// DEFAULT-NEXT:         call<u16, signature=fn(u16) -> u16>(%[[VALUE_foou_o3]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_a]])));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_uexp]]))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_ures]]))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<u16>(%[[VALUE_uexp]], call<u16, signature=fn(u16) -> u16>(%[[VALUE_foou1]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_a]]))));
-// DEFAULT-NEXT:         call<u16, signature=fn(u16) -> u16>(%[[VALUE_foou1]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_a]])));
 // DEFAULT-NEXT:         write<u16>(%[[VALUE_ures]], call<u16, signature=fn(u16) -> u16>(%[[VALUE_foou1_o3]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_a]]))));
-// DEFAULT-NEXT:         call<u16, signature=fn(u16) -> u16>(%[[VALUE_foou1_o3]], reinterpret<u16, reason=arg, fits=unknown>(read<i16>(%[[VALUE_a]])));
 // DEFAULT-NEXT:         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_uexp]]))), reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u16>(%[[VALUE_ures]]))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

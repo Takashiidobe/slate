@@ -50,7 +50,6 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_retval:[0-9]+]] retval: f64 [storage=automatic];
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_retval]], call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_test]], const<f64>(1.0), const<f64>(2.0)));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_test]], const<f64>(1.0), const<f64>(2.0));
 // DEFAULT-NEXT:         if logical_or<bool>(lt<f64, exceptions=observable>(read<f64>(%[[VALUE_retval]]), const<f64>(0.24)), gt<f64, exceptions=observable>(read<f64>(%[[VALUE_retval]]), const<f64>(0.26)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

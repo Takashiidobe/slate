@@ -78,7 +78,6 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_func1:[0-9]+]] @func1() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_test:[0-9]+]] test: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_test]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_func2]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_func2]]));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field0(%[[VALUE_test]])), const<i32>(0)))), const<i32>(10))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(field0(%[[VALUE_test]])), const<i32>(1)))), const<i32>(20))

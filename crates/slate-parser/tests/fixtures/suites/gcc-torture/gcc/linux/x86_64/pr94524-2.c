@@ -59,11 +59,9 @@ int main() {
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(lane(%[[VALUE_x]], const<i32>(0)))), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<vector<i8, 16>>(%[[VALUE_x]], call<vector<i8, 16>, signature=fn(vector<i8, 16>) -> vector<i8, 16>, abi=sysv64(direct) -> direct>(%[[VALUE_foo]], read<vector<i8, 16>>(compound_literal %[[VALUE3:[0-9]+]] [storage=automatic] = aggregate<vector<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(127)))))));
-// DEFAULT-NEXT:         call<vector<i8, 16>, signature=fn(vector<i8, 16>) -> vector<i8, 16>, abi=sysv64(direct) -> direct>(%[[VALUE_foo]], read<vector<i8, 16>>(compound_literal %[[VALUE3]] [storage=automatic] = aggregate<vector<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(127))))));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(lane(%[[VALUE_x]], const<i32>(0)))), neg<i32, overflow=ub>(const<i32>(127)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         write<vector<i8, 16>>(%[[VALUE_x]], call<vector<i8, 16>, signature=fn(vector<i8, 16>) -> vector<i8, 16>, abi=sysv64(direct) -> direct>(%[[VALUE_foo]], read<vector<i8, 16>>(compound_literal %[[VALUE4:[0-9]+]] [storage=automatic] = aggregate<vector<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(127))))));
-// DEFAULT-NEXT:         call<vector<i8, 16>, signature=fn(vector<i8, 16>) -> vector<i8, 16>, abi=sysv64(direct) -> direct>(%[[VALUE_foo]], read<vector<i8, 16>>(compound_literal %[[VALUE4]] [storage=automatic] = aggregate<vector<i8, 16>, zero_fill=true>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(127)))));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i8>(lane(%[[VALUE_x]], const<i32>(0)))), const<i32>(127))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

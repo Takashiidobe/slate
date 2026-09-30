@@ -492,8 +492,9 @@ int main(void) {
 // DEFAULT-NEXT:             let %[[VALUE___o_4:[0-9]+]] __o: ptr<@type[[TYPE_obstack]]> [storage=automatic] = addr_of<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_storage]]);
 // DEFAULT-NEXT:             let %[[VALUE___obj:[0-9]+]] __obj: ptr<void> [storage=automatic] = null<ptr<void>>;
 // DEFAULT-NEXT:             if logical_and<bool>(gt<ptr<void>>(read<ptr<void>>(%[[VALUE___obj]]), pointer_cast<ptr<void>, reason=explicit>(read<ptr<@type[[TYPE__obstack_chunk]]>>(field1(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o_4]])))))), lt<ptr<void>>(read<ptr<void>>(%[[VALUE___obj]]), pointer_cast<ptr<void>, reason=explicit>(read<ptr<i8>>(field4(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o_4]])))))))
-// DEFAULT-NEXT:                 write<ptr<i8>>(field2(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o_4]]))), pointer_cast<ptr<i8>, reason=explicit>(read<ptr<void>>(%[[VALUE___obj]])));
-// DEFAULT-NEXT:                 write<ptr<i8>>(field3(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o_4]]))), pointer_cast<ptr<i8>, reason=explicit>(read<ptr<void>>(%[[VALUE___obj]])));
+// DEFAULT-NEXT:                 let %[[VALUE49:[0-9]+]]: ptr<i8> [synthetic] = pointer_cast<ptr<i8>, reason=explicit>(read<ptr<void>>(%[[VALUE___obj]]));
+// DEFAULT-NEXT:                 write<ptr<i8>>(field2(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o_4]]))), read<ptr<i8>>(%[[VALUE49]]));
+// DEFAULT-NEXT:                 write<ptr<i8>>(field3(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o_4]]))), read<ptr<i8>>(%[[VALUE49]]));
 // DEFAULT-NEXT:             else
 // DEFAULT-NEXT:                 call<void, signature=fn(ptr<@type[[TYPE_obstack]]>, ptr<void>) -> void>(%[[VALUE__SC_BC_SCALE_MAX]], read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE___o_4]]), read<ptr<void>>(%[[VALUE___obj]]));
 // DEFAULT-NEXT:         }

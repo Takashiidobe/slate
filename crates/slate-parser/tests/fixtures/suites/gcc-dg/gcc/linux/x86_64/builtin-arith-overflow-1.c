@@ -175,7 +175,6 @@ main ()
 // DEFAULT-NEXT:     fn %[[VALUE_fn3:[0-9]+]] @fn3(%[[VALUE_x_3:[0-9]+]] x: i8, %[[VALUE_y_3:[0-9]+]] y: u16, %[[VALUE_ovf_3:[0-9]+]] ovf: ptr<i32>) -> i32 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_res_3:[0-9]+]] res: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ovf_3]])), from_bool<i32, reason=assign>(overflow_add<bool>(read<i8>(%[[VALUE_x_3]]), read<u16>(%[[VALUE_y_3]]), deref(addr_of<ptr<i32>>(%[[VALUE_res_3]])))));
-// DEFAULT-NEXT:         from_bool<i32, reason=assign>(overflow_add<bool>(read<i8>(%[[VALUE_x_3]]), read<u16>(%[[VALUE_y_3]]), deref(addr_of<ptr<i32>>(%[[VALUE_res_3]]))));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_res_3]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn4:[0-9]+]] @fn4(%[[VALUE_x_4:[0-9]+]] x: i64, %[[VALUE_y_4:[0-9]+]] y: i64, %[[VALUE_ovf_4:[0-9]+]] ovf: ptr<i32>) -> i64 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
@@ -185,7 +184,6 @@ main ()
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x_4]], read<i64>(%[[VALUE1]]));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_y_4]], sub<i64, overflow=ub>(and<i64>(read<i64>(%[[VALUE_y_4]]), widen<i64, reason=usual_arith>(const<i32>(65535))), widen<i64, reason=usual_arith>(const<i32>(32768))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ovf_4]])), from_bool<i32, reason=assign>(overflow_mul<bool>(read<i64>(%[[VALUE_x_4]]), read<i64>(%[[VALUE_y_4]]), deref(addr_of<ptr<i64>>(%[[VALUE_res_4]])))));
-// DEFAULT-NEXT:         from_bool<i32, reason=assign>(overflow_mul<bool>(read<i64>(%[[VALUE_x_4]]), read<i64>(%[[VALUE_y_4]]), deref(addr_of<ptr<i64>>(%[[VALUE_res_4]]))));
 // DEFAULT-NEXT:         return read<i64>(%[[VALUE_res_4]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn5:[0-9]+]] @fn5(%[[VALUE_x_5:[0-9]+]] x: i64, %[[VALUE_y_5:[0-9]+]] y: i64, %[[VALUE_ovf_5:[0-9]+]] ovf: ptr<i32>) -> i8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
@@ -193,7 +191,6 @@ main ()
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x_5]], add<i64, overflow=ub>(and<i64>(read<i64>(%[[VALUE_x_5]]), widen<i64, reason=usual_arith>(const<i32>(63))), widen<i64, reason=usual_arith>(div<i32, by_zero=ub, min_by_neg_one=ub>(const<i32>(127), const<i32>(4)))));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_y_5]], add<i64, overflow=ub>(and<i64>(read<i64>(%[[VALUE_y_5]]), widen<i64, reason=usual_arith>(const<i32>(3))), widen<i64, reason=usual_arith>(const<i32>(5))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ovf_5]])), from_bool<i32, reason=assign>(overflow_mul<bool>(read<i64>(%[[VALUE_x_5]]), read<i64>(%[[VALUE_y_5]]), deref(addr_of<ptr<i8>>(%[[VALUE_res_5]])))));
-// DEFAULT-NEXT:         from_bool<i32, reason=assign>(overflow_mul<bool>(read<i64>(%[[VALUE_x_5]]), read<i64>(%[[VALUE_y_5]]), deref(addr_of<ptr<i8>>(%[[VALUE_res_5]]))));
 // DEFAULT-NEXT:         return read<i8>(%[[VALUE_res_5]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn6:[0-9]+]] @fn6(%[[VALUE_x_6:[0-9]+]] x: u8, %[[VALUE_y_6:[0-9]+]] y: u8, %[[VALUE_ovf_6:[0-9]+]] ovf: ptr<i32>) -> u8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
@@ -201,7 +198,6 @@ main ()
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_x_6]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_x_6]]))), const<i32>(63)), sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(not<i32>(const<i32>(0)))))), const<i32>(66))))));
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_y_6]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_y_6]]))), const<i32>(3)))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ovf_6]])), from_bool<i32, reason=assign>(overflow_add<bool>(read<u8>(%[[VALUE_x_6]]), read<u8>(%[[VALUE_y_6]]), deref(addr_of<ptr<u8>>(%[[VALUE_res_6]])))));
-// DEFAULT-NEXT:         from_bool<i32, reason=assign>(overflow_add<bool>(read<u8>(%[[VALUE_x_6]]), read<u8>(%[[VALUE_y_6]]), deref(addr_of<ptr<u8>>(%[[VALUE_res_6]]))));
 // DEFAULT-NEXT:         return read<u8>(%[[VALUE_res_6]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_fn7:[0-9]+]] @fn7(%[[VALUE_x_7:[0-9]+]] x: u8, %[[VALUE_y_7:[0-9]+]] y: u8, %[[VALUE_ovf_7:[0-9]+]] ovf: ptr<i32>) -> u8 [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {
@@ -209,7 +205,6 @@ main ()
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_x_7]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_x_7]]))), const<i32>(15)), sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(not<i32>(const<i32>(0)))))), const<i32>(15))))));
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_y_7]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(and<i32>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_y_7]]))), const<i32>(3)), const<i32>(16)))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ovf_7]])), from_bool<i32, reason=assign>(overflow_add<bool>(read<u8>(%[[VALUE_x_7]]), read<u8>(%[[VALUE_y_7]]), deref(addr_of<ptr<u8>>(%[[VALUE_res_7]])))));
-// DEFAULT-NEXT:         from_bool<i32, reason=assign>(overflow_add<bool>(read<u8>(%[[VALUE_x_7]]), read<u8>(%[[VALUE_y_7]]), deref(addr_of<ptr<u8>>(%[[VALUE_res_7]]))));
 // DEFAULT-NEXT:         return read<u8>(%[[VALUE_res_7]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];

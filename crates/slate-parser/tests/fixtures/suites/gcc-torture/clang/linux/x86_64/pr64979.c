@@ -82,7 +82,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_n:[0-9]+]] n: i32 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_n]], va_arg<i32>(%[[VALUE_ap_2]]));
-// DEFAULT-NEXT:         va_arg<i32>(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32, ptr<va_list>) -> void>(%[[VALUE_bar]], read<i32>(%[[VALUE_x_2]]), conditional<ptr<va_list>>(eq<i32>(read<i32>(%[[VALUE_n]]), const<i32>(0)), null<ptr<va_list>>, addr_of<ptr<va_list>>(%[[VALUE_ap_2]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:     }

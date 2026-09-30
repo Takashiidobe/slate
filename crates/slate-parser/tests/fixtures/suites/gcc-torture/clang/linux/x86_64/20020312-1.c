@@ -69,7 +69,6 @@ int foo (B *x)
 // DEFAULT-NEXT:         let %[[VALUE_y:[0-9]+]] y: ptr<@type[[TYPE0]]> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_y]], read<ptr<@type[[TYPE0]]>>(field1(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_x_2]])))));
 // DEFAULT-NEXT:         write<u32>(field1(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_y]]))), call<u32, signature=fn(u32) -> u32>(%[[VALUE_bar]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(field2(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_x_2]])))))));
-// DEFAULT-NEXT:         call<u32, signature=fn(u32) -> u32>(%[[VALUE_bar]], reinterpret<u32, reason=arg, fits=unknown>(read<i32>(field2(deref(read<ptr<@type[[TYPE1]]>>(%[[VALUE_x_2]]))))));
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: u32 [synthetic];
 // DEFAULT-NEXT:         {
 // DEFAULT-NEXT:             let %[[VALUE_z:[0-9]+]] z: u32 [storage=automatic] = reinterpret<u32, reason=assign, fits=always>(const<i32>(1));

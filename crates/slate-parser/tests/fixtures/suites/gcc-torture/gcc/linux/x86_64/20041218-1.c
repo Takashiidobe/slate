@@ -162,11 +162,9 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: ptr<@type[[TYPE_V]]> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_v_2:[0-9]+]] v: ptr<void> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_v_2]], call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%[[VALUE_dummy1]], read<ptr<void>>(%[[VALUE_y_3]])));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%[[VALUE_dummy1]], read<ptr<void>>(%[[VALUE_y_3]]));
 // DEFAULT-NEXT:         if not<bool>(ne<ptr<void>>(read<ptr<void>>(%[[VALUE_v_2]]), null<ptr<void>>))
 // DEFAULT-NEXT:             return null<ptr<@type[[TYPE_V]]>>;
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_V]]>>(%[[VALUE_u]], call<ptr<@type[[TYPE_V]]>, signature=fn(u32) -> ptr<@type[[TYPE_V]]>>(%[[VALUE_baz]], truncate<u32, reason=arg, fits=always>(const<u64>(72))));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_V]]>, signature=fn(u32) -> ptr<@type[[TYPE_V]]>>(%[[VALUE_baz]], truncate<u32, reason=arg, fits=always>(const<u64>(72)));
 // DEFAULT-NEXT:         write<u32>(field0(deref(read<ptr<@type[[TYPE_V]]>>(%[[VALUE_u]]))), read<u32>(%[[VALUE_x_5]]));
 // DEFAULT-NEXT:         write<u32>(field0(field0(field1(deref(read<ptr<@type[[TYPE_V]]>>(%[[VALUE_u]]))))), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<@type[[TYPE_T]]>(field1(field0(field1(deref(read<ptr<@type[[TYPE_V]]>>(%[[VALUE_u]]))))), copy<@type[[TYPE_T]], reason=assign>(read<@type[[TYPE_T]]>(%[[VALUE_t]])));
@@ -205,7 +203,6 @@ int main(void) {
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             case %[[VALUE8]] const<u32>(1):
 // DEFAULT-NEXT:                                 write<ptr<@type[[TYPE_V]]>>(%[[VALUE_c]], call<ptr<@type[[TYPE_V]]>, signature=fn(u32, ptr<void>) -> ptr<@type[[TYPE_V]]>>(%[[VALUE_bar]], read<u32>(%[[VALUE_j]]), pointer_cast<ptr<void>, reason=arg>(read<ptr<u32>>(%[[VALUE_x_6]]))));
-// DEFAULT-NEXT:                                 call<ptr<@type[[TYPE_V]]>, signature=fn(u32, ptr<void>) -> ptr<@type[[TYPE_V]]>>(%[[VALUE_bar]], read<u32>(%[[VALUE_j]]), pointer_cast<ptr<void>, reason=arg>(read<ptr<u32>>(%[[VALUE_x_6]])));
 // DEFAULT-NEXT:                             break %[[VALUE8]];
 // DEFAULT-NEXT:                             default %[[VALUE8]]:
 // DEFAULT-NEXT:                                 write<ptr<@type[[TYPE_V]]>>(%[[VALUE_c]], null<ptr<@type[[TYPE_V]]>>);
@@ -213,7 +210,6 @@ int main(void) {
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                     if ne<ptr<@type[[TYPE_V]]>>(read<ptr<@type[[TYPE_V]]>>(%[[VALUE_c]]), null<ptr<@type[[TYPE_V]]>>)
 // DEFAULT-NEXT:                         write<ptr<void>>(%[[VALUE_v_3]], call<ptr<void>, signature=fn(ptr<void>, ptr<void>) -> ptr<void>>(%[[VALUE_dummy2]], read<ptr<void>>(%[[VALUE_v_3]]), pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_V]]>>(%[[VALUE_c]]))));
-// DEFAULT-NEXT:                         call<ptr<void>, signature=fn(ptr<void>, ptr<void>) -> ptr<void>>(%[[VALUE_dummy2]], read<ptr<void>>(%[[VALUE_v_3]]), pointer_cast<ptr<void>, reason=arg>(read<ptr<@type[[TYPE_V]]>>(%[[VALUE_c]])));
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         return const<i32>(1);
 // DEFAULT-NEXT:                 }

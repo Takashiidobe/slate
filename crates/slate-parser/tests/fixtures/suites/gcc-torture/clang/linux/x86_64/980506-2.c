@@ -63,7 +63,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_ip:[0-9]+]] ip: ptr<i32> [storage=automatic] = addr_of<ptr<i32>>(field0(%[[VALUE_s]]));
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_s]]), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE0]]>>(%[[VALUE_sp]], pointer_cast<ptr<@type[[TYPE0]]>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%[[VALUE_self]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_s]])))));
-// DEFAULT-NEXT:         pointer_cast<ptr<@type[[TYPE0]]>, reason=assign>(call<ptr<void>, signature=fn(ptr<void>) -> ptr<void>>(%[[VALUE_self]], pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE0]]>>(%[[VALUE_s]]))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_ip]])), const<i32>(0));
 // DEFAULT-NEXT:         return add<i32, overflow=ub>(read<i32>(field0(deref(read<ptr<@type[[TYPE0]]>>(%[[VALUE_sp]])))), const<i32>(1));
 // DEFAULT-NEXT:     }

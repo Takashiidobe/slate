@@ -51,7 +51,6 @@ static int bar(void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> i32 [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_a]], call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_minimum]], read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]])));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_minimum]], read<i32>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i32 [linkage=internal] [fallthrough=ub_if_used] {

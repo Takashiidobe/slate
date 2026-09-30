@@ -91,7 +91,6 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_g]])), call<i32, signature=fn(i8) -> i32>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=unknown>(read<i16>(%[[VALUE_a]]))));
-// DEFAULT-NEXT:         call<i32, signature=fn(i8) -> i32>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=unknown>(read<i16>(%[[VALUE_a]])));
 // DEFAULT-NEXT:         if ne<i32>(widen<i32, reason=promotion>(read<i16>(%[[VALUE_a]])), const<i32>(0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

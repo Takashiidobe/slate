@@ -68,7 +68,6 @@ main ()
 // DEFAULT-NEXT:             inlateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_j]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_f1]], read<i32>(%[[VALUE_x]])));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_f1]], read<i32>(%[[VALUE_x]]));
 // DEFAULT-NEXT:         asm volatile "" [dialect=att] [options=nomem,nostack] {
 // DEFAULT-NEXT:             inlateout 0 "r" [reg] width 32 place<i32>(%[[VALUE_x]]);
 // DEFAULT-NEXT:         }

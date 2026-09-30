@@ -80,7 +80,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<@type[[TYPE0]]>(%[[VALUE_x_2]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(f64) -> @type[[TYPE0]], abi=sysv64(scalar) -> native_c>(%[[VALUE_foo]], const<f64>(1.0))));
-// DEFAULT-NEXT:                     copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(f64) -> @type[[TYPE0]], abi=sysv64(scalar) -> native_c>(%[[VALUE_foo]], const<f64>(1.0)));
 // DEFAULT-NEXT:                     if ne<f64, exceptions=ignore>(read<f64>(field0(%[[VALUE_x_2]])), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(const<f64>(1.0), const<f64>(1.0)))
 // DEFAULT-NEXT:                         call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }

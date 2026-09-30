@@ -57,7 +57,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_x]], read<i32>(%[[VALUE1]]));
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_mem]]), read<i32>(%[[VALUE0]]))), call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn() -> i32>(%[[VALUE_bar]])));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn() -> i32>(%[[VALUE_bar]]));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_x]]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

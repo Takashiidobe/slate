@@ -68,7 +68,6 @@ unsigned long osf_getsysinfo(unsigned long flags)
 // DEFAULT-NEXT:     fn %[[VALUE_osf_getsysinfo:[0-9]+]] @osf_getsysinfo(%[[VALUE_flags:[0-9]+]] flags: u64) -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_w:[0-9]+]] w: u64 [storage=automatic];
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_w]], call<u64, signature=fn(u64, u64) -> u64>(%[[VALUE_swcr_update_status]], read<u64>(%[[VALUE_flags]]), call<u64, signature=fn() -> u64>(%[[VALUE_rdfpcr]])));
-// DEFAULT-NEXT:         call<u64, signature=fn(u64, u64) -> u64>(%[[VALUE_swcr_update_status]], read<u64>(%[[VALUE_flags]]), call<u64, signature=fn() -> u64>(%[[VALUE_rdfpcr]]));
 // DEFAULT-NEXT:         return read<u64>(%[[VALUE_w]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

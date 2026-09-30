@@ -170,7 +170,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<i64>(%[[VALUE_ran]], call<i64, signature=fn() -> i64>(%[[VALUE_simple_rand]]));
-// DEFAULT-NEXT:                     call<i64, signature=fn() -> i64>(%[[VALUE_simple_rand]]);
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_n_bits]], truncate<i32, reason=assign, fits=unknown>(rem<i64, by_zero=ub, min_by_neg_one=ub>(shr<i64, amount_out_of_range=ub, fill=sign_extend>(read<i64>(%[[VALUE_ran]]), const<i32>(1)), widen<i64, reason=usual_arith>(const<i32>(16)))));
 // DEFAULT-NEXT:                     let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_tot_bits]]);
 // DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), read<i32>(%[[VALUE_n_bits]]));
@@ -208,9 +207,7 @@ int main(void) {
 // DEFAULT-NEXT:                     let %[[VALUE_x_2:[0-9]+]] x: u64 [storage=automatic];
 // DEFAULT-NEXT:                     let %[[VALUE_y:[0-9]+]] y: u64 [storage=automatic];
 // DEFAULT-NEXT:                     write<u64>(%[[VALUE_x_2]], call<u64, signature=fn() -> u64>(%[[VALUE_random_bitstring]]));
-// DEFAULT-NEXT:                     call<u64, signature=fn() -> u64>(%[[VALUE_random_bitstring]]);
 // DEFAULT-NEXT:                     write<u64>(%[[VALUE_y]], call<u64, signature=fn() -> u64>(%[[VALUE_random_bitstring]]));
-// DEFAULT-NEXT:                     call<u64, signature=fn() -> u64>(%[[VALUE_random_bitstring]]);
 // DEFAULT-NEXT:                     if eq<u64>(const<u64>(4), const<u64>(8))
 // DEFAULT-NEXT:                         goto %[[VALUE_save_time:[0-9]+]];
 // DEFAULT-NEXT:                     {

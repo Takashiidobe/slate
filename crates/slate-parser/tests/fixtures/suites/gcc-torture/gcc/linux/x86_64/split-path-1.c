@@ -99,9 +99,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_ReadPtr:[0-9]+]] ReadPtr: ptr<u8> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_EritePtr:[0-9]+]] EritePtr: ptr<u8> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<u8>>(%[[VALUE_ReadPtr]], pointer_cast<ptr<u8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(100)))))));
-// DEFAULT-NEXT:         pointer_cast<ptr<u8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(100))))));
 // DEFAULT-NEXT:         write<ptr<u8>>(%[[VALUE_EritePtr]], pointer_cast<ptr<u8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(100)))))));
-// DEFAULT-NEXT:         pointer_cast<ptr<u8>, reason=explicit>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], mul<u64, overflow=wrap>(const<u64>(1), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(100))))));
 // DEFAULT-NEXT:         for %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], const<i32>(0));

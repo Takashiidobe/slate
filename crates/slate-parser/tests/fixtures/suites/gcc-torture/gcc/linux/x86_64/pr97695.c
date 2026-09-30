@@ -69,7 +69,6 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_j:[0-9]+]] @j() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_i]], const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<i32>>(deref(read<ptr<ptr<i32>>>(%[[VALUE_c]])), pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_i]], read<i32>(%[[VALUE_d]]))));
-// DEFAULT-NEXT:         pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(i32) -> ptr<void>>(%[[VALUE_i]], read<i32>(%[[VALUE_d]])));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_j]]);

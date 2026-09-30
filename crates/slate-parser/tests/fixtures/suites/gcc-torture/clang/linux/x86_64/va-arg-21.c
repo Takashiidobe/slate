@@ -85,10 +85,8 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_ap_array:[0-9]+]] ap_array: array<ptr<va_list>, 3> [storage=automatic] [align=16];
 // DEFAULT-NEXT:         let %[[VALUE_ap_ptr:[0-9]+]] ap_ptr: ptr<ptr<va_list>> [storage=automatic] = array_decay<ptr<ptr<va_list>>, length=Some(3)>(%[[VALUE_ap_array]]);
 // DEFAULT-NEXT:         write<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%[[VALUE_ap_array]]), const<i32>(0))), pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(24))));
-// DEFAULT-NEXT:         pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(24)));
 // DEFAULT-NEXT:         write<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%[[VALUE_ap_array]]), const<i32>(1))), null<ptr<va_list>>);
 // DEFAULT-NEXT:         write<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%[[VALUE_ap_array]]), const<i32>(2))), pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(24))));
-// DEFAULT-NEXT:         pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(24)));
 // DEFAULT-NEXT:         va_start(deref(read<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%[[VALUE_ap_array]]), const<i32>(0))))));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, va_list) -> i32>(%[[VALUE_vprintf]], read<ptr<const i8>>(%[[VALUE_s]]), read<va_list>(deref(read<ptr<va_list>>(deref(read<ptr<ptr<va_list>>>(%[[VALUE_ap_ptr]]))))));
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<ptr<va_list>> [synthetic] = read<ptr<ptr<va_list>>>(%[[VALUE_ap_ptr]]);

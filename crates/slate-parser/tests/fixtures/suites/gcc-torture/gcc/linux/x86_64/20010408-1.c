@@ -184,18 +184,21 @@ char *mode, *s;
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                                 body:
 // DEFAULT-NEXT:                                     ;
-// DEFAULT-NEXT:                         write<i8>(%[[VALUE_ch]], read<i8>(deref(read<ptr<i8>>(%[[VALUE_p]]))));
-// DEFAULT-NEXT:                         if ne<i8>(read<i8>(deref(read<ptr<i8>>(%[[VALUE_p]]))), const<i8>(0))
-// DEFAULT-NEXT:                             let %[[VALUE23:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_p]]);
-// DEFAULT-NEXT:                             let %[[VALUE24:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE23]]), const<i32>(1));
-// DEFAULT-NEXT:                             write<ptr<i8>>(%[[VALUE_p]], read<ptr<i8>>(%[[VALUE24]]));
-// DEFAULT-NEXT:                             write<i8>(deref(read<ptr<i8>>(%[[VALUE23]])), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
-// DEFAULT-NEXT:                         write<i32>(%[[VALUE_i]], call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_FindCommnr]], read<ptr<i8>>(%[[VALUE_s]])));
-// DEFAULT-NEXT:                         if ne<i32>(call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_FindCommnr]], read<ptr<i8>>(%[[VALUE_s]])), neg<i32, overflow=ub>(const<i32>(1)))
+// DEFAULT-NEXT:                         let %[[VALUE23:[0-9]+]]: i8 [synthetic] = read<i8>(deref(read<ptr<i8>>(%[[VALUE_p]])));
+// DEFAULT-NEXT:                         write<i8>(%[[VALUE_ch]], read<i8>(%[[VALUE23]]));
+// DEFAULT-NEXT:                         if ne<i8>(read<i8>(%[[VALUE23]]), const<i8>(0))
+// DEFAULT-NEXT:                             let %[[VALUE24:[0-9]+]]: ptr<i8> [synthetic] = read<ptr<i8>>(%[[VALUE_p]]);
+// DEFAULT-NEXT:                             let %[[VALUE25:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(read<ptr<i8>>(%[[VALUE24]]), const<i32>(1));
+// DEFAULT-NEXT:                             write<ptr<i8>>(%[[VALUE_p]], read<ptr<i8>>(%[[VALUE25]]));
+// DEFAULT-NEXT:                             write<i8>(deref(read<ptr<i8>>(%[[VALUE24]])), truncate<i8, reason=assign, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:                         let %[[VALUE26:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_FindCommnr]], read<ptr<i8>>(%[[VALUE_s]]));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE26]]));
+// DEFAULT-NEXT:                         if ne<i32>(read<i32>(%[[VALUE26]]), neg<i32, overflow=ub>(const<i32>(1)))
 // DEFAULT-NEXT:                             call<i32, signature=fn(ptr<@type[[TYPE_auser]]>, ptr<i8>, ptr<@type[[TYPE_comm]]>) -> i32>(%[[VALUE_AclSetPermCmd]], read<ptr<@type[[TYPE_auser]]>>(%[[VALUE_u]]), read<ptr<i8>>(%[[VALUE_mode]]), addr_of<ptr<@type[[TYPE_comm]]>>(deref(ptr_offset<ptr<@type[[TYPE_comm]]>, subtract=false, element=@type[[TYPE_comm]], overflow=ub>(array_decay<ptr<@type[[TYPE_comm]]>, length=None>(%[[VALUE_comms]]), read<i32>(%[[VALUE_i]])))));
 // DEFAULT-NEXT:                         else
-// DEFAULT-NEXT:                             write<i32>(%[[VALUE_i]], call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_WindowByNoN]], read<ptr<i8>>(%[[VALUE_s]])));
-// DEFAULT-NEXT:                             if logical_and<bool>(ge<i32>(call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_WindowByNoN]], read<ptr<i8>>(%[[VALUE_s]])), const<i32>(0)), ne<ptr<@type[[TYPE_win]]>>(read<ptr<@type[[TYPE_win]]>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_win]]>>, subtract=false, element=ptr<@type[[TYPE_win]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_win]]>>, length=None>(%[[VALUE_wtab]]), read<i32>(%[[VALUE_i]])))), null<ptr<@type[[TYPE_win]]>>))
+// DEFAULT-NEXT:                             let %[[VALUE27:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn(ptr<i8>) -> i32>(%[[VALUE_WindowByNoN]], read<ptr<i8>>(%[[VALUE_s]]));
+// DEFAULT-NEXT:                             write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE27]]));
+// DEFAULT-NEXT:                             if logical_and<bool>(ge<i32>(read<i32>(%[[VALUE27]]), const<i32>(0)), ne<ptr<@type[[TYPE_win]]>>(read<ptr<@type[[TYPE_win]]>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_win]]>>, subtract=false, element=ptr<@type[[TYPE_win]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_win]]>>, length=None>(%[[VALUE_wtab]]), read<i32>(%[[VALUE_i]])))), null<ptr<@type[[TYPE_win]]>>))
 // DEFAULT-NEXT:                                 call<i32, signature=fn(ptr<@type[[TYPE_auser]]>, ptr<@type[[TYPE_auser]]>, ptr<i8>, ptr<@type[[TYPE_win]]>) -> i32>(%[[VALUE_AclSetPermWin]], null<ptr<@type[[TYPE_auser]]>>, read<ptr<@type[[TYPE_auser]]>>(%[[VALUE_u]]), read<ptr<i8>>(%[[VALUE_mode]]), read<ptr<@type[[TYPE_win]]>>(deref(ptr_offset<ptr<ptr<@type[[TYPE_win]]>>, subtract=false, element=ptr<@type[[TYPE_win]]>, overflow=ub>(array_decay<ptr<ptr<@type[[TYPE_win]]>>, length=None>(%[[VALUE_wtab]]), read<i32>(%[[VALUE_i]])))));
 // DEFAULT-NEXT:                             else
 // DEFAULT-NEXT:                                 return neg<i32, overflow=ub>(const<i32>(1));

@@ -123,7 +123,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_error:[0-9]+]] error: i32 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_tmp:[0-9]+]] tmp: ptr<i8> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<i8>>(%[[VALUE_tmp]], call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_getname]], read<ptr<const i8>>(%[[VALUE_filename_3]])));
-// DEFAULT-NEXT:         call<ptr<i8>, signature=fn(ptr<const i8>) -> ptr<i8>>(%[[VALUE_getname]], read<ptr<const i8>>(%[[VALUE_filename_3]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_error]], truncate<i32, reason=assign, fits=unknown>(ptr_to_int<i64, reason=explicit>(read<ptr<i8>>(%[[VALUE_tmp]]))));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, i32, u32) -> void>(%[[VALUE_do_mknod]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<i8>>(%[[VALUE_tmp]])), read<i32>(%[[VALUE_mode_2]]), call<u32, signature=fn(i32) -> u32>(%[[VALUE_to_kdev_t]], reinterpret<i32, reason=arg, fits=unknown>(read<u32>(%[[VALUE_dev_3]]))));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_error]]);

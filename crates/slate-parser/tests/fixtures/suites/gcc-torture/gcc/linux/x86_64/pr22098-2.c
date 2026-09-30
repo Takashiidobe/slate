@@ -44,8 +44,9 @@ int                      main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: i32 [storage=automatic] = const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_p:[0-9]+]] p: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: u64 [storage=automatic];
-// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_p]], addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1), index2 = const<i32>(2))), const<i32>(1)))));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_b]], ptr_to_int<u64, reason=explicit>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(compound_literal %[[VALUE1]] [storage=automatic] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1), index2 = const<i32>(2))), const<i32>(1))))));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<i32> [synthetic] = addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(0), index1 = const<i32>(1), index2 = const<i32>(2))), const<i32>(1))));
+// DEFAULT-NEXT:         write<ptr<i32>>(%[[VALUE_p]], read<ptr<i32>>(%[[VALUE1]]));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_b]], ptr_to_int<u64, reason=explicit>(read<ptr<i32>>(%[[VALUE1]])));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_p]]))), const<i32>(1)), ne<i32>(read<i32>(deref(int_to_ptr<ptr<i32>, reason=explicit>(read<u64>(%[[VALUE_b]])))), const<i32>(1)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

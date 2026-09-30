@@ -47,8 +47,9 @@ int  main() {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_c]]), null<ptr<i32>>)
-// DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_b]]), xor<i32>(from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0))), const<i32>(3)));
-// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<i32>(xor<i32>(from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0))), const<i32>(3)), const<i32>(0)));
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = xor<i32>(from_bool<i32, reason=promotion>(lt<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0))), const<i32>(3));
+// DEFAULT-NEXT:             write<i32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_b]]), read<i32>(%[[VALUE1]]));
+// DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<i32>(widen<i32, reason=assign>(truncate<i1b, reason=assign, fits=unknown>(read<i32>(%[[VALUE1]]))), const<i32>(0)));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(false));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_d]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE0]])));

@@ -82,11 +82,9 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_u:[0-9]+]] u: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_a:[0-9]+]] a: vector<i32, 2> [storage=automatic] = aggregate<vector<i32, 2>, zero_fill=false>(index0 = neg<i32, overflow=ub>(const<i32>(3)), index1 = neg<i32, overflow=ub>(const<i32>(3)));
 // DEFAULT-NEXT:         write<vector<u32, 2>>(field2(%[[VALUE_u]]), call<vector<u32, 2>, signature=fn(vector<i32, 2>) -> vector<u32, 2>, abi=sysv64(coerce<f64>) -> coerce<f64>>(%[[VALUE_test1]], read<vector<i32, 2>>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         call<vector<u32, 2>, signature=fn(vector<i32, 2>) -> vector<u32, 2>, abi=sysv64(coerce<f64>) -> coerce<f64>>(%[[VALUE_test1]], read<vector<i32, 2>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%[[VALUE_u]])), const<i32>(0)))), neg<i32, overflow=ub>(const<i32>(3))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%[[VALUE_u]])), const<i32>(1)))), neg<i32, overflow=ub>(const<i32>(3))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<i64>(field3(%[[VALUE_u]]), call<i64, signature=fn(vector<i32, 2>) -> i64, abi=sysv64(coerce<f64>) -> scalar>(%[[VALUE_test2]], read<vector<i32, 2>>(%[[VALUE_a]])));
-// DEFAULT-NEXT:         call<i64, signature=fn(vector<i32, 2>) -> i64, abi=sysv64(coerce<f64>) -> scalar>(%[[VALUE_test2]], read<vector<i32, 2>>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%[[VALUE_u]])), const<i32>(0)))), neg<i32, overflow=ub>(const<i32>(3))), ne<i32>(read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(field1(%[[VALUE_u]])), const<i32>(1)))), neg<i32, overflow=ub>(const<i32>(3))))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

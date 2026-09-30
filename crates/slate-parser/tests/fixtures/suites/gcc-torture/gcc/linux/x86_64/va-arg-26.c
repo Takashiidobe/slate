@@ -54,7 +54,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: f64 [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_d]], va_arg<f64>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:         va_arg<f64>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         return read<f64>(%[[VALUE_d]]);
 // DEFAULT-NEXT:     }

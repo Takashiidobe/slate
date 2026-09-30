@@ -102,11 +102,9 @@ int main() {
 // DEFAULT-NEXT:         if logical_or<bool>(ne<u64>(const<u64>(8), const<u64>(8)), ne<i32>(neg<i32, overflow=ub>(const<i32>(1021)), neg<i32, overflow=ub>(const<i32>(1021))))
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         write<i64>(field0(%[[VALUE_u]]), call<i64, signature=fn() -> i64>(%[[VALUE_f1]]));
-// DEFAULT-NEXT:         call<i64, signature=fn() -> i64>(%[[VALUE_f1]]);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(field1(%[[VALUE_u]])), const<f64>(2.225073858507201e-308))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<f64>(field1(%[[VALUE_u]]), call<f64, signature=fn() -> f64>(%[[VALUE_f2]]));
-// DEFAULT-NEXT:         call<f64, signature=fn() -> f64>(%[[VALUE_f2]]);
 // DEFAULT-NEXT:         if ne<i64>(read<i64>(field0(%[[VALUE_u]])), const<i64>(4483583629026627))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: f64 [storage=automatic] = const<f64>(234.0);

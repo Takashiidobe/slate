@@ -56,7 +56,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_value]], va_arg<f64>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:         va_arg<f64>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         if logical_or<bool>(ne<f64, exceptions=observable>(read<f64>(%[[VALUE_one]]), const<f64>(1.0)), ne<f64, exceptions=observable>(read<f64>(%[[VALUE_value]]), const<f64>(2.0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

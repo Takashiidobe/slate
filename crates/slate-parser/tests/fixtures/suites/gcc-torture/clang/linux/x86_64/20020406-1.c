@@ -163,7 +163,6 @@ int main() {
 // DEFAULT-NEXT:         write<ptr<u32>>(field2(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_ans]]))), null<ptr<u32>>);
 // DEFAULT-NEXT:         if ge<i32>(read<i32>(%[[VALUE_maxdeg]]), const<i32>(0))
 // DEFAULT-NEXT:             write<ptr<u32>>(field2(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_ans]]))), pointer_cast<ptr<u32>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(add<i32, overflow=ub>(read<i32>(%[[VALUE_maxdeg]]), const<i32>(1)))), const<u64>(4))));
-// DEFAULT-NEXT:             pointer_cast<ptr<u32>, reason=explicit>(call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(add<i32, overflow=ub>(read<i32>(%[[VALUE_maxdeg]]), const<i32>(1)))), const<u64>(4)));
 // DEFAULT-NEXT:         write<i32>(field0(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_ans]]))), read<i32>(%[[VALUE_maxdeg]]));
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_ans]]))), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         return read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_ans]]);
@@ -207,42 +206,30 @@ int main() {
 // DEFAULT-NEXT:             return read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_f_3]]);
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_p]], reinterpret<u32, reason=assign, fits=always>(const<i32>(2)));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_df]], call<i32, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> i32>(%[[VALUE_DUPFFdeg]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_f_3]])));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> i32>(%[[VALUE_DUPFFdeg]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_f_3]]));
 // DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_df]]), const<i32>(0))
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_df]], const<i32>(0));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_dg]], call<i32, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> i32>(%[[VALUE_DUPFFdeg]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_g_2]])));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> i32>(%[[VALUE_DUPFFdeg]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_g_2]]));
 // DEFAULT-NEXT:         if lt<i32>(read<i32>(%[[VALUE_dg]]), const<i32>(0))
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_dg]], const<i32>(0));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_u]], call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFcopy]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_f_3]])));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFcopy]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_f_3]]));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_v]], call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFcopy]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_g_2]])));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFcopy]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_g_2]]));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_uf]], call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(i32) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFnew]], read<i32>(%[[VALUE_dg]])));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(i32) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFnew]], read<i32>(%[[VALUE_dg]]));
 // DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(field2(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_uf]])))), const<i32>(0))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_uf]]))), const<i32>(0));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_ug]], call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(i32) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFnew]], read<i32>(%[[VALUE_df]])));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(i32) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFnew]], read<i32>(%[[VALUE_df]]));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_vf]], call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(i32) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFnew]], read<i32>(%[[VALUE_dg]])));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(i32) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFnew]], read<i32>(%[[VALUE_dg]]));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_vg]], call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(i32) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFnew]], read<i32>(%[[VALUE_df]])));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(i32) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFnew]], read<i32>(%[[VALUE_df]]));
 // DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(field2(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_vg]])))), const<i32>(0))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_vg]]))), const<i32>(0));
 // DEFAULT-NEXT:         while %[[VALUE5:[0-9]+]] gt<i32>(call<i32, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> i32>(%[[VALUE_DUPFFdeg]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_v]])), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_dv]], call<i32, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> i32>(%[[VALUE_DUPFFdeg]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_v]])));
-// DEFAULT-NEXT:                 call<i32, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> i32>(%[[VALUE_DUPFFdeg]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_v]]));
 // DEFAULT-NEXT:                 write<u32>(%[[VALUE_lcvrecip]], call<u32, signature=fn(u32, u32) -> u32>(%[[VALUE_FFmul]], reinterpret<u32, reason=arg, fits=always>(const<i32>(1)), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(field2(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_v]])))), read<i32>(%[[VALUE_dv]]))))));
-// DEFAULT-NEXT:                 call<u32, signature=fn(u32, u32) -> u32>(%[[VALUE_FFmul]], reinterpret<u32, reason=arg, fits=always>(const<i32>(1)), read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(field2(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_v]])))), read<i32>(%[[VALUE_dv]])))));
 // DEFAULT-NEXT:                 while %[[VALUE6:[0-9]+]] ge<i32>(call<i32, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> i32>(%[[VALUE_DUPFFdeg]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_u]])), read<i32>(%[[VALUE_dv]]))
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_du]], call<i32, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> i32>(%[[VALUE_DUPFFdeg]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_u]])));
-// DEFAULT-NEXT:                         call<i32, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> i32>(%[[VALUE_DUPFFdeg]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_u]]));
 // DEFAULT-NEXT:                         write<u32>(%[[VALUE_lcu]], read<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(field2(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_u]])))), read<i32>(%[[VALUE_du]])))));
 // DEFAULT-NEXT:                         write<u32>(%[[VALUE_q]], call<u32, signature=fn(u32, u32) -> u32>(%[[VALUE_FFmul]], read<u32>(%[[VALUE_lcu]]), read<u32>(%[[VALUE_lcvrecip]])));
-// DEFAULT-NEXT:                         call<u32, signature=fn(u32, u32) -> u32>(%[[VALUE_FFmul]], read<u32>(%[[VALUE_lcu]]), read<u32>(%[[VALUE_lcvrecip]]));
 // DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>, ptr<@type[[TYPE_DUPFFstruct]]>, i32, u32) -> void>(%[[VALUE_DUPFFshift_add]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_u]]), read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_v]]), sub<i32, overflow=ub>(read<i32>(%[[VALUE_du]]), read<i32>(%[[VALUE_dv]])), sub<u32, overflow=wrap>(read<u32>(%[[VALUE_p]]), read<u32>(%[[VALUE_q]])));
 // DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>, ptr<@type[[TYPE_DUPFFstruct]]>, i32, u32) -> void>(%[[VALUE_DUPFFshift_add]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_uf]]), read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_vf]]), sub<i32, overflow=ub>(read<i32>(%[[VALUE_du]]), read<i32>(%[[VALUE_dv]])), sub<u32, overflow=wrap>(read<u32>(%[[VALUE_p]]), read<u32>(%[[VALUE_q]])));
 // DEFAULT-NEXT:                         call<void, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>, ptr<@type[[TYPE_DUPFFstruct]]>, i32, u32) -> void>(%[[VALUE_DUPFFshift_add]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_ug]]), read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_vg]]), sub<i32, overflow=ub>(read<i32>(%[[VALUE_du]]), read<i32>(%[[VALUE_dv]])), sub<u32, overflow=wrap>(read<u32>(%[[VALUE_p]]), read<u32>(%[[VALUE_q]])));
@@ -271,16 +258,13 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_cg:[0-9]+]] cg: ptr<@type[[TYPE_DUPFFstruct]]> [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: ptr<@type[[TYPE_DUPFFstruct]]> [storage=automatic];
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_f_4]], call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(i32) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFnew]], const<i32>(1)));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(i32) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFnew]], const<i32>(1));
 // DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(field2(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_f_4]])))), const<i32>(1))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_f_4]]))), const<i32>(1));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_g_3]], call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(i32) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFnew]], const<i32>(2)));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(i32) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFnew]], const<i32>(2));
 // DEFAULT-NEXT:         write<u32>(deref(ptr_offset<ptr<u32>, subtract=false, element=u32, overflow=ub>(read<ptr<u32>>(field2(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_g_3]])))), const<i32>(2))), reinterpret<u32, reason=assign, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:         write<i32>(field1(deref(read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_g_3]]))), const<i32>(2));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE___builtin_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(41)>(%[[VALUE_str_2]])), call<i32, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> i32>(%[[VALUE_DUPFFdeg]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_f_4]])), call<i32, signature=fn(ptr<@type[[TYPE_DUPFFstruct]]>) -> i32>(%[[VALUE_DUPFFdeg]], read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_g_3]])));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_h]], call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(ptr<ptr<@type[[TYPE_DUPFFstruct]]>>, ptr<ptr<@type[[TYPE_DUPFFstruct]]>>, ptr<@type[[TYPE_DUPFFstruct]]>, ptr<@type[[TYPE_DUPFFstruct]]>) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFexgcd]], addr_of<ptr<ptr<@type[[TYPE_DUPFFstruct]]>>>(%[[VALUE_cf]]), addr_of<ptr<ptr<@type[[TYPE_DUPFFstruct]]>>>(%[[VALUE_cg]]), read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_f_4]]), read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_g_3]])));
-// DEFAULT-NEXT:         call<ptr<@type[[TYPE_DUPFFstruct]]>, signature=fn(ptr<ptr<@type[[TYPE_DUPFFstruct]]>>, ptr<ptr<@type[[TYPE_DUPFFstruct]]>>, ptr<@type[[TYPE_DUPFFstruct]]>, ptr<@type[[TYPE_DUPFFstruct]]>) -> ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_DUPFFexgcd]], addr_of<ptr<ptr<@type[[TYPE_DUPFFstruct]]>>>(%[[VALUE_cf]]), addr_of<ptr<ptr<@type[[TYPE_DUPFFstruct]]>>>(%[[VALUE_cg]]), read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_f_4]]), read<ptr<@type[[TYPE_DUPFFstruct]]>>(%[[VALUE_g_3]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

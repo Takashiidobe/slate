@@ -68,7 +68,6 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_i:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         write<f32>(%[[VALUE_f]], va_arg<f32>(deref(call<ptr<va_list>, signature=fn() -> ptr<va_list>>(%[[VALUE_foo]]))));
-// DEFAULT-NEXT:         va_arg<f32>(deref(call<ptr<va_list>, signature=fn() -> ptr<va_list>>(%[[VALUE_foo]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

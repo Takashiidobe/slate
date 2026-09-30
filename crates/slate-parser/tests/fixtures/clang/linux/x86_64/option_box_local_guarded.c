@@ -63,7 +63,6 @@ int main(void) {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_flag]]), const<i32>(0))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<i32>>(%[[VALUE_p]], pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(4))));
-// DEFAULT-NEXT:                 pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(4)));
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(%[[VALUE_p]]), null<ptr<i32>>)
 // DEFAULT-NEXT:             {

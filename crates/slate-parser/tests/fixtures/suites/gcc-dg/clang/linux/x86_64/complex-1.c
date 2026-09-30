@@ -62,7 +62,6 @@ int main(void)
 // DEFAULT-NEXT:         let %[[VALUE_cf:[0-9]+]] cf: complex<f32> [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         write<complex<f32>>(%[[VALUE_cf]], va_arg<complex<f32>>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:         va_arg<complex<f32>>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         if ne<f32, exceptions=ignore>(read<f32>(imag(%[[VALUE_cf]])), const<f32>(2.0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

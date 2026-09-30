@@ -64,7 +64,6 @@ int main() {
 // DEFAULT-NEXT:             return const<i32>(0);
 // DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=automatic];
 // DEFAULT-NEXT:         write<u64>(bitfield0<unit=0, bytes=0..6, bits=0..48>(%[[VALUE_s]]), or<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_foo]], const<u32>(3735928559))), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(65261), const<i32>(32))));
-// DEFAULT-NEXT:         or<u64>(widen<u64, reason=usual_arith>(call<u32, signature=fn(u32) -> u32>(%[[VALUE_foo]], const<u32>(3735928559))), shl<u64, overflow=wrap, amount_out_of_range=ub>(const<u64>(65261), const<i32>(32)));
 // DEFAULT-NEXT:         if ne<u32>(call<u32, signature=fn(ptr<@type[[TYPE_S]]>) -> u32>(%[[VALUE_bar]], addr_of<ptr<@type[[TYPE_S]]>>(%[[VALUE_s]])), const<u32>(3735928559))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         return const<i32>(0);

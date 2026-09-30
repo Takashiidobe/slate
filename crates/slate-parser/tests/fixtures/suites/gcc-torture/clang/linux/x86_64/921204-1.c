@@ -98,7 +98,6 @@ int main(void) {
 // DEFAULT-NEXT:         write<u32>(field1(%[[VALUE_a]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(67108864)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..1>(field0(%[[VALUE_a]])), reinterpret<u32, reason=assign, fits=always>(const<i32>(0)));
 // DEFAULT-NEXT:         write<@type[[TYPE1]]>(%[[VALUE_r]], copy<@type[[TYPE1]], reason=assign>(call<@type[[TYPE1]], signature=fn(@type[[TYPE1]]) -> @type[[TYPE1]], abi=sysv64(native_c) -> native_c>(%[[VALUE_f]], copy<@type[[TYPE1]], reason=arg>(read<@type[[TYPE1]]>(%[[VALUE_a]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE1]], reason=assign>(call<@type[[TYPE1]], signature=fn(@type[[TYPE1]]) -> @type[[TYPE1]], abi=sysv64(native_c) -> native_c>(%[[VALUE_f]], copy<@type[[TYPE1]], reason=arg>(read<@type[[TYPE1]]>(%[[VALUE_a]]))));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field1(%[[VALUE_a]])), read<u32>(field1(%[[VALUE_r]])))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

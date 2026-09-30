@@ -71,7 +71,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_ar:[0-9]+]] ar: array<u32, 5> [storage=automatic] [align=16] = aggregate<array<u32, 5>, zero_fill=false>(index0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(10)), index1 = reinterpret<u32, reason=assign, fits=always>(const<i32>(11)), index2 = reinterpret<u32, reason=assign, fits=always>(const<i32>(12)), index3 = reinterpret<u32, reason=assign, fits=always>(const<i32>(13)), index4 = reinterpret<u32, reason=assign, fits=always>(const<i32>(14)));
 // DEFAULT-NEXT:         let %[[VALUE_v_2:[0-9]+]] v: u64 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_res]], call<i32, signature=fn(ptr<u64>, i32, ptr<u32>, i32) -> i32>(%[[VALUE_g]], addr_of<ptr<u64>>(%[[VALUE_v_2]]), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=unknown>(div<u64, by_zero=ub>(const<u64>(20), const<u64>(4)))), array_decay<ptr<u32>, length=Some(5)>(%[[VALUE_ar]]), const<i32>(16)));
-// DEFAULT-NEXT:         call<i32, signature=fn(ptr<u64>, i32, ptr<u32>, i32) -> i32>(%[[VALUE_g]], addr_of<ptr<u64>>(%[[VALUE_v_2]]), reinterpret<i32, reason=arg, fits=unknown>(truncate<u32, reason=arg, fits=unknown>(div<u64, by_zero=ub>(const<u64>(20), const<u64>(4)))), array_decay<ptr<u32>, length=Some(5)>(%[[VALUE_ar]]), const<i32>(16));
 // DEFAULT-NEXT:         if ne<u64>(read<u64>(%[[VALUE_v_2]]), const<u64>(703710))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

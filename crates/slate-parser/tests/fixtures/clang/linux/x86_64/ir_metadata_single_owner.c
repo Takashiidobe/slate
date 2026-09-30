@@ -72,7 +72,7 @@ int fallthrough(int x) {
 // IR-NEXT:         return read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(3)>(%[[VALUE_values]]), const<i32>(0))));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_hoisted:[0-9]+]] @hoisted(%[[VALUE_p_2:[0-9]+]] p: ptr<atomic i32> [c="_Atomic int *"]) -> i32 [linkage=external] [fallthrough=ub_if_used] [c_storage="none"] [c_return="int"] [c="int(_Atomic int *)"] {
-// IR-NEXT:         write<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p_2]])), const<i32>(1)) [c_builtin="__c11_atomic_store"];
+// IR-NEXT:         write<i32, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p_2]])), const<i32>(1));
 // IR-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(deref(read<ptr<atomic i32>>(%[[VALUE_p_2]])), add<i32, overflow=wrap>(old<i32>, const<i32>(1))) [c_builtin="__c11_atomic_fetch_add"];
 // IR-NEXT:         return add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));
 // IR-NEXT:     }

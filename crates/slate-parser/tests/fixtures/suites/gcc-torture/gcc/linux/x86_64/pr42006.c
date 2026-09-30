@@ -66,7 +66,6 @@ int main(void) {
 // DEFAULT-NEXT:             condition: lt<u32>(read<u32>(%[[VALUE_p_6]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(3)))
 // DEFAULT-NEXT:             increment: {
 // DEFAULT-NEXT:                 write<u32>(%[[VALUE_p_6]], call<u32, signature=fn(u32, u32) -> u32>(%[[VALUE_my_add]], read<u32>(%[[VALUE_p_6]]), reinterpret<u32, reason=arg, fits=always>(const<i32>(1))));
-// DEFAULT-NEXT:                 call<u32, signature=fn(u32, u32) -> u32>(%[[VALUE_my_add]], read<u32>(%[[VALUE_p_6]]), reinterpret<u32, reason=arg, fits=always>(const<i32>(1)));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:

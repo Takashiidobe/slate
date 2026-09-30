@@ -55,7 +55,6 @@ static int mmap_mem (void)
 // DEFAULT-NEXT:     fn %[[VALUE_mmap_mem:[0-9]+]] @mmap_mem() -> i32 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_p_2:[0-9]+]] p: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_p_2]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(@type[[TYPE0]]) -> @type[[TYPE0]], abi=sysv64(native_c) -> native_c>(%[[VALUE_f]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_p_2]])))));
-// DEFAULT-NEXT:         copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn(@type[[TYPE0]]) -> @type[[TYPE0]], abi=sysv64(native_c) -> native_c>(%[[VALUE_f]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_p_2]]))));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

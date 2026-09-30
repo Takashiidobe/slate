@@ -108,12 +108,9 @@ int main() {
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             write<i8>(%[[VALUE_k]], call<i8, signature=fn(i8, i8) -> i8>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=always>(const<i32>(9)), truncate<i8, reason=arg, fits=unknown>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_i]]))))));
-// DEFAULT-NEXT:                             call<i8, signature=fn(i8, i8) -> i8>(%[[VALUE_foo]], truncate<i8, reason=arg, fits=always>(const<i32>(9)), truncate<i8, reason=arg, fits=unknown>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_i]])))));
 // DEFAULT-NEXT:                             write<i32>(deref(read<ptr<i32>>(deref(read<ptr<ptr<i32>>>(%[[VALUE_s]])))), widen<i32, reason=assign>(call<i8, signature=fn(i8, i8) -> i8>(%[[VALUE_bar]], from_bool<i8, reason=arg>(gt<i64>(read<i64>(%[[VALUE_f]]), widen<i64, reason=usual_arith>(const<i32>(1)))), truncate<i8, reason=arg, fits=unknown>(xor<i32>(from_bool<i32, reason=promotion>(logical_and<bool>(ne<i32>(const<i32>(1), const<i32>(0)), ne<i128>(read<i128, volatile>(%[[VALUE_j]]), const<i128>(0)))), widen<i32, reason=promotion>(read<i8>(%[[VALUE_k]])))))));
-// DEFAULT-NEXT:                             widen<i32, reason=assign>(call<i8, signature=fn(i8, i8) -> i8>(%[[VALUE_bar]], from_bool<i8, reason=arg>(gt<i64>(read<i64>(%[[VALUE_f]]), widen<i64, reason=usual_arith>(const<i32>(1)))), truncate<i8, reason=arg, fits=unknown>(xor<i32>(from_bool<i32, reason=promotion>(logical_and<bool>(ne<i32>(const<i32>(1), const<i32>(0)), ne<i128>(read<i128, volatile>(%[[VALUE_j]]), const<i128>(0)))), widen<i32, reason=promotion>(read<i8>(%[[VALUE_k]]))))));
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:         write<i16>(%[[VALUE_b]], call<i16, signature=fn(i16) -> i16>(%[[VALUE_baz]], from_bool<i16, reason=arg>(eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_q]]), addr_of<ptr<i8>>(%[[VALUE_l]])))));
-// DEFAULT-NEXT:         call<i16, signature=fn(i16) -> i16>(%[[VALUE_baz]], from_bool<i16, reason=arg>(eq<ptr<i8>>(read<ptr<i8>>(%[[VALUE_q]]), addr_of<ptr<i8>>(%[[VALUE_l]]))));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_h]])), widen<i32, reason=assign>(read<i16>(%[[VALUE_b]])));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);

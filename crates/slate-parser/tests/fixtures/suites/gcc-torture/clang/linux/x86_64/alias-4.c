@@ -53,10 +53,12 @@ int        main(int argc) {
 // DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: ptr<i32> [storage=automatic];
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_argc]]), const<i32>(0))
 // DEFAULT-NEXT:             write<ptr<i32>>(%[[VALUE_p]], addr_of<ptr<i32>>(%[[VALUE_a]]));
-// DEFAULT-NEXT:             write<ptr<i32>>(%[[VALUE_q]], addr_of<ptr<i32>>(%[[VALUE_b]]));
+// DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: ptr<i32> [synthetic] = addr_of<ptr<i32>>(%[[VALUE_b]]);
+// DEFAULT-NEXT:             write<ptr<i32>>(%[[VALUE_q]], read<ptr<i32>>(%[[VALUE0]]));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<ptr<i32>>(%[[VALUE_p]], addr_of<ptr<i32>>(%[[VALUE_c]]));
-// DEFAULT-NEXT:             write<ptr<i32>>(%[[VALUE_q]], addr_of<ptr<i32>>(%[[VALUE_d]]));
+// DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: ptr<i32> [synthetic] = addr_of<ptr<i32>>(%[[VALUE_d]]);
+// DEFAULT-NEXT:             write<ptr<i32>>(%[[VALUE_q]], read<ptr<i32>>(%[[VALUE1]]));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_p]])), const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_q]])), const<i32>(2));
 // DEFAULT-NEXT:         if eq<i32>(read<i32>(deref(read<ptr<i32>>(%[[VALUE_p]]))), const<i32>(1))

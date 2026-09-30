@@ -81,9 +81,11 @@ L:
 // DEFAULT-NEXT:                 body:
 // DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: bool [synthetic];
 // DEFAULT-NEXT:                     if lt<i32>(widen<i32, reason=promotion>(read<i8>(%[[VALUE_k]])), widen<i32, reason=promotion>(call<i8, signature=fn(i8, i32) -> i8>(%[[VALUE_foo]], read<i8>(%[[VALUE_k]]), const<i32>(2))))
-// DEFAULT-NEXT:                         write<i8>(%[[VALUE_k]], truncate<i8, reason=assign, fits=unknown>(read<i32>(%[[VALUE_g]])));
-// DEFAULT-NEXT:                         write<i32>(%[[VALUE_c]], widen<i32, reason=assign>(truncate<i8, reason=assign, fits=unknown>(read<i32>(%[[VALUE_g]]))));
-// DEFAULT-NEXT:                         write<bool>(%[[VALUE3]], ne<i32>(widen<i32, reason=assign>(truncate<i8, reason=assign, fits=unknown>(read<i32>(%[[VALUE_g]]))), const<i32>(0)));
+// DEFAULT-NEXT:                         let %[[VALUE4:[0-9]+]]: i8 [synthetic] = truncate<i8, reason=assign, fits=unknown>(read<i32>(%[[VALUE_g]]));
+// DEFAULT-NEXT:                         write<i8>(%[[VALUE_k]], read<i8>(%[[VALUE4]]));
+// DEFAULT-NEXT:                         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = widen<i32, reason=assign>(read<i8>(%[[VALUE4]]));
+// DEFAULT-NEXT:                         write<i32>(%[[VALUE_c]], read<i32>(%[[VALUE5]]));
+// DEFAULT-NEXT:                         write<bool>(%[[VALUE3]], ne<i32>(read<i32>(%[[VALUE5]]), const<i32>(0)));
 // DEFAULT-NEXT:                     else
 // DEFAULT-NEXT:                         write<bool>(%[[VALUE3]], const<bool>(false));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(1))

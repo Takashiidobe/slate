@@ -54,7 +54,7 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(bitfield0<unit=0, bytes=0..4, bits=0..30>(%[[VALUE_t]]));
 // DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: u32 [synthetic] = reinterpret<u32, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE1]])), const<i32>(1)));
 // DEFAULT-NEXT:         write<u32>(bitfield0<unit=0, bytes=0..4, bits=0..30>(%[[VALUE_t]]), read<u32>(%[[VALUE2]]));
-// DEFAULT-NEXT:         if not<bool>(ne<u32>(read<u32>(%[[VALUE1]]), const<u32>(0)))
+// DEFAULT-NEXT:         if not<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE1]])), const<i32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

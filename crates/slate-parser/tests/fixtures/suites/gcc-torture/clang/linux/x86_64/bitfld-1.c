@@ -94,7 +94,8 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:         write<u32>(bitfield1<unit=0, bytes=0..2, bits=7..14>(%[[VALUE_bit]]), reinterpret<u32, reason=assign, fits=always>(const<i32>(61)));
 // DEFAULT-NEXT:         write<u32>(%[[VALUE_u]], reinterpret<u32, reason=assign, fits=always>(const<i32>(61)));
 // DEFAULT-NEXT:         write<i32>(bitfield0<unit=0, bytes=0..2, bits=0..7>(%[[VALUE_bit]]), neg<i32, overflow=ub>(const<i32>(13)));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], neg<i32, overflow=ub>(const<i32>(13)));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = neg<i32, overflow=ub>(const<i32>(13));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE0]]));
 // DEFAULT-NEXT:         if ne<u32>(rem<u32, by_zero=ub>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_i]])), read<u32>(%[[VALUE_u]])), read<u32>(%[[VALUE_unsigned_result]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         if ne<u32>(rem<u32, by_zero=ub>(reinterpret<u32, reason=usual_arith, fits=unknown>(read<i32>(%[[VALUE_i]])), read<u32>(%[[VALUE_u]])), read<u32>(%[[VALUE_unsigned_result]]))

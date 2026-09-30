@@ -435,7 +435,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_thread_3:[0-9]+]] thread: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(1)));
 // DEFAULT-NEXT:         let %[[VALUE_strlen_call:[0-9]+]] strlen_call: ptr<fn(ptr<const i8>) -> u64> [storage=automatic] = function_decay<ptr<fn(ptr<const i8>) -> u64>>(%[[VALUE_strlen]]);
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_ptr_6]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], read<u64, volatile>(%[[VALUE_count_15]])));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], read<u64, volatile>(%[[VALUE_count_15]]));
 // DEFAULT-NEXT:         do %[[VALUE0:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if ne<ptr<void>>(read<ptr<void>>(%[[VALUE_ptr_6]]), int_to_ptr<ptr<void>, reason=explicit>(const<i32>(16)))
@@ -618,7 +617,6 @@ int main(void) {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         write<ptr<void>>(%[[VALUE_stream_7]], call<ptr<void>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<void>>(%[[VALUE_fopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_a]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_b]]))));
-// DEFAULT-NEXT:         call<ptr<void>, signature=fn(ptr<const i8>, ptr<const i8>) -> ptr<void>>(%[[VALUE_fopen]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_a]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(8)>(%[[VALUE_b]])));
 // DEFAULT-NEXT:         do %[[VALUE30:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if ne<ptr<void>>(read<ptr<void>>(%[[VALUE_stream_7]]), int_to_ptr<ptr<void>, reason=explicit>(const<i32>(48)))

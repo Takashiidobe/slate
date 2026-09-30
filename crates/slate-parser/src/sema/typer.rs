@@ -22,6 +22,7 @@ pub(super) struct Typed {
     pub c: QualType,
     pub lvalue: bool,
     pub bits: Option<u32>,
+    pub source_bits: Option<u32>,
 }
 
 impl Typed {
@@ -30,6 +31,7 @@ impl Typed {
             c,
             lvalue: false,
             bits: None,
+            source_bits: None,
         }
     }
 
@@ -38,6 +40,7 @@ impl Typed {
             c,
             lvalue: true,
             bits: None,
+            source_bits: None,
         }
     }
 }
@@ -123,11 +126,11 @@ impl TypeResolver {
 
     pub(super) fn rvalue_type(&mut self, typed: Typed) -> QualType {
         let decays = self.ctypes.element(typed.c).is_some() || self.ctypes.is_function(typed.c);
-        if !typed.lvalue && !decays {
+        if !typed.lvalue && !decays && typed.source_bits.is_none() {
             return typed.c;
         }
         let c = self.ctypes.lvalue_conversion(typed.c);
-        match typed.bits {
+        match typed.bits.or(typed.source_bits) {
             Some(bits) => {
                 let c = self.ctypes.enum_underlying(c).unwrap_or(c);
                 let target = self.target_info().clone();
@@ -448,11 +451,18 @@ impl TypeResolver {
                     BinaryOp::Add
                 };
                 let one = self.ctypes.int();
-                self.record_update(e, operand, op, one)?
+                let updated = self.record_update(e, operand, op, one)?;
+                if matches!(e.value, ExprKind::Postfix { .. })
+                    && self.flavor() != CompilerFlavor::Gcc
+                {
+                    updated
+                } else {
+                    self.stored_to(operand, updated)?
+                }
             }
             ExprKind::Assign { op, target, value } => {
                 let value = self.operand_type(value)?;
-                if *op == AssignOp::Assign {
+                let assigned = if *op == AssignOp::Assign {
                     let typed = self.typed(target)?;
                     if !typed.lvalue {
                         return Err(NOT_ASSIGNABLE);
@@ -462,7 +472,8 @@ impl TypeResolver {
                 } else {
                     let op = super::expression::assignment_operator(*op)?;
                     self.record_update(e, target, op, value)?
-                }
+                };
+                self.stored_to(target, assigned)?
             }
             ExprKind::Comma { left, right } => {
                 self.typed(left)?;
@@ -546,6 +557,7 @@ impl TypeResolver {
                         c,
                         lvalue: lvalue && assignable,
                         bits: None,
+                        source_bits: None,
                     });
                 }
                 let Some((c, bits)) = self.member_type(record, &field.value) else {
@@ -555,7 +567,12 @@ impl TypeResolver {
                         "member of incomplete or non-record"
                     }));
                 };
-                Typed { c, lvalue, bits }
+                Typed {
+                    c,
+                    lvalue,
+                    bits,
+                    source_bits: None,
+                }
             }
             ExprKind::Binary {
                 op,
@@ -1322,6 +1339,14 @@ impl TypeResolver {
         let reason = ConversionReason::UsualArith;
         self.record_cast(owner, Slot::Left, left_expr, left, to, reason)?;
         self.record_cast(owner, Slot::Right, right_expr, right, to, reason)
+    }
+
+    // clang's getSourceBitField: the result of storing to a bit-field promotes like the bit-field
+    fn stored_to(&mut self, target: &Expr, assigned: Typed) -> Result<Typed, ResolveError> {
+        Ok(Typed {
+            source_bits: self.typed(target)?.bits,
+            ..assigned
+        })
     }
 
     fn record_update(

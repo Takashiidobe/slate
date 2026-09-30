@@ -95,7 +95,6 @@ int main() {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_r]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], read<i32>(%[[VALUE_i]])));
-// DEFAULT-NEXT:                     call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], read<i32>(%[[VALUE_i]]));
 // DEFAULT-NEXT:                     if eq<i32>(read<i32>(%[[VALUE_i]]), const<i32>(4))
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             if ne<i32>(read<i32>(%[[VALUE_r]]), const<i32>(30))

@@ -122,7 +122,6 @@ void f2(void) { abort(); }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_a]], call<i32, signature=fn(ptr<@type[[TYPE_xx]]>) -> i32>(%[[VALUE_f1]], read<ptr<@type[[TYPE_xx]]>>(%[[VALUE_p_2]])));
-// DEFAULT-NEXT:                     call<i32, signature=fn(ptr<@type[[TYPE_xx]]>) -> i32>(%[[VALUE_f1]], read<ptr<@type[[TYPE_xx]]>>(%[[VALUE_p_2]]));
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))
 // DEFAULT-NEXT:                         return const<i32>(0);
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0))

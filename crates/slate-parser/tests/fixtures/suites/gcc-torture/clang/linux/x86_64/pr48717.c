@@ -49,7 +49,6 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_v]], reinterpret<i32, reason=assign, fits=unknown>(widen<u32, reason=assign>(call<u16, signature=fn(u16, u16) -> u16>(%[[VALUE_foo]], reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=unknown>(not<i32>(read<i32>(%[[VALUE_w]])))), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=unknown>(read<i32>(%[[VALUE_w]])))))));
-// DEFAULT-NEXT:         reinterpret<i32, reason=assign, fits=unknown>(widen<u32, reason=assign>(call<u16, signature=fn(u16, u16) -> u16>(%[[VALUE_foo]], reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=unknown>(not<i32>(read<i32>(%[[VALUE_w]])))), reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=unknown>(read<i32>(%[[VALUE_w]]))))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE_bar]]);

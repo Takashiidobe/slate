@@ -60,7 +60,6 @@ l1:;
 // DEFAULT-NEXT:         let %[[VALUE_q:[0-9]+]] q: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%[[VALUE_l1:[0-9]+]]), index1 = label_addr<ptr<void>>(%[[VALUE_l2:[0-9]+]]));
 // DEFAULT-NEXT:         label %[[VALUE_l2]] l2:
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_x_2]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3))));
-// DEFAULT-NEXT:             call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3)));
 // DEFAULT-NEXT:         call<i32, signature=fn(i129b) -> i32>(%[[VALUE_bar]], read<i129b>(%[[VALUE_y]]));
 // DEFAULT-NEXT:         goto *read<ptr<void>>(deref(ptr_offset<ptr<ptr<void>>, subtract=false, element=ptr<void>, overflow=ub>(array_decay<ptr<ptr<void>>, length=Some(2)>(%[[VALUE_q]]), and<i32>(read<i32>(%[[VALUE_x_2]]), const<i32>(1)))));
 // DEFAULT-NEXT:         label %[[VALUE_l1]] l1:
@@ -70,7 +69,6 @@ l1:;
 // DEFAULT-NEXT:         let %[[VALUE_q_2:[0-9]+]] q: array<ptr<void>, 2> [storage=automatic] [align=16] = aggregate<array<ptr<void>, 2>, zero_fill=false>(index0 = label_addr<ptr<void>>(%[[VALUE_l1_2:[0-9]+]]), index1 = label_addr<ptr<void>>(%[[VALUE_l2_2:[0-9]+]]));
 // DEFAULT-NEXT:         label %[[VALUE_l2_2]] l2:
 // DEFAULT-NEXT:             write<i32>(%[[VALUE_x_3]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3))));
-// DEFAULT-NEXT:             call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(3)));
 // DEFAULT-NEXT:         call<i32, signature=fn(i129b) -> i32>(%[[VALUE_bar]], read<i129b>(%[[VALUE_y_2]]));
 // DEFAULT-NEXT:         label %[[VALUE_l1_2]] l1:
 // DEFAULT-NEXT:             ;

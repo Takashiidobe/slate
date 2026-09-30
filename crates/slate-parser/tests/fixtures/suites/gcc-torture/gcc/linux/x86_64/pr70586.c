@@ -59,11 +59,9 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar() -> i16 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_foo]], widen<i32, reason=arg>(read<i16>(%[[VALUE_c]])), read<i32>(%[[VALUE_f]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_f]], call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_foo]], widen<i32, reason=arg>(read<i16>(%[[VALUE_d]])), const<i32>(2)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_foo]], widen<i32, reason=arg>(read<i16>(%[[VALUE_d]])), const<i32>(2));
 // DEFAULT-NEXT:         let %[[VALUE_g:[0-9]+]] g: i32 [storage=automatic] = call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_foo]], widen<i32, reason=arg>(read<i16>(%[[VALUE_b]])), widen<i32, reason=arg>(read<i16>(%[[VALUE_c]])));
 // DEFAULT-NEXT:         let %[[VALUE_h:[0-9]+]] h: i32 [storage=automatic] = call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_foo]], from_bool<i32, reason=arg>(gt<i32>(read<i32>(%[[VALUE_g]]), const<i32>(0))), widen<i32, reason=arg>(read<i16>(%[[VALUE_c]])));
 // DEFAULT-NEXT:         write<i16>(%[[VALUE_c]], from_bool<i16, reason=assign>(le<i32>(xor<i32>(from_bool<i32, reason=promotion>(ge<i32>(const<i32>(3), read<i32>(%[[VALUE_h]]))), const<i32>(7)), call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_foo]], read<i32>(%[[VALUE_i]]), widen<i32, reason=arg>(read<i16>(%[[VALUE_c]]))))));
-// DEFAULT-NEXT:         from_bool<i16, reason=assign>(le<i32>(xor<i32>(from_bool<i32, reason=promotion>(ge<i32>(const<i32>(3), read<i32>(%[[VALUE_h]]))), const<i32>(7)), call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_foo]], read<i32>(%[[VALUE_i]]), widen<i32, reason=arg>(read<i16>(%[[VALUE_c]])))));
 // DEFAULT-NEXT:         if ne<i32>(call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_foo]], read<i32>(%[[VALUE_e]]), const<i32>(1)), const<i32>(0))
 // DEFAULT-NEXT:             return truncate<i16, reason=return, fits=unknown>(read<i32>(%[[VALUE_a]]));
 // DEFAULT-NEXT:         return truncate<i16, reason=return, fits=always>(const<i32>(0));

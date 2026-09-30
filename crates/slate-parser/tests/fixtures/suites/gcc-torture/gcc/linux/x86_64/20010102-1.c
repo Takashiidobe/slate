@@ -174,18 +174,19 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_new_chunk]], read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE0]]));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE__obstack_chunk]]>>(field1(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]]))), read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_new_chunk]]));
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE__obstack_chunk]]>>(field1(deref(read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_new_chunk]]))), read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_old_chunk]]));
-// DEFAULT-NEXT:         write<ptr<i8>>(field4(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]]))), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_new_chunk]])), read<i64>(%[[VALUE_new_size]])));
-// DEFAULT-NEXT:         write<ptr<i8>>(field0(deref(read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_new_chunk]]))), ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_new_chunk]])), read<i64>(%[[VALUE_new_size]])));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<i8> [synthetic] = ptr_offset<ptr<i8>, subtract=false, element=i8, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_new_chunk]])), read<i64>(%[[VALUE_new_size]]));
+// DEFAULT-NEXT:         write<ptr<i8>>(field4(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]]))), read<ptr<i8>>(%[[VALUE1]]));
+// DEFAULT-NEXT:         write<ptr<i8>>(field0(deref(read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_new_chunk]]))), read<ptr<i8>>(%[[VALUE1]]));
 // DEFAULT-NEXT:         if ge<i64>(widen<i64, reason=usual_arith>(add<i32, overflow=ub>(read<i32>(field6(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]])))), const<i32>(1))), ptr_diff<i64, element=i8, same_array=required, overflow=ub>(pointer_cast<ptr<i8>, reason=explicit>(addr_of<ptr<f64>>(field1(deref(null<ptr<@type[[TYPE_fooalign]]>>)))), null<ptr<i8>>))
 // DEFAULT-NEXT:             {
-// DEFAULT-NEXT:                 for %[[VALUE1:[0-9]+]]
+// DEFAULT-NEXT:                 for %[[VALUE2:[0-9]+]]
 // DEFAULT-NEXT:                     init:
 // DEFAULT-NEXT:                         write<i64>(%[[VALUE_i]], reinterpret<i64, reason=assign, fits=unknown>(sub<u64, overflow=wrap>(div<u64, by_zero=ub>(reinterpret<u64, reason=usual_arith, fits=unknown>(read<i64>(%[[VALUE_obj_size]])), const<u64>(4)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))))));
 // DEFAULT-NEXT:                     condition: ge<i64>(read<i64>(%[[VALUE_i]]), widen<i64, reason=usual_arith>(const<i32>(0)))
 // DEFAULT-NEXT:                     increment: {
-// DEFAULT-NEXT:                         let %[[VALUE2:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_i]]);
-// DEFAULT-NEXT:                         let %[[VALUE3:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE2]]), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                         write<i64>(%[[VALUE_i]], read<i64>(%[[VALUE3]]));
+// DEFAULT-NEXT:                         let %[[VALUE3:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                         let %[[VALUE4:[0-9]+]]: i64 [synthetic] = sub<i64, overflow=ub>(read<i64>(%[[VALUE3]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                         write<i64>(%[[VALUE_i]], read<i64>(%[[VALUE4]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
 // DEFAULT-NEXT:                     body:
@@ -194,14 +195,14 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<i64>(%[[VALUE_already]], widen<i64, reason=assign>(const<i32>(0)));
-// DEFAULT-NEXT:         for %[[VALUE4:[0-9]+]]
+// DEFAULT-NEXT:         for %[[VALUE5:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 write<i64>(%[[VALUE_i]], read<i64>(%[[VALUE_already]]));
 // DEFAULT-NEXT:             condition: lt<i64>(read<i64>(%[[VALUE_i]]), read<i64>(%[[VALUE_obj_size]]))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %[[VALUE5:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_i]]);
-// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE5]]), widen<i64, reason=usual_arith>(const<i32>(1)));
-// DEFAULT-NEXT:                 write<i64>(%[[VALUE_i]], read<i64>(%[[VALUE6]]));
+// DEFAULT-NEXT:                 let %[[VALUE6:[0-9]+]]: i64 [synthetic] = read<i64>(%[[VALUE_i]]);
+// DEFAULT-NEXT:                 let %[[VALUE7:[0-9]+]]: i64 [synthetic] = add<i64, overflow=ub>(read<i64>(%[[VALUE6]]), widen<i64, reason=usual_arith>(const<i32>(1)));
+// DEFAULT-NEXT:                 write<i64>(%[[VALUE_i]], read<i64>(%[[VALUE7]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -209,7 +210,7 @@ _obstack_newchunk (h, length)
 // DEFAULT-NEXT:         if logical_and<bool>(eq<ptr<i8>>(read<ptr<i8>>(field2(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]])))), array_decay<ptr<i8>, length=Some(4)>(field2(deref(read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_old_chunk]]))))), not<bool>(ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield11<unit=0, bytes=80..81, bits=1..2>(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]]))))), const<i32>(0))))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<@type[[TYPE__obstack_chunk]]>>(field1(deref(read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_new_chunk]]))), read<ptr<@type[[TYPE__obstack_chunk]]>>(field1(deref(read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_old_chunk]])))));
-// DEFAULT-NEXT:                 do %[[VALUE7:[0-9]+]]
+// DEFAULT-NEXT:                 do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         if ne<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(bitfield10<unit=0, bytes=80..81, bits=0..1>(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]]))))), const<i32>(0))
 // DEFAULT-NEXT:                             call<void, signature=fn(ptr<void>, ptr<@type[[TYPE__obstack_chunk]]>) -> void>(read<ptr<fn(ptr<void>, ptr<@type[[TYPE__obstack_chunk]]>) -> void>>(field8(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]])))), read<ptr<void>>(field9(deref(read<ptr<@type[[TYPE_obstack]]>>(%[[VALUE_h]])))), read<ptr<@type[[TYPE__obstack_chunk]]>>(%[[VALUE_old_chunk]]));

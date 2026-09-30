@@ -73,7 +73,6 @@ static int q()
 // DEFAULT-NEXT:         let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic] = read<i32>(%[[VALUE_mem]]);
 // DEFAULT-NEXT:         let %[[VALUE_r:[0-9]+]] r: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_r]], call<i32, signature=fn() -> i32>(%[[VALUE_e]]));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_e]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_t]]), read<i32>(%[[VALUE_mem]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_r]]);
@@ -85,7 +84,6 @@ static int q()
 // DEFAULT-NEXT:             call<i32, signature=fn() -> i32>(%[[VALUE_t_2]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_e_2]], read<i32>(%[[VALUE_mem]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_r_2]], call<i32, signature=fn() -> i32>(%[[VALUE_q]]));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_q]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_e_2]]), read<i32>(%[[VALUE_mem]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_link_error]]);
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_r_2]]);

@@ -82,7 +82,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         write<@type[[TYPE_S2848]]>(%[[VALUE_arg]], copy<@type[[TYPE_S2848]], reason=assign>(va_arg<@type[[TYPE_S2848]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE_S2848]], reason=assign>(va_arg<@type[[TYPE_S2848]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         if ne<u32>(read<u32>(field0(%[[VALUE_s2848]])), read<u32>(field0(%[[VALUE_arg]])))
 // DEFAULT-NEXT:             let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_fails]]);
 // DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE0]]), const<i32>(1));

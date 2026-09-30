@@ -1,10 +1,69 @@
-use super::numeric::ResolveError;
+use super::numeric::{ResolveError, conversion, integer_fits};
 use crate::ast::Span;
 use crate::ir::*;
 use std::collections::{HashMap, HashSet};
 
 pub(super) fn has_effects(value: &Value) -> bool {
     Hoister::new(0, 0, HashMap::new(), HashSet::new()).effects(value)
+}
+
+fn is_constant(value: &Value) -> bool {
+    match &value.node.value {
+        ValueKind::Constant(_) | ValueKind::Null => true,
+        ValueKind::Convert { operand, .. } => is_constant(operand),
+        _ => false,
+    }
+}
+
+fn promoted_store(value: Value) -> Value {
+    let mut inner = &value;
+    while let ValueKind::Convert {
+        operand,
+        reason: ConversionReason::Promotion,
+        ..
+    } = &inner.node.value
+    {
+        inner = operand;
+    }
+    match inner.node.value {
+        ValueKind::Store { .. } => inner.clone(),
+        _ => value,
+    }
+}
+
+fn assigned_value(place: &Place, value: Value) -> Value {
+    let (
+        PlaceKind::Field {
+            bits: Some(bits), ..
+        },
+        Type::Numeric(NumericType::Integer { width, signed, .. }),
+    ) = (&place.kind, &place.ty)
+    else {
+        return value;
+    };
+    if bits.width >= *width {
+        return value;
+    }
+    let field = Type::Numeric(NumericType::Integer {
+        width: bits.width,
+        signed: *signed,
+        bit_precise: true,
+    });
+    let fits = ConversionSema::Fits(integer_fits(&value, bits.width, *signed));
+    let truncated = conversion(
+        value,
+        field,
+        ConversionKind::Truncate,
+        ConversionReason::Assign,
+        fits,
+    );
+    conversion(
+        truncated,
+        place.ty.clone(),
+        ConversionKind::Widen,
+        ConversionReason::Assign,
+        ConversionSema::Exact,
+    )
 }
 
 pub(super) struct Hoister {
@@ -80,6 +139,17 @@ impl Hoister {
         span: Option<Span<()>>,
         out: &mut Vec<Span<Statement>>,
     ) -> Result<(), ResolveError> {
+        let value = promoted_store(value);
+        let source = value.node.derive(());
+        if let ValueKind::Store {
+            place,
+            value: stored,
+            ordering,
+        } = value.node.value
+        {
+            self.store(source, place, *stored, ordering, false, out)?;
+            return Ok(());
+        }
         let had_effects = self.effects(&value);
         let value = self.value(value, out)?;
         if !(had_effects && !self.effects(&value)) {
@@ -320,23 +390,7 @@ impl Hoister {
                 place,
                 value,
                 ordering,
-            } => {
-                let conflict = super::sequencing::assignment(&place, &value);
-                let (value, place, ordering) = self.grouped(conflict, |this| {
-                    Ok::<_, ResolveError>((
-                        this.value(*value, out)?,
-                        this.place(place, out)?,
-                        this.ordering(ordering, out)?,
-                    ))
-                })?;
-                out.push(source.with_value(Statement::Write {
-                    place,
-                    value: value.clone(),
-                    ordering,
-                    unsequenced: conflict || self.unsequenced,
-                }));
-                return Ok(value);
-            }
+            } => return self.store(source, place, *value, ordering, true, out),
             ValueKind::Update {
                 place,
                 computation,
@@ -433,13 +487,14 @@ impl Hoister {
                     this.old.pop();
                     Ok::<_, ResolveError>((old, this.temporary(result?, out)))
                 })?;
+                let assigned = assigned_value(&place, result.clone());
                 out.push(source.with_value(Statement::Write {
                     place,
-                    value: result.clone(),
+                    value: result,
                     ordering: None,
                     unsequenced: conflict || self.unsequenced,
                 }));
-                return Ok(if postfix { old } else { result });
+                return Ok(if postfix { old } else { assigned });
             }
             ValueKind::StatementExpression(evaluation) => {
                 let result = (ty != Type::Void).then(|| self.declare(&template, None, out));
@@ -730,6 +785,38 @@ impl Hoister {
             ty,
             node: source.with_value(kind),
         })
+    }
+
+    fn store(
+        &mut self,
+        source: Span<()>,
+        place: Place,
+        value: Value,
+        ordering: Option<Atomicity>,
+        keep_result: bool,
+        out: &mut Vec<Span<Statement>>,
+    ) -> Result<Value, ResolveError> {
+        let conflict = super::sequencing::assignment(&place, &value);
+        let (value, place, ordering) = self.grouped(conflict, |this| {
+            Ok::<_, ResolveError>((
+                this.value(value, out)?,
+                this.place(place, out)?,
+                this.ordering(ordering, out)?,
+            ))
+        })?;
+        let value = if keep_result && !is_constant(&value) {
+            self.temporary(value, out)
+        } else {
+            value
+        };
+        let result = assigned_value(&place, value.clone());
+        out.push(source.with_value(Statement::Write {
+            place,
+            value,
+            ordering,
+            unsequenced: conflict || self.unsequenced,
+        }));
+        Ok(result)
     }
 
     fn place_effects(&self, place: &Place) -> bool {

@@ -67,7 +67,6 @@ void test (void *p, unsigned n)
 // DEFAULT-NEXT:         do %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_aligned_alloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))), widen<u64, reason=arg>(read<u32>(%[[VALUE_n]]))));
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE_aligned_alloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))), widen<u64, reason=arg>(read<u32>(%[[VALUE_n]])));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_x]], const<i32>(123));
 // DEFAULT-NEXT:                 write<i32>(deref(pointer_cast<ptr<i32>, reason=explicit>(read<ptr<void>>(%[[VALUE_p]]))), const<i32>(456));
 // DEFAULT-NEXT:                 if eq<i32>(read<i32>(%[[VALUE_x]]), const<i32>(123))
@@ -80,7 +79,6 @@ void test (void *p, unsigned n)
 // DEFAULT-NEXT:         do %[[VALUE10:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], widen<u64, reason=arg>(read<u32>(%[[VALUE_n]]))));
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_alloca]], widen<u64, reason=arg>(read<u32>(%[[VALUE_n]])));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_x]], const<i32>(123));
 // DEFAULT-NEXT:                 write<i32>(deref(pointer_cast<ptr<i32>, reason=explicit>(read<ptr<void>>(%[[VALUE_p]]))), const<i32>(456));
 // DEFAULT-NEXT:                 if eq<i32>(read<i32>(%[[VALUE_x]]), const<i32>(123))
@@ -93,7 +91,6 @@ void test (void *p, unsigned n)
 // DEFAULT-NEXT:         do %[[VALUE11:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE___builtin_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))), widen<u64, reason=arg>(read<u32>(%[[VALUE_n]]))));
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(u64, u64) -> ptr<void>>(%[[VALUE___builtin_calloc]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(4))), widen<u64, reason=arg>(read<u32>(%[[VALUE_n]])));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_x]], const<i32>(123));
 // DEFAULT-NEXT:                 write<i32>(deref(pointer_cast<ptr<i32>, reason=explicit>(read<ptr<void>>(%[[VALUE_p]]))), const<i32>(456));
 // DEFAULT-NEXT:                 if eq<i32>(read<i32>(%[[VALUE_x]]), const<i32>(123))
@@ -106,7 +103,6 @@ void test (void *p, unsigned n)
 // DEFAULT-NEXT:         do %[[VALUE12:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], widen<u64, reason=arg>(read<u32>(%[[VALUE_n]]))));
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE___builtin_malloc]], widen<u64, reason=arg>(read<u32>(%[[VALUE_n]])));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_x]], const<i32>(123));
 // DEFAULT-NEXT:                 write<i32>(deref(pointer_cast<ptr<i32>, reason=explicit>(read<ptr<void>>(%[[VALUE_p]]))), const<i32>(456));
 // DEFAULT-NEXT:                 if eq<i32>(read<i32>(%[[VALUE_x]]), const<i32>(123))
@@ -119,7 +115,6 @@ void test (void *p, unsigned n)
 // DEFAULT-NEXT:         do %[[VALUE13:[0-9]+]]
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 write<ptr<void>>(%[[VALUE_p]], call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_p]]), widen<u64, reason=arg>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_n]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1))))));
-// DEFAULT-NEXT:                 call<ptr<void>, signature=fn(ptr<void>, u64) -> ptr<void>>(%[[VALUE___builtin_realloc]], read<ptr<void>>(%[[VALUE_p]]), widen<u64, reason=arg>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_n]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)))));
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_x]], const<i32>(123));
 // DEFAULT-NEXT:                 write<i32>(deref(pointer_cast<ptr<i32>, reason=explicit>(read<ptr<void>>(%[[VALUE_p]]))), const<i32>(456));
 // DEFAULT-NEXT:                 if eq<i32>(read<i32>(%[[VALUE_x]]), const<i32>(123))

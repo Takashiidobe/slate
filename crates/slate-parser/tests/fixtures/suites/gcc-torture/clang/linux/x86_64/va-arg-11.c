@@ -74,7 +74,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 va_arg<i32>(%[[VALUE_va]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_res]], va_arg<i32>(%[[VALUE_va]]));
-// DEFAULT-NEXT:         va_arg<i32>(%[[VALUE_va]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_va]]);
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_res]]);
 // DEFAULT-NEXT:     }

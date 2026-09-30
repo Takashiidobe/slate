@@ -97,7 +97,6 @@ int main(void) {
 // DEFAULT-NEXT:         write<i64>(field0(%[[VALUE_p2]]), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(23250))));
 // DEFAULT-NEXT:         write<i64>(field1(%[[VALUE_p2]]), widen<i64, reason=assign>(neg<i32, overflow=ub>(const<i32>(23250))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_answer]], call<i32, signature=fn(@type[[TYPE0]], @type[[TYPE0]], @type[[TYPE0]]) -> i32, abi=sysv64(native_c, native_c, native_c) -> scalar>(%[[VALUE_f]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_b]])), copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_p1]])), copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_p2]]))));
-// DEFAULT-NEXT:         call<i32, signature=fn(@type[[TYPE0]], @type[[TYPE0]], @type[[TYPE0]]) -> i32, abi=sysv64(native_c, native_c, native_c) -> scalar>(%[[VALUE_f]], copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_b]])), copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_p1]])), copy<@type[[TYPE0]], reason=arg>(read<@type[[TYPE0]]>(%[[VALUE_p2]])));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_answer]]), const<i32>(1))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

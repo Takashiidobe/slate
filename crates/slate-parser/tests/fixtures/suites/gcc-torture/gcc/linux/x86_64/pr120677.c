@@ -84,7 +84,6 @@ int main() {
 // DEFAULT-NEXT:                     let %[[VALUE5:[0-9]+]]: u32 [synthetic] = shr<u32, amount_out_of_range=ub, fill=zero_extend>(read<u32>(%[[VALUE4]]), const<i32>(1));
 // DEFAULT-NEXT:                     write<u32>(%[[VALUE_a]], read<u32>(%[[VALUE5]]));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_e]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(0)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_foo]], const<i32>(0));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(%[[VALUE_e]]), const<i32>(0)), ne<u32>(read<u32>(%[[VALUE_a]]), const<u32>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:     }

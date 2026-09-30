@@ -55,7 +55,6 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_bar:[0-9]+]] @bar(%[[VALUE_x_2:[0-9]+]] x: u32) -> void [linkage=internal] [inline=hint] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(deref(read<ptr<i32>>(%[[VALUE_e]])), from_bool<i32, reason=assign>(gt<u32>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8)), sub<u32, overflow=wrap>(call<u32, signature=fn(u8) -> u32>(%[[VALUE_foo]], truncate<u8, reason=arg, fits=unknown>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_x_2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(86))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(86))))));
-// DEFAULT-NEXT:         from_bool<i32, reason=assign>(gt<u32>(reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(8)), sub<u32, overflow=wrap>(call<u32, signature=fn(u8) -> u32>(%[[VALUE_foo]], truncate<u8, reason=arg, fits=unknown>(add<u32, overflow=wrap>(read<u32>(%[[VALUE_x_2]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(86))))), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(86)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_abort:[0-9]+]] @__builtin_abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

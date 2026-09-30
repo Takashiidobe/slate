@@ -78,7 +78,6 @@ int main() {
 // DEFAULT-NEXT:                     while %[[VALUE4:[0-9]+]] ne<i32>(const<i32>(1), const<i32>(0))
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             write<ptr<i8>>(%[[VALUE_end]], va_arg<ptr<i8>>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:                             va_arg<ptr<i8>>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:                             if not<bool>(ne<ptr<i8>>(read<ptr<i8>>(%[[VALUE_end]]), null<ptr<i8>>))
 // DEFAULT-NEXT:                                 break %[[VALUE4]];
 // DEFAULT-NEXT:                         }

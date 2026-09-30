@@ -62,10 +62,13 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_us:[0-9]+]] us: u16 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_ul:[0-9]+]] ul: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_s2:[0-9]+]] s2: i16 [storage=automatic];
-// DEFAULT-NEXT:         write<i16>(%[[VALUE_s2]], truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
-// DEFAULT-NEXT:         write<i64>(%[[VALUE_l2]], widen<i64, reason=assign>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
-// DEFAULT-NEXT:         write<u16>(%[[VALUE_us]], reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(widen<i64, reason=assign>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))))));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_ul]], widen<u64, reason=assign>(reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(widen<i64, reason=assign>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))))))));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i16>(%[[VALUE_s2]], read<i16>(%[[VALUE1]]));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: i64 [synthetic] = widen<i64, reason=assign>(read<i16>(%[[VALUE1]]));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_l2]], read<i64>(%[[VALUE2]]));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(read<i64>(%[[VALUE2]])));
+// DEFAULT-NEXT:         write<u16>(%[[VALUE_us]], read<u16>(%[[VALUE3]]));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_ul]], widen<u64, reason=assign>(read<u16>(%[[VALUE3]])));
 // DEFAULT-NEXT:         return truncate<u32, reason=return, fits=unknown>(read<u64>(%[[VALUE_ul]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_g:[0-9]+]] @g() -> u64 [linkage=external] [fallthrough=ub_if_used] {
@@ -73,10 +76,13 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_us_2:[0-9]+]] us: u16 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_ul_2:[0-9]+]] ul: u64 [storage=automatic];
 // DEFAULT-NEXT:         let %[[VALUE_s2_2:[0-9]+]] s2: i16 [storage=automatic];
-// DEFAULT-NEXT:         write<i16>(%[[VALUE_s2_2]], truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))));
-// DEFAULT-NEXT:         write<i64>(%[[VALUE_l2_2]], widen<i64, reason=assign>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))));
-// DEFAULT-NEXT:         write<u16>(%[[VALUE_us_2]], reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(widen<i64, reason=assign>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)))))));
-// DEFAULT-NEXT:         write<u64>(%[[VALUE_ul_2]], widen<u64, reason=assign>(reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(widen<i64, reason=assign>(truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1))))))));
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i16 [synthetic] = truncate<i16, reason=assign, fits=unknown>(neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:         write<i16>(%[[VALUE_s2_2]], read<i16>(%[[VALUE4]]));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i64 [synthetic] = widen<i64, reason=assign>(read<i16>(%[[VALUE4]]));
+// DEFAULT-NEXT:         write<i64>(%[[VALUE_l2_2]], read<i64>(%[[VALUE5]]));
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: u16 [synthetic] = reinterpret<u16, reason=assign, fits=unknown>(truncate<i16, reason=assign, fits=unknown>(read<i64>(%[[VALUE5]])));
+// DEFAULT-NEXT:         write<u16>(%[[VALUE_us_2]], read<u16>(%[[VALUE6]]));
+// DEFAULT-NEXT:         write<u64>(%[[VALUE_ul_2]], widen<u64, reason=assign>(read<u16>(%[[VALUE6]])));
 // DEFAULT-NEXT:         return read<u64>(%[[VALUE_ul_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

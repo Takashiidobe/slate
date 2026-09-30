@@ -64,7 +64,6 @@ int main(void)
 // DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], va_arg<i32>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:         va_arg<i32>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ub_if_used] {

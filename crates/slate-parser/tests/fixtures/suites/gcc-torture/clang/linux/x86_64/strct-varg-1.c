@@ -85,15 +85,12 @@ int main(void) {
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_attr]]), const<i32>(2))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_va_values]], copy<@type[[TYPE_s]], reason=assign>(va_arg<@type[[TYPE_s]]>(%[[VALUE_va]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE_s]], reason=assign>(va_arg<@type[[TYPE_s]]>(%[[VALUE_va]]));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(%[[VALUE_va_values]])), const<i32>(43690)), ne<i32>(read<i32>(field1(%[[VALUE_va_values]])), const<i32>(21845)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_attr]], va_arg<i32>(%[[VALUE_va]]));
-// DEFAULT-NEXT:         va_arg<i32>(%[[VALUE_va]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_attr]]), const<i32>(3))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<@type[[TYPE_s]]>(%[[VALUE_va_values]], copy<@type[[TYPE_s]], reason=assign>(va_arg<@type[[TYPE_s]]>(%[[VALUE_va]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE_s]], reason=assign>(va_arg<@type[[TYPE_s]]>(%[[VALUE_va]]));
 // DEFAULT-NEXT:         if logical_or<bool>(ne<i32>(read<i32>(field0(%[[VALUE_va_values]])), const<i32>(65535)), ne<i32>(read<i32>(field1(%[[VALUE_va_values]])), const<i32>(4369)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_va]]);

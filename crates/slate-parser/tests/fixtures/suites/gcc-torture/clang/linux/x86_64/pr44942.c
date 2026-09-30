@@ -94,7 +94,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i]], va_arg<i32>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:         va_arg<i32>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(1234))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
@@ -104,7 +103,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_ap_2:[0-9]+]] ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_o]], va_arg<i32>(%[[VALUE_ap_2]]));
-// DEFAULT-NEXT:         va_arg<i32>(%[[VALUE_ap_2]]);
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(%[[VALUE_o]]), const<i32>(1234))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_2]]);
@@ -114,7 +112,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_ap_3:[0-9]+]] ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_i_3]], va_arg<f64>(%[[VALUE_ap_3]]));
-// DEFAULT-NEXT:         va_arg<f64>(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%[[VALUE_i_3]]), const<f64>(1234.0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_3]]);
@@ -124,7 +121,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_o_2]], va_arg<f64>(%[[VALUE_ap_4]]));
-// DEFAULT-NEXT:         va_arg<f64>(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:         if ne<f64, exceptions=ignore>(read<f64>(%[[VALUE_o_2]]), const<f64>(1234.0))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE___builtin_abort]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_4]]);

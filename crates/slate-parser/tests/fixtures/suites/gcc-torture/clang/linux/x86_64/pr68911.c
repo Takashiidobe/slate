@@ -70,17 +70,18 @@ die:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE_f:[0-9]+]] f: i32 [storage=automatic] = reinterpret<i32, reason=assign, fits=unknown>(div<u32, by_zero=ub>(not<u32>(read<u32>(%[[VALUE_e]])), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(7))));
 // DEFAULT-NEXT:                     if ne<i32>(read<i32>(%[[VALUE_f]]), const<i32>(0))
-// DEFAULT-NEXT:                         write<u32>(%[[VALUE_e]], reinterpret<u32, reason=assign, fits=unknown>(not<i32>(from_bool<i32, reason=promotion>(logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0)), ne<i16>(read<i16>(%[[VALUE_d]]), const<i16>(0)))))));
-// DEFAULT-NEXT:                         write<i8>(%[[VALUE_a]], reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(reinterpret<u32, reason=assign, fits=unknown>(not<i32>(from_bool<i32, reason=promotion>(logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0)), ne<i16>(read<i16>(%[[VALUE_d]]), const<i16>(0)))))))));
-// DEFAULT-NEXT:                     while %[[VALUE3:[0-9]+]] lt<u32>(read<u32>(%[[VALUE_e]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(94)))
+// DEFAULT-NEXT:                         let %[[VALUE3:[0-9]+]]: u32 [synthetic] = reinterpret<u32, reason=assign, fits=unknown>(not<i32>(from_bool<i32, reason=promotion>(logical_and<bool>(ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0)), ne<i16>(read<i16>(%[[VALUE_d]]), const<i16>(0))))));
+// DEFAULT-NEXT:                         write<u32>(%[[VALUE_e]], read<u32>(%[[VALUE3]]));
+// DEFAULT-NEXT:                         write<i8>(%[[VALUE_a]], reinterpret<i8, reason=assign, fits=unknown>(truncate<u8, reason=assign, fits=unknown>(read<u32>(%[[VALUE3]]))));
+// DEFAULT-NEXT:                     while %[[VALUE4:[0-9]+]] lt<u32>(read<u32>(%[[VALUE_e]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(94)))
 // DEFAULT-NEXT:                         {
-// DEFAULT-NEXT:                             let %[[VALUE4:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_e]]);
-// DEFAULT-NEXT:                             let %[[VALUE5:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE4]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                             write<u32>(%[[VALUE_e]], read<u32>(%[[VALUE5]]));
-// DEFAULT-NEXT:                             let %[[VALUE6:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_timeout]]);
-// DEFAULT-NEXT:                             let %[[VALUE7:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE6]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
-// DEFAULT-NEXT:                             write<u32>(%[[VALUE_timeout]], read<u32>(%[[VALUE7]]));
-// DEFAULT-NEXT:                             if gt<u32>(read<u32>(%[[VALUE7]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(100)))
+// DEFAULT-NEXT:                             let %[[VALUE5:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_e]]);
+// DEFAULT-NEXT:                             let %[[VALUE6:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE5]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:                             write<u32>(%[[VALUE_e]], read<u32>(%[[VALUE6]]));
+// DEFAULT-NEXT:                             let %[[VALUE7:[0-9]+]]: u32 [synthetic] = read<u32>(%[[VALUE_timeout]]);
+// DEFAULT-NEXT:                             let %[[VALUE8:[0-9]+]]: u32 [synthetic] = add<u32, overflow=wrap>(read<u32>(%[[VALUE7]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(1)));
+// DEFAULT-NEXT:                             write<u32>(%[[VALUE_timeout]], read<u32>(%[[VALUE8]]));
+// DEFAULT-NEXT:                             if gt<u32>(read<u32>(%[[VALUE8]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(100)))
 // DEFAULT-NEXT:                                 goto %[[VALUE_die:[0-9]+]];
 // DEFAULT-NEXT:                         }
 // DEFAULT-NEXT:                 }

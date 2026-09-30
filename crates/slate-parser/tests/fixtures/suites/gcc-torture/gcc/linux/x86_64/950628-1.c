@@ -76,7 +76,6 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_f:[0-9]+]] @f() -> @type[[TYPE0]] [linkage=external] [abi=sysv64() -> native_c] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_virk:[0-9]+]] virk: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_virk]], copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_g]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE0]], reason=assign>(call<@type[[TYPE0]], signature=fn() -> @type[[TYPE0]], abi=sysv64() -> native_c>(%[[VALUE_g]]));
 // DEFAULT-NEXT:         return copy<@type[[TYPE0]], reason=return>(read<@type[[TYPE0]]>(%[[VALUE_virk]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

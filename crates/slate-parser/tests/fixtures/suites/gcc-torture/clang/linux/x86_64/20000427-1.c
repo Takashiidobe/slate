@@ -41,7 +41,6 @@ void ConvertFor3dDriver (int requirePO2, int maxAspect)
 // DEFAULT-NEXT:         let %[[VALUE_oldw:[0-9]+]] oldw: i32 [storage=automatic] = read<i32>(%[[VALUE_lwidth]]);
 // DEFAULT-NEXT:         let %[[VALUE_oldh:[0-9]+]] oldh: i32 [storage=automatic] = read<i32>(%[[VALUE_lheight]]);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_lheight]], call<i32, signature=fn(i32) -> i32>(%[[VALUE_FindNearestPowerOf2]], read<i32>(%[[VALUE_lheight]])));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_FindNearestPowerOf2]], read<i32>(%[[VALUE_lheight]]));
 // DEFAULT-NEXT:         while %[[VALUE1:[0-9]+]] gt<i32>(div<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_lwidth]]), read<i32>(%[[VALUE_lheight]])), read<i32>(%[[VALUE_maxAspect]]))
 // DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_lheight]]);
 // DEFAULT-NEXT:             let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE2]]), read<i32>(%[[VALUE_lheight]]));

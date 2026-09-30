@@ -49,7 +49,6 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo() -> u64 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_retval:[0-9]+]] retval: u64 [storage=automatic];
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_retval]], reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(call<i32, signature=fn() -> i32>(%[[VALUE_bar]]))));
-// DEFAULT-NEXT:         reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(call<i32, signature=fn() -> i32>(%[[VALUE_bar]])));
 // DEFAULT-NEXT:         if eq<u64>(read<u64>(%[[VALUE_retval]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(neg<i32, overflow=ub>(const<i32>(1)))))
 // DEFAULT-NEXT:             return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(0)));
 // DEFAULT-NEXT:         return reinterpret<u64, reason=return, fits=unknown>(widen<i64, reason=return>(const<i32>(3)));

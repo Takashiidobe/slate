@@ -82,7 +82,6 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_z:[0-9]+]] z: i64 [storage=automatic] = const<i64>(9000000000);
 // DEFAULT-NEXT:         let %[[VALUE_bx:[0-9]+]] bx: @type[[TYPE_Box]] [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(field0(%[[VALUE_bx]]), call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_add_alias]], read<i32>(%[[VALUE_x]]), const<i32>(2)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, i32) -> i32>(%[[VALUE_add_alias]], read<i32>(%[[VALUE_x]]), const<i32>(2));
 // DEFAULT-NEXT:         write<u8>(field1(%[[VALUE_bx]]), read<u8>(%[[VALUE_y]]));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), read<i32>(field0(%[[VALUE_bx]])));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(field1(%[[VALUE_bx]])))));

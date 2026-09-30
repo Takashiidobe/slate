@@ -57,8 +57,9 @@ int main() {
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], const<bool>(true));
 // DEFAULT-NEXT:         else
 // DEFAULT-NEXT:             write<bool>(%[[VALUE0]], ne<i32>(call<i32, signature=fn() -> i32>(%[[VALUE_bar]]), const<i32>(0)));
-// DEFAULT-NEXT:         write<u8>(%[[VALUE_error]], from_bool<u8, reason=assign>(read<bool>(%[[VALUE0]])));
-// DEFAULT-NEXT:         if not<bool>(ne<u8>(from_bool<u8, reason=assign>(read<bool>(%[[VALUE0]])), const<u8>(0)))
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: u8 [synthetic] = from_bool<u8, reason=assign>(read<bool>(%[[VALUE0]]));
+// DEFAULT-NEXT:         write<u8>(%[[VALUE_error]], read<u8>(%[[VALUE1]]));
+// DEFAULT-NEXT:         if not<bool>(ne<u8>(read<u8>(%[[VALUE1]]), const<u8>(0)))
 // DEFAULT-NEXT:             call<i32, signature=fn() -> i32>(%[[VALUE_bar]]);
 // DEFAULT-NEXT:         if not<bool>(ne<u8>(read<u8>(%[[VALUE_error]]), const<u8>(0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);

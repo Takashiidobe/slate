@@ -84,7 +84,6 @@ int main() {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_res:[0-9]+]] res: u128 [storage=automatic];
 // DEFAULT-NEXT:         write<u128>(%[[VALUE_res]], call<u128, signature=fn(i128, u32) -> u128>(%[[VALUE_foo]], widen<i128, reason=arg>(const<i32>(3)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4))));
-// DEFAULT-NEXT:         call<u128, signature=fn(i128, u32) -> u128>(%[[VALUE_foo]], widen<i128, reason=arg>(const<i32>(3)), reinterpret<u32, reason=arg, fits=always>(const<i32>(4)));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

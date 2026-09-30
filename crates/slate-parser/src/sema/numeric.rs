@@ -1645,7 +1645,7 @@ pub(super) fn resolve_float_literal(
     resolve_float(&literal)
 }
 
-fn conversion(
+pub(super) fn conversion(
     value: Value,
     ty: Type,
     kind: ConversionKind,
@@ -1662,7 +1662,7 @@ fn conversion(
     Value { ty, node }
 }
 
-fn integer_fits(value: &Value, width: u32, signed: bool) -> Fits {
+pub(super) fn integer_fits(value: &Value, width: u32, signed: bool) -> Fits {
     match &value.node.value {
         ValueKind::Constant(Number::Integer(value)) if fits_rank(value, width, signed) => {
             Fits::Always

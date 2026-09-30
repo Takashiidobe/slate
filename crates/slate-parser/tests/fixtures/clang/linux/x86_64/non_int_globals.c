@@ -71,12 +71,9 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_small]], call<i8, signature=fn(i8, i8) -> i8>(%[[VALUE_add_char]], read<i8>(%[[VALUE_small]]), truncate<i8, reason=arg, fits=always>(const<i32>(3))));
-// DEFAULT-NEXT:         call<i8, signature=fn(i8, i8) -> i8>(%[[VALUE_add_char]], read<i8>(%[[VALUE_small]]), truncate<i8, reason=arg, fits=always>(const<i32>(3)));
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_byte]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%[[VALUE_byte]]))), const<i32>(1)))));
 // DEFAULT-NEXT:         write<f32>(%[[VALUE_ratio]], call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_scale]], read<f32>(%[[VALUE_ratio]]), const<f32>(2.0)));
-// DEFAULT-NEXT:         call<f32, signature=fn(f32, f32) -> f32>(%[[VALUE_scale]], read<f32>(%[[VALUE_ratio]]), const<f32>(2.0));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_total]], call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_add_double]], read<f64>(%[[VALUE_total]]), float_widen<f64, reason=arg>(read<f32>(%[[VALUE_ratio]]))));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64, f64) -> f64>(%[[VALUE_add_double]], read<f64>(%[[VALUE_total]]), float_widen<f64, reason=arg>(read<f32>(%[[VALUE_ratio]])));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), widen<i32, reason=vararg>(read<i8>(%[[VALUE_small]])));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), reinterpret<i32, reason=vararg, fits=unknown>(widen<u32, reason=vararg>(read<u8>(%[[VALUE_byte]]))));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_3]])), float_widen<f64, reason=vararg>(read<f32>(%[[VALUE_ratio]])));

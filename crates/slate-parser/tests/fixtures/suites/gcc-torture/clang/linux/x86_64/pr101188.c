@@ -94,7 +94,6 @@ int main(void) {
 // DEFAULT-NEXT:         write<u16>(field1(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE0]]))), read<u16>(%[[VALUE2]]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ptr<i32>) -> void>(read<ptr<fn(ptr<void>, ptr<i32>) -> void>>(field2(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_self]])))), read<ptr<void>>(field3(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_self]])))), addr_of<ptr<i32>>(%[[VALUE_arg]]));
 // DEFAULT-NEXT:         write<u8>(deref(ptr_offset<ptr<u8>, subtract=false, element=u8, overflow=ub>(array_decay<ptr<u8>, length=Some(64)>(field0(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_self]])))), const<i32>(0))), call<u8, signature=fn(ptr<void>) -> u8>(read<ptr<fn(ptr<void>) -> u8>>(field4(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_self]])))), read<ptr<void>>(field3(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_self]]))))));
-// DEFAULT-NEXT:         call<u8, signature=fn(ptr<void>) -> u8>(read<ptr<fn(ptr<void>) -> u8>>(field4(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_self]])))), read<ptr<void>>(field3(deref(read<ptr<@type[[TYPE_S]]>>(%[[VALUE_self]])))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_myfn2:[0-9]+]] @myfn2(%[[VALUE_a:[0-9]+]] a: ptr<void>, %[[VALUE_arg_2:[0-9]+]] arg: ptr<i32>) -> void [linkage=internal] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<u8>(%[[VALUE_myfn2_called]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(1))));

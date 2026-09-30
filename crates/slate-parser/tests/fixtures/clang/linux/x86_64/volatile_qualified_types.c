@@ -75,14 +75,12 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_use_volatile_fields:[0-9]+]] @use_volatile_fields(%[[VALUE_input:[0-9]+]] input: f64) -> f64 [linkage=internal] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         let %[[VALUE_fields:[0-9]+]] fields: @type[[TYPE_VolatileFields]] [storage=automatic];
 // DEFAULT-NEXT:         write<i32, volatile>(field0(%[[VALUE_fields]]), call<i32, signature=fn(i32) -> i32>(%[[VALUE_bump_return]], const<i32>(4)));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32) -> i32>(%[[VALUE_bump_return]], const<i32>(4));
 // DEFAULT-NEXT:         write<f64, volatile>(field1(%[[VALUE_fields]]), add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64>(%[[VALUE_input]]), read<f64, volatile>(%[[VALUE_gain]])));
 // DEFAULT-NEXT:         return add<f64, rounding=nearest_even, exceptions=ignore, contract=on>(read<f64, volatile>(field1(%[[VALUE_fields]])), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=ignore>(read<i32, volatile>(field0(%[[VALUE_fields]]))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i8, volatile>(%[[VALUE_marker]], truncate<i8, reason=assign, fits=unknown>(add<i32, overflow=ub>(widen<i32, reason=promotion>(read<i8, volatile>(%[[VALUE_marker]])), const<i32>(1))));
 // DEFAULT-NEXT:         write<f64, volatile>(%[[VALUE_gain]], call<f64, signature=fn(f64) -> f64>(%[[VALUE_read_volatile_param]], read<f64, volatile>(%[[VALUE_gain]])));
-// DEFAULT-NEXT:         call<f64, signature=fn(f64) -> f64>(%[[VALUE_read_volatile_param]], read<f64, volatile>(%[[VALUE_gain]]));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str]])), widen<i32, reason=vararg>(read<i8, volatile>(%[[VALUE_marker]])));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_2]])), read<f64, volatile>(%[[VALUE_gain]]));
 // DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[VALUE_printf]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_3]])), call<f64, signature=fn(f64) -> f64>(%[[VALUE_use_volatile_fields]], const<f64>(2.0)));

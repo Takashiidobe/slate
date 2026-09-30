@@ -69,7 +69,7 @@ int main() {
 // DEFAULT-NEXT:             let %[[VALUE1:[0-9]+]]: u32 [synthetic] = read<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_sdata]]));
 // DEFAULT-NEXT:             let %[[VALUE2:[0-9]+]]: u32 [synthetic] = reinterpret<u32, reason=assign, fits=unknown>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE1]])), const<i32>(1)));
 // DEFAULT-NEXT:             write<u32>(bitfield0<unit=0, bytes=0..1, bits=0..1>(%[[VALUE_sdata]]), read<u32>(%[[VALUE2]]));
-// DEFAULT-NEXT:             yield gt<u32>(read<u32>(%[[VALUE1]]), reinterpret<u32, reason=usual_arith, fits=always>(const<i32>(0)));
+// DEFAULT-NEXT:             yield gt<i32>(reinterpret<i32, reason=promotion, fits=unknown>(read<u32>(%[[VALUE1]])), const<i32>(0));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_b]]);

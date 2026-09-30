@@ -65,7 +65,6 @@ int main(int argc, char *argv[]) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(%[[VALUE_argc:[0-9]+]] argc: i32, %[[VALUE_argv:[0-9]+]] argv: ptr<ptr<i8>>) -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_r_2]], call<i32, signature=fn(i32, ptr<@type[[TYPE_bovid]]>) -> i32>(%[[VALUE_ox]], from_bool<i32, reason=arg>(gt<i32>(read<i32>(%[[VALUE_argc]]), const<i32>(2000))), null<ptr<@type[[TYPE_bovid]]>>));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, ptr<@type[[TYPE_bovid]]>) -> i32>(%[[VALUE_ox]], from_bool<i32, reason=arg>(gt<i32>(read<i32>(%[[VALUE_argc]]), const<i32>(2000))), null<ptr<@type[[TYPE_bovid]]>>);
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_r_2]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

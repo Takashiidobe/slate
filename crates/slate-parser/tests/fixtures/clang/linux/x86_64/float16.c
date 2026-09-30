@@ -84,7 +84,6 @@ int main(void) {
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     write<f16>(%[[VALUE_total]], add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%[[VALUE_total]]), va_arg<f16>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:                     add<f16, rounding=nearest_even, exceptions=ignore, contract=on>(read<f16>(%[[VALUE_total]]), va_arg<f16>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         return read<f16>(%[[VALUE_total]]);

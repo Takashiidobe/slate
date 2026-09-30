@@ -54,9 +54,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<complex<f32>>(%[[VALUE_z]], call<complex<f32>, signature=fn(complex<f32>, complex<f32>) -> complex<f32>, abi=sysv64(native_c, native_c) -> native_c>(%[[VALUE_p]], read<complex<f32>>(%[[VALUE_x]]), read<complex<f32>>(%[[VALUE_y]])));
-// DEFAULT-NEXT:         call<complex<f32>, signature=fn(complex<f32>, complex<f32>) -> complex<f32>, abi=sysv64(native_c, native_c) -> native_c>(%[[VALUE_p]], read<complex<f32>>(%[[VALUE_x]]), read<complex<f32>>(%[[VALUE_y]]));
 // DEFAULT-NEXT:         write<complex<f32>>(%[[VALUE_y]], call<complex<f32>, signature=fn(complex<f32>, complex<f32>) -> complex<f32>, abi=sysv64(native_c, native_c) -> native_c>(%[[VALUE_p]], read<complex<f32>>(%[[VALUE_x]]), div<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f32>(1.0), read<complex<f32>>(%[[VALUE_z]]))));
-// DEFAULT-NEXT:         call<complex<f32>, signature=fn(complex<f32>, complex<f32>) -> complex<f32>, abi=sysv64(native_c, native_c) -> native_c>(%[[VALUE_p]], read<complex<f32>>(%[[VALUE_x]]), div<complex<f32>, complex=true, rounding=nearest_even, exceptions=observable, range=full>(const<f32>(1.0), read<complex<f32>>(%[[VALUE_z]])));
 // DEFAULT-NEXT:         if ne<complex<f32>, exceptions=observable>(read<complex<f32>>(%[[VALUE_z]]), read<complex<f32>>(%[[VALUE_w]]))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));

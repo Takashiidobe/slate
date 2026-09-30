@@ -54,7 +54,6 @@ int main(void) {
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_tmp:[0-9]+]] tmp: u64 [storage=automatic];
 // DEFAULT-NEXT:         write<u64>(%[[VALUE_tmp]], shr<u64, amount_out_of_range=ub, fill=zero_extend>(and<u64>(call<u64, signature=fn() -> u64>(%[[VALUE_ReadNumber]]), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(16711680))), const<i32>(16)));
-// DEFAULT-NEXT:         shr<u64, amount_out_of_range=ub, fill=zero_extend>(and<u64>(call<u64, signature=fn() -> u64>(%[[VALUE_ReadNumber]]), reinterpret<u64, reason=usual_arith, fits=always>(const<i64>(16711680))), const<i32>(16));
 // DEFAULT-NEXT:         call<void, signature=fn(u64) -> void>(%[[VALUE_DisplayNumber]], read<u64>(%[[VALUE_tmp]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }

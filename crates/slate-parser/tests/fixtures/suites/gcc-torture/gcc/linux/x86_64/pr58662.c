@@ -53,7 +53,6 @@ int main() {
 // DEFAULT-NEXT:         let %[[VALUE_e:[0-9]+]] e: i8 [storage=automatic];
 // DEFAULT-NEXT:         const<i32>(0);
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_d]], call<i32, signature=fn(i32, i16) -> i32>(%[[VALUE_foo]], from_bool<i32, reason=arg>(eq<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))), truncate<i16, reason=arg, fits=unknown>(const<i32>(35536))));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, i16) -> i32>(%[[VALUE_foo]], from_bool<i32, reason=arg>(eq<i32>(read<i32>(%[[VALUE_a]]), const<i32>(0))), truncate<i16, reason=arg, fits=unknown>(const<i32>(35536)));
 // DEFAULT-NEXT:         write<i8>(%[[VALUE_e]], truncate<i8, reason=assign, fits=unknown>(rem<i32, by_zero=ub, min_by_neg_one=ub>(read<i32>(%[[VALUE_d]]), const<i32>(14))));
 // DEFAULT-NEXT:         write<i32, volatile>(%[[VALUE_b]], from_bool<i32, reason=assign>(logical_and<bool>(ne<i8>(read<i8>(%[[VALUE_e]]), const<i8>(0)), ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0)))));
 // DEFAULT-NEXT:         if ne<i32>(read<i32, volatile>(%[[VALUE_b]]), const<i32>(0))

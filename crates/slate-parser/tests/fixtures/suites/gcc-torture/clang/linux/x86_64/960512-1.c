@@ -55,8 +55,9 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         let %[[VALUE_c_2:[0-9]+]] c: complex<f64> [storage=automatic];
-// DEFAULT-NEXT:         write<complex<f64>>(%[[VALUE_c_2]], call<complex<f64>, signature=fn() -> complex<f64>, abi=sysv64() -> native_c>(%[[VALUE_f]]));
-// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(call<complex<f64>, signature=fn() -> complex<f64>, abi=sysv64() -> native_c>(%[[VALUE_f]]), real_to_complex<complex<f64>, reason=usual_arith>(const<f64>(0.0)))
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: complex<f64> [synthetic] = call<complex<f64>, signature=fn() -> complex<f64>, abi=sysv64() -> native_c>(%[[VALUE_f]]);
+// DEFAULT-NEXT:         write<complex<f64>>(%[[VALUE_c_2]], read<complex<f64>>(%[[VALUE1]]));
+// DEFAULT-NEXT:         if ne<complex<f64>, exceptions=ignore>(read<complex<f64>>(%[[VALUE1]]), real_to_complex<complex<f64>, reason=usual_arith>(const<f64>(0.0)))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
 // DEFAULT-NEXT:     }

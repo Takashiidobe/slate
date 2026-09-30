@@ -88,7 +88,6 @@ int                             main(void) {
 // DEFAULT-NEXT:         write<ptr<@type[[TYPE_a]]>>(%[[VALUE_a]], null<ptr<@type[[TYPE_a]]>>);
 // DEFAULT-NEXT:         write<ptr<i32>>(field0(%[[VALUE_b]]), addr_of<ptr<i32>>(%[[VALUE_e]]));
 // DEFAULT-NEXT:         write<ptr<ptr<i32>>>(%[[VALUE_ptr]], call<ptr<ptr<i32>>, signature=fn(ptr<ptr<i32>>) -> ptr<ptr<i32>>>(%[[VALUE_retme]], addr_of<ptr<ptr<i32>>>(field0(%[[VALUE_b]]))));
-// DEFAULT-NEXT:         call<ptr<ptr<i32>>, signature=fn(ptr<ptr<i32>>) -> ptr<ptr<i32>>>(%[[VALUE_retme]], addr_of<ptr<ptr<i32>>>(field0(%[[VALUE_b]])));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<ptr<i32>>) -> void>(%[[VALUE_set_b]], read<ptr<ptr<i32>>>(%[[VALUE_ptr]]));
 // DEFAULT-NEXT:         write<@type[[TYPE_b]]>(%[[VALUE_b3]], copy<@type[[TYPE_b]], reason=assign>(read<@type[[TYPE_b]]>(%[[VALUE_b]])));
 // DEFAULT-NEXT:         if ne<ptr<i32>>(read<ptr<i32>>(field0(%[[VALUE_b3]])), addr_of<ptr<i32>>(%[[VALUE_d]]))

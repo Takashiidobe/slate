@@ -92,7 +92,6 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_f]], call<i32, signature=fn() -> i32>(%[[VALUE_foo]]));
-// DEFAULT-NEXT:         call<i32, signature=fn() -> i32>(%[[VALUE_foo]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i64) -> void>(%[[VALUE_baz]], widen<i64, reason=arg>(sub<i32, overflow=ub>(reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(reinterpret<u8, reason=explicit, fits=unknown>(truncate<i8, reason=explicit, fits=unknown>(read<i32>(%[[VALUE_f]]))))), const<i32>(4))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

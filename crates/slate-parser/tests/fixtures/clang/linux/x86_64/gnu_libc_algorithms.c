@@ -348,8 +348,9 @@ int main(void) {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_optind]], const<i32>(1));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_opterr]], const<i32>(0));
 // DEFAULT-NEXT:         while %[[VALUE3:[0-9]+]] {
-// DEFAULT-NEXT:             write<i32>(%[[VALUE_option]], call<i32, signature=fn(i32, ptr<const ptr<i8>>, ptr<const i8>, ptr<const @type[[TYPE_option]]>, ptr<i32>) -> i32>(%[[VALUE_getopt_long]], const<i32>(3), pointer_cast<ptr<const ptr<i8>>, reason=arg>(array_decay<ptr<ptr<i8>>, length=Some(4)>(%[[VALUE_arguments_2]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_4]])), pointer_cast<ptr<const @type[[TYPE_option]]>, reason=arg>(array_decay<ptr<@type[[TYPE_option]]>, length=Some(3)>(%[[VALUE_options]])), null<ptr<i32>>));
-// DEFAULT-NEXT:             yield ne<i32>(call<i32, signature=fn(i32, ptr<const ptr<i8>>, ptr<const i8>, ptr<const @type[[TYPE_option]]>, ptr<i32>) -> i32>(%[[VALUE_getopt_long]], const<i32>(3), pointer_cast<ptr<const ptr<i8>>, reason=arg>(array_decay<ptr<ptr<i8>>, length=Some(4)>(%[[VALUE_arguments_2]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_4]])), pointer_cast<ptr<const @type[[TYPE_option]]>, reason=arg>(array_decay<ptr<@type[[TYPE_option]]>, length=Some(3)>(%[[VALUE_options]])), null<ptr<i32>>), neg<i32, overflow=ub>(const<i32>(1)));
+// DEFAULT-NEXT:             let %[[VALUE4:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn(i32, ptr<const ptr<i8>>, ptr<const i8>, ptr<const @type[[TYPE_option]]>, ptr<i32>) -> i32>(%[[VALUE_getopt_long]], const<i32>(3), pointer_cast<ptr<const ptr<i8>>, reason=arg>(array_decay<ptr<ptr<i8>>, length=Some(4)>(%[[VALUE_arguments_2]])), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[VALUE_str_4]])), pointer_cast<ptr<const @type[[TYPE_option]]>, reason=arg>(array_decay<ptr<@type[[TYPE_option]]>, length=Some(3)>(%[[VALUE_options]])), null<ptr<i32>>);
+// DEFAULT-NEXT:             write<i32>(%[[VALUE_option]], read<i32>(%[[VALUE4]]));
+// DEFAULT-NEXT:             yield ne<i32>(read<i32>(%[[VALUE4]]), neg<i32, overflow=ub>(const<i32>(1)));
 // DEFAULT-NEXT:         }
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 if eq<i32>(read<i32>(%[[VALUE_option]]), const<i32>(110))
@@ -383,27 +384,27 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_tree:[0-9]+]] tree: ptr<void> [storage=automatic] = null<ptr<void>>;
 // DEFAULT-NEXT:         let %[[VALUE_values_2:[0-9]+]] values: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(3), index1 = const<i32>(1), index2 = const<i32>(4), index3 = const<i32>(2));
 // DEFAULT-NEXT:         let %[[VALUE_total:[0-9]+]] total: i32 [storage=automatic] = const<i32>(0);
-// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
-// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE4]]), from_bool<i32, reason=promotion>(ne<i32>(call<i32, signature=fn(u64, ptr<@type[[TYPE_hsearch_data]]>) -> i32>(%[[VALUE_hcreate_r]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))), addr_of<ptr<@type[[TYPE_hsearch_data]]>>(%[[VALUE_table]])), const<i32>(0))));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE5]]));
-// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
-// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE6]]), from_bool<i32, reason=promotion>(ne<i32>(call<i32, signature=fn(@type[[TYPE_entry]], @type[[TYPE0]], ptr<ptr<@type[[TYPE_entry]]>>, ptr<@type[[TYPE_hsearch_data]]>) -> i32, abi=sysv64(native_c, scalar, scalar, scalar) -> scalar>(%[[VALUE_hsearch_r]], copy<@type[[TYPE_entry]], reason=arg>(read<@type[[TYPE_entry]]>(%[[VALUE_inserted]])), int_to_enum<@type[[TYPE0]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(1))), addr_of<ptr<ptr<@type[[TYPE_entry]]>>>(%[[VALUE_found]]), addr_of<ptr<@type[[TYPE_hsearch_data]]>>(%[[VALUE_table]])), const<i32>(0))));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE7]]));
-// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
-// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE8]]), from_bool<i32, reason=promotion>(ne<i32>(call<i32, signature=fn(@type[[TYPE_entry]], @type[[TYPE0]], ptr<ptr<@type[[TYPE_entry]]>>, ptr<@type[[TYPE_hsearch_data]]>) -> i32, abi=sysv64(native_c, scalar, scalar, scalar) -> scalar>(%[[VALUE_hsearch_r]], copy<@type[[TYPE_entry]], reason=arg>(read<@type[[TYPE_entry]]>(%[[VALUE_query]])), int_to_enum<@type[[TYPE0]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(0))), addr_of<ptr<ptr<@type[[TYPE_entry]]>>>(%[[VALUE_found]]), addr_of<ptr<@type[[TYPE_hsearch_data]]>>(%[[VALUE_table]])), const<i32>(0))));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE9]]));
-// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
-// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE10]]), from_bool<i32, reason=promotion>(logical_and<bool>(ne<ptr<@type[[TYPE_entry]]>>(read<ptr<@type[[TYPE_entry]]>>(%[[VALUE_found]]), null<ptr<@type[[TYPE_entry]]>>), eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE_strcmp]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<void>>(field1(deref(read<ptr<@type[[TYPE_entry]]>>(%[[VALUE_found]]))))), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_12]]))), const<i32>(0)))));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE11]]));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE5]]), from_bool<i32, reason=promotion>(ne<i32>(call<i32, signature=fn(u64, ptr<@type[[TYPE_hsearch_data]]>) -> i32>(%[[VALUE_hcreate_r]], reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(8))), addr_of<ptr<@type[[TYPE_hsearch_data]]>>(%[[VALUE_table]])), const<i32>(0))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE6]]));
+// DEFAULT-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
+// DEFAULT-NEXT:         let %[[VALUE8:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE7]]), from_bool<i32, reason=promotion>(ne<i32>(call<i32, signature=fn(@type[[TYPE_entry]], @type[[TYPE0]], ptr<ptr<@type[[TYPE_entry]]>>, ptr<@type[[TYPE_hsearch_data]]>) -> i32, abi=sysv64(native_c, scalar, scalar, scalar) -> scalar>(%[[VALUE_hsearch_r]], copy<@type[[TYPE_entry]], reason=arg>(read<@type[[TYPE_entry]]>(%[[VALUE_inserted]])), int_to_enum<@type[[TYPE0]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(1))), addr_of<ptr<ptr<@type[[TYPE_entry]]>>>(%[[VALUE_found]]), addr_of<ptr<@type[[TYPE_hsearch_data]]>>(%[[VALUE_table]])), const<i32>(0))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE8]]));
+// DEFAULT-NEXT:         let %[[VALUE9:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
+// DEFAULT-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE9]]), from_bool<i32, reason=promotion>(ne<i32>(call<i32, signature=fn(@type[[TYPE_entry]], @type[[TYPE0]], ptr<ptr<@type[[TYPE_entry]]>>, ptr<@type[[TYPE_hsearch_data]]>) -> i32, abi=sysv64(native_c, scalar, scalar, scalar) -> scalar>(%[[VALUE_hsearch_r]], copy<@type[[TYPE_entry]], reason=arg>(read<@type[[TYPE_entry]]>(%[[VALUE_query]])), int_to_enum<@type[[TYPE0]], reason=arg>(reinterpret<u32, reason=arg, fits=always>(const<i32>(0))), addr_of<ptr<ptr<@type[[TYPE_entry]]>>>(%[[VALUE_found]]), addr_of<ptr<@type[[TYPE_hsearch_data]]>>(%[[VALUE_table]])), const<i32>(0))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE10]]));
+// DEFAULT-NEXT:         let %[[VALUE11:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
+// DEFAULT-NEXT:         let %[[VALUE12:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE11]]), from_bool<i32, reason=promotion>(logical_and<bool>(ne<ptr<@type[[TYPE_entry]]>>(read<ptr<@type[[TYPE_entry]]>>(%[[VALUE_found]]), null<ptr<@type[[TYPE_entry]]>>), eq<i32>(call<i32, signature=fn(ptr<const i8>, ptr<const i8>) -> i32>(%[[VALUE_strcmp]], pointer_cast<ptr<const i8>, reason=arg>(read<ptr<void>>(field1(deref(read<ptr<@type[[TYPE_entry]]>>(%[[VALUE_found]]))))), pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str_12]]))), const<i32>(0)))));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE12]]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<@type[[TYPE_hsearch_data]]>) -> void>(%[[VALUE_hdestroy_r]], addr_of<ptr<@type[[TYPE_hsearch_data]]>>(%[[VALUE_table]]));
-// DEFAULT-NEXT:         for %[[VALUE12:[0-9]+]]
+// DEFAULT-NEXT:         for %[[VALUE13:[0-9]+]]
 // DEFAULT-NEXT:             init:
 // DEFAULT-NEXT:                 let %[[VALUE_index_2:[0-9]+]] index: u64 [storage=automatic] = reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0)));
 // DEFAULT-NEXT:             condition: lt<u64>(read<u64>(%[[VALUE_index_2]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))))
 // DEFAULT-NEXT:             increment: {
-// DEFAULT-NEXT:                 let %[[VALUE13:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_index_2]]);
-// DEFAULT-NEXT:                 let %[[VALUE14:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE13]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
-// DEFAULT-NEXT:                 write<u64>(%[[VALUE_index_2]], read<u64>(%[[VALUE14]]));
+// DEFAULT-NEXT:                 let %[[VALUE14:[0-9]+]]: u64 [synthetic] = read<u64>(%[[VALUE_index_2]]);
+// DEFAULT-NEXT:                 let %[[VALUE15:[0-9]+]]: u64 [synthetic] = add<u64, overflow=wrap>(read<u64>(%[[VALUE14]]), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(1))));
+// DEFAULT-NEXT:                 write<u64>(%[[VALUE_index_2]], read<u64>(%[[VALUE15]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
@@ -412,9 +413,9 @@ int main(void) {
 // DEFAULT-NEXT:                     write<i32>(deref(read<ptr<i32>>(%[[VALUE_value]])), read<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values_2]]), read<u64>(%[[VALUE_index_2]])))));
 // DEFAULT-NEXT:                     call<ptr<void>, signature=fn(ptr<const void>, ptr<ptr<void>>, ptr<fn(ptr<const void>, ptr<const void>) -> i32>) -> ptr<void>>(%[[VALUE_tsearch]], pointer_cast<ptr<const void>, reason=arg>(read<ptr<i32>>(%[[VALUE_value]])), addr_of<ptr<ptr<void>>>(%[[VALUE_tree]]), function_decay<ptr<fn(ptr<const void>, ptr<const void>) -> i32>>(%[[VALUE_gnu_compare_entries]]));
 // DEFAULT-NEXT:                 }
-// DEFAULT-NEXT:         let %[[VALUE15:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
-// DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE15]]), from_bool<i32, reason=promotion>(ne<ptr<void>>(call<ptr<void>, signature=fn(ptr<const void>, ptr<const ptr<void>>, ptr<fn(ptr<const void>, ptr<const void>) -> i32>) -> ptr<void>>(%[[VALUE_tfind]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values_2]]), const<i32>(2))))), pointer_cast<ptr<const ptr<void>>, reason=arg>(addr_of<ptr<ptr<void>>>(%[[VALUE_tree]])), function_decay<ptr<fn(ptr<const void>, ptr<const void>) -> i32>>(%[[VALUE_gnu_compare_entries]])), null<ptr<void>>)));
-// DEFAULT-NEXT:         write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE16]]));
+// DEFAULT-NEXT:         let %[[VALUE16:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_total]]);
+// DEFAULT-NEXT:         let %[[VALUE17:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[VALUE16]]), from_bool<i32, reason=promotion>(ne<ptr<void>>(call<ptr<void>, signature=fn(ptr<const void>, ptr<const ptr<void>>, ptr<fn(ptr<const void>, ptr<const void>) -> i32>) -> ptr<void>>(%[[VALUE_tfind]], pointer_cast<ptr<const void>, reason=arg>(addr_of<ptr<i32>>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(4)>(%[[VALUE_values_2]]), const<i32>(2))))), pointer_cast<ptr<const ptr<void>>, reason=arg>(addr_of<ptr<ptr<void>>>(%[[VALUE_tree]])), function_decay<ptr<fn(ptr<const void>, ptr<const void>) -> i32>>(%[[VALUE_gnu_compare_entries]])), null<ptr<void>>)));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_total]], read<i32>(%[[VALUE17]]));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<void>, ptr<fn(ptr<void>) -> void>) -> void>(%[[VALUE_tdestroy]], read<ptr<void>>(%[[VALUE_tree]]), function_decay<ptr<fn(ptr<void>) -> void>>(%[[VALUE_gnu_free_entry]]));
 // DEFAULT-NEXT:         return read<i32>(%[[VALUE_total]]);
 // DEFAULT-NEXT:     }

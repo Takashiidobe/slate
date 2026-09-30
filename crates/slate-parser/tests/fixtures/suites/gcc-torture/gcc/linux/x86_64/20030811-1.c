@@ -59,11 +59,9 @@ int main(void) { return 0; }
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test2:[0-9]+]] @test2() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(0)>(%[[VALUE_i0]]), const<i32>(0))), truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE___builtin_return_address]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0))))));
-// DEFAULT-NEXT:         truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE___builtin_return_address]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test3:[0-9]+]] @test3() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_i1]], truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE___builtin_return_address]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0))))));
-// DEFAULT-NEXT:         truncate<i32, reason=explicit, fits=unknown>(ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE___builtin_return_address]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_test4:[0-9]+]] @test4() -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_a_2:[0-9]+]] a: volatile i64 [storage=automatic] = ptr_to_int<i64, reason=explicit>(call<ptr<void>, signature=fn(u32) -> ptr<void>>(%[[VALUE___builtin_return_address]], reinterpret<u32, reason=arg, fits=always>(const<i32>(0))));

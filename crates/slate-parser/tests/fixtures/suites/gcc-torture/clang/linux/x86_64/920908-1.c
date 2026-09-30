@@ -71,11 +71,9 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_X:[0-9]+]] X: @type[[TYPE0]] [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
 // DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_X]], copy<@type[[TYPE0]], reason=assign>(va_arg<@type[[TYPE0]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE0]], reason=assign>(va_arg<@type[[TYPE0]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%[[VALUE_X]])), const<i32>(10))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         write<@type[[TYPE0]]>(%[[VALUE_X]], copy<@type[[TYPE0]], reason=assign>(va_arg<@type[[TYPE0]]>(%[[VALUE_ap]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE0]], reason=assign>(va_arg<@type[[TYPE0]]>(%[[VALUE_ap]]));
 // DEFAULT-NEXT:         if ne<i32>(read<i32>(field0(%[[VALUE_X]])), const<i32>(20))
 // DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);

@@ -832,12 +832,10 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                 let %[[VALUE_BgL_auxz00_4066:[0-9]+]] BgL_auxz00_4066: i32 [storage=automatic];
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_BgL_auxz00_4066]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))));
 // DEFAULT-NEXT:                                 write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_v1042z00_998]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4066]])));
-// DEFAULT-NEXT:                                 call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4066]]));
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 let %[[VALUE_BgL_arg1586z00_1000:[0-9]+]] BgL_arg1586z00_1000: ptr<@type[[TYPE_scmobj]]> [storage=automatic];
 // DEFAULT-NEXT:                                 write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_arg1586z00_1000]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(ptr<@type[[TYPE_scmobj]]>, ptr<@type[[TYPE_scmobj]]>) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_make_pair]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_wherez00_41]]), read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_bodyz00_40]])));
-// DEFAULT-NEXT:                                 call<ptr<@type[[TYPE_scmobj]]>, signature=fn(ptr<@type[[TYPE_scmobj]]>, ptr<@type[[TYPE_scmobj]]>) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_make_pair]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_wherez00_41]]), read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_bodyz00_40]]));
 // DEFAULT-NEXT:                                 {
 // DEFAULT-NEXT:                                     let %[[VALUE_BgL_auxz00_4070:[0-9]+]] BgL_auxz00_4070: i32 [storage=automatic];
 // DEFAULT-NEXT:                                     write<i32>(%[[VALUE_BgL_auxz00_4070]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(2))));
@@ -857,7 +855,6 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                     {
 // DEFAULT-NEXT:                                         let %[[VALUE_BgL_auxz00_4080:[0-9]+]] BgL_auxz00_4080: i64 [storage=automatic];
 // DEFAULT-NEXT:                                         write<i64>(%[[VALUE_BgL_auxz00_4080]], call<i64, signature=fn(ptr<@type[[TYPE_scmobj]]>) -> i64>(%[[VALUE_bgl_list_length]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_formalsz00_39]])));
-// DEFAULT-NEXT:                                         call<i64, signature=fn(ptr<@type[[TYPE_scmobj]]>) -> i64>(%[[VALUE_bgl_list_length]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_formalsz00_39]]));
 // DEFAULT-NEXT:                                         write<i64>(%[[VALUE_BgL_auxz00_4079]], add<i64, overflow=ub>(read<i64>(%[[VALUE_BgL_auxz00_4080]]), widen<i64, reason=explicit>(const<i32>(37))));
 // DEFAULT-NEXT:                                     }
 // DEFAULT-NEXT:                                     write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_auxz00_4078]], int_to_ptr<ptr<@type[[TYPE_scmobj]]>, reason=explicit>(or<i64>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i64>(%[[VALUE_BgL_auxz00_4079]]), const<i32>(2)), widen<i64, reason=usual_arith>(const<i32>(1)))));
@@ -874,7 +871,6 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                 let %[[VALUE_BgL_auxz00_4085:[0-9]+]] BgL_auxz00_4085: i32 [storage=automatic];
 // DEFAULT-NEXT:                                 write<i32>(%[[VALUE_BgL_auxz00_4085]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))));
 // DEFAULT-NEXT:                                 write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_v1043z00_1005]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4085]])));
-// DEFAULT-NEXT:                                 call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4085]]));
 // DEFAULT-NEXT:                             }
 // DEFAULT-NEXT:                             {
 // DEFAULT-NEXT:                                 let %[[VALUE_BgL_auxz00_4088:[0-9]+]] BgL_auxz00_4088: i32 [storage=automatic];
@@ -894,7 +890,6 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                     {
 // DEFAULT-NEXT:                                         let %[[VALUE_BgL_auxz00_4098:[0-9]+]] BgL_auxz00_4098: i64 [storage=automatic];
 // DEFAULT-NEXT:                                         write<i64>(%[[VALUE_BgL_auxz00_4098]], call<i64, signature=fn(ptr<@type[[TYPE_scmobj]]>) -> i64>(%[[VALUE_bgl_list_length]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_formalsz00_39]])));
-// DEFAULT-NEXT:                                         call<i64, signature=fn(ptr<@type[[TYPE_scmobj]]>) -> i64>(%[[VALUE_bgl_list_length]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_formalsz00_39]]));
 // DEFAULT-NEXT:                                         write<i64>(%[[VALUE_BgL_auxz00_4097]], add<i64, overflow=ub>(read<i64>(%[[VALUE_BgL_auxz00_4098]]), widen<i64, reason=explicit>(const<i32>(42))));
 // DEFAULT-NEXT:                                     }
 // DEFAULT-NEXT:                                     write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_auxz00_4096]], int_to_ptr<ptr<@type[[TYPE_scmobj]]>, reason=explicit>(or<i64>(shl<i64, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i64>(%[[VALUE_BgL_auxz00_4097]]), const<i32>(2)), widen<i64, reason=usual_arith>(const<i32>(1)))));
@@ -965,7 +960,6 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                         let %[[VALUE_BgL_auxz00_4134:[0-9]+]] BgL_auxz00_4134: i32 [storage=automatic];
 // DEFAULT-NEXT:                                                                                                         write<i32>(%[[VALUE_BgL_auxz00_4134]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))));
 // DEFAULT-NEXT:                                                                                                         write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_v1052z00_1026]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4134]])));
-// DEFAULT-NEXT:                                                                                                         call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4134]]));
 // DEFAULT-NEXT:                                                                                                     }
 // DEFAULT-NEXT:                                                                                                     {
 // DEFAULT-NEXT:                                                                                                         let %[[VALUE_BgL_arg1606z00_1028:[0-9]+]] BgL_arg1606z00_1028: ptr<@type[[TYPE_scmobj]]> [storage=automatic];
@@ -975,7 +969,6 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                                 let %[[VALUE_BgL_auxz00_4137:[0-9]+]] BgL_auxz00_4137: i32 [storage=automatic];
 // DEFAULT-NEXT:                                                                                                                 write<i32>(%[[VALUE_BgL_auxz00_4137]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))));
 // DEFAULT-NEXT:                                                                                                                 write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_v1053z00_1029]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4137]])));
-// DEFAULT-NEXT:                                                                                                                 call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4137]]));
 // DEFAULT-NEXT:                                                                                                             }
 // DEFAULT-NEXT:                                                                                                             {
 // DEFAULT-NEXT:                                                                                                                 let %[[VALUE_BgL_auxz00_4140:[0-9]+]] BgL_auxz00_4140: i32 [storage=automatic];
@@ -1021,12 +1014,10 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                         let %[[VALUE_BgL_auxz00_4160:[0-9]+]] BgL_auxz00_4160: i32 [storage=automatic];
 // DEFAULT-NEXT:                                                                                                         write<i32>(%[[VALUE_BgL_auxz00_4160]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))));
 // DEFAULT-NEXT:                                                                                                         write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_v1054z00_1030]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4160]])));
-// DEFAULT-NEXT:                                                                                                         call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4160]]));
 // DEFAULT-NEXT:                                                                                                     }
 // DEFAULT-NEXT:                                                                                                     {
 // DEFAULT-NEXT:                                                                                                         let %[[VALUE_BgL_arg1608z00_1032:[0-9]+]] BgL_arg1608z00_1032: ptr<@type[[TYPE_scmobj]]> [storage=automatic];
 // DEFAULT-NEXT:                                                                                                         write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_arg1608z00_1032]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(ptr<@type[[TYPE_scmobj]]>, ptr<@type[[TYPE_scmobj]]>) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_make_pair]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_bodyz00_40]]), read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_formalsz00_39]])));
-// DEFAULT-NEXT:                                                                                                         call<ptr<@type[[TYPE_scmobj]]>, signature=fn(ptr<@type[[TYPE_scmobj]]>, ptr<@type[[TYPE_scmobj]]>) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_make_pair]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_bodyz00_40]]), read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_formalsz00_39]]));
 // DEFAULT-NEXT:                                                                                                         {
 // DEFAULT-NEXT:                                                                                                             let %[[VALUE_BgL_auxz00_4164:[0-9]+]] BgL_auxz00_4164: i32 [storage=automatic];
 // DEFAULT-NEXT:                                                                                                             write<i32>(%[[VALUE_BgL_auxz00_4164]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(2))));
@@ -1149,12 +1140,10 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                             let %[[VALUE_BgL_auxz00_4209:[0-9]+]] BgL_auxz00_4209: i32 [storage=automatic];
 // DEFAULT-NEXT:                                                                                                             write<i32>(%[[VALUE_BgL_auxz00_4209]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))));
 // DEFAULT-NEXT:                                                                                                             write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_v1050z00_1022]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4209]])));
-// DEFAULT-NEXT:                                                                                                             call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4209]]));
 // DEFAULT-NEXT:                                                                                                         }
 // DEFAULT-NEXT:                                                                                                         {
 // DEFAULT-NEXT:                                                                                                             let %[[VALUE_BgL_arg1604z00_1024:[0-9]+]] BgL_arg1604z00_1024: ptr<@type[[TYPE_scmobj]]> [storage=automatic];
 // DEFAULT-NEXT:                                                                                                             write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_arg1604z00_1024]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(ptr<@type[[TYPE_scmobj]]>, ptr<@type[[TYPE_scmobj]]>) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_make_pair]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_wherez00_41]]), read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_bodyz00_40]])));
-// DEFAULT-NEXT:                                                                                                             call<ptr<@type[[TYPE_scmobj]]>, signature=fn(ptr<@type[[TYPE_scmobj]]>, ptr<@type[[TYPE_scmobj]]>) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_make_pair]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_wherez00_41]]), read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_bodyz00_40]]));
 // DEFAULT-NEXT:                                                                                                             {
 // DEFAULT-NEXT:                                                                                                                 let %[[VALUE_BgL_auxz00_4213:[0-9]+]] BgL_auxz00_4213: i32 [storage=automatic];
 // DEFAULT-NEXT:                                                                                                                 write<i32>(%[[VALUE_BgL_auxz00_4213]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(2))));
@@ -1182,7 +1171,6 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                                             let %[[VALUE_BgL_auxz00_4224:[0-9]+]] BgL_auxz00_4224: i32 [storage=automatic];
 // DEFAULT-NEXT:                                                                                                             write<i32>(%[[VALUE_BgL_auxz00_4224]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))));
 // DEFAULT-NEXT:                                                                                                             write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_v1051z00_1025]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4224]])));
-// DEFAULT-NEXT:                                                                                                             call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4224]]));
 // DEFAULT-NEXT:                                                                                                         }
 // DEFAULT-NEXT:                                                                                                         {
 // DEFAULT-NEXT:                                                                                                             let %[[VALUE_BgL_auxz00_4227:[0-9]+]] BgL_auxz00_4227: i32 [storage=automatic];
@@ -1242,12 +1230,10 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                     let %[[VALUE_BgL_auxz00_4248:[0-9]+]] BgL_auxz00_4248: i32 [storage=automatic];
 // DEFAULT-NEXT:                                                                                     write<i32>(%[[VALUE_BgL_auxz00_4248]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))));
 // DEFAULT-NEXT:                                                                                     write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_v1048z00_1018]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4248]])));
-// DEFAULT-NEXT:                                                                                     call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4248]]));
 // DEFAULT-NEXT:                                                                                 }
 // DEFAULT-NEXT:                                                                                 {
 // DEFAULT-NEXT:                                                                                     let %[[VALUE_BgL_arg1602z00_1020:[0-9]+]] BgL_arg1602z00_1020: ptr<@type[[TYPE_scmobj]]> [storage=automatic];
 // DEFAULT-NEXT:                                                                                     write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_arg1602z00_1020]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(ptr<@type[[TYPE_scmobj]]>, ptr<@type[[TYPE_scmobj]]>) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_make_pair]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_wherez00_41]]), read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_bodyz00_40]])));
-// DEFAULT-NEXT:                                                                                     call<ptr<@type[[TYPE_scmobj]]>, signature=fn(ptr<@type[[TYPE_scmobj]]>, ptr<@type[[TYPE_scmobj]]>) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_make_pair]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_wherez00_41]]), read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_bodyz00_40]]));
 // DEFAULT-NEXT:                                                                                     {
 // DEFAULT-NEXT:                                                                                         let %[[VALUE_BgL_auxz00_4252:[0-9]+]] BgL_auxz00_4252: i32 [storage=automatic];
 // DEFAULT-NEXT:                                                                                         write<i32>(%[[VALUE_BgL_auxz00_4252]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(2))));
@@ -1275,7 +1261,6 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                                                     let %[[VALUE_BgL_auxz00_4263:[0-9]+]] BgL_auxz00_4263: i32 [storage=automatic];
 // DEFAULT-NEXT:                                                                                     write<i32>(%[[VALUE_BgL_auxz00_4263]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))));
 // DEFAULT-NEXT:                                                                                     write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_v1049z00_1021]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4263]])));
-// DEFAULT-NEXT:                                                                                     call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4263]]));
 // DEFAULT-NEXT:                                                                                 }
 // DEFAULT-NEXT:                                                                                 {
 // DEFAULT-NEXT:                                                                                     let %[[VALUE_BgL_auxz00_4266:[0-9]+]] BgL_auxz00_4266: i32 [storage=automatic];
@@ -1322,12 +1307,10 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                             let %[[VALUE_BgL_auxz00_4283:[0-9]+]] BgL_auxz00_4283: i32 [storage=automatic];
 // DEFAULT-NEXT:                                                             write<i32>(%[[VALUE_BgL_auxz00_4283]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))));
 // DEFAULT-NEXT:                                                             write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_v1046z00_1014]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4283]])));
-// DEFAULT-NEXT:                                                             call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4283]]));
 // DEFAULT-NEXT:                                                         }
 // DEFAULT-NEXT:                                                         {
 // DEFAULT-NEXT:                                                             let %[[VALUE_BgL_arg1600z00_1016:[0-9]+]] BgL_arg1600z00_1016: ptr<@type[[TYPE_scmobj]]> [storage=automatic];
 // DEFAULT-NEXT:                                                             write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_arg1600z00_1016]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(ptr<@type[[TYPE_scmobj]]>, ptr<@type[[TYPE_scmobj]]>) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_make_pair]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_wherez00_41]]), read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_bodyz00_40]])));
-// DEFAULT-NEXT:                                                             call<ptr<@type[[TYPE_scmobj]]>, signature=fn(ptr<@type[[TYPE_scmobj]]>, ptr<@type[[TYPE_scmobj]]>) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_make_pair]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_wherez00_41]]), read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_bodyz00_40]]));
 // DEFAULT-NEXT:                                                             {
 // DEFAULT-NEXT:                                                                 let %[[VALUE_BgL_auxz00_4287:[0-9]+]] BgL_auxz00_4287: i32 [storage=automatic];
 // DEFAULT-NEXT:                                                                 write<i32>(%[[VALUE_BgL_auxz00_4287]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(2))));
@@ -1355,7 +1338,6 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                                             let %[[VALUE_BgL_auxz00_4298:[0-9]+]] BgL_auxz00_4298: i32 [storage=automatic];
 // DEFAULT-NEXT:                                                             write<i32>(%[[VALUE_BgL_auxz00_4298]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))));
 // DEFAULT-NEXT:                                                             write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_v1047z00_1017]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4298]])));
-// DEFAULT-NEXT:                                                             call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4298]]));
 // DEFAULT-NEXT:                                                         }
 // DEFAULT-NEXT:                                                         {
 // DEFAULT-NEXT:                                                             let %[[VALUE_BgL_auxz00_4301:[0-9]+]] BgL_auxz00_4301: i32 [storage=automatic];
@@ -1389,12 +1371,10 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                     let %[[VALUE_BgL_auxz00_4314:[0-9]+]] BgL_auxz00_4314: i32 [storage=automatic];
 // DEFAULT-NEXT:                                     write<i32>(%[[VALUE_BgL_auxz00_4314]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))));
 // DEFAULT-NEXT:                                     write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_v1044z00_1010]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4314]])));
-// DEFAULT-NEXT:                                     call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4314]]));
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                                 {
 // DEFAULT-NEXT:                                     let %[[VALUE_BgL_arg1598z00_1012:[0-9]+]] BgL_arg1598z00_1012: ptr<@type[[TYPE_scmobj]]> [storage=automatic];
 // DEFAULT-NEXT:                                     write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_arg1598z00_1012]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(ptr<@type[[TYPE_scmobj]]>, ptr<@type[[TYPE_scmobj]]>) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_make_pair]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_wherez00_41]]), read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_bodyz00_40]])));
-// DEFAULT-NEXT:                                     call<ptr<@type[[TYPE_scmobj]]>, signature=fn(ptr<@type[[TYPE_scmobj]]>, ptr<@type[[TYPE_scmobj]]>) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_make_pair]], read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_wherez00_41]]), read<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_bodyz00_40]]));
 // DEFAULT-NEXT:                                     {
 // DEFAULT-NEXT:                                         let %[[VALUE_BgL_auxz00_4318:[0-9]+]] BgL_auxz00_4318: i32 [storage=automatic];
 // DEFAULT-NEXT:                                         write<i32>(%[[VALUE_BgL_auxz00_4318]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(2))));
@@ -1422,7 +1402,6 @@ BGl_evcompilezd2lambdazd2zz__evcompilez00 (obj_t BgL_formalsz00_39,
 // DEFAULT-NEXT:                                     let %[[VALUE_BgL_auxz00_4329:[0-9]+]] BgL_auxz00_4329: i32 [storage=automatic];
 // DEFAULT-NEXT:                                     write<i32>(%[[VALUE_BgL_auxz00_4329]], truncate<i32, reason=explicit, fits=unknown>(widen<i64, reason=explicit>(const<i32>(3))));
 // DEFAULT-NEXT:                                     write<ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_BgL_v1045z00_1013]], call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4329]])));
-// DEFAULT-NEXT:                                     call<ptr<@type[[TYPE_scmobj]]>, signature=fn(i32) -> ptr<@type[[TYPE_scmobj]]>>(%[[VALUE_create_vector]], read<i32>(%[[VALUE_BgL_auxz00_4329]]));
 // DEFAULT-NEXT:                                 }
 // DEFAULT-NEXT:                                 {
 // DEFAULT-NEXT:                                     let %[[VALUE_BgL_auxz00_4332:[0-9]+]] BgL_auxz00_4332: i32 [storage=automatic];

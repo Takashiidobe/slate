@@ -54,7 +54,6 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // DEFAULT-NEXT:         write<@type[[TYPE_A]]>(%[[VALUE_e]], copy<@type[[TYPE_A]], reason=assign>(call<@type[[TYPE_A]], signature=fn() -> @type[[TYPE_A]], abi=sysv64() -> native_c>(%[[VALUE_foo]])));
-// DEFAULT-NEXT:         copy<@type[[TYPE_A]], reason=assign>(call<@type[[TYPE_A]], signature=fn() -> @type[[TYPE_A]], abi=sysv64() -> native_c>(%[[VALUE_foo]]));
 // DEFAULT-NEXT:         return read<i32>(field0(%[[VALUE_e]]));
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }

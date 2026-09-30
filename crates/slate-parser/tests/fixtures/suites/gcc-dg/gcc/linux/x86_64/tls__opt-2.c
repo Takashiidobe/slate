@@ -96,12 +96,10 @@ int main (void)
 // DEFAULT-NEXT:         let %[[VALUE_d:[0-9]+]] d: i32 [storage=automatic];
 // DEFAULT-NEXT:         write<@type[[TYPE_A]]>(%[[VALUE_b]], copy<@type[[TYPE_A]], reason=assign>(read<@type[[TYPE_A]]>(deref(read<ptr<const @type[[TYPE_A]]>>(%[[VALUE_z_2]])))));
 // DEFAULT-NEXT:         write<i32>(%[[VALUE_d]], call<i32, signature=fn(i32, u64, ptr<void>) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE_x_2]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_y_2]]))), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_b]]))));
-// DEFAULT-NEXT:         call<i32, signature=fn(i32, u64, ptr<void>) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE_x_2]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(read<i32>(%[[VALUE_y_2]]))), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_b]])));
 // DEFAULT-NEXT:         if logical_and<bool>(eq<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0)), eq<i32>(read<i32>(%[[VALUE_y_2]]), const<i32>(21506)))
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 let %[[VALUE_e:[0-9]+]] e: i32 [storage=automatic] = read<i32>(%[[VALUE_thr]]);
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_d]], call<i32, signature=fn(i32, u64, ptr<void>) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE_x_2]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(21505))), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_b]]))));
-// DEFAULT-NEXT:                 call<i32, signature=fn(i32, u64, ptr<void>) -> i32>(%[[VALUE_bar]], read<i32>(%[[VALUE_x_2]]), reinterpret<u64, reason=arg, fits=unknown>(widen<i64, reason=arg>(const<i32>(21505))), pointer_cast<ptr<void>, reason=arg>(addr_of<ptr<@type[[TYPE_A]]>>(%[[VALUE_b]])));
 // DEFAULT-NEXT:                 if ne<i32>(read<i32>(%[[VALUE_d]]), const<i32>(0))
 // DEFAULT-NEXT:                     {
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_thr]], read<i32>(%[[VALUE_e]]));

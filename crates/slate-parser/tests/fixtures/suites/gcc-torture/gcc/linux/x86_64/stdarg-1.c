@@ -167,7 +167,6 @@ int main(void) {
 // DEFAULT-NEXT:             {
 // DEFAULT-NEXT:                 case %[[VALUE0]] const<i32>(5):
 // DEFAULT-NEXT:                     write<i32>(%[[VALUE_foo_arg]], va_arg<i32>(%[[VALUE_ap]]));
-// DEFAULT-NEXT:                     va_arg<i32>(%[[VALUE_ap]]);
 // DEFAULT-NEXT:                 break %[[VALUE0]];
 // DEFAULT-NEXT:                 default %[[VALUE0]]:
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
@@ -214,7 +213,6 @@ int main(void) {
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], float_to_int<i32, reason=arg, out_of_range=ub, exceptions=observable>(read<f64>(%[[VALUE_d]])));
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], va_arg<i64>(%[[VALUE_ap_3]]));
-// DEFAULT-NEXT:         va_arg<i64>(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], truncate<i32, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_3]]);
 // DEFAULT-NEXT:     }
@@ -222,14 +220,12 @@ int main(void) {
 // DEFAULT-NEXT:         let %[[VALUE_ap_4:[0-9]+]] ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_d]], va_arg<f64>(%[[VALUE_ap_4]]));
-// DEFAULT-NEXT:         va_arg<f64>(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_4]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_f4:[0-9]+]] @f4(%[[VALUE_i_5:[0-9]+]] i: i32, ...) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_ap_5:[0-9]+]] ap: va_list [storage=automatic];
 // DEFAULT-NEXT:         va_start(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], float_to_int<i64, reason=assign, out_of_range=ub, exceptions=observable>(va_arg<f64>(%[[VALUE_ap_5]])));
-// DEFAULT-NEXT:         float_to_int<i64, reason=assign, out_of_range=ub, exceptions=observable>(va_arg<f64>(%[[VALUE_ap_5]]));
 // DEFAULT-NEXT:         call<void, signature=fn(i32, va_list) -> void>(%[[VALUE_foo]], read<i32>(%[[VALUE_i_5]]), read<va_list>(%[[VALUE_ap_5]]));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_5]]);
 // DEFAULT-NEXT:     }
@@ -248,7 +244,6 @@ int main(void) {
 // DEFAULT-NEXT:         va_arg<i64>(%[[VALUE_ap_7]]);
 // DEFAULT-NEXT:         va_arg<i64>(%[[VALUE_ap_7]]);
 // DEFAULT-NEXT:         write<i64>(%[[VALUE_x]], va_arg<i64>(%[[VALUE_ap_7]]));
-// DEFAULT-NEXT:         va_arg<i64>(%[[VALUE_ap_7]]);
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], truncate<i32, reason=arg, fits=unknown>(read<i64>(%[[VALUE_x]])));
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_7]]);
 // DEFAULT-NEXT:     }
@@ -265,7 +260,6 @@ int main(void) {
 // DEFAULT-NEXT:         write<ptr<va_list>>(%[[VALUE_pap]], addr_of<ptr<va_list>>(%[[VALUE_ap_9]]));
 // DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_bar]], read<i32>(%[[VALUE_i_9]]));
 // DEFAULT-NEXT:         write<f64>(%[[VALUE_d]], va_arg<f64>(%[[VALUE_ap_9]]));
-// DEFAULT-NEXT:         va_arg<f64>(%[[VALUE_ap_9]]);
 // DEFAULT-NEXT:         va_end(%[[VALUE_ap_9]]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
