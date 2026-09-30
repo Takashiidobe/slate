@@ -1,7 +1,8 @@
 use crate::ast::{
     AlignAsOperand, ArraySize, Attribute, Decl, DeclKind, Declaration, Declarator, EnumItemKind,
-    Expr, ExprKind, Initializer, InitializerItem, Loc, Span, Stmt, StmtKind, StorageClass, TagBody,
-    TagId as AstTagId, TagSpecifier, TranslationUnit, TypeName, TypeOfOperand, TypeSpecifier,
+    Expr, ExprKind, Initializer, InitializerItem, Loc, ParameterList, Span, Stmt, StmtKind,
+    StorageClass, TagBody, TagId as AstTagId, TagSpecifier, TranslationUnit, TypeName,
+    TypeOfOperand, TypeSpecifier,
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{Binding, BindingId, BindingKind, NameResolution, Reference};
@@ -119,6 +120,8 @@ impl Resolver {
             DeclKind::Function(function) => {
                 self.type_specifier(&function.specifiers.ty, declaration)?;
                 self.attributes(&function.specifiers.attributes)?;
+                let definition_parameters = function.declarator.function_parameters();
+                self.declarator_layers(&function.declarator, definition_parameters)?;
                 let name = function.declarator.name().unwrap_or("<anonymous>");
                 self.bind_ordinary(name, BindingKind::Function, true, declaration)?;
                 let outer_labels = std::mem::take(&mut self.labels);
@@ -127,7 +130,7 @@ impl Resolver {
                 let outer_ms_asm_labels = std::mem::take(&mut self.ms_asm_labels);
                 self.collect_labels(&function.body)?;
                 self.push_scope();
-                if let Some(parameters) = function.declarator.function_parameters() {
+                if let Some(parameters) = definition_parameters {
                     for parameter in parameters.parameters() {
                         self.type_specifier(&parameter.specifiers.ty, parameter)?;
                         self.visit_declarator(&parameter.declarator)?;
@@ -493,26 +496,34 @@ impl Resolver {
         self.visit_declarator(&ty.declarator)
     }
 
-    fn declarator(&mut self, declarator: &Declarator) -> Result<(), ResolveError> {
+    fn declarator_layers(
+        &mut self,
+        declarator: &Declarator,
+        definition: Option<&ParameterList>,
+    ) -> Result<(), ResolveError> {
         match declarator {
             Declarator::Abstract | Declarator::Name(_) => Ok(()),
-            Declarator::Grouped(inner) => self.visit_declarator(inner),
+            Declarator::Grouped(inner) => self.declarator_layers(inner, definition),
             Declarator::Attributed { inner, attributes }
             | Declarator::Pointer {
                 inner, attributes, ..
             } => {
-                self.visit_declarator(inner)?;
+                self.declarator_layers(inner, definition)?;
                 self.attributes(attributes)
             }
             Declarator::Array { inner, size, .. } => {
-                self.visit_declarator(inner)?;
+                self.declarator_layers(inner, definition)?;
                 if let ArraySize::Expression(value) = size {
                     self.visit_expr(value)?;
                 }
                 Ok(())
             }
             Declarator::Function { inner, parameters } => {
-                self.visit_declarator(inner)?;
+                self.declarator_layers(inner, definition)?;
+                // a definition binds its own parameters in the body scope instead
+                if definition.is_some_and(|definition| std::ptr::eq(definition, parameters)) {
+                    return Ok(());
+                }
                 let parameters = parameters.parameters();
                 if !parameters.is_empty() {
                     self.push_scope();
@@ -1100,7 +1111,7 @@ impl Visitor for Resolver {
     }
 
     fn visit_declarator(&mut self, declarator: &Declarator) -> Result<(), Self::Error> {
-        self.declarator(declarator)
+        self.declarator_layers(declarator, None)
     }
 }
 
