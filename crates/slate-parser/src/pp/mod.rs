@@ -68,6 +68,17 @@ const GNU_COMPATIBILITY_MACROS: [(&str, &str); 5] = [
     ("__STDC__", "1"),
 ];
 
+// expanded by expand_builtin_macro; msvc lacks the gnu-only ones
+const BUILTIN_MACROS: [&str; 6] = [
+    "__LINE__",
+    "__FILE__",
+    "__COUNTER__",
+    "__DATE__",
+    "__TIME__",
+    "__TIMESTAMP__",
+];
+const GNU_BUILTIN_MACROS: [&str; 3] = ["__FILE_NAME__", "__BASE_FILE__", "__INCLUDE_LEVEL__"];
+
 const MSC_VERSION_MACROS: [&str; 5] = [
     "_MSC_VER",
     "_MSC_FULL_VER",
@@ -81,6 +92,7 @@ pub struct MacroDef {
     pub parameters: Option<Vec<String>>,
     pub variadic: bool,
     pub replacement: Vec<Span<Token>>,
+    pub builtin: bool,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -492,9 +504,45 @@ impl<'a> Preprocessor<'a> {
         Ok((included, nodes))
     }
 
+    fn seed_builtin_names(&mut self, flavor: CompilerFlavor) {
+        let file = self
+            .files
+            .intern(PathBuf::from("<built-in>"), HeaderKind::System);
+        let provenance = self.provenance(Loc::new(file, 0, 0));
+        let gnu = match flavor {
+            CompilerFlavor::Msvc => &[][..],
+            CompilerFlavor::Clang | CompilerFlavor::Gcc => &GNU_BUILTIN_MACROS[..],
+        };
+        for name in BUILTIN_MACROS.iter().chain(gnu) {
+            let definition = MacroDef {
+                parameters: None,
+                variadic: false,
+                replacement: Vec::new(),
+                builtin: true,
+            };
+            self.macros.insert(
+                name.to_string(),
+                MacroEntry {
+                    definition: Rc::new(definition),
+                    provenance,
+                },
+            );
+        }
+    }
+
+    // msvc ignores #define and #undef of its builtin macros (warning C4117)
+    fn is_reserved_macro(&self, name: &str) -> bool {
+        self.dialect.flavor() == CompilerFlavor::Msvc
+            && self
+                .macros
+                .get(name)
+                .is_some_and(|entry| entry.definition.builtin)
+    }
+
     fn configure(&mut self) -> Result<(), PPError> {
         let dialect = self.dialect;
         let (target, options, flavor) = (dialect.target(), dialect.options(), dialect.flavor());
+        self.seed_builtin_names(flavor);
         self.seed_builtin_macros(target, flavor)?;
         if self.macros.contains_key("__GNUC__") {
             use crate::compiler_options::InlineSemantics;

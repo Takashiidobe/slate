@@ -171,15 +171,20 @@ impl Preprocessor<'_> {
         let Token::Ident(name) = &token.token.value else {
             return Ok(Some(token));
         };
-        if let Some(value) = self.expand_builtin_macro(name, &token.token, token.end) {
-            return Ok(Some(PPToken {
-                token: value,
-                ..token
-            }));
-        }
         let Some(entry) = self.macros.get(name.as_str()) else {
             return Ok(Some(token));
         };
+        if entry.definition.builtin {
+            return Ok(Some(
+                match self.expand_builtin_macro(name, &token.token, token.end) {
+                    Some(value) => PPToken {
+                        token: value,
+                        ..token
+                    },
+                    None => token,
+                },
+            ));
+        }
         if self.hide_sets.contains(token.hide, name) {
             return Ok(Some(token));
         }
@@ -522,6 +527,11 @@ impl Preprocessor<'_> {
                         .with_value(Token::IntLit(value.to_string().into())),
                 )
             }
+            "__TIMESTAMP__" => Some(
+                token
+                    .clone()
+                    .with_value(Token::StringLit(self.file_timestamp(loc.file).into())),
+            ),
             "__DATE__" => Some(
                 token
                     .clone()
@@ -537,59 +547,84 @@ impl Preprocessor<'_> {
     }
 
     fn build_date(&self) -> String {
-        let (year, month, day, _, _, _) = self.build_calendar_time();
-        const MONTHS: [&str; 12] = [
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-        ];
+        let (year, month, day, _, _, _) = calendar_time(self.build_time);
         format!("{} {:2} {year:04}", MONTHS[month as usize - 1], day)
     }
 
     fn build_time(&self) -> String {
-        let (_, _, _, hour, minute, second) = self.build_calendar_time();
+        let (_, _, _, hour, minute, second) = calendar_time(self.build_time);
         format!("{hour:02}:{minute:02}:{second:02}")
     }
 
-    fn build_calendar_time(&self) -> (i64, i64, i64, i64, i64, i64) {
-        let seconds = self
-            .build_time
-            .duration_since(std::time::UNIX_EPOCH)
-            .map_or(0, |duration| duration.as_secs() as i64);
-        #[cfg(unix)]
-        if let Some(local) = local_calendar_time(seconds) {
-            return local;
-        }
-        let days = seconds.div_euclid(86_400);
-        let day_seconds = seconds.rem_euclid(86_400);
-        let z = days + 719_468;
-        let era = if z >= 0 { z } else { z - 146_096 }.div_euclid(146_097);
-        let day_of_era = z - era * 146_097;
-        let year_of_era = (day_of_era - day_of_era / 1_460 + day_of_era / 36_524
-            - day_of_era / 146_096)
-            .div_euclid(365);
-        let mut year = year_of_era + era * 400;
-        let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
-        let month_part = (5 * day_of_year + 2).div_euclid(153);
-        let day = day_of_year - (153 * month_part + 2).div_euclid(5) + 1;
-        let month = month_part + if month_part < 10 { 3 } else { -9 };
-        if month <= 2 {
-            year += 1;
-        }
-        (
-            year,
-            month,
-            day,
-            day_seconds / 3_600,
-            day_seconds % 3_600 / 60,
-            day_seconds % 60,
+    fn file_timestamp(&self, file: crate::ast::FileId) -> String {
+        let Some(modified) = self
+            .files
+            .get_path(file)
+            .and_then(|path| std::fs::metadata(path).ok())
+            .and_then(|metadata| metadata.modified().ok())
+        else {
+            return "??? ??? ?? ??:??:?? ????".into();
+        };
+        let (year, month, day, hour, minute, second) = calendar_time(modified);
+        const WEEKDAYS: [&str; 7] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        let shifted = if month < 3 { year - 1 } else { year };
+        let offsets = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
+        let weekday = (shifted + shifted / 4 - shifted / 100
+            + shifted / 400
+            + offsets[month as usize - 1]
+            + day)
+            .rem_euclid(7);
+        format!(
+            "{} {} {day:2} {hour:02}:{minute:02}:{second:02} {year:04}",
+            WEEKDAYS[weekday as usize],
+            MONTHS[month as usize - 1]
         )
     }
 
     fn may_expand(&self, token: &Span<Token>) -> bool {
         match &token.value {
-            Token::Ident(name) => name.starts_with("__") || self.macros.contains_key(name.as_str()),
+            Token::Ident(name) => self.macros.contains_key(name.as_str()),
             _ => false,
         }
     }
+}
+
+const MONTHS: [&str; 12] = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
+fn calendar_time(time: std::time::SystemTime) -> (i64, i64, i64, i64, i64, i64) {
+    let seconds = time
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |duration| duration.as_secs() as i64);
+    #[cfg(unix)]
+    if let Some(local) = local_calendar_time(seconds) {
+        return local;
+    }
+    let days = seconds.div_euclid(86_400);
+    let day_seconds = seconds.rem_euclid(86_400);
+    let z = days + 719_468;
+    let era = if z >= 0 { z } else { z - 146_096 }.div_euclid(146_097);
+    let day_of_era = z - era * 146_097;
+    let year_of_era = (day_of_era - day_of_era / 1_460 + day_of_era / 36_524
+        - day_of_era / 146_096)
+        .div_euclid(365);
+    let mut year = year_of_era + era * 400;
+    let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
+    let month_part = (5 * day_of_year + 2).div_euclid(153);
+    let day = day_of_year - (153 * month_part + 2).div_euclid(5) + 1;
+    let month = month_part + if month_part < 10 { 3 } else { -9 };
+    if month <= 2 {
+        year += 1;
+    }
+    (
+        year,
+        month,
+        day,
+        day_seconds / 3_600,
+        day_seconds % 3_600 / 60,
+        day_seconds % 60,
+    )
 }
 
 #[cfg(unix)]

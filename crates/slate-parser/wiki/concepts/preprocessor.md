@@ -131,9 +131,13 @@ token plus an interned `HideSet`; file tokens start empty.
   physical lines from the file, running any directive it meets (so
   `#ifdef` inside arguments selects an argument, as in gcc and clang).
 - `expand_token` returns a final token, or pushes a replacement back:
-  - builtins first (`__LINE__`, `__FILE__`, `__FILE_NAME__`,
-    `__BASE_FILE__`, `__INCLUDE_LEVEL__`, `__COUNTER__`, `__DATE__`,
-    `__TIME__`). `__LINE__` differs per flavor when an invocation spans
+  - builtins (`__LINE__`, `__FILE__`, `__COUNTER__`, `__DATE__`,
+    `__TIME__`, `__TIMESTAMP__`, and for gcc and clang `__FILE_NAME__`,
+    `__BASE_FILE__`, `__INCLUDE_LEVEL__`) are entries in `macros` marked
+    `builtin`, seeded first by `configure`, so `defined`, `#undef`,
+    `#define` and `push_macro` see them. msvc ignores `#define`/`#undef` of
+    its builtins (C4117; `is_reserved_macro`). `__TIMESTAMP__` is the
+    current file's modification time. `__LINE__` differs per flavor when an invocation spans
     lines: gcc reports the line of the outermost macro name, clang the line
     of its closing `)` (a `PPToken`'s `end`, carried by `Stamp`), and msvc
     how far the source has been read (`source_position`), even for a

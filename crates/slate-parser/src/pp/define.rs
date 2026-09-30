@@ -53,6 +53,9 @@ impl Preprocessor<'_> {
 
     pub(super) fn record_define(&mut self, directive: &Directive) -> Result<(), PPFailure> {
         let (name, name_token) = self.macro_name(directive, "#define")?;
+        if self.is_reserved_macro(&name) {
+            return Ok(());
+        }
         let src = self.source(directive.loc.file);
         let rest = &directive.arguments[1..];
         let name_end = name_token.spelling.offset + name_token.spelling.length;
@@ -85,6 +88,7 @@ impl Preprocessor<'_> {
             parameters,
             variadic,
             replacement,
+            builtin: false,
         };
         let provenance = self.provenance(directive.loc);
         self.macros.insert(
@@ -99,7 +103,9 @@ impl Preprocessor<'_> {
 
     pub(super) fn record_undef(&mut self, directive: &Directive) -> Result<(), PPFailure> {
         let (name, _) = self.macro_name(directive, "#undef")?;
-        self.macros.remove(&name);
+        if !self.is_reserved_macro(&name) {
+            self.macros.remove(&name);
+        }
         Ok(())
     }
 }
