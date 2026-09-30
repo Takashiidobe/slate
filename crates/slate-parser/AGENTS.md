@@ -128,8 +128,6 @@ Subsystems:
   entities merged across redeclarations.
 - [preprocessor](wiki/concepts/preprocessor.md): predefine seeding,
   includes, expansion, token and macro provenance.
-- [pp-logical-line-merging](wiki/concepts/pp-logical-line-merging.md): why
-  macro invocations spanning lines are merged before expansion.
 - [msvc-asm](wiki/concepts/msvc-asm.md): parsing MSVC `__asm` and inferring
   its reads, writes, and clobbers.
 - [generated-sources](wiki/concepts/generated-sources.md): generated and

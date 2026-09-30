@@ -19,8 +19,9 @@ stream of `PPNode`s (`Code`, `Comment`, `Pragma`) that the parser reads as
 | File | Contents |
 | --- | --- |
 | `mod.rs` | `Preprocessor`, predefine seeding, `process`, directives, the conditional stack, pragma operators, provenance |
-| `syntax.rs` | `TokenSource`: directive and text lines read from the token stream ([pp-logical-line-merging](pp-logical-line-merging.md)) |
-| `expand.rs` | macro expansion, builtin macros, `#if` operand protection |
+| `syntax.rs` | `TokenSource`: directive and physical text lines read from the token stream |
+| `expand.rs` | `Stream`, the hide-set expander, substitution, builtin macros, `#if` operand protection |
+| `hide_set.rs` | interned hide sets with memoized union and intersection |
 | `define.rs` | `#define` / `#undef` parsing |
 | `include.rs` | include resolution, `#pragma once`, depth limit, outermost system header |
 | `has_checks.rs` | hand-maintained `__has_builtin` / `__has_feature` / … answers, seeded from clang tablegen and extended per flavor ([attributes](attributes.md#preprocessor-queries)) |
@@ -34,11 +35,18 @@ which point at headers installed by `../slate-sysroots`.
 Preprocessor::new → configure            predefines, target options, -D/-U, forced files
 parse_file → parse_source
   Lexer::tokenize_lines                  tokens flagged at_line_start, no newline tokens
-  process(TokenSource)                   pulls one line at a time
-    text line       → expand_line        → Code / Pragma nodes
+  process(TokenSource)                   pulls one physical line at a time
+    text line       → Stream → next_raw / expand_token → emit_line → Code / Pragma nodes
     #if family      → conditional stack; a false branch runs skip_group
     other directive → run_directive      → define, include, embed, pragma, line, error/warning
 ```
+
+A text line becomes one group. Expansion reads that line's tokens, and an
+invocation whose `(` or arguments lie on later lines pulls those lines into
+the same group, so a group is one physical line unless a macro call spans
+lines. Its Code node takes the first line's provenance. Comments of the
+first line come before the node, comments of pulled lines after it, then
+any nodes produced by directives met inside the arguments.
 
 A directive is a line whose first non-comment token is `#`. Conditionals
 are evaluated when the stream reaches them. `skip_group` reads only the
@@ -90,7 +98,7 @@ from `<command line>` ([compiler-arg-rules](compiler-arg-rules.md#forced-files-a
   from user code and restored on leaving it, so every token below
   `<stdio.h>` reports `<stdio.h>`. Slate uses it to recognize libc
   declarations.
-- `expand_line` gives every token of an expanded line the line's
+- `emit_line` gives every token of a group the group's
   provenance, including tokens spelled in a macro defined elsewhere.
 
 ## Macro provenance
@@ -111,18 +119,34 @@ named Rust constant (`CHAR_MAX`) instead of its value.
 
 ## Expansion
 
-- `expand_rescanning` walks the tokens: builtins (`__LINE__`, `__FILE__`,
-  `__FILE_NAME__`, `__BASE_FILE__`, `__INCLUDE_LEVEL__`, `__COUNTER__`,
-  `__DATE__`, `__TIME__`) first, then macros not in the `disabled` set.
-- Function-like: `invocation` may complete the argument list from the
-  caller's tail. Arguments are prescanned only where used outside `#`/`##`
-  (all of them if `__VA_OPT__` appears). `substitute_function_macro`
-  handles `#`, `##` (re-lex; a paste that doesn't form one token keeps both),
-  `__VA_ARGS__`, `__VA_OPT__`.
-- `rescan` expands the replacement alone, and against the following tokens
-  only when `wants_more` (unbalanced `(` or trailing function-like name).
-- The first result token inherits the invocation's leading space.
-- `expand_line` then classifies keywords per the dialect's features.
+Prosser's algorithm (as in chibicc's `expand_macro`). A `PPToken` is a
+token plus an interned `HideSet`; file tokens start empty.
+
+- `Stream` is a pushback stack in front of an optional `FileInput`.
+  `next_raw` pops the stack; when reading an invocation it pulls further
+  physical lines from the file, running any directive it meets (so
+  `#ifdef` inside arguments selects an argument, as in gcc and clang).
+- `expand_token` returns a final token, or pushes a replacement back:
+  - builtins first (`__LINE__`, `__FILE__`, `__FILE_NAME__`,
+    `__BASE_FILE__`, `__INCLUDE_LEVEL__`, `__COUNTER__`, `__DATE__`,
+    `__TIME__`);
+  - a name in its own hide set is final (painted);
+  - object-like: the replacement gets `hs(name) ∪ {name}`;
+  - function-like: only if the next token is `(`. `Stream::next_is_lparen`
+    peeks the stack, else the file's next non-comment token, so a `#`
+    line in between means no invocation. The replacement gets
+    `(hs(name) ∩ hs(')')) ∪ {name}`. An unterminated call or a wrong
+    argument count pushes the tokens back and leaves the name.
+- Arguments are prescanned by `expand_isolated`, a stream without a file,
+  only where used outside `#`/`##` (all of them if `__VA_OPT__` appears).
+  `substitute_function_macro` handles `#`, `##` (re-lex; a paste that
+  doesn't form one token keeps both), `__VA_ARGS__`, `__VA_OPT__`.
+- The first replacement token inherits the invocation's leading space.
+- `#if`, `#include`, `#embed` and `#line` operands expand with
+  `expand_isolated` too (`expand_macros`), so they never read past the
+  directive.
+- `emit_line` then classifies keywords per the dialect's features and
+  splits out `_Pragma` / `__pragma`.
 
 ## Conditionals
 

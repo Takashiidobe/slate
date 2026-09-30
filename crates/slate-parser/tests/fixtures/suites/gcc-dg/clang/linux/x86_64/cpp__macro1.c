@@ -241,14 +241,14 @@ int main (int argc, char *argv[])
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(const<i32>(2), call<i32, signature=fn(i32) -> i32>(%[[VALUE_M]], add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(2), const<i32>(2)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_M]], const<i32>(9))))), const<i32>(42))
+// DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(const<i32>(2), call<i32, signature=fn(i32) -> i32>(%[[VALUE_M]], add<i32, overflow=ub>(const<i32>(2), call<i32, signature=fn(i32) -> i32>(%[[VALUE_M]], const<i32>(9))))), const<i32>(42))
 // DEFAULT-NEXT:             do %[[VALUE8:[0-9]+]]
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     ;
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);
 // DEFAULT-NEXT:                 }
 // DEFAULT-NEXT:             while ne<i32>(const<i32>(0), const<i32>(0));
-// DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(const<i32>(1), call<i32, signature=fn(i32) -> i32>(%[[VALUE_B]], add<i32, overflow=ub>(add<i32, overflow=ub>(add<i32, overflow=ub>(const<i32>(1), const<i32>(1)), const<i32>(1)), call<i32, signature=fn(i32) -> i32>(%[[VALUE_B]], const<i32>(0))))), const<i32>(42))
+// DEFAULT-NEXT:         if ne<i32>(add<i32, overflow=ub>(const<i32>(1), call<i32, signature=fn(i32) -> i32>(%[[VALUE_B]], add<i32, overflow=ub>(const<i32>(1), call<i32, signature=fn(i32) -> i32>(%[[VALUE_B]], const<i32>(0))))), const<i32>(42))
 // DEFAULT-NEXT:             do %[[VALUE9:[0-9]+]]
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     ;

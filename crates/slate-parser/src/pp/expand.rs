@@ -1,8 +1,53 @@
-use super::{MacroDef, Preprocessor, stringized_source};
+use super::error::PPFailure;
+use super::hide_set::HideSet;
+use super::syntax::Line;
+use super::{FileInput, MacroDef, Preprocessor, stringized_source};
 use crate::ast::{Loc, MacroOrigin, MacroOriginLink, Span};
-use crate::lexer::{Token, TokenSpanExt, TokenText};
-use foldhash::HashSet;
+use crate::lexer::{Token, TokenSpanExt};
 use std::rc::Rc;
+
+#[derive(Debug, Clone)]
+pub(super) struct PPToken {
+    pub(super) token: Span<Token>,
+    pub(super) hide: HideSet,
+}
+
+impl From<Span<Token>> for PPToken {
+    fn from(token: Span<Token>) -> Self {
+        Self {
+            token,
+            hide: HideSet::EMPTY,
+        }
+    }
+}
+
+pub(super) struct Stream<'f, 's> {
+    pending: Vec<PPToken>,
+    file: Option<&'f mut FileInput<'s>>,
+}
+
+impl<'f, 's> Stream<'f, 's> {
+    pub(super) fn new(tokens: Vec<PPToken>, file: Option<&'f mut FileInput<'s>>) -> Self {
+        let mut pending = tokens;
+        pending.reverse();
+        Self { pending, file }
+    }
+
+    fn push_front(&mut self, tokens: Vec<PPToken>) {
+        self.pending.extend(tokens.into_iter().rev());
+    }
+
+    fn next_is_lparen(&self) -> bool {
+        match self.pending.last() {
+            Some(token) => token.token.value == Token::LParen,
+            None => self
+                .file
+                .as_ref()
+                .and_then(|file| file.source.peek_token())
+                .is_some_and(|token| token.value == Token::LParen),
+        }
+    }
+}
 
 fn origin_for_expansion(
     name: &str,
@@ -42,10 +87,245 @@ impl Stamp {
 }
 
 struct Invocation {
-    arguments: Vec<Vec<Span<Token>>>,
-    commas: Vec<Span<Token>>,
-    end: usize,
-    from_tail: usize,
+    lparen: PPToken,
+    arguments: Vec<Vec<PPToken>>,
+    commas: Vec<PPToken>,
+    rparen: Option<PPToken>,
+}
+
+impl Invocation {
+    fn into_tokens(self) -> Vec<PPToken> {
+        let mut tokens = vec![self.lparen];
+        let mut commas = self.commas.into_iter();
+        for (index, argument) in self.arguments.into_iter().enumerate() {
+            if index > 0 {
+                tokens.extend(commas.next());
+            }
+            tokens.extend(argument);
+        }
+        tokens.extend(commas);
+        tokens.extend(self.rparen);
+        tokens
+    }
+}
+
+impl Preprocessor<'_> {
+    pub(super) fn next_raw(
+        &mut self,
+        stream: &mut Stream,
+        across_lines: bool,
+    ) -> Result<Option<PPToken>, PPFailure> {
+        loop {
+            if let Some(token) = stream.pending.pop() {
+                return Ok(Some(token));
+            }
+            let Some(file) = stream.file.as_deref_mut().filter(|_| across_lines) else {
+                return Ok(None);
+            };
+            match file.source.next_line() {
+                None => return Ok(None),
+                Some(Line::Directive(directive, comments)) => {
+                    file.group.trailing.extend(comments);
+                    self.directive(
+                        &mut file.source,
+                        &mut file.conditionals,
+                        directive,
+                        &mut file.group.deferred,
+                    )?;
+                }
+                Some(Line::Text(line)) => {
+                    file.group.trailing.extend(line.comments);
+                    file.group.extend(&line.tokens);
+                    stream
+                        .pending
+                        .extend(line.tokens.into_iter().rev().map(PPToken::from));
+                }
+            }
+        }
+    }
+
+    // a final token, or None after pushing a macro's replacement back onto the stream
+    pub(super) fn expand_token(
+        &mut self,
+        token: PPToken,
+        stream: &mut Stream,
+    ) -> Result<Option<PPToken>, PPFailure> {
+        let Token::Ident(name) = &token.token.value else {
+            return Ok(Some(token));
+        };
+        if let Some(value) = self.expand_builtin_macro(name, &token.token) {
+            return Ok(Some(PPToken {
+                token: value,
+                hide: token.hide,
+            }));
+        }
+        let Some(entry) = self.macros.get(name.as_str()) else {
+            return Ok(Some(token));
+        };
+        if self.hide_sets.contains(token.hide, name) {
+            return Ok(Some(token));
+        }
+        let definition = entry.definition.clone();
+        let stamp = Stamp {
+            expansion: token.token.expansion,
+            origin: origin_for_expansion(name, entry.provenance, &token.token),
+        };
+        let name = name.clone();
+        let Some(parameters) = &definition.parameters else {
+            let hide = self.hide_sets.with(token.hide, &name);
+            let replacement = self.substitute_object_macro(&definition, &stamp);
+            let replacement = self.hide_all(replacement, hide);
+            stream.push_front(inherit_leading_space(replacement, &token.token));
+            return Ok(None);
+        };
+        if !stream.next_is_lparen() {
+            return Ok(Some(token));
+        }
+        let Some(lparen) = self.next_raw(stream, true)? else {
+            return Ok(Some(token));
+        };
+        let mut invocation = self.collect_invocation(stream, lparen)?;
+        let Some(rparen) = invocation.rparen.as_ref() else {
+            stream.push_front(invocation.into_tokens());
+            return Ok(Some(token));
+        };
+        let rparen_hide = rparen.hide;
+        if invocation.arguments.is_empty() && parameters.len() == 1 && !definition.variadic {
+            invocation.arguments.push(Vec::new());
+        }
+        let arguments = &invocation.arguments;
+        if !definition.variadic && arguments.len() != parameters.len()
+            || definition.variadic && arguments.len() < parameters.len()
+        {
+            stream.push_front(invocation.into_tokens());
+            return Ok(Some(token));
+        }
+        let prescanned = prescanned_parameters(&definition, parameters);
+        let mut expanded_arguments = Vec::with_capacity(arguments.len());
+        for (index, argument) in arguments.iter().enumerate() {
+            let prescan = prescanned
+                .get(index)
+                .copied()
+                .unwrap_or(prescanned[parameters.len()]);
+            expanded_arguments.push(
+                if prescan && argument.iter().any(|token| self.may_expand(&token.token)) {
+                    Some(self.expand_isolated(argument.clone())?)
+                } else {
+                    None
+                },
+            );
+        }
+        let replacement = self.substitute_function_macro(
+            &definition,
+            parameters,
+            &Arguments {
+                raw: arguments,
+                expanded: &expanded_arguments,
+                commas: &invocation.commas,
+            },
+            &stamp,
+        );
+        let hide = self.hide_sets.intersection(token.hide, rparen_hide);
+        let hide = self.hide_sets.with(hide, &name);
+        let replacement = self.hide_all(replacement, hide);
+        stream.push_front(inherit_leading_space(replacement, &token.token));
+        Ok(None)
+    }
+
+    fn hide_all(&mut self, mut tokens: Vec<PPToken>, hide: HideSet) -> Vec<PPToken> {
+        for token in &mut tokens {
+            token.hide = self.hide_sets.union(token.hide, hide);
+        }
+        tokens
+    }
+
+    fn collect_invocation(
+        &mut self,
+        stream: &mut Stream,
+        lparen: PPToken,
+    ) -> Result<Invocation, PPFailure> {
+        let mut invocation = Invocation {
+            lparen,
+            arguments: Vec::new(),
+            commas: Vec::new(),
+            rparen: None,
+        };
+        let mut current = Vec::new();
+        let mut depth = 0usize;
+        while let Some(token) = self.next_raw(stream, true)? {
+            match token.token.value {
+                Token::LParen => {
+                    depth += 1;
+                    current.push(token);
+                }
+                Token::RParen if depth == 0 => {
+                    if !current.is_empty() || !invocation.arguments.is_empty() {
+                        invocation.arguments.push(current);
+                    }
+                    invocation.rparen = Some(token);
+                    return Ok(invocation);
+                }
+                Token::RParen => {
+                    depth -= 1;
+                    current.push(token);
+                }
+                Token::Comma if depth == 0 => {
+                    invocation.arguments.push(std::mem::take(&mut current));
+                    invocation.commas.push(token);
+                }
+                _ => current.push(token),
+            }
+        }
+        invocation.arguments.push(current);
+        Ok(invocation)
+    }
+
+    pub(super) fn expand_isolated(
+        &mut self,
+        tokens: Vec<PPToken>,
+    ) -> Result<Vec<PPToken>, PPFailure> {
+        let mut stream = Stream::new(tokens, None);
+        let mut expanded = Vec::new();
+        while let Some(token) = self.next_raw(&mut stream, false)? {
+            expanded.extend(self.expand_token(token, &mut stream)?);
+        }
+        Ok(expanded)
+    }
+
+    pub(super) fn expand_macros(
+        &mut self,
+        tokens: &[Span<Token>],
+    ) -> Result<Vec<Span<Token>>, PPFailure> {
+        let tokens = tokens.iter().cloned().map(PPToken::from).collect();
+        Ok(self
+            .expand_isolated(tokens)?
+            .into_iter()
+            .map(|token| token.token)
+            .collect())
+    }
+
+    pub(super) fn expand_condition(
+        &mut self,
+        tokens: &[Span<Token>],
+    ) -> Result<Vec<Span<Token>>, PPFailure> {
+        let operands = unexpanded_operands(tokens);
+        let mut expanded = Vec::with_capacity(tokens.len());
+        let mut start = 0;
+        while start < tokens.len() {
+            let unexpanded = operands[start];
+            let end = operands[start..]
+                .iter()
+                .position(|&flag| flag != unexpanded)
+                .map_or(tokens.len(), |offset| start + offset);
+            if unexpanded {
+                expanded.extend_from_slice(&tokens[start..end]);
+            } else {
+                expanded.extend(self.expand_macros(&tokens[start..end])?);
+            }
+            start = end;
+        }
+        Ok(expanded)
+    }
 }
 
 impl Preprocessor<'_> {
@@ -161,205 +441,6 @@ impl Preprocessor<'_> {
             _ => false,
         }
     }
-
-    pub(super) fn expand_macros(
-        &self,
-        tokens: &[Span<Token>],
-        disabled: &mut HashSet<TokenText>,
-    ) -> Vec<Span<Token>> {
-        self.expand_rescanning(tokens, &[], disabled).0
-    }
-
-    // `tail` is what follows `tokens` in the enclosing stream: rescanning a
-    // replacement may complete an invocation out of it, and reports how much
-    // of it the expansion swallowed
-    fn expand_rescanning(
-        &self,
-        tokens: &[Span<Token>],
-        tail: &[Span<Token>],
-        disabled: &mut HashSet<TokenText>,
-    ) -> (Vec<Span<Token>>, usize) {
-        let mut expanded = Vec::new();
-        let mut i = 0;
-        let mut taken = 0;
-        while i < tokens.len() {
-            let token = &tokens[i];
-            let Token::Ident(name) = &token.value else {
-                expanded.push(token.clone());
-                i += 1;
-                continue;
-            };
-            if let Some(replacement) = self.expand_builtin_macro(name, token) {
-                expanded.push(replacement);
-                i += 1;
-                continue;
-            }
-            let Some(macro_entry) = self.macros.get(name.as_str()) else {
-                expanded.push(token.clone());
-                i += 1;
-                continue;
-            };
-            let macro_def = &macro_entry.definition;
-            if disabled.contains(name) {
-                expanded.push(token.clone());
-                i += 1;
-                continue;
-            }
-            let rest = &tokens[i + 1..];
-            let stamp = Stamp {
-                expansion: token.expansion,
-                origin: origin_for_expansion(name, macro_entry.provenance, token),
-            };
-            let Some(parameters) = &macro_def.parameters else {
-                let replacement = self.substitute_object_macro(macro_def, &stamp);
-                disabled.insert(name.clone());
-                let (produced, used) = self.rescan(&replacement, rest, tail, disabled);
-                disabled.remove(name);
-                expanded.extend(inherit_leading_space(produced, token));
-                i += 1 + used.min(rest.len());
-                taken += used.saturating_sub(rest.len());
-                continue;
-            };
-            let Some(Invocation {
-                mut arguments,
-                commas,
-                end,
-                from_tail,
-            }) = self.invocation(rest, tail)
-            else {
-                expanded.push(token.clone());
-                i += 1;
-                continue;
-            };
-            if arguments.is_empty() && parameters.len() == 1 && !macro_def.variadic {
-                arguments.push(Vec::new());
-            }
-            if !macro_def.variadic && arguments.len() != parameters.len()
-                || macro_def.variadic && arguments.len() < parameters.len()
-            {
-                expanded.push(token.clone());
-                i += 1;
-                continue;
-            }
-            let prescanned = prescanned_parameters(macro_def, parameters);
-            let expanded_arguments = arguments
-                .iter()
-                .enumerate()
-                .map(|(index, argument)| {
-                    let prescan = prescanned
-                        .get(index)
-                        .copied()
-                        .unwrap_or(prescanned[parameters.len()]);
-                    (prescan && argument.iter().any(|token| self.may_expand(token)))
-                        .then(|| self.expand_macros(argument, disabled))
-                })
-                .collect::<Vec<_>>();
-            disabled.insert(name.clone());
-            let replacement = self.substitute_function_macro(
-                macro_def,
-                parameters,
-                &Arguments {
-                    raw: &arguments,
-                    expanded: &expanded_arguments,
-                    commas: &commas,
-                },
-                &stamp,
-            );
-            let consumed = i + 1 + end - from_tail;
-            let (produced, used) = self.rescan(
-                &replacement,
-                &tokens[consumed..],
-                &tail[from_tail..],
-                disabled,
-            );
-            disabled.remove(name);
-            expanded.extend(inherit_leading_space(produced, token));
-            i = consumed + used.min(tokens.len() - consumed);
-            taken += from_tail + used.saturating_sub(tokens.len() - consumed);
-        }
-        (expanded, taken)
-    }
-
-    fn rescan(
-        &self,
-        replacement: &[Span<Token>],
-        rest: &[Span<Token>],
-        tail: &[Span<Token>],
-        disabled: &mut HashSet<TokenText>,
-    ) -> (Vec<Span<Token>>, usize) {
-        let isolated = self.expand_macros(replacement, disabled);
-        if (rest.is_empty() && tail.is_empty()) || !self.wants_more(&isolated) {
-            return (isolated, 0);
-        }
-        let following = rest.iter().chain(tail).cloned().collect::<Vec<_>>();
-        self.expand_rescanning(replacement, &following, disabled)
-    }
-
-    // an expansion that ends mid-invocation is the only one worth rescanning
-    // against the caller's stream, and expanding in isolation is how we tell
-    fn wants_more(&self, expansion: &[Span<Token>]) -> bool {
-        let mut depth = 0i32;
-        for token in expansion {
-            match token.value {
-                Token::LParen => depth += 1,
-                Token::RParen => depth -= 1,
-                _ => {}
-            }
-        }
-        if depth > 0 {
-            return true;
-        }
-        match expansion.last().map(|token| &token.value) {
-            Some(Token::Ident(name)) => self
-                .macros
-                .get(name.as_str())
-                .is_some_and(|entry| entry.definition.parameters.is_some()),
-            _ => false,
-        }
-    }
-
-    // an invocation may open in `rest` and close in the caller's `tail`
-    fn invocation(&self, rest: &[Span<Token>], tail: &[Span<Token>]) -> Option<Invocation> {
-        if let Some((arguments, commas, end)) = invocation_arguments(rest, 0) {
-            return Some(Invocation {
-                arguments,
-                commas,
-                end,
-                from_tail: 0,
-            });
-        }
-        if tail.is_empty() {
-            return None;
-        }
-        let spliced = rest.iter().chain(tail).cloned().collect::<Vec<_>>();
-        let (arguments, commas, end) = invocation_arguments(&spliced, 0)?;
-        Some(Invocation {
-            arguments,
-            commas,
-            end,
-            from_tail: end.saturating_sub(rest.len()),
-        })
-    }
-
-    pub(super) fn expand_condition(&self, tokens: &[Span<Token>]) -> Vec<Span<Token>> {
-        let operands = unexpanded_operands(tokens);
-        let mut expanded = Vec::with_capacity(tokens.len());
-        let mut start = 0;
-        while start < tokens.len() {
-            let unexpanded = operands[start];
-            let end = operands[start..]
-                .iter()
-                .position(|&flag| flag != unexpanded)
-                .map_or(tokens.len(), |offset| start + offset);
-            if unexpanded {
-                expanded.extend_from_slice(&tokens[start..end]);
-            } else {
-                expanded.extend(self.expand_macros(&tokens[start..end], &mut HashSet::default()));
-            }
-            start = end;
-        }
-        expanded
-    }
 }
 
 #[cfg(unix)]
@@ -447,32 +528,6 @@ fn invocation_arguments(tokens: &[Span<Token>], start: usize) -> Option<SplitArg
     None
 }
 
-struct Arguments<'a> {
-    raw: &'a [Vec<Span<Token>>],
-    expanded: &'a [Option<Vec<Span<Token>>>],
-    commas: &'a [Span<Token>],
-}
-
-impl Arguments<'_> {
-    fn selected(&self, index: usize, prescan: bool) -> &[Span<Token>] {
-        match self.expanded.get(index) {
-            Some(Some(expanded)) if prescan => expanded,
-            _ => self.raw.get(index).map_or(&[], Vec::as_slice),
-        }
-    }
-
-    fn variadic(&self, fixed: usize, prescan: bool) -> Vec<Span<Token>> {
-        let mut output: Vec<Span<Token>> = Vec::new();
-        for index in fixed..self.raw.len() {
-            if index != fixed {
-                output.extend(self.commas.get(index - 1).cloned());
-            }
-            output.extend_from_slice(self.selected(index, prescan));
-        }
-        output
-    }
-}
-
 // one entry per parameter, then one for __VA_ARGS__
 fn prescanned_parameters(definition: &MacroDef, parameters: &[String]) -> Vec<bool> {
     let replacement = &definition.replacement;
@@ -510,11 +565,43 @@ fn prescanned_parameters(definition: &MacroDef, parameters: &[String]) -> Vec<bo
     prescanned
 }
 
-fn inherit_leading_space(mut tokens: Vec<Span<Token>>, name: &Span<Token>) -> Vec<Span<Token>> {
+struct Arguments<'a> {
+    raw: &'a [Vec<PPToken>],
+    expanded: &'a [Option<Vec<PPToken>>],
+    commas: &'a [PPToken],
+}
+
+impl Arguments<'_> {
+    fn selected(&self, index: usize, prescan: bool) -> &[PPToken] {
+        match self.expanded.get(index) {
+            Some(Some(expanded)) if prescan => expanded,
+            _ => self.raw.get(index).map_or(&[], Vec::as_slice),
+        }
+    }
+
+    fn variadic(&self, fixed: usize, prescan: bool) -> Vec<PPToken> {
+        let mut output = Vec::new();
+        for index in fixed..self.raw.len() {
+            if index != fixed {
+                output.extend(self.commas.get(index - 1).cloned());
+            }
+            output.extend_from_slice(self.selected(index, prescan));
+        }
+        output
+    }
+}
+
+fn inherit_leading_space(mut tokens: Vec<PPToken>, name: &Span<Token>) -> Vec<PPToken> {
     if let Some(first) = tokens.first_mut() {
-        first.leading_space = name.leading_space;
+        first.token.leading_space = name.leading_space;
     }
     tokens
+}
+
+impl Stamp {
+    fn token(&self, token: &Span<Token>) -> PPToken {
+        PPToken::from(self.apply(token))
+    }
 }
 
 impl Preprocessor<'_> {
@@ -524,7 +611,7 @@ impl Preprocessor<'_> {
         parameters: &[String],
         arguments: &Arguments,
         stamp: &Stamp,
-    ) -> Vec<Span<Token>> {
+    ) -> Vec<PPToken> {
         let mut output = Vec::new();
         let mut i = 0;
         while i < definition.replacement.len() {
@@ -559,14 +646,13 @@ impl Preprocessor<'_> {
                 let argument = if name == "__VA_ARGS__" {
                     Some(arguments.variadic(parameters.len(), false))
                 } else {
-                    macro_argument(name, parameters, arguments.raw).map(<[Span<Token>]>::to_vec)
+                    macro_argument(name, parameters, arguments.raw).map(<[PPToken]>::to_vec)
                 };
                 if let Some(argument) = argument {
-                    output.push(
-                        stamp
-                            .apply(token)
-                            .with_value(Token::StringLit(stringized_source(&argument).into())),
-                    );
+                    let text = stringized_source(argument.iter().map(|token| &token.token));
+                    output.push(PPToken::from(
+                        stamp.apply(token).with_value(Token::StringLit(text.into())),
+                    ));
                     i += 2;
                     continue;
                 }
@@ -600,7 +686,7 @@ impl Preprocessor<'_> {
         output
     }
 
-    fn substitute_object_macro(&self, definition: &MacroDef, stamp: &Stamp) -> Vec<Span<Token>> {
+    fn substitute_object_macro(&self, definition: &MacroDef, stamp: &Stamp) -> Vec<PPToken> {
         let mut output = Vec::new();
         let mut tokens = definition.replacement.iter();
         while let Some(token) = tokens.next() {
@@ -609,33 +695,33 @@ impl Preprocessor<'_> {
                 && let Some(right) = tokens.next()
                 && let Some(left) = output.pop()
             {
-                output.extend(self.paste(left, vec![stamp.apply(right)]));
+                output.extend(self.paste(left, vec![stamp.token(right)]));
                 continue;
             }
-            output.push(stamp.apply(token));
+            output.push(stamp.token(token));
         }
         output
     }
 
-    fn paste(&self, left: Span<Token>, right_tokens: Vec<Span<Token>>) -> Vec<Span<Token>> {
+    fn paste(&self, left: PPToken, right_tokens: Vec<PPToken>) -> Vec<PPToken> {
         let Some(right) = right_tokens.first() else {
             return vec![left];
         };
         let pasted = self.lex(&format!(
             "{}{}",
-            String::from(&left.value),
-            String::from(&right.value)
+            String::from(&left.token.value),
+            String::from(&right.token.value)
         ));
         if pasted.len() != 1 {
             return std::iter::once(left).chain(right_tokens).collect();
         }
         let joined = Span::new(
             pasted[0].clone(),
-            left.spelling.through(right.spelling),
-            left.expansion.through(right.expansion),
+            left.token.spelling.through(right.token.spelling),
+            left.token.expansion.through(right.token.expansion),
         )
-        .with_leading_space(left.leading_space);
-        std::iter::once(joined)
+        .with_leading_space(left.token.leading_space);
+        std::iter::once(PPToken::from(joined))
             .chain(right_tokens.into_iter().skip(1))
             .collect()
     }
@@ -644,8 +730,8 @@ impl Preprocessor<'_> {
 fn macro_argument<'a>(
     name: &str,
     parameters: &[String],
-    arguments: &'a [Vec<Span<Token>>],
-) -> Option<&'a [Span<Token>]> {
+    arguments: &'a [Vec<PPToken>],
+) -> Option<&'a [PPToken]> {
     if name == "__VA_ARGS__" {
         return None;
     }
@@ -661,9 +747,9 @@ fn replacement_tokens(
     arguments: &Arguments,
     stamp: &Stamp,
     prescan: bool,
-) -> Vec<Span<Token>> {
+) -> Vec<PPToken> {
     let Token::Ident(name) = &token.value else {
-        return vec![stamp.apply(token)];
+        return vec![stamp.token(token)];
     };
     if name == "__VA_ARGS__" {
         return inherit_leading_space(arguments.variadic(parameters.len(), prescan), token);
@@ -673,5 +759,5 @@ fn replacement_tokens(
         .position(|parameter| parameter == name)
         .filter(|&index| index < arguments.raw.len())
         .map(|index| inherit_leading_space(arguments.selected(index, prescan).to_vec(), token))
-        .unwrap_or_else(|| vec![stamp.apply(token)])
+        .unwrap_or_else(|| vec![stamp.token(token)])
 }

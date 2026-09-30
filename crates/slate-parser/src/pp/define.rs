@@ -90,7 +90,7 @@ impl Preprocessor<'_> {
         self.macros.insert(
             name,
             MacroEntry {
-                definition,
+                definition: std::rc::Rc::new(definition),
                 provenance,
             },
         );

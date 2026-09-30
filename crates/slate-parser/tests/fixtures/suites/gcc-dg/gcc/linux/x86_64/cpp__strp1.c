@@ -62,7 +62,7 @@ main(void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     global %[[VALUE_s1:[0-9]+]] s1: array<i8, 4> [storage=static] [const] = code_units<array<i8, 4>>([49, 46, 49, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_t1:[0-9]+]] t1: array<i8, 4> [storage=static] [const] = code_units<array<i8, 4>>([49, 46, 49, 0]) [linkage=internal];
-// DEFAULT-NEXT:     global %[[VALUE_s2:[0-9]+]] s2: array<i8, 7> [storage=static] [const] = code_units<array<i8, 7>>([49, 43, 102, 40, 50, 41, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_s2:[0-9]+]] s2: array<i8, 7> [storage=static] [const] = code_units<array<i8, 7>>([49, 43, 104, 40, 50, 41, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_t2:[0-9]+]] t2: array<i8, 7> [storage=static] [const] = code_units<array<i8, 7>>([49, 43, 104, 40, 50, 41, 0]) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_strcmp:[0-9]+]] @strcmp(%[[VALUE___s1:[0-9]+]] __s1: ptr<const i8>, %[[VALUE___s2:[0-9]+]] __s2: ptr<const i8>) -> i32 [linkage=external] [memory=read];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];

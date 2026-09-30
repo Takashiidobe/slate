@@ -2,6 +2,7 @@ mod define;
 mod error;
 mod expand;
 mod has_checks;
+mod hide_set;
 mod include;
 mod print;
 mod syntax;
@@ -15,12 +16,15 @@ use crate::files::{Files, SearchPaths, display_path};
 use crate::lexer::{Lexer, Token, TokenSpanExt, keyword_token};
 pub use error::{DirectiveDiagnostic, DirectiveErrors, PPError};
 use error::{PPErrorKind, PPFailure};
+use expand::{PPToken, Stream};
+use hide_set::HideSets;
 use include::{include_target, read_source};
 use miette::Severity;
 pub use print::write_preprocessed;
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
+use std::rc::Rc;
 use std::time::SystemTime;
 use syntax::{Directive, DirectiveName, Line, TokenSource, directive_spelling, identifier};
 
@@ -81,7 +85,7 @@ pub struct MacroDef {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct MacroEntry {
-    pub definition: MacroDef,
+    pub definition: Rc<MacroDef>,
     pub provenance: Provenance,
 }
 
@@ -118,6 +122,34 @@ impl Conditional {
     }
 }
 
+pub(super) struct FileInput<'s> {
+    source: TokenSource<'s>,
+    conditionals: Vec<Conditional>,
+    group: Group,
+}
+
+// the physical lines one text line's expansion read, and what they carried besides code
+#[derive(Default)]
+struct Group {
+    start: Option<Loc>,
+    end: Option<Loc>,
+    trailing: Vec<Span<String>>,
+    deferred: Vec<PPNode>,
+}
+
+impl Group {
+    fn extend(&mut self, tokens: &[Span<Token>]) {
+        if let (Some(first), Some(last)) = (tokens.first(), tokens.last()) {
+            self.start.get_or_insert(first.spelling);
+            self.end = Some(last.spelling);
+        }
+    }
+
+    fn loc(&self) -> Option<Loc> {
+        Some(self.start?.through(self.end?))
+    }
+}
+
 #[derive(Debug, Clone)]
 struct LineOverride {
     at_line: usize,
@@ -139,6 +171,7 @@ pub struct Preprocessor<'a> {
     pub directive_diagnostics: Vec<DirectiveDiagnostic>,
     line_overrides: HashMap<FileId, Vec<LineOverride>>,
     counter: Cell<i64>,
+    hide_sets: HideSets,
     build_time: SystemTime,
     dialect: &'a Dialect,
 }
@@ -167,6 +200,7 @@ impl<'a> Preprocessor<'a> {
             directive_diagnostics: Vec::new(),
             line_overrides: HashMap::new(),
             counter: Cell::new(0),
+            hide_sets: HideSets::new(),
             build_time: SystemTime::now(),
             dialect,
         };
@@ -280,7 +314,7 @@ impl<'a> Preprocessor<'a> {
             self.macros.get_mut("__STDC_VERSION__"),
         ) {
             (Some(version), Some(entry)) => {
-                let replacement = &mut entry.definition.replacement;
+                let replacement = &mut Rc::make_mut(&mut entry.definition).replacement;
                 if let Some(token) = replacement.first_mut() {
                     token.value = Token::IntLit(format!("{version}L").into());
                     replacement.truncate(1);
@@ -601,7 +635,7 @@ impl<'a> Preprocessor<'a> {
     }
 
     fn record_line_directive(&mut self, directive: &Directive) -> Result<(), PPFailure> {
-        let expanded = self.expand_macros(&directive.arguments, &mut foldhash::HashSet::default());
+        let expanded = self.expand_macros(&directive.arguments)?;
         let Some(Span {
             value: Token::IntLit(number),
             ..
@@ -647,65 +681,98 @@ impl<'a> Preprocessor<'a> {
         self.push_line_override(directive.loc, presumed_line, presumed_file);
     }
 
-    fn process(&mut self, mut source: TokenSource<'_>) -> Result<Vec<PPNode>, PPFailure> {
+    fn process(&mut self, source: TokenSource<'_>) -> Result<Vec<PPNode>, PPFailure> {
         let mut nodes = Vec::new();
-        let mut conditionals: Vec<Conditional> = Vec::new();
-        while let Some(line) = source.next_line() {
-            let directive = match line {
-                Line::Text(line) => {
-                    self.push_comments(&mut nodes, line.comments);
-                    if !line.tokens.is_empty() {
-                        nodes.extend(self.expand_line(&line.tokens));
-                    }
-                    self.push_comments(&mut nodes, line.continuation_comments);
-                    continue;
-                }
+        let mut file = FileInput {
+            source,
+            conditionals: Vec::new(),
+            group: Group::default(),
+        };
+        while let Some(line) = file.source.next_line() {
+            let line = match line {
                 Line::Directive(directive, comments) => {
                     self.push_comments(&mut nodes, comments);
-                    directive
+                    self.directive(
+                        &mut file.source,
+                        &mut file.conditionals,
+                        directive,
+                        &mut nodes,
+                    )?;
+                    continue;
                 }
+                Line::Text(line) => line,
             };
-            match directive.name {
-                DirectiveName::If | DirectiveName::Ifdef | DirectiveName::Ifndef => {
-                    let mut open = Conditional::new(&directive);
-                    open.taken = self.branch_taken(&directive)?;
-                    if open.taken || !self.skip_group(&mut source, &mut open)? {
-                        conditionals.push(open);
-                    }
-                }
-                DirectiveName::Elif
-                | DirectiveName::Elifdef
-                | DirectiveName::Elifndef
-                | DirectiveName::Else => {
-                    let Some(mut open) = conditionals.pop() else {
-                        return Err(PPFailure::at(
-                            directive.loc,
-                            PPErrorKind::UnexpectedConditional,
-                        ));
-                    };
-                    open.advance(&directive)?;
-                    if !self.skip_group(&mut source, &mut open)? {
-                        conditionals.push(open);
-                    }
-                }
-                DirectiveName::Endif => {
-                    if conditionals.pop().is_none() {
-                        return Err(PPFailure::at(
-                            directive.loc,
-                            PPErrorKind::UnexpectedConditional,
-                        ));
-                    }
-                }
-                _ => self.run_directive(&directive, &mut nodes)?,
+            self.push_comments(&mut nodes, line.comments);
+            if line.tokens.is_empty() {
+                continue;
             }
+            file.group.extend(&line.tokens);
+            let tokens = line.tokens.into_iter().map(PPToken::from).collect();
+            let mut stream = Stream::new(tokens, Some(&mut file));
+            let mut expanded = Vec::new();
+            while let Some(token) = self.next_raw(&mut stream, false)? {
+                expanded.extend(
+                    self.expand_token(token, &mut stream)?
+                        .map(|token| token.token),
+                );
+            }
+            let group = std::mem::take(&mut file.group);
+            if let Some(loc) = group.loc() {
+                nodes.extend(self.emit_line(loc, expanded));
+            }
+            self.push_comments(&mut nodes, group.trailing);
+            nodes.extend(group.deferred);
         }
-        match conditionals.last() {
+        match file.conditionals.last() {
             Some(open) => Err(PPFailure::at(
                 open.opening,
                 PPErrorKind::UnterminatedConditional,
             )),
             None => Ok(nodes),
         }
+    }
+
+    fn directive(
+        &mut self,
+        source: &mut TokenSource<'_>,
+        conditionals: &mut Vec<Conditional>,
+        directive: Directive,
+        nodes: &mut Vec<PPNode>,
+    ) -> Result<(), PPFailure> {
+        match directive.name {
+            DirectiveName::If | DirectiveName::Ifdef | DirectiveName::Ifndef => {
+                let mut open = Conditional::new(&directive);
+                open.taken = self.branch_taken(&directive)?;
+                if open.taken || !self.skip_group(source, &mut open)? {
+                    conditionals.push(open);
+                }
+            }
+            DirectiveName::Elif
+            | DirectiveName::Elifdef
+            | DirectiveName::Elifndef
+            | DirectiveName::Else => {
+                let Some(mut open) = conditionals.pop() else {
+                    return Err(PPFailure::at(
+                        directive.loc,
+                        PPErrorKind::UnexpectedConditional,
+                    ));
+                };
+                open.advance(&directive)?;
+                if !self.skip_group(source, &mut open)? {
+                    conditionals.push(open);
+                }
+            }
+            DirectiveName::Endif => {
+                if conditionals.pop().is_none() {
+                    return Err(PPFailure::at(
+                        directive.loc,
+                        PPErrorKind::UnexpectedConditional,
+                    ));
+                }
+            }
+            _ => self.run_directive(&directive, nodes)?,
+        }
+        Ok(())
     }
 
     // scans a group whose branch is not taken; true when it ends at #endif, false when a later branch is taken
@@ -748,7 +815,7 @@ impl<'a> Preprocessor<'a> {
         }
     }
 
-    fn branch_taken(&self, directive: &Directive) -> Result<bool, PPFailure> {
+    fn branch_taken(&mut self, directive: &Directive) -> Result<bool, PPFailure> {
         match directive.name {
             DirectiveName::Ifdef | DirectiveName::Elifdef => self.names_defined_macro(directive),
             DirectiveName::Ifndef | DirectiveName::Elifndef => {
@@ -789,8 +856,7 @@ impl<'a> Preprocessor<'a> {
                     directive.arguments.value_at(0),
                     Some(Token::StringLit(_) | Token::Less)
                 ) {
-                    expanded.arguments =
-                        self.expand_macros(&directive.arguments, &mut foldhash::HashSet::default());
+                    expanded.arguments = self.expand_macros(&directive.arguments)?;
                 }
                 let include = include_target(self.source(directive.loc.file), &expanded)?;
                 nodes.extend(self.resolve_and_parse_include(&include, directive.arguments_loc())?);
@@ -818,11 +884,9 @@ impl<'a> Preprocessor<'a> {
         Ok(())
     }
 
-    fn expand_line(&mut self, source_tokens: &[Span<Token>]) -> Vec<PPNode> {
-        let loc = Span::cover((), source_tokens).spelling;
+    fn emit_line(&mut self, loc: Loc, expanded: Vec<Span<Token>>) -> Vec<PPNode> {
         let provenance = self.provenance(loc);
-        let expanded = self
-            .expand_macros(source_tokens, &mut foldhash::HashSet::default())
+        let expanded = expanded
             .into_iter()
             .map(|token| self.classify_keyword(token).with_provenance(provenance))
             .collect::<Vec<_>>();
@@ -937,8 +1001,8 @@ impl<'a> Preprocessor<'a> {
         }
     }
 
-    fn expand_embed(&self, directive: &Directive) -> Result<PPNode, PPFailure> {
-        let arguments = self.expand_macros(&directive.arguments, &mut foldhash::HashSet::default());
+    fn expand_embed(&mut self, directive: &Directive) -> Result<PPNode, PPFailure> {
+        let arguments = self.expand_macros(&directive.arguments)?;
         let Some(Span {
             value: Token::StringLit(name),
             ..
@@ -1077,11 +1141,11 @@ impl<'a> Preprocessor<'a> {
     }
 
     fn evaluate_condition(
-        &self,
+        &mut self,
         directive: &Directive,
         name: &'static str,
     ) -> Result<bool, PPFailure> {
-        let expanded = self.expand_condition(&directive.arguments);
+        let expanded = self.expand_condition(&directive.arguments)?;
         let expanded = self.expand_has_embed(&expanded, directive.loc.file);
         let expanded = self.expand_has_include(&expanded, directive.loc.file);
         let expanded = expand_has_checks(
@@ -1403,7 +1467,7 @@ fn is_quoted_literal(token: &Token) -> bool {
     )
 }
 
-fn stringized_source(tokens: &[Span<Token>]) -> String {
+fn stringized_source<'t>(tokens: impl IntoIterator<Item = &'t Span<Token>>) -> String {
     let mut text = String::new();
     let mut previous: Option<&Span<Token>> = None;
     for token in tokens {

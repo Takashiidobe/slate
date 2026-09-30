@@ -97,18 +97,12 @@ pub(super) fn identifier(src: &str, token: &Span<Token>) -> Option<String> {
 
 pub(super) enum Line {
     Directive(Directive, Vec<Span<String>>),
-    Text(TextLine),
+    Text(PhysicalLine),
 }
 
-pub(super) struct TextLine {
+pub(super) struct PhysicalLine {
     pub(super) comments: Vec<Span<String>>,
     pub(super) tokens: Vec<Span<Token>>,
-    pub(super) continuation_comments: Vec<Span<String>>,
-}
-
-struct PhysicalLine {
-    comments: Vec<Span<String>>,
-    tokens: Vec<Span<Token>>,
 }
 
 pub(super) struct TokenSource<'a> {
@@ -127,26 +121,18 @@ impl<'a> TokenSource<'a> {
     }
 
     pub(super) fn next_line(&mut self) -> Option<Line> {
-        let PhysicalLine { comments, tokens } = self.physical_line()?;
-        if starts_directive(&tokens) {
-            return Some(Line::Directive(self.directive(tokens), comments));
-        }
-        // until expansion pulls from the stream (slate-parser-ryfo.3), an open invocation gathers its lines here
-        let mut depth = paren_depth(&tokens);
-        let mut line = TextLine {
-            comments,
-            tokens,
-            continuation_comments: Vec::new(),
-        };
-        while depth > 0 && !self.at_directive() {
-            let Some(PhysicalLine { comments, tokens }) = self.physical_line() else {
-                break;
-            };
-            depth += paren_depth(&tokens);
-            line.continuation_comments.extend(comments);
-            line.tokens.extend(tokens);
+        let line = self.physical_line()?;
+        if starts_directive(&line.tokens) {
+            return Some(Line::Directive(self.directive(line.tokens), line.comments));
         }
         Some(Line::Text(line))
+    }
+
+    pub(super) fn peek_token(&self) -> Option<&Span<Token>> {
+        self.tokens[self.position.min(self.tokens.len())..]
+            .iter()
+            .map(|token| &token.token)
+            .find(|token| !matches!(token.value, Token::Comment(_)))
     }
 
     pub(super) fn next_directive(&mut self) -> Option<Directive> {
@@ -230,12 +216,4 @@ fn starts_directive(tokens: &[Span<Token>]) -> bool {
     tokens
         .first()
         .is_some_and(|token| token.value == Token::Hash)
-}
-
-fn paren_depth(tokens: &[Span<Token>]) -> i32 {
-    tokens.iter().fold(0i32, |depth, token| match token.value {
-        Token::LParen | Token::LBracket => depth + 1,
-        Token::RParen | Token::RBracket => depth - 1,
-        _ => depth,
-    })
 }

@@ -188,7 +188,7 @@ impl From<Keyword> for &'static str {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct TokenText(Rc<str>);
 
 impl TokenText {

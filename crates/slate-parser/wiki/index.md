@@ -7,7 +7,6 @@
 - [Type Family Touchpoints](concepts/type-family-touchpoints.md)
 - [Preprocessor](concepts/preprocessor.md)
 - [Generated sources](concepts/generated-sources.md)
-- [Preprocessor logical-line merging](concepts/pp-logical-line-merging.md)
 - [IR Spec](concepts/ir-spec.md)
   - [Pipeline](concepts/ir/pipeline.md)
   - [Types](concepts/ir/types.md)
