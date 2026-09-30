@@ -57,6 +57,9 @@ pub struct TypeResolver {
     pub(super) typeof_operands: HashMap<crate::ast::NodeId, QualType>,
     pub(super) expression_types: HashMap<crate::ast::NodeId, super::typer::Typed>,
     pub(super) conversions: HashMap<crate::ast::NodeId, super::ctype::convert::Conversion>,
+    pub(super) operand_conversions:
+        HashMap<(crate::ast::NodeId, super::typer::Slot), Vec<super::typer::Step>>,
+    pub(super) computation_types: HashMap<crate::ast::NodeId, QualType>,
     pub(super) element_targets: HashMap<crate::ast::NodeId, QualType>,
     pub(super) transparent_unions: HashSet<TypeId>,
     pub(super) transparent_arguments: HashMap<crate::ast::NodeId, (usize, QualType)>,
@@ -101,6 +104,8 @@ impl TypeResolver {
             typeof_operands: HashMap::new(),
             expression_types: HashMap::new(),
             conversions: HashMap::new(),
+            operand_conversions: HashMap::new(),
+            computation_types: HashMap::new(),
             element_targets: HashMap::new(),
             transparent_unions: HashSet::new(),
             transparent_arguments: HashMap::new(),

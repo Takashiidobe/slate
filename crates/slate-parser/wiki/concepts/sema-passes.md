@@ -129,12 +129,14 @@ Rules:
   `arithmetic_type`, `literal_type`, `derived_signature`,
   `builtin_callee`, `chosen_expr`, `real_floating_component`,
   `statement_expression_parts`, `AtomicBuiltin::result`, `swizzle`,
-  `shuffle`, `predefined_name`), but lowering still has its own copy of
-  the logic that picks which helper applies, and the copies drift: the
-  typer converts enum `?:` arms to the underlying type, while lowering's
-  `Conditional` arm skips it for compatible arms. slate-parser-ygrj
-  replaces this with recorded facts that lowering reads, then removes the
-  cross-check. Don't add new lowering-side typing decisions.
+  `shuffle`, `predefined_name`), but lowering still derives result types,
+  selections and builtin argument conversions itself, and such copies
+  drift (the enum `?:` bug). Operand conversions of binary, unary, `?:`,
+  compound assignment, `++`/`--`, subscripts and `switch`/`case` are
+  recorded facts lowering applies
+  ([c-type-layer](c-type-layer.md#conversions)); slate-parser-ygrj.3 moves
+  the rest, then removes the cross-check. Don't add new lowering-side
+  typing decisions.
 - A typed `sizeof` operand is not lowered unless it is a VLA.
 - Null pointer constants: `integer_constant_zero`, an ICE by 6.6p6
   operand rules that folds to zero (`(void *)(1 - 1)` yes; `(void *)(0,

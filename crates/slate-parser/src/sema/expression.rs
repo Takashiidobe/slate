@@ -1,8 +1,9 @@
 use super::builtins::{ClangBuiltin, CustomBuiltin, DerivedSignature};
-use super::ctype::convert::{CastKind, Conversion, ConversionContext};
+use super::ctype::convert::{CastKind, ConversionContext};
 use super::ctype::{CTypeKind, CTypes, QualType};
 use super::numeric::{Context, ResolveError};
 use super::operand::{Lvalue, Operand};
+use super::typer::{Slot, Step, StepKind};
 use super::types::TypeResolver;
 use crate::ast::{Expr, ExprKind, Initializer, NodeId, Span, StmtKind};
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
@@ -26,7 +27,7 @@ pub(super) struct Lowerer {
     pub next_id: u32,
     pub break_targets: Vec<BindingId>,
     pub continue_targets: Vec<BindingId>,
-    pub switches: Vec<(BindingId, QualType)>,
+    pub switches: Vec<BindingId>,
     pub in_function: bool,
     pub in_naked_function: bool,
     pub files: crate::files::Files,
@@ -676,17 +677,16 @@ impl Lowerer {
         to: QualType,
         reason: ConversionReason,
     ) -> Result<Operand, ResolveError> {
-        self.convert_classified(None, value, to, reason)
-    }
-
-    pub(super) fn convert_expr(
-        &mut self,
-        e: &Expr,
-        value: Operand,
-        to: QualType,
-        reason: ConversionReason,
-    ) -> Result<Operand, ResolveError> {
-        self.convert_classified(Some(e), value, to, reason)
+        let c = self.types.ctypes.unqualified(to);
+        let null = self.is_null_pointer_constant(None, &value);
+        let conversion =
+            self.types
+                .ctypes
+                .classify_conversion(value.c, c, conversion_context(reason), null)?;
+        if let Some((warning, message)) = conversion.warning {
+            self.warn(warning, message, &value.value.node);
+        }
+        self.apply_conversion(conversion.kind, value, c, reason)
     }
 
     pub(super) fn convert_recorded(
@@ -703,42 +703,80 @@ impl Lowerer {
             .ok_or(ResolveError::Internal(
                 "conversion not recorded by the checker",
             ))?;
-        self.apply_conversion(conversion, value, to, reason)
+        self.apply_conversion(conversion.kind, value, to, reason)
     }
 
-    fn convert_classified(
+    pub(super) fn converted(
         &mut self,
-        e: Option<&Expr>,
+        owner: &Expr,
+        slot: Slot,
         value: Operand,
-        to: QualType,
-        reason: ConversionReason,
     ) -> Result<Operand, ResolveError> {
-        let c = self.types.ctypes.unqualified(to);
-        let null = self.is_null_pointer_constant(e, &value);
-        let conversion =
-            self.types
-                .ctypes
-                .classify_conversion(value.c, c, conversion_context(reason), null)?;
-        if let Some((warning, message)) = conversion.warning {
-            if let Some(e) = e {
-                self.warn(warning, message, e);
-            } else {
-                self.warn(warning, message, &value.value.node);
+        let steps = self.operand_steps(owner, slot)?;
+        self.apply_steps(value, &steps)
+    }
+
+    pub(super) fn converted_statement(
+        &mut self,
+        owner: &Span<StmtKind>,
+        slot: Slot,
+        value: Operand,
+    ) -> Result<Operand, ResolveError> {
+        let steps = self
+            .types
+            .operand_conversions
+            .get(&(owner.id, slot))
+            .cloned()
+            .ok_or(ResolveError::Internal(
+                "operand conversion not recorded by the checker",
+            ))?;
+        self.apply_steps(value, &steps)
+    }
+
+    fn operand_steps(&mut self, owner: &Expr, slot: Slot) -> Result<Vec<Step>, ResolveError> {
+        let key = (owner.id, slot);
+        if let Some(steps) = self.types.operand_conversions.get(&key) {
+            if !steps
+                .iter()
+                .any(|step| self.types.ctypes.has_unbound_extent(step.to))
+            {
+                return Ok(steps.clone());
             }
+            self.types.expression_types.remove(&owner.id);
         }
-        self.apply_conversion(conversion, value, c, reason)
+        self.types.typed(owner)?;
+        self.types
+            .operand_conversions
+            .get(&key)
+            .cloned()
+            .ok_or(ResolveError::Internal(
+                "operand conversion not recorded by the checker",
+            ))
+    }
+
+    fn apply_steps(&mut self, mut value: Operand, steps: &[Step]) -> Result<Operand, ResolveError> {
+        for step in steps {
+            value = match step.kind {
+                StepKind::Arithmetic => {
+                    self.types
+                        .arithmetic_conversion(&self.context, value, step.to, step.reason)?
+                }
+                StepKind::Cast(kind) => self.apply_conversion(kind, value, step.to, step.reason)?,
+            };
+        }
+        Ok(value)
     }
 
     fn apply_conversion(
         &mut self,
-        conversion: Conversion,
+        kind: CastKind,
         value: Operand,
         to: QualType,
         reason: ConversionReason,
     ) -> Result<Operand, ResolveError> {
         let c = self.types.ctypes.unqualified(to);
         Ok(Operand {
-            value: self.emit_cast(conversion.kind, value, c, reason)?,
+            value: self.emit_cast(kind, value, c, reason)?,
             c,
         })
     }
@@ -914,11 +952,6 @@ impl Lowerer {
             return self.condition(value, Some(reason));
         }
         self.context.emit_arithmetic_conversion(value, ty, reason)
-    }
-
-    pub(super) fn promote(&mut self, value: Operand) -> Result<Operand, ResolveError> {
-        let value = self.enum_operand(value);
-        self.types.promote_operand(&self.context, value, None)
     }
 
     pub(super) fn enum_operand(&self, operand: Operand) -> Operand {
@@ -1326,6 +1359,8 @@ impl Lowerer {
                 },
             )));
         }
+        let object = self.converted(e, Slot::Left, object)?;
+        let index = self.converted(e, Slot::Right, index)?;
         let pointer = self.binary(e, BinaryOp::Add, object, index)?;
         Ok(Projection::Place(self.deref(pointer)?))
     }
@@ -1714,7 +1749,20 @@ impl Lowerer {
             (BinaryOp::Add, None, Some(element)) => {
                 self.pointer_offset(e, right, left, element, false)
             }
-            _ => self.types.binary_operand(&self.context, e, op, left, right),
+            _ => {
+                let c = *self
+                    .types
+                    .computation_types
+                    .get(&e.id)
+                    .ok_or(ResolveError::Internal(
+                        "operation type not recorded by the checker",
+                    ))?;
+                let (ty, kind) = self.context.emit_binary(op, left.value, right.value)?;
+                Ok(Operand {
+                    value: self.value(e, ty, kind),
+                    c,
+                })
+            }
         }
     }
 
@@ -1728,7 +1776,6 @@ impl Lowerer {
     ) -> Result<Operand, ResolveError> {
         let element = self.types.ir_type(element);
         self.types.require_pointer_element(&element)?;
-        let amount = self.promote(amount)?;
         if !matches!(amount.ty, Type::Numeric(NumericType::Integer { .. })) {
             return Err(ResolveError::Internal("noninteger pointer offset"));
         }
@@ -1764,26 +1811,10 @@ impl Lowerer {
         }
         let c = self.types.ctypes.unqualified(place.c);
         let old = self.operand(target, c, ValueKind::OldValue);
-        let bits = match &place.kind {
-            PlaceKind::Field {
-                bits: Some(bits), ..
-            } => Some(bits.width),
-            _ => None,
-        };
-        let old = if bits.is_some() {
-            self.types.promote_operand(&self.context, old, bits)?
-        } else {
-            old
-        };
+        let old = self.converted(e, Slot::Left, old)?;
+        let rhs = self.converted(e, Slot::Right, rhs)?;
         let computation = self.binary(e, op, old, rhs)?;
-        let conversion = self.types.ctypes.classify_conversion(
-            computation.c,
-            c,
-            ConversionContext::Assign,
-            false,
-        )?;
-        let computation =
-            self.apply_conversion(conversion, computation, c, ConversionReason::Assign)?;
+        let computation = self.converted(e, Slot::Result, computation)?;
         Ok(self.operand(
             e,
             c,
@@ -1904,7 +1935,13 @@ impl Lowerer {
             },
         );
         let element = self.runtime_size(e, element)?;
-        self.binary(e, BinaryOp::Mul, count, element)
+        let (ty, kind) = self
+            .context
+            .emit_binary(BinaryOp::Mul, count.value, element.value)?;
+        Ok(Operand {
+            value: self.value(e, ty, kind),
+            c,
+        })
     }
 
     fn layout_constant(&mut self, e: &Expr, amount: u64, key: &str, detail: String) -> Operand {
@@ -2119,7 +2156,7 @@ impl Lowerer {
                     }
                 );
                 let Type::Complex(_component) = value.ty else {
-                    let value = self.promote(value)?;
+                    let value = self.converted(e, Slot::Operand, value)?;
                     if real {
                         return Ok(value);
                     }
@@ -2148,9 +2185,9 @@ impl Lowerer {
             }
             ExprKind::Unary { op, operand } => {
                 let value = self.expr(operand)?;
-                let value = self.enum_operand(value);
                 match op {
                     UnaryOp::Plus => {
+                        let value = self.converted(e, Slot::Operand, value)?;
                         if !matches!(
                             value.ty,
                             Type::Bool
@@ -2162,9 +2199,10 @@ impl Lowerer {
                         ) {
                             return Err(ResolveError::Internal("non-numeric unary plus"));
                         }
-                        self.promote(value)
+                        Ok(value)
                     }
                     UnaryOp::Not => {
+                        let value = self.enum_operand(value);
                         let value = self.condition(value.value, None)?;
                         Ok(self.truth(
                             e,
@@ -2176,7 +2214,12 @@ impl Lowerer {
                         ))
                     }
                     UnaryOp::Minus | UnaryOp::BitNot => {
-                        self.types.unary_operand(&self.context, e, *op, value)
+                        let value = self.converted(e, Slot::Operand, value)?;
+                        let (ty, kind) = self.context.emit_unary_arith(*op, value.value)?;
+                        Ok(Operand {
+                            value: self.value(e, ty, kind),
+                            c: value.c,
+                        })
                     }
                     _ => Err(ResolveError::Internal("advanced unary operator")),
                 }
@@ -2185,10 +2228,10 @@ impl Lowerer {
                 let left_expr = left;
                 let right_expr = right;
                 let left = self.expr(left)?;
-                let left = self.enum_operand(left);
                 let right = self.expr(right)?;
-                let right = self.enum_operand(right);
                 if matches!(op, BinaryOp::And | BinaryOp::Or) {
+                    let left = self.enum_operand(left);
+                    let right = self.enum_operand(right);
                     return Ok(self.truth(
                         e,
                         ValueKind::Logical {
@@ -2202,67 +2245,26 @@ impl Lowerer {
                         },
                     ));
                 }
-                if matches!(op, BinaryOp::Equal | BinaryOp::NotEqual)
-                    && (self.pointee(&left.ty).is_ok() || self.pointee(&right.ty).is_ok())
-                {
-                    let is_c_pointer = |operand: &Operand| {
-                        self.pointee(&operand.ty).is_ok()
-                            && !self.types.ctypes.is_nullptr(operand.c)
-                    };
-                    let ty = if is_c_pointer(&left) {
-                        left.c
-                    } else if is_c_pointer(&right) || self.pointee(&left.ty).is_err() {
-                        right.c
-                    } else {
-                        left.c
-                    };
-                    self.warn_comparison(e, left_expr, &left, right_expr, &right);
-                    let left =
-                        self.convert_expr(left_expr, left, ty, ConversionReason::UsualArith)?;
-                    let right =
-                        self.convert_expr(right_expr, right, ty, ConversionReason::UsualArith)?;
-                    return Ok(self.truth(
-                        e,
-                        ValueKind::Compare {
-                            op: if *op == BinaryOp::Equal {
-                                CompareOp::Eq
-                            } else {
-                                CompareOp::Ne
-                            },
-                            left: Box::new(left.value),
-                            right: Box::new(right.value),
-                            exceptions: None,
-                            reason: None,
-                        },
-                    ));
+                let compare = match op {
+                    BinaryOp::Equal => Some(CompareOp::Eq),
+                    BinaryOp::NotEqual => Some(CompareOp::Ne),
+                    BinaryOp::Less => Some(CompareOp::Lt),
+                    BinaryOp::LessEqual => Some(CompareOp::Le),
+                    BinaryOp::Greater => Some(CompareOp::Gt),
+                    BinaryOp::GreaterEqual => Some(CompareOp::Ge),
+                    _ => None,
                 }
-                if matches!(
-                    op,
-                    BinaryOp::Less
-                        | BinaryOp::LessEqual
-                        | BinaryOp::Greater
-                        | BinaryOp::GreaterEqual
-                ) && (self.pointee(&left.ty).is_ok() || self.pointee(&right.ty).is_ok())
-                {
-                    let ty = if self.pointee(&left.ty).is_ok() {
-                        left.c
-                    } else {
-                        right.c
-                    };
+                .filter(|_| self.pointee(&left.ty).is_ok() || self.pointee(&right.ty).is_ok());
+                if compare.is_some() {
                     self.warn_comparison(e, left_expr, &left, right_expr, &right);
-                    let left =
-                        self.convert_expr(left_expr, left, ty, ConversionReason::UsualArith)?;
-                    let right =
-                        self.convert_expr(right_expr, right, ty, ConversionReason::UsualArith)?;
+                }
+                let left = self.converted(e, Slot::Left, left)?;
+                let right = self.converted(e, Slot::Right, right)?;
+                if let Some(op) = compare {
                     return Ok(self.truth(
                         e,
                         ValueKind::Compare {
-                            op: match op {
-                                BinaryOp::Less => CompareOp::Lt,
-                                BinaryOp::LessEqual => CompareOp::Le,
-                                BinaryOp::Greater => CompareOp::Gt,
-                                _ => CompareOp::Ge,
-                            },
+                            op,
                             left: Box::new(left.value),
                             right: Box::new(right.value),
                             exceptions: None,
@@ -2355,44 +2357,9 @@ impl Lowerer {
                 if self.types.ctypes.is_void(left.c) || self.types.ctypes.is_void(right.c) {
                     left = self.voided(then_value, left);
                     right = self.voided(else_value, right);
-                } else if matches!(
-                    left.ty,
-                    Type::Bool | Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_)
-                ) && matches!(
-                    right.ty,
-                    Type::Bool | Type::Numeric(_) | Type::Complex(_) | Type::Imaginary(_)
-                ) {
-                    (left, right) = self.types.arithmetic_operands(&self.context, left, right)?;
-                } else if self.types.ctypes.is_arithmetic(left.c)
-                    && self.types.ctypes.is_arithmetic(right.c)
-                    && !self.types.ctypes.compatible_unqualified(left.c, right.c)
-                {
-                    let (enum_left, enum_right) =
-                        (self.enum_operand(left), self.enum_operand(right));
-                    (left, right) =
-                        self.types
-                            .arithmetic_operands(&self.context, enum_left, enum_right)?;
-                } else if self.types.ctypes.is_pointer(left.c)
-                    && self.types.ctypes.is_pointer(right.c)
-                {
-                    let (merged, _) = self
-                        .types
-                        .conditional_pointers(then_value, left.c, else_value, right.c)?;
-                    left =
-                        self.convert_expr(then_value, left, merged, ConversionReason::UsualArith)?;
-                    right =
-                        self.convert_expr(else_value, right, merged, ConversionReason::UsualArith)?;
-                } else if self.types.ctypes.is_pointer(left.c) {
-                    right =
-                        self.convert_expr(else_value, right, left.c, ConversionReason::UsualArith)?;
-                } else if self.types.ctypes.is_pointer(right.c) {
-                    left =
-                        self.convert_expr(then_value, left, right.c, ConversionReason::UsualArith)?;
-                }
-                if !self.types.ctypes.compatible_unqualified(left.c, right.c) {
-                    return Err(ResolveError::Internal(
-                        "conditional operands have incompatible types",
-                    ));
+                } else {
+                    left = self.converted(e, Slot::Then, left)?;
+                    right = self.converted(e, Slot::Else, right)?;
                 }
                 let result = self.operand(
                     e,

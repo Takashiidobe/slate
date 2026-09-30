@@ -13,9 +13,9 @@ use crate::ast::{
     StorageClass, TypeName, TypeSpecifier,
 };
 use crate::compiler_args::CompilerFlavor;
-use crate::const_expr::{AssignOp, BinaryOp, UnaryOp};
+use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::diagnostics::Warning;
-use crate::ir::{NumericType, Type, TypeDefinitionKind};
+use crate::ir::{ConversionReason, NumericType, Type, TypeDefinitionKind};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) struct Typed {
@@ -40,6 +40,42 @@ impl Typed {
             bits: None,
         }
     }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum StepKind {
+    Arithmetic,
+    Cast(CastKind),
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) struct Step {
+    pub kind: StepKind,
+    pub to: QualType,
+    pub reason: ConversionReason,
+}
+
+impl Step {
+    fn arithmetic(to: QualType, reason: ConversionReason) -> Self {
+        Self {
+            kind: StepKind::Arithmetic,
+            to,
+            reason,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(super) enum Slot {
+    Left,
+    Right,
+    Operand,
+    Then,
+    Else,
+    Result,
+    Discriminant,
+    CaseStart,
+    CaseEnd,
 }
 
 pub(super) type Lanes = Vec<Option<u32>>;
@@ -356,21 +392,18 @@ impl TypeResolver {
                 operand,
             } => {
                 let c = self.operand_type(operand)?;
-                if *op == UnaryOp::Plus {
-                    if self.ctypes.is_vector(c) {
-                        return Ok(Typed::rvalue(c));
-                    }
-                    if !self.ctypes.is_arithmetic(c) {
-                        return Err(ResolveError::Rejected("non-numeric unary plus"));
-                    }
-                    return Ok(Typed::rvalue(self.promoted(c)));
-                }
                 let c = if self.vector_element(c).is_some() {
                     c
+                } else if *op == UnaryOp::Plus && !self.ctypes.is_arithmetic(c) {
+                    return Err(ResolveError::Rejected("non-numeric unary plus"));
                 } else {
                     self.promoted(c)
                 };
-                super::numeric::unary_rule(*op, &self.ir_type(c))?;
+                if *op != UnaryOp::Plus {
+                    super::numeric::unary_rule(*op, &self.ir_type(c))?;
+                }
+                let promotion = Step::arithmetic(c, ConversionReason::Promotion);
+                self.record_steps(e, Slot::Operand, vec![promotion]);
                 Typed::rvalue(c)
             }
             ExprKind::Unary {
@@ -387,7 +420,25 @@ impl TypeResolver {
                 op: UnaryOp::PreIncrement | UnaryOp::PreDecrement,
                 operand,
             }
-            | ExprKind::Postfix { operand, .. } => self.updated(operand)?,
+            | ExprKind::Postfix { operand, .. } => {
+                let decrement = matches!(
+                    e.value,
+                    ExprKind::Unary {
+                        op: UnaryOp::PreDecrement,
+                        ..
+                    } | ExprKind::Postfix {
+                        op: PostfixOp::Decrement,
+                        ..
+                    }
+                );
+                let op = if decrement {
+                    BinaryOp::Sub
+                } else {
+                    BinaryOp::Add
+                };
+                let one = self.ctypes.int();
+                self.record_update(e, operand, op, one)?
+            }
             ExprKind::Assign { op, target, value } => {
                 let value = self.operand_type(value)?;
                 if *op == AssignOp::Assign {
@@ -398,9 +449,8 @@ impl TypeResolver {
                     self.require_modifiable_lvalue(typed.c)?;
                     Typed::rvalue(self.ctypes.unqualified(typed.c))
                 } else {
-                    let updated = self.updated(target)?;
-                    self.compound_conversion(*op, target, value, updated.c)?;
-                    updated
+                    let op = super::expression::assignment_operator(*op)?;
+                    self.record_update(e, target, op, value)?
                 }
             }
             ExprKind::Comma { left, right } => {
@@ -450,6 +500,13 @@ impl TypeResolver {
                     "subscripted value is not an array, pointer, or vector",
                 ))?;
                 self.pointer_offset(pointer, index)?;
+                let amount = vec![self.promotion(index)];
+                let facts = if pointer == base {
+                    BinaryFacts::new(Vec::new(), amount, pointer)
+                } else {
+                    BinaryFacts::new(amount, Vec::new(), pointer)
+                };
+                self.record_binary(e, facts);
                 Typed::lvalue(element)
             }
             ExprKind::Member { base, field, arrow } => {
@@ -488,10 +545,25 @@ impl TypeResolver {
                 };
                 Typed { c, lvalue, bits }
             }
-            ExprKind::Binary { op, left, right } => {
-                let left = self.operand_type(left)?;
-                let right = self.operand_type(right)?;
-                Typed::rvalue(self.binary_type(*op, left, right)?)
+            ExprKind::Binary {
+                op,
+                left: left_expr,
+                right: right_expr,
+            } => {
+                let left = self.operand_type(left_expr)?;
+                let right = self.operand_type(right_expr)?;
+                let (result, facts) = self.binary_type(*op, left, right)?;
+                match facts {
+                    Some(facts) => self.record_binary(e, facts),
+                    None if matches!(op, BinaryOp::And | BinaryOp::Or) => {}
+                    None => self.record_pointer_comparison(
+                        e,
+                        *op,
+                        (left_expr, left),
+                        (right_expr, right),
+                    )?,
+                }
+                Typed::rvalue(result)
             }
             ExprKind::Conditional {
                 condition,
@@ -507,27 +579,48 @@ impl TypeResolver {
                     None => tested,
                 };
                 let right = self.operand_type(else_value)?;
+                let then_value: &Expr = match then_value {
+                    Some(then_value) => then_value,
+                    None => condition,
+                };
                 let lp = self.ctypes.is_pointer(left);
                 let rp = self.ctypes.is_pointer(right);
+                let reason = ConversionReason::UsualArith;
                 if self.ctypes.is_void(left) || self.ctypes.is_void(right) {
                     Typed::rvalue(self.ctypes.qual(CTypeKind::Void))
                 } else if self.ctypes.is_arithmetic(left) && self.ctypes.is_arithmetic(right) {
                     let left = self.promoted(left);
                     let right = self.promoted(right);
-                    Typed::rvalue(self.arithmetic_type(left, right)?)
+                    let c = self.arithmetic_type(left, right)?;
+                    let promotion = ConversionReason::Promotion;
+                    let then_steps = vec![
+                        Step::arithmetic(left, promotion),
+                        Step::arithmetic(c, reason),
+                    ];
+                    let else_steps = vec![
+                        Step::arithmetic(right, promotion),
+                        Step::arithmetic(c, reason),
+                    ];
+                    self.record_steps(e, Slot::Then, then_steps);
+                    self.record_steps(e, Slot::Else, else_steps);
+                    Typed::rvalue(c)
                 } else if lp && rp {
-                    let then_value: &Expr = match then_value {
-                        Some(then_value) => then_value,
-                        None => condition,
-                    };
                     let (merged, _) =
                         self.conditional_pointers(then_value, left, else_value, right)?;
+                    self.record_cast(e, Slot::Then, then_value, left, merged, reason)?;
+                    self.record_cast(e, Slot::Else, else_value, right, merged, reason)?;
                     Typed::rvalue(merged)
                 } else if lp {
+                    self.record_steps(e, Slot::Then, Vec::new());
+                    self.record_cast(e, Slot::Else, else_value, right, left, reason)?;
                     Typed::rvalue(left)
                 } else if rp {
+                    self.record_cast(e, Slot::Then, then_value, left, right, reason)?;
+                    self.record_steps(e, Slot::Else, Vec::new());
                     Typed::rvalue(right)
                 } else if self.ctypes.compatible_unqualified(left, right) {
+                    self.record_steps(e, Slot::Then, Vec::new());
+                    self.record_steps(e, Slot::Else, Vec::new());
                     Typed::rvalue(left)
                 } else {
                     return Err(ResolveError::Rejected(
@@ -611,7 +704,9 @@ impl TypeResolver {
                     if complex {
                         Typed::rvalue(self.ctypes.arithmetic_component(c))
                     } else if self.ctypes.is_arithmetic(c) {
-                        Typed::rvalue(self.promoted(c))
+                        let promotion = self.promotion(c);
+                        self.record_steps(e, Slot::Operand, vec![promotion]);
+                        Typed::rvalue(promotion.to)
                     } else {
                         return Err(ResolveError::Rejected("non-numeric operand"));
                     }
@@ -987,6 +1082,140 @@ impl TypeResolver {
         Ok(())
     }
 
+    pub(super) fn record_switch(
+        &mut self,
+        switch: &Stmt,
+        discriminant: &Expr,
+    ) -> Result<QualType, ResolveError> {
+        let c = self.operand_type(discriminant)?;
+        let promotion = self.promotion(c);
+        self.record_steps(switch, Slot::Discriminant, vec![promotion]);
+        Ok(promotion.to)
+    }
+
+    pub(super) fn record_case(
+        &mut self,
+        label: &Stmt,
+        slot: Slot,
+        value: &Expr,
+        switch: QualType,
+    ) -> Result<(), ResolveError> {
+        let from = self.operand_type(value)?;
+        self.record_cast(
+            label,
+            slot,
+            value,
+            from,
+            switch,
+            ConversionReason::Promotion,
+        )
+    }
+
+    fn record_steps(&mut self, owner: &Span<impl Sized>, slot: Slot, steps: Vec<Step>) {
+        self.operand_conversions.insert((owner.id, slot), steps);
+    }
+
+    fn record_cast(
+        &mut self,
+        owner: &Span<impl Sized>,
+        slot: Slot,
+        operand: &Expr,
+        from: QualType,
+        to: QualType,
+        reason: ConversionReason,
+    ) -> Result<(), ResolveError> {
+        let to = self.ctypes.unqualified(to);
+        let null = self.null_pointer_constant(operand);
+        let conversion =
+            self.ctypes
+                .classify_conversion(from, to, ConversionContext::Cast, null)?;
+        let step = Step {
+            kind: StepKind::Cast(conversion.kind),
+            to,
+            reason,
+        };
+        if self
+            .operand_conversions
+            .insert((owner.id, slot), vec![step])
+            .is_none()
+            && let Some((warning, message)) = conversion.warning
+        {
+            self.warn(warning, message, operand);
+        }
+        Ok(())
+    }
+
+    fn promotion(&mut self, c: QualType) -> Step {
+        Step::arithmetic(self.promoted(c), ConversionReason::Promotion)
+    }
+
+    fn record_binary(&mut self, owner: &Expr, facts: BinaryFacts) {
+        self.record_steps(owner, Slot::Left, facts.left);
+        self.record_steps(owner, Slot::Right, facts.right);
+        self.computation_types.insert(owner.id, facts.computation);
+    }
+
+    fn record_pointer_comparison(
+        &mut self,
+        owner: &Expr,
+        op: BinaryOp,
+        (left_expr, left): (&Expr, QualType),
+        (right_expr, right): (&Expr, QualType),
+    ) -> Result<(), ResolveError> {
+        let lp = self.ctypes.is_pointer(left) || self.ctypes.is_nullptr(left);
+        let to = if matches!(op, BinaryOp::Equal | BinaryOp::NotEqual) {
+            if self.ctypes.is_pointer(left) {
+                left
+            } else if self.ctypes.is_pointer(right) || !lp {
+                right
+            } else {
+                left
+            }
+        } else if lp {
+            left
+        } else {
+            right
+        };
+        let reason = ConversionReason::UsualArith;
+        self.record_cast(owner, Slot::Left, left_expr, left, to, reason)?;
+        self.record_cast(owner, Slot::Right, right_expr, right, to, reason)
+    }
+
+    fn record_update(
+        &mut self,
+        owner: &Expr,
+        target: &Expr,
+        op: BinaryOp,
+        value: QualType,
+    ) -> Result<Typed, ResolveError> {
+        let updated = self.updated(target)?;
+        let typed = self.typed(target)?;
+        let current = self.rvalue_type(typed);
+        let (_, facts) = self.binary_type(op, current, value)?;
+        let mut facts = facts.ok_or(ResolveError::Internal(
+            "compound assignment without operand steps",
+        ))?;
+        if typed.bits.is_some() {
+            facts
+                .left
+                .insert(0, Step::arithmetic(current, ConversionReason::Promotion));
+        }
+        let conversion = self.ctypes.classify_conversion(
+            facts.computation,
+            updated.c,
+            ConversionContext::Assign,
+            false,
+        )?;
+        let back = Step {
+            kind: StepKind::Cast(conversion.kind),
+            to: updated.c,
+            reason: ConversionReason::Assign,
+        };
+        self.record_binary(owner, facts);
+        self.record_steps(owner, Slot::Result, vec![back]);
+        Ok(updated)
+    }
+
     // clang and gcc pass the argument as the first member it converts to without a diagnostic
     pub(super) fn transparent_member(
         &mut self,
@@ -1142,7 +1371,7 @@ impl TypeResolver {
         let current = self.operand_type(target)?;
         let current = self.promoted(current);
         let op = super::expression::assignment_operator(op)?;
-        let computed = self.binary_type(op, current, value)?;
+        let (computed, _) = self.binary_type(op, current, value)?;
         self.ctypes
             .classify_conversion(computed, updated, ConversionContext::Assign, false)
     }
@@ -1323,12 +1552,13 @@ impl TypeResolver {
         Ok(())
     }
 
+    // the result type, and for an operation lowering emits itself, the operand steps
     fn binary_type(
         &mut self,
         op: BinaryOp,
         left: QualType,
         right: QualType,
-    ) -> Result<QualType, ResolveError> {
+    ) -> Result<(QualType, Option<BinaryFacts>), ResolveError> {
         let lp = self.ctypes.is_pointer(left) || self.ctypes.is_nullptr(left);
         let rp = self.ctypes.is_pointer(right) || self.ctypes.is_nullptr(right);
         match op {
@@ -1336,15 +1566,17 @@ impl TypeResolver {
                 if !self.ctypes.is_scalar(left) || !self.ctypes.is_scalar(right) {
                     return Err(NON_SCALAR_CONDITION);
                 }
-                return Ok(self.ctypes.int());
+                return Ok((self.ctypes.int(), None));
             }
-            BinaryOp::Equal | BinaryOp::NotEqual if lp || rp => return Ok(self.ctypes.int()),
+            BinaryOp::Equal | BinaryOp::NotEqual if lp || rp => {
+                return Ok((self.ctypes.int(), None));
+            }
             BinaryOp::Less | BinaryOp::LessEqual | BinaryOp::Greater | BinaryOp::GreaterEqual
                 if (lp || self.ctypes.is_integer(left))
                     && (rp || self.ctypes.is_integer(right))
                     && (lp || rp) =>
             {
-                return Ok(self.ctypes.int());
+                return Ok((self.ctypes.int(), None));
             }
             BinaryOp::Sub if lp && rp => {
                 let (Some(a), Some(b)) = (self.ctypes.pointee(left), self.ctypes.pointee(right))
@@ -1359,15 +1591,18 @@ impl TypeResolver {
                 let element = self.ir_type(a);
                 self.require_pointer_element(&element)?;
                 let target = self.target_info().clone();
-                return Ok(self.ctypes.ptrdiff_type(&target));
+                let c = self.ctypes.ptrdiff_type(&target);
+                return Ok((c, Some(BinaryFacts::new(Vec::new(), Vec::new(), c))));
             }
             BinaryOp::Add | BinaryOp::Sub if self.ctypes.is_pointer(left) && !rp => {
                 self.pointer_offset(left, right)?;
-                return Ok(left);
+                let amount = vec![self.promotion(right)];
+                return Ok((left, Some(BinaryFacts::new(Vec::new(), amount, left))));
             }
             BinaryOp::Add if self.ctypes.is_pointer(right) && !lp => {
                 self.pointer_offset(right, left)?;
-                return Ok(right);
+                let amount = vec![self.promotion(left)];
+                return Ok((right, Some(BinaryFacts::new(amount, Vec::new(), right))));
             }
             _ if lp || rp => return Err(ResolveError::Rejected("non-arithmetic operand")),
             _ => {}
@@ -1380,7 +1615,33 @@ impl TypeResolver {
         let (lc, rc) = types.operands.unwrap_or((left, right));
         let target = self.target_info().clone();
         super::numeric::binary_rule(op, &self.ir_type(lc), &self.ir_type(rc), &target)?;
-        Ok(types.result)
+        let promotion = ConversionReason::Promotion;
+        let mut left_steps = vec![Step::arithmetic(left, promotion)];
+        let mut right_steps = vec![Step::arithmetic(right, promotion)];
+        if let Some((lc, rc)) = types.operands {
+            left_steps.push(Step::arithmetic(lc, ConversionReason::UsualArith));
+            right_steps.push(Step::arithmetic(rc, ConversionReason::UsualArith));
+        }
+        Ok((
+            types.result,
+            Some(BinaryFacts::new(left_steps, right_steps, types.result)),
+        ))
+    }
+}
+
+pub(super) struct BinaryFacts {
+    left: Vec<Step>,
+    right: Vec<Step>,
+    computation: QualType,
+}
+
+impl BinaryFacts {
+    fn new(left: Vec<Step>, right: Vec<Step>, computation: QualType) -> Self {
+        Self {
+            left,
+            right,
+            computation,
+        }
     }
 }
 

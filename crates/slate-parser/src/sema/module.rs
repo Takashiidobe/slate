@@ -4,6 +4,7 @@ use super::expression::Lowerer;
 use super::numeric::{Context, ResolveError};
 use super::operand::Operand;
 use super::pragmas::{FloatingPragmas, PragmaPlacement};
+use super::typer::Slot;
 use super::types::{TypeResolver, is_folded};
 use super::validate::{ERROR_LIMIT, with_sources};
 use super::{SemaError, SemaErrors};
@@ -1409,14 +1410,19 @@ impl Lowerer {
         result
     }
 
-    fn case_value(&mut self, expr: &ast::Expr, ty: QualType) -> Result<Value, ResolveError> {
+    fn case_value(
+        &mut self,
+        label: &Stmt,
+        slot: Slot,
+        expr: &ast::Expr,
+    ) -> Result<Value, ResolveError> {
         let value = self.expr(expr)?;
-        let value = self.convert(value, ty, ConversionReason::Promotion)?;
+        let value = self.converted_statement(label, slot, value)?;
         let number = super::fold::integer_constant(&value, self.types.compiler_flavor())
             .ok_or(ResolveError::Internal("nonconstant case expression"))?;
         Ok(self.value(
             expr,
-            self.types.ir_type(ty),
+            value.ty.clone(),
             ValueKind::Constant(Number::SignedInteger(number)),
         ))
     }
@@ -1571,13 +1577,14 @@ impl Lowerer {
             ),
             StmtKind::Switch { discriminant, body } => {
                 let value = self.expr(discriminant)?;
-                let discriminant = self.promote(value)?;
+                let discriminant =
+                    self.converted_statement(statement, Slot::Discriminant, value)?;
                 if !matches!(discriminant.ty, Type::Numeric(NumericType::Integer { .. })) {
                     return Err(ResolveError::Internal("noninteger switch discriminant"));
                 }
                 let id = self.fresh();
                 self.break_targets.push(id);
-                self.switches.push((id, discriminant.c));
+                self.switches.push(id);
                 let body = self.statements(std::slice::from_ref(body), return_type);
                 self.switches.pop();
                 self.break_targets.pop();
@@ -1588,10 +1595,9 @@ impl Lowerer {
                 }
             }
             StmtKind::SwitchLabel { label, body } => {
-                let (switch, ty) = self
+                let switch = *self
                     .switches
                     .last()
-                    .cloned()
                     .ok_or(ResolveError::Internal("case or default outside switch"))?;
                 match label {
                     ast::SwitchLabel::Default => Statement::Default {
@@ -1600,14 +1606,14 @@ impl Lowerer {
                     },
                     ast::SwitchLabel::Case(start) => Statement::Case {
                         switch,
-                        start: self.case_value(start, ty)?,
+                        start: self.case_value(statement, Slot::CaseStart, start)?,
                         end: None,
                         body: self.statements(std::slice::from_ref(body), return_type)?,
                     },
                     ast::SwitchLabel::CaseRange { start, end } => Statement::Case {
                         switch,
-                        start: self.case_value(start, ty)?,
-                        end: Some(self.case_value(end, ty)?),
+                        start: self.case_value(statement, Slot::CaseStart, start)?,
+                        end: Some(self.case_value(statement, Slot::CaseEnd, end)?),
                         body: self.statements(std::slice::from_ref(body), return_type)?,
                     },
                 }

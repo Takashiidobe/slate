@@ -20,6 +20,7 @@ use super::initializer::ElementError;
 use super::module::{applies, function_symbol, linkage as declared_linkage, symbol_attributes};
 use super::numeric::{Context, ResolveError};
 use super::pragmas::{FloatingPragmas, FloatingRegion, PragmaPlacement};
+use super::typer::Slot;
 use super::types::TypeResolver;
 use super::validate::{SemaError, error};
 use std::collections::{HashMap, HashSet};
@@ -104,7 +105,7 @@ struct StatementContext {
     returns: Returns,
     loops: usize,
     breakables: usize,
-    switches: usize,
+    switches: Vec<Option<QualType>>,
 }
 
 #[derive(Default, Clone, Copy)]
@@ -876,15 +877,18 @@ impl Checker<'_> {
             }
             StmtKind::Switch { discriminant, body } => {
                 self.expression(discriminant);
-                if let Ok(ty) = self.types.operand_type(discriminant)
-                    && !self.types.ctypes.is_integer(ty)
-                {
-                    self.reject(stmt, "noninteger switch discriminant");
+                let mut promoted = None;
+                if let Ok(ty) = self.types.operand_type(discriminant) {
+                    if self.types.ctypes.is_integer(ty) {
+                        promoted = self.types.record_switch(stmt, discriminant).ok();
+                    } else {
+                        self.reject(stmt, "noninteger switch discriminant");
+                    }
                 }
                 self.context.breakables += 1;
-                self.context.switches += 1;
+                self.context.switches.push(promoted);
                 self.statement(body);
-                self.context.switches -= 1;
+                self.context.switches.pop();
                 self.context.breakables -= 1;
             }
             StmtKind::For {
@@ -905,14 +909,14 @@ impl Checker<'_> {
                 self.loop_body(body);
             }
             StmtKind::SwitchLabel { label, body } => {
-                if self.context.switches == 0 {
+                if self.context.switches.is_empty() {
                     self.reject(stmt, "case or default outside switch");
                 }
                 match label {
-                    SwitchLabel::Case(value) => self.case_value(stmt, value),
+                    SwitchLabel::Case(value) => self.case_value(stmt, Slot::CaseStart, value),
                     SwitchLabel::CaseRange { start, end } => {
-                        self.case_value(stmt, start);
-                        self.case_value(stmt, end);
+                        self.case_value(stmt, Slot::CaseStart, start);
+                        self.case_value(stmt, Slot::CaseEnd, end);
                     }
                     SwitchLabel::Default => {}
                 }
@@ -925,7 +929,7 @@ impl Checker<'_> {
                 self.reject(stmt, "continue outside loop")
             }
             StmtKind::Attribute(attributes)
-                if self.context.switches == 0
+                if self.context.switches.is_empty()
                     && is_fallthrough(attributes)
                     && self.types.compiler_flavor() != CompilerFlavor::Gcc =>
             {
@@ -1007,10 +1011,14 @@ impl Checker<'_> {
         }
     }
 
-    fn case_value(&mut self, label: &Stmt, value: &Expr) {
+    fn case_value(&mut self, label: &Stmt, slot: Slot, value: &Expr) {
         self.expression(value);
         if self.types.constant_integer(value).is_err() {
             self.reject(label, "nonconstant case expression");
+        }
+        if let Some(Some(switch)) = self.context.switches.last().copied() {
+            let recorded = self.types.record_case(label, slot, value, switch);
+            self.report(label, recorded);
         }
     }
 

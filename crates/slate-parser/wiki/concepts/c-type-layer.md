@@ -139,17 +139,32 @@ level), `compatible_unqualified`, `composite`.
   the recorded kind and warning; a missing record is `Internal`.
 - Also recorded: braced-initializer elements (initializer walk) and atomic
   value operands (`AtomicBuiltin::operands`). Still classified in lowering
-  (`convert_expr`): usual arithmetic conversions (moving to the checker in
-  slate-parser-ygrj.2) and other builtin arguments such as sizes, orders
-  and fetch operands (slate-parser-ygrj.3).
-- Shape limits of the table: `conversions` is `HashMap<NodeId, Conversion>`
-  and `Conversion` is `{ kind, warning }`. It holds one conversion per
-  operand node with no target type; `convert_recorded`'s caller supplies
-  the target and the source `c` from its own derivation. A second record
-  for the same node silently replaces the first. Operand conversions need
-  a target type, several steps per operand (enum → underlying, promotion,
-  usual arithmetic), and one node in two roles (GNU `x ?: y`, compound
-  assignment); the design is in the slate-parser-ygrj.2 notes.
+  (`convert`): builtin and atomic arguments such as sizes, orders and fetch
+  operands, K&R parameters and VLA extents (slate-parser-ygrj.3).
+- `conversions` is `HashMap<NodeId, Conversion>` with `Conversion { kind,
+  warning }`: one per operand node, no target type; `convert_recorded`'s
+  caller still supplies the target (slate-parser-ygrj.3).
+- Operand conversions are recorded per edge in `operand_conversions`:
+  `(owner NodeId, Slot) → Vec<Step { kind, to, reason }>`. The owner is the
+  operator (or the `switch` / case label statement); a slot names the
+  operand (`Left`, `Right`, `Operand`, `Then`, `Else`, `Result`,
+  `Discriminant`, `CaseStart`, `CaseEnd`), so GNU `x ?: y` and compound
+  assignment never collide. `StepKind::Arithmetic` emits through
+  `arithmetic_conversion` (it wraps enums itself), `StepKind::Cast` through
+  `emit_cast`. An empty list means no conversion; a missing key is
+  `Internal`. `computation_types` holds the type an arithmetic operation
+  (or compound assignment) is performed at. The typer records them in
+  `binary_type`, `record_update`, `record_pointer_comparison`, the `?:`,
+  unary and `Index` arms; the checker records `switch` / `case`
+  (`record_switch`, `record_case`). Lowering applies them with `converted`
+  / `converted_statement`.
+- Recorded targets may hold unbound extents (`vla<T, *>`); `operand_steps`
+  then drops the owner's memo and types it again under lowering's bound
+  extents.
+- Pointer comparisons convert both operands to one operand's type (the
+  non-null pointer side), not clang's composite type; null pointer
+  constants use the typer's rule, so `(const void *)0` is a pointer cast,
+  not `null`, as in clang.
 - `record_conversion` rejects a `Vector` cast between different storage
   sizes.
 - The checker sees VM types with unbound extents (`vla<T, *>`), so a
