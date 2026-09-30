@@ -12,8 +12,6 @@
 #include <stdlib.h>
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   volatile unsigned long long h    = -1ULL;
   volatile unsigned __int128  u128 = (((unsigned __int128)h) << 64) | h;
@@ -26,5 +24,3 @@ main(void) {
     abort();
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

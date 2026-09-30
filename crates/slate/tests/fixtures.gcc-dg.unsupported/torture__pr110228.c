@@ -23,8 +23,6 @@ __attribute__((noipa)) static void bug(unsigned *p, unsigned *t, int n,
   }
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   unsigned r = 42;
   bug(&r, a, sizeof(a) / sizeof(a[0]), 1);
@@ -32,5 +30,3 @@ int main() {
   if (r != 3)
     __builtin_abort();
 }
-// @rewrite-fn-end
-// @lowering-fn-end

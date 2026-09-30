@@ -45,8 +45,6 @@ __attribute__((noinline, noclone, used)) int foo(int i, int j) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   int l;
   asm("" : "=r"(l) : "0"(7));
@@ -56,5 +54,3 @@ main(void) {
     abort();
   return l - 7;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

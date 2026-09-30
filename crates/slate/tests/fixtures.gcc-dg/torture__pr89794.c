@@ -15,12 +15,8 @@ u32 foo(u32 f, u32 g, u32 g2, u32 g3, u16 h, u16 i) {
   return b + f + i + c;
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main(void) {
   u32 x = foo(0, 0, 0, 0, 0, 0);
   asm("" ::"r"(x));
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

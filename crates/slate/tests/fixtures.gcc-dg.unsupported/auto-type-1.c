@@ -15,8 +15,6 @@ const __auto_type      ll = 1LL;
 extern const long long ll;
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   if (i != 1 || c != 1 || u != 10U)
     abort();
@@ -36,5 +34,3 @@ main(void) {
     abort();
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

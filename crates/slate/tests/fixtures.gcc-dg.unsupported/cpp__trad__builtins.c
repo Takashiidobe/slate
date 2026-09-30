@@ -34,8 +34,6 @@ int   strcmp(const char *, const char *);
 #error __DATE__  /* { dg-bogus "__DATE__" } */
 #endif
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   /* level is defined in builtins.h.  */
   if (level != 1)
@@ -49,7 +47,5 @@ int main() {
 
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 
 /* { dg-require-host-local "" } */

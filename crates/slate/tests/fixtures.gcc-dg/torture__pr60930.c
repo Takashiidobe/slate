@@ -9,8 +9,6 @@ __attribute__((noinline, noclone)) void foo(unsigned long long t) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __SIZEOF_LONG_LONG__ >= 8
   unsigned long long t = 0xffffffffffffffffULL * (0xffffffffUL * x);
@@ -20,5 +18,3 @@ main() {
 #endif
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

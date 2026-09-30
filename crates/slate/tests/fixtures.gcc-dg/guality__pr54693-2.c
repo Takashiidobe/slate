@@ -21,12 +21,8 @@ __attribute__((noinline, noclone)) void foo(int x, int y, int z) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   v = -1;
   foo(10, 20, 30);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

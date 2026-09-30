@@ -23,13 +23,9 @@ static inline __attribute__((always_inline)) V bar(V a, unsigned long long i,
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   union U z = {.j = bar(foo(1729), 2, 1)};
   if (z.i[0] != 1729)
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

@@ -61,8 +61,6 @@ __attribute__((noipa)) _BitInt(575) test575(struct T575 *q, _BitInt(575) x) {
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __BITINT_MAXWIDTH__ >= 156
   static struct S156 p156[] = {
@@ -244,5 +242,3 @@ main() {
     __builtin_abort();
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

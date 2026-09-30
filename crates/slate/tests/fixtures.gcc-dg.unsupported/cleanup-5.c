@@ -41,11 +41,7 @@ static void doit() {
   force_unwind();
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   doit();
   abort();
 }
-// @rewrite-fn-end
-// @lowering-fn-end

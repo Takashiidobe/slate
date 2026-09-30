@@ -4,8 +4,6 @@
 int x(int a) { return a; }
 int y(int a) __attribute__((weak));
 int g = 0;
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   int (*scan_func)(int);
   if (g)
@@ -18,5 +16,3 @@ int main() {
 
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

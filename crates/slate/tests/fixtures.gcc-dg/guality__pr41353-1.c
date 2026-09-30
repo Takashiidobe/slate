@@ -38,8 +38,6 @@ int (*volatile fnp2)(int, int) = f2;
 int (*volatile fnp3)(int)      = f3;
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(int argc, char *argv[]) {
   asm volatile("" : : "r"(&fnp1) : "memory");
   asm volatile("" : : "r"(&fnp2) : "memory");
@@ -49,5 +47,3 @@ main(int argc, char *argv[]) {
   fnp3(12);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

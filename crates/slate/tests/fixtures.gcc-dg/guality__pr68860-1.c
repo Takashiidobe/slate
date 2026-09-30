@@ -52,8 +52,6 @@ static int __attribute__((noinline)) foo(int arg1, int arg2, int arg3, int arg4,
 /* { dg-final { gdb-test 16 "y" "2" } } */
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   int l = 0;
   asm volatile("" : "=r"(l) : "0"(l));
@@ -61,5 +59,3 @@ main() {
   asm volatile("" ::"r"(l));
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

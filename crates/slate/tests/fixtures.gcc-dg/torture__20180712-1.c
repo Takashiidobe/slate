@@ -56,13 +56,9 @@ __attribute__((noipa)) void qux(void) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   qux();
   if (a[0] != 2 || a[1] != 1 || a[2] != 2)
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

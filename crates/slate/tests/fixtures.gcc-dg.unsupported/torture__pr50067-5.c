@@ -12,8 +12,6 @@ short b[33] = {
     0,
 };
 char *volatile ap_ = (char *)&a[0];
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   int   i;
@@ -28,5 +26,3 @@ int main() {
 #endif
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

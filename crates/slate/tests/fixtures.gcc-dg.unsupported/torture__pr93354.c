@@ -12,8 +12,6 @@ void foo(int64_t *z) {
   *z                 = 0x0102030405060708;
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   int64_t  l = 0;
   int64_t *p;
@@ -23,5 +21,3 @@ int main() {
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

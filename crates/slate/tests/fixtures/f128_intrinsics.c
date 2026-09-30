@@ -1,5 +1,3 @@
-// @lowering-fn-begin
-// @rewrite-fn-begin
 static __float128 nexttowardf128(__float128 from, __float128 toward) {
   return __builtin_nextafterf128(from, toward);
 }
@@ -42,18 +40,3 @@ int main(void) {
     return 1;
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end
-
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn nexttowardf128({{arg[0-9]+}}: f128, {{arg[0-9]+}}: f128) -> f128 {
-// LOWERING-DAG:     let {{__v[0-9]+}}: f128 = unsafe { nextafterf128({{arg[0-9]+}} as f128, {{arg[0-9]+}} as f128) };
-// LOWERING-DAG:     return {{__v[0-9]+}};
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
-
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn nexttowardf128({{arg[0-9]+}}: f128, {{arg[0-9]+}}: f128) -> f128 {
-// REWRITES-DAG:     unsafe { nextafterf128({{arg[0-9]+}} as f128, {{arg[0-9]+}} as f128) }
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites

@@ -5,8 +5,6 @@
 register unsigned long long regVar asm("r15");
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   regVar = 0xdeadbeefcafebabeULL;
   asm("nop" : "+r"(regVar));
@@ -15,5 +13,3 @@ main() {
   asm volatile("nop" : : "r"(regVar));
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

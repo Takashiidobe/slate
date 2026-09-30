@@ -22,8 +22,6 @@ void fn5(float a[(int)++i][(int)(j = 10)]) {}
 void fn6(float a[(int)(i = 7)][(int)j--]) {}
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   float a[10];
   float aa[10][10];
@@ -42,5 +40,3 @@ main() {
   CHECK(i == 7);
   CHECK(j == 9);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

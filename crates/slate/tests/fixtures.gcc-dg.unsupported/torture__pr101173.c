@@ -2,8 +2,6 @@
 /* { dg-additional-options "-floop-interchange" } */
 
 int a[6][9];
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   a[1][3] = 8;
   for (int b = 1; b <= 5; b++)
@@ -17,5 +15,3 @@ int main() {
         __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

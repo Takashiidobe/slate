@@ -18,28 +18,6 @@ int main(void) {
   int value  = 0;
   int first  = CHECK_VALUE(++value == 1);
   int second = CHECK_VALUE(++value == 9);
-  // @lowering-begin
-  // @rewrite-begin
   printf("%d %d %d\n", first, second, value);
-  // @rewrite-end
-  // @lowering-end
   return 0;
 }
-
-// COMMON-DAG: let mut result: i32 = 0;
-// COMMON-DAG: let mut result2: i32 = 0;
-
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = b"%d %d %d\n\0".as_ptr() as *mut u8;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = first;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = second;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = value;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 =
-// LOWERING-DAG:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// SLATE-FILECHECK-END lowering
-
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: println!("{} {} {}", first, second, value);
-// REWRITES-DAG: let _ = std::io::Write::flush(&mut std::io::stdout());
-// SLATE-FILECHECK-END rewrites

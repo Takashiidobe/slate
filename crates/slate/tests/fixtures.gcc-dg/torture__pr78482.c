@@ -28,8 +28,6 @@ __attribute__((noinline, noclone)) int bar(const char *x, int y) {
   return 0;
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   for (; c >= 0; c--) {
     if (!b) {
@@ -40,5 +38,3 @@ int main() {
   }
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

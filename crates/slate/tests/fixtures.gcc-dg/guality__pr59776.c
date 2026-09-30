@@ -46,12 +46,8 @@ __attribute__((noipa)) void foo(struct S *p) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   struct S x = {5.0f, 6.0f};
   foo(&x);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

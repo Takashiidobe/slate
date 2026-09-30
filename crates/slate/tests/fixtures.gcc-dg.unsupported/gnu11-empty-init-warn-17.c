@@ -40,8 +40,6 @@ struct F {
 };
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   static struct A a = {};
   static struct B b = {};
@@ -75,5 +73,3 @@ main() {
 
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

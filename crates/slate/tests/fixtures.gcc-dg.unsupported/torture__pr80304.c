@@ -2,8 +2,6 @@
 
 int __attribute__((pure, noinline, noclone)) foo(int *p) { return *p * 2; }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   int k = 0;
   int i;
@@ -21,5 +19,3 @@ int main() {
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

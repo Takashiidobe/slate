@@ -33,12 +33,8 @@ __attribute__((noinline, noclone)) void foo(void) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   asm volatile("" : : "g"(&b), "g"(&c) : "memory");
   foo();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

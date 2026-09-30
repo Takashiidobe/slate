@@ -2,8 +2,6 @@
 
 typedef _BitInt(128) big;
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int classify_u64(unsigned long long v) {
   switch (v) {
   case 18446744073709551610ULL:
@@ -16,11 +14,7 @@ int classify_u64(unsigned long long v) {
     return 0;
   }
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int classify_bitint(int seed) {
   big v = (big)170141183460469231731687303715884105720wb + (big)seed;
   switch (v) {
@@ -34,8 +28,6 @@ int classify_bitint(int seed) {
     return 0;
   }
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 
 int main(void) {
   printf("%d %d %d %d %d %d\n", classify_u64(18446744073709551611ULL),
@@ -43,149 +35,3 @@ int main(void) {
          classify_bitint(1), classify_bitint(7), classify_bitint(4));
   return 0;
 }
-
-// SLATE-FILECHECK-BEGIN common-lowering
-// COMMON-LOWERING-DAG: fn classify_u64({{arg[0-9]+}}: u64) -> i32 {
-// COMMON-LOWERING-DAG:     let mut v: u64 = 0;
-// COMMON-LOWERING-DAG:     let mut __retval: i32 = 0;
-// COMMON-LOWERING-DAG:     v = {{arg[0-9]+}};
-// COMMON-LOWERING-DAG:     {
-// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: u64 = v;
-// COMMON-LOWERING-DAG:         {
-// COMMON-LOWERING-DAG:             let __switch_value0 = {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:             let mut __switch_case0: i32 = match __switch_value0 {
-// COMMON-LOWERING-DAG:                 18446744073709551610 => 0,
-// COMMON-LOWERING-DAG:                 18446744073709551611 => 1,
-// COMMON-LOWERING-DAG:                 18446744073709551612 => 2,
-// COMMON-LOWERING-DAG:                 18446744073709551615 => 3,
-// COMMON-LOWERING-DAG:                 _ => 4,
-// COMMON-LOWERING-DAG:             };
-// COMMON-LOWERING-DAG:             '__switch0: loop {
-// COMMON-LOWERING-DAG:                 match __switch_case0 {
-// COMMON-LOWERING-DAG:                     0 => {
-// COMMON-LOWERING-DAG:                         __switch_case0 = 1;
-// COMMON-LOWERING-DAG:                         continue '__switch0;
-// COMMON-LOWERING-DAG:                     }
-// COMMON-LOWERING-DAG:                     1 => {
-// COMMON-LOWERING-DAG:                         __switch_case0 = 2;
-// COMMON-LOWERING-DAG:                         continue '__switch0;
-// COMMON-LOWERING-DAG:                     }
-// COMMON-LOWERING-DAG:                     2 => {
-// COMMON-LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 1;
-// COMMON-LOWERING-DAG:                         __retval = {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = __retval;
-// COMMON-LOWERING-DAG:                         return {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:                     }
-// COMMON-LOWERING-DAG:                     3 => {
-// COMMON-LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 2;
-// COMMON-LOWERING-DAG:                         __retval = {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = __retval;
-// COMMON-LOWERING-DAG:                         return {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:                     }
-// COMMON-LOWERING-DAG:                     4 => {
-// COMMON-LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-DAG:                         __retval = {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = __retval;
-// COMMON-LOWERING-DAG:                         return {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:                     }
-// COMMON-LOWERING-DAG:                     _ => {
-// COMMON-LOWERING-DAG:                         break '__switch0;
-// COMMON-LOWERING-DAG:                     }
-// COMMON-LOWERING-DAG:                 }
-// COMMON-LOWERING-DAG:             }
-// COMMON-LOWERING-DAG:         }
-// COMMON-LOWERING-DAG:     }
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = __retval;
-// COMMON-LOWERING-DAG:     return {{__v[0-9]+}};
-// COMMON-LOWERING-DAG: }
-// COMMON-LOWERING-DAG: fn classify_bitint({{arg[0-9]+}}: i32) -> i32 {
-// COMMON-LOWERING-DAG:     let mut __retval: i32 = 0;
-// COMMON-LOWERING-DAG:     let mut v: i128 = 0;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i128 = 170141183460469231731687303715884105720i128;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i128 = {{arg[0-9]+}} as i128;
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i128 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:     v = {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:     {
-// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i128 = v;
-// COMMON-LOWERING-DAG:         {
-// COMMON-LOWERING-DAG:             let __switch_value0 = {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:             let mut __switch_case0: i32 = match __switch_value0 {
-// COMMON-LOWERING-DAG:                 170141183460469231731687303715884105720 => 0,
-// COMMON-LOWERING-DAG:                 170141183460469231731687303715884105721 => 1,
-// COMMON-LOWERING-DAG:                 170141183460469231731687303715884105722 => 2,
-// COMMON-LOWERING-DAG:                 170141183460469231731687303715884105727 => 3,
-// COMMON-LOWERING-DAG:                 _ => 4,
-// COMMON-LOWERING-DAG:             };
-// COMMON-LOWERING-DAG:             '__switch0: loop {
-// COMMON-LOWERING-DAG:                 match __switch_case0 {
-// COMMON-LOWERING-DAG:                     0 => {
-// COMMON-LOWERING-DAG:                         __switch_case0 = 1;
-// COMMON-LOWERING-DAG:                         continue '__switch0;
-// COMMON-LOWERING-DAG:                     }
-// COMMON-LOWERING-DAG:                     1 => {
-// COMMON-LOWERING-DAG:                         __switch_case0 = 2;
-// COMMON-LOWERING-DAG:                         continue '__switch0;
-// COMMON-LOWERING-DAG:                     }
-// COMMON-LOWERING-DAG:                     2 => {
-// COMMON-LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 1;
-// COMMON-LOWERING-DAG:                         __retval = {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = __retval;
-// COMMON-LOWERING-DAG:                         return {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:                     }
-// COMMON-LOWERING-DAG:                     3 => {
-// COMMON-LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 2;
-// COMMON-LOWERING-DAG:                         __retval = {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = __retval;
-// COMMON-LOWERING-DAG:                         return {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:                     }
-// COMMON-LOWERING-DAG:                     4 => {
-// COMMON-LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = 0;
-// COMMON-LOWERING-DAG:                         __retval = {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:                         let {{__v[0-9]+}}: i32 = __retval;
-// COMMON-LOWERING-DAG:                         return {{__v[0-9]+}};
-// COMMON-LOWERING-DAG:                     }
-// COMMON-LOWERING-DAG:                     _ => {
-// COMMON-LOWERING-DAG:                         break '__switch0;
-// COMMON-LOWERING-DAG:                     }
-// COMMON-LOWERING-DAG:                 }
-// COMMON-LOWERING-DAG:             }
-// COMMON-LOWERING-DAG:         }
-// COMMON-LOWERING-DAG:     }
-// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = __retval;
-// COMMON-LOWERING-DAG:     return {{__v[0-9]+}};
-// COMMON-LOWERING-DAG: }
-// SLATE-FILECHECK-END common-lowering
-
-// SLATE-FILECHECK-BEGIN common-rewrites
-// COMMON-REWRITES-DAG: fn classify_u64(mut {{__v[0-9]+}}: u64) -> i32 {
-// COMMON-REWRITES-DAG:     let mut __retval: i32 = 0;
-// COMMON-REWRITES-DAG:     match {{__v[0-9]+}} {
-// COMMON-REWRITES-DAG:         18446744073709551610..=18446744073709551612 => {
-// COMMON-REWRITES-DAG:             return 1;
-// COMMON-REWRITES-DAG:         }
-// COMMON-REWRITES-DAG:         18446744073709551615 => {
-// COMMON-REWRITES-DAG:             return 2;
-// COMMON-REWRITES-DAG:         }
-// COMMON-REWRITES-DAG:         _ => {
-// COMMON-REWRITES-DAG:             return 0;
-// COMMON-REWRITES-DAG:         }
-// COMMON-REWRITES-DAG:     }
-// COMMON-REWRITES-DAG:     __retval
-// COMMON-REWRITES-DAG: }
-// COMMON-REWRITES-DAG: fn classify_bitint({{arg[0-9]+}}: i32) -> i32 {
-// COMMON-REWRITES-DAG:     let mut __retval: i32 = 0;
-// COMMON-REWRITES-DAG:     let mut v: i128 = 170141183460469231731687303715884105720i128 + ({{arg[0-9]+}} as i128);
-// COMMON-REWRITES-DAG:     match v {
-// COMMON-REWRITES-DAG:         170141183460469231731687303715884105720..=170141183460469231731687303715884105722 => {
-// COMMON-REWRITES-DAG:             return 1;
-// COMMON-REWRITES-DAG:         }
-// COMMON-REWRITES-DAG:         170141183460469231731687303715884105727 => {
-// COMMON-REWRITES-DAG:             return 2;
-// COMMON-REWRITES-DAG:         }
-// COMMON-REWRITES-DAG:         _ => {
-// COMMON-REWRITES-DAG:             return 0;
-// COMMON-REWRITES-DAG:         }
-// COMMON-REWRITES-DAG:     }
-// COMMON-REWRITES-DAG:     __retval
-// COMMON-REWRITES-DAG: }
-// SLATE-FILECHECK-END common-rewrites

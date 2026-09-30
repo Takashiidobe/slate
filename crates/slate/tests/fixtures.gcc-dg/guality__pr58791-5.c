@@ -32,11 +32,7 @@ foo(unsigned int a0, unsigned int a1, unsigned int a2, unsigned int a3,
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   foo(1, 8, 64, 512, 4096);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

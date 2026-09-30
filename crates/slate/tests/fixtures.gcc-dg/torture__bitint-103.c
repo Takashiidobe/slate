@@ -10,12 +10,8 @@
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   for (unsigned i = 0; i < 16; i++)
     if (foo(i) != 0 || bar(i) != 0)
       __builtin_abort();
 }
-// @rewrite-fn-end
-// @lowering-fn-end

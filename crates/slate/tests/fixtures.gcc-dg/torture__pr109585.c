@@ -21,8 +21,6 @@ int __attribute__((noipa)) f(struct F *f, int i) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   struct F *m = malloc(sizeof(long) + 2 * sizeof(struct P));
   m->fam[0].n = &m->fam[1];
@@ -30,5 +28,3 @@ main() {
     abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

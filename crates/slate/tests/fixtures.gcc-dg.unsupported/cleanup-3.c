@@ -26,8 +26,6 @@ static void doit(int x, int y) {
   r = x + y;
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   expected = 0;
   doit(1, 2);
@@ -37,5 +35,3 @@ int main() {
 
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

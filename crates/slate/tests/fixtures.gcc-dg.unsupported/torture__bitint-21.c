@@ -51,8 +51,6 @@ __attribute__((noipa)) unsigned _BitInt(575) testdblu_575(double d) {
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __FLT_MANT_DIG__ == 24
 #if __BITINT_MAXWIDTH__ >= 135
@@ -401,5 +399,3 @@ main() {
 #endif
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

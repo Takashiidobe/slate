@@ -23,8 +23,6 @@ __attribute__((noinline, noclone)) void foo(void) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   float e = a;
   foo();
@@ -36,7 +34,5 @@ main() {
   b = c;
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 
 /* { dg-final { gdb-test 25 "c" "p.i-4" } } */

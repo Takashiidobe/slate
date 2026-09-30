@@ -119,8 +119,6 @@ __attribute__((noipa)) int f2(const unsigned long *restrict a,
   return 0;
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main(void) {
   check_vect();
 
@@ -135,8 +133,6 @@ int main(void) {
 
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 
 /* { dg-final { scan-tree-dump-times "LOOP VECTORIZED" 2 "vect" } } */
 /* { dg-final { scan-tree-dump-not "early break does not require epilog" "vect" } } */

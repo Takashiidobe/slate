@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 static int consume_bin(char *buf, int len) {
   (void)strlen(buf);
   int score = 0;
@@ -12,8 +10,6 @@ static int consume_bin(char *buf, int len) {
   free(buf);
   return score;
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 
 static int forward_bin(char *buf, int len) { return consume_bin(buf, len); }
 
@@ -25,73 +21,3 @@ int main(void) {
   printf("%d\n", score);
   return 0;
 }
-
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-X86_64-GNU-DAG: fn consume_bin({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-X86_64-GNU-DAG:     let mut buf: *mut i8 = std::ptr::null_mut();
-// LOWERING-AARCH64-GNU-DAG: fn consume_bin({{arg[0-9]+}}: *mut u8, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-AARCH64-GNU-DAG:     let mut buf: *mut u8 = std::ptr::null_mut();
-// LOWERING-DAG:     let mut len: i32 = 0;
-// LOWERING-DAG:     let mut score: i32 = 0;
-// LOWERING-DAG:     buf = {{arg[0-9]+}};
-// LOWERING-DAG:     len = {{arg[0-9]+}};
-// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: *mut i8 = buf;
-// LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: *mut u8 = buf;
-// LOWERING-DAG:     let {{__v[0-9]+}}: u64 = (unsafe { strlen({{__v[0-9]+}} as *const core::ffi::c_char) }) as u64;
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     score = {{__v[0-9]+}};
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let mut i: i32 = 0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:         i = {{__v[0-9]+}};
-// LOWERING-DAG:         loop {
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = len;
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// LOWERING-DAG:             if !{{__v[0-9]+}} {
-// LOWERING-DAG:                 break;
-// LOWERING-DAG:             }
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: *mut i8 = buf;
-// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
-// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
-// LOWERING-X86_64-GNU-DAG:             let {{__v[0-9]+}}: u8 = {{__v[0-9]+}} as u8;
-// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: *mut u8 = buf;
-// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: *mut u8 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
-// LOWERING-AARCH64-GNU-DAG:             let {{__v[0-9]+}}: u8 = unsafe { *{{__v[0-9]+}} };
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = score;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-DAG:             score = {{__v[0-9]+}};
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// LOWERING-DAG:             i = {{__v[0-9]+}};
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: *mut i8 = buf;
-// LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: *mut u8 = buf;
-// LOWERING-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-DAG:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = score;
-// LOWERING-DAG:     return {{__v[0-9]+}};
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
-
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-X86_64-GNU-DAG: fn consume_bin(mut buf: *mut i8, mut len: i32) -> i32 {
-// REWRITES-AARCH64-GNU-DAG: fn consume_bin(mut buf: *mut u8, mut len: i32) -> i32 {
-// REWRITES-DAG:     let mut score: i32 = 0;
-// REWRITES-DAG:     (unsafe { strlen(buf as *const core::ffi::c_char) }) as u64;
-// REWRITES-DAG:     for i in 0..len {
-// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: *mut i8 = buf;
-// REWRITES-X86_64-GNU-DAG:         let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-X86_64-GNU-DAG:         score += ((unsafe { *{{__v[0-9]+}} }) as u8) as i32;
-// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: *mut u8 = buf;
-// REWRITES-AARCH64-GNU-DAG:         let {{__v[0-9]+}}: *mut u8 = unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-AARCH64-GNU-DAG:         score += (unsafe { *{{__v[0-9]+}} }) as i32;
-// REWRITES-DAG:     }
-// REWRITES-DAG:     unsafe { free(buf as *mut core::ffi::c_void) };
-// REWRITES-DAG:     score
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites

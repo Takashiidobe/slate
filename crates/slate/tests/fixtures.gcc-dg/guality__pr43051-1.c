@@ -47,13 +47,9 @@ struct S *__attribute__((noinline)) bar(struct S *c, int v, struct S *e) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   asm volatile("" : : "r"(&a[0]) : "memory");
   if (bar(&a[a[0].v], a[0].v + 1, &a[a[0].v + 1]))
     abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

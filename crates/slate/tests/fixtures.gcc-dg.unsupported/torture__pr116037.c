@@ -26,8 +26,6 @@ VV foo(unsigned long long x, VV vv) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   VV v = foo(0x01aabbccdd, (VV){-0xff});
   if (v[0] != 0x01aabbccdd - 0xff)
@@ -39,5 +37,3 @@ main() {
   if (v[3] != 0x01aabbccdd)
     __builtin_abort();
 }
-// @rewrite-fn-end
-// @lowering-fn-end

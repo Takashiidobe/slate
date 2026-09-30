@@ -50,8 +50,6 @@ void f5(void) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   f1();
   f2();
@@ -60,5 +58,3 @@ main(void) {
   f5();
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

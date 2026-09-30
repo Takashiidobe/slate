@@ -14,8 +14,6 @@
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   int a[] = {
       1, 2,
@@ -60,5 +58,3 @@ main() {
   asm volatile(NOP); /* { dg-final { gdb-test . "*q" "25" } } */
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

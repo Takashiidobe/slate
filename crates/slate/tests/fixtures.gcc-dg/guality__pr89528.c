@@ -22,6 +22,4 @@ static short n(void) {
   e = 0;
   return 5;
 }
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() { n(); }

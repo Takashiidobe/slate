@@ -48,8 +48,6 @@ __attribute__((noipa)) void waldo(struct S *p, _BitInt(1856) x,
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __BITINT_MAXWIDTH__ >= 2048
   static struct S a = {
@@ -230,5 +228,3 @@ main() {
     __builtin_abort();
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

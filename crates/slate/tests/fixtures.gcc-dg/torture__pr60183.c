@@ -20,8 +20,6 @@ static void foo(unsigned long *x, unsigned char *y) {
 __attribute__((noinline, noclone)) void bar(unsigned long *x) { foo(x, c); }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   unsigned long a[2] = {0, -1UL};
   asm volatile("" ::"r"(c) : "memory");
@@ -31,5 +29,3 @@ main() {
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

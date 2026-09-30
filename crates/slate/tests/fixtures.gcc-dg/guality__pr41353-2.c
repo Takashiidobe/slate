@@ -14,12 +14,8 @@ __attribute__((noinline)) int f1(void) {
 int (*volatile fnp1)(void) = f1;
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(int argc, char *argv[]) {
   asm volatile("" : : "r"(&fnp1) : "memory");
   fnp1();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

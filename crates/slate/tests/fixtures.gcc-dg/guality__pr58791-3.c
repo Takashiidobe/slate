@@ -28,11 +28,7 @@ foo(unsigned a, unsigned b, unsigned c, unsigned d, unsigned e) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   foo(29, 2, 3, 4, 5);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

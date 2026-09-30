@@ -1,7 +1,5 @@
 /* { dg-do run } */
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   int   g_58;
   _Bool g_170 = 0;
@@ -24,5 +22,3 @@ int main() {
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

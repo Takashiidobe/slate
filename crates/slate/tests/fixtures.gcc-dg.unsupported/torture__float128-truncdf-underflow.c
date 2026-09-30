@@ -9,8 +9,6 @@
 #include <stdlib.h>
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   volatile __float128 a = 0x0.fffffffffffffffp-1022q,
                       b = 0x0.fffffffffffff8p-1022q;
@@ -27,5 +25,3 @@ main(void) {
     abort();
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

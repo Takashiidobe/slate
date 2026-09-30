@@ -44,8 +44,6 @@ static void down2(int i) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   struct rlimit r;
 
@@ -59,5 +57,3 @@ main(void) {
   down2(1000);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

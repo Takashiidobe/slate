@@ -27,8 +27,6 @@ __attribute__((noinline, noclone)) int h(enum e3 *p, unsigned char *q) {
   return *p;
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   signed         x;
   unsigned short y;
@@ -42,5 +40,3 @@ int main() {
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

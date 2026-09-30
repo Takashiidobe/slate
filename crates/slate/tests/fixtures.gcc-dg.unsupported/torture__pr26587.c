@@ -7,8 +7,6 @@ typedef BF_word      BF_key[16 + 2];
 static struct {
   BF_key P;
 } BF_current;
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main(void) {
   BF_word L;
   BF_word tmp4, *ptr;
@@ -28,5 +26,3 @@ int main(void) {
     abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

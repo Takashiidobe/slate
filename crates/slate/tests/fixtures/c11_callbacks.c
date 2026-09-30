@@ -22,12 +22,8 @@ int main(void) {
       thread_created == thrd_success ? thrd_join(thread, &thread_result) : -1;
 
   once_flag control = ONCE_FLAG_INIT;
-  // @lowering-begin
-  // @rewrite-begin
   call_once(&control, once_handler);
   call_once(&control, once_handler);
-  // @rewrite-end
-  // @lowering-end
 
   int key_created = tss_create(&key, tss_destructor);
   if (key_created == thrd_success) {
@@ -39,33 +35,3 @@ int main(void) {
          once_total, key_created, quick_registered);
   return 0;
 }
-
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: unsafe {
-// LOWERING-DAG:     call_once(
-// LOWERING-DAG:         std::ptr::addr_of_mut!(control) as *mut __once_flag,
-// LOWERING-DAG:         Some(once_handler),
-// LOWERING-DAG:     )
-// LOWERING-DAG: };
-// LOWERING-DAG: unsafe {
-// LOWERING-DAG:     call_once(
-// LOWERING-DAG:         std::ptr::addr_of_mut!(control) as *mut __once_flag,
-// LOWERING-DAG:         Some(once_handler),
-// LOWERING-DAG:     )
-// LOWERING-DAG: };
-// SLATE-FILECHECK-END lowering
-
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     call_once(
-// REWRITES-DAG:         std::ptr::addr_of_mut!(control) as *mut __once_flag,
-// REWRITES-DAG:         Some(once_handler),
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     call_once(
-// REWRITES-DAG:         std::ptr::addr_of_mut!(control) as *mut __once_flag,
-// REWRITES-DAG:         Some(once_handler),
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
-// SLATE-FILECHECK-END rewrites

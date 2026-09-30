@@ -45,11 +45,7 @@ __attribute__((noinline, noclone)) double foo(float a, float b, float c,
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   foo(3.0f, 2.0f, -1.0f, 9.0f, 1.0f, 2.0);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

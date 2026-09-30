@@ -124,8 +124,6 @@ unsigned _BitInt(511) e, f, g, h;
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __BITINT_MAXWIDTH__ >= 511
   __builtin_memset(&a, 0x55, sizeof(a));
@@ -180,5 +178,3 @@ main() {
      2025545578012992696919009225822788038691815646525577733706021933464568718262575612415581176797970841793616511309641023298056786955966008679910134224064441uwb);
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

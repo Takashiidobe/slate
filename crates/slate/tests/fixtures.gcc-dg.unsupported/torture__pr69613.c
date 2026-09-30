@@ -28,8 +28,6 @@ foo(u32 u32_0, u64 u64_1, u128 u128_1, v32u16 v32u16_0, v32u128 v32u128_0,
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   u128 x = foo(1, 1, 1, (v32u16){1, 1, 1}, (v32u128){1}, (v32u16){1, 1, 1},
                (v32u32){1}, (v32u64){1, 1, 1}, (v32u128){-1});
@@ -37,5 +35,3 @@ main() {
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

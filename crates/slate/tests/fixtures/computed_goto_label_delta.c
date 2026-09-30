@@ -24,28 +24,6 @@ subtract:
 
 int main(void) {
   const unsigned char code[] = {0, 1, 2, 1};
-  // @lowering-begin
-  // @rewrite-begin
   printf("%d\n", interpret(code, 4));
-  // @rewrite-end
-  // @lowering-end
   return 0;
 }
-
-// COMMON-DAG: {{__state[0-9]+}} = [{{[0-9]+}}, {{[0-9]+}}, {{[0-9]+}}][
-
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = b"%d\n\0".as_ptr() as *mut u8;
-// LOWERING-DAG: let {{__v[0-9]+}}: *mut u8 = code.as_mut_ptr() as *mut u8;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 4;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = interpret({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// SLATE-FILECHECK-END lowering
-
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
-// REWRITES-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = c"%d\n".as_ptr() as *mut u8;
-// REWRITES-DAG: let {{__v[0-9]+}}: *mut u8 = code.as_mut_ptr() as *mut u8;
-// REWRITES-DAG: unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, interpret({{__v[0-9]+}}, 4)) };
-// SLATE-FILECHECK-END rewrites

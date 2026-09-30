@@ -14,8 +14,6 @@ __attribute__((noipa)) _BitInt(256) foo(void) { return s.b; }
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __BITINT_MAXWIDTH__ >= 256
   s.b = 1414262180967678524960294186228886540125217087586381431wb;
@@ -26,5 +24,3 @@ main() {
     __builtin_abort();
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

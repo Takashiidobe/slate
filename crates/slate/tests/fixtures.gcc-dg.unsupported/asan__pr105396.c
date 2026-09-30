@@ -4,8 +4,6 @@
 /* { dg-shouldfail "asan" } */
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   int  a;
   int *b[1];
@@ -15,8 +13,6 @@ main() {
     d[1][a] = 0;
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 
 /* { dg-output "ERROR: AddressSanitizer: stack-buffer-overflow on address.*(\n|\r\n|\r)" } */
 /* { dg-output "WRITE of size.*" } */

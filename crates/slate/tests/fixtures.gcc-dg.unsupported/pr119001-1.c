@@ -18,8 +18,6 @@ union V y = {.a = "abcdefghijk"};
 union V z = {.a = {10, 11, 12, 13, 14, 15, 16, 17}};
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   for (int i = 0; i < 6; ++i)
     if (u.a[i] != "12345"[i])
@@ -40,5 +38,3 @@ main() {
     if (z.a[i] != i + 10)
       __builtin_abort();
 }
-// @rewrite-fn-end
-// @lowering-fn-end

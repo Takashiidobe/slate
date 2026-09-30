@@ -52,8 +52,6 @@ __attribute__((noclone, noinline)) unsigned int f6(unsigned int x, int y) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   f1(0x123456789abcde0fUL);
   f2(0x123456789abcde0fUL, 18);
@@ -63,5 +61,3 @@ main() {
   f6(0x12345678, 17);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

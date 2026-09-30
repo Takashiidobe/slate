@@ -13,8 +13,6 @@ struct {
 int d2 = 0;
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   d2 = 1;
   if (sizeof(d1) != sizeof(int))
@@ -23,5 +21,3 @@ main() {
     abort();
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

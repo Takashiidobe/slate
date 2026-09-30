@@ -41,13 +41,9 @@ __attribute__((noipa)) unsigned _BitInt(16319)
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __BITINT_MAXWIDTH__ >= 16319
   if (foo(a, b) != c || bar(d, 42uwb) != e || baz(f, 171uwb) != g)
     __builtin_abort();
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

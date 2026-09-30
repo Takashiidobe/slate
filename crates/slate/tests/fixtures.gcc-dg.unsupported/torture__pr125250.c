@@ -19,8 +19,6 @@ lbl_br11:
   g6 = a5;
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   g4 = &g0;
   f5(0, 8);
@@ -28,5 +26,3 @@ int main() {
   if (__chk != 8)
     __builtin_abort();
 }
-// @rewrite-fn-end
-// @lowering-fn-end

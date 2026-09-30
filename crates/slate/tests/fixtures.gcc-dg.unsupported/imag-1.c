@@ -7,8 +7,6 @@ extern void abort(void);
 extern void exit(int);
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   int i, j;
   i = 1;
@@ -17,5 +15,3 @@ main(void) {
     abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

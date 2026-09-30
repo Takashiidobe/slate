@@ -18,12 +18,8 @@ struct S {
 } s;
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   if (sizeof(int) == 4 && sizeof(s) != 12)
     abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

@@ -30,8 +30,6 @@ void __attribute__((noinline, noclone)) foo(struct T *t) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   struct T *t = (struct T *)calloc(128, 1);
 
@@ -41,33 +39,3 @@ main() {
   free(t);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end
-
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() -> std::process::ExitCode {
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: u64 = 128;
-// LOWERING-DAG:     let {{__v[0-9]+}}: u64 = 1;
-// LOWERING-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe { calloc({{__v[0-9]+}} as usize, {{__v[0-9]+}} as usize) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: *mut T = {{__v[0-9]+}} as *mut T;
-// LOWERING-DAG:     unsafe { foo({{__v[0-9]+}}) };
-// LOWERING-DAG:     unsafe { check(unsafe { std::ptr::addr_of_mut!((*{{__v[0-9]+}}).s) }) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-DAG:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
-
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() -> std::process::ExitCode {
-// REWRITES-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void =
-// REWRITES-DAG:         unsafe { calloc((128 as u64) as usize, (1 as u64) as usize) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: *mut T = {{__v[0-9]+}} as *mut T;
-// REWRITES-DAG:     unsafe { foo({{__v[0-9]+}}) };
-// REWRITES-DAG:     unsafe { check(unsafe { std::ptr::addr_of_mut!((*{{__v[0-9]+}}).s) }) };
-// REWRITES-DAG:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
-// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites

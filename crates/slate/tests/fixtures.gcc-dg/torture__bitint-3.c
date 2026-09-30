@@ -76,8 +76,6 @@ __attribute__((noipa)) void foo(_BitInt(125) a, _BitInt(128) b,
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   _BitInt(125) p;
   _BitInt(128) q[41];
@@ -146,15 +144,9 @@ main() {
       __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 #else
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 #endif

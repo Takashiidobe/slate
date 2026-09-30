@@ -10,8 +10,6 @@ static inline u128 foo(u128 p1) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   asm volatile("" : : : "memory");
   u128 x = foo(~0x7fffffffffffffffLL);
@@ -19,5 +17,3 @@ main() {
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

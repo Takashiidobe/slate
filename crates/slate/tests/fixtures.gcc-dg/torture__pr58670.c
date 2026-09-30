@@ -28,13 +28,9 @@ lab:
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   if (foo(1, 0) != -3 || foo(0, 3) != 0 || foo(1, 0) != -3 || foo(0, 0) != 0 ||
       bar(1, 0) != -3 || bar(0, 3) != 0 || bar(1, 0) != -3 || bar(0, 0) != 0)
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

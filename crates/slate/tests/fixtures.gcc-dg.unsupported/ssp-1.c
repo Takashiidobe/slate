@@ -6,8 +6,6 @@
 
 void __stack_chk_fail(void) { exit(0); /* pass */ }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   register int i;
   char         foo[255];
@@ -18,5 +16,3 @@ int main() {
 
   return 1; /* fail */
 }
-// @rewrite-fn-end
-// @lowering-fn-end

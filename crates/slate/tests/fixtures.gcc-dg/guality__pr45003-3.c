@@ -22,8 +22,6 @@ int __attribute__((noinline)) bar(short *p) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   unsigned short us = 0x8078;
   foo(&us);
@@ -31,5 +29,3 @@ main() {
   bar(&s);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

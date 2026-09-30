@@ -54,8 +54,6 @@ __attribute__((interrupt, used)) void fn(struct interrupt_frame *frame) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   asm("push	$" STRING(SS) ";		\
 	push	$" STRING(SP) ";		\
@@ -65,8 +63,6 @@ main() {
 	jmp	 " ASMNAME("fn"));
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 
 /* { dg-final { gdb-test 46 "frame->ip" "0x12345671" } } */
 /* { dg-final { gdb-test 46 "frame->cs" "0x12345672" } } */

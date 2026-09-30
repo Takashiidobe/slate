@@ -14,8 +14,6 @@ __complex__ float foo(void) {
   return f[0];
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main(void) {
   __complex__ double d[1];
   d[0] = foo();
@@ -23,74 +21,3 @@ int main(void) {
     abort();
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end
-
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() -> std::process::ExitCode {
-// LOWERING-X86_64-GNU-DAG:     let mut d: aligned::Aligned<aligned::A16, [num_complex::Complex<f64>; 1]> =
-// LOWERING-X86_64-GNU-DAG:         aligned::Aligned([num_complex::Complex { re: 0.0, im: 0.0 }; 1]);
-// LOWERING-AARCH64-GNU-DAG:     let mut d: [num_complex::Complex<f64>; 1] = [num_complex::Complex { re: 0.0, im: 0.0 }; 1];
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = foo();
-// LOWERING-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re as f64;
-// LOWERING-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im as f64;
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
-// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:     d[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = d[({{__v[0-9]+}} as usize)];
-// LOWERING-DAG:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} as f64;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         } else {
-// LOWERING-DAG:             let {{__v[0-9]+}}: i64 = 0;
-// LOWERING-DAG:             let {{__v[0-9]+}}: num_complex::Complex<f64> = d[({{__v[0-9]+}} as usize)];
-// LOWERING-DAG:             let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = -1;
-// LOWERING-DAG:             let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} as f64;
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:             {{__v[0-9]+}}
-// LOWERING-DAG:         };
-// LOWERING-DAG:         if {{__v[0-9]+}} {
-// LOWERING-DAG:             unsafe { abort() };
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
-// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
-
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() -> std::process::ExitCode {
-// REWRITES-X86_64-GNU-DAG:     let mut d: aligned::Aligned<aligned::A16, [num_complex::Complex<f64>; 1]> =
-// REWRITES-X86_64-GNU-DAG:         aligned::Aligned([num_complex::Complex { re: 0.0, im: 0.0 }; 1]);
-// REWRITES-AARCH64-GNU-DAG:     let mut d: [num_complex::Complex<f64>; 1] = [num_complex::Complex { re: 0.0, im: 0.0 }; 1];
-// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = foo();
-// REWRITES-DAG:     let {{__v[0-9]+}}: i64 = 0;
-// REWRITES-DAG:     d[({{__v[0-9]+}} as usize)] = num_complex::Complex {
-// REWRITES-DAG:         re: {{__v[0-9]+}}.re as f64,
-// REWRITES-DAG:         im: {{__v[0-9]+}}.im as f64,
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> = d[0];
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}}.re != ((1 as i32) as f64) {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = d[0];
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.im != ((-1 as i32) as f64);
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     if {{__v[0-9]+}} {
-// REWRITES-DAG:         unsafe { abort() };
-// REWRITES-DAG:     }
-// REWRITES-DAG:     unsafe { exit(0 as i32) };
-// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites

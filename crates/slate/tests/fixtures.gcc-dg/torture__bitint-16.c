@@ -185,8 +185,6 @@ __attribute__((noipa)) void test138_192_523_574(unsigned _BitInt(138) * p,
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __BITINT_MAXWIDTH__ >= 256
   static unsigned _BitInt(135)
@@ -510,5 +508,3 @@ main() {
       __builtin_abort();
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

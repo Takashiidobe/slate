@@ -6,8 +6,6 @@
 /* { dg-add-options float16 } */
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __FLT16_MANT_DIG__ == 11
   static volatile _Float16 s[] = {0.0F16, 42.0F16, -65504.0F16, 65504.0F16};
@@ -47,5 +45,3 @@ main() {
 #endif
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

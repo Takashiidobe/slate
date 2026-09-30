@@ -8,8 +8,6 @@ void __attribute__((noinline)) check_int(int a, int b) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   x = 0.0;
   asm("" : "+m"(x));
@@ -20,5 +18,3 @@ main(void) {
   check_int(__builtin_islessgreater(x, 1.0), 1);
   return exit_code;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

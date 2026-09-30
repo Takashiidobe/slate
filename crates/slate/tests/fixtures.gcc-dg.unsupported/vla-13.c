@@ -66,8 +66,6 @@ void f5c(void *x, int j, int k) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   f1(p, 1);
   f2(p, 2);
@@ -80,5 +78,3 @@ main(void) {
   f5c(p, 12, 13);
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

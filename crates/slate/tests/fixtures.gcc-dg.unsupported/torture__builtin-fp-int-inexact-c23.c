@@ -57,13 +57,9 @@ static void main_test(void) {
 #ifndef ARCH_MAIN
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   main_test();
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 
 #endif

@@ -195,11 +195,7 @@ __attribute__((noipa)) void prepare(void) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   prepare();
   test();
 }
-// @rewrite-fn-end
-// @lowering-fn-end

@@ -22,8 +22,6 @@ int __attribute__((noinline)) f2(int i) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   volatile int j;
   int          i = 5;
@@ -32,5 +30,3 @@ main() {
   f2(i);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

@@ -11,11 +11,7 @@ void __attribute__((noipa)) foo(int i) {
   bar(p); /* { dg-final { gdb-test . "i" "5" } } */
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main(void) {
   foo(5);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

@@ -20,12 +20,8 @@ __attribute__((noclone, noinline)) int bar(int x) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   foo(0x123456789abcde0fUL);
   bar(0x12345678);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

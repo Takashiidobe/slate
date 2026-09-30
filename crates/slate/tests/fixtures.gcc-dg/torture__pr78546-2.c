@@ -5,8 +5,6 @@ typedef unsigned __int128 u128;
 u128                      b;
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   asm volatile("" : : : "memory");
   u128 x = ((u128)~0x7fffffffffffffffLL) - b;
@@ -15,5 +13,3 @@ main() {
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

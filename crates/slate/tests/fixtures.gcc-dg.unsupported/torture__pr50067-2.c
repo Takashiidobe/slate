@@ -10,8 +10,6 @@ short a[32] = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15,
 short b[32] = {
     4, 0, 5, 0, 6, 0, 7, 0, 8, 0,
 };
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   int i;
@@ -25,5 +23,3 @@ int main() {
 #endif
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

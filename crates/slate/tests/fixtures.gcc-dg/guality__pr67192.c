@@ -51,8 +51,6 @@ void (*volatile fnp3)(void) = f3;
 void (*volatile fnp4)(void) = f4;
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   asm volatile("" : : "r"(&fnp1) : "memory");
   asm volatile("" : : "r"(&fnp2) : "memory");
@@ -64,5 +62,3 @@ main() {
   fnp4();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

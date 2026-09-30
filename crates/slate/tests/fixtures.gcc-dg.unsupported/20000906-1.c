@@ -57,8 +57,6 @@ void foo(struct ucharp cp, struct ucharp lp, struct list **nextp) {
 extern void exit(int);
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   static unsigned char cp0[] = "\0\0\0\0";
   struct ucharp        cp    = {cp0, cp0, cp0 + sizeof(cp0)};
@@ -73,5 +71,3 @@ main(void) {
 
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

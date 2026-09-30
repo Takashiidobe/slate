@@ -15,8 +15,6 @@ extern void abort(void);
 static const char str??(??) = "0123456789??/n";
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void)
 ??<
   unsigned char x = 5;

@@ -30,13 +30,9 @@ uint64_t func_1() {
   return BS_VAR_0[0];
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   uint64_t BS_CHECKSUM = func_1();
   if (BS_CHECKSUM != 0x0000000000000200ull)
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

@@ -14,11 +14,7 @@ int __attribute__((__noinline__)) foo(int x, int y, int z) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   foo(1, 2, 3);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

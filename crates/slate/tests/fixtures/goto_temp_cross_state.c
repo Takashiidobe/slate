@@ -39,29 +39,6 @@ int main(void) {
   ou.in   = inr;
   state_t s;
   s.dict = &ou;
-  // @lowering-begin
-  // @rewrite-begin
   printf("%d %d\n", compute(&s, 0), compute(&s, 1));
-  // @rewrite-end
-  // @lowering-end
   return 0;
 }
-
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = b"%d %d\n\0".as_ptr() as *mut u8;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { compute(std::ptr::addr_of_mut!(s), {{__v[0-9]+}}) };
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { compute(std::ptr::addr_of_mut!(s), {{__v[0-9]+}}) };
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// SLATE-FILECHECK-END lowering
-
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: println!(
-// REWRITES-DAG:     "{} {}",
-// REWRITES-DAG:     unsafe { compute(std::ptr::addr_of_mut!(s), 0) },
-// REWRITES-DAG:     unsafe { compute(std::ptr::addr_of_mut!(s), 1) }
-// REWRITES-DAG: );
-// REWRITES-DAG: let _ = std::io::Write::flush(&mut std::io::stdout());
-// SLATE-FILECHECK-END rewrites

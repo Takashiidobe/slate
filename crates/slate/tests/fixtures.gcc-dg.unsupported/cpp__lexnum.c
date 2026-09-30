@@ -30,8 +30,6 @@ extern void abort(void);
 #error foo
 #endif
 
-    // @lowering-fn-begin
-    // @rewrite-fn-begin
     int main(int argc, char *argv[]) {
   double a = 5.;
   double x = .5;
@@ -59,5 +57,3 @@ extern void abort(void);
 
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

@@ -62,8 +62,6 @@ __attribute__((noipa)) void qux2047(struct T2047 *p, _BitInt(1025) x,
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __BITINT_MAXWIDTH__ >= 255
   static struct S255 a255 = {
@@ -230,5 +228,3 @@ main() {
     __builtin_abort();
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

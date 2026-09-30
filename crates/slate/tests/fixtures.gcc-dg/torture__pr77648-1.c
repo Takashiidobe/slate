@@ -11,8 +11,6 @@ int **__attribute__((noinline, noclone, pure)) foo(struct S *s) {
   return &s->q;
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   struct S s;
   int      i = 1, j = 2;
@@ -25,5 +23,3 @@ int main() {
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

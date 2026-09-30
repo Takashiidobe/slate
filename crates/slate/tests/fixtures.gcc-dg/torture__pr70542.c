@@ -6,8 +6,6 @@ int   a[113], d[113];
 short b[113], c[113], e[113];
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   int  i;
   long j;
@@ -29,5 +27,3 @@ main() {
       __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

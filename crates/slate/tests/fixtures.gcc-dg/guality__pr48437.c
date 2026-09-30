@@ -13,8 +13,6 @@
 #endif
 
 int i __attribute__((used));
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   volatile int i;
   for (i = 3; i < 7; ++i) {
@@ -23,5 +21,3 @@ int main() {
   }
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

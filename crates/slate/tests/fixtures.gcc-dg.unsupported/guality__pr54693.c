@@ -8,8 +8,6 @@ __attribute__((noinline, noclone)) void foo(char *str, char c) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   int  i;
   char c;
@@ -24,5 +22,3 @@ main() {
   __builtin_printf("arr = %s\n", arr);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

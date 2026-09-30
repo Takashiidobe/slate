@@ -95,8 +95,6 @@ void test(void) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   errno  = 0;
   i      = 100;
@@ -117,5 +115,3 @@ main(void) {
 
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

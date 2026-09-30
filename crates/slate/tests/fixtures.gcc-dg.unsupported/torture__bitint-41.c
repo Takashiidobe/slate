@@ -11,8 +11,6 @@ __attribute__((noipa)) _Bool test256(_BitInt(256) * q) {
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __BITINT_MAXWIDTH__ >= 256
   static _BitInt(256) q256[] = {
@@ -32,5 +30,3 @@ main() {
       __builtin_abort();
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

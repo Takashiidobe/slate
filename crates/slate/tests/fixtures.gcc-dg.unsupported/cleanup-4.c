@@ -21,13 +21,9 @@ static void doit(int n, int n2) {
   }
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   doit(10, 6);
   if (counter != 0 + 1 + 2 + 3 + 4 + 5 + 6)
     abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

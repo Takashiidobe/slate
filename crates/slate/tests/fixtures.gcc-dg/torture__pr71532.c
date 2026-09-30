@@ -51,12 +51,8 @@ __attribute__((noinline, noclone)) int test() {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   if (test() != 182)
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

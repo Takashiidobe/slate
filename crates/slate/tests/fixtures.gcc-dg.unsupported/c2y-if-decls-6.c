@@ -7,8 +7,6 @@
 void foo(int) {}
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   int i = 3;
 
@@ -25,5 +23,3 @@ main() {
     __builtin_abort();
   }
 }
-// @rewrite-fn-end
-// @lowering-fn-end

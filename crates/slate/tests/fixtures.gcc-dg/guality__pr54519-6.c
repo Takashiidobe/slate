@@ -24,12 +24,8 @@ static inline void f2(int z) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   f2(2);
   f2(3);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

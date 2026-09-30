@@ -15,8 +15,6 @@ __attribute__((noinline, noclone)) long long foo(struct s *x, int y, V *z) {
 }
 
 struct s a = {0, {{0, 0}, {0, 0}}};
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int      main() {
   V v1 = {0, 1};
   V v2 = {0, 2};
@@ -29,5 +27,3 @@ int      main() {
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

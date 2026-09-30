@@ -47,13 +47,9 @@ static inline void bar(void) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   __asm__ volatile("" : "=r"(i) : "0"(0));
   bar();
   bar();
   return i;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

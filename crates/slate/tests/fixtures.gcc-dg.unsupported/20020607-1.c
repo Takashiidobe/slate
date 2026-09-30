@@ -21,8 +21,6 @@ cpp_num        lhs, rhs;
   return lhs;
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   cpp_num a = {1, 2};
   cpp_num b = {3, 4};
@@ -37,5 +35,3 @@ int main() {
 
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

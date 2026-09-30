@@ -17,8 +17,6 @@ int func(void) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   int vla[s][s];
   int (*_Atomic p)[s] = &vla[0];
@@ -63,5 +61,3 @@ main(void) {
     abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

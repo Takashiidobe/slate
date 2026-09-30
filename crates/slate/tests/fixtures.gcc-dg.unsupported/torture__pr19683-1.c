@@ -44,8 +44,6 @@ unsigned int __attribute__((nomips16)) foo(volatile unsigned int *ptr) {
 #endif
 
 int __attribute__((nomips16))
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
 #if __mips_isa_rev <= 5
   unsigned int array[] = {1000 * 1000 * 1000};
@@ -57,5 +55,3 @@ main(void) {
 #endif
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

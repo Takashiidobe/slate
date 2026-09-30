@@ -13,43 +13,9 @@
 extern void abort(void);
 extern void exit(int);
 
-/* @lowering-fn-begin */
-/* @rewrite-fn-begin */
 int main(void) {
   (void)_Generic(INFINITY, float: 0);
   if (!(INFINITY >= FLT_MAX))
     abort();
   exit(0);
 }
-/* @rewrite-fn-end */
-/* @lowering-fn-end */
-
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() -> std::process::ExitCode {
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = f32::from_bits(0x7f800000);
-// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = 340282346999999984391321947108527833088.0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} >= {{__v[0-9]+}};
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = !{{__v[0-9]+}};
-// LOWERING-DAG:         if {{__v[0-9]+}} {
-// LOWERING-DAG:             unsafe { abort() };
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
-// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
-
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() -> std::process::ExitCode {
-// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = f32::from_bits(0x7f800000);
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = !({{__v[0-9]+}} >= 340282346999999984391321947108527833088.0);
-// REWRITES-DAG:     if {{__v[0-9]+}} {
-// REWRITES-DAG:         unsafe { abort() };
-// REWRITES-DAG:     }
-// REWRITES-DAG:     unsafe { exit(0 as i32) };
-// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites

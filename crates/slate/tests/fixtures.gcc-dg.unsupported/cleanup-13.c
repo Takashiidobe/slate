@@ -322,11 +322,7 @@ __attribute__((noinline)) static void doit() {
   callme();
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   doit();
   abort();
 }
-// @rewrite-fn-end
-// @lowering-fn-end

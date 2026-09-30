@@ -41,11 +41,7 @@ __attribute__((noinline, noclone)) int foo(unsigned char c) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   foo(32);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

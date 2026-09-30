@@ -32,8 +32,6 @@ void __attribute__((interrupt, used)) fn(struct __uintr_frame *frame,
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   asm("push	$" STRING(RSP) ";		\
 	push	$" STRING(RFLAGS) ";		\
@@ -42,5 +40,3 @@ main() {
 	jmp	" ASMNAME("fn"));
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

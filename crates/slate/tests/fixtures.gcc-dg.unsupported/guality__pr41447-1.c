@@ -200,8 +200,6 @@ int volatile guality_attached;
    list.  */
 
 extern int __attribute__((noipa))
-// @lowering-fn-begin
-// @rewrite-fn-begin
 guality_main(int argc, char *argv[]);
 
 static void __attribute__((noipa))
@@ -281,8 +279,6 @@ continue\n\
 
   return i;
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 
 #define main guality_main
 
@@ -387,8 +383,6 @@ continue\n\
 int a;
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(int argc, char *argv[]) {
   int tmp  = a;
   int tmp2 = a;
@@ -406,5 +400,3 @@ main(int argc, char *argv[]) {
   res = tmp - tmp2 + 1;
   return res;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

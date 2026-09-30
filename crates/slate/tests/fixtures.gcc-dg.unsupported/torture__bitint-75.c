@@ -14,8 +14,6 @@ __attribute__((noipa)) B foo(B a, int r) {
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __BITINT_MAXWIDTH__ >= 512
   B a =
@@ -25,5 +23,3 @@ main() {
     __builtin_abort();
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

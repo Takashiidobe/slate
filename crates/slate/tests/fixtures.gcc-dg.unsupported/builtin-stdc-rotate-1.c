@@ -21,8 +21,6 @@ unsigned long long rotate_right(unsigned char a, unsigned short b,
 #define expr_has_type(e, t) _Generic(e, default: 0, t: 1)
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   if (__builtin_stdc_rotate_left((unsigned char)0, 0) != 0 ||
       __builtin_stdc_rotate_left((unsigned char)0xdcU, (char)0) != 0xdcU ||
@@ -326,5 +324,3 @@ main() {
     __builtin_abort();
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

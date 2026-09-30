@@ -25,13 +25,9 @@ void foo(int x) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   int x = 1;
   asm volatile("" : "+r"(x));
   foo(x);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

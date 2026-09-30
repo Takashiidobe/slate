@@ -101,8 +101,6 @@ static void *start_thread(void *context) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
   pthread_t             tid;
   int                   err;
@@ -149,5 +147,3 @@ main(int argc __attribute__((unused)), char **argv __attribute__((unused))) {
 
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

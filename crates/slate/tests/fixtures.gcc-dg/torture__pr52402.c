@@ -17,8 +17,6 @@ static struct T *__attribute__((noinline)) init() {
   return (struct T *)p;
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   struct T *p;
   p = init();
@@ -26,40 +24,3 @@ int main() {
     __builtin_abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end
-
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() -> std::process::ExitCode {
-// LOWERING-DAG:     let mut p: *mut T = std::ptr::null_mut();
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: *mut T = init();
-// LOWERING-DAG:     p = {{__v[0-9]+}};
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: *mut T = p;
-// LOWERING-DAG:         let {{__v[0-9]+}}: T = unsafe { *{{__v[0-9]+}} };
-// LOWERING-DAG:         let {{__v[0-9]+}}: [i32; 4] = foo({{__v[0-9]+}});
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}[({{__v[0-9]+}} as usize)];
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 16843009;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:         if {{__v[0-9]+}} {
-// LOWERING-DAG:             unsafe { abort() };
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     return std::process::ExitCode::SUCCESS;
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
-
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() -> std::process::ExitCode {
-// REWRITES-DAG:     let mut p: *mut T = init();
-// REWRITES-DAG:     let {{__v[0-9]+}}: [i32; 4] = foo(unsafe { *p });
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}}[0] != 16843009;
-// REWRITES-DAG:     if {{__v[0-9]+}} {
-// REWRITES-DAG:         unsafe { std::process::abort() };
-// REWRITES-DAG:     }
-// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites

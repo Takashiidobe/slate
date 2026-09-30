@@ -29,8 +29,6 @@ int __attribute__((noinline)) fn6(int i) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   int x = 4;
   asm volatile("" : "+r"(x));
@@ -38,5 +36,3 @@ main(void) {
   fn6(x);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

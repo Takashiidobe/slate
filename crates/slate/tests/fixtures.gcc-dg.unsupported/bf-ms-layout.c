@@ -136,8 +136,6 @@ struct ten { /* ms size 16 */
       abort();                                                                 \
   }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
 
   unsigned char filler[16];
@@ -229,5 +227,3 @@ int main() {
 
   return 0;
 };
-// @rewrite-fn-end
-// @lowering-fn-end

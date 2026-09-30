@@ -43,8 +43,6 @@ __attribute__((noipa)) unsigned _BitInt(271)
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __BITINT_MAXWIDTH__ >= 251
   static _BitInt(251) s251[] = {
@@ -84,5 +82,3 @@ main() {
     __builtin_abort();
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

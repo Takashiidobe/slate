@@ -15,8 +15,6 @@ volatile double      ndinf  = -__builtin_inf();
 volatile long double nldinf = -__builtin_infl();
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   volatile __float128 r;
   r = (__float128)finf;
@@ -39,5 +37,3 @@ main(void) {
     abort();
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

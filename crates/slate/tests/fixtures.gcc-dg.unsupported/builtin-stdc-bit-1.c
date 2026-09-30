@@ -115,8 +115,6 @@ unsigned long long bit_ceil(unsigned char a, unsigned short b, unsigned int c,
 #define expr_has_type(e, t) _Generic(e, default: 0, t: 1)
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   if (__builtin_stdc_leading_zeros((unsigned char)0) != __CHAR_BIT__ ||
       !expr_has_type(__builtin_stdc_leading_zeros((unsigned char)0),
@@ -1046,5 +1044,3 @@ main() {
     __builtin_abort();
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

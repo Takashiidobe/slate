@@ -23,8 +23,6 @@ volatile float f1  = 1.0;
 volatile float f42 = 42.0;
 volatile float fm2 = -2.0;
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main(void) {
   TEST(h1);
   TESTNOT(h0);
@@ -139,5 +137,3 @@ int main(void) {
 
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

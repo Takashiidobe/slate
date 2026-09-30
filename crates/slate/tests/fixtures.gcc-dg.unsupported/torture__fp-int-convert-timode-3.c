@@ -10,8 +10,6 @@
 #include <stdlib.h>
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
 #ifdef FE_UPWARD
   volatile unsigned long long h    = 0x8000000000000000LL;
@@ -28,5 +26,3 @@ main(void) {
 #endif
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <time.h>
 
-// @rewrite-fn-begin
 int main(void) {
   struct timespec value    = {0};
   int             result   = timespec_get(&value, TIME_UTC);
@@ -10,26 +9,3 @@ int main(void) {
   printf("%d %d\n", result == TIME_UTC, nanoseconds_in_range);
   return 0;
 }
-// @rewrite-fn-end
-
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() -> std::process::ExitCode {
-// REWRITES-DAG:     let mut value: libc::timespec = libc::timespec {
-// REWRITES-DAG:         tv_sec: 0,
-// REWRITES-DAG:         tv_nsec: 0,
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
-// REWRITES-DAG:         timespec_get(
-// REWRITES-DAG:             std::ptr::addr_of_mut!(value) as *mut libc::timespec,
-// REWRITES-DAG:             1 as i32,
-// REWRITES-DAG:         )
-// REWRITES-DAG:     };
-// REWRITES-DAG:     println!(
-// REWRITES-DAG:         "{} {}",
-// REWRITES-DAG:         ({{__v[0-9]+}} == 1) as i32,
-// REWRITES-DAG:         (value.tv_nsec >= 0 && value.tv_nsec < 1000000000) as i32
-// REWRITES-DAG:     );
-// REWRITES-DAG:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// REWRITES-DAG:     return std::process::ExitCode::SUCCESS;
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites

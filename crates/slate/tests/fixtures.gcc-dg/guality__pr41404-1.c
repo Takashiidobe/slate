@@ -25,12 +25,8 @@ __attribute__((noinline)) int bar2(int i) {
 __attribute__((noinline)) const char *baz(int i) { return i ? "foo" : "bar"; }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   bar1(6);
   bar2(6);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

@@ -81,8 +81,6 @@ __attribute__((noipa)) void test522_547_575(_BitInt(522) * p, _BitInt(547) * q,
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __BITINT_MAXWIDTH__ >= 192
   static _BitInt(135) p135[15] = {-21017626881393060962682831099345275646127wb,
@@ -292,5 +290,3 @@ main() {
       __builtin_abort();
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

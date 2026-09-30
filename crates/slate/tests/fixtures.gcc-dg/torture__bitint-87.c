@@ -99,8 +99,6 @@ unsigned _BitInt(513) l, m, n;
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __BITINT_MAXWIDTH__ >= 513
   __builtin_memset(&a, 0x55, sizeof(a));
@@ -127,5 +125,3 @@ main() {
      234567891234567.125, 123465987893275.53244532L);
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

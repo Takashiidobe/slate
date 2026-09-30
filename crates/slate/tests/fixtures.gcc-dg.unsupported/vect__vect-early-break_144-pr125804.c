@@ -124,8 +124,6 @@ o:
   return 1;
 }
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
 
   check_vect();
@@ -136,8 +134,6 @@ int main() {
   g         = h(&f);
   return g == 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 
 /* { dg-final { scan-tree-dump-times "LOOP VECTORIZED" 1 "vect" { target { ! arm*-*-* } } } } */
 /* { dg-final { scan-tree-dump "early break does not require epilog" "vect" { target { ! arm*-*-* } } } } */

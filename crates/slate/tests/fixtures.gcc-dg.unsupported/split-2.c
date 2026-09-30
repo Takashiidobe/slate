@@ -30,8 +30,6 @@ static void *thread_routine(void *arg __attribute__((unused))) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   int       i;
   pthread_t tid;
@@ -45,5 +43,3 @@ main(void) {
     abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

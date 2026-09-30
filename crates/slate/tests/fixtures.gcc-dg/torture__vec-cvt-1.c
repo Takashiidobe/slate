@@ -183,8 +183,6 @@ FLTTEST(0, 2U * __INT_MAX__ + 1, ui)
 FLTTEST(0, 2ULL * __LONG_LONG_MAX__ + 1, ul)
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   flttointtestsc();
   flttointtestss();
@@ -204,5 +202,3 @@ main() {
   inttoflttestul();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

@@ -24,11 +24,7 @@ void f(int n, ...) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   f(10, &a);
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

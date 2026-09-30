@@ -22,13 +22,9 @@ __attribute__((noinline)) void foo(int k, int l, int m, int n) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   int q = 6;
   asm("" : "+r"(q));
   foo(q, q + 1, q + 2, q + 3);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

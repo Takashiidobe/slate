@@ -56,8 +56,6 @@ void __attribute__((noipa)) food() {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   fooa();
   foob();
@@ -65,5 +63,3 @@ main() {
   food();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

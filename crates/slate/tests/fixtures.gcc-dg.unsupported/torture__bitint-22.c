@@ -57,8 +57,6 @@ __attribute__((noipa)) unsigned _BitInt(575) testflt128u_575(_Float128 d) {
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __LDBL_MANT_DIG__ == 64
 #if __BITINT_MAXWIDTH__ >= 135
@@ -423,5 +421,3 @@ main() {
 #endif
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

@@ -16,8 +16,6 @@ int __attribute__((noinline)) foo(int b) {
 
 extern void abort(void);
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() {
   int i;
   for (i = 0; i < 4; ++i)
@@ -26,5 +24,3 @@ int main() {
     abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

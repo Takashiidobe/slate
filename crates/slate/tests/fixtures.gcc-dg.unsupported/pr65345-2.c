@@ -23,8 +23,6 @@ void fn5(int a[++i][j = 10]) {}
 void fn6(int a[i = 7][j--]) {}
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   int a[10];
   int aa[10][10];
@@ -43,5 +41,3 @@ main() {
   CHECK(i == 7);
   CHECK(j == 9);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

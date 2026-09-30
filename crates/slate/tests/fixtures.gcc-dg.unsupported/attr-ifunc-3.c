@@ -18,8 +18,4 @@ static __typeof__(implementation) *resolver(void) {
 
 extern int magic(void *) __attribute__((ifunc("resolver")));
 
-// @lowering-fn-begin
-// @rewrite-fn-begin
 int main() { return magic((void *)magic); }
-// @rewrite-fn-end
-// @lowering-fn-end

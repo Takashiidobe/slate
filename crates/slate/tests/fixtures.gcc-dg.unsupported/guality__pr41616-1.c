@@ -199,8 +199,6 @@ int volatile guality_attached;
    list.  */
 
 extern int __attribute__((noipa))
-// @lowering-fn-begin
-// @rewrite-fn-begin
 guality_main(int argc, char *argv[]);
 
 static void __attribute__((noipa))
@@ -280,8 +278,6 @@ continue\n\
 
   return i;
 }
-// @rewrite-fn-end
-// @lowering-fn-end
 
 #define main guality_main
 
@@ -386,8 +382,6 @@ continue\n\
 inline int f(int *a) { return *a; }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(int argc, char *argv[]) {
   int b = -1;
   GUALCHKVAL(b);
@@ -396,5 +390,3 @@ main(int argc, char *argv[]) {
   GUALCHKVAL(b);
   return b;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

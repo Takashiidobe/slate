@@ -13,8 +13,6 @@
 volatile long double a = __builtin_nansl("");
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
 #if LDBL_MANT_DIG < 113
   volatile __float128 r = a;
@@ -25,5 +23,3 @@ main(void) {
 #endif
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

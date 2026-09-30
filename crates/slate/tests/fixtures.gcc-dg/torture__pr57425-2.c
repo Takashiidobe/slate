@@ -3,8 +3,6 @@
 extern void abort(void) __attribute__((noreturn));
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   int sum = 0;
   {
@@ -30,5 +28,3 @@ main() {
     abort();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

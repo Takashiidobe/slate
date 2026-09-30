@@ -20,8 +20,6 @@ static void handle_sigfpe(int sig) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   volatile __float128 a = 0x1p-16382q, b = 0x1p-2q;
   volatile __float128 r;
@@ -38,5 +36,3 @@ main(void) {
     abort();
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end

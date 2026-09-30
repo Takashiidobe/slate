@@ -13,8 +13,6 @@ extern void abort(void);
 extern int  strcmp(const char *, const char *);
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   const char *t = foo(1, 2);
   const char *u = str (<:);
@@ -23,5 +21,3 @@ main(void) {
   else
     return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

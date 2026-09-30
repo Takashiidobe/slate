@@ -51,8 +51,6 @@ __attribute__((noipa)) double testdblu_575(unsigned _BitInt(575) b) {
 #endif
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
 #if __BITINT_MAXWIDTH__ >= 135
   static _BitInt(135) s_135[] = {-39242093wb,
@@ -718,5 +716,3 @@ main() {
 #endif
 #endif
 }
-// @rewrite-fn-end
-// @lowering-fn-end

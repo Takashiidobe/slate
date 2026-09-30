@@ -39,11 +39,7 @@ __attribute__((noinline, noclone)) int foo(int x, int y) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   foo(1, 3);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

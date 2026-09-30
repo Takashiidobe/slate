@@ -20,8 +20,6 @@ long __attribute__((noinline)) baz(int x) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   int i;
   asm volatile("" : "=r"(i) : "0"(7));
@@ -29,5 +27,3 @@ main(void) {
   baz(i);
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

@@ -10,8 +10,6 @@ struct S {
 } s;
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   s.a = -64;
   s.b = -64;
@@ -19,5 +17,3 @@ main() {
   if (s.a != -64 || s.b != -64 || s.c != 64)
     __builtin_abort();
 }
-// @rewrite-fn-end
-// @lowering-fn-end

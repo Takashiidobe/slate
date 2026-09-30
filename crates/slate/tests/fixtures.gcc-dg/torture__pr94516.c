@@ -25,11 +25,7 @@ __attribute__((noipa)) void bar(void) {
 }
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main() {
   bar();
   return 0;
 }
-// @rewrite-fn-end
-// @lowering-fn-end

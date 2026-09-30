@@ -42,8 +42,6 @@ extern void exit(int);
 extern int  strcmp(const char *, const char *);
 
 int
-// @lowering-fn-begin
-// @rewrite-fn-begin
 main(void) {
   /* The macro `bool' must expand to _Bool.  */
   const char *t = str(bool);
@@ -246,5 +244,3 @@ main(void) {
   }
   exit(0);
 }
-// @rewrite-fn-end
-// @lowering-fn-end
