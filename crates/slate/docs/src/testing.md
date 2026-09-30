@@ -1,15 +1,13 @@
 # Testing
 
 Testing is organized around release `cargo nextest` profiles. Use `lowering`
-for CIR/frontend changes, `rewrites` for backend fixups, and `libc` for
-libc-shim or libc-test changes. Cross-target profiles are available for ARM32
+for CIR/frontend changes and `rewrites` for backend fixups. Cross-target profiles are available for ARM32
 and AArch64; the setup and environment requirements are documented in
 [Setup](setup.md).
 
 ```bash
 cargo nextest r --release --profile lowering
 cargo nextest r --release --profile rewrites
-cargo nextest r --release --profile libc
 cargo nextest r --release --profile arm-lowering
 cargo nextest r --release --profile arm-rewrites
 cargo nextest r --release --profile aarch64-lowering
@@ -32,15 +30,6 @@ run these tests, since they're a good suite for basic compliance. Some
 are still failing, so that's also a WIP.
 
 Tests are located at `tests/fixtures.chibicc`.
-
-## Libc Test
-
-The [libc test](https://wiki.musl-libc.org/libc-test) suite provides API
-declaration checks and functional runtime checks. The API and functional
-sub-suites have separate supported/unsupported buckets; use the commands in
-`tests/fixtures.libc-test/README.md` when triaging one case.
-
-Tests are located at `tests/fixtures.libc-test`.
 
 ## GCC Torture Tests
 

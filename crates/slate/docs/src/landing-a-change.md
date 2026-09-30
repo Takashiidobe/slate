@@ -19,8 +19,6 @@ C -> CIR -> parse -> lower -> Rust source -> Fixup Rust
   `src/backend/engine/rules/` and are scheduled by the worklist engine. See
   [Rewriting](./writing-a-rewrite.md).
   Covered by the `rewrites` profile.
-- `libc-shim/` the freestanding libc headers and implementations
-  Slate compiles C against (`-nostdlib`). Covered by the `libc` profile.
 - `vendor/` crates Slate ships fixed/adapted versions of
   (`bitint`, `num-complex`, `aligned`, `triplers`); see
   [Vendored Crates](./vendored-crates.md). These have their own unit
@@ -57,22 +55,10 @@ dump plugin.
    New ops get a new `Op::X(v) => self.lower_x(&v)` arm
    plus a `lower_x` implementation in the matching file.
 8. Run the full `lowering` profile; it also covers the chibicc,
-   gcc-torture, c-testsuite, and libc-test suite, since a change can
+   gcc-torture, and c-testsuite suites, since a change can
    regress other fixtures.
 9. Run `cargo fmt` and `cargo clippy` as final gates. They do not replace the
    differential test or the full profile; rerun tests after them only if they
    changed source or fixture inputs.
 10. Do not close the task until the relevant full profile is green and the
     FileCheck diff has been reviewed.
-
-## Landing a libc-shim change
-
-1. Add or extend a probe under `tests/stdlib/<header>/*.c` (one probe per
-   libc function) or a fixture that exercises the header end to end.
-2. Add the implementation/declaration to the relevant `libc-shim/include/`
-   header. Gate anything that varies by target behind the `__SLATE_*`
-   macros from `<features.h>` (see [Vendored Crates](./vendored-crates.md)
-   for the full macro list).
-3. Run the `libc` profile for header-only compilation, API
-   compilation, and functional behavior across the targets Slate supports.
-4. `cargo fmt` and `cargo clippy` before finishing.

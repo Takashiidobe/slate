@@ -27,8 +27,8 @@ did, not just on the machine that ran the translator. [Cross Compilation](./comp
 covers how `--target` produces one crate that cross-compiles for every
 requested triple, with `#ifdef`-gated C translated once per target and
 merged behind matching `#[cfg(...)]` attributes. That only works because
-translation never depends on the host's system headers. See [Libc](./libc.md)
-for the details.
+translation never depends on the host's system headers: target headers come
+from slate-sysroots.
 
 ## Idiomatic output, without an LLM
 

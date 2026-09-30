@@ -113,87 +113,6 @@ fn cir_opt() -> String {
         .unwrap_or_else(|_| format!("{}/llvm-project/build-cir/bin/cir-opt", home()))
 }
 
-pub fn libc_shim_dir() -> Option<String> {
-    match std::env::var("SLATE_LIBC_SHIM") {
-        Ok(dir) if dir.trim().is_empty() => None,
-        Ok(dir) => Some(dir),
-        Err(_) => Some(format!("{}/libc-shim/include", env!("CARGO_MANIFEST_DIR"))),
-    }
-}
-
-fn libc_shim_args(target: &str) -> Vec<String> {
-    match libc_shim_dir() {
-        Some(dir) => {
-            let mut args = vec!["-nostdlibinc".into(), "-isystem".into(), dir];
-            let kernel = Triple::parse(target).ok().map(|triple| triple.kernel);
-            if !target.ends_with("windows-msvc")
-                && !target.ends_with("-android")
-                && kernel != Some(Kernel::Darwin)
-                && kernel != Some(Kernel::FreeBSD)
-            {
-                for fallback in system_fallback_include_dirs() {
-                    args.push("-idirafter".into());
-                    args.push(fallback);
-                }
-            }
-            args
-        }
-        None => Vec::new(),
-    }
-}
-
-pub fn clang_resource_dir_include() -> Option<String> {
-    static RESOURCE_DIR: OnceLock<Option<String>> = OnceLock::new();
-    RESOURCE_DIR
-        .get_or_init(|| {
-            let out = Command::new(clang())
-                .arg("-print-resource-dir")
-                .output()
-                .ok()?;
-            if !out.status.success() {
-                return None;
-            }
-            let dir = String::from_utf8_lossy(&out.stdout).trim().to_string();
-            (!dir.is_empty()).then(|| format!("{dir}/include"))
-        })
-        .clone()
-}
-
-fn system_fallback_include_dirs() -> Vec<String> {
-    static DIRS: OnceLock<Vec<String>> = OnceLock::new();
-    DIRS.get_or_init(|| {
-        let Ok(out) = Command::new(clang())
-            .args(["-E", "-Wp,-v", "-x", "c", "/dev/null"])
-            .output()
-        else {
-            return Vec::new();
-        };
-        let resource_dir_include = clang_resource_dir_include();
-        let stderr = String::from_utf8_lossy(&out.stderr);
-        let mut dirs = Vec::new();
-        let mut in_list = false;
-        for line in stderr.lines() {
-            if line.starts_with("#include <...> search starts here") {
-                in_list = true;
-                continue;
-            }
-            if !in_list {
-                continue;
-            }
-            if line.starts_with("End of search list") {
-                break;
-            }
-            let dir = line.trim();
-            if dir.is_empty() || Some(dir) == resource_dir_include.as_deref() {
-                continue;
-            }
-            dirs.push(dir.to_string());
-        }
-        dirs
-    })
-    .clone()
-}
-
 #[derive(Clone)]
 struct TargetFeatures {
     names: Vec<String>,
@@ -588,8 +507,7 @@ pub fn target_override_args(target: &str) -> Result<Vec<String>, TargetError> {
 
 pub fn target_args() -> Result<Vec<String>, TargetError> {
     let target = active_target();
-    let mut args = libc_shim_args(&target);
-    args.extend(target_features(&target)?.define_args());
+    let mut args = target_features(&target)?.define_args();
     let api = android_api(&target)?;
     if let Some(api) = api {
         args.push(format!("-D__SLATE_ANDROID_API__={api}"));

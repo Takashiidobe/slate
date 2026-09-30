@@ -1,30 +1,9 @@
-[profile.libc]
-default-filter = '''
-  binary_id(=slate::libc_shim_suite)
-  + binary_id(=slate::libc_test_api_suite)
-  + binary_id(=slate::libc_test_functional_suite)
-  + binary_id(=slate::libc_test_regression_suite)
-  + binary_id(=slate::header_compilation)
-  + binary_id(=slate::libc_abi_matrix_suite)
-  + binary_id(=slate::libc_declaration_probe)
-  + binary_id(=slate::libc_declaration_matrix_suite)
-  + binary_id(=slate::libc_runtime_matrix_suite)
-'''
-
 [profile.rewrites]
 default-filter = '''
   not (
-    binary_id(=slate::libc_shim_suite)
-    + binary_id(=slate::libc_test_api_suite)
-    + binary_id(=slate::libc_test_functional_suite)
-    + binary_id(=slate::libc_test_regression_suite)
-    + binary_id(=slate::header_compilation)
-    + binary_id(=slate::libc_abi_matrix_suite)
-    + binary_id(=slate::libc_runtime_matrix_suite)
-    + binary_id(=slate::differential_aarch64)
+    binary_id(=slate::differential_aarch64)
     + binary_id(=slate::differential_arm)
     + binary_id(=slate::differential_i686)
-    + binary_id(=slate::slate_frontend)
   )
 '''
 
@@ -59,13 +38,8 @@ default-filter = '''
     + test(gcc_torture_unsupported_tests_still_fail)
     + test(gcc_dg_supported_tests_match_c)
     + test(gcc_dg_unsupported_tests_still_fail)
-    + test(libc_test_functional_supported_tests_match_c)
-    + test(stdlib_coverage)
   ) - binary_id(=slate::differential_aarch64) - binary_id(=slate::differential_arm) - binary_id(=slate::differential_i686)
 '''
-
-[profile.slate]
-default-filter = 'binary_id(=slate::slate_frontend)'
 
 [[profile.default.overrides]]
 filter = 'test(gcc_torture_supported_tests_match_c)'
@@ -81,20 +55,12 @@ filter = 'test(c_testsuite_supported_tests_match_c)'
 priority = 80
 
 [[profile.default.overrides]]
-filter = 'test(libc_test_functional_supported_tests_match_c)'
-priority = 70
-
-[[profile.default.overrides]]
 filter = 'test(generated_cross_tu_filecheck)'
 priority = 60
 
 [[profile.default.overrides]]
 filter = 'test(chibicc_supported_tests_match_c)'
 priority = 50
-
-[[profile.default.overrides]]
-filter = 'test(stdlib_coverage)'
-priority = 40
 
 [[profile.default.overrides]]
 filter = 'test(chibicc_unsupported_tests_still_fail)'
@@ -107,9 +73,6 @@ filter = '''
   + test(chibicc_supported_tests_match_c)
   + test(chibicc_unsupported_tests_still_fail)
   + test(gcc_torture_supported_tests_match_c)
-  + test(libc_test_api_supported_tests_compile)
-  + test(libc_test_functional_supported_tests_match_c)
-  + test(stdlib_coverage)
   + test(directive_translated_fixtures_compile_for_current_host)
 '''
 threads-required = 3

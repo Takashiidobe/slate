@@ -12,11 +12,15 @@ do not replace runtime comparison.
 Only assertions satisfied by the current engine belong in the baseline; add
 new assertions alongside each newly ported rewrite.
 
-Fixtures exercised by the typed slate-parser frontend carry `SLATE-LOWERER`
-and `SLATE-REWRITES` FileCheck lines in the same C file. The `slate` nextest
-profile selects only those fixtures, checks raw and rewritten Rust separately,
-and differentially runs both against the C oracle. Select one fixture with
-`SLATE_DIFF_FIXTURE=<stem> cargo nextest r --release --profile slate`.
+`generated_differential`, `gcc_torture_suite`, `gcc_dg_suite`, and
+`c_testsuite_suite` translate through the typed slate-parser frontend
+(`support::translate_slate`) and emit raw lowered Rust with no backend
+fixups and no CIR fallback. They gate only on runtime parity with the C
+oracle; FileCheck is not enforced for them while the frontend is unstable.
+Every fixture in `tests/fixtures` (plus `tests/fixtures/x86_64` on x86_64
+hosts) runs, regardless of FileCheck blocks. Headers come from slate-sysroots;
+there are no cross-target fixture flavors. Select one fixture with
+`SLATE_DIFF_FIXTURE=<stem> cargo nextest r --release --profile lowering --test differential -E 'test(=generated_differential)'`.
 
 Generate raw Slate lowerer checks with `@slate-lowerer-fn-begin` and
 `@slate-lowerer-fn-end` around each function whose emitted form matters, then

@@ -29,7 +29,6 @@ The managed Beads block is task-tracking guidance, not permission to override re
 
 - **Conservative (default)**: Use `bd` for task tracking. Do not run git commits, git pushes, or Dolt remote sync unless explicitly asked. At handoff, report changed files, validation, and suggested next commands.
 - **Minimal**: Keep tool instruction files as pointers to `bd prime`; use the same conservative git policy unless active instructions say otherwise.
-- **Team-maintainer**: Only when the repository explicitly opts in, agents may close beads, run quality gates, commit, and push as part of session close. A current "do not commit" or "do not push" instruction still wins.
 
 ## Session Completion
 
@@ -40,20 +39,15 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 3. **Update issue status** - Close finished work, update in-progress items
 4. **Handle git/sync by active profile**:
 
-```bash
-# Conservative/minimal/default: report status and proposed commands; wait for approval.
-git status
-```
-
 5. **Every change must have a corresponding log**: - create a new log
    with `llog new` for every change made, summarizing the change, no
    more than 30 lines.
 6. **Hand off** - Summarize changes, validation, issue status, and any blocked sync/commit/push step
+7. Commit with a one line commit message.
 
 **Critical rules:**
 
 - Explicit user or orchestrator instructions override this Beads block.
-- Do not commit or push without clear authority from the active profile or the current user request.
 - If a required sync or push is blocked, stop and report the exact command and error.
 <!-- END BEADS INTEGRATION -->
 
@@ -70,15 +64,15 @@ the generated Rust, then require identical stdout and exit code.
 Nothing works without a **CIR-enabled Clang** (`CLANG_ENABLE_CIR=ON`). Tool paths
 default to a local build and are overridable via environment variables:
 
-| Var                                 | Default                                     | Role                                                                                                                                                                                                                                                                                                         |
-| ----------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `SLATE_CLANG`                       | `~/llvm-project/build-cir/bin/clang`        | emit CIR + Clang AST JSON                                                                                                                                                                                                                                                                                    |
-| `SLATE_CIR_OPT`                     | `~/llvm-project/build-cir/bin/cir-opt`      | CIR → MLIR generic form                                                                                                                                                                                                                                                                                      |
-| `SLATE_CARGO`                       | `cargo`                                     | compile the generated Rust                                                                                                                                                                                                                                                                                   |
-| `SLATE_RUSTFMT`                     | `rustfmt`                                   | format generated Rust before writing it to files                                                                                                                                                                                                                                                             |
-| `SLATE_TARGET` / `SLATE_CLANG_ARGS` | —                                           | shared target triple / extra clang flags                                                                                                                                                                                                                                                                     |
-| `SLATE_MACRO_DUMP_PLUGIN`           | `<SLATE_CLANG build>/lib/SlateMacroDump.so` | macro invocations plus include/function provenance, keyed by physical source offset                                                                                                                                                                                                                          |
-| `SLATE_LIBC_SHIM`                   | `libc-shim/include`                         | directory SLATE_CLANG parses with `-nostdlibinc -isystem <dir>` instead of the host's system libc headers (clang's own builtin freestanding headers — stddef.h, stdint.h, stdatomic.h, etc. — stay available); set to a different directory to override, or to an empty value to fall back to system headers |
+| Var                                 | Default                                     | Role                                                                                                                                 |
+| ----------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `SLATE_CLANG`                       | `~/llvm-project/build-cir/bin/clang`        | emit CIR + Clang AST JSON                                                                                                            |
+| `SLATE_CIR_OPT`                     | `~/llvm-project/build-cir/bin/cir-opt`      | CIR → MLIR generic form                                                                                                              |
+| `SLATE_CARGO`                       | `cargo`                                     | compile the generated Rust                                                                                                           |
+| `SLATE_RUSTFMT`                     | `rustfmt`                                   | format generated Rust before writing it to files                                                                                     |
+| `SLATE_TARGET` / `SLATE_CLANG_ARGS` | —                                           | shared target triple / extra clang flags                                                                                             |
+| `SLATE_MACRO_DUMP_PLUGIN`           | `<SLATE_CLANG build>/lib/SlateMacroDump.so` | macro invocations plus include/function provenance, keyed by physical source offset                                                  |
+| `SLATE_SYSROOTS`                    | `~/.local/share/slate/sysroots`             | slate-parser reads target headers from `<dir>/<triple>`; install targets with `cargo run -- install <triple>` in `../slate-sysroots` |
 
 `src/frontend/c_ast.rs` always loads `SLATE_CLANG` with `-fplugin=$SLATE_MACRO_DUMP_PLUGIN`, so
 that plugin must be built against the same clang tree `SLATE_CLANG` points at
@@ -102,17 +96,11 @@ Before running a command that parses C:
    rebuild it after rebuilding Clang.
 4. Select the nextest profile matching the subsystem and target matrix below.
 
-| Target | Profiles | Runtime/toolchain requirements |
-| --- | --- | --- |
-| Host Linux | `lowering`, `rewrites` | CIR Clang and host libc |
-| ARM32 GNU | `arm-lowering`, `arm-rewrites` | `armv7-unknown-linux-gnueabihf`, ARM GNU sysroot/linker, `qemu-arm-static` |
-| AArch64 GNU | `aarch64-lowering`, `aarch64-rewrites` | AArch64 Rust target, sysroot/linker, `qemu-aarch64-static` |
-| libc/API | `libc` | libc-shim headers and selected libc oracle |
-
-Android, macOS, and MSVC fixtures are collected by the normal host profiles
-when their target prerequisites and FileCheck prefixes are available; their
-oracle/bootstrap instructions live in the corresponding `wiki/concepts/*oracle.md`
-documents.
+| Target      | Profiles                               | Runtime/toolchain requirements                                             |
+| ----------- | -------------------------------------- | -------------------------------------------------------------------------- |
+| Host Linux  | `lowering`, `rewrites`                 | CIR Clang and host libc                                                    |
+| ARM32 GNU   | `arm-lowering`, `arm-rewrites`         | `armv7-unknown-linux-gnueabihf`, ARM GNU sysroot/linker, `qemu-arm-static` |
+| AArch64 GNU | `aarch64-lowering`, `aarch64-rewrites` | AArch64 Rust target, sysroot/linker, `qemu-aarch64-static`                 |
 
 ## Build & Test
 
@@ -120,8 +108,7 @@ documents.
 
 ```bash
 cargo nextest r --release --profile lowering # frontend/lowering runtime differential, no fixups
-cargo nextest r --release --profile rewrites # backend/fixups and every non-libc test
-cargo nextest r --release --profile libc     # libc shim, headers, API, and functional tests
+cargo nextest r --release --profile rewrites # backend/fixups and every other test
 cargo nextest r --release --profile arm-lowering   # ARM32 raw lowering differential
 cargo nextest r --release --profile arm-rewrites   # ARM32 lowering plus fixups
 cargo nextest r --release --profile aarch64-lowering # AArch64 raw lowering differential
@@ -132,9 +119,9 @@ cargo run -- translate tests/fixtures/add.c  # C -> Rust on stdout
 ```
 
 Only the profile relevant to the changed subsystem is required to pass. Run
-`lowering` for frontend/CIR/AST/lowering changes, `rewrites` for backend or
-fixup changes, and `libc` for `libc-shim/` or libc-test changes. Run multiple
-profiles only when a change crosses those boundaries. The `lowering` profile
+`lowering` for frontend/CIR/AST/lowering changes and `rewrites` for backend or
+fixup changes. Run multiple profiles only when a change crosses those
+boundaries. The `lowering` profile
 sets raw-lowering behavior through `NEXTEST_PROFILE=lowering`, so it compiles
 and differentially runs baseline Rust without backend fixups.
 
@@ -168,8 +155,6 @@ SLATE_GCC_TORTURE_FIXTURE=<name> cargo nextest r --release --test gcc_torture_su
   -E 'test(gcc_torture_unsupported_triage_report)' --run-ignored ignored-only --nocapture
 SLATE_GCC_DG_FIXTURE=<name> cargo nextest r --release --test gcc_dg_suite \
   -E 'test(gcc_dg_unsupported_triage_report)' --run-ignored ignored-only --nocapture
-SLATE_LIBC_TEST_FIXTURE=<name> cargo nextest r --release --test libc_test_functional_suite \
-  -E 'test(libc_test_functional_unsupported_triage_report)' --run-ignored ignored-only --nocapture
 ```
 
 Batch suites write translated Rust under `target/*-suite/<group>/` and actual
@@ -274,7 +259,7 @@ parses the generic-form CIR op-tree.
 - [wiki/concepts/passes.md](wiki/concepts/passes.md) — the pass catalog: what runs, in what order.
 - [wiki/concepts/slate-overview.md](wiki/concepts/slate-overview.md) — the supported-subset surface.
 - [wiki/concepts/gcc-torture-triage.md](wiki/concepts/gcc-torture-triage.md) — working the
-  gcc-torture/c-testsuite/chibicc/libc-test unsupported-corpus triage epics
+  gcc-torture/c-testsuite/chibicc unsupported-corpus triage epics
   (`slate-os0h.3.1` and children): the three-test pattern, which nextest
   profile to use, how to dig into one failing case, where the compiled batch
   binary lives, and what failure signatures mean.

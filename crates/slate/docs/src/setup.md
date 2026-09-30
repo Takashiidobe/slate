@@ -26,7 +26,7 @@ instead (all optional, all overriding a local-build default):
 | `SLATE_FILECHECK`                   | sibling of `SLATE_CLANG`, then `FileCheck`   | match profile-specific generated-Rust assertions in C fixtures                                    |
 | `SLATE_TARGET` / `SLATE_CLANG_ARGS` | N/A                                          | shared target triple / extra clang flags                                                          |
 | `SLATE_MACRO_DUMP_PLUGIN`           | `<$SLATE_CLANG build>/lib/SlateMacroDump.so` | the macro dump plugin binary (see below)                                                          |
-| `SLATE_LIBC_SHIM`                   | `libc-shim/include`                          | headers `SLATE_CLANG` parses with `-nostdlibinc -isystem <dir>` instead of the host's system libc |
+| `SLATE_SYSROOTS`                    | `~/.local/share/slate/sysroots`              | slate-parser target headers, read from `<dir>/<triple>` (installed by `../slate-sysroots`)        |
 
 ## Build the macro dump plugin
 
@@ -57,17 +57,13 @@ some fixtures assume optimized codegen.
 
 ```bash
 cargo nextest r --release --profile lowering # frontend/lowering runtime differential, no fixups
-cargo nextest r --release --profile rewrites # backend/fixups and every non-libc test
-cargo nextest r --release --profile libc     # libc shim, headers, API, and functional tests
+cargo nextest r --release --profile rewrites # backend/fixups and every other test
 ```
 
 - `lowering` for `src/frontend/`, `src/cir/`, and the lowerer
   against differential fixtures (`tests/fixtures/*.c`) plus the chibicc,
-  gcc-torture, c-testsuite, and libc-test suite, run through only lowering
+  gcc-torture, and c-testsuite suites, run through only lowering
   Run for changes in `src/frontend/`, `src/cir/`, or the CIR/AST parsing layer.
-- `libc` for `libc-shim/` headers and implementations: API
-  compilation, functional behavior, and header-only compilation across
-  targets. Run for changes in `libc-shim/`.
 - `rewrites` for fixup/idiomatization passes
   (`src/backend/engine/rules/`) Run for changes in `src/backend/`.
 

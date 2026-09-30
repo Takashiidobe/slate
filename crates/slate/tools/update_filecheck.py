@@ -15,9 +15,6 @@ from pathlib import Path
 TARGET_FIXTURE_DIRECTORIES = {"bionic", "macos", "msvc"}
 FIXTURE_GLOB_ROOTS = (
     "tests/fixtures",
-    "tests/fixtures/bionic",
-    "tests/fixtures/macos",
-    "tests/fixtures/msvc",
     "tests/fixtures.link",
     "tests/fixtures.cfg",
     "tests/fixtures.multi",
@@ -568,23 +565,6 @@ def target_environment(triple):
 
 def default_targets_for_path(path):
     parts = path.resolve().parts
-    if "bionic" in parts or path.parent.name == "bionic":
-        return [
-            ("BIONIC-AARCH64", target_environment("aarch64-linux-android")),
-            ("BIONIC-X86_64", target_environment("x86_64-linux-android")),
-        ]
-    if "macos" in parts or path.parent.name == "macos":
-        return [
-            ("MACOS", target_environment("aarch64-apple-darwin")),
-        ]
-    if "msvc" in parts or path.parent.name == "msvc":
-        return [
-            ("MSVC", target_environment("x86_64-pc-windows-msvc")),
-        ]
-    if "freebsd" in parts or path.parent.name == "freebsd":
-        return [
-            ("FREEBSD", target_environment("x86_64-unknown-freebsd")),
-        ]
     if "arm" in parts or path.parent.name == "arm":
         return [
             ("ARMV7-GNU", target_environment("armv7-unknown-linux-gnueabihf")),

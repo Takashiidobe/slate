@@ -1,5 +1,0 @@
-CompileFlags:
-  Add:
-    - "-nostdlibinc"
-    - "-isystem"
-    - "libc-shim/include"

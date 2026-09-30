@@ -6,9 +6,7 @@
 
 `SLATE_CLANG` a Clang built with `CLANG_ENABLE_CIR=ON` is invoked once
 per translation unit with the [macro dump plugin](./macro-dump-plugin.md)
-attached, against `libc-shim`'s headers instead of the host's system libc
-(`-nostdlib`, so the same invocation works for any target. See
-[Cross Compilation](./compilation.md) and [Libc](./libc.md)). The
+attached (see [Cross Compilation](./compilation.md)). The
 parsing stage emits CIR and AST.
 
 - CIR (`-fclangir`), parsed by `src/cir` into a structured op-tree. CIR

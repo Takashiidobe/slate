@@ -4,13 +4,8 @@
 - [Differential fixtures](concepts/differential-fixtures.md)
 - [Lowerer internals](concepts/lowerer-internals.md)
 - [Passes](concepts/passes.md)
-- [libc-shim](concepts/libc-shim.md)
 - [Cross-target toolchains](concepts/cross-target-toolchains.md)
 - [gcc-torture triage](concepts/gcc-torture-triage.md)
-- [Android NDK oracle](concepts/android-ndk-oracle.md)
-- [FreeBSD libc oracle](concepts/freebsd-libc-oracle.md)
-- [macOS SDK oracle](concepts/macos-sdk-oracle.md)
-- [MSVC reference sysroot](concepts/msvc-reference-sysroot.md)
 - [Slate overview](concepts/slate-overview.md)
 - [x86/ARM/RISC-V intrinsic lowering](concepts/x86-intrinsic-lowering.md)
 - [ARM/RISC-V intrinsic extension](concepts/arm-riscv-intrinsic-extension.md)
@@ -22,7 +17,6 @@
 - [Pointer capability lattice](concepts/pointer-capability-lattice.md)
 - [long-double-f80](concepts/long-double-f80.md)
 - [predicate tokenizer no longer collapses #if conditions to opaque](concepts/predicate-tokenizer-no-longer-collapses-if-conditions-to-opaque.md)
-- [libc-test functional harness: admission and companion-file vendoring](concepts/libc-test-functional-harness.md)
 - [Directive-driven differential fixtures use profile-scoped FileCheck](concepts/directive-driven-differential-fixtures-use-profile-scoped-filecheck.md)
 - [Port differential source assertions to fixture FileCheck](concepts/port-differential-source-assertions-to-fixture-filecheck.md)
 - [Target-qualified FileCheck is independent of fixture flavor](concepts/target-qualified-filecheck-is-independent-of-fixture-flavor.md)
@@ -33,13 +27,7 @@
 - [Lowerer phase file boundaries](concepts/lowerer-phase-file-boundaries.md)
 - [Reusable CIR normalization ownership](concepts/reusable-cir-normalization-ownership.md)
 - [Typed module alias ownership](concepts/typed-module-alias-ownership.md)
-- [model MSVC time and file status families](concepts/model-msvc-time-and-file-status-families.md)
-- [MSVC secure CRT declaration surface](concepts/msvc-secure-crt-declaration-surface.md)
-- [MSVC process and environment surface](concepts/msvc-process-and-environment-surface.md)
-- [MSVC UCRT manifest audit](concepts/msvc-ucrt-manifest-audit.md)
-- [Model Darwin stdio locale and wide text ABI](concepts/model-darwin-stdio-locale-and-wide-text-abi.md)
 - [ClangIR -emit-cir memory blowup on large, type-recursive TUs](concepts/clangir-emit-cir-memory-blowup.md)
-- [Bionic libc-shim ABI facts](concepts/android-bionic-libc-shim-abi.md)
 - [C++ translation pain points (pre-implementation scoping)](concepts/cxx-translation-pain-points.md)
 - [C++ exceptions lowering](concepts/cxx-exceptions-lowering.md)
 - [C++ stdlib shim lowering](concepts/cxx-stdlib-shim-lowering.md)
@@ -65,6 +53,14 @@ superseded each one for what actually applies now.
 - [Fixups](historical/fixups.md) -- query-engine matcher/`EditSet` mechanics,
   retired with `src/backend/query/`.
 - [Facts](historical/facts.md) -- salsa-backed analysis layer, retired.
+- libc-shim and its oracles -- [libc-shim](historical/libc-shim.md),
+  [Bionic ABI](historical/android-bionic-libc-shim-abi.md),
+  [Android NDK](historical/android-ndk-oracle.md),
+  [FreeBSD](historical/freebsd-libc-oracle.md),
+  [macOS SDK](historical/macos-sdk-oracle.md),
+  [MSVC sysroot](historical/msvc-reference-sysroot.md) and the MSVC/Darwin/Linux
+  libc surface audits: removed with `libc-shim/` (slate-p58o.7.9); the
+  slate-parser frontend reads target headers from slate-sysroots.
 - [ptr_len signature worklist with canonical forwarding](concepts/ptr-len-signature-worklist-with-canonical-forwarding.md)
 - [ptr_len owned Vec signature lifting](concepts/ptr-len-owned-vec-signature-lifting.md)
 - [Re-enable rewrite FileCheck for worklist baseline](concepts/re-enable-rewrite-filecheck-for-worklist-baseline.md)
@@ -80,4 +76,3 @@ superseded each one for what actually applies now.
 - [atoi/atol/atoll/atof const-fold lift (Tier A)](concepts/atoi-atol-atoll-atof-const-fold-lift-tier-a.md)
 - [atoi/atol/atoll Tier B prelude helper + handwritten filecheck](concepts/atoi-atol-atoll-tier-b-prelude-helper-handwritten-filecheck.md)
 - [Goto Lowering](concepts/goto-lowering.md)
-- [Linux libc header-matrix handoff](concepts/linux-libc-header-matrix-handoff.md)

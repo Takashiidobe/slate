@@ -1,7 +1,8 @@
 use slate_parser::compiler_args::CompilerArgParser;
+use slate_parser::dialect::Dialect;
 use slate_parser::ir::Module;
 use slate_parser::parser::Parser;
-use slate_parser::sema;
+use slate_parser::sema::Sema;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 
@@ -23,12 +24,10 @@ pub enum Error {
 
 pub fn parse_module_with_args(path: &Path, args: &[String]) -> Result<Module, Error> {
     let args = CompilerArgParser::parse(args.iter().cloned())?;
-    let mut parser = Parser::new(args.search_paths())
-        .with_preprocessor_inputs(args.preprocessor_inputs)
-        .with_target(args.target)
-        .with_flavor(args.flavor)
-        .with_options(args.options)
-        .with_standard(args.standard);
+    let search = args.search_paths();
+    let dialect = Dialect::new(args.flavor, args.standard, args.target, args.options);
+    let mut parser =
+        Parser::new(search, dialect).with_preprocessor_inputs(args.preprocessor_inputs);
     let (unit, files) = parser.parse_file(path).map_err(|error| Error::Parse {
         path: path.to_path_buf(),
         message: error.to_string(),
@@ -48,11 +47,12 @@ pub fn parse_module_with_args(path: &Path, args: &[String]) -> Result<Module, Er
                 .join("\n"),
         });
     }
-    unit.analyze(&files).map_err(|error| Error::Analyze {
+    let mut sema = Sema::new(&unit);
+    sema.analyze(&files).map_err(|error| Error::Analyze {
         path: path.to_path_buf(),
         message: error.to_string(),
     })?;
-    let (module, _) = sema::resolve_module(&unit, &files).map_err(|error| Error::Lower {
+    let (module, _) = sema.lower(&files).map_err(|error| Error::Lower {
         path: path.to_path_buf(),
         message: error.to_string(),
     })?;

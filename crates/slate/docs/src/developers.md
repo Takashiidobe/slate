@@ -16,6 +16,5 @@
   - [Vendored Crates](./vendored-crates.md)
 - [Querying](./writing-a-query.md)
 - [Rewriting](./writing-a-rewrite.md)
-- [Libc](./libc.md)
-  - [intrinsicgen](./intrinsicgen.md)
+- [intrinsicgen](./intrinsicgen.md)
 - [Testing](./testing.md)

@@ -1,0 +1,445 @@
+fixture	stage	first_barrier	first_ticket	scope_owner	slate_checks	diagnostic
+add.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	yes	-
+address_of_array_element.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.3.24	no	error: unsupported slate-parser IR: value aggregate<array<i32, 1>, zero_fill=false>(index0 = const<i32>(10))
+aggregate_array_literal_typed_elements.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+aggregate_value_member_ops.c	unsupported-lowering	module.types record Pair	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+alias_function.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+alias_global.c	unsupported-lowering	Global real_global	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global real_global
+aligned_struct.c	unsupported-lowering	module.types record Aligned	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+alloca_frame_const_ptr_param.c	unsupported-lowering	module.types record <anonymous>	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+allocation_attribute_metadata.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+anon_local_struct.c	unsupported-lowering	module.types record <anonymous>	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+anon_struct_array.c	unsupported-lowering	module.types record <anonymous>	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+anon_struct_name_collision.c	unsupported-lowering	module.types record __slate_anonymous_struct_0	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+anonymous_enum_record_field.c	unsupported-lowering	module.types record Conditional	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+anonymous_header_two_hop.c	unsupported-lowering	module.types record <anonymous>	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+anonymous_members.c	unsupported-lowering	module.types record container	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+array_decay_void_ptr_call_arg.c	unsupported-lowering	ValueKind::code_units	slate-p58o.3.37	slate-p58o.3.24	no	error: unsupported slate-parser IR: value code_units<array<i8, 6>>([104, 101, 108, 108, 111, 0])
+array_indexed_struct_field_named_enum.c	unsupported-lowering	module.types enum <anonymous>	slate-p58o.3.20	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+array_init.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.3.24	no	error: unsupported slate-parser IR: value aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(
+array_of_structs.c	unsupported-lowering	module.types record Point	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+array_one_past_end_bound.c	unsupported-lowering	module.types record cursor	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+array_types.c	unsupported-lowering	Type f64	slate-p58o.3.6	slate-p58o.3.24	no	error: unsupported slate-parser IR: type f64
+arrays.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+assert_compile_time_true.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+assert_recovery_preserves_result.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+assert_runtime_false.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+assert_runtime_true.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+assign_value_in_branch.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+atoi_atof_const_fold.c	unsupported-lowering	Type f64	slate-p58o.3.6	slate-p58o.4	no	error: unsupported slate-parser IR: type f64
+atoi_atol_prelude_dynamic.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+atomic_explicit_orderings.c	unsupported-lowering	module.types enum memory_order	slate-p58o.3.20	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+atomic_fallbacks.c	unsupported-lowering	module.types enum memory_order	slate-p58o.3.20	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+atomic_flag_ops.c	unsupported-lowering	module.types enum memory_order	slate-p58o.3.20	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+atomic_widths.c	unsupported-lowering	module.types enum memory_order	slate-p58o.3.20	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+atomics.c	unsupported-lowering	module.types enum memory_order	slate-p58o.3.20	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+attribute_cold_inline.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+attribute_deprecated_must_use.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+bitand.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.3.24	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(1))
+bitfield_init_increment.c	unsupported-lowering	module.types record <anonymous>	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+bitfield_ops.c	unsupported-lowering	module.types record Bits	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+bitfield_storage.c	unsupported-lowering	module.types union U	slate-p58o.3.17	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+bitint_record_layout.c	unsupported-lowering	module.types union BitIntOrArray	slate-p58o.3.17	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+bitint_shift.c	unsupported-lowering	Type i129b	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: integer type i129b
+bitnot.c	unsupported-lowering	ValueKind::not	slate-p58o.3.4	slate-p58o.3.24	no	error: unsupported slate-parser IR: value not<i32>(read<i32>(%2))
+bitor.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.3.24	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(8))
+bitxor.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.3.24	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(1))
+bool.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+borrowck_hostile_aliasing.c	unsupported-lowering	module.types record Pair	slate-p58o.3.15	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+branch_hint_builtins.c	unsupported-lowering	Global side_effect_calls	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global side_effect_calls
+break_for.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.3.24	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(1))
+break_while.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+buffer_const_bound.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+buffer_cursor.c	unsupported-lowering	module.types record cursor	slate-p58o.3.15	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+buffer_return_box.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+buffer_return_lift.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+builtin_alloca.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+builtin_assume_aligned.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+builtin_ctzll_shift.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+builtin_math_scalar_ops.c	unsupported-lowering	ValueKind::call	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: value call<f64, signature=fn(f64, f64, f64) -> f64>(__builtin_fma, const<f64>(2.0), const<f64>(3.0), const<f64>(1.0))
+c11.c	parser-sema	lower /home/takashi/Projects/slate/tests/fixtures/c11.c to slate-parser IR: unresolved ordinary name `CMPLX`	slate-p58o.1.7	slate-p58o.4	no	error: lower tests/fixtures/c11.c to slate-parser IR: unresolved ordinary name `CMPLX`
+c11_callbacks.c	unsupported-lowering	module.types alias __tss_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+c23_embed.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+c23_language.c	parser-sema	lower /home/takashi/Projects/slate/tests/fixtures/c23_language.c to slate-parser IR: unsupported in numeric IR lowering:	slate-parser-dyd.38	slate-p58o.4	no	error: lower tests/fixtures/c23_language.c to slate-parser IR: unsupported in numeric IR lowering: target builtin type
+c23_library.c	parser-sema	parse /home/takashi/Projects/slate/tests/fixtures/c23_library.c: header not found in search path: <stdbit.h>	slate-p58o.1.6	slate-p58o.4	no	error: parse tests/fixtures/c23_library.c: header not found in search path: <stdbit.h>
+c23_nullptr.c	parser-sema	lower /home/takashi/Projects/slate/tests/fixtures/c23_nullptr.c to slate-parser IR: unsupported in numeric IR lowering: 	slate-parser-dyd.51	slate-p58o.4	no	error: lower tests/fixtures/c23_nullptr.c to slate-parser IR: unsupported in numeric IR lowering: target builtin type
+c23_stdlib_memory_management.c	parser-sema	lower /home/takashi/Projects/slate/tests/fixtures/c23_stdlib_memory_management.c to slate-parser IR: unresolved ordinary	slate-p58o.1.6	slate-p58o.4	no	error: lower tests/fixtures/c23_stdlib_memory_management.c to slate-parser IR: unresolved ordinary name `free_sized`
+c23_typeof_unqual.c	unsupported-lowering	ValueKind::null	slate-p58o.3.36	slate-p58o.4	no	error: unsupported slate-parser IR: value null<ptr<i32>>
+c89.c	unsupported-lowering	module.types alias __gnuc_va_list	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+c99.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+c_string_literal.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+casts.c	unsupported-lowering	Number::FloatBits	slate-p58o.3.6	slate-p58o.3.24	no	error: unsupported slate-parser IR: constant FloatBits(4620411742705418240)
+chars.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.3.24	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(5))
+clang_codegen_pragmas.c	unsupported-lowering	Type f64	slate-p58o.3.6	slate-p58o.4	no	error: unsupported slate-parser IR: type f64
+comments.c	unsupported-lowering	module.types enum Mode	slate-p58o.3.20	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+compile_time_selection_builtins.c	unsupported-lowering	Number::FloatBits	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: constant FloatBits(4612811918334230528)
+complex.c	unsupported-lowering	ValueKind::aggregate	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: value aggregate<complex<f64>, zero_fill=false>(index0 = const<f64>(1.0), index1 = const<f64>(2.0))
+complex_equality.c	unsupported-lowering	ValueKind::aggregate	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: value aggregate<complex<f32>, zero_fill=false>(index0 = const<f32>(1.0), index1 = const<f32>(2.0))
+complex_lvalue.c	unsupported-lowering	Type f64	slate-p58o.3.6	slate-p58o.4	no	error: unsupported slate-parser IR: type f64
+complex_record_fields.c	unsupported-lowering	module.types alias complex_float	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+compound_assignments.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+compound_literal_address.c	unsupported-lowering	module.types record Slice	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+computed_goto_label_delta.c	unsupported-lowering	Global offsets	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global offsets
+computed_goto_ops.c	unsupported-lowering	Global targets	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global targets
+conditionals.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.3.24	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(1))
+constant_index_cast.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+constant_object_query_ops.c	unsupported-lowering	Global global_array	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global global_array
+constructor_destructor_attrs.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+constructor_destructor_priority.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+constructor_only.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+continue_for.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+continue_nested_loops.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+continue_while.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+control_flow_builtin_ops.c	unsupported-lowering	ValueKind::call	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: value call<i64, signature=fn(i64, i64) -> i64>(__builtin_expect, from_bool<i64, reason=arg>(ne<i32>(read<i32>(%2), const<i32>(0))), widen<i64, reason=arg>(const<i32
+cstr_literal_arg.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+cstr_literal_mut_ptr.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+ctype_classify_fixup.c	unsupported-lowering	module.types enum <anonymous>	slate-p58o.3.20	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+ctype_classify_param_unsupported.c	unsupported-lowering	module.types enum <anonymous>	slate-p58o.3.20	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+ctype_classify_setlocale_c.c	unsupported-lowering	module.types enum <anonymous>	slate-p58o.3.20	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+ctype_classify_setlocale_non_c.c	unsupported-lowering	module.types enum <anonymous>	slate-p58o.3.20	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+ctype_libc_fixup.c	unsupported-lowering	Global c	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global c
+ctype_libc_setlocale_c.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+ctype_libc_setlocale_non_c.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+dead_store.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+decrement.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+deep_ast.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+dense_temp_chain_completes_in_bounded_time.c	unsupported-lowering	Global results	slate-p58o.3.18	slate-p58o.5	no	error: unsupported slate-parser IR: global results
+destructor_early_return.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+destructor_only.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+div.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.3.24	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(7))
+do_while.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+dynamic_object_size_ops.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+effectful_temp_forward.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+elifdef.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+enum_field_ptr_call_arg.c	unsupported-lowering	module.types enum <anonymous>	slate-p58o.3.20	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+enum_ptr_signedness.c	unsupported-lowering	module.types enum color_e	slate-p58o.3.20	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+enum_return_type_function_pointer_field.c	unsupported-lowering	module.types enum Status	slate-p58o.3.20	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+enum_wrapper_unwind_abi_propagation.c	unsupported-lowering	module.types alias __jmp_buf	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+enums.c	unsupported-lowering	module.types enum Basic	slate-p58o.3.20	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+extern_char_ptr_ffi.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+extern_decl.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.3.24	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(42))
+f128_intrinsics.c	unsupported-lowering	Type f128	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: type f128
+filecheck_annotation_regions.c	lowered-unverified	-	slate-p58o.5	slate-p58o.5	no	-
+flexible_array_member.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+float128.c	unsupported-lowering	Type f128	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: type f128
+float16.c	unsupported-lowering	module.types alias __gnuc_va_list	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+floats.c	unsupported-lowering	Type f64	slate-p58o.3.6	slate-p58o.3.24	no	error: unsupported slate-parser IR: type f64
+fn_ptr_cmp_libc.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+fn_signature_filecheck.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+fprintf_non_standard_file_no_rewrite.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+fprintf_stderr_with_args.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+fprintf_stdout_with_args.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+fputs_stderr_plain.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+freeze_builtin_ops.c	unsupported-lowering	ValueKind::call	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: value call<i32, signature=fn(i32) -> i32>(__builtin_nondeterministic_value, read<i32>(%3))
+function_pointer_presence.c	unsupported-lowering	Type fn(i32) -> i32	slate-p58o.3.11	slate-p58o.3.24	no	error: unsupported slate-parser IR: type fn(i32) -> i32
+function_pointer_struct_init.c	unsupported-lowering	module.types record Callback	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+function_pointer_to_void_ptr_cast.c	unsupported-lowering	module.types alias Callback	slate-p58o.3.35	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+function_pointers.c	unsupported-lowering	Type fn(i32, i32) -> i32	slate-p58o.3.11	slate-p58o.3.24	no	error: unsupported slate-parser IR: type fn(i32, i32) -> i32
+function_prototypes.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+function_provenance.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+function_typedef_pointer_return_struct.c	unsupported-lowering	module.types alias pointer_returning_fn	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+generic_type_dispatch.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.4	no	error: unsupported slate-parser IR: value aggregate<array<i32, 2>, zero_fill=false>(index0 = const<i32>(5), index1 = const<i32>(6))
+getenv_var_recover.c	unsupported-lowering	ValueKind::null	slate-p58o.3.36	slate-p58o.3.24	no	error: unsupported slate-parser IR: value null<ptr<i8>>
+global_array_pointer_decay.c	unsupported-lowering	module.types alias __uint32_t	slate-p58o.3.35	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+global_bool.c	unsupported-lowering	Global enabled	slate-p58o.3.18	slate-p58o.3.24	no	error: unsupported slate-parser IR: global enabled
+global_string_pointer.c	unsupported-lowering	Global bom_original	slate-p58o.3.34	slate-p58o.3.24	no	error: unsupported slate-parser IR: global bom_original
+global_string_pointer_array.c	unsupported-lowering	Global names	slate-p58o.3.19	slate-p58o.3.24	no	error: unsupported slate-parser IR: global names
+global_vars.c	unsupported-lowering	module.types record Pair	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+gnu_auto_type.c	parser-sema	lower /home/takashi/Projects/slate/tests/fixtures/gnu_auto_type.c to slate-parser IR: unsupported in numeric IR lowering	slate-parser-dyd.38	slate-p58o.4	no	error: lower tests/fixtures/gnu_auto_type.c to slate-parser IR: unsupported in numeric IR lowering: target builtin type
+gnu_builtin_addressof.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+gnu_builtin_atomic_flag.c	unsupported-lowering	ValueKind::update	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: value update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<bool>>(%2)), const<bool>(true))
+gnu_builtin_debugtrap.c	unsupported-lowering	Global debugtrap_never	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global debugtrap_never
+gnu_builtin_return_address.c	unsupported-lowering	ValueKind::call	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: value call<ptr<void>, signature=fn(u32) -> ptr<void>>(__builtin_return_address, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)))
+gnu_builtin_source.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+gnu_builtins_numeric.c	unsupported-lowering	ValueKind::call	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: value call<i32, signature=fn(i32) -> i32>(__builtin_ffs, const<i32>(16))
+gnu_carry_borrow_builtins.c	unsupported-lowering	ValueKind::call	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: value call<u32, signature=fn(u32, u32, u32, ptr<u32>) -> u32>(__builtin_addc, read<u32>(%2), read<u32>(%3), read<u32>(%4), read<ptr<u32>>(%5))
+gnu_case_ranges.c	unsupported-lowering	Statement::Switch	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: statement Switch { id: BindingId(8), discriminant: Value { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), node: Read { place: Place { ty: Num
+gnu_cookie_stdio.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+gnu_counter.c	unsupported-lowering	Global direct_zero	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global direct_zero
+gnu_empty_struct.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+gnu_frame_address.c	unsupported-lowering	module.types alias uintptr_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+gnu_function_pointer_arithmetic.c	parser-sema	lower /home/takashi/Projects/slate/tests/fixtures/gnu_function_pointer_arithmetic.c to slate-parser IR: unsupported in n	slate-parser-dyd.52	slate-p58o.4	no	error: lower tests/fixtures/gnu_function_pointer_arithmetic.c to slate-parser IR: unsupported in numeric IR lowering: incomplete field type
+gnu_init_designator_survey.c	parser-sema	lower /home/takashi/Projects/slate/tests/fixtures/gnu_init_designator_survey.c to slate-parser IR: unsupported in numeri	slate-parser-dyd.53	slate-p58o.4	no	error: lower tests/fixtures/gnu_init_designator_survey.c to slate-parser IR: unsupported in numeric IR lowering: incomplete field type
+gnu_integer_complex.c	unsupported-lowering	Global global_value	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global global_value
+gnu_legacy_sync_builtins.c	unsupported-lowering	ValueKind::update	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: value update<i32, result=old, atomic=seq_cst>(deref(addr_of<ptr<i32>>(%2)), add<i32, overflow=wrap>(old<i32>, const<i32>(3)))
+gnu_libc_algorithms.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+gnu_libc_allocation.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+gnu_libc_platform.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+gnu_libc_process_diagnostics.c	unsupported-lowering	module.types enum mcheck_status	slate-p58o.3.20	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+gnu_libc_stdio.c	unsupported-lowering	module.types record _IO_FILE	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+gnu_libc_strings.c	unsupported-lowering	module.types alias error_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+gnu_libm.c	unsupported-lowering	Type f64	slate-p58o.3.6	slate-p58o.4	no	error: unsupported slate-parser IR: type f64
+gnu_macro_pragmas.c	unsupported-lowering	Global macro_inner	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global macro_inner
+gnu_misc_extension_survey.c	parser-sema	lower /home/takashi/Projects/slate/tests/fixtures/gnu_misc_extension_survey.c to slate-parser IR: unsupported in numeric	slate-parser-dyd.26	slate-p58o.4	no	error: lower tests/fixtures/gnu_misc_extension_survey.c to slate-parser IR: unsupported in numeric IR lowering: module statement
+gnu_pragmas.c	unsupported-lowering	module.types record GNUPragmaPacked	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+gnu_symbol_pragmas.c	unsupported-lowering	ValueKind::function_decay	slate-p58o.3.11	slate-p58o.4	no	error: unsupported slate-parser IR: value function_decay<ptr<fn(i32) -> i32>>(%3)
+goto_backward_loop.c	unsupported-lowering	Statement::Label	slate-p58o.4	slate-p58o.4	no	"error: unsupported slate-parser IR: statement Label { id: BindingId(2), name: ""loop"", body: [Write { place: Place { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), kind: Binding("
+goto_forward.c	unsupported-lowering	Statement::Goto	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: statement Goto(BindingId(2))
+goto_if_scope.c	unsupported-lowering	Statement::Goto	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: statement Goto(BindingId(2))
+goto_into_later_switch_case.c	unsupported-lowering	Statement::Switch	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: statement Switch { id: BindingId(7), discriminant: Value { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), node: Read { place: Place { ty: Num
+goto_into_later_switch_case_i128.c	unsupported-lowering	Statement::Switch	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: statement Switch { id: BindingId(7), discriminant: Value { ty: Numeric(Integer { width: 128, signed: true, bit_precise: true }), node: Read { place: Place { ty: Num
+goto_irreducible.c	unsupported-lowering	Statement::Goto	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: statement Goto(BindingId(3))
+goto_irreducible_islands.c	unsupported-lowering	Statement::Goto	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: statement Goto(BindingId(3))
+goto_multi_exit_loop.c	unsupported-lowering	Statement::Label	slate-p58o.4	slate-p58o.4	no	"error: unsupported slate-parser IR: statement Label { id: BindingId(2), name: ""loop"", body: [Write { place: Place { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), kind: Binding("
+goto_nested_if.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.4	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(1))
+goto_nested_loops.c	unsupported-lowering	Statement::Label	slate-p58o.4	slate-p58o.4	no	"error: unsupported slate-parser IR: statement Label { id: BindingId(2), name: ""outer"", body: [Write { place: Place { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), kind: Binding"
+goto_return_value.c	unsupported-lowering	Statement::Goto	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: statement Goto(BindingId(2))
+goto_sibling_loops.c	unsupported-lowering	Statement::Label	slate-p58o.4	slate-p58o.4	no	"error: unsupported slate-parser IR: statement Label { id: BindingId(2), name: ""first"", body: [Write { place: Place { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), kind: Binding"
+goto_switch_forward.c	unsupported-lowering	Statement::Switch	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: statement Switch { id: BindingId(9), discriminant: Value { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), node: Read { place: Place { ty: Num
+goto_temp_cross_state.c	unsupported-lowering	module.types record <anonymous>	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+heap_box_delayed_store.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+heap_box_fixup.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+heap_box_use_after_free_bailout.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+heap_vec_calloc.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+heap_vec_malloc.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+heap_vec_realloc.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+indirect_call_enum_return_capture.c	unsupported-lowering	module.types enum <anonymous>	slate-p58o.3.20	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+indirect_call_unwind_abi_propagation.c	unsupported-lowering	module.types alias __jmp_buf	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+indirect_call_void_ptr_param.c	unsupported-lowering	module.types record Data	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+inline_variadic_const_args.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+int128_arith.c	unsupported-lowering	ValueKind::conditional	slate-p58o.3.29	slate-p58o.3.24	no	error: unsupported slate-parser IR: value conditional<i32>(gt<i128>(read<i128>(%14), widen<i128, reason=usual_arith>(const<i32>(0))), const<i32>(1), const<i32>(0))
+int128_struct.c	unsupported-lowering	module.types record Wide	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+integer_bit_builtin_ops.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.4	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(12345))
+interprocedural_alloc_promotion.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+interprocedural_alloc_promotion_arith_bailout.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+interprocedural_alloc_promotion_branches.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+interprocedural_alloc_promotion_chain.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+lazy_singleton.c	unsupported-lowering	Global cached_value	slate-p58o.3.18	slate-p58o.3.24	no	error: unsupported slate-parser IR: global cached_value
+lazy_singleton_unsafe_alias.c	unsupported-lowering	Global cached_value	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global cached_value
+length_lattice_view.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.5	no	error: unsupported slate-parser IR: value aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(
+libc_address_taken_safe_callback.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+libyaml_type_shapes.c	unsupported-lowering	module.types alias yaml_char_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+local_libc_mem.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+local_libc_memcmp.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+local_libc_strcmp.c	unsupported-lowering	ValueKind::code_units	slate-p58o.3.37	slate-p58o.4	no	error: unsupported slate-parser IR: value code_units<array<i8, 4>>([97, 98, 99, 0])
+local_libc_string_bounds.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+local_named_enum_declaration.c	unsupported-lowering	module.types enum <anonymous>	slate-p58o.3.20	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+local_named_err.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+local_record_same_tag.c	unsupported-lowering	module.types enum Err	slate-p58o.3.20	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+local_struct_name_collision.c	unsupported-lowering	module.types record TestCase	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+local_vla.c	unsupported-lowering	Type vla<i32, %12>	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: type vla<i32, %12>
+logical_ops.c	unsupported-lowering	Global hits	slate-p58o.3.18	slate-p58o.3.24	no	error: unsupported slate-parser IR: global hits
+long_double.c	unsupported-lowering	module.types alias __int8_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+long_double_comparisons.c	unsupported-lowering	Number::FloatBits	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: constant FloatBits(0)
+long_double_complex.c	parser-sema	lower /home/takashi/Projects/slate/tests/fixtures/long_double_complex.c to slate-parser IR: unresolved ordinary name `CM	slate-p58o.1.7	slate-p58o.4	no	error: lower tests/fixtures/long_double_complex.c to slate-parser IR: unresolved ordinary name `CMPLXL`
+long_double_layout.c	unsupported-lowering	module.types record ld_box	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+long_double_pointer_out.c	unsupported-lowering	Type f80	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: type f80
+long_double_struct.c	unsupported-lowering	module.types record box	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+long_double_union_representation.c	unsupported-lowering	module.types alias __uint64_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+long_double_variadic.c	unsupported-lowering	Number::FloatBits	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: constant FloatBits(302222231531620438900736)
+longlong.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+longs.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+loop_break_continue.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+loop_sum.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	yes	-
+math_builtin_ops.c	unsupported-lowering	Number::FloatBits	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: constant FloatBits(4602678819172646912)
+mem2reg_computed_goto.c	unsupported-lowering	Global labels	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global labels
+mem2reg_const_global_load.c	unsupported-lowering	module.types record Byte	slate-p58o.3.15	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+mem2reg_pointer_mutability.c	unsupported-lowering	module.types record Row	slate-p58o.3.15	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+mem2reg_pointer_ssa.c	unsupported-lowering	Global value	slate-p58o.3.18	slate-p58o.5	no	error: unsupported slate-parser IR: global value
+mem2reg_va_list_ssa.c	unsupported-lowering	module.types alias __gnuc_va_list	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+mem_bcopy_overlap.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.4	no	error: unsupported slate-parser IR: value aggregate<array<i8, 8>, zero_fill=false>(index0 = truncate<i8, reason=assign, fits=always>(const<i32>(1)), index1 = truncate<i8, reason=assign, fits=always>(c
+mem_bitcast_copy.c	unsupported-lowering	module.types record Pair	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+mem_bzero.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.4	no	error: unsupported slate-parser IR: value aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(
+mem_memchr.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+mem_safe_slice_idioms.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+memchr_nullable_pointer.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.4	no	error: unsupported slate-parser IR: value aggregate<array<u8, 4>, zero_fill=false>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(10))), inde
+memcmp.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+memcpy.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+memmove.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+memset.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+misc_language_survey.c	parser-sema	lower /home/takashi/Projects/slate/tests/fixtures/misc_language_survey.c to slate-parser IR: unsupported in numeric IR l	slate-parser-dyd.54	slate-p58o.4	no	error: lower tests/fixtures/misc_language_survey.c to slate-parser IR: unsupported in numeric IR lowering: sizeof of incomplete type
+mkstemp.c	unsupported-lowering	ValueKind::code_units	slate-p58o.3.37	slate-p58o.4	no	error: unsupported slate-parser IR: value code_units<array<i8, 13>>([115, 108, 97, 116, 101, 45, 88, 88, 88, 88, 88, 88, 0])
+modulo.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.3.24	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(7))
+mt-atomics.c	unsupported-lowering	module.types alias pthread_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+mul.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.3.24	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(4))
+nested_aggregate_const_record_field_alignment.c	unsupported-lowering	module.types alias fnptr	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+nested_anon_struct_fields.c	unsupported-lowering	module.types record event	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+nested_structs.c	unsupported-lowering	module.types record Inner	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+non_int_fields.c	unsupported-lowering	module.types record Mixed	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+non_int_globals.c	unsupported-lowering	Global small	slate-p58o.3.18	slate-p58o.3.24	no	error: unsupported slate-parser IR: global small
+nonnull_all_params.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+nonnull_contract_positions.c	unsupported-lowering	ValueKind::conditional	slate-p58o.3.29	slate-p58o.4	no	error: unsupported slate-parser IR: value conditional<i32>(ne<ptr<i32>>(read<ptr<i32>>(%5), null<ptr<i32>>), read<i32>(deref(read<ptr<i32>>(%5))), const<i32>(0))
+nonnull_params.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+nonnull_prototype.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+nonnull_static_array_param.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.4	no	error: unsupported slate-parser IR: value aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4))
+noreturn_attribute.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+noreturn_c11_spelling.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+noreturn_prototype.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+noreturn_unproven_shape.c	unsupported-lowering	Global unused_spin	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global unused_spin
+numeric_parse_fixup.c	unsupported-lowering	Type f64	slate-p58o.3.6	slate-p58o.5	no	error: unsupported slate-parser IR: type f64
+option_box_local_arith_bailout.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+option_box_local_guarded.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+option_box_local_identity.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+over_aligned_local.c	unsupported-lowering	module.types alias uintptr_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+overflow_scalar_ops.c	unsupported-lowering	ValueKind::overflow_add	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: value overflow_add<bool>(const<i32>(2147483647), const<i32>(1), deref(addr_of<ptr<i32>>(%2)))
+packed_aligned_struct.c	unsupported-lowering	module.types record PackedAligned	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+packed_mixed_bitfields.c	unsupported-lowering	module.types record MixedBits	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+packed_struct.c	unsupported-lowering	module.types record Packed	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+param_spill.c	unsupported-lowering	ValueKind::read	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: value read<i32, atomic=seq_cst>(%2)
+peel_casts.c	lowered-unverified	-	slate-p58o.5	slate-p58o.5	no	-
+peel_casts_ptr_chain.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+perror_call_guard_last_os_error.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+perror_fopen_last_os_error.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+perror_intervening_call_no_rewrite.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+pointer_compare_address.c	unsupported-lowering	module.types alias __time_t	slate-p58o.3.35	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+pointer_lattice.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+pointer_return_alias.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+pointer_select_field_address.c	unsupported-lowering	module.types alias BigCount	slate-p58o.3.35	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+pointer_to_function_pointer_field.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+pointers.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	yes	-
+pragma_guarded_by_opaque_version_predicate.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+pragma_pack.c	unsupported-lowering	module.types record NaturalBefore	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+pragma_pack_named_and_aligned.c	unsupported-lowering	module.types record IgnoredBadAlign	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+printf_alternate_integer.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+printf_char_width.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+printf_char_width_rejected.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+printf_decimal_format.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+printf_float.c	unsupported-lowering	Number::FloatBits	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: constant FloatBits(1069547520)
+printf_float_rejected.c	unsupported-lowering	Number::FloatBits	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: constant FloatBits(4608308318706860032)
+printf_float_width.c	unsupported-lowering	Number::FloatBits	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: constant FloatBits(4614256650576692846)
+printf_float_width_rejected.c	unsupported-lowering	Number::FloatBits	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: constant FloatBits(4614256650576692846)
+printf_general.c	unsupported-lowering	Number::FloatBits	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: constant FloatBits(4653144502051863213)
+printf_general_rejected.c	unsupported-lowering	Number::FloatBits	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: constant FloatBits(4653144502051863213)
+printf_hex_octal.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+printf_integer_precision.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.4	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(5))
+printf_integer_widths.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.4	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(42))
+printf_literal_escaping.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+printf_narrow_length_modifiers.c	unsupported-lowering	module.types alias ptrdiff_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+printf_narrow_length_modifiers_precision_alternate.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.4	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(5))
+printf_narrow_length_modifiers_rejected.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+printf_partial_conversion.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+printf_pointer.c	unsupported-lowering	module.types alias uintptr_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+printf_pointer_rejected.c	unsupported-lowering	module.types alias uintptr_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+printf_scientific.c	unsupported-lowering	Number::FloatBits	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: constant FloatBits(4653144502051863213)
+printf_scientific_rejected.c	unsupported-lowering	Number::FloatBits	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: constant FloatBits(4653144502051863213)
+printf_string_char.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+printf_string_char_rejected.c	unsupported-lowering	ValueKind::code_units	slate-p58o.3.37	slate-p58o.4	no	error: unsupported slate-parser IR: value code_units<array<i8, 4>>([104, 101, 121, 0])
+printf_string_width_precision.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+process_msvc_absent.c	unsupported-lowering	Global _beginthread	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global _beginthread
+ptr_lattice_escape_then_free.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+ptr_lattice_free_cast_bridge.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+ptr_lattice_offset_temp_write.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.5	no	error: unsupported slate-parser IR: value aggregate<array<i32, 4>, zero_fill=true>(index0 = const<i32>(0))
+ptr_lattice_shared_helper_mixed_provenance.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+ptr_len_array_sources.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+ptr_len_const_bound.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.5	no	error: unsupported slate-parser IR: value aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(4), index2 = const<i32>(6), index3 = const<i32>(8))
+ptr_len_nonadjacent.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.5	no	error: unsupported slate-parser IR: value aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(4), index2 = const<i32>(6), index3 = const<i32>(8))
+ptr_len_slice.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.5	no	error: unsupported slate-parser IR: value aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(4), index2 = const<i32>(6), index3 = const<i32>(8))
+ptr_len_slice_enumerate.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.5	no	error: unsupported slate-parser IR: value aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(4), index2 = const<i32>(6), index3 = const<i32>(8))
+ptr_len_slice_item.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.5	no	error: unsupported slate-parser IR: value aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(2), index1 = const<i32>(4), index2 = const<i32>(6), index3 = const<i32>(8))
+ptr_len_str_invalid_reject.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+ptr_len_str_worklist.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+ptr_len_string_owned_invalid_reject.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+ptr_len_string_owned_worklist.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+ptr_len_vec_capacity_reject.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+ptr_len_vec_worklist.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+ptr_len_worklist.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+ptr_member_store_unsafe.c	unsupported-lowering	module.types record inner	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+ptr_out_param_alloca_frame.c	unsupported-lowering	ValueKind::ptr_diff	slate-p58o.3.12	slate-p58o.4	no	error: unsupported slate-parser IR: value ptr_diff<i64, element=i8, same_array=required, overflow=ub>(read<ptr<const i8>>(%3), read<ptr<const i8>>(%2))
+ptr_param_field_addr_of_mut.c	unsupported-lowering	module.types record <anonymous>	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+ptr_param_field_store.c	unsupported-lowering	module.types record <anonymous>	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+ptr_to_array_local.c	unsupported-lowering	module.types alias arr_t	slate-p58o.3.35	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+qsort_bsearch_fixup.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+range_loop_local_array.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.3.24	no	error: unsupported slate-parser IR: value aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4), index4 = const<i32>(
+redundant_parens.c	unsupported-lowering	ValueKind::conditional	slate-p58o.3.29	slate-p58o.5	no	error: unsupported slate-parser IR: value conditional<i32>(gt<i32>(read<i32>(%2), read<i32>(%3)), sub<i32, overflow=ub>(read<i32>(%2), read<i32>(%3)), sub<i32, overflow=ub>(read<i32>(%3), read<i32>(%2
+return_cleanup.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.4	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(1))
+returns_nonnull.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+salsa_id_stability.c	lowered-unverified	-	slate-p58o.5	slate-p58o.5	no	-
+saturating_arith.c	unsupported-lowering	module.types alias U128	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+secure_crt_absent.c	unsupported-lowering	Global _ctime64_s	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global _ctime64_s
+serial_temp_chain_completes_in_bounded_time.c	lowered-unverified	-	slate-p58o.5	slate-p58o.5	no	-
+setjmp_recovery_dynamic_buf_stack.c	unsupported-lowering	module.types alias __jmp_buf	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+setjmp_recovery_extern_c_callback.c	unsupported-lowering	module.types alias __jmp_buf	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+setjmp_recovery_guard.c	unsupported-lowering	module.types alias __jmp_buf	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+setjmp_recovery_loop_continue.c	unsupported-lowering	module.types alias __jmp_buf	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+setjmp_recovery_retry_rearm.c	unsupported-lowering	module.types alias __jmp_buf	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+setjmp_zero_init.c	unsupported-lowering	module.types alias __jmp_buf	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+shl.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+shorts.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.3.24	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(12345))
+shr.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.3.24	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(256))
+sizeof.c	unsupported-lowering	module.types record Pair	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+slice_swap_fixup.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.5	no	error: unsupported slate-parser IR: value aggregate<array<i32, 5>, zero_fill=false>(index0 = const<i32>(5), index1 = const<i32>(3), index2 = const<i32>(4), index3 = const<i32>(1), index4 = const<i32>(
+snprintf_buffer_return_value.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+sprintf_buffer_mutated_no_rewrite.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+sprintf_buffer_printf.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+sprintf_buffer_puts.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+sprintf_nonconst_format_no_rewrite.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+sprintf_overflow_risk_no_rewrite.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+stat_mtime_member.c	unsupported-lowering	module.types alias __dev_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+stat_struct.c	unsupported-lowering	module.types alias __dev_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+statement_expr_auto_type.c	parser-sema	lower /home/takashi/Projects/slate/tests/fixtures/statement_expr_auto_type.c to slate-parser IR: unsupported in numeric 	slate-parser-dyd.38	slate-p58o.4	no	error: lower tests/fixtures/statement_expr_auto_type.c to slate-parser IR: unsupported in numeric IR lowering: target builtin type
+statement_expr_local_label.c	unsupported-lowering	ValueKind::not	slate-p58o.3.4	slate-p58o.4	no	error: unsupported slate-parser IR: value not<bool>(eq<i32>(read<i32>(%15), const<i32>(1)))
+static_globals.c	unsupported-lowering	Global counter	slate-p58o.3.18	slate-p58o.3.24	no	error: unsupported slate-parser IR: global counter
+stdint_types.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+stdio_file_close_before_remove.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+stdio_file_ownership.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+stdio_file_write.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+stdio_fread_multi_byte.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+stdio_fread_short_read.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+stdio_fread_size_one.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+stdio_fread_unsupported_buffer.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+stdio_fwrite_return.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+stdio_gets_loop_eof.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+stdio_gets_loop_lines.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+stdio_gets_loop_truncation.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+stdio_gets_loop_unsupported.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+stdlib_complex_cx_limited_range.c	unsupported-lowering	Type complex<f64>	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: type complex<f64>
+stdlib_fenv_access.c	unsupported-lowering	Number::FloatBits	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: constant FloatBits(4613937818241073152)
+stdlib_fp_contract.c	unsupported-lowering	Number::FloatBits	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: constant FloatBits(4611686018427387903)
+string_copy_fixup.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+string_libc_fixup.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+string_lift.c	unsupported-lowering	ValueKind::code_units	slate-p58o.3.37	slate-p58o.5	no	error: unsupported slate-parser IR: value code_units<array<i8, 4>>([104, 195, 169, 0])
+string_param_lift.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.5	no	error: unsupported slate-parser IR: types or module assembly
+struct_field_2d_array.c	unsupported-lowering	module.types record table	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+struct_init.c	unsupported-lowering	module.types record Triple	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+struct_literal_null_function_pointer_field.c	unsupported-lowering	module.types alias Callback	slate-p58o.3.35	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+struct_with_array.c	unsupported-lowering	module.types record Buf	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+structs.c	unsupported-lowering	module.types record Pair	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+sub.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+support_module_cleanup.c	unsupported-lowering	ValueKind::code_units	slate-p58o.3.37	slate-p58o.5	no	error: unsupported slate-parser IR: value code_units<array<i8, 4>>([49, 50, 51, 0])
+switch_break_inside_if.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.3.24	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(1))
+switch_case_range_fold.c	unsupported-lowering	Statement::Switch	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: statement Switch { id: BindingId(5), discriminant: Value { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), node: Read { place: Place { ty: Num
+switch_case_range_fold_wide.c	unsupported-lowering	module.types alias big	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+switch_case_u128_values.c	unsupported-lowering	module.types alias u128	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+switch_case_wide_bitint.c	unsupported-lowering	module.types alias big	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+switch_case_wide_bitint_range.c	unsupported-lowering	module.types alias big	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+switch_default.c	unsupported-lowering	Statement::Switch	slate-p58o.3.22	slate-p58o.3.24	no	error: unsupported slate-parser IR: statement Switch { id: BindingId(6), discriminant: Value { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), node: Read { place: Place { ty: Num
+switch_default_first_fallthrough.c	unsupported-lowering	Statement::Switch	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: statement Switch { id: BindingId(6), discriminant: Value { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), node: Read { place: Place { ty: Num
+switch_default_middle_fallthrough.c	unsupported-lowering	Statement::Switch	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: statement Switch { id: BindingId(10), discriminant: Value { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), node: Read { place: Place { ty: Nu
+switch_fallthrough.c	unsupported-lowering	Statement::Switch	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: statement Switch { id: BindingId(6), discriminant: Value { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), node: Read { place: Place { ty: Num
+switch_loop_control.c	unsupported-lowering	Statement::Switch	slate-p58o.3.22	slate-p58o.3.24	no	error: unsupported slate-parser IR: statement Switch { id: BindingId(7), discriminant: Value { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), node: Read { place: Place { ty: Num
+switch_no_default.c	unsupported-lowering	Statement::Switch	slate-p58o.3.22	slate-p58o.3.24	no	error: unsupported slate-parser IR: statement Switch { id: BindingId(6), discriminant: Value { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), node: Read { place: Place { ty: Num
+switch_sparse.c	unsupported-lowering	Statement::Switch	slate-p58o.3.22	slate-p58o.3.24	no	error: unsupported slate-parser IR: statement Switch { id: BindingId(6), discriminant: Value { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), node: Read { place: Place { ty: Num
+switch_torture.c	unsupported-lowering	Statement::Switch	slate-p58o.4	slate-p58o.4	no	error: unsupported slate-parser IR: statement Switch { id: BindingId(7), discriminant: Value { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), node: Read { place: Place { ty: Num
+target_feature_macros.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+target_stack_builtin_ops.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+ternary_function_pointer_select.c	unsupported-lowering	module.types alias BinaryOp	slate-p58o.3.35	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+thread_local.c	unsupported-lowering	module.types alias __thrd_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+timespec_get.c	unsupported-lowering	module.types alias __time_t	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+transparent_union_call.c	parser-sema	lower /home/takashi/Projects/slate/tests/fixtures/transparent_union_call.c to slate-parser IR: invalid in this context: 	slate-parser-dyd.34	slate-p58o.4	no	error: lower tests/fixtures/transparent_union_call.c to slate-parser IR: invalid in this context: conversion between a struct or union and an unrelated type
+type_qualifiers.c	unsupported-lowering	Global global_bias	slate-p58o.3.18	slate-p58o.4	no	error: unsupported slate-parser IR: global global_bias
+typedef_ptr_signedness.c	unsupported-lowering	module.types alias my_char_t	slate-p58o.3.35	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+typedefs.c	unsupported-lowering	module.types alias my_int	slate-p58o.3.35	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+u8_string_literal.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+uchar_conversions.c	unsupported-lowering	module.types alias size_t	slate-p58o.3.35	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+unary_negation.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.3.24	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(read<i32>(%2))
+union_after_include.c	unsupported-lowering	module.types enum FuzzEnum	slate-p58o.3.20	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+union_array_member.c	unsupported-lowering	module.types union Word	slate-p58o.3.17	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+union_init.c	unsupported-lowering	module.types union Value	slate-p58o.3.17	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+unions.c	unsupported-lowering	module.types union Pair	slate-p58o.3.17	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+unnecessary_casts.c	lowered-unverified	-	slate-p58o.5	slate-p58o.5	no	-
+unsigned.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+unused_items.c	unsupported-lowering	module.types record totally_unused	slate-p58o.3.15	slate-p58o.3.24	no	error: unsupported slate-parser IR: types or module assembly
+unused_params.c	unsupported-lowering	ValueKind::function_decay	slate-p58o.3.11	slate-p58o.3.24	no	error: unsupported slate-parser IR: value function_decay<ptr<fn(i32, i32) -> i32>>(%11)
+va_list_vfprintf.c	unsupported-lowering	module.types alias __gnuc_va_list	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+varargs.c	unsupported-lowering	module.types alias __gnuc_va_list	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+vector_extension_ops.c	unsupported-lowering	module.types alias v4si	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+vla_bound_side_effects.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.4	no	error: unsupported slate-parser IR: value aggregate<array<i32, 3>, zero_fill=false>(index0 = const<i32>(7), index1 = const<i32>(8), index2 = const<i32>(9))
+void_int_cast_view.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.3.24	no	error: unsupported slate-parser IR: value aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(1), index1 = const<i32>(2), index2 = const<i32>(3), index3 = const<i32>(4))
+void_ptr_byte_view.c	unsupported-lowering	ValueKind::aggregate[array]	slate-p58o.3.32	slate-p58o.3.24	no	error: unsupported slate-parser IR: value aggregate<array<u8, 4>, zero_fill=false>(index0 = reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=always>(const<i32>(7))), index
+void_ptr_function_pointer_cast.c	unsupported-lowering	module.types alias Callback	slate-p58o.3.35	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+volatile.c	lowered-unverified	-	slate-p58o.4	slate-p58o.4	no	-
+volatile_qualified_types.c	unsupported-lowering	module.types record VolatileFields	slate-p58o.3.15	slate-p58o.4	no	error: unsupported slate-parser IR: types or module assembly
+weakref_function.c	unsupported-lowering	ValueKind::neg	slate-p58o.3.2	slate-p58o.4	no	error: unsupported slate-parser IR: value neg<i32, overflow=ub>(const<i32>(53))
+while_loop.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-
+while_switch_continue.c	unsupported-lowering	Statement::Switch	slate-p58o.3.22	slate-p58o.3.24	no	error: unsupported slate-parser IR: statement Switch { id: BindingId(7), discriminant: Value { ty: Numeric(Integer { width: 32, signed: true, bit_precise: false }), node: Read { place: Place { ty: Num
+zero_init.c	lowered-unverified	-	slate-p58o.3.24	slate-p58o.3.24	no	-

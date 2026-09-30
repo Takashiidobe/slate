@@ -3,9 +3,6 @@
     reason = "test helper toolbox; helpers may sit unused between runs"
 )]
 pub mod filecheck;
-pub mod libc_declaration_probe;
-pub mod libc_probe;
-pub mod libc_shim;
 
 use std::collections::BTreeMap;
 use std::io::Write;
@@ -1405,6 +1402,25 @@ pub fn translate_with_args(
     let rust =
         slate::api::translate_with_args(c_src, extra_args).map_err(|error| error.to_string())?;
     write_if_changed(rs_out, rust.as_bytes())
+        .map(|_| ())
+        .map_err(|e| format!("write {}: {e}", rs_out.display()))
+}
+
+pub fn translate_slate(c_src: &Path, rs_out: &Path, extra_args: &[String]) -> Result<(), String> {
+    let o = Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate-lowered", "--frontend=slate", "-std=c23"])
+        .args(extra_args)
+        .arg(c_src)
+        .output()
+        .map_err(|e| format!("spawn slate translate-lowered: {e}"))?;
+    if !o.status.success() {
+        return Err(format!(
+            "slate translate-lowered failed ({}):\n{}",
+            o.status,
+            String::from_utf8_lossy(&o.stderr)
+        ));
+    }
+    write_if_changed(rs_out, &o.stdout)
         .map(|_| ())
         .map_err(|e| format!("write {}: {e}", rs_out.display()))
 }

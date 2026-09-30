@@ -1,7 +1,0 @@
-sys/types.h
-sys/stat.h
-sys/statvfs.h
-dirent.h
-fcntl.h
-unistd.h
-utime.h

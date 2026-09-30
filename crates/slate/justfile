@@ -79,14 +79,11 @@ transpile-all:
     fi
 
 filecheck_files := split(`find tests/fixtures -maxdepth 1 -type f -name '*.c' -printf '%p\n' | sort | tr '\n' ' '`)
-filecheck_bionic := split(`find tests/fixtures/bionic -type f -name '*.c' -printf '%p\n' | sort | tr '\n' ' '`)
-filecheck_macos := split(`find tests/fixtures/macos -type f -name '*.c' -printf '%p\n' | sort | tr '\n' ' '`)
-filecheck_msvc := split(`find tests/fixtures/msvc -type f -name '*.c' -printf '%p\n' | sort | tr '\n' ' '`)
 filecheck_link := split(`rg -l '@(lowering|rewrite)(-fn)?-(begin|not-begin)|(LOWERING|REWRITES)-' tests/fixtures.link -g '*.c' | sort | tr '\n' ' '`)
 filecheck_cfg := split(`rg -l '@rewrite(-fn)?-(begin|not-begin)' tests/fixtures.cfg -g '*.c' | sort | tr '\n' ' '`)
 filecheck_projects := split(`rg -l '@(lowering|rewrite)(-fn)?-(begin|not-begin)' tests/fixtures.multi -g '*.c' | cut -d/ -f1-3 | sort -u | tr '\n' ' '`)
 filecheck_libraries := split(`rg -l '@(lowering|rewrite)(-fn)?-(begin|not-begin)' tests/fixtures.library -g '*.c' | cut -d/ -f1-3 | sort -u | tr '\n' ' '`)
-filecheck_fixtures := filecheck_files ++ filecheck_bionic ++ filecheck_macos ++ filecheck_msvc ++ filecheck_link ++ filecheck_cfg ++ filecheck_projects ++ filecheck_libraries
+filecheck_fixtures := filecheck_files ++ filecheck_link ++ filecheck_cfg ++ filecheck_projects ++ filecheck_libraries
 filecheck_jobs := if num_jobs() { num_jobs() } else { "8" }
 
 # aarch64/x86_64 linux-gnu --target flags the regen-* recipes pass by default; override with e.g.
@@ -122,17 +119,11 @@ regen-filecheck-match *pattern:
 [parallel]
 _regen-filechecks profile *paths: *(_regen-filecheck profile *paths)
 
-# bionic/macos/msvc fixtures carry their own android/darwin/msvc --target defaults inside
-# update_filecheck.py (see default_targets_for_path); forcing the generic linux-gnu targets
-# on top of those would overwrite their real cross-target checks, so they're excluded here.
 [private]
 _regen-filecheck profile path:
     #!/usr/bin/env bash
     set -euo pipefail
-    case {{quote(path)}} in
-        */fixtures/bionic/*|*/fixtures/macos/*|*/fixtures/msvc/*) target_args=() ;;
-        *) target_args=({{filecheck_targets}}) ;;
-    esac
+    target_args=({{filecheck_targets}})
     python3 tools/update_filecheck.py --in-place --profile {{quote(profile)}} "${target_args[@]}" {{quote(path)}}
 
 # cargo check every already-transpiled crate; keeps going past per-project failures and reports them at the end
