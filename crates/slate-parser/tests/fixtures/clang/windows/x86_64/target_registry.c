@@ -41,7 +41,7 @@ struct pair record(struct pair value) { return value; }
 // X86-64-WINDOWS-MSVC-CLANG-NEXT:         field0 a: i32;
 // X86-64-WINDOWS-MSVC-CLANG-NEXT:         field1 b: i32;
 // X86-64-WINDOWS-MSVC-CLANG-NEXT:     } [size=8, align=4, offsets=[0, 4]];
-// X86-64-WINDOWS-MSVC-CLANG-NEXT:     global %[[VALUE_msc_ver:[0-9]+]] msc_ver: i32 [storage=static] = const<i32>(1940) [linkage=external];
+// X86-64-WINDOWS-MSVC-CLANG-NEXT:     global %[[VALUE_msc_ver:[0-9]+]] msc_ver: i32 [storage=static] = const<i32>(1933) [linkage=external];
 // X86-64-WINDOWS-MSVC-CLANG-NEXT:     global %[[VALUE_sizeof_long:[0-9]+]] sizeof_long: u32 [storage=static] = truncate<u32>(const<u64>(4)) [linkage=external];
 // X86-64-WINDOWS-MSVC-CLANG-NEXT:     global %[[VALUE_sizeof_long_double:[0-9]+]] sizeof_long_double: u32 [storage=static] = truncate<u32>(const<u64>(8)) [linkage=external];
 // X86-64-WINDOWS-MSVC-CLANG-NEXT:     global %[[VALUE_sizeof_va_list:[0-9]+]] sizeof_va_list: u32 [storage=static] = truncate<u32>(const<u64>(8)) [linkage=external];
