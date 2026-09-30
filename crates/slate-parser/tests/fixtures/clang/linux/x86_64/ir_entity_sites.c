@@ -1,0 +1,70 @@
+// SLATE-FILECHECK-DEFINES IR
+// SLATE-FILECHECK-ARGS --dump-ir
+
+struct fields {
+    _Alignas(16) int field_aligned;
+    const int field_const;
+    volatile int field_volatile;
+    _Atomic int field_atomic;
+    int *restrict field_restrict;
+};
+
+_Alignas(32) volatile int file_scope;
+const int *restrict file_restrict;
+
+void parameters(_Atomic int a, volatile int v, const int c, int *restrict r);
+
+const struct fields *file_literal = &(const struct fields){0};
+
+int block(void) {
+    _Alignas(32) volatile int block_scope;
+    static _Alignas(64) _Atomic int static_local;
+    const int *const_literal = &(const int){7};
+    volatile int *volatile_literal = &(volatile int){8};
+    return __alignof__(file_scope) + __alignof__(block_scope)
+         + __alignof__(static_local) + *const_literal + *volatile_literal;
+}
+
+// SLATE-FILECHECK-BEGIN IR
+// IR: module {
+// IR-NEXT:     target "x86_64-unknown-linux-gnu" {
+// IR-NEXT:         endian = little;
+// IR-NEXT:         pointer [size=8, align=8];
+// IR-NEXT:         stack_alignment = 16;
+// IR-NEXT:         long_double = f80;
+// IR-NEXT:         storage bool [size=1, align=1];
+// IR-NEXT:         storage i8, u8 [size=1, align=1];
+// IR-NEXT:         storage i16, u16 [size=2, align=2];
+// IR-NEXT:         storage i32, u32 [size=4, align=4];
+// IR-NEXT:         storage i64, u64 [size=8, align=8];
+// IR-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-NEXT:         storage bf16 [size=2, align=2];
+// IR-NEXT:         storage f16 [size=2, align=2];
+// IR-NEXT:         storage f32 [size=4, align=4];
+// IR-NEXT:         storage f64 [size=8, align=8];
+// IR-NEXT:         storage f80 [size=16, align=16];
+// IR-NEXT:         storage f128 [size=16, align=16];
+// IR-NEXT:         storage d32 [size=4, align=4];
+// IR-NEXT:         storage d64 [size=8, align=8];
+// IR-NEXT:         storage d128 [size=16, align=16];
+// IR-NEXT:     }
+// IR-NEXT:     type @type[[TYPE_fields:[0-9]+]] fields = struct {
+// IR-NEXT:         field0 field_aligned: i32;
+// IR-NEXT:         field1 field_const: const i32;
+// IR-NEXT:         field2 field_volatile: volatile i32;
+// IR-NEXT:         field3 field_atomic: atomic i32;
+// IR-NEXT:         field4 field_restrict: ptr<i32>;
+// IR-NEXT:     } [size=32, align=16, offsets=[0, 4, 8, 12, 16]];
+// IR-NEXT:     global %[[VALUE_file_scope:[0-9]+]] file_scope: volatile i32 [storage=static] [align=32] [linkage=external];
+// IR-NEXT:     global %[[VALUE_file_restrict:[0-9]+]] file_restrict: ptr<const i32> [storage=static] [restrict] [linkage=external];
+// IR-NEXT:     global %[[VALUE_file_literal:[0-9]+]] file_literal: ptr<const @type[[TYPE_fields]]> [storage=static] = addr_of<ptr<const @type[[TYPE_fields]]>>(compound_literal %[[VALUE0:[0-9]+]] [storage=static] = aggregate<@type[[TYPE_fields]], zero_fill=true>(field0 = const<i32>(0))) [linkage=external];
+// IR-NEXT:     global %[[VALUE_static_local:[0-9]+]] static_local: atomic i32 [storage=static] [align=64] [linkage=internal];
+// IR-NEXT:     fn %[[VALUE_parameters:[0-9]+]] @parameters(%[[VALUE_a:[0-9]+]] a: atomic i32, %[[VALUE_v:[0-9]+]] v: volatile i32, %[[VALUE_c:[0-9]+]] c: i32 [const], %[[VALUE_r:[0-9]+]] r: ptr<i32> [restrict]) -> void [linkage=external];
+// IR-NEXT:     fn %[[VALUE_block:[0-9]+]] @block() -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// IR-NEXT:         let %[[VALUE_block_scope:[0-9]+]] block_scope: volatile i32 [storage=automatic] [align=32];
+// IR-NEXT:         let %[[VALUE_const_literal:[0-9]+]] const_literal: ptr<const i32> [storage=automatic] = addr_of<ptr<const i32>>(compound_literal %[[VALUE1:[0-9]+]] [storage=automatic] = const<i32>(7));
+// IR-NEXT:         let %[[VALUE_volatile_literal:[0-9]+]] volatile_literal: ptr<volatile i32> [storage=automatic] = addr_of<ptr<volatile i32>>(compound_literal %[[VALUE2:[0-9]+]] [storage=automatic] = const<i32>(8));
+// IR-NEXT:         return reinterpret<i32, reason=return, fits=unknown>(truncate<u32, reason=return, fits=unknown>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(add<u64, overflow=wrap>(const<u64>(32), const<u64>(32)), const<u64>(64)), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32>(deref(read<ptr<const i32>>(%[[VALUE_const_literal]])))))), reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(read<i32, volatile>(deref(read<ptr<volatile i32>>(%[[VALUE_volatile_literal]]))))))));
+// IR-NEXT:     }
+// IR-NEXT: }
+// SLATE-FILECHECK-END IR

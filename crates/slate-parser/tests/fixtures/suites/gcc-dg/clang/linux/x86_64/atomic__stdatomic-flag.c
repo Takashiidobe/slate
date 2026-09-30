@@ -1,0 +1,112 @@
+/* Test atomic_flag routines for existence and execution.  */
+/* The test needs a lockless atomic implementation.  */
+/* { dg-do run } */
+/* { dg-options "-std=c11 -pedantic-errors" } */
+
+#include <stdatomic.h>
+
+extern void abort (void);
+atomic_flag a = ATOMIC_FLAG_INIT;
+
+int
+main ()
+{
+  int b;
+
+  if (!atomic_is_lock_free (&a))
+    abort ();
+
+  if (atomic_flag_test_and_set (&a))
+    abort ();
+  atomic_flag_clear_explicit (&a, memory_order_relaxed);
+  if (atomic_flag_test_and_set (&a))
+    abort ();
+  atomic_flag_clear (&a);
+
+  b = atomic_flag_test_and_set_explicit (&a, memory_order_seq_cst);
+  if (!atomic_flag_test_and_set (&a) || b != 0)
+    abort ();
+
+  b = atomic_flag_test_and_set_explicit (&a, memory_order_acq_rel);
+  if (!atomic_flag_test_and_set (&a) || b != 1)
+    abort ();
+
+  atomic_flag_clear_explicit (&a, memory_order_seq_cst);
+  if (atomic_flag_test_and_set (&a))
+    abort ();
+
+  return 0;
+}
+
+// SLATE-FILECHECK-STD DEFAULT c11
+// SLATE-FILECHECK-DEFINES DEFAULT
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=8, align=8];
+// DEFAULT-NEXT:         stack_alignment = 16;
+// DEFAULT-NEXT:         long_double = f80;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f80 [size=16, align=16];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     type @type[[TYPE_memory_order:[0-9]+]] memory_order = enum : u32 {
+// DEFAULT-NEXT:         %[[VALUE_memory_order_relaxed:[0-9]+]] memory_order_relaxed = const<i32>(0);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_consume:[0-9]+]] memory_order_consume = const<i32>(1);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_acquire:[0-9]+]] memory_order_acquire = const<i32>(2);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_release:[0-9]+]] memory_order_release = const<i32>(3);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_acq_rel:[0-9]+]] memory_order_acq_rel = const<i32>(4);
+// DEFAULT-NEXT:         %[[VALUE_memory_order_seq_cst:[0-9]+]] memory_order_seq_cst = const<i32>(5);
+// DEFAULT-NEXT:     } [size=4, align=4];
+// DEFAULT-NEXT:     type @type[[TYPE_memory_order_2:[0-9]+]] memory_order = @type[[TYPE_memory_order]];
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_bool:[0-9]+]] atomic_bool = bool;
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_flag:[0-9]+]] atomic_flag = struct {
+// DEFAULT-NEXT:         field0 _Value: atomic bool;
+// DEFAULT-NEXT:     } [size=1, align=1, offsets=[0]];
+// DEFAULT-NEXT:     type @type[[TYPE_atomic_flag_2:[0-9]+]] atomic_flag = @type[[TYPE_atomic_flag]];
+// DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: @type[[TYPE_atomic_flag]] [storage=static] = aggregate<@type[[TYPE_atomic_flag]], zero_fill=false>(field0 = ne<i32, reason=assign>(const<i32>(0), const<i32>(0))) [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         let %[[VALUE_b:[0-9]+]] b: i32 [storage=automatic];
+// DEFAULT-NEXT:         if not<bool>(const<bool>(true))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_a]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE0]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<bool, atomic=relaxed>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_a]]))))), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_a]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE1]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<bool, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_a]]))))), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_a]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE2]])));
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_a]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
+// DEFAULT-NEXT:         if logical_or<bool>(not<bool>(read<bool>(%[[VALUE3]])), ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(0)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         let %[[VALUE4:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=acq_rel>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_a]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
+// DEFAULT-NEXT:         write<i32>(%[[VALUE_b]], from_bool<i32, reason=assign>(read<bool>(%[[VALUE4]])));
+// DEFAULT-NEXT:         let %[[VALUE5:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_a]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
+// DEFAULT-NEXT:         if logical_or<bool>(not<bool>(read<bool>(%[[VALUE5]])), ne<i32>(read<i32>(%[[VALUE_b]]), const<i32>(1)))
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         write<bool, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_a]]))))), ne<i32, reason=arg>(const<i32>(0), const<i32>(0)));
+// DEFAULT-NEXT:         let %[[VALUE6:[0-9]+]]: bool [synthetic] = update<bool, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic bool>>(field0(deref(addr_of<ptr<@type[[TYPE_atomic_flag]]>>(%[[VALUE_a]]))))), ne<i32, reason=arg>(const<i32>(1), const<i32>(0)));
+// DEFAULT-NEXT:         if read<bool>(%[[VALUE6]])
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:         return const<i32>(0);
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT: }
+// SLATE-FILECHECK-END DEFAULT

@@ -1,0 +1,109 @@
+/* Copyright (C) 2000  Free Software Foundation.
+
+   If the argument to va_end() has side effects, test whether side
+   effects from that argument are honored.
+
+   Written by Kaveh R. Ghazi, 10/31/2000.  */
+
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#ifndef __GNUC__
+#define __attribute__(x)
+#endif
+
+static void __attribute__((__format__(__printf__, 1, 2))) doit(const char *s,
+                                                               ...) {
+  va_list *ap_array[3], **ap_ptr = ap_array;
+
+  ap_array[0] = malloc(sizeof(va_list));
+  ap_array[1] = NULL;
+  ap_array[2] = malloc(sizeof(va_list));
+
+  va_start(*ap_array[0], s);
+  vprintf(s, **ap_ptr);
+  /* Increment the va_list pointer once.  */
+  va_end(**ap_ptr++);
+
+  /* Increment the va_list pointer a second time.  */
+  ap_ptr++;
+
+  va_start(*ap_array[2], s);
+  /* If we failed to increment ap_ptr twice, then the parameter passed
+     in here will dereference NULL and should cause a crash.  */
+  vprintf(s, **ap_ptr);
+  va_end(**ap_ptr);
+
+  /* Just in case, If *ap_ptr is NULL abort anyway.  */
+  if (*ap_ptr == 0)
+    abort();
+}
+
+int main() {
+  doit("%s", "hello world\n");
+  exit(0);
+}
+
+
+// SLATE-FILECHECK-DEFINES DEFAULT
+
+// SLATE-FILECHECK-BEGIN DEFAULT
+// DEFAULT: module {
+// DEFAULT-NEXT:     target "x86_64-unknown-linux-gnu" {
+// DEFAULT-NEXT:         endian = little;
+// DEFAULT-NEXT:         pointer [size=8, align=8];
+// DEFAULT-NEXT:         stack_alignment = 16;
+// DEFAULT-NEXT:         long_double = f80;
+// DEFAULT-NEXT:         storage bool [size=1, align=1];
+// DEFAULT-NEXT:         storage i8, u8 [size=1, align=1];
+// DEFAULT-NEXT:         storage i16, u16 [size=2, align=2];
+// DEFAULT-NEXT:         storage i32, u32 [size=4, align=4];
+// DEFAULT-NEXT:         storage i64, u64 [size=8, align=8];
+// DEFAULT-NEXT:         storage i128, u128 [size=16, align=16];
+// DEFAULT-NEXT:         storage bf16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f16 [size=2, align=2];
+// DEFAULT-NEXT:         storage f32 [size=4, align=4];
+// DEFAULT-NEXT:         storage f64 [size=8, align=8];
+// DEFAULT-NEXT:         storage f80 [size=16, align=16];
+// DEFAULT-NEXT:         storage f128 [size=16, align=16];
+// DEFAULT-NEXT:         storage d32 [size=4, align=4];
+// DEFAULT-NEXT:         storage d64 [size=8, align=8];
+// DEFAULT-NEXT:         storage d128 [size=16, align=16];
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     type @type[[TYPE___gnuc_va_list:[0-9]+]] __gnuc_va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
+// DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
+// DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 3> [storage=static] = code_units<array<i8, 3>>([37, 115, 0]) [linkage=internal];
+// DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 10, 0]) [linkage=internal];
+// DEFAULT-NEXT:     fn %[[VALUE_vprintf:[0-9]+]] @vprintf(%[[VALUE___format:[0-9]+]] __format: ptr<const i8> [restrict], %[[VALUE___arg:[0-9]+]] __arg: va_list) -> i32 [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64) -> ptr<void> [linkage=external];
+// DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE___status:[0-9]+]] __status: i32) -> void [linkage=external] [noreturn];
+// DEFAULT-NEXT:     fn %[[VALUE_doit:[0-9]+]] @doit(%[[VALUE_s:[0-9]+]] s: ptr<const i8>, ...) -> void [linkage=internal] [fallthrough=ret_void] {
+// DEFAULT-NEXT:         let %[[VALUE_ap_array:[0-9]+]] ap_array: array<ptr<va_list>, 3> [storage=automatic] [align=16];
+// DEFAULT-NEXT:         let %[[VALUE_ap_ptr:[0-9]+]] ap_ptr: ptr<ptr<va_list>> [storage=automatic] = array_decay<ptr<ptr<va_list>>, length=Some(3)>(%[[VALUE_ap_array]]);
+// DEFAULT-NEXT:         write<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%[[VALUE_ap_array]]), const<i32>(0))), pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(24))));
+// DEFAULT-NEXT:         write<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%[[VALUE_ap_array]]), const<i32>(1))), null<ptr<va_list>>);
+// DEFAULT-NEXT:         write<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%[[VALUE_ap_array]]), const<i32>(2))), pointer_cast<ptr<va_list>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], const<u64>(24))));
+// DEFAULT-NEXT:         va_start(deref(read<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%[[VALUE_ap_array]]), const<i32>(0))))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, va_list) -> i32>(%[[VALUE_vprintf]], read<ptr<const i8>>(%[[VALUE_s]]), read<va_list>(deref(read<ptr<va_list>>(deref(read<ptr<ptr<va_list>>>(%[[VALUE_ap_ptr]]))))));
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: ptr<ptr<va_list>> [synthetic] = read<ptr<ptr<va_list>>>(%[[VALUE_ap_ptr]]);
+// DEFAULT-NEXT:         let %[[VALUE1:[0-9]+]]: ptr<ptr<va_list>> [synthetic] = ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(read<ptr<ptr<va_list>>>(%[[VALUE0]]), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<ptr<va_list>>>(%[[VALUE_ap_ptr]], read<ptr<ptr<va_list>>>(%[[VALUE1]]));
+// DEFAULT-NEXT:         va_end(deref(read<ptr<va_list>>(deref(read<ptr<ptr<va_list>>>(%[[VALUE0]])))));
+// DEFAULT-NEXT:         let %[[VALUE2:[0-9]+]]: ptr<ptr<va_list>> [synthetic] = read<ptr<ptr<va_list>>>(%[[VALUE_ap_ptr]]);
+// DEFAULT-NEXT:         let %[[VALUE3:[0-9]+]]: ptr<ptr<va_list>> [synthetic] = ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(read<ptr<ptr<va_list>>>(%[[VALUE2]]), const<i32>(1));
+// DEFAULT-NEXT:         write<ptr<ptr<va_list>>>(%[[VALUE_ap_ptr]], read<ptr<ptr<va_list>>>(%[[VALUE3]]));
+// DEFAULT-NEXT:         va_start(deref(read<ptr<va_list>>(deref(ptr_offset<ptr<ptr<va_list>>, subtract=false, element=ptr<va_list>, overflow=ub>(array_decay<ptr<ptr<va_list>>, length=Some(3)>(%[[VALUE_ap_array]]), const<i32>(2))))));
+// DEFAULT-NEXT:         call<i32, signature=fn(ptr<const i8>, va_list) -> i32>(%[[VALUE_vprintf]], read<ptr<const i8>>(%[[VALUE_s]]), read<va_list>(deref(read<ptr<va_list>>(deref(read<ptr<ptr<va_list>>>(%[[VALUE_ap_ptr]]))))));
+// DEFAULT-NEXT:         va_end(deref(read<ptr<va_list>>(deref(read<ptr<ptr<va_list>>>(%[[VALUE_ap_ptr]])))));
+// DEFAULT-NEXT:         if eq<ptr<va_list>>(read<ptr<va_list>>(deref(read<ptr<ptr<va_list>>>(%[[VALUE_ap_ptr]]))), null<ptr<va_list>>)
+// DEFAULT-NEXT:             call<void, signature=fn() -> void>(%[[VALUE_abort]]);
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<const i8>, ...) -> void>(%[[VALUE_doit]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(3)>(%[[VALUE_str]])), array_decay<ptr<i8>, length=Some(13)>(%[[VALUE_str_2]]));
+// DEFAULT-NEXT:         call<void, signature=fn(i32) -> void>(%[[VALUE_exit]], const<i32>(0));
+// DEFAULT-NEXT:     }
+// DEFAULT-NEXT: }
+// SLATE-FILECHECK-END DEFAULT

@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+
+root=${MSVC_WINE_ROOT:-$HOME/.local/share/msvc-wine/opt/msvc}
+arch=${MSVC_ARCH:-x64}
+cl="$root/bin/$arch/cl"
+
+if [ ! -x "$cl" ]; then
+    echo "tools/cl.exe: $cl not found; install msvc-wine (see wiki/concepts/msvc-oracle.md)" >&2
+    exit 127
+fi
+
+export WINEDEBUG=${WINEDEBUG:--all}
+exec "$cl" "$@"

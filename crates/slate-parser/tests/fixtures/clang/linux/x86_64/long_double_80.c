@@ -1,0 +1,28 @@
+// SLATE-FILECHECK-DEFINES CHECK
+// SLATE-FILECHECK-ARGS --dump-ir-expressions -mlong-double-80
+
+void numbers(void) {
+    1.0L + 2.0L;
+    1.0000000000000000000000000000000002L;
+    0x1.00000000000008001p0L;
+    __SIZEOF_LONG_DOUBLE__;
+    __LDBL_MANT_DIG__;
+    __LDBL_DECIMAL_DIG__;
+    __LDBL_EPSILON__;
+    __LDBL_MIN__;
+    __LDBL_MAX__;
+    __LDBL_DENORM_MIN__;
+}
+
+// SLATE-FILECHECK-BEGIN CHECK
+// CHECK: add<f80, rounding=nearest_even, exceptions=ignore, contract=on>(const<f80>(1), const<f80>(2))
+// CHECK-NEXT: const<f80>(1)
+// CHECK-NEXT: const<f80>(1.00000000000000011102)
+// CHECK-NEXT: const<i32>(16)
+// CHECK-NEXT: const<i32>(64)
+// CHECK-NEXT: const<i32>(21)
+// CHECK-NEXT: const<f80>(1.08420217248550443401E-19)
+// CHECK-NEXT: const<f80>(3.36210314311209350626E-4932)
+// CHECK-NEXT: const<f80>(1.18973149535723176502E+4932)
+// CHECK-NEXT: const<f80>(3.64519953188247460253E-4951)
+// SLATE-FILECHECK-END CHECK

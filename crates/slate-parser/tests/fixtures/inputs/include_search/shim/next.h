@@ -1,0 +1,1 @@
+#define NEXT_SECOND 12

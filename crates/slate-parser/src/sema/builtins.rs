@@ -1,0 +1,1324 @@
+use super::ctype::convert::ConversionContext;
+use super::ctype::{CTypeKind, FloatKind, IntRank, QualType, Qualifiers};
+use super::numeric::ResolveError;
+use super::types::TypeResolver;
+use crate::ast::{Expr, ExprKind};
+use crate::compiler_args::CompilerFlavor;
+use crate::ir::{
+    ArithOp, BindingId, CompareOp, FloatClassTest, Linkage, MemoryEffects, PointerSpace,
+};
+use crate::target_info::TargetInfo;
+
+pub(super) fn is_foldable_builtin(name: &str) -> bool {
+    FOLDABLE_BUILTINS.binary_search(&name).is_ok()
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum ClangBuiltinKind {
+    Builtin,
+    Atomic,
+    Language,
+    Library,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum BuiltinAttribute {
+    Callback,
+    Const,
+    ConstIgnoringErrnoAndExceptions,
+    ConstIgnoringExceptions,
+    Consteval,
+    Constexpr,
+    CustomTypeChecking,
+    FunctionWithBuiltinPrefix,
+    FunctionWithoutBuiltinPrefix,
+    IgnoreSignature,
+    NoReturn,
+    NoThrow,
+    NonNull,
+    PrintfFormat,
+    Pure,
+    RequireDeclaration,
+    ReturnsTwice,
+    ScanfFormat,
+    UnevaluatedArguments,
+    VPrintfFormat,
+    VScanfFormat,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum BuiltinLanguage {
+    AllLanguages,
+    AllGnuLanguages,
+    AllMsLanguages,
+    AllOclLanguages,
+    C23Lang,
+    C2yLang,
+    CorLang,
+    CudaLang,
+    CxxLang,
+    HlslLang,
+    ObjcLang,
+    OclDse,
+    OclGas,
+    OclPipe,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum BuiltinType {
+    Void,
+    Bool,
+    Char,
+    #[expect(
+        dead_code,
+        reason = "no current builtin prototype spells `signed char`"
+    )]
+    SChar,
+    UChar,
+    Int {
+        rank: IntRank,
+        signed: bool,
+    },
+    FixedInt {
+        bits: u32,
+        signed: bool,
+    },
+    Float(FloatKind),
+    Complex(&'static BuiltinType),
+    Pointer(&'static BuiltinParam),
+    Reference(&'static BuiltinParam),
+    ExtVector {
+        lanes: u32,
+        element: &'static BuiltinParam,
+    },
+    SizeT,
+    PtrdiffT,
+    WcharT,
+    VaList,
+    VaListRef,
+    Opaque(&'static str),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct BuiltinParam {
+    pub ty: &'static BuiltinType,
+    pub quals: Qualifiers,
+    pub constant: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct BuiltinPrototype {
+    pub spelling: &'static str,
+    pub ret: BuiltinParam,
+    pub params: &'static [BuiltinParam],
+    pub variadic: bool,
+}
+
+#[derive(Clone, Copy, Debug)]
+#[expect(
+    dead_code,
+    reason = "generated semantic metadata is consumed incrementally"
+)]
+pub(super) struct ClangBuiltin {
+    pub name: &'static str,
+    pub record: &'static str,
+    pub prototype: Option<&'static BuiltinPrototype>,
+    pub kind: ClangBuiltinKind,
+    pub attributes: &'static [BuiltinAttribute],
+    pub languages: Option<BuiltinLanguage>,
+    pub header: Option<&'static str>,
+    pub features: Option<&'static str>,
+}
+
+impl ClangBuiltin {
+    pub fn has(&self, attribute: BuiltinAttribute) -> bool {
+        self.attributes.contains(&attribute)
+    }
+
+    // cl.exe gives a bare `exit` or `toupper` declaration no builtin semantics.
+    fn declaration_semantics(&self, flavor: CompilerFlavor) -> bool {
+        flavor != CompilerFlavor::Msvc || self.kind != ClangBuiltinKind::Library
+    }
+
+    pub fn noreturn(&self, flavor: CompilerFlavor) -> bool {
+        self.declaration_semantics(flavor) && self.has(BuiltinAttribute::NoReturn)
+    }
+
+    pub fn memory_effects(&self, flavor: CompilerFlavor) -> Option<MemoryEffects> {
+        if !self.declaration_semantics(flavor) {
+            None
+        } else if self.has(BuiltinAttribute::Const) {
+            Some(MemoryEffects::None)
+        } else if self.has(BuiltinAttribute::Pure) {
+            Some(MemoryEffects::Read)
+        } else {
+            None
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum CustomBuiltin {
+    Overflow(ArithOp),
+    FloatClass(FloatClassTest),
+    QuietCompare(CompareOp),
+    LessGreater,
+    Unordered,
+    InfSign,
+    Complex,
+    AddressOf,
+    ClassifyType,
+    FloatClassify,
+    Shuffle,
+}
+
+pub(super) fn custom_builtin(builtin: &ClangBuiltin) -> Option<CustomBuiltin> {
+    Some(match builtin.record {
+        "AddOverflow" => CustomBuiltin::Overflow(ArithOp::Add),
+        "SubOverflow" => CustomBuiltin::Overflow(ArithOp::Sub),
+        "MulOverflow" => CustomBuiltin::Overflow(ArithOp::Mul),
+        "IsNan" => CustomBuiltin::FloatClass(FloatClassTest::Nan),
+        "IsInf" => CustomBuiltin::FloatClass(FloatClassTest::Infinite),
+        "IsFinite" => CustomBuiltin::FloatClass(FloatClassTest::Finite),
+        "IsNormal" => CustomBuiltin::FloatClass(FloatClassTest::Normal),
+        "IsSubnormal" => CustomBuiltin::FloatClass(FloatClassTest::Subnormal),
+        "IsZero" => CustomBuiltin::FloatClass(FloatClassTest::Zero),
+        "IsSignaling" => CustomBuiltin::FloatClass(FloatClassTest::Signaling),
+        "Signbit" | "SignbitF" | "SignbitL" => CustomBuiltin::FloatClass(FloatClassTest::SignBit),
+        "IsGreater" => CustomBuiltin::QuietCompare(CompareOp::Gt),
+        "IsGreaterEqual" => CustomBuiltin::QuietCompare(CompareOp::Ge),
+        "IsLess" => CustomBuiltin::QuietCompare(CompareOp::Lt),
+        "IsLessEqual" => CustomBuiltin::QuietCompare(CompareOp::Le),
+        "IsLessGreater" => CustomBuiltin::LessGreater,
+        "IsUnordered" => CustomBuiltin::Unordered,
+        "IsInfSign" => CustomBuiltin::InfSign,
+        "BuiltinComplex" => CustomBuiltin::Complex,
+        "FPClassify" => CustomBuiltin::FloatClassify,
+        "ShuffleVector" => CustomBuiltin::Shuffle,
+        "BuiltinAddressof" => CustomBuiltin::AddressOf,
+        "BuiltinClassifyType" => CustomBuiltin::ClassifyType,
+        _ => return None,
+    })
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum OperandClass {
+    Integer,
+    Floating,
+    Arithmetic,
+    Any,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum DerivedSignature {
+    Uniform {
+        least: usize,
+        most: usize,
+        class: OperandClass,
+    },
+    Scaled,
+    BitCount,
+    Declared,
+}
+
+pub(super) fn derived_signature(builtin: &ClangBuiltin) -> Option<DerivedSignature> {
+    if let Some(operation) = builtin.record.strip_prefix("Elementwise") {
+        return elementwise_signature(operation);
+    }
+    Some(match builtin.record {
+        "BuiltinAssumeAligned" => DerivedSignature::Declared,
+        "NondetermenisticValue" => DerivedSignature::Uniform {
+            least: 1,
+            most: 1,
+            class: OperandClass::Any,
+        },
+        "Clzg" | "Ctzg" => DerivedSignature::BitCount,
+        _ => return None,
+    })
+}
+
+fn elementwise_signature(operation: &str) -> Option<DerivedSignature> {
+    let (operands, class) = match operation {
+        "ACos" | "ASin" | "ATan" | "Canonicalize" | "Ceil" | "Cos" | "Cosh" | "Exp" | "Exp10"
+        | "Exp2" | "Floor" | "Log" | "Log10" | "Log2" | "NearbyInt" | "Rint" | "Round"
+        | "RoundEven" | "Sin" | "Sinh" | "Sqrt" | "Tan" | "Tanh" | "Trunc" => {
+            (1..=1, OperandClass::Floating)
+        }
+        "Abs" => (1..=1, OperandClass::Arithmetic),
+        "Bitreverse" | "Popcount" => (1..=1, OperandClass::Integer),
+        "Ctlz" | "Cttz" => (1..=2, OperandClass::Integer),
+        "ATan2" | "Copysign" | "Fmod" | "Maximum" | "MaximumNum" | "MaxNum" | "Minimum"
+        | "MinimumNum" | "MinNum" | "Pow" => (2..=2, OperandClass::Floating),
+        "Max" | "Min" => (2..=2, OperandClass::Arithmetic),
+        "AddSat" | "SubSat" | "Clmul" | "Pdep" | "Pext" => (2..=2, OperandClass::Integer),
+        "Fma" => (3..=3, OperandClass::Floating),
+        "Fshl" | "Fshr" => (3..=3, OperandClass::Integer),
+        "Ldexp" => return Some(DerivedSignature::Scaled),
+        _ => return None,
+    };
+    Some(DerivedSignature::Uniform {
+        least: *operands.start(),
+        most: *operands.end(),
+        class,
+    })
+}
+
+/// Looks up the builtin a call to `name` names under `flavor`. GCC also
+/// accepts a `__builtin_` prefix on any library builtin (`__builtin_exit`
+/// calls `exit`), where Clang only has the prefixed aliases its registry
+/// spells out.
+pub(super) fn clang_builtin(name: &str, flavor: CompilerFlavor) -> Option<&'static ClangBuiltin> {
+    registered_builtin(name).or_else(|| match flavor {
+        CompilerFlavor::Gcc => registered_builtin(name.strip_prefix("__builtin_")?)
+            .filter(|builtin| builtin.kind == ClangBuiltinKind::Library),
+        CompilerFlavor::Clang | CompilerFlavor::Msvc => None,
+    })
+}
+
+const VOID_POINTER: BuiltinParam = BuiltinParam {
+    ty: &BuiltinType::Pointer(&BuiltinParam {
+        ty: &BuiltinType::Void,
+        quals: Qualifiers::NONE,
+        constant: false,
+    }),
+    quals: Qualifiers::NONE,
+    constant: false,
+};
+
+static GCC_SETJMP: BuiltinPrototype = BuiltinPrototype {
+    spelling: "int(void*)",
+    ret: BuiltinParam {
+        ty: &BuiltinType::Int {
+            rank: IntRank::Int,
+            signed: true,
+        },
+        quals: Qualifiers::NONE,
+        constant: false,
+    },
+    params: &[VOID_POINTER],
+    variadic: false,
+};
+
+static GCC_LONGJMP: BuiltinPrototype = BuiltinPrototype {
+    spelling: "void(void*, int)",
+    ret: BuiltinParam {
+        ty: &BuiltinType::Void,
+        quals: Qualifiers::NONE,
+        constant: false,
+    },
+    params: &[
+        VOID_POINTER,
+        BuiltinParam {
+            ty: &BuiltinType::Int {
+                rank: IntRank::Int,
+                signed: true,
+            },
+            quals: Qualifiers::NONE,
+            constant: false,
+        },
+    ],
+    variadic: false,
+};
+
+fn gcc_prototype(
+    builtin: &ClangBuiltin,
+    flavor: CompilerFlavor,
+) -> Option<&'static BuiltinPrototype> {
+    match (flavor, builtin.name) {
+        (CompilerFlavor::Gcc, "__builtin_setjmp") => Some(&GCC_SETJMP),
+        (CompilerFlavor::Gcc, "__builtin_longjmp") => Some(&GCC_LONGJMP),
+        _ => None,
+    }
+}
+
+fn registered_builtin(name: &str) -> Option<&'static ClangBuiltin> {
+    CLANG_BUILTINS
+        .binary_search_by_key(&name, |builtin| builtin.name)
+        .ok()
+        .map(|index| &CLANG_BUILTINS[index])
+}
+
+impl TypeResolver {
+    pub(super) fn builtin_callee(
+        &mut self,
+        callee: &Expr,
+        arguments: &[Expr],
+    ) -> Option<(&'static ClangBuiltin, Option<BindingId>)> {
+        if super::expression::specially_lowered(callee, arguments) {
+            return None;
+        }
+        let ExprKind::Identifier(name) = &callee.value else {
+            return None;
+        };
+        let builtin = clang_builtin(name, self.compiler_flavor())?;
+        let Some(&binding) = self.references.get(&callee.id) else {
+            return Some((builtin, None));
+        };
+        if self.function_references.contains(&callee.id)
+            && (self.entities.ty(&binding).is_none() || self.declares_builtin(binding, builtin))
+            && !self.unprototyped_mismatch(binding, builtin, arguments)
+        {
+            return Some((builtin, Some(binding)));
+        }
+        // A prefixed spelling (`__builtin_exit`) names the builtin even
+        // when the `exit` in scope was declared with another type.
+        (builtin.name != name).then_some((builtin, None))
+    }
+
+    // gcc calls an unprototyped declaration of a builtin as declared when an argument cannot convert
+    fn unprototyped_mismatch(
+        &mut self,
+        binding: BindingId,
+        builtin: &ClangBuiltin,
+        arguments: &[Expr],
+    ) -> bool {
+        if self.compiler_flavor() != CompilerFlavor::Gcc
+            || !self
+                .entities
+                .ty(&binding)
+                .and_then(|declared| self.ctypes.function_parts(declared))
+                .is_some_and(|(.., prototyped)| !prototyped)
+        {
+            return false;
+        }
+        let Some((_, parameters, ..)) = self
+            .builtin_signature(builtin)
+            .and_then(|signature| self.ctypes.function_parts(signature))
+        else {
+            return false;
+        };
+        let parameters = parameters.to_vec();
+        arguments
+            .iter()
+            .zip(parameters)
+            .any(|(argument, parameter)| {
+                let null = self.null_pointer_constant(argument);
+                let parameter = self.ctypes.adjust_parameter(parameter);
+                self.operand_type(argument).is_ok_and(|from| {
+                    self.ctypes
+                        .classify_conversion(from, parameter, ConversionContext::Arg, null)
+                        .is_err()
+                })
+            })
+    }
+
+    pub(super) fn declares_builtin(&mut self, binding: BindingId, builtin: &ClangBuiltin) -> bool {
+        if matches!(self.entities.linkage(binding), Some(Linkage::External))
+            && let Some(declared) = self.entities.ty(&binding)
+            && let Some(signature) = self.builtin_signature(builtin)
+        {
+            return self.ctypes.compatible(declared, signature);
+        }
+        false
+    }
+
+    pub(super) fn derived_signature(
+        &mut self,
+        builtin: &ClangBuiltin,
+        derived: DerivedSignature,
+        arity: usize,
+        first: Option<QualType>,
+    ) -> Result<QualType, ResolveError> {
+        match (derived, first) {
+            (DerivedSignature::Declared, _) => {
+                let prototype = builtin
+                    .prototype
+                    .ok_or(ResolveError::Internal("builtin prototype"))?;
+                self.declared_signature(prototype)
+                    .ok_or(ResolveError::Internal("builtin prototype"))
+            }
+            (DerivedSignature::Uniform { least, most, class }, Some(first)) => {
+                if arity < least || arity > most {
+                    return Err(ResolveError::Rejected("elementwise builtin arity"));
+                }
+                let operand = self.classified_operand(first, class)?;
+                Ok(self.function_type(operand, vec![operand; arity]))
+            }
+            (DerivedSignature::Scaled, Some(first)) if arity == 2 => {
+                let operand = self.classified_operand(first, OperandClass::Floating)?;
+                let exponent = self.ctypes.int();
+                Ok(self.function_type(operand, vec![operand, exponent]))
+            }
+            (DerivedSignature::BitCount, Some(first)) if arity <= 2 => {
+                let operand = self.classified_operand(first, OperandClass::Integer)?;
+                let count = self.ctypes.int();
+                let mut params = vec![operand];
+                params.extend((1..arity).map(|_| count));
+                Ok(self.function_type(count, params))
+            }
+            (DerivedSignature::Uniform { .. } | DerivedSignature::Scaled, _) => {
+                Err(ResolveError::Rejected("elementwise builtin arity"))
+            }
+            (DerivedSignature::BitCount, _) => {
+                Err(ResolveError::Rejected("bit-counting builtin arity"))
+            }
+        }
+    }
+
+    fn classified_operand(
+        &self,
+        operand: QualType,
+        class: OperandClass,
+    ) -> Result<QualType, ResolveError> {
+        let component = match self.ctypes.canonical_kind(operand) {
+            CTypeKind::Vector { element, .. } => *element,
+            _ => operand,
+        };
+        let accepted = match class {
+            OperandClass::Integer => self.ctypes.is_integer(component),
+            OperandClass::Floating => self.ctypes.is_floating(component),
+            OperandClass::Arithmetic => self.ctypes.is_arithmetic(component),
+            OperandClass::Any => true,
+        };
+        if !accepted {
+            return Err(ResolveError::Rejected("elementwise builtin operand type"));
+        }
+        Ok(operand)
+    }
+
+    fn function_type(&mut self, ret: QualType, params: Vec<QualType>) -> QualType {
+        self.ctypes.qual(CTypeKind::Function {
+            ret,
+            params,
+            variadic: false,
+            prototyped: true,
+            convention: crate::ir::CallConv::C,
+        })
+    }
+
+    pub(super) fn builtin_signature(&mut self, builtin: &ClangBuiltin) -> Option<QualType> {
+        let prototype = gcc_prototype(builtin, self.compiler_flavor()).or(builtin.prototype)?;
+        if builtin.has(BuiltinAttribute::CustomTypeChecking)
+            || (prototype.params.is_empty() && prototype.variadic)
+        {
+            return None;
+        }
+        self.declared_signature(prototype)
+    }
+
+    pub(super) fn declared_signature(&mut self, prototype: &BuiltinPrototype) -> Option<QualType> {
+        let target = self.target_info().clone();
+        let ret = self.builtin_param(&prototype.ret, &target)?;
+        let mut params = Vec::with_capacity(prototype.params.len());
+        for param in prototype.params {
+            params.push(self.builtin_param(param, &target)?);
+        }
+        Some(self.ctypes.qual(CTypeKind::Function {
+            ret,
+            params,
+            variadic: prototype.variadic,
+            prototyped: true,
+            convention: crate::ir::CallConv::C,
+        }))
+    }
+
+    fn builtin_param(&mut self, param: &BuiltinParam, target: &TargetInfo) -> Option<QualType> {
+        Some(self.builtin_type(param.ty, target)?.with(param.quals))
+    }
+
+    fn builtin_type(&mut self, ty: &BuiltinType, target: &TargetInfo) -> Option<QualType> {
+        let kind = match ty {
+            BuiltinType::Void => CTypeKind::Void,
+            BuiltinType::Bool => CTypeKind::Bool,
+            BuiltinType::Char => CTypeKind::Char,
+            BuiltinType::SChar => CTypeKind::SChar,
+            BuiltinType::UChar => CTypeKind::UChar,
+            BuiltinType::Int { rank, signed } => CTypeKind::Int {
+                rank: *rank,
+                signed: *signed,
+            },
+            BuiltinType::FixedInt { bits, signed } => CTypeKind::Int {
+                rank: fixed_rank(*bits, target)?,
+                signed: *signed,
+            },
+            BuiltinType::Float(kind) => CTypeKind::Float(*kind),
+            BuiltinType::Complex(element) => {
+                let element = self.builtin_type(element, target)?;
+                CTypeKind::Complex(element.ty)
+            }
+            BuiltinType::Pointer(pointee) => {
+                let pointee = self.builtin_param(pointee, target)?;
+                CTypeKind::Pointer(pointee, PointerSpace::Default)
+            }
+            BuiltinType::SizeT => return Some(self.ctypes.size_type(target)),
+            BuiltinType::PtrdiffT => return Some(self.ctypes.ptrdiff_type(target)),
+            BuiltinType::WcharT => CTypeKind::Int {
+                rank: if target.wchar_width == target.short_width {
+                    IntRank::Short
+                } else {
+                    IntRank::Int
+                },
+                signed: target.wchar_signed,
+            },
+            BuiltinType::VaList => return Some(self.ctypes.va_list_type(target)),
+            BuiltinType::Reference(_)
+            | BuiltinType::ExtVector { .. }
+            | BuiltinType::VaListRef
+            | BuiltinType::Opaque(_) => return None,
+        };
+        Some(self.ctypes.qual(kind))
+    }
+}
+
+fn fixed_rank(bits: u32, target: &TargetInfo) -> Option<IntRank> {
+    [
+        IntRank::Short,
+        IntRank::Int,
+        IntRank::Long,
+        IntRank::LongLong,
+    ]
+    .into_iter()
+    .find(|rank| super::ctype::rank_width(*rank, target) == bits)
+}
+
+include!("clang_builtins.rs");
+
+const FOLDABLE_BUILTINS: &[&str] = &[
+    "__addressof",
+    "__arithmetic_fence",
+    "__assume",
+    "__atomic_always_lock_free",
+    "__atomic_is_lock_free",
+    "__builtin_abs",
+    "__builtin_add_overflow",
+    "__builtin_addc",
+    "__builtin_addcb",
+    "__builtin_addcl",
+    "__builtin_addcll",
+    "__builtin_addcs",
+    "__builtin_addressof",
+    "__builtin_align_down",
+    "__builtin_align_up",
+    "__builtin_assume",
+    "__builtin_assume_aligned",
+    "__builtin_bcmp",
+    "__builtin_bitreverse16",
+    "__builtin_bitreverse32",
+    "__builtin_bitreverse64",
+    "__builtin_bitreverse8",
+    "__builtin_bitreverseg",
+    "__builtin_bswap16",
+    "__builtin_bswap32",
+    "__builtin_bswap64",
+    "__builtin_bswapg",
+    "__builtin_char_memchr",
+    "__builtin_choose_expr",
+    "__builtin_classify_type",
+    "__builtin_clrsb",
+    "__builtin_clrsbl",
+    "__builtin_clrsbll",
+    "__builtin_clz",
+    "__builtin_clzg",
+    "__builtin_clzl",
+    "__builtin_clzll",
+    "__builtin_clzs",
+    "__builtin_complex",
+    "__builtin_constant_p",
+    "__builtin_copysign",
+    "__builtin_copysignf",
+    "__builtin_copysignf128",
+    "__builtin_copysignl",
+    "__builtin_ctz",
+    "__builtin_ctzg",
+    "__builtin_ctzl",
+    "__builtin_ctzll",
+    "__builtin_ctzs",
+    "__builtin_dynamic_object_size",
+    "__builtin_eh_return_data_regno",
+    "__builtin_elementwise_abs",
+    "__builtin_elementwise_add_sat",
+    "__builtin_elementwise_bitreverse",
+    "__builtin_elementwise_clmul",
+    "__builtin_elementwise_clzg",
+    "__builtin_elementwise_ctzg",
+    "__builtin_elementwise_fma",
+    "__builtin_elementwise_fshl",
+    "__builtin_elementwise_fshr",
+    "__builtin_elementwise_max",
+    "__builtin_elementwise_min",
+    "__builtin_elementwise_pdep",
+    "__builtin_elementwise_pext",
+    "__builtin_elementwise_popcount",
+    "__builtin_elementwise_sub_sat",
+    "__builtin_expect",
+    "__builtin_expect_with_probability",
+    "__builtin_fabs",
+    "__builtin_fabsf",
+    "__builtin_fabsf128",
+    "__builtin_fabsl",
+    "__builtin_ffs",
+    "__builtin_ffsl",
+    "__builtin_ffsll",
+    "__builtin_fmax",
+    "__builtin_fmaxf",
+    "__builtin_fmaxf128",
+    "__builtin_fmaxf16",
+    "__builtin_fmaximum_num",
+    "__builtin_fmaximum_numf",
+    "__builtin_fmaximum_numf128",
+    "__builtin_fmaximum_numf16",
+    "__builtin_fmaximum_numl",
+    "__builtin_fmaxl",
+    "__builtin_fmin",
+    "__builtin_fminf",
+    "__builtin_fminf128",
+    "__builtin_fminf16",
+    "__builtin_fminimum_num",
+    "__builtin_fminimum_numf",
+    "__builtin_fminimum_numf128",
+    "__builtin_fminimum_numf16",
+    "__builtin_fminimum_numl",
+    "__builtin_fminl",
+    "__builtin_fpclassify",
+    "__builtin_huge_val",
+    "__builtin_huge_valf",
+    "__builtin_huge_valf128",
+    "__builtin_huge_valf16",
+    "__builtin_huge_vall",
+    "__builtin_ia32_alignd128",
+    "__builtin_ia32_alignd256",
+    "__builtin_ia32_alignd512",
+    "__builtin_ia32_alignq128",
+    "__builtin_ia32_alignq256",
+    "__builtin_ia32_alignq512",
+    "__builtin_ia32_blendpd",
+    "__builtin_ia32_blendpd256",
+    "__builtin_ia32_blendps",
+    "__builtin_ia32_blendps256",
+    "__builtin_ia32_blendvpd",
+    "__builtin_ia32_blendvpd256",
+    "__builtin_ia32_blendvps",
+    "__builtin_ia32_blendvps256",
+    "__builtin_ia32_compressdf128_mask",
+    "__builtin_ia32_compressdf256_mask",
+    "__builtin_ia32_compressdf512_mask",
+    "__builtin_ia32_compressdi128_mask",
+    "__builtin_ia32_compressdi256_mask",
+    "__builtin_ia32_compressdi512_mask",
+    "__builtin_ia32_compresshi128_mask",
+    "__builtin_ia32_compresshi256_mask",
+    "__builtin_ia32_compresshi512_mask",
+    "__builtin_ia32_compressqi128_mask",
+    "__builtin_ia32_compressqi256_mask",
+    "__builtin_ia32_compressqi512_mask",
+    "__builtin_ia32_compresssf128_mask",
+    "__builtin_ia32_compresssf256_mask",
+    "__builtin_ia32_compresssf512_mask",
+    "__builtin_ia32_compresssi128_mask",
+    "__builtin_ia32_compresssi256_mask",
+    "__builtin_ia32_compresssi512_mask",
+    "__builtin_ia32_crc32di",
+    "__builtin_ia32_crc32hi",
+    "__builtin_ia32_crc32qi",
+    "__builtin_ia32_crc32si",
+    "__builtin_ia32_cvtpd2dq",
+    "__builtin_ia32_cvtpd2dq256",
+    "__builtin_ia32_cvtpd2ps",
+    "__builtin_ia32_cvtpd2ps256",
+    "__builtin_ia32_cvtpd2ps512_mask",
+    "__builtin_ia32_cvtpd2ps_mask",
+    "__builtin_ia32_cvtps2dq",
+    "__builtin_ia32_cvtps2dq256",
+    "__builtin_ia32_cvtsd2si",
+    "__builtin_ia32_cvtsd2si64",
+    "__builtin_ia32_cvtsd2ss",
+    "__builtin_ia32_cvtsd2ss_round_mask",
+    "__builtin_ia32_cvtss2si",
+    "__builtin_ia32_cvtss2si64",
+    "__builtin_ia32_cvttpd2dq",
+    "__builtin_ia32_cvttpd2dq256",
+    "__builtin_ia32_cvttps2dq",
+    "__builtin_ia32_cvttps2dq256",
+    "__builtin_ia32_cvttsd2si",
+    "__builtin_ia32_cvttsd2si64",
+    "__builtin_ia32_cvttss2si",
+    "__builtin_ia32_cvttss2si64",
+    "__builtin_ia32_expanddf128_mask",
+    "__builtin_ia32_expanddf256_mask",
+    "__builtin_ia32_expanddf512_mask",
+    "__builtin_ia32_expanddi128_mask",
+    "__builtin_ia32_expanddi256_mask",
+    "__builtin_ia32_expanddi512_mask",
+    "__builtin_ia32_expandhi128_mask",
+    "__builtin_ia32_expandhi256_mask",
+    "__builtin_ia32_expandhi512_mask",
+    "__builtin_ia32_expandqi128_mask",
+    "__builtin_ia32_expandqi256_mask",
+    "__builtin_ia32_expandqi512_mask",
+    "__builtin_ia32_expandsf128_mask",
+    "__builtin_ia32_expandsf256_mask",
+    "__builtin_ia32_expandsf512_mask",
+    "__builtin_ia32_expandsi128_mask",
+    "__builtin_ia32_expandsi256_mask",
+    "__builtin_ia32_expandsi512_mask",
+    "__builtin_ia32_extract128i256",
+    "__builtin_ia32_extractf32x4_256_mask",
+    "__builtin_ia32_extractf32x4_mask",
+    "__builtin_ia32_extractf32x8_mask",
+    "__builtin_ia32_extractf64x2_256_mask",
+    "__builtin_ia32_extractf64x2_512_mask",
+    "__builtin_ia32_extractf64x4_mask",
+    "__builtin_ia32_extracti32x4_256_mask",
+    "__builtin_ia32_extracti32x4_mask",
+    "__builtin_ia32_extracti32x8_mask",
+    "__builtin_ia32_extracti64x2_256_mask",
+    "__builtin_ia32_extracti64x2_512_mask",
+    "__builtin_ia32_extracti64x4_mask",
+    "__builtin_ia32_insert128i256",
+    "__builtin_ia32_insertf32x4",
+    "__builtin_ia32_insertf32x4_256",
+    "__builtin_ia32_insertf32x8",
+    "__builtin_ia32_insertf64x2_256",
+    "__builtin_ia32_insertf64x2_512",
+    "__builtin_ia32_insertf64x4",
+    "__builtin_ia32_inserti32x4",
+    "__builtin_ia32_inserti32x4_256",
+    "__builtin_ia32_inserti32x8",
+    "__builtin_ia32_inserti64x2_256",
+    "__builtin_ia32_inserti64x2_512",
+    "__builtin_ia32_inserti64x4",
+    "__builtin_ia32_insertps128",
+    "__builtin_ia32_kadddi",
+    "__builtin_ia32_kaddhi",
+    "__builtin_ia32_kaddqi",
+    "__builtin_ia32_kaddsi",
+    "__builtin_ia32_kanddi",
+    "__builtin_ia32_kandhi",
+    "__builtin_ia32_kandndi",
+    "__builtin_ia32_kandnhi",
+    "__builtin_ia32_kandnqi",
+    "__builtin_ia32_kandnsi",
+    "__builtin_ia32_kandqi",
+    "__builtin_ia32_kandsi",
+    "__builtin_ia32_kmovb",
+    "__builtin_ia32_kmovd",
+    "__builtin_ia32_kmovq",
+    "__builtin_ia32_kmovw",
+    "__builtin_ia32_knotdi",
+    "__builtin_ia32_knothi",
+    "__builtin_ia32_knotqi",
+    "__builtin_ia32_knotsi",
+    "__builtin_ia32_kordi",
+    "__builtin_ia32_korhi",
+    "__builtin_ia32_korqi",
+    "__builtin_ia32_korsi",
+    "__builtin_ia32_kshiftlidi",
+    "__builtin_ia32_kshiftlihi",
+    "__builtin_ia32_kshiftliqi",
+    "__builtin_ia32_kshiftlisi",
+    "__builtin_ia32_kshiftridi",
+    "__builtin_ia32_kshiftrihi",
+    "__builtin_ia32_kshiftriqi",
+    "__builtin_ia32_kshiftrisi",
+    "__builtin_ia32_kxnordi",
+    "__builtin_ia32_kxnorhi",
+    "__builtin_ia32_kxnorqi",
+    "__builtin_ia32_kxnorsi",
+    "__builtin_ia32_kxordi",
+    "__builtin_ia32_kxorhi",
+    "__builtin_ia32_kxorqi",
+    "__builtin_ia32_kxorsi",
+    "__builtin_ia32_packssdw128",
+    "__builtin_ia32_packssdw256",
+    "__builtin_ia32_packssdw512",
+    "__builtin_ia32_packsswb128",
+    "__builtin_ia32_packsswb256",
+    "__builtin_ia32_packsswb512",
+    "__builtin_ia32_packusdw128",
+    "__builtin_ia32_packusdw256",
+    "__builtin_ia32_packusdw512",
+    "__builtin_ia32_packuswb128",
+    "__builtin_ia32_packuswb256",
+    "__builtin_ia32_packuswb512",
+    "__builtin_ia32_palignr128",
+    "__builtin_ia32_palignr256",
+    "__builtin_ia32_palignr512",
+    "__builtin_ia32_pblendd128",
+    "__builtin_ia32_pblendd256",
+    "__builtin_ia32_pblendvb128",
+    "__builtin_ia32_pblendvb256",
+    "__builtin_ia32_pblendw128",
+    "__builtin_ia32_pblendw256",
+    "__builtin_ia32_permdf256",
+    "__builtin_ia32_permdi256",
+    "__builtin_ia32_permti256",
+    "__builtin_ia32_permvardf256",
+    "__builtin_ia32_permvardf512",
+    "__builtin_ia32_permvardi256",
+    "__builtin_ia32_permvardi512",
+    "__builtin_ia32_permvarhi128",
+    "__builtin_ia32_permvarhi256",
+    "__builtin_ia32_permvarhi512",
+    "__builtin_ia32_permvarqi128",
+    "__builtin_ia32_permvarqi256",
+    "__builtin_ia32_permvarqi512",
+    "__builtin_ia32_permvarsf256",
+    "__builtin_ia32_permvarsf512",
+    "__builtin_ia32_permvarsi256",
+    "__builtin_ia32_permvarsi512",
+    "__builtin_ia32_phminposuw128",
+    "__builtin_ia32_pshufb128",
+    "__builtin_ia32_pshufb256",
+    "__builtin_ia32_pshufb512",
+    "__builtin_ia32_pshufd",
+    "__builtin_ia32_pshufd256",
+    "__builtin_ia32_pshufd512",
+    "__builtin_ia32_pshufhw",
+    "__builtin_ia32_pshufhw256",
+    "__builtin_ia32_pshufhw512",
+    "__builtin_ia32_pshuflw",
+    "__builtin_ia32_pshuflw256",
+    "__builtin_ia32_pshuflw512",
+    "__builtin_ia32_psignb128",
+    "__builtin_ia32_psignb256",
+    "__builtin_ia32_psignd128",
+    "__builtin_ia32_psignd256",
+    "__builtin_ia32_psignw128",
+    "__builtin_ia32_psignw256",
+    "__builtin_ia32_pslld128",
+    "__builtin_ia32_pslld256",
+    "__builtin_ia32_pslld512",
+    "__builtin_ia32_pslldqi128_byteshift",
+    "__builtin_ia32_pslldqi256_byteshift",
+    "__builtin_ia32_pslldqi512_byteshift",
+    "__builtin_ia32_psllq128",
+    "__builtin_ia32_psllq256",
+    "__builtin_ia32_psllq512",
+    "__builtin_ia32_psllw128",
+    "__builtin_ia32_psllw256",
+    "__builtin_ia32_psllw512",
+    "__builtin_ia32_psrad128",
+    "__builtin_ia32_psrad256",
+    "__builtin_ia32_psrad512",
+    "__builtin_ia32_psraq128",
+    "__builtin_ia32_psraq256",
+    "__builtin_ia32_psraq512",
+    "__builtin_ia32_psraw128",
+    "__builtin_ia32_psraw256",
+    "__builtin_ia32_psraw512",
+    "__builtin_ia32_psrld128",
+    "__builtin_ia32_psrld256",
+    "__builtin_ia32_psrld512",
+    "__builtin_ia32_psrldqi128_byteshift",
+    "__builtin_ia32_psrldqi256_byteshift",
+    "__builtin_ia32_psrldqi512_byteshift",
+    "__builtin_ia32_psrlq128",
+    "__builtin_ia32_psrlq256",
+    "__builtin_ia32_psrlq512",
+    "__builtin_ia32_psrlw128",
+    "__builtin_ia32_psrlw256",
+    "__builtin_ia32_psrlw512",
+    "__builtin_ia32_pternlogd128_mask",
+    "__builtin_ia32_pternlogd128_maskz",
+    "__builtin_ia32_pternlogd256_mask",
+    "__builtin_ia32_pternlogd256_maskz",
+    "__builtin_ia32_pternlogd512_mask",
+    "__builtin_ia32_pternlogd512_maskz",
+    "__builtin_ia32_pternlogq128_mask",
+    "__builtin_ia32_pternlogq128_maskz",
+    "__builtin_ia32_pternlogq256_mask",
+    "__builtin_ia32_pternlogq256_maskz",
+    "__builtin_ia32_pternlogq512_mask",
+    "__builtin_ia32_pternlogq512_maskz",
+    "__builtin_ia32_ptestc128",
+    "__builtin_ia32_ptestc256",
+    "__builtin_ia32_ptestnzc128",
+    "__builtin_ia32_ptestnzc256",
+    "__builtin_ia32_ptestz128",
+    "__builtin_ia32_ptestz256",
+    "__builtin_ia32_selectb_128",
+    "__builtin_ia32_selectb_256",
+    "__builtin_ia32_selectb_512",
+    "__builtin_ia32_selectd_128",
+    "__builtin_ia32_selectd_256",
+    "__builtin_ia32_selectd_512",
+    "__builtin_ia32_selectpbf_128",
+    "__builtin_ia32_selectpbf_256",
+    "__builtin_ia32_selectpbf_512",
+    "__builtin_ia32_selectpd_128",
+    "__builtin_ia32_selectpd_256",
+    "__builtin_ia32_selectpd_512",
+    "__builtin_ia32_selectph_128",
+    "__builtin_ia32_selectph_256",
+    "__builtin_ia32_selectph_512",
+    "__builtin_ia32_selectps_128",
+    "__builtin_ia32_selectps_256",
+    "__builtin_ia32_selectps_512",
+    "__builtin_ia32_selectq_128",
+    "__builtin_ia32_selectq_256",
+    "__builtin_ia32_selectq_512",
+    "__builtin_ia32_selectw_128",
+    "__builtin_ia32_selectw_256",
+    "__builtin_ia32_selectw_512",
+    "__builtin_ia32_shuf_f32x4",
+    "__builtin_ia32_shuf_f32x4_256",
+    "__builtin_ia32_shuf_f64x2",
+    "__builtin_ia32_shuf_f64x2_256",
+    "__builtin_ia32_shuf_i32x4",
+    "__builtin_ia32_shuf_i32x4_256",
+    "__builtin_ia32_shuf_i64x2",
+    "__builtin_ia32_shuf_i64x2_256",
+    "__builtin_ia32_shufpd",
+    "__builtin_ia32_shufpd256",
+    "__builtin_ia32_shufpd512",
+    "__builtin_ia32_shufps",
+    "__builtin_ia32_shufps256",
+    "__builtin_ia32_shufps512",
+    "__builtin_ia32_vextractf128_pd256",
+    "__builtin_ia32_vextractf128_ps256",
+    "__builtin_ia32_vextractf128_si256",
+    "__builtin_ia32_vgf2p8affineinvqb_v16qi",
+    "__builtin_ia32_vgf2p8affineinvqb_v32qi",
+    "__builtin_ia32_vgf2p8affineinvqb_v64qi",
+    "__builtin_ia32_vgf2p8affineqb_v16qi",
+    "__builtin_ia32_vgf2p8affineqb_v32qi",
+    "__builtin_ia32_vgf2p8affineqb_v64qi",
+    "__builtin_ia32_vgf2p8mulb_v16qi",
+    "__builtin_ia32_vgf2p8mulb_v32qi",
+    "__builtin_ia32_vgf2p8mulb_v64qi",
+    "__builtin_ia32_vinsertf128_pd256",
+    "__builtin_ia32_vinsertf128_ps256",
+    "__builtin_ia32_vinsertf128_si256",
+    "__builtin_ia32_vpconflictdi_128",
+    "__builtin_ia32_vpconflictdi_256",
+    "__builtin_ia32_vpconflictdi_512",
+    "__builtin_ia32_vpconflictsi_128",
+    "__builtin_ia32_vpconflictsi_256",
+    "__builtin_ia32_vpconflictsi_512",
+    "__builtin_ia32_vpdpbusd128",
+    "__builtin_ia32_vpdpbusd256",
+    "__builtin_ia32_vpdpbusd512",
+    "__builtin_ia32_vpdpbusds128",
+    "__builtin_ia32_vpdpbusds256",
+    "__builtin_ia32_vpdpbusds512",
+    "__builtin_ia32_vpdpwssd128",
+    "__builtin_ia32_vpdpwssd256",
+    "__builtin_ia32_vpdpwssd512",
+    "__builtin_ia32_vpdpwssds128",
+    "__builtin_ia32_vpdpwssds256",
+    "__builtin_ia32_vpdpwssds512",
+    "__builtin_ia32_vperm2f128_pd256",
+    "__builtin_ia32_vperm2f128_ps256",
+    "__builtin_ia32_vperm2f128_si256",
+    "__builtin_ia32_vpermi2vard128",
+    "__builtin_ia32_vpermi2vard256",
+    "__builtin_ia32_vpermi2vard512",
+    "__builtin_ia32_vpermi2varhi128",
+    "__builtin_ia32_vpermi2varhi256",
+    "__builtin_ia32_vpermi2varhi512",
+    "__builtin_ia32_vpermi2varpd128",
+    "__builtin_ia32_vpermi2varpd256",
+    "__builtin_ia32_vpermi2varpd512",
+    "__builtin_ia32_vpermi2varps128",
+    "__builtin_ia32_vpermi2varps256",
+    "__builtin_ia32_vpermi2varps512",
+    "__builtin_ia32_vpermi2varq128",
+    "__builtin_ia32_vpermi2varq256",
+    "__builtin_ia32_vpermi2varq512",
+    "__builtin_ia32_vpermi2varqi128",
+    "__builtin_ia32_vpermi2varqi256",
+    "__builtin_ia32_vpermi2varqi512",
+    "__builtin_ia32_vpermilpd",
+    "__builtin_ia32_vpermilpd256",
+    "__builtin_ia32_vpermilpd512",
+    "__builtin_ia32_vpermilps",
+    "__builtin_ia32_vpermilps256",
+    "__builtin_ia32_vpermilps512",
+    "__builtin_ia32_vpermilvarpd",
+    "__builtin_ia32_vpermilvarpd256",
+    "__builtin_ia32_vpermilvarpd512",
+    "__builtin_ia32_vpermilvarps",
+    "__builtin_ia32_vpermilvarps256",
+    "__builtin_ia32_vpermilvarps512",
+    "__builtin_ia32_vpmadd52huq128",
+    "__builtin_ia32_vpmadd52huq256",
+    "__builtin_ia32_vpmadd52huq512",
+    "__builtin_ia32_vpmadd52luq128",
+    "__builtin_ia32_vpmadd52luq256",
+    "__builtin_ia32_vpmadd52luq512",
+    "__builtin_ia32_vpmultishiftqb128",
+    "__builtin_ia32_vpmultishiftqb256",
+    "__builtin_ia32_vpmultishiftqb512",
+    "__builtin_ia32_vpshldd128",
+    "__builtin_ia32_vpshldd256",
+    "__builtin_ia32_vpshldd512",
+    "__builtin_ia32_vpshldq128",
+    "__builtin_ia32_vpshldq256",
+    "__builtin_ia32_vpshldq512",
+    "__builtin_ia32_vpshldw128",
+    "__builtin_ia32_vpshldw256",
+    "__builtin_ia32_vpshldw512",
+    "__builtin_ia32_vpshrdd128",
+    "__builtin_ia32_vpshrdd256",
+    "__builtin_ia32_vpshrdd512",
+    "__builtin_ia32_vpshrdq128",
+    "__builtin_ia32_vpshrdq256",
+    "__builtin_ia32_vpshrdq512",
+    "__builtin_ia32_vpshrdw128",
+    "__builtin_ia32_vpshrdw256",
+    "__builtin_ia32_vpshrdw512",
+    "__builtin_ia32_vpshufbitqmb128_mask",
+    "__builtin_ia32_vpshufbitqmb256_mask",
+    "__builtin_ia32_vpshufbitqmb512_mask",
+    "__builtin_ia32_vtestcpd",
+    "__builtin_ia32_vtestcpd256",
+    "__builtin_ia32_vtestcps",
+    "__builtin_ia32_vtestcps256",
+    "__builtin_ia32_vtestnzcpd",
+    "__builtin_ia32_vtestnzcpd256",
+    "__builtin_ia32_vtestnzcps",
+    "__builtin_ia32_vtestnzcps256",
+    "__builtin_ia32_vtestzpd",
+    "__builtin_ia32_vtestzpd256",
+    "__builtin_ia32_vtestzps",
+    "__builtin_ia32_vtestzps256",
+    "__builtin_inf",
+    "__builtin_infer_alloc_token",
+    "__builtin_inff",
+    "__builtin_inff128",
+    "__builtin_inff16",
+    "__builtin_infl",
+    "__builtin_is_aligned",
+    "__builtin_is_constant_evaluated",
+    "__builtin_is_within_lifetime",
+    "__builtin_isfinite",
+    "__builtin_isfpclass",
+    "__builtin_isgreater",
+    "__builtin_isgreaterequal",
+    "__builtin_isinf",
+    "__builtin_isinf_sign",
+    "__builtin_isless",
+    "__builtin_islessequal",
+    "__builtin_islessgreater",
+    "__builtin_isnan",
+    "__builtin_isnormal",
+    "__builtin_issignaling",
+    "__builtin_issubnormal",
+    "__builtin_isunordered",
+    "__builtin_iszero",
+    "__builtin_labs",
+    "__builtin_launder",
+    "__builtin_llabs",
+    "__builtin_memchr",
+    "__builtin_memcmp",
+    "__builtin_memcpy",
+    "__builtin_memmove",
+    "__builtin_mul_overflow",
+    "__builtin_nan",
+    "__builtin_nanf",
+    "__builtin_nanf128",
+    "__builtin_nanf16",
+    "__builtin_nanl",
+    "__builtin_nans",
+    "__builtin_nansf",
+    "__builtin_nansf128",
+    "__builtin_nansf16",
+    "__builtin_nansl",
+    "__builtin_object_size",
+    "__builtin_operator_delete",
+    "__builtin_operator_new",
+    "__builtin_os_log_format_buffer_size",
+    "__builtin_parity",
+    "__builtin_parityl",
+    "__builtin_parityll",
+    "__builtin_popcount",
+    "__builtin_popcountg",
+    "__builtin_popcountl",
+    "__builtin_popcountll",
+    "__builtin_ptrauth_string_discriminator",
+    "__builtin_reduce_add",
+    "__builtin_reduce_and",
+    "__builtin_reduce_max",
+    "__builtin_reduce_min",
+    "__builtin_reduce_mul",
+    "__builtin_reduce_or",
+    "__builtin_reduce_xor",
+    "__builtin_rotateleft16",
+    "__builtin_rotateleft32",
+    "__builtin_rotateleft64",
+    "__builtin_rotateleft8",
+    "__builtin_rotateright16",
+    "__builtin_rotateright32",
+    "__builtin_rotateright64",
+    "__builtin_rotateright8",
+    "__builtin_sadd_overflow",
+    "__builtin_saddl_overflow",
+    "__builtin_saddll_overflow",
+    "__builtin_signbit",
+    "__builtin_signbitf",
+    "__builtin_signbitl",
+    "__builtin_smul_overflow",
+    "__builtin_smull_overflow",
+    "__builtin_smulll_overflow",
+    "__builtin_ssub_overflow",
+    "__builtin_ssubl_overflow",
+    "__builtin_ssubll_overflow",
+    "__builtin_stdc_bit_ceil",
+    "__builtin_stdc_bit_floor",
+    "__builtin_stdc_bit_width",
+    "__builtin_stdc_count_ones",
+    "__builtin_stdc_count_zeros",
+    "__builtin_stdc_first_leading_one",
+    "__builtin_stdc_first_leading_zero",
+    "__builtin_stdc_first_trailing_one",
+    "__builtin_stdc_first_trailing_zero",
+    "__builtin_stdc_has_single_bit",
+    "__builtin_stdc_leading_ones",
+    "__builtin_stdc_leading_zeros",
+    "__builtin_stdc_rotate_left",
+    "__builtin_stdc_rotate_right",
+    "__builtin_stdc_trailing_ones",
+    "__builtin_stdc_trailing_zeros",
+    "__builtin_strchr",
+    "__builtin_strcmp",
+    "__builtin_strlen",
+    "__builtin_strncmp",
+    "__builtin_sub_overflow",
+    "__builtin_subc",
+    "__builtin_subcb",
+    "__builtin_subcl",
+    "__builtin_subcll",
+    "__builtin_subcs",
+    "__builtin_uadd_overflow",
+    "__builtin_uaddl_overflow",
+    "__builtin_uaddll_overflow",
+    "__builtin_umul_overflow",
+    "__builtin_umull_overflow",
+    "__builtin_umulll_overflow",
+    "__builtin_usub_overflow",
+    "__builtin_usubl_overflow",
+    "__builtin_usubll_overflow",
+    "__builtin_wcschr",
+    "__builtin_wcscmp",
+    "__builtin_wcslen",
+    "__builtin_wcsncmp",
+    "__builtin_wmemchr",
+    "__builtin_wmemcmp",
+    "__builtin_wmemcpy",
+    "__builtin_wmemmove",
+    "__c11_atomic_is_lock_free",
+    "__lzcnt",
+    "__lzcnt16",
+    "__lzcnt64",
+    "__noop",
+    "__popcnt",
+    "__popcnt16",
+    "__popcnt64",
+    "_lrotl",
+    "_lrotr",
+    "_rotl",
+    "_rotl16",
+    "_rotl64",
+    "_rotl8",
+    "_rotr",
+    "_rotr16",
+    "_rotr64",
+    "_rotr8",
+    "addressof",
+    "as_const",
+    "bcmp",
+    "forward",
+    "forward_like",
+    "memchr",
+    "memcmp",
+    "memcpy",
+    "memmove",
+    "move",
+    "move_if_noexcept",
+    "stdc_bit_ceil_uc",
+    "stdc_bit_ceil_ui",
+    "stdc_bit_ceil_ul",
+    "stdc_bit_ceil_ull",
+    "stdc_bit_ceil_us",
+    "stdc_bit_floor_uc",
+    "stdc_bit_floor_ui",
+    "stdc_bit_floor_ul",
+    "stdc_bit_floor_ull",
+    "stdc_bit_floor_us",
+    "stdc_bit_width_uc",
+    "stdc_bit_width_ui",
+    "stdc_bit_width_ul",
+    "stdc_bit_width_ull",
+    "stdc_bit_width_us",
+    "stdc_count_ones_uc",
+    "stdc_count_ones_ui",
+    "stdc_count_ones_ul",
+    "stdc_count_ones_ull",
+    "stdc_count_ones_us",
+    "stdc_count_zeros_uc",
+    "stdc_count_zeros_ui",
+    "stdc_count_zeros_ul",
+    "stdc_count_zeros_ull",
+    "stdc_count_zeros_us",
+    "stdc_first_leading_one_uc",
+    "stdc_first_leading_one_ui",
+    "stdc_first_leading_one_ul",
+    "stdc_first_leading_one_ull",
+    "stdc_first_leading_one_us",
+    "stdc_first_leading_zero_uc",
+    "stdc_first_leading_zero_ui",
+    "stdc_first_leading_zero_ul",
+    "stdc_first_leading_zero_ull",
+    "stdc_first_leading_zero_us",
+    "stdc_first_trailing_one_uc",
+    "stdc_first_trailing_one_ui",
+    "stdc_first_trailing_one_ul",
+    "stdc_first_trailing_one_ull",
+    "stdc_first_trailing_one_us",
+    "stdc_first_trailing_zero_uc",
+    "stdc_first_trailing_zero_ui",
+    "stdc_first_trailing_zero_ul",
+    "stdc_first_trailing_zero_ull",
+    "stdc_first_trailing_zero_us",
+    "stdc_has_single_bit_uc",
+    "stdc_has_single_bit_ui",
+    "stdc_has_single_bit_ul",
+    "stdc_has_single_bit_ull",
+    "stdc_has_single_bit_us",
+    "stdc_leading_ones_uc",
+    "stdc_leading_ones_ui",
+    "stdc_leading_ones_ul",
+    "stdc_leading_ones_ull",
+    "stdc_leading_ones_us",
+    "stdc_leading_zeros_uc",
+    "stdc_leading_zeros_ui",
+    "stdc_leading_zeros_ul",
+    "stdc_leading_zeros_ull",
+    "stdc_leading_zeros_us",
+    "stdc_memreverse8u16",
+    "stdc_memreverse8u32",
+    "stdc_memreverse8u64",
+    "stdc_memreverse8u8",
+    "stdc_rotate_left_uc",
+    "stdc_rotate_left_ui",
+    "stdc_rotate_left_ul",
+    "stdc_rotate_left_ull",
+    "stdc_rotate_left_us",
+    "stdc_rotate_right_uc",
+    "stdc_rotate_right_ui",
+    "stdc_rotate_right_ul",
+    "stdc_rotate_right_ull",
+    "stdc_rotate_right_us",
+    "stdc_trailing_ones_uc",
+    "stdc_trailing_ones_ui",
+    "stdc_trailing_ones_ul",
+    "stdc_trailing_ones_ull",
+    "stdc_trailing_ones_us",
+    "stdc_trailing_zeros_uc",
+    "stdc_trailing_zeros_ui",
+    "stdc_trailing_zeros_ul",
+    "stdc_trailing_zeros_ull",
+    "stdc_trailing_zeros_us",
+    "strchr",
+    "strcmp",
+    "strlen",
+    "strncmp",
+    "wcschr",
+    "wcscmp",
+    "wcslen",
+    "wcsncmp",
+    "wmemchr",
+    "wmemcmp",
+    "wmemcpy",
+    "wmemmove",
+];

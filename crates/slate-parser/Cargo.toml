@@ -1,0 +1,37 @@
+[package]
+name = "slate-parser"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+custom_debug = "0.6.2"
+directories = "6.0.0"
+foldhash = "0.2"
+libc = "0.2"
+miette = { version = "7", features = ["fancy", "syntect-highlighter"] }
+num-bigint = "0.5"
+rustc_apfloat = "0.2.3"
+thiserror = "2"
+
+[dev-dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+clang-ast = "0.1"
+tempfile = "3"
+libtest-mimic = "0.8"
+
+[lints.clippy]
+large_enum_variant = "allow"
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"
+result_large_err = "allow"
+
+[[test]]
+name = "filecheck"
+harness = false
+
+[profile.test]
+opt-level = 3
+debug = false
+debug-assertions = false
+overflow-checks = false

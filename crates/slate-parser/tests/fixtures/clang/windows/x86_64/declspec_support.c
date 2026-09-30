@@ -1,0 +1,66 @@
+// SLATE-FILECHECK-DEFINES WARN
+// SLATE-FILECHECK-WARNING WARN
+// SLATE-FILECHECK-ARGS --dump-ir --compact-ir
+
+extern __declspec(dllimport) int imported;
+int *imported_address = &imported;
+__declspec(dllexport) int exported = 1;
+__declspec(weak) int weak_value;
+
+struct __declspec(packed) Packed {
+  char c;
+  int i;
+};
+int packed_size = sizeof(struct Packed);
+
+// SLATE-FILECHECK-BEGIN WARN
+// WARN: -Wignored-attributes
+// WARN: ⚠ __declspec attribute 'weak' is not supported
+// WARN: ╭─[tests/fixtures/clang/windows/x86_64/declspec_support.c:5:12]
+// WARN: 4 │ __declspec(dllexport) int exported = 1;
+// WARN: 5 │ __declspec(weak) int weak_value;
+// WARN: ·            ────
+// WARN: 6 │
+// WARN: ╰────
+// WARN: -Wignored-attributes
+// WARN: ⚠ __declspec attribute 'packed' is not supported
+// WARN: ╭─[tests/fixtures/clang/windows/x86_64/declspec_support.c:7:19]
+// WARN: 6 │
+// WARN: 7 │ struct __declspec(packed) Packed {
+// WARN: ·                   ──────
+// WARN: 8 │   char c;
+// WARN: ╰────
+// SLATE-FILECHECK-END WARN
+// SLATE-FILECHECK-BEGIN IR-WARN
+// IR-WARN: module {
+// IR-WARN-NEXT:     target "x86_64-pc-windows-msvc" {
+// IR-WARN-NEXT:         endian = little;
+// IR-WARN-NEXT:         pointer [size=8, align=8];
+// IR-WARN-NEXT:         stack_alignment = 16;
+// IR-WARN-NEXT:         long_double = f64;
+// IR-WARN-NEXT:         storage bool [size=1, align=1];
+// IR-WARN-NEXT:         storage i8, u8 [size=1, align=1];
+// IR-WARN-NEXT:         storage i16, u16 [size=2, align=2];
+// IR-WARN-NEXT:         storage i32, u32 [size=4, align=4];
+// IR-WARN-NEXT:         storage i64, u64 [size=8, align=8];
+// IR-WARN-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-WARN-NEXT:         storage bf16 [size=2, align=2];
+// IR-WARN-NEXT:         storage f16 [size=2, align=2];
+// IR-WARN-NEXT:         storage f32 [size=4, align=4];
+// IR-WARN-NEXT:         storage f64 [size=8, align=8];
+// IR-WARN-NEXT:         storage f128 [size=16, align=16];
+// IR-WARN-NEXT:         storage d32 [size=4, align=4];
+// IR-WARN-NEXT:         storage d64 [size=8, align=8];
+// IR-WARN-NEXT:         storage d128 [size=16, align=16];
+// IR-WARN-NEXT:     }
+// IR-WARN-NEXT:     type @type[[TYPE_Packed:[0-9]+]] Packed = struct {
+// IR-WARN-NEXT:         field0 c: i8;
+// IR-WARN-NEXT:         field1 i: i32;
+// IR-WARN-NEXT:     } [size=8, align=4, offsets=[0, 4]];
+// IR-WARN-NEXT:     extern %[[VALUE_imported:[0-9]+]] imported: i32 [storage=static] [linkage=external] [dllimport];
+// IR-WARN-NEXT:     global %[[VALUE_imported_address:[0-9]+]] imported_address: ptr<i32> [storage=static] = addr_of<ptr<i32>>(%[[VALUE_imported]]) [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_exported:[0-9]+]] exported: i32 [storage=static] = const<i32>(1) [linkage=external] [dllexport];
+// IR-WARN-NEXT:     global %[[VALUE_weak_value:[0-9]+]] weak_value: i32 [storage=static] [linkage=external];
+// IR-WARN-NEXT:     global %[[VALUE_packed_size:[0-9]+]] packed_size: i32 [storage=static] = reinterpret<i32>(truncate<u32>(const<u64>(8))) [linkage=external];
+// IR-WARN-NEXT: }
+// SLATE-FILECHECK-END IR-WARN

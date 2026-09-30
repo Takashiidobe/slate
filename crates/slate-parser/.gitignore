@@ -1,0 +1,14 @@
+/target
+.llog/index
+.llog/state.json
+__pycache__
+scratch
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/
+
+# FileCheck harness scratch copies of fixtures, kept for debugging
+.*.c

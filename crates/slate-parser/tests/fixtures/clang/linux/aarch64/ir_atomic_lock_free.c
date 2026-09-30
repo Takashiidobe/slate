@@ -1,0 +1,34 @@
+// SLATE-FILECHECK-DEFINES IR
+// SLATE-FILECHECK-ARGS --dump-ir
+
+_Bool c11_wide = __c11_atomic_is_lock_free(16);
+_Bool always_wide = __atomic_always_lock_free(16, 0);
+_Bool always_too_wide = __atomic_always_lock_free(32, 0);
+
+// SLATE-FILECHECK-BEGIN IR
+// IR: module {
+// IR-NEXT:     target "aarch64-unknown-linux-gnu" {
+// IR-NEXT:         endian = little;
+// IR-NEXT:         pointer [size=8, align=8];
+// IR-NEXT:         stack_alignment = 16;
+// IR-NEXT:         long_double = f128;
+// IR-NEXT:         storage bool [size=1, align=1];
+// IR-NEXT:         storage i8, u8 [size=1, align=1];
+// IR-NEXT:         storage i16, u16 [size=2, align=2];
+// IR-NEXT:         storage i32, u32 [size=4, align=4];
+// IR-NEXT:         storage i64, u64 [size=8, align=8];
+// IR-NEXT:         storage i128, u128 [size=16, align=16];
+// IR-NEXT:         storage bf16 [size=2, align=2];
+// IR-NEXT:         storage f16 [size=2, align=2];
+// IR-NEXT:         storage f32 [size=4, align=4];
+// IR-NEXT:         storage f64 [size=8, align=8];
+// IR-NEXT:         storage f128 [size=16, align=16];
+// IR-NEXT:         storage d32 [size=4, align=4];
+// IR-NEXT:         storage d64 [size=8, align=8];
+// IR-NEXT:         storage d128 [size=16, align=16];
+// IR-NEXT:     }
+// IR-NEXT:     global %[[VALUE_c11_wide:[0-9]+]] c11_wide: bool [storage=static] = const<bool>(true) [linkage=external];
+// IR-NEXT:     global %[[VALUE_always_wide:[0-9]+]] always_wide: bool [storage=static] = const<bool>(true) [linkage=external];
+// IR-NEXT:     global %[[VALUE_always_too_wide:[0-9]+]] always_too_wide: bool [storage=static] = const<bool>(false) [linkage=external];
+// IR-NEXT: }
+// SLATE-FILECHECK-END IR
