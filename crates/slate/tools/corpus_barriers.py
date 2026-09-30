@@ -42,7 +42,7 @@ def revision(repo):
         text=True,
     ).stdout.strip()
     dirty = subprocess.run(
-        ["git", "-C", str(repo), "status", "--porcelain", "--untracked-files=no"],
+        ["git", "-C", str(repo), "status", "--porcelain", "--untracked-files=no", "--", ".", ":!.beads"],
         capture_output=True,
         text=True,
     ).stdout.strip()
@@ -117,6 +117,8 @@ def report(binary, compile_commands):
 
     lines = [
         f"# Slate lowering barriers: {compile_commands}",
+        "",
+        "Regenerate with `python3 tools/corpus_barriers.py --output wiki/concepts/chibicc-lowering-barriers.md`.",
         "",
         f"- slate `{revision(ROOT)}`",
         f"- slate-parser `{revision(ROOT.parent / 'slate-parser')}`",
