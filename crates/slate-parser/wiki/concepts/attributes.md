@@ -206,8 +206,8 @@ Fixtures: `sema/ir_attribute_applicability.c`,
 - `malloc(f[, n])`: `f` resolves like a callee (`Resolver::implicit_builtin`
   for undeclared builtins); `deallocator_argument` (shared) validates `n`
   ([ir/declarations](ir/declarations.md#function-semantics)).
-- Known duplicate: the `always_inline` / `noinline` conflict is checked in
-  `Checker::inlining` and again in `record_function`.
+- The `always_inline` / `noinline` conflict is rejected by
+  `Checker::inlining`; `record_function` treats it as `Internal`.
 
 ## Consumers
 

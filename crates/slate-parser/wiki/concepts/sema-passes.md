@@ -115,6 +115,9 @@ Rules:
 ## Expression typer
 
 `TypeResolver::typed` (`typer.rs`) types an expression without lowering it.
+It is the only place expression types and conversions are decided:
+lowering reads its facts and derives no types
+([architecture](architecture.md#checker-first-lowering-trusts)).
 
 - Used by the checker (every expression, children first), unevaluated
   operands (`sizeof`, `_Generic` control, `typeof`, `__auto_type`
@@ -140,6 +143,8 @@ Rules:
   character-constant, `__builtin_types_compatible_p` and
   `__builtin_classify_type` values, decoded from the facts. Declaration
   types are merged by the checker only; lowering reads `declared_types`.
+  Each declarator's resolved type (or its error) is in `declarator_types`;
+  lowering re-resolves only one with unbound extents.
 - A typed `sizeof` operand is not lowered unless it is a VLA.
 - Null pointer constants: `integer_constant_zero`, an ICE by 6.6p6
   operand rules that folds to zero (`(void *)(1 - 1)` yes; `(void *)(0,
@@ -168,7 +173,8 @@ Rules:
 
 ## Checker-owned rules
 
-The checker rejects; lowering's copies are `Internal`.
+The checker rejects and records; lowering executes the record. Lowering's
+remaining guards (`Internal` on an impossible shape) are not rules.
 
 - **Statements** (`StatementContext`, reset per function): `break` /
   `continue` / `case` / `default` / `[[fallthrough]]` outside their
@@ -230,8 +236,6 @@ The checker rejects; lowering's copies are `Internal`.
 - **FP pragmas**: the checker runs its own `FloatingPragmas` /
   `FloatingRegion`, restored at each compound; a pragma right after
   `({ ... })` is rejected, as clang does.
-- Known duplicate: the `always_inline`/`noinline` conflict is also checked
-  in lowering's `record_function`; merge rather than edit both.
 
 ## Error reporting
 

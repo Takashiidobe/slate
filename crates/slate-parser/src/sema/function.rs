@@ -158,7 +158,7 @@ impl Lowerer {
                         (Some(Inlining::Always), Inlining::Never)
                             | (Some(Inlining::Never), Inlining::Always)
                     ) {
-                        return Err(ResolveError::Rejected(
+                        return Err(ResolveError::Internal(
                             "conflicting always_inline and noinline attributes",
                         ));
                     }

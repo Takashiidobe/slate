@@ -118,26 +118,26 @@ validation logic is in [`src/compiler_args.rs`](src/compiler_args.rs) and
 
 ## Trophy case
 
-Popular C projects where every translation unit that `clang -fsyntax-only`
-accepts also goes through `slate-parser ir`. Each project uses its own
-`compile_commands.json` flags, with `--flavor=clang` on
+Popular C projects that slate-parser can parse with `--flavor=clang` on
 `x86_64-unknown-linux-gnu`.
 
-| Project | Revision | Translation units |
-| --- | --- | --- |
-| [musl](https://musl.libc.org) | `v1.2.6-20-gf21a9653` | 1324 |
-| [SQLite](https://sqlite.org) | `0eaef28cf2` | 102 |
-| [Lua](https://www.lua.org) | `v5.5.1` | 33 |
-| [PCRE2](https://github.com/PCRE2Project/pcre2) | `a2b146a` | 33 |
-| [giflib](https://giflib.sourceforge.net) | `6.1.3-4-ga8e3114` | 24 |
-| [cJSON](https://github.com/DaveGamble/cJSON) | `fb16e5c` | 23 |
-| [libyaml](https://github.com/yaml/libyaml) | `0.2.5-16-g893682b` | 22 |
-| [QuickJS](https://bellard.org/quickjs/) | `04be246` | 15 |
-| [LZ4](https://github.com/lz4/lz4) | `0774d05` | 12 |
-| [TinyCC](https://bellard.org/tcc/) | `2ba12e8` | 12 |
-| [chibicc](https://github.com/rui314/chibicc) | `90d1f7f` | 9 |
-| [yyjson](https://github.com/ibireme/yyjson) | `757305b` | 1 |
-| [utf8proc](https://github.com/JuliaStrings/utf8proc) | `0075ed7` | 1 |
+| Project                                              | Revision               |
+| ---------------------------------------------------- | ---------------------- |
+| [musl](https://musl.libc.org)                        | `v1.2.6-20-gf21a9653`  |
+| [SQLite](https://sqlite.org)                         | `0eaef28cf2`           |
+| [Lua](https://www.lua.org)                           | `v5.5.1`               |
+| [PCRE2](https://github.com/PCRE2Project/pcre2)       | `a2b146a`              |
+| [giflib](https://giflib.sourceforge.net)             | `6.1.3-4-ga8e3114`     |
+| [cJSON](https://github.com/DaveGamble/cJSON)         | `fb16e5c`              |
+| [libyaml](https://github.com/yaml/libyaml)           | `0.2.5-16-g893682b`    |
+| [libexpat](https://libexpat.github.io)               | `R_2_8_2-51-gdfdbaadf` |
+| [zlib](https://zlib.net)                             | `e3dc0a8`              |
+| [QuickJS](https://bellard.org/quickjs/)              | `04be246`              |
+| [LZ4](https://github.com/lz4/lz4)                    | `0774d05`              |
+| [TinyCC](https://bellard.org/tcc/)                   | `2ba12e8`              |
+| [chibicc](https://github.com/rui314/chibicc)         | `90d1f7f`              |
+| [yyjson](https://github.com/ibireme/yyjson)          | `757305b`              |
+| [utf8proc](https://github.com/JuliaStrings/utf8proc) | `0075ed7`              |
 
 Last swept 2026-09-30. Work toward the rest of the corpus is tracked in
 the `bd` epic `slate-parser-6x05`.

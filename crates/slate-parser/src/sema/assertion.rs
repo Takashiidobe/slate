@@ -345,6 +345,9 @@ impl Checker<'_> {
                 .declarator_type(&declaration.specifiers, declarator);
             self.types.provisional_extents = provisional;
             self.resolution(at, &resolved);
+            self.types
+                .declarator_types
+                .insert(declarator.id, resolved.clone());
             if let Ok(resolved) = resolved
                 && declaration.specifiers.storage == StorageClass::Typedef
             {

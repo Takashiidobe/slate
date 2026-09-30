@@ -994,11 +994,23 @@ impl Lowerer {
             } else {
                 None
             };
-            let resolved = self.resolve_declarator_type(
-                &item.specifiers,
-                &declarator.declarator,
-                &declarator.attributes,
-            )?;
+            let recorded = self
+                .types
+                .declarator_types
+                .get(&declarator.id)
+                .cloned()
+                .ok_or(ResolveError::Internal(
+                    "declarator type not recorded by the checker",
+                ))??;
+            let resolved = if self.types.ctypes.has_unbound_extent(recorded) {
+                self.resolve_declarator_type(
+                    &item.specifiers,
+                    &declarator.declarator,
+                    &declarator.attributes,
+                )?
+            } else {
+                recorded
+            };
             let resolved = match self.declaration_id(declarator.id, name) {
                 Ok(id) => self.types.inherit_convention(id, resolved),
                 Err(_) => resolved,

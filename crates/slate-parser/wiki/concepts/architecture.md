@@ -36,9 +36,13 @@ argv → Dialect → preprocess → parse → sema: names → check → lower �
   *typing* functions called from both passes are not: the helper is
   shared, but each pass's code that picks which helper applies drifts
   (the enum `?:` bug, slate-parser-ygrj).
-- When a rule exists in both places today, move the decision into the
-  checker, record its result, and have lowering read it. Don't grow a
-  second copy, and don't add a new shared typing helper to paper over one.
+- Invariant (since slate-parser-ygrj): lowering reads facts and derives no
+  types. Expression types, operand conversions, selections, initializer
+  plans and merged declaration types all come from the checker; a missing
+  fact is `Internal`. The only re-derivation is a variably modified type,
+  which lowering re-runs through the checker's own rule with bound extents.
+  A new rule goes in the checker with its result recorded; never add a
+  lowering-side copy or a shared typing helper.
 
 ## What goes in the IR
 
