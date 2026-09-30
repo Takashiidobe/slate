@@ -849,7 +849,7 @@ impl Lexer {
             let next = self.chars.get(i + 1).copied();
             if matches!(c, 'e' | 'E' | 'p' | 'P') && matches!(next, Some('+' | '-')) {
                 i += 2;
-            } else if c.is_ascii_alphanumeric() || c == '.' {
+            } else if c.is_ascii_alphanumeric() || c == '_' || c == '.' {
                 i += 1;
             } else if c == '\''
                 && self.features.digit_separators
