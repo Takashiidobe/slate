@@ -171,6 +171,7 @@ pub struct Preprocessor<'a> {
     pub directive_diagnostics: Vec<DirectiveDiagnostic>,
     line_overrides: HashMap<FileId, Vec<LineOverride>>,
     counter: Cell<i64>,
+    source_position: Option<Loc>,
     hide_sets: HideSets,
     build_time: SystemTime,
     dialect: &'a Dialect,
@@ -200,6 +201,7 @@ impl<'a> Preprocessor<'a> {
             directive_diagnostics: Vec::new(),
             line_overrides: HashMap::new(),
             counter: Cell::new(0),
+            source_position: None,
             hide_sets: HideSets::new(),
             build_time: SystemTime::now(),
             dialect,
@@ -692,6 +694,7 @@ impl<'a> Preprocessor<'a> {
             let line = match line {
                 Line::Directive(directive, comments) => {
                     self.push_comments(&mut nodes, comments);
+                    self.source_position = Some(directive.loc);
                     self.directive(
                         &mut file.source,
                         &mut file.conditionals,
@@ -707,6 +710,7 @@ impl<'a> Preprocessor<'a> {
                 continue;
             }
             file.group.extend(&line.tokens);
+            self.source_position = line.tokens.last().map(|token| token.spelling);
             let tokens = line.tokens.into_iter().map(PPToken::from).collect();
             let mut stream = Stream::new(tokens, Some(&mut file));
             let mut pieces = Vec::new();

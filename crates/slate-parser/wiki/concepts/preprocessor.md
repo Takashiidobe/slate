@@ -133,7 +133,11 @@ token plus an interned `HideSet`; file tokens start empty.
 - `expand_token` returns a final token, or pushes a replacement back:
   - builtins first (`__LINE__`, `__FILE__`, `__FILE_NAME__`,
     `__BASE_FILE__`, `__INCLUDE_LEVEL__`, `__COUNTER__`, `__DATE__`,
-    `__TIME__`);
+    `__TIME__`). `__LINE__` differs per flavor when an invocation spans
+    lines: gcc reports the line of the outermost macro name, clang the line
+    of its closing `)` (a `PPToken`'s `end`, carried by `Stamp`), and msvc
+    how far the source has been read (`source_position`), even for a
+    `__LINE__` written in an argument;
   - a name in its own hide set is final (painted);
   - object-like: the replacement gets `hs(name) ∪ {name}`;
   - function-like: only if the next token is `(`. `Stream::next_is_lparen`

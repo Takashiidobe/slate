@@ -3,6 +3,7 @@ use super::hide_set::HideSet;
 use super::syntax::{Directive, DirectiveName, Line};
 use super::{FileInput, MacroDef, Preprocessor, stringized_source};
 use crate::ast::{Loc, MacroOrigin, MacroOriginLink, Span};
+use crate::compiler_args::CompilerFlavor;
 use crate::lexer::{Token, TokenSpanExt};
 use std::rc::Rc;
 
@@ -10,11 +11,14 @@ use std::rc::Rc;
 pub(super) struct PPToken {
     pub(super) token: Span<Token>,
     pub(super) hide: HideSet,
+    // where __LINE__ reads its line: the token itself, or the end of the invocation that produced it
+    end: Loc,
 }
 
 impl From<Span<Token>> for PPToken {
     fn from(token: Span<Token>) -> Self {
         Self {
+            end: token.expansion,
             token,
             hide: HideSet::EMPTY,
         }
@@ -74,6 +78,7 @@ fn origin_for_expansion(
 
 struct Stamp {
     expansion: Loc,
+    end: Loc,
     origin: Rc<MacroOrigin>,
 }
 
@@ -135,6 +140,7 @@ impl Preprocessor<'_> {
                 None => return Ok(None),
                 Some(Line::Directive(directive, comments)) => {
                     file.group.trailing.extend(comments);
+                    self.source_position = Some(directive.loc);
                     self.directive(
                         &mut file.source,
                         &mut file.conditionals,
@@ -145,6 +151,9 @@ impl Preprocessor<'_> {
                 Some(Line::Text(line)) => {
                     file.group.trailing.extend(line.comments);
                     file.group.extend(&line.tokens);
+                    if let Some(last) = line.tokens.last() {
+                        self.source_position = Some(last.spelling);
+                    }
                     stream
                         .pending
                         .extend(line.tokens.into_iter().rev().map(PPToken::from));
@@ -162,10 +171,10 @@ impl Preprocessor<'_> {
         let Token::Ident(name) = &token.token.value else {
             return Ok(Some(token));
         };
-        if let Some(value) = self.expand_builtin_macro(name, &token.token) {
+        if let Some(value) = self.expand_builtin_macro(name, &token.token, token.end) {
             return Ok(Some(PPToken {
                 token: value,
-                hide: token.hide,
+                ..token
             }));
         }
         let Some(entry) = self.macros.get(name.as_str()) else {
@@ -175,8 +184,9 @@ impl Preprocessor<'_> {
             return Ok(Some(token));
         }
         let definition = entry.definition.clone();
-        let stamp = Stamp {
+        let mut stamp = Stamp {
             expansion: token.token.expansion,
+            end: token.end,
             origin: origin_for_expansion(name, entry.provenance, &token.token),
         };
         let name = name.clone();
@@ -199,6 +209,10 @@ impl Preprocessor<'_> {
             return Ok(Some(token));
         };
         let rparen_hide = rparen.hide;
+        // clang reports the end of the invocation's expansion range, gcc its name
+        if self.dialect.flavor() == CompilerFlavor::Clang {
+            stamp.end = rparen.end;
+        }
         if invocation.arguments.is_empty() && parameters.len() == 1 && !definition.variadic {
             invocation.arguments.push(Vec::new());
         }
@@ -454,11 +468,21 @@ impl Preprocessor<'_> {
 }
 
 impl Preprocessor<'_> {
-    fn expand_builtin_macro(&self, name: &str, token: &Span<Token>) -> Option<Span<Token>> {
+    fn expand_builtin_macro(
+        &self,
+        name: &str,
+        token: &Span<Token>,
+        end: Loc,
+    ) -> Option<Span<Token>> {
         let loc = token.expansion;
         match name {
             "__LINE__" => {
-                let (line, _) = self.presumed_location(loc);
+                // msvc reports how far the source has been read, even for a __LINE__ in an argument
+                let end = match self.dialect.flavor() {
+                    CompilerFlavor::Msvc => self.source_position.unwrap_or(end),
+                    _ => end,
+                };
+                let (line, _) = self.presumed_location(end);
                 Some(
                     token
                         .clone()
@@ -696,7 +720,10 @@ fn inherit_leading_space(mut tokens: Vec<PPToken>, name: &Span<Token>) -> Vec<PP
 
 impl Stamp {
     fn token(&self, token: &Span<Token>) -> PPToken {
-        PPToken::from(self.apply(token))
+        PPToken {
+            end: self.end,
+            ..PPToken::from(self.apply(token))
+        }
     }
 }
 
