@@ -45,6 +45,16 @@ promotes it.
 
 `*.ignored` buckets hold only features Slate will never support.
 
+For `tests/fixtures.unsupported` (including its `x86_64/` subdirectory),
+`fixtures_unsupported_triage_report` prints `PASS`/`FAIL` with the first
+barrier classified as `parse/sema`, `unsupported lowering`, `rustc`, or
+`runtime mismatch`; `SLATE_DIFF_FIXTURE=<stem>` selects one case:
+
+```bash
+cargo nextest r --release --test differential \
+  -E 'test(fixtures_unsupported_triage_report)' --run-ignored ignored-only --nocapture
+```
+
 Generate raw Slate lowerer checks with `@slate-lowerer-fn-begin` and
 `@slate-lowerer-fn-end` around each function whose emitted form matters, then
 run:

@@ -6,13 +6,18 @@ fn fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures")
 }
 
+fn unsupported_dir() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.unsupported")
+}
+
 struct Fixture {
     name: String,
+    relative: PathBuf,
     path: PathBuf,
 }
 
-fn collect_fixtures(dir: &Path, selected: &Option<String>, out: &mut Vec<Fixture>) {
-    let Ok(entries) = std::fs::read_dir(dir) else {
+fn collect_fixtures(root: &Path, sub: &Path, selected: &Option<String>, out: &mut Vec<Fixture>) {
+    let Ok(entries) = std::fs::read_dir(root.join(sub)) else {
         return;
     };
     for entry in entries {
@@ -24,37 +29,33 @@ fn collect_fixtures(dir: &Path, selected: &Option<String>, out: &mut Vec<Fixture
         if selected.as_ref().is_some_and(|selected| selected != &name) {
             continue;
         }
-        out.push(Fixture { name, path });
+        let relative = sub.join(path.file_name().unwrap());
+        out.push(Fixture {
+            name,
+            relative,
+            path,
+        });
     }
 }
 
-fn fixtures() -> Vec<Fixture> {
-    let dir = fixtures_dir();
+fn fixtures(root: &Path) -> Vec<Fixture> {
     let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
     let mut fixtures = Vec::new();
-    collect_fixtures(&dir, &selected, &mut fixtures);
+    collect_fixtures(root, Path::new(""), &selected, &mut fixtures);
     if cfg!(target_arch = "x86_64") {
-        collect_fixtures(&dir.join("x86_64"), &selected, &mut fixtures);
+        collect_fixtures(root, Path::new("x86_64"), &selected, &mut fixtures);
     }
     fixtures.sort_by(|a, b| a.name.cmp(&b.name));
     fixtures
 }
 
-#[test]
-fn generated_differential() {
-    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated");
+fn run_cases(group: &str, fixtures: &[Fixture]) -> Vec<(String, Result<(), String>)> {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/difftest-generated")
+        .join(group);
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
 
-    let fixtures = fixtures();
-    assert!(
-        !fixtures.is_empty(),
-        "no fixtures found in {:?}",
-        fixtures_dir()
-    );
-
-    let mut failures = Vec::new();
-
-    let translated = support::parallel_map(&fixtures, |f| {
+    let translated = support::parallel_map(fixtures, |f| {
         let generated = tmp.join(format!("{}.generated.rs", f.name));
         let dg_options = support::fixture_dg_options(&f.path);
         let mut extra_args = dg_options.clone();
@@ -71,17 +72,54 @@ fn generated_differential() {
         })
     });
     let mut cases = Vec::new();
+    let mut results = Vec::new();
     for (f, result) in fixtures.iter().zip(translated) {
         match result {
             Ok(case) => cases.push(case),
-            Err(e) => {
-                eprintln!("FAIL  {}", f.name);
-                failures.push(format!("[{}] {e}", f.name));
-            }
+            Err(e) => results.push((f.name.clone(), Err(e))),
         }
     }
+    results.extend(support::compare_batch(&cases, &tmp));
+    results.sort_by(|a, b| a.0.cmp(&b.0));
+    results
+}
 
-    for (name, result) in support::compare_batch(&cases, &tmp) {
+fn first_barrier(error: &str) -> (&'static str, &str) {
+    let detail = error
+        .lines()
+        .map(str::trim)
+        .find(|line| line.starts_with("error"))
+        .unwrap_or_else(|| error.lines().next().unwrap_or_default());
+    let class = if error.starts_with("slate translate-lowered failed") {
+        if detail.contains("unsupported slate-parser IR") {
+            "unsupported lowering"
+        } else {
+            "parse/sema"
+        }
+    } else if error.starts_with("Rust batch build failed") {
+        "rustc"
+    } else if error.starts_with("exit code differs")
+        || error.starts_with("stdout differs")
+        || error.starts_with("stderr differs")
+    {
+        "runtime mismatch"
+    } else {
+        "harness"
+    };
+    (class, detail)
+}
+
+#[test]
+fn generated_differential() {
+    let fixtures = fixtures(&fixtures_dir());
+    assert!(
+        !fixtures.is_empty() || std::env::var("SLATE_DIFF_FIXTURE").is_ok(),
+        "no fixtures found in {:?}",
+        fixtures_dir()
+    );
+
+    let mut failures = Vec::new();
+    for (name, result) in run_cases("supported", &fixtures) {
         match result {
             Ok(()) => eprintln!("ok    {name}"),
             Err(e) => {
@@ -98,5 +136,42 @@ fn generated_differential() {
             fixtures.len(),
             failures.join("\n\n")
         );
+    }
+}
+
+#[test]
+fn fixtures_unsupported_tests_still_fail() {
+    let fixtures = fixtures(&unsupported_dir());
+    let results = run_cases("unsupported", &fixtures);
+    let unexpected_passes: Vec<String> = results
+        .into_iter()
+        .filter(|(_, result)| result.is_ok())
+        .filter_map(|(name, _)| fixtures.iter().find(|f| f.name == name))
+        .map(|f| {
+            format!(
+                "  git mv tests/fixtures.unsupported/{0} tests/fixtures/{0}",
+                f.relative.display()
+            )
+        })
+        .collect();
+    assert!(
+        unexpected_passes.is_empty(),
+        "fixture(s) now pass end-to-end -- promote them:\n{}",
+        unexpected_passes.join("\n")
+    );
+}
+
+#[test]
+#[ignore]
+fn fixtures_unsupported_triage_report() {
+    let fixtures = fixtures(&unsupported_dir());
+    for (name, result) in run_cases("unsupported", &fixtures) {
+        match result {
+            Ok(()) => println!("PASS {name}"),
+            Err(error) => {
+                let (class, detail) = first_barrier(&error);
+                println!("FAIL {name} [{class}] {detail}");
+            }
+        }
     }
 }

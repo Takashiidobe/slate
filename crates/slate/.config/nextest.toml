@@ -29,6 +29,7 @@ default-filter = 'binary_id(=slate::differential_i686)'
 default-filter = '''
   (
     test(generated_differential)
+    + test(fixtures_unsupported_tests_still_fail)
     + test(generated_cross_tu_filecheck)
     + test(generated_library_filecheck)
     + test(c_testsuite_supported_tests_match_c)
