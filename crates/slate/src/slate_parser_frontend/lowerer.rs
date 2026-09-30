@@ -794,6 +794,44 @@ fn lower_value(
             lhs: Box::new(lower_value(left, names, bindings, strings)?),
             rhs: Box::new(lower_value(right, names, bindings, strings)?),
         },
+        ValueKind::Unary {
+            op,
+            operand,
+            semantics,
+        } if matches!(value.ty, ir::Type::Numeric(ir::NumericType::Integer { .. })) => {
+            let operand = lower_value(operand, names, bindings, strings)?;
+            match (op, semantics) {
+                (ir::UnaryArithOp::Not, _) => Expr::Unary {
+                    op: rust::UnaryOp::Not,
+                    expr: Box::new(operand),
+                },
+                (
+                    ir::UnaryArithOp::Neg,
+                    ir::ArithSema::Integer {
+                        overflow: ir::Overflow::Undefined,
+                    },
+                ) => Expr::Unary {
+                    op: rust::UnaryOp::Neg,
+                    expr: Box::new(operand),
+                },
+                (
+                    ir::UnaryArithOp::Neg,
+                    ir::ArithSema::Integer {
+                        overflow: ir::Overflow::Wrap,
+                    },
+                ) => Expr::MethodCall {
+                    recv: Box::new(operand),
+                    method: "wrapping_neg".into(),
+                    args: Vec::new(),
+                },
+                _ => {
+                    return Err(super::Error::Unsupported(format!(
+                        "value {}",
+                        value.display(false)
+                    )));
+                }
+            }
+        }
         ValueKind::Compare {
             op, left, right, ..
         } => Expr::Binary {
