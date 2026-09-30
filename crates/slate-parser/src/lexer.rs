@@ -569,6 +569,12 @@ impl TokenSpanExt for [Span<Token>] {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct LineToken {
+    pub token: Span<Token>,
+    pub at_line_start: bool,
+}
+
 pub struct Lexer {
     file: FileId,
     base_offset: usize,
@@ -576,7 +582,8 @@ pub struct Lexer {
     byte_offsets: Vec<usize>,
     pos: usize,
     mark: usize,
-    emit_newlines: bool,
+    line_starts: Option<Vec<bool>>,
+    at_line_start: bool,
     space_before: bool,
     tokens: Vec<Span<Token>>,
     features: StandardFeatures,
@@ -618,16 +625,26 @@ impl Lexer {
             byte_offsets,
             pos: 0,
             mark: 0,
-            emit_newlines: false,
+            line_starts: None,
+            at_line_start: true,
             space_before: false,
             tokens: Vec::new(),
             features,
         }
     }
 
-    pub fn with_newlines(mut self) -> Self {
-        self.emit_newlines = true;
-        self
+    pub fn tokenize_lines(mut self) -> Vec<LineToken> {
+        self.line_starts = Some(Vec::new());
+        let starts = self.run();
+        let tokens = std::mem::take(&mut self.tokens);
+        tokens
+            .into_iter()
+            .zip(starts)
+            .map(|(token, at_line_start)| LineToken {
+                token,
+                at_line_start,
+            })
+            .collect()
     }
 
     fn byte_of(&self, char_index: usize) -> usize {
@@ -682,25 +699,33 @@ impl Lexer {
     fn emit(&mut self, token: Token) {
         let loc = self.current_loc();
         let leading_space = std::mem::take(&mut self.space_before);
+        if let Some(starts) = &mut self.line_starts {
+            starts.push(std::mem::take(&mut self.at_line_start));
+        }
         self.tokens
             .push(Span::new(token, loc, loc).with_leading_space(leading_space));
     }
 
     pub fn tokenize(mut self) -> Vec<Span<Token>> {
+        self.run();
+        self.tokens
+    }
+
+    fn run(&mut self) -> Vec<bool> {
         while self.pos < self.chars.len() {
             self.mark = self.pos;
             self.scan_one();
         }
-        self.tokens
+        self.line_starts.take().unwrap_or_default()
     }
 
     fn scan_one(&mut self) {
         let i = self.pos;
         let c = self.chars[i];
 
-        if c == '\n' && self.emit_newlines {
+        if c == '\n' && self.line_starts.is_some() {
             self.pos += 1;
-            self.emit(Token::Newline);
+            self.at_line_start = true;
             self.space_before = true;
         } else if c.is_whitespace() {
             self.pos += 1;

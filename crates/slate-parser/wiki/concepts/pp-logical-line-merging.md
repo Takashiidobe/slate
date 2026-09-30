@@ -2,21 +2,22 @@
 
 Part of the [preprocessor](preprocessor.md) pipeline.
 
-`src/pp/syntax.rs::logical_lines` splits a file into one `LogicalLine` per
-physical line; `GroupParser::group` turns them into `Item::Text` /
-`Item::Directive` / `Item::Conditional`, and `Preprocessor::expand_line`
-expands each `Item::Text` on its own. A function-like macro call whose
-arguments span lines would then go unexpanded and parse as an ordinary call.
+`TokenSource::next_line` (`src/pp/syntax.rs`) hands `Preprocessor::process`
+one physical line at a time, and `Preprocessor::expand_line` expands each
+text line on its own. A function-like macro call whose arguments span lines
+would then go unexpanded and parse as an ordinary call.
 
-`merge_open_lines` joins consecutive non-directive lines while the net
-`(`/`[` depth is positive, so `expand_line` sees the whole invocation.
+So `next_line` keeps pulling non-directive lines onto a text line while
+the net `(`/`[` depth is positive, so `expand_line` sees the whole
+invocation. This is temporary: slate-parser-ryfo.3 expands straight from
+the token stream and removes the merge.
 
 ## Rules
 
 - **Never merge across a directive.** The open line is emitted unbalanced
   and the directive stays a directive; gcc-dg code selects one argument of
   an open call with `#ifdef` (`tests/fixtures/clang/linux/x86_64/c11.c`).
-  The parser works on the flat token stream, so an unbalanced `Item::Text`
+  The parser works on the flat token stream, so an unbalanced text line
   is fine.
 - **Trigger on depth `> 0`, not `!= 0`.** A line starting with unmatched
   closers (`);`) closes an earlier span; treating it as open cascades

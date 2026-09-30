@@ -18,8 +18,8 @@ stream of `PPNode`s (`Code`, `Comment`, `Pragma`) that the parser reads as
 
 | File | Contents |
 | --- | --- |
-| `mod.rs` | `Preprocessor`, predefine seeding, `walk_group`, directives, conditionals, pragma operators, provenance |
-| `syntax.rs` | lexing into logical lines, groups ([pp-logical-line-merging](pp-logical-line-merging.md)) |
+| `mod.rs` | `Preprocessor`, predefine seeding, `process`, directives, the conditional stack, pragma operators, provenance |
+| `syntax.rs` | `TokenSource`: directive and text lines read from the token stream ([pp-logical-line-merging](pp-logical-line-merging.md)) |
 | `expand.rs` | macro expansion, builtin macros, `#if` operand protection |
 | `define.rs` | `#define` / `#undef` parsing |
 | `include.rs` | include resolution, `#pragma once`, depth limit, outermost system header |
@@ -33,12 +33,20 @@ which point at headers installed by `../slate-sysroots`.
 ```text
 Preprocessor::new → configure            predefines, target options, -D/-U, forced files
 parse_file → parse_source
-  lex → syntax::parse                    logical lines, merged, grouped
-  walk_group
-    Item::Text        → expand_line      → Code / Pragma nodes
-    Item::Conditional → walk_conditional → walk_group on the taken branch
-    Item::Directive   → define, include, embed, pragma, line, error/warning
+  Lexer::tokenize_lines                  tokens flagged at_line_start, no newline tokens
+  process(TokenSource)                   pulls one line at a time
+    text line       → expand_line        → Code / Pragma nodes
+    #if family      → conditional stack; a false branch runs skip_group
+    other directive → run_directive      → define, include, embed, pragma, line, error/warning
 ```
+
+A directive is a line whose first non-comment token is `#`. Conditionals
+are evaluated when the stream reaches them. `skip_group` reads only the
+directives of a skipped group. It tracks nesting and `#else` ordering there,
+and evaluates a later `#elif` of its own conditional only while no branch
+has been taken. Structural errors (stray `#endif`, `#else` after `#else`,
+unterminated `#if`) surface where the stream reaches them. Earlier
+evaluation errors take precedence.
 
 Unknown directives are `UnsupportedDirective`; `#ident` and `#` are
 ignored.

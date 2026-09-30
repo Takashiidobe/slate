@@ -1,6 +1,5 @@
-use super::error::{PPErrorKind, PPFailure};
 use crate::ast::{Loc, Span};
-use crate::lexer::Token;
+use crate::lexer::{LineToken, Token};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum DirectiveName {
@@ -86,31 +85,6 @@ impl Directive {
     }
 }
 
-#[derive(Debug, Clone)]
-pub(super) enum Item {
-    Comment(Span<String>),
-    Text(Vec<Span<Token>>),
-    Directive(Directive),
-    Conditional(IfSection),
-}
-
-#[derive(Debug, Clone)]
-pub(super) struct Branch {
-    pub(super) directive: Directive,
-    pub(super) body: Vec<Item>,
-}
-
-#[derive(Debug, Clone)]
-pub(super) struct IfSection {
-    pub(super) branches: Vec<Branch>,
-}
-
-#[derive(Default)]
-struct LogicalLine {
-    comments: Vec<Span<String>>,
-    tokens: Vec<Span<Token>>,
-}
-
 pub(super) fn identifier(src: &str, token: &Span<Token>) -> Option<String> {
     match &token.value {
         Token::Ident(name) => Some(name.to_string()),
@@ -121,132 +95,110 @@ pub(super) fn identifier(src: &str, token: &Span<Token>) -> Option<String> {
     }
 }
 
-pub(super) fn parse(src: &str, tokens: Vec<Span<Token>>) -> Result<Vec<Item>, PPFailure> {
-    let mut parser = GroupParser {
-        src,
-        lines: logical_lines(tokens).into_iter(),
-    };
-    let mut items = Vec::new();
-    match parser.group(&mut items)? {
-        Some(stray) => Err(PPFailure::at(stray.loc, PPErrorKind::UnexpectedConditional)),
-        None => Ok(items),
-    }
+pub(super) enum Line {
+    Directive(Directive, Vec<Span<String>>),
+    Text(TextLine),
 }
 
-fn logical_lines(tokens: Vec<Span<Token>>) -> Vec<LogicalLine> {
-    let mut lines = Vec::new();
-    let mut current = LogicalLine::default();
-    for token in tokens {
-        match token.value {
-            Token::Newline => {
-                if !current.comments.is_empty() || !current.tokens.is_empty() {
-                    lines.push(std::mem::take(&mut current));
-                }
-            }
-            Token::Comment(text) => {
-                current
-                    .comments
-                    .push(Span::new(text.to_string(), token.spelling, token.expansion))
-            }
-            _ => current.tokens.push(token),
-        }
-    }
-    if !current.comments.is_empty() || !current.tokens.is_empty() {
-        lines.push(current);
-    }
-    merge_open_lines(lines)
+pub(super) struct TextLine {
+    pub(super) comments: Vec<Span<String>>,
+    pub(super) tokens: Vec<Span<Token>>,
+    pub(super) continuation_comments: Vec<Span<String>>,
 }
 
-fn is_directive_line(line: &LogicalLine) -> bool {
-    line.tokens
-        .first()
-        .is_some_and(|token| token.value == Token::Hash)
+struct PhysicalLine {
+    comments: Vec<Span<String>>,
+    tokens: Vec<Span<Token>>,
 }
 
-fn paren_depth(line: &LogicalLine) -> i32 {
-    line.tokens
-        .iter()
-        .fold(0i32, |depth, token| match token.value {
-            Token::LParen | Token::LBracket => depth + 1,
-            Token::RParen | Token::RBracket => depth - 1,
-            _ => depth,
-        })
-}
-
-fn merge_open_lines(lines: Vec<LogicalLine>) -> Vec<LogicalLine> {
-    let mut merged = Vec::with_capacity(lines.len());
-    let mut lines = lines.into_iter();
-    while let Some(mut line) = lines.next() {
-        if is_directive_line(&line) {
-            merged.push(line);
-            continue;
-        }
-        let mut depth = paren_depth(&line);
-        let mut deferred_comments = Vec::new();
-        while depth > 0 {
-            let Some(next) = lines.next() else { break };
-            if is_directive_line(&next) {
-                merged.push(line);
-                merged.push(LogicalLine {
-                    comments: deferred_comments,
-                    tokens: Vec::new(),
-                });
-                line = next;
-                depth = 0;
-                deferred_comments = Vec::new();
-                break;
-            }
-            depth += paren_depth(&next);
-            deferred_comments.extend(next.comments);
-            line.tokens.extend(next.tokens);
-        }
-        merged.push(line);
-        if !deferred_comments.is_empty() {
-            merged.push(LogicalLine {
-                comments: deferred_comments,
-                tokens: Vec::new(),
-            });
-        }
-    }
-    merged
-}
-
-struct GroupParser<'a> {
+pub(super) struct TokenSource<'a> {
     src: &'a str,
-    lines: std::vec::IntoIter<LogicalLine>,
+    tokens: Vec<LineToken>,
+    position: usize,
 }
 
-impl GroupParser<'_> {
-    fn group(&mut self, items: &mut Vec<Item>) -> Result<Option<Directive>, PPFailure> {
-        while let Some(line) = self.lines.next() {
-            items.extend(line.comments.into_iter().map(Item::Comment));
-            if line
-                .tokens
-                .first()
-                .is_none_or(|token| token.value != Token::Hash)
-            {
-                if !line.tokens.is_empty() {
-                    items.push(Item::Text(line.tokens));
-                }
-                continue;
+impl<'a> TokenSource<'a> {
+    pub(super) fn new(src: &'a str, tokens: Vec<LineToken>) -> Self {
+        Self {
+            src,
+            tokens,
+            position: 0,
+        }
+    }
+
+    pub(super) fn next_line(&mut self) -> Option<Line> {
+        let PhysicalLine { comments, tokens } = self.physical_line()?;
+        if starts_directive(&tokens) {
+            return Some(Line::Directive(self.directive(tokens), comments));
+        }
+        // until expansion pulls from the stream (slate-parser-ryfo.3), an open invocation gathers its lines here
+        let mut depth = paren_depth(&tokens);
+        let mut line = TextLine {
+            comments,
+            tokens,
+            continuation_comments: Vec::new(),
+        };
+        while depth > 0 && !self.at_directive() {
+            let Some(PhysicalLine { comments, tokens }) = self.physical_line() else {
+                break;
+            };
+            depth += paren_depth(&tokens);
+            line.continuation_comments.extend(comments);
+            line.tokens.extend(tokens);
+        }
+        Some(Line::Text(line))
+    }
+
+    pub(super) fn next_directive(&mut self) -> Option<Directive> {
+        while self.position < self.tokens.len() {
+            if self.at_directive() {
+                let line = self.physical_line()?;
+                return Some(self.directive(line.tokens));
             }
-            let directive = self.directive(line.tokens);
-            match directive.name {
-                DirectiveName::Elif
-                | DirectiveName::Elifdef
-                | DirectiveName::Elifndef
-                | DirectiveName::Else
-                | DirectiveName::Endif => {
-                    return Ok(Some(directive));
-                }
-                DirectiveName::If | DirectiveName::Ifdef | DirectiveName::Ifndef => {
-                    let section = self.if_section(directive)?;
-                    items.push(Item::Conditional(section));
-                }
-                _ => items.push(Item::Directive(directive)),
+            self.position += 1;
+            while self
+                .tokens
+                .get(self.position)
+                .is_some_and(|token| !token.at_line_start)
+            {
+                self.position += 1;
             }
         }
-        Ok(None)
+        None
+    }
+
+    fn at_directive(&self) -> bool {
+        self.tokens[self.position.min(self.tokens.len())..]
+            .iter()
+            .enumerate()
+            .take_while(|(index, token)| *index == 0 || !token.at_line_start)
+            .find(|(_, token)| !matches!(token.token.value, Token::Comment(_)))
+            .is_some_and(|(_, token)| token.token.value == Token::Hash)
+    }
+
+    fn physical_line(&mut self) -> Option<PhysicalLine> {
+        if self.position >= self.tokens.len() {
+            return None;
+        }
+        let mut comments = Vec::new();
+        let mut tokens = Vec::new();
+        loop {
+            let token = self.tokens[self.position].token.clone();
+            self.position += 1;
+            match token.value {
+                Token::Comment(text) => {
+                    comments.push(Span::new(text.to_string(), token.spelling, token.expansion))
+                }
+                _ => tokens.push(token),
+            }
+            if self
+                .tokens
+                .get(self.position)
+                .is_none_or(|token| token.at_line_start)
+            {
+                return Some(PhysicalLine { comments, tokens });
+            }
+        }
     }
 
     fn directive(&self, tokens: Vec<Span<Token>>) -> Directive {
@@ -272,39 +224,18 @@ impl GroupParser<'_> {
             loc,
         }
     }
+}
 
-    fn if_section(&mut self, opening: Directive) -> Result<IfSection, PPFailure> {
-        let opening_loc = opening.loc;
-        let mut branches = Vec::new();
-        let mut directive = opening;
-        loop {
-            let mut body = Vec::new();
-            let terminator = self.group(&mut body)?;
-            let in_else = directive.name == DirectiveName::Else;
-            branches.push(Branch { directive, body });
-            let Some(next) = terminator else {
-                return Err(PPFailure::at(
-                    opening_loc,
-                    PPErrorKind::UnterminatedConditional,
-                ));
-            };
-            match next.name {
-                DirectiveName::Endif => {
-                    return Ok(IfSection { branches });
-                }
-                DirectiveName::Else if in_else => {
-                    return Err(PPFailure::at(next.loc, PPErrorKind::MultipleElse));
-                }
-                DirectiveName::Elif | DirectiveName::Elifdef | DirectiveName::Elifndef
-                    if in_else =>
-                {
-                    return Err(PPFailure::at(
-                        next.loc,
-                        PPErrorKind::ElifAfterElse(directive_spelling(next.name)),
-                    ));
-                }
-                _ => directive = next,
-            }
-        }
-    }
+fn starts_directive(tokens: &[Span<Token>]) -> bool {
+    tokens
+        .first()
+        .is_some_and(|token| token.value == Token::Hash)
+}
+
+fn paren_depth(tokens: &[Span<Token>]) -> i32 {
+    tokens.iter().fold(0i32, |depth, token| match token.value {
+        Token::LParen | Token::LBracket => depth + 1,
+        Token::RParen | Token::RBracket => depth - 1,
+        _ => depth,
+    })
 }

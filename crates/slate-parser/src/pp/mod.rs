@@ -22,7 +22,7 @@ use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
-use syntax::{Directive, DirectiveName, IfSection, Item, directive_spelling, identifier};
+use syntax::{Directive, DirectiveName, Line, TokenSource, directive_spelling, identifier};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MacroOption {
@@ -83,6 +83,39 @@ pub struct MacroDef {
 pub struct MacroEntry {
     pub definition: MacroDef,
     pub provenance: Provenance,
+}
+
+struct Conditional {
+    opening: Loc,
+    in_else: bool,
+    taken: bool,
+}
+
+impl Conditional {
+    fn new(directive: &Directive) -> Self {
+        Self {
+            opening: directive.loc,
+            in_else: false,
+            taken: false,
+        }
+    }
+
+    fn advance(&mut self, directive: &Directive) -> Result<(), PPFailure> {
+        match directive.name {
+            DirectiveName::Else if self.in_else => {
+                Err(PPFailure::at(directive.loc, PPErrorKind::MultipleElse))
+            }
+            DirectiveName::Else => {
+                self.in_else = true;
+                Ok(())
+            }
+            name if self.in_else => Err(PPFailure::at(
+                directive.loc,
+                PPErrorKind::ElifAfterElse(directive_spelling(name)),
+            )),
+            _ => Ok(()),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -514,11 +547,8 @@ impl<'a> Preprocessor<'a> {
             .collect();
         self.files.set_line_starts(file, starts.clone());
         self.line_starts.insert(file, starts);
-        let tokens = Lexer::new(file, src, self.dialect.features())
-            .with_newlines()
-            .tokenize();
-        let items = syntax::parse(src, tokens)?;
-        self.walk_group(&items)
+        let tokens = Lexer::new(file, src, self.dialect.features()).tokenize_lines();
+        self.process(TokenSource::new(src, tokens))
     }
 
     fn source(&self, file: FileId) -> &str {
@@ -617,69 +647,175 @@ impl<'a> Preprocessor<'a> {
         self.push_line_override(directive.loc, presumed_line, presumed_file);
     }
 
-    fn walk_group(&mut self, items: &[Item]) -> Result<Vec<PPNode>, PPFailure> {
+    fn process(&mut self, mut source: TokenSource<'_>) -> Result<Vec<PPNode>, PPFailure> {
         let mut nodes = Vec::new();
-        for item in items {
-            match item {
-                Item::Comment(comment) => {
-                    let provenance = self.provenance(comment.spelling);
-                    nodes.push(
-                        Span::new(
-                            PPNodeKind::Comment {
-                                text: comment.value.clone(),
-                                provenance,
-                            },
-                            comment.spelling,
-                            comment.spelling,
-                        )
-                        .with_provenance(provenance),
-                    );
+        let mut conditionals: Vec<Conditional> = Vec::new();
+        while let Some(line) = source.next_line() {
+            let directive = match line {
+                Line::Text(line) => {
+                    self.push_comments(&mut nodes, line.comments);
+                    if !line.tokens.is_empty() {
+                        nodes.extend(self.expand_line(&line.tokens));
+                    }
+                    self.push_comments(&mut nodes, line.continuation_comments);
+                    continue;
                 }
-                Item::Text(tokens) => nodes.extend(self.expand_line(tokens)),
-                Item::Conditional(section) => nodes.extend(self.walk_conditional(section)?),
-                Item::Directive(directive) => match directive.name {
-                    DirectiveName::Define => self.record_define(directive)?,
-                    DirectiveName::Include | DirectiveName::IncludeNext => {
-                        let mut expanded = directive.clone();
-                        if !matches!(
-                            directive.arguments.value_at(0),
-                            Some(Token::StringLit(_) | Token::Less)
-                        ) {
-                            expanded.arguments = self.expand_macros(
-                                &directive.arguments,
-                                &mut foldhash::HashSet::default(),
-                            );
-                        }
-                        let include = include_target(self.source(directive.loc.file), &expanded)?;
-                        nodes.extend(
-                            self.resolve_and_parse_include(&include, directive.arguments_loc())?,
-                        );
+                Line::Directive(directive, comments) => {
+                    self.push_comments(&mut nodes, comments);
+                    directive
+                }
+            };
+            match directive.name {
+                DirectiveName::If | DirectiveName::Ifdef | DirectiveName::Ifndef => {
+                    let mut open = Conditional::new(&directive);
+                    open.taken = self.branch_taken(&directive)?;
+                    if open.taken || !self.skip_group(&mut source, &mut open)? {
+                        conditionals.push(open);
                     }
-                    DirectiveName::Embed => nodes.push(self.expand_embed(directive)?),
-                    DirectiveName::Undef => self.record_undef(directive)?,
-                    DirectiveName::Pragma => {
-                        self.record_pragma(directive);
-                        nodes.push(self.pragma_node(directive));
-                    }
-                    DirectiveName::Error => {
-                        self.record_directive_diagnostic(directive, Severity::Error)
-                    }
-                    DirectiveName::Warning => {
-                        self.record_directive_diagnostic(directive, Severity::Warning)
-                    }
-                    DirectiveName::Line => self.record_line_directive(directive)?,
-                    DirectiveName::LineMarker => self.record_line_marker(directive),
-                    DirectiveName::Ident | DirectiveName::Null => {}
-                    _ => {
+                }
+                DirectiveName::Elif
+                | DirectiveName::Elifdef
+                | DirectiveName::Elifndef
+                | DirectiveName::Else => {
+                    let Some(mut open) = conditionals.pop() else {
                         return Err(PPFailure::at(
-                            directive.name_loc,
-                            PPErrorKind::UnsupportedDirective,
+                            directive.loc,
+                            PPErrorKind::UnexpectedConditional,
+                        ));
+                    };
+                    open.advance(&directive)?;
+                    if !self.skip_group(&mut source, &mut open)? {
+                        conditionals.push(open);
+                    }
+                }
+                DirectiveName::Endif => {
+                    if conditionals.pop().is_none() {
+                        return Err(PPFailure::at(
+                            directive.loc,
+                            PPErrorKind::UnexpectedConditional,
                         ));
                     }
-                },
+                }
+                _ => self.run_directive(&directive, &mut nodes)?,
             }
         }
-        Ok(nodes)
+        match conditionals.last() {
+            Some(open) => Err(PPFailure::at(
+                open.opening,
+                PPErrorKind::UnterminatedConditional,
+            )),
+            None => Ok(nodes),
+        }
+    }
+
+    // scans a group whose branch is not taken; true when it ends at #endif, false when a later branch is taken
+    fn skip_group(
+        &mut self,
+        source: &mut TokenSource<'_>,
+        open: &mut Conditional,
+    ) -> Result<bool, PPFailure> {
+        let mut nested: Vec<Conditional> = Vec::new();
+        loop {
+            let Some(directive) = source.next_directive() else {
+                let innermost = nested.last().unwrap_or(open);
+                return Err(PPFailure::at(
+                    innermost.opening,
+                    PPErrorKind::UnterminatedConditional,
+                ));
+            };
+            match directive.name {
+                DirectiveName::If | DirectiveName::Ifdef | DirectiveName::Ifndef => {
+                    nested.push(Conditional::new(&directive));
+                }
+                DirectiveName::Elif
+                | DirectiveName::Elifdef
+                | DirectiveName::Elifndef
+                | DirectiveName::Else => match nested.last_mut() {
+                    Some(inner) => inner.advance(&directive)?,
+                    None => {
+                        open.advance(&directive)?;
+                        if !open.taken && self.branch_taken(&directive)? {
+                            open.taken = true;
+                            return Ok(false);
+                        }
+                    }
+                },
+                DirectiveName::Endif if nested.pop().is_none() => {
+                    return Ok(true);
+                }
+                _ => {}
+            }
+        }
+    }
+
+    fn branch_taken(&self, directive: &Directive) -> Result<bool, PPFailure> {
+        match directive.name {
+            DirectiveName::Ifdef | DirectiveName::Elifdef => self.names_defined_macro(directive),
+            DirectiveName::Ifndef | DirectiveName::Elifndef => {
+                Ok(!self.names_defined_macro(directive)?)
+            }
+            DirectiveName::Else => Ok(true),
+            _ => self.evaluate_condition(directive, directive_spelling(directive.name)),
+        }
+    }
+
+    fn push_comments(&self, nodes: &mut Vec<PPNode>, comments: Vec<Span<String>>) {
+        for comment in comments {
+            let provenance = self.provenance(comment.spelling);
+            nodes.push(
+                Span::new(
+                    PPNodeKind::Comment {
+                        text: comment.value,
+                        provenance,
+                    },
+                    comment.spelling,
+                    comment.spelling,
+                )
+                .with_provenance(provenance),
+            );
+        }
+    }
+
+    fn run_directive(
+        &mut self,
+        directive: &Directive,
+        nodes: &mut Vec<PPNode>,
+    ) -> Result<(), PPFailure> {
+        match directive.name {
+            DirectiveName::Define => self.record_define(directive)?,
+            DirectiveName::Include | DirectiveName::IncludeNext => {
+                let mut expanded = directive.clone();
+                if !matches!(
+                    directive.arguments.value_at(0),
+                    Some(Token::StringLit(_) | Token::Less)
+                ) {
+                    expanded.arguments =
+                        self.expand_macros(&directive.arguments, &mut foldhash::HashSet::default());
+                }
+                let include = include_target(self.source(directive.loc.file), &expanded)?;
+                nodes.extend(self.resolve_and_parse_include(&include, directive.arguments_loc())?);
+            }
+            DirectiveName::Embed => nodes.push(self.expand_embed(directive)?),
+            DirectiveName::Undef => self.record_undef(directive)?,
+            DirectiveName::Pragma => {
+                self.record_pragma(directive);
+                nodes.push(self.pragma_node(directive));
+            }
+            DirectiveName::Error => self.record_directive_diagnostic(directive, Severity::Error),
+            DirectiveName::Warning => {
+                self.record_directive_diagnostic(directive, Severity::Warning)
+            }
+            DirectiveName::Line => self.record_line_directive(directive)?,
+            DirectiveName::LineMarker => self.record_line_marker(directive),
+            DirectiveName::Ident | DirectiveName::Null => {}
+            _ => {
+                return Err(PPFailure::at(
+                    directive.name_loc,
+                    PPErrorKind::UnsupportedDirective,
+                ));
+            }
+        }
+        Ok(())
     }
 
     fn expand_line(&mut self, source_tokens: &[Span<Token>]) -> Vec<PPNode> {
@@ -929,26 +1065,6 @@ impl<'a> Preprocessor<'a> {
             Span::new(PPNodeKind::Code { tokens, provenance }, loc, loc)
                 .with_provenance(provenance),
         )
-    }
-
-    fn walk_conditional(&mut self, section: &IfSection) -> Result<Vec<PPNode>, PPFailure> {
-        for branch in &section.branches {
-            let directive = &branch.directive;
-            let taken = match directive.name {
-                DirectiveName::Ifdef | DirectiveName::Elifdef => {
-                    self.names_defined_macro(directive)?
-                }
-                DirectiveName::Ifndef | DirectiveName::Elifndef => {
-                    !self.names_defined_macro(directive)?
-                }
-                DirectiveName::Else => true,
-                _ => self.evaluate_condition(directive, directive_spelling(directive.name))?,
-            };
-            if taken {
-                return self.walk_group(&branch.body);
-            }
-        }
-        Ok(Vec::new())
     }
 
     fn names_defined_macro(&self, directive: &Directive) -> Result<bool, PPFailure> {
