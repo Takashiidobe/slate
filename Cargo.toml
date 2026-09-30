@@ -1,3 +1,11 @@
 [workspace]
 members = ["crates/slate", "crates/slate-parser", "crates/slate-sysroots"]
 resolver = "3"
+
+[profile.test]
+opt-level = 3
+debug = false
+debug-assertions = false
+overflow-checks = false
+incremental = false
+codegen-units = 16

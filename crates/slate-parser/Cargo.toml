@@ -29,9 +29,3 @@ result_large_err = "allow"
 [[test]]
 name = "filecheck"
 harness = false
-
-[profile.test]
-opt-level = 3
-debug = false
-debug-assertions = false
-overflow-checks = false

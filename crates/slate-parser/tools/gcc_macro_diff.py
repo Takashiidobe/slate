@@ -5,7 +5,7 @@ usage: gcc_macro_diff.py '<compiler + flags>' '<slate-parser args>'
 e.g.   gcc_macro_diff.py 'gcc -m32 -march=x86-64-v3' '--flavor=gcc -target=i686-unknown-linux-gnu -march=x86-64-v3'
 
 Checks every macro name the compiler defines, the checked-in predefine
-snapshots mention, or the ISA generators emit. Needs target/release/slate-parser.
+snapshots mention, or the ISA generators emit. Needs target/test-cache/release/slate-parser.
 """
 import glob
 import pathlib
@@ -39,7 +39,7 @@ expanded = subprocess.run(
 theirs = {m[1]: eval(m[2]) for m in re.finditer(r'char m_(\w+)\[\] = (".*");', expanded)}
 
 rendered = subprocess.run(
-    [str(root / "target/release/slate-parser"), "parse", source.name, "--dump-ir", "--compact-ir", *slate_args],
+    [str(root.parents[1] / "target/test-cache/release/slate-parser"), "parse", source.name, "--dump-ir", "--compact-ir", *slate_args],
     capture_output=True,
     text=True,
 )

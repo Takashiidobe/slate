@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path.home() / "gcc-sparse/gcc/testsuite/gcc.dg"
 REPO = Path(__file__).resolve().parent.parent
-SLATE = REPO / "target/release/slate-parser"
+SLATE = REPO.parents[1] / "target/test-cache/release/slate-parser"
 FIXTURES = REPO / "tests/fixtures/suites/gcc-dg"
 FLAVORS = ("gcc", "clang")
 

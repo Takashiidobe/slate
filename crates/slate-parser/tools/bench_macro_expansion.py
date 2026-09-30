@@ -18,7 +18,7 @@ def source(uses, depth, literal_only):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--binary", type=Path, default=Path("target/release/slate-parser"))
+    parser.add_argument("--binary", type=Path, default=Path("target/test-cache/release/slate-parser"))
     parser.add_argument("--uses", type=int, default=50000)
     parser.add_argument("--depth", type=int, default=59)
     parser.add_argument("--runs", type=int, default=3)

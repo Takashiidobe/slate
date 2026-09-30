@@ -1,58 +1,14 @@
-# Instructions for AI Agents
+# Slate-Parser
 
-## Beads Issue Tracker
+Workspace rules (beads, testing from the root, session completion, commits)
+live in [the root AGENTS.md](../../AGENTS.md).
 
-This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.
+## Wiki
 
-### Quick Reference
-
-```bash
-bd ready              # Find available work
-bd show <id>          # View issue details
-bd update <id> --claim  # Claim work
-bd close <id>         # Complete work
-```
-
-### Rules
-
-- Use `bd` for ALL task tracking — do NOT use TodoWrite, TaskCreate, or markdown TODO lists
-- Run `bd prime` for detailed command reference and session close protocol
-- Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
-
-**Architecture in one line:** issues live in a local Dolt DB; sync uses `refs/dolt/data` on your git remote; `.beads/issues.jsonl` is a passive export. See https://github.com/gastownhall/beads/blob/main/docs/SYNC_CONCEPTS.md for details and anti-patterns.
-
-## Session Completion
-
-This protocol applies when ending a Beads implementation workflow. It is subordinate to explicit user, repository, and orchestrator instructions.
-
-1. **File issues for remaining work** - Create beads for anything that needs follow-up
-2. **Run quality gates** (if rust changed) - `clippy, fmt`
-   - run `cargo clippy --allow-dirty --fix` to fix what can be fixed
-     first.
-   - afterwards, run `cargo fmt` to clean up code
-   - run `cargo nextest run` to run tests afterwards
-3. **Update issue status** - Close finished work, update in-progress items
-4. **Every change must have a corresponding log**: - create a new log
-   with `llog new` for every change made, summarizing the change, no
-   more than 30 lines.
-5. **Git commit**: run `git commit -m ...` with a one line message
-   summarizing the task.
-6. **Hand off** - Summarize changes, validation, issue status, and commit.
-
-**Critical rules:**
-
-- Explicit user or orchestrator instructions override this Beads block.
-- Do not push without clear authority from the user.
-- If a required sync or push is blocked, stop and report the exact command and error.
-
-## Slate-Parser
-
-### Wiki
-
-Non-obvious project context lives in `wiki/`. Check it before re-deriving
+Non-obvious project context lives in the workspace-root `wiki/`. Check it before re-deriving
 something from scratch. Every concept page opens with a table of contents,
 so jump straight to the heading you need. After adding or renaming headings,
-run `python3 tools/wiki_toc.py` (`--check` reports stale pages).
+run `python3 crates/slate-parser/tools/wiki_toc.py` (`--check` reports stale pages).
 
 Start here:
 
@@ -144,7 +100,7 @@ Testing:
 History: `wiki/index.md` and `wiki/log/` hold the chronological log of
 changes and decisions; query it with `llog search <keyword>`.
 
-### Goal
+## Goal
 
 Slate-Parser is to be the new C front end for Slate. It exists to let Slate ingest
 real-world C headers and sources and eventually convert them to Rust.
@@ -179,36 +135,36 @@ preprocessing, parsing, and sema. Check `bd ready`
 / `bd list` for the current state of the bytecode-lowering and
 Rust-conversion work.
 
-### Coding
+## Coding
 
 Never use `assert!` and friends. Everything should be an explicit Result
 type, using `thiserror`. If you see a stray `assert!` or `assert_eq!`,
 think about refactoring it.
 
-### Testing
+## Testing
 
-Oracle compilers: `clang` and `gcc` are installed natively; MSVC is `tools/cl.exe`.
+Oracle compilers: `clang` and `gcc` are installed natively; MSVC is `crates/slate-parser/tools/cl.exe`.
 
 A fixture's directory sets its compiler and target
-(`tests/fixtures/<flavor>/<os>/<arch>/`, with `error/` and `suites/`
+(`crates/slate-parser/tests/fixtures/<flavor>/<os>/<arch>/`, with `error/` and `suites/`
 variants); see [fixture-layout](../../wiki/concepts/fixture-layout.md).
 
 FileCheck expectations are generated. After changing a fixture or its
-renderer, run `python3 tools/update_filecheck.py --in-place <fixture>`;
+renderer, run `python3 crates/slate-parser/tools/update_filecheck.py --in-place <fixture>`;
 do not write `CHECK` lines by hand.
 
 Testing is done via filecheck. Standard gate (use release to run tests
 ~10x faster):
 
 ```
-cargo nextest run --release --no-fail-fast
+cargo nextest run --release --profile parser --no-fail-fast
 ```
 
 The AST can additionally be checked against clang-ast as an
 oracle by setting `SLATE_CLANG_ORACLE=1`:
 
 ```
-SLATE_CLANG_ORACLE=1 cargo test
+SLATE_CLANG_ORACLE=1 cargo nextest run --release --profile parser
 ```
 
 This is a debugging aid, not part of the standard gate; there is no need

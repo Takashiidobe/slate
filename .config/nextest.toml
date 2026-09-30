@@ -1,47 +1,13 @@
-[profile.rewrites]
+[profile.slate]
 default-filter = '''
-  not (
-    binary_id(=slate::differential_aarch64)
-    + binary_id(=slate::differential_arm)
-    + binary_id(=slate::differential_i686)
-  )
+  binary_id(=slate::differential)
+  + binary_id(=slate::c_testsuite_suite)
+  + binary_id(=slate::gcc_torture_suite)
+  + binary_id(=slate::gcc_dg_suite)
 '''
 
-[profile.aarch64-lowering]
-default-filter = 'binary_id(=slate::differential_aarch64)'
-
-[profile.aarch64-rewrites]
-default-filter = 'binary_id(=slate::differential_aarch64)'
-
-[profile.arm-lowering]
-default-filter = 'binary_id(=slate::differential_arm)'
-
-[profile.arm-rewrites]
-default-filter = 'binary_id(=slate::differential_arm)'
-
-[profile.i686-lowering]
-default-filter = 'binary_id(=slate::differential_i686)'
-
-[profile.i686-rewrites]
-default-filter = 'binary_id(=slate::differential_i686)'
-
-[profile.lowering]
-default-filter = '''
-  (
-    test(generated_differential)
-    + test(fixtures_unsupported_tests_still_fail)
-    + test(generated_cross_tu_filecheck)
-    + test(generated_library_filecheck)
-    + test(c_testsuite_supported_tests_match_c)
-    + test(c_testsuite_unsupported_tests_still_fail)
-    + test(chibicc_supported_tests_match_c)
-    + test(chibicc_unsupported_tests_still_fail)
-    + test(gcc_torture_supported_tests_match_c)
-    + test(gcc_torture_unsupported_tests_still_fail)
-    + test(gcc_dg_supported_tests_match_c)
-    + test(gcc_dg_unsupported_tests_still_fail)
-  ) - binary_id(=slate::differential_aarch64) - binary_id(=slate::differential_arm) - binary_id(=slate::differential_i686)
-'''
+[profile.parser]
+default-filter = 'package(slate-parser)'
 
 [[profile.default.overrides]]
 filter = 'test(gcc_torture_supported_tests_match_c)'
@@ -57,24 +23,5 @@ filter = 'test(c_testsuite_supported_tests_match_c)'
 priority = 80
 
 [[profile.default.overrides]]
-filter = 'test(generated_cross_tu_filecheck)'
-priority = 60
-
-[[profile.default.overrides]]
-filter = 'test(chibicc_supported_tests_match_c)'
-priority = 50
-
-[[profile.default.overrides]]
-filter = 'test(chibicc_unsupported_tests_still_fail)'
-priority = 30
-
-[[profile.default.overrides]]
-filter = '''
-  test(generated_differential)
-  + test(c_testsuite_supported_tests_match_c)
-  + test(chibicc_supported_tests_match_c)
-  + test(chibicc_unsupported_tests_still_fail)
-  + test(gcc_torture_supported_tests_match_c)
-  + test(directive_translated_fixtures_compile_for_current_host)
-'''
+filter = 'test(generated_differential) + test(c_testsuite_supported_tests_match_c)'
 threads-required = 3

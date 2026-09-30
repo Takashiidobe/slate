@@ -7,7 +7,7 @@ usage: pp_diff.py [--corpus [PROJECT ...]] [--compdb compile_commands.json ...]
 Both outputs are re-tokenized and compared ignoring whitespace and line breaks.
 Clang runs with -nostdinc over slate's own compiler headers and sysroot, so both
 sides read the same headers. Compile commands keep -D/-U/-I/-isystem/-iquote/
--include/-std. Needs target/release/slate-parser.
+-include/-std. Needs target/test-cache/release/slate-parser.
 """
 import argparse
 import concurrent.futures
@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SLATE = ROOT / "target/release/slate-parser"
+SLATE = ROOT.parents[1] / "target/test-cache/release/slate-parser"
 TARGET = "x86_64-unknown-linux-gnu"
 # slate defaults every flavor to gnu23 (slate-parser-6x05.6); pin clang's own default instead
 CLANG_DEFAULT_STANDARD = "-std=gnu17"

@@ -239,7 +239,7 @@ def inventory(binary):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--binary", type=pathlib.Path, default=ROOT / "target/test-cache/release/slate")
+    parser.add_argument("--binary", type=pathlib.Path, default=ROOT.parents[1] / "target/test-cache/release/slate")
     parser.add_argument("--output", type=pathlib.Path, default=ROOT / "wiki/concepts/slate-parser-fixture-inventory.tsv")
     args = parser.parse_args()
     rows = list(inventory(args.binary.resolve()))

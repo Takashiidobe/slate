@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path.home() / "llvm-project/clang/test"
 REPO = Path(__file__).resolve().parent.parent
-SLATE = REPO / "target/release/slate-parser"
+SLATE = REPO.parents[1] / "target/test-cache/release/slate-parser"
 CL = REPO / "tools/cl.exe"
 SYSROOTS = Path(os.environ.get("SLATE_SYSROOTS", Path.home() / ".local/share/slate/sysroots"))
 

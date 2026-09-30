@@ -4,7 +4,7 @@
 usage: c_corpus_sweep.py [PROJECT ...] [--flavor clang] [--jobs N] [--trophies]
 
 Reads <corpus>/<project>/build-<flavor>/compile_commands.json, written by
-tools/c_corpus_setup.py. Needs target/release/slate-parser.
+tools/c_corpus_setup.py. Needs target/test-cache/release/slate-parser.
 """
 import argparse
 import collections
@@ -22,7 +22,7 @@ from pathlib import Path
 import pp_diff
 
 ROOT = Path(__file__).resolve().parents[1]
-SLATE = ROOT / "target/release/slate-parser"
+SLATE = ROOT.parents[1] / "target/test-cache/release/slate-parser"
 PROVIDERS = {"zlib": ["", "build-{flavor}"]}
 PROJECTS = {
     "cJSON": "https://github.com/DaveGamble/cJSON",

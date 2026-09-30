@@ -146,7 +146,7 @@ def main():
         type=pathlib.Path,
         default=pathlib.Path.home() / "c-corpus/chibicc/compile_commands.json",
     )
-    parser.add_argument("--binary", type=pathlib.Path, default=ROOT / "target/test-cache/release/slate")
+    parser.add_argument("--binary", type=pathlib.Path, default=ROOT.parents[1] / "target/test-cache/release/slate")
     parser.add_argument("--output", type=pathlib.Path)
     args = parser.parse_args()
     text = report(args.binary, args.compile_commands)

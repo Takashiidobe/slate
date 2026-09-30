@@ -1,285 +1,120 @@
-# Instructions for AI Agents
+# Slate
 
-<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:970c3bf2 -->
+Workspace rules (beads, testing from the root, session completion, commits)
+live in [the root AGENTS.md](../../AGENTS.md). Run every command below from
+the workspace root.
 
-## Beads Issue Tracker
+Slate translates C to Rust. Correctness is the only bar, and it is checked by
+**differential testing**: compile and run both the C and the generated Rust,
+then require identical stdout and exit code.
 
-This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.
+## Architecture
 
-### Quick Reference
+```
+C -> slate-parser (preprocess, parse, sema) -> ir::Module
+  -> src/slate_parser_frontend/lowerer.rs -> rust_ast::Program -> Rust source
+```
+
+- `crates/slate-parser` produces a typed `ir::Module` (places, bindings,
+  explicit conversions, hoisted side effects). Slate consumes it directly as a
+  library; never parse its printed IR.
+- `src/slate_parser_frontend.rs` drives slate-parser;
+  `src/slate_parser_frontend/lowerer.rs` lowers IR to `rust_ast`. Anything it
+  cannot lower yet returns `Error::Unsupported`, which is a per-function
+  lowering barrier.
+- IR semantics are specified in [ir-spec](../../wiki/concepts/ir-spec.md) and
+  its `wiki/concepts/ir/` subpages. Read the relevant subpage before lowering
+  a new `ValueKind`, `Statement`, `PlaceKind`, or `Type`.
+- The migration plan is the `slate-p58o` epic (`bd show slate-p58o`).
+
+**Legacy code:** `src/frontend/` (ClangIR + Clang AST lowering) and
+`src/backend/engine/` (rewrites/fixups) belong to the old CIR pipeline. Do not
+extend them or cite their wiki pages (`lowerer-internals.md`, `passes.md`,
+`rewrite-engine-v2.md`) for slate-frontend work. They are removed in Phase 6.
+
+**Rewrites are not enabled for the slate frontend yet.** Only raw lowering
+(`translate-lowered --frontend=slate`) is tested; there is no rewrites
+profile.
+
+## Toolchain
+
+| Var              | Default                              | Role                                                          |
+| ---------------- | ------------------------------------ | ------------------------------------------------------------- |
+| `SLATE_SYSROOTS` | `~/.local/share/slate/sysroots`      | slate-parser reads target headers from `<dir>/<triple>`       |
+| `SLATE_CLANG`    | `~/llvm-project/build-cir/bin/clang` | compiles the C side of differential tests (the oracle)        |
+| `SLATE_CARGO`    | `cargo`                              | compiles the generated Rust                                   |
+| `SLATE_RUSTFMT`  | `rustfmt`                            | formats generated Rust                                        |
+
+Install a sysroot with `cargo run -p slate-sysroots -- install <triple>`.
+
+## Debugging a fixture
 
 ```bash
-bd ready              # Find available work
-bd show <id>          # View issue details
-bd update <id> --claim  # Claim work
-bd close <id>         # Complete work
+cargo run --release -p slate -- emit-slate-ir <file.c>                         # the IR slate receives
+cargo run --release -p slate -- translate-lowered --frontend=slate <file.c>   # raw Rust output
+cargo run --release -p slate -- lowering-barriers <file.c>                    # first barrier per function
 ```
 
-### Rules
-
-- Use `bd` for ALL task tracking — do NOT use TodoWrite, TaskCreate, or markdown TODO lists
-- Run `bd prime` for detailed command reference and session close protocol
-- Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
-
-**Architecture in one line:** issues live in a local Dolt DB; sync uses `refs/dolt/data` on your git remote; `.beads/issues.jsonl` is a passive export. See https://github.com/gastownhall/beads/blob/main/docs/SYNC_CONCEPTS.md for details and anti-patterns.
-
-## Agent Context Profiles
-
-The managed Beads block is task-tracking guidance, not permission to override repository, user, or orchestrator instructions.
-
-- **Conservative (default)**: Use `bd` for task tracking. Do not run git commits, git pushes, or Dolt remote sync unless explicitly asked. At handoff, report changed files, validation, and suggested next commands.
-- **Minimal**: Keep tool instruction files as pointers to `bd prime`; use the same conservative git policy unless active instructions say otherwise.
-
-## Session Completion
-
-This protocol applies when ending a Beads implementation workflow. It is subordinate to explicit user, repository, and orchestrator instructions.
-
-1. **File issues for remaining work** - Create beads for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
-3. **Update issue status** - Close finished work, update in-progress items
-4. **Handle git/sync by active profile**:
-
-5. **Every change must have a corresponding log**: - create a new log
-   with `llog new` for every change made, summarizing the change, no
-   more than 30 lines.
-6. **Hand off** - Summarize changes, validation, issue status, and any blocked sync/commit/push step
-7. Commit with a one line commit message.
-
-**Critical rules:**
-
-- Explicit user or orchestrator instructions override this Beads block.
-- If a required sync or push is blocked, stop and report the exact command and error.
-<!-- END BEADS INTEGRATION -->
-
-## Slate
-
-Slate translates C to Rust by lowering **ClangIR (CIR)** Clang's MLIR-based IR
-so it keeps structured control flow, integer signedness,
-and named locals. Correctness is the only bar
-and is checked by **differential testing**: compile and run both the C and
-the generated Rust, then require identical stdout and exit code.
-
-## Toolchain (prerequisite)
-
-Nothing works without a **CIR-enabled Clang** (`CLANG_ENABLE_CIR=ON`). Tool paths
-default to a local build and are overridable via environment variables:
-
-| Var                                 | Default                                     | Role                                                                                                                                 |
-| ----------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `SLATE_CLANG`                       | `~/llvm-project/build-cir/bin/clang`        | emit CIR + Clang AST JSON                                                                                                            |
-| `SLATE_CIR_OPT`                     | `~/llvm-project/build-cir/bin/cir-opt`      | CIR → MLIR generic form                                                                                                              |
-| `SLATE_CARGO`                       | `cargo`                                     | compile the generated Rust                                                                                                           |
-| `SLATE_RUSTFMT`                     | `rustfmt`                                   | format generated Rust before writing it to files                                                                                     |
-| `SLATE_TARGET` / `SLATE_CLANG_ARGS` | —                                           | shared target triple / extra clang flags                                                                                             |
-| `SLATE_MACRO_DUMP_PLUGIN`           | `<SLATE_CLANG build>/lib/SlateMacroDump.so` | macro invocations plus include/function provenance, keyed by physical source offset                                                  |
-| `SLATE_SYSROOTS`                    | `~/.local/share/slate/sysroots`             | slate-parser reads target headers from `<dir>/<triple>`; install targets with `cargo run -p slate-sysroots -- install <triple>` |
-
-`src/frontend/c_ast.rs` always loads `SLATE_CLANG` with `-fplugin=$SLATE_MACRO_DUMP_PLUGIN`, so
-that plugin must be built against the same clang tree `SLATE_CLANG` points at
-before anything that parses C will run:
+## Testing
 
 ```bash
-SLATE_CLANG=~/llvm-project/build-cir/bin/clang ./tools/macro-dump-plugin/build.sh
+cargo nextest r --release --profile slate
 ```
 
-Rerun this after rebuilding `SLATE_CLANG` from source - the plugin links
-against that tree's headers and must be rebuilt in lockstep.
+The `slate` profile runs `differential` (`tests/fixtures`) plus the
+c-testsuite, gcc-torture, and gcc-dg corpus suites, all through the slate
+frontend. Other test binaries in this crate exercise the legacy CIR pipeline
+and are not gates.
 
-## Agent startup checklist
+Each suite is a ratchet: `tests/fixtures/` must pass, and
+`tests/fixtures.unsupported/` must still fail. When an unsupported fixture
+starts passing, `fixtures_unsupported_tests_still_fail` fails and prints the
+`git mv` that promotes it. Corpus suites work the same way with their own
+`*.unsupported` directories.
 
-Before running a command that parses C:
-
-1. Run `bd prime` and inspect `git status`; preserve unrelated worktree changes.
-2. Confirm `SLATE_CLANG` is a CIR-enabled Clang and `SLATE_CIR_OPT` is from
-   the same LLVM build.
-3. Confirm `SLATE_MACRO_DUMP_PLUGIN` was built against that exact Clang tree;
-   rebuild it after rebuilding Clang.
-4. Select the nextest profile matching the subsystem and target matrix below.
-
-| Target      | Profiles                               | Runtime/toolchain requirements                                             |
-| ----------- | -------------------------------------- | -------------------------------------------------------------------------- |
-| Host Linux  | `lowering`, `rewrites`                 | CIR Clang and host libc                                                    |
-| ARM32 GNU   | `arm-lowering`, `arm-rewrites`         | `armv7-unknown-linux-gnueabihf`, ARM GNU sysroot/linker, `qemu-arm-static` |
-| AArch64 GNU | `aarch64-lowering`, `aarch64-rewrites` | AArch64 Rust target, sysroot/linker, `qemu-aarch64-static`                 |
-
-## Build & Test
-
-> **Always use a release nextest profile to test** (not `cargo test`).
+Isolate one fixture while developing:
 
 ```bash
-cargo nextest r --release --profile lowering # frontend/lowering runtime differential, no fixups
-cargo nextest r --release --profile rewrites # backend/fixups and every other test
-cargo nextest r --release --profile arm-lowering   # ARM32 raw lowering differential
-cargo nextest r --release --profile arm-rewrites   # ARM32 lowering plus fixups
-cargo nextest r --release --profile aarch64-lowering # AArch64 raw lowering differential
-cargo nextest r --release --profile aarch64-rewrites # AArch64 lowering plus fixups
-cargo fmt                                    # required before finishing
-
-cargo run -- translate tests/fixtures/add.c  # C -> Rust on stdout
+SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile slate --test differential -E 'test(generated_differential)' --nocapture
 ```
 
-Only the profile relevant to the changed subsystem is required to pass. Run
-`lowering` for frontend/CIR/AST/lowering changes and `rewrites` for backend or
-fixup changes. Run multiple profiles only when a change crosses those
-boundaries. The `lowering` profile
-sets raw-lowering behavior through `NEXTEST_PROFILE=lowering`, so it compiles
-and differentially runs baseline Rust without backend fixups.
-
-Cross-target profiles need the matching Rust target, a cross linker/sysroot,
-and QEMU user-mode execution. ARM32 uses `armv7-unknown-linux-gnueabihf`,
-`SLATE_ARM_SYSROOT`, `SLATE_ARM_LINKER`, and `qemu-arm-static`; AArch64 uses
-the analogous `SLATE_AARCH64_SYSROOT`, `SLATE_AARCH64_LINKER`, and
-`qemu-aarch64-static` variables. The ARM GNU toolchain's linker is commonly
-named `arm-none-linux-gnueabihf-gcc`, so do not rely on the runner's default
-`arm-linux-gnueabihf-gcc` lookup when using that distribution:
+Find the first barrier for every unsupported fixture:
 
 ```bash
-rustup target add armv7-unknown-linux-gnueabihf
-export SLATE_ARM_SYSROOT="$HOME/toolchains/<arm-toolchain>/arm-none-linux-gnueabihf/libc"
-export SLATE_ARM_LINKER="$HOME/toolchains/<arm-toolchain>/bin/arm-none-linux-gnueabihf-gcc"
-cargo nextest r --release --profile arm-lowering
-cargo nextest r --release --profile arm-rewrites
+cargo nextest r --release -p slate --test differential -E 'test(fixtures_unsupported_triage_report)' --run-ignored ignored-only --nocapture
 ```
 
-The repository's local `.env` is fish syntax and is not tracked; it is not
-automatically loaded or exported for bash/nextest. In fish, set exported
-variables explicitly (for example, `set -gx SLATE_ARM_SYSROOT ...`) or export
-the variables in the shell that launches Cargo. The current ARM differential
-runner shares `SLATE_DIFF_FIXTURE=<name>` for single-fixture selection.
+Corpus suites use their own selectors: `SLATE_GCC_TORTURE_FIXTURE`,
+`SLATE_GCC_DG_FIXTURE`, `SLATE_C_TESTSUITE_FIXTURE`.
+`gcc_torture_unsupported_triage_report` and
+`c_testsuite_unsupported_triage_report` are the corpus triage reports.
 
-For corpus cases, use the suite-specific selector and test name rather than
-`SLATE_DIFF_FIXTURE`:
+Batch suites write translated Rust under `crates/slate/target/*-suite/` and
+build it under `crates/slate/target/test-cache/`. A `could not parse/generate
+dep info` error usually means one cache subdirectory is stale; remove only
+that `target-*` directory and rerun.
 
-```bash
-SLATE_GCC_TORTURE_FIXTURE=<name> cargo nextest r --release --test gcc_torture_suite \
-  -E 'test(gcc_torture_unsupported_triage_report)' --run-ignored ignored-only --nocapture
-SLATE_GCC_DG_FIXTURE=<name> cargo nextest r --release --test gcc_dg_suite \
-  -E 'test(gcc_dg_unsupported_triage_report)' --run-ignored ignored-only --nocapture
-```
+## Workflow for a lowering change
 
-Batch suites write translated Rust under `target/*-suite/<group>/` and actual
-debug binaries under the corresponding `target/test-cache/` Cargo target. A
-`could not parse/generate dep info` error usually means the named cache
-subdirectory is stale; remove only that specific `target/test-cache/target-*`
-directory and rerun. Do not delete the whole `target/` tree while diagnosing a
-single case.
+1. Put the fixture in `tests/fixtures.unsupported/` (or find the existing one)
+   and confirm it fails with the expected barrier: run the triage report with
+   `SLATE_DIFF_FIXTURE=<name>`.
+2. Implement the lowering until the triage report prints `PASS <name>`.
+3. `git mv` it into `tests/fixtures/`.
+4. Run the full `slate` profile. It must be green; promote any other fixtures
+   the change makes pass.
 
-During feature development, isolate the new differential fixture:
+**FileCheck is suspended** until lowering covers enough that shape checks are
+signal rather than noise. Do not add `@lowering`, `@rewrite`, or
+`@slate-lowerer` markers or `SLATE-FILECHECK` blocks, and do not run
+`tools/update_filecheck.py`.
 
-```bash
-SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile lowering --test differential -E 'test(generated_differential)' --nocapture
-SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile rewrites --test differential -E 'test(generated_differential)' --nocapture
-```
-
-Use this order for every fixture-backed change:
-
-1. Isolate the fixture with the selector and profile that exercise the changed
-   behavior. Establish C/Rust differential parity before adding or changing
-   shape assertions.
-2. Wrap only the interesting C statements or whole function definitions with
-   the matching `@lowering-*` and `@rewrite-*` markers.
-3. Run the FileCheck updater for the affected profile(s).
-4. Review the generated fixture diff manually. Every new or changed check
-   must describe desirable code generation, not merely the output the tool
-   happened to produce. Reject or narrow checks that would bless a regression.
-5. Rerun the isolated differential test so the regenerated checks are actually
-   enforced.
-6. Run the complete relevant nextest profile. A change is not ready to close
-   while that profile is failing, including unrelated-looking failures exposed
-   by the change.
-7. Run `cargo fmt` and `cargo clippy` as final quality gates. They do not replace
-   differential testing or make a failed profile green; rerun tests after them
-   only if they changed source or generated fixture inputs.
-
-Do not close the bead or report the change complete until the relevant full
-profile is green and the FileCheck diff has been reviewed.
-
-Regenerate embedded FileCheck blocks after changing a fixture or generated
-Rust shape:
-
-```bash
-just regen-filecheck tests/fixtures/<name>.c
-just regen-lowering tests/fixtures/<name>.c
-just regen-rewrites tests/fixtures/<name>.c
-```
-
-Use `regen-lowering` or `regen-rewrites` when the other profile's block must
-remain unchanged. `just regen-filecheck-match '<glob>'` regenerates matching
-fixtures. For a full profile run, `tools/regen-filecheck.sh` reruns nextest,
-finds the failing FileCheck artifacts, regenerates only those fixtures, and
-returns the original nextest status:
-
-```bash
-tools/regen-filecheck.sh lowering
-tools/regen-filecheck.sh rewrites
-```
-
-The direct updater is useful when `just` is unavailable or for explicit target
-ABIs:
-
-```bash
-python3 tools/update_filecheck.py --profile both --in-place tests/fixtures/<name>.c
-python3 tools/update_filecheck.py --project --profile both --in-place tests/fixtures.multi/<name>
-```
-
-## Architecture Overview
-
-```
-C -> CIR -> parse -> lower -> Rust source -> Fixup Rust
-│                                 ▲
-└──ast-dump────► Clang AST ───────┘
-```
-
-CIR is the primary lowering input; the Clang AST is the source-fact oracle, and
-the two are joined by **source location**. `src/frontend/lowerer.rs` and its submodules hold the `cir.*`
-handlers; `src/frontend/c_ast.rs` extracts source facts from Clang JSON; `src/cir/`
-parses the generic-form CIR op-tree.
-
-**Read before making changes**
-
-- [wiki/](../../wiki/) — the `llog` wiki: `wiki/concepts/` holds durable
-  design/decision docs `wiki/log/` holds point-in-time
-  entries. Use `llog search "<query>"` before re-deriving a decision that may
-  already be recorded, **always** write a log with `llog new` for changes
-  and especially decisions made. No more than 30 lines per log entry.
-- [wiki/concepts/rewrite-engine-v2.md](../../wiki/concepts/rewrite-engine-v2.md) — start here for any
-  new or ported rewrite: the current worklist engine that replaced
-  `src/backend/query/` + salsa. (The retired query/facts docs now live under
-  `wiki/historical/`.)
-- [wiki/concepts/differential-fixtures.md](../../wiki/concepts/differential-fixtures.md) — how fixture
-  differential tests and FileCheck directives work: `@lowering`/`@rewrite`
-  region markers, `tools/update_filecheck.py`, and per-fixture clang-arg
-  overrides. Read before adding a fixture.
-- [wiki/concepts/slate-architecture.md](../../wiki/concepts/slate-architecture.md) — sources, the two IRs, the
-  pipeline, and why CIR over LLVM IR.
-- [wiki/concepts/lowerer-internals.md](../../wiki/concepts/lowerer-internals.md) — the lowerer's internal module split:
-  `Lowerer` vs `FunctionLowerer`, the `src/frontend/lowerer/*.rs` submodule
-  map, op dispatch, and how to wire in a new `cir.*` handler. Read this before
-  touching anything under `src/frontend/lowerer.rs` or `src/frontend/lowerer/`.
-- [wiki/concepts/passes.md](../../wiki/concepts/passes.md) — the pass catalog: what runs, in what order.
-- [wiki/concepts/slate-overview.md](../../wiki/concepts/slate-overview.md) — the supported-subset surface.
-- [wiki/concepts/gcc-torture-triage.md](../../wiki/concepts/gcc-torture-triage.md) — working the
-  gcc-torture/c-testsuite/chibicc unsupported-corpus triage epics
-  (`slate-os0h.3.1` and children): the three-test pattern, which nextest
-  profile to use, how to dig into one failing case, where the compiled batch
-  binary lives, and what failure signatures mean.
-
-## Conventions & Patterns
+## Conventions
 
 - **Never comment.**
-- **Every feature and fixup starts with a C fixture** in `tests/fixtures/` (C-only), driven
-  by the relevant `lowering` or `rewrites` profile and `--test differential -E 'test(generated_differential)'`.
-- **Every new fixture must carry both `@lowering` and `@rewrite` FileCheck assertions.**
-  Wrap the statements whose generated Rust proves the fix in `@lowering-begin`/`@rewrite-begin`
-  markers and run `python3 tools/update_filecheck.py --in-place tests/fixtures/<name>.c` to emit the
-  `SLATE-FILECHECK-BEGIN/END` blocks. Runtime differential comparison alone is not enough; the shape
-  assertions lock in the specific generated form. Use as many disjoint region pairs as the fixture
-  has interesting spots — wrap every statement worth asserting, not just one. In-body markers wrap
-  statements; to assert a whole function **including its signature**, use the file-scope
-  `@lowering-fn-begin`/`@rewrite-fn-begin` markers around the definition.
-  See [wiki/concepts/differential-fixtures.md](../../wiki/concepts/differential-fixtures.md).
-- **Testing**: Feature testing is done with e2e fixture differential tests, **never unit tests**.
+- **Every feature starts with a C fixture**, and it must fail before you
+  write the fix.
+- **Feature testing is e2e differential fixtures, never unit tests.**
 - **Transliterate first, idiomatize later.** Baseline Rust may be ugly:
   `#[repr(C)]`, raw pointers, explicit temps, `libc`, and `unsafe` are all
-  acceptable. Make it correct first; recover idiom in separate, verified fixups.
-- Run `cargo fmt`, `cargo clippy`, and the relevant release nextest profile before finishing.
+  acceptable.

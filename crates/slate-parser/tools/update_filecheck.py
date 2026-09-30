@@ -9,7 +9,7 @@ import tempfile
 from pathlib import Path
 
 
-RENDERER = Path("target/release/slate-parser")
+RENDERER = Path(__file__).resolve().parents[3] / "target/test-cache/release/slate-parser"
 
 
 def _no_color_env() -> dict:
@@ -199,7 +199,7 @@ def render(
                         for line in source.splitlines()
                         if line.strip().startswith("// SLATE-FILECHECK-EXAMPLE ")), None)
         command = (["cargo", "run", "--release", "--quiet", "--example", example, "--"] if example
-                   else [str(repo / RENDERER), "parse", str(parsed_fixture)])
+                   else [str(RENDERER), "parse", str(parsed_fixture)])
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
         command.extend(std_args)
@@ -230,7 +230,7 @@ def render_warnings(
     parsed_fixture = fixture.with_name(parsed_name)
     parsed_fixture.write_text(fixture_source(source), errors="surrogateescape")
     try:
-        command = [str(repo / RENDERER), "parse", str(parsed_fixture)]
+        command = [str(RENDERER), "parse", str(parsed_fixture)]
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
         command.extend(std_args)
@@ -267,7 +267,7 @@ def render_error(
     parsed_fixture = fixture.with_name(parsed_name)
     parsed_fixture.write_text(fixture_source(source), errors="surrogateescape")
     try:
-        command = [str(repo / RENDERER), "parse", str(parsed_fixture)]
+        command = [str(RENDERER), "parse", str(parsed_fixture)]
         command.extend(f"-D{define.removeprefix('-D')}" for define in defines)
         command.extend(f"-isystem{path}" for path in isystem)
         command.extend(std_args)

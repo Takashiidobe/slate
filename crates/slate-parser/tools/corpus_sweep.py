@@ -432,7 +432,7 @@ def git_revision() -> str:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fixtures", type=Path, default=Path("tests/fixtures"))
-    parser.add_argument("--slate-parser", default="target/release/slate-parser")
+    parser.add_argument("--slate-parser", default="target/test-cache/release/slate-parser")
     parser.add_argument("--clang", default="clang")
     parser.add_argument("--gcc", default="gcc")
     parser.add_argument("--msvc", default="tools/cl.exe")
