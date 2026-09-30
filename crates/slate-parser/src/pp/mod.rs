@@ -54,6 +54,22 @@ pub enum PPNodeKind {
     },
 }
 
+const GNU_COMPATIBILITY_MACROS: [(&str, &str); 5] = [
+    ("__GNUC__", "4"),
+    ("__GNUC_MINOR__", "2"),
+    ("__GNUC_PATCHLEVEL__", "1"),
+    ("__GXX_ABI_VERSION", "1002"),
+    ("__STDC__", "1"),
+];
+
+const MSC_VERSION_MACROS: [&str; 5] = [
+    "_MSC_VER",
+    "_MSC_FULL_VER",
+    "_MSC_BUILD",
+    "_MSVC_CONSTEXPR_ATTRIBUTE",
+    "_CRT_USE_BUILTIN_OFFSETOF",
+];
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct MacroDef {
     pub parameters: Option<Vec<String>>,
@@ -157,7 +173,70 @@ impl<'a> Preprocessor<'a> {
                 continue;
             }
         }
+        if flavor == CompilerFlavor::Clang {
+            self.seed_microsoft_mode_predefines(target)?;
+        }
         self.seed_standard_predefines()
+    }
+
+    fn seed_microsoft_mode_predefines(
+        &mut self,
+        target: &crate::target_info::TargetInfo,
+    ) -> Result<(), PPError> {
+        let captured = target.environment == crate::target_info::TargetEnvironment::Msvc;
+        let features = self.dialect.features();
+        let mut defines = Vec::new();
+        let mut removed = Vec::new();
+        match (features.microsoft_compatibility, captured) {
+            (true, false) => {
+                removed.extend(GNU_COMPATIBILITY_MACROS.map(|(name, _)| name.to_string()));
+                removed.extend(
+                    self.macros
+                        .keys()
+                        .filter(|name| name.starts_with("__GCC_ATOMIC_"))
+                        .cloned(),
+                );
+            }
+            (false, true) => {
+                defines.extend(
+                    GNU_COMPATIBILITY_MACROS.map(|(name, value)| (name.into(), value.into())),
+                );
+                defines.push(("__GCC_ATOMIC_TEST_AND_SET_TRUEVAL".into(), "1".into()));
+                for name in self.macros.keys() {
+                    if let Some(kind) = name.strip_prefix("__CLANG_ATOMIC_")
+                        && let Some(value) = self.scalar_macro_spelling(name)
+                    {
+                        defines.push((format!("__GCC_ATOMIC_{kind}"), value));
+                    }
+                }
+            }
+            _ => {}
+        }
+        let i686 = target.family == crate::target_info::TargetFamily::X86;
+        match (features.microsoft_extensions, captured) {
+            (true, false) if i686 => defines.push(("_M_IX86_FP".into(), "2".into())),
+            (false, true) => removed.extend(["_MSC_EXTENSIONS".into(), "_M_IX86_FP".into()]),
+            _ => {}
+        }
+        if captured && self.dialect.options().microsoft.extensions == Some(false) {
+            removed.extend(MSC_VERSION_MACROS.map(String::from));
+        }
+        for name in &removed {
+            self.macros.remove(name);
+        }
+        if defines.is_empty() {
+            return Ok(());
+        }
+        let source: String = defines
+            .iter()
+            .map(|(name, value)| format!("#define {name} {value}\n"))
+            .collect();
+        let file = self
+            .files
+            .intern(PathBuf::from("<microsoft modes>"), HeaderKind::System);
+        self.parse_source(&source, file)
+            .map(drop)
+            .map_err(|failure| self.render_error(failure))
     }
 
     fn seed_standard_predefines(&mut self) -> Result<(), PPError> {

@@ -235,8 +235,8 @@ Decimal floating types are accepted in every mode and target
 
 ### MS and GNU keywords
 
-Gate: `--flavor=msvc`, or clang flavor on `*-windows-msvc` (like
-`-fms-extensions`). Elsewhere these are identifiers.
+Gate: `microsoft_extensions` ([MS modes](compiler-flags.md#ms-modes)).
+Elsewhere these are identifiers.
 
 - `__intN` / `_intN`: `__int8/16/32` alias `char`/`short`/`int`; `__int64`
   is a `long long` width (`__int64 unsigned int`, `long __int64` parse).

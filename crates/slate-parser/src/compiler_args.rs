@@ -1,4 +1,4 @@
-use crate::compiler_options::{CompilerOptions, LayoutOptions, OperationValues};
+use crate::compiler_options::{CompilerOptions, LayoutOptions, MicrosoftFlags, OperationValues};
 use crate::diagnostics::{DiagnosticOptions, Warning};
 use crate::files::SearchPaths;
 use crate::ir::{AsmDialect, Overflow};
@@ -168,6 +168,8 @@ struct ParsedCompilerArgs {
     trapping_math: Option<bool>,
     gnu89_inline: Option<bool>,
     common: Option<bool>,
+    ms_extensions: Option<bool>,
+    ms_compatibility: Option<bool>,
     long_double: Option<LongDoubleFormat>,
     asm_dialect: Option<AsmDialect>,
     isa: IsaRequest,
@@ -200,6 +202,8 @@ enum Opt {
     TrappingMath,
     Gnu89Inline,
     Common,
+    MsExtensions,
+    MsCompatibility,
     LongDouble,
     AsmDialect,
     IsaFeature,
@@ -238,6 +242,8 @@ impl std::fmt::Display for Opt {
             Self::TrappingMath => "trapping-math",
             Self::Gnu89Inline => "gnu89-inline",
             Self::Common => "common",
+            Self::MsExtensions => "ms-extensions",
+            Self::MsCompatibility => "ms-compatibility",
             Self::LongDouble => "long-double",
             Self::AsmDialect => "masm",
             Self::IsaFeature => "m<feature>",
@@ -263,6 +269,8 @@ impl Opt {
             Self::TrappingMath => "trapping-math",
             Self::Gnu89Inline => "gnu89-inline",
             Self::Common => "common",
+            Self::MsExtensions => "ms-extensions",
+            Self::MsCompatibility => "ms-compatibility",
             _ => "",
         }
     }
@@ -279,9 +287,11 @@ impl Opt {
     }
 }
 
-const FLAG_OPTS: [Opt; 7] = [
+const FLAG_OPTS: [Opt; 9] = [
     Opt::Gnu89Inline,
     Opt::Common,
+    Opt::MsExtensions,
+    Opt::MsCompatibility,
     Opt::Wrapv,
     Opt::Trapv,
     Opt::StrictOverflow,
@@ -331,6 +341,10 @@ impl CompilerArgParser {
             }
         });
         options.common = raw.common.unwrap_or(false);
+        options.microsoft = MicrosoftFlags {
+            extensions: raw.ms_extensions,
+            compatibility: raw.ms_compatibility,
+        };
         options.asm_dialect = raw.asm_dialect.unwrap_or_default();
         options.explicit_standard = raw.standard.is_some();
         Ok(CompilerArgs {
@@ -409,6 +423,8 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::TrappingMath => parsed.trapping_math = Some(value),
                 Opt::Gnu89Inline => parsed.gnu89_inline = Some(value),
                 Opt::Common => parsed.common = Some(value),
+                Opt::MsExtensions => parsed.ms_extensions = Some(value),
+                Opt::MsCompatibility => parsed.ms_compatibility = Some(value),
                 _ => return Err(invalid(argument, "unknown flag")),
             }
         } else if let Some(value) = option_value(argument, "D") {
@@ -751,6 +767,15 @@ fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
                 Ok(())
             }
         }),
+        Rule::validate("GCC MS modes", |args: &ParsedCompilerArgs| {
+            match [Opt::MsExtensions, Opt::MsCompatibility]
+                .into_iter()
+                .find(|opt| args.present.contains(opt))
+            {
+                Some(opt) => Err(format!("`{opt}` is not emulated for GCC")),
+                None => Ok(()),
+            }
+        }),
         Rule::validate("GCC stack alignment", |args: &ParsedCompilerArgs| {
             if args.stack_alignment.is_some() {
                 Err("stack alignment is a Clang option".into())
@@ -813,9 +838,11 @@ fn clang_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
 }
 
 fn msvc_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
-    const UNSUPPORTED: [Opt; 17] = [
+    const UNSUPPORTED: [Opt; 19] = [
         Opt::Gnu89Inline,
         Opt::Common,
+        Opt::MsExtensions,
+        Opt::MsCompatibility,
         Opt::Wrapv,
         Opt::Trapv,
         Opt::StrictOverflow,

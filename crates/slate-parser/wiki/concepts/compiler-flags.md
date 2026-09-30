@@ -4,6 +4,7 @@
 - [Contract](#contract)
 - [Implemented](#implemented)
 - [ISA gotchas](#isa-gotchas)
+- [MS modes](#ms-modes)
 - [Not implemented](#not-implemented)
 <!-- /toc -->
 
@@ -39,6 +40,7 @@ each stage is in [configuration-threading](configuration-threading.md).
 | `-ftrapping-math` | gcc, clang | `exceptions=`. Default is observable on gcc, ignored on clang |
 | `-fgnu89-inline` | gcc, clang | inline definition semantics, `__GNUC_GNU_INLINE__` |
 | `-fcommon` | gcc, clang | tentative definitions become common symbols |
+| `-fms-extensions` / `-fms-compatibility` (and `-fno-`) | clang | [MS modes](#ms-modes); gcc and msvc reject them |
 | `-mlong-double-64\|80\|128` | gcc, clang | `TargetInfo.long_double` and its predefines; x86 only |
 | `-mpreferred-stack-boundary` | gcc | stack alignment ABI; x86, exponent from 4 (x86_64) or 2 (x86) up to 12 |
 | `-mstack-alignment` | clang | stack alignment ABI; power of two; exclusive with the gcc form |
@@ -71,13 +73,33 @@ resolve the same string differently, each file has per-flavor rules.
 - Arm32: the default float ABI comes from the triple (`gnueabihf` → hard).
   `thumbv7a-pc-windows-msvc` is always hard-float and Thumb-only.
 
+## MS modes
+
+clang only (clang 22, `-###` and `-dM -E`). msvc flavor: always both on.
+gcc's `-fms-extensions` is a different feature; not emulated.
+
+- Default: both on for `*-windows-msvc`, off elsewhere.
+- `-fms-compatibility` implies extensions. `-fno-ms-extensions` drops
+  default compatibility, not an explicit `-fms-compatibility`.
+- Slate: `StandardFeatures::{microsoft_extensions,
+  microsoft_compatibility}`. Snapshots hold the target default;
+  `<microsoft modes>` applies the delta.
+
+| Follows | Effect |
+| --- | --- |
+| compatibility | predeclared `size_t` (`Sema::Initialize`) |
+| compatibility off | `__GNUC__` 4.2.1, `__GNUC_STDC_INLINE__`, `__GXX_ABI_VERSION 1002`, `__STDC__`, `__GCC_ATOMIC_*` (= `__CLANG_ATOMIC_*`, plus `TEST_AND_SET_TRUEVAL 1`) |
+| effective extensions | MS keywords, x86 `__asm {}`, `_MSC_EXTENSIONS` (Windows), `_M_IX86_FP 2` (i686) |
+| requested extensions (Windows) | `_MSC_VER 1933`, `_MSC_FULL_VER`, `_MSC_BUILD`, `_MSVC_CONSTEXPR_ATTRIBUTE`, `_CRT_USE_BUILTIN_OFFSETOF` |
+| target ABI, not flags | inline-definition visibility, object requests |
+
 ## Not implemented
 
 Add these when a sweep or corpus needs them, emulating the flag of the
 same name:
 
 - Layout: `-funsigned-char`, `-fshort-enums`, `-fshort-wchar`, `-fpack-struct`.
-- Language: `-fms-extensions`, `-fdollars-in-identifiers`, `-fpermissive`,
+- Language: gcc's `-fms-extensions`, `-fdollars-in-identifiers`, `-fpermissive`,
   `-ffreestanding`, `-fno-builtin`.
 - Floating point: the fast-math family (`nnan`, `ninf`, `nsz`, `arcp`,
   `reassoc`, `afn` have no IR field yet).

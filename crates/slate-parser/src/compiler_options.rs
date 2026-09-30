@@ -13,6 +13,13 @@ pub struct CompilerOptions {
     pub common: bool,
     pub explicit_standard: bool,
     pub asm_dialect: AsmDialect,
+    pub microsoft: MicrosoftFlags,
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub struct MicrosoftFlags {
+    pub extensions: Option<bool>,
+    pub compatibility: Option<bool>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -60,6 +67,7 @@ impl Default for CompilerOptions {
             common: false,
             explicit_standard: false,
             asm_dialect: AsmDialect::Att,
+            microsoft: MicrosoftFlags::default(),
         }
     }
 }

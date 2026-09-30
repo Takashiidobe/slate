@@ -9,7 +9,7 @@ use crate::compiler_args::CompilerFlavor;
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Token};
 use crate::target::x86::decode_register;
-use crate::target_info::{TargetEnvironment, TargetFamily};
+use crate::target_info::TargetFamily;
 
 const PREFIXES: &[&str] = &["lock", "rep", "repe", "repz", "repne", "repnz"];
 
@@ -59,7 +59,7 @@ impl Parser {
                 matches!(
                     self.dialect().target().family,
                     TargetFamily::X86 | TargetFamily::X86_64
-                ) && self.dialect().target().environment == TargetEnvironment::Msvc
+                ) && self.dialect().features().microsoft_extensions
             }
             CompilerFlavor::Gcc => false,
         }

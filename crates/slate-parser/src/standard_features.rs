@@ -1,5 +1,5 @@
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
-use crate::compiler_options::InlineSemantics;
+use crate::compiler_options::{InlineSemantics, MicrosoftFlags};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Availability {
@@ -47,6 +47,7 @@ pub struct StandardFeatures {
     pub valueless_return_in_nonvoid: bool,
     pub inline_semantics: InlineSemantics,
     pub microsoft_extensions: bool,
+    pub microsoft_compatibility: bool,
     pub gnu_floating_keywords: bool,
     pub widest_integer_literal_fallback: bool,
     pub keyword_float80: bool,
@@ -108,6 +109,7 @@ impl StandardFeatures {
                 InlineSemantics::ProvideDef
             },
             microsoft_extensions: false,
+            microsoft_compatibility: false,
             gnu_floating_keywords: false,
             widest_integer_literal_fallback: false,
             keyword_float80: false,
@@ -120,14 +122,26 @@ impl StandardFeatures {
         standard: LanguageStandard,
         flavor: CompilerFlavor,
         target: &crate::target_info::TargetInfo,
+        microsoft: MicrosoftFlags,
     ) -> Self {
         let mut features = Self::new(standard);
-        features.microsoft_extensions = match flavor {
-            CompilerFlavor::Msvc => true,
+        (
+            features.microsoft_extensions,
+            features.microsoft_compatibility,
+        ) = match flavor {
+            CompilerFlavor::Msvc => (true, true),
             CompilerFlavor::Clang => {
-                target.environment == crate::target_info::TargetEnvironment::Msvc
+                let windows_msvc =
+                    target.environment == crate::target_info::TargetEnvironment::Msvc;
+                let compatibility = microsoft
+                    .compatibility
+                    .unwrap_or(windows_msvc && microsoft.extensions != Some(false));
+                (
+                    compatibility || microsoft.extensions.unwrap_or(windows_msvc),
+                    compatibility,
+                )
             }
-            CompilerFlavor::Gcc => false,
+            CompilerFlavor::Gcc => (false, false),
         };
         if flavor == CompilerFlavor::Gcc {
             features.widest_integer_literal_fallback = true;

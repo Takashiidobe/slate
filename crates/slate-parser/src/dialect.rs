@@ -20,7 +20,7 @@ impl Dialect {
         options: CompilerOptions,
     ) -> Self {
         let target = options.effective_target(target);
-        let features = StandardFeatures::for_compiler(standard, flavor, &target);
+        let features = StandardFeatures::for_compiler(standard, flavor, &target, options.microsoft);
         Self {
             flavor,
             standard,

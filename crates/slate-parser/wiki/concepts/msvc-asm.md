@@ -69,8 +69,8 @@ clang 22.1.8 (`-target i686-pc-windows-msvc -emit-llvm`) and `tools/cl.exe`
 ### Acceptance
 
 - MSVC: `__asm`, `_asm`, x86 only (x64: C4235). `asm {` is not a keyword.
-- clang: `__asm`, `_asm`, `asm {` on every `*-windows-msvc` triple,
-  x86_64 included; elsewhere needs `-fasm-blocks`.
+- clang: `__asm`, `_asm`, `asm {` on x86 with MS extensions
+  ([MS modes](compiler-flags.md#ms-modes)); otherwise needs `-fasm-blocks`.
 - gcc: never.
 
 ## Design
@@ -80,8 +80,8 @@ clang 22.1.8 (`-target i686-pc-windows-msvc -emit-llvm`) and `tools/cl.exe`
 - In statement position, `__asm`/`_asm` not followed by `(` or a GNU
   qualifier starts an MS asm statement. `asm {` is not modeled.
 - msvc flavor: i686 only; other arches error like C4235.
-- clang flavor: any x86 `*-windows-msvc` triple (permissive); other triples
-  use the GNU parser, which rejects it like clang without `-fasm-blocks`.
+- clang flavor: x86 with `microsoft_extensions`; otherwise the GNU parser
+  rejects it, like clang without `-fasm-blocks`.
 
 ### Parser and AST
 

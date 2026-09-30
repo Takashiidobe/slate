@@ -52,6 +52,7 @@ Later groups remove earlier definitions of the names they set.
 | snapshot name | System | `target.profile.predefines(flavor)`, captured from the real compiler ([adding-a-target](adding-a-target.md)); missing snapshot is an error |
 | `<slate-target-defaults>` | System | slate-side target defaults |
 | `<slate-gnu-namespace-predefines>` | System | gnu modes only |
+| `<microsoft modes>` | System | clang: delta from the snapshot's default [MS modes](compiler-flags.md#ms-modes) |
 | `<standard predefines>` | System | `__STDC_VERSION__`, `__STRICT_ANSI__`, GNU inline macros, C23 `char8_t` / `bool` / `_FMTb__` macros, recomputed for the selected standard |
 | `<target options>` | User | long-double and ISA macros (not for msvc on Windows), `__ROUNDING_MATH__` (gcc, `-frounding-math`), msvc explicit `__STDC_VERSION__`, inline-semantics swap |
 | `<command line>` | User | `-D` / `-U` in order |
