@@ -1,57 +1,54 @@
-# Differential fixture directives
+# Differential fixtures
 
-Runnable fixtures in `tests/fixtures/` remain semantic differential tests:
-Slate compiles and runs the C source and generated Rust, then compares stdout
-and exit status. FileCheck directives add generated-Rust shape assertions; they
-do not replace runtime comparison.
+Fixtures are C programs. Slate compiles and runs the C source with
+`SLATE_CLANG` (the oracle) and the generated Rust, then requires identical
+stdout and exit status. Runtime parity is the only correctness gate.
 
-`NEXTEST_PROFILE=lowering` activates `COMMON` and `LOWERING` directives. The
-`rewrites` profile activates `COMMON` and `REWRITES` directives.
-
-`REWRITES` directives are enforced against the new worklist engine's output.
-Only assertions satisfied by the current engine belong in the baseline; add
-new assertions alongside each newly ported rewrite.
+## Suites
 
 `generated_differential`, `gcc_torture_suite`, `gcc_dg_suite`, and
-`c_testsuite_suite` translate through the typed slate-parser frontend
-(`support::translate_slate`) and emit raw lowered Rust with no backend
-fixups and no CIR fallback. They gate only on runtime parity with the C
-oracle; FileCheck is not enforced for them while the frontend is unstable.
-Every fixture in `tests/fixtures` (plus `tests/fixtures/x86_64` on x86_64
-hosts) runs. Headers come from slate-sysroots;
-there are no cross-target fixture flavors. Select one fixture with
-`SLATE_DIFF_FIXTURE=<stem> cargo nextest r --release --profile lowering --test differential -E 'test(=generated_differential)'`.
-
-## Promotion gate while the frontend is unstable
-
-Runtime parity of raw lowering (stdout + exit code) is the only promotion
-gate. All `SLATE-FILECHECK` blocks and `@lowering`/`@rewrite` markers were
-stripped from `tests/fixtures`, gcc-torture, gcc-dg, c-testsuite and chibicc;
-do not add new ones until the slate frontend is stable. The FileCheck
-material below documents the tooling for when it returns.
-
-Every single-file suite is a supported/unsupported ratchet. A fixture that
-fails raw-lowering parity lives in the unsupported bucket; when it starts
-passing, `*_unsupported_tests_still_fail` fails with the `git mv` that
-promotes it.
-
-| Suite       | Supported                  | Unsupported                            |
-| ----------- | -------------------------- | -------------------------------------- |
-| fixtures    | `tests/fixtures`           | `tests/fixtures.unsupported`           |
-| gcc-torture | `tests/fixtures.gcc-torture` | `tests/fixtures.gcc-torture.unsupported` |
-| gcc-dg      | `tests/fixtures.gcc-dg`    | `tests/fixtures.gcc-dg.unsupported`    |
-| c-testsuite | `tests/fixtures.c-testsuite` | `tests/fixtures.c-testsuite.unsupported` |
-| chibicc     | `tests/fixtures.chibicc/supported` | `tests/fixtures.chibicc/unsupported` |
-
-`*.ignored` buckets hold only features Slate will never support.
-
-For `tests/fixtures.unsupported` (including its `x86_64/` subdirectory),
-`fixtures_unsupported_triage_report` prints `PASS`/`FAIL` with the first
-barrier classified as `parse/sema`, `unsupported lowering`, `rustc`, or
-`runtime mismatch`; `SLATE_DIFF_FIXTURE=<stem>` selects one case:
+`c_testsuite_suite` translate every fixture through the slate-parser frontend
+(`support::translate_slate`, i.e. `slate translate-lowered --frontend=slate`).
+That emits raw lowered Rust: rewrites are not enabled for the slate frontend,
+and there is no CIR fallback. Headers come from slate-sysroots, and fixtures
+run for the host target only. These four suites make up the `slate` nextest
+profile:
 
 ```bash
-cargo nextest r --release --test differential \
+cargo nextest r --release --profile slate
+```
+
+Run it from the workspace root. `chibicc_suite`, `cross_tu`, `link`, `syslink`,
+`yarpgen`, `directive_translate`, and the `differential_{arm,aarch64,i686}`
+binaries still exercise the legacy CIR pipeline and are not gates.
+
+## Supported/unsupported ratchet
+
+Each suite has a supported and an unsupported bucket. Supported fixtures must
+pass; unsupported fixtures must still fail. When an unsupported fixture starts
+passing, `*_unsupported_tests_still_fail` fails and prints the `git mv` that
+promotes it.
+
+| Suite       | Supported                    | Unsupported                              | Selector                    |
+| ----------- | ---------------------------- | ---------------------------------------- | --------------------------- |
+| fixtures    | `tests/fixtures`             | `tests/fixtures.unsupported`             | `SLATE_DIFF_FIXTURE`        |
+| gcc-torture | `tests/fixtures.gcc-torture` | `tests/fixtures.gcc-torture.unsupported` | `SLATE_GCC_TORTURE_FIXTURE` |
+| gcc-dg      | `tests/fixtures.gcc-dg`      | `tests/fixtures.gcc-dg.unsupported`      | `SLATE_GCC_DG_FIXTURE`      |
+| c-testsuite | `tests/fixtures.c-testsuite` | `tests/fixtures.c-testsuite.unsupported` | `SLATE_C_TESTSUITE_FIXTURE` |
+
+Paths are relative to `crates/slate`. `tests/fixtures/x86_64/` (and its
+unsupported twin) runs only on x86_64 hosts. `*.ignored` buckets hold only
+features Slate will never support. Selectors take a fixture stem.
+
+## Triage
+
+`fixtures_unsupported_triage_report`, `gcc_torture_unsupported_triage_report`,
+and `c_testsuite_unsupported_triage_report` are ignored tests. Each prints
+`PASS`/`FAIL` per unsupported fixture, with the first barrier classified as
+`parse/sema`, `unsupported lowering`, `rustc`, or `runtime mismatch`:
+
+```bash
+SLATE_DIFF_FIXTURE=<stem> cargo nextest r --release -p slate --test differential \
   -E 'test(fixtures_unsupported_triage_report)' --run-ignored ignored-only --nocapture
 ```
 
@@ -63,300 +60,34 @@ translation (`translate-lowered --frontend=slate`) still fails on the first
 barrier. Record and enum definitions only block the functions that use them;
 sema already resolves typedefs, so the module's type list is not a gate.
 
-Generate raw Slate lowerer checks with `@slate-lowerer-fn-begin` and
-`@slate-lowerer-fn-end` around each function whose emitted form matters, then
-run:
+## Workflow
 
-```bash
-python3 tools/update_filecheck.py --profile slate-lowerer --in-place \
-  tests/fixtures/<name>.c
-```
+1. Put the fixture in the unsupported bucket and confirm the triage report
+   shows the expected barrier.
+2. Implement the lowering until the report prints `PASS <stem>`.
+3. `git mv` the fixture into the supported bucket.
+4. Run the full `slate` profile and promote anything else the change fixed.
 
-This emits the `SLATE-LOWERER` block through
-`translate-lowered --frontend=slate`. It leaves ordinary `@lowering` and
-`@rewrite` markers uninstrumented, since those use CIR lowering and its
-FileCheck sentinels.
+## Per-fixture compiler flags
 
-Cross-target fixtures combine the profile and target in one prefix, such as
-`REWRITES-MACOS`, `REWRITES-MSVC`, or `REWRITES-BIONIC-X86_64`. This keeps a
-target assertion from running under the other profile or ABI.
+`dg-options "..."` comments in a fixture add compiler flags to both
+slate-parser and the C oracle; `dg-additional-options "..."` adds them to
+slate-parser only. Only semantic flags are kept (`-std=`, `-O0`..`-O3`, and
+the list in `is_semantic_dg_flag` in `tests/support/mod.rs`), and a
+`{ target ... }` clause that does not match the host triple drops the
+directive.
 
-Platform/libc fixture directories use the normal cross-target collector.
-Special target cases outside those directories, such as a multi-file ABI
-fixture, use a separate target-check entry instead of inventing a fixture
-flavor.
+## FileCheck (suspended)
 
-Global checks use normal FileCheck syntax. Each global assertion runs as an
-independent FileCheck invocation, so generated Rust item and import ordering is
-not significant:
+FileCheck shape assertions are suspended until lowering coverage makes them
+signal rather than noise. All `SLATE-FILECHECK` blocks and `@lowering`,
+`@rewrite`, and `@slate-lowerer` markers were stripped from single-file
+fixtures, and the differential suites do not run FileCheck. Do not add
+markers or blocks, and do not run `tools/update_filecheck.py` for
+single-file fixtures.
 
-```c
-// COMMON-DAG: unsafe extern "C"
-// LOWERING-DAG: let __v{{[0-9]+}}: i32
-// REWRITES-NOT: todo!()
-```
-
-Function checks start with `LABEL` and end at the function's column-zero
-closing brace:
-
-```c
-// REWRITES-LABEL: {{^}}fn alias_impl(
-// REWRITES-DAG: real_impl(_0)
-// REWRITES-NOT: todo!()
-// REWRITES: {{^}}}
-```
-
-The runner invokes each label block independently, so fixture check order does
-not constrain generated function order. Each `DAG` or `NOT` assertion is also
-checked independently within the labeled function. This prevents a match from
-leaking into a later function while preserving position-independent checks.
-
-Use plain profile checks, optionally with `NEXT`, `SAME`, or `EMPTY`, when
-relative order is itself the behavior. An ordered sequence inside a function
-block is checked together and remains bounded by that function.
-
-`SLATE_FILECHECK` overrides the FileCheck executable. Otherwise the runner uses
-the `FileCheck` next to `SLATE_CLANG` when that variable is set, then falls back
-to `FileCheck` from `PATH`.
-
-For a multi-translation-unit project, directives in `foo.c` check the generated
-`src/foo.rs`. Library fixtures use the same mapping for C files under `src/`.
-Direct textual assertions about synthesized `lib.rs`, `types.rs`, manifests, C
-shims, smoke tests, diagnostics, or binary symbols stay in the Rust project
-harness. Properties exposed through an owned module and verified by compiling
-the generated crate need no duplicate synthesized-file assertion.
-
-Generate annotated multi-translation-unit checks from one whole-project
-translation per requested profile:
-
-```bash
-python3 tools/update_filecheck.py --project \
-  tests/fixtures.multi/<name> --profile both --in-place
-python3 tools/update_filecheck.py --library-project \
-  tests/fixtures.library/<name> --profile both --in-place
-```
-
-Project mode instruments every annotated C source before translating the copied
-fixture, then maps each marker-bearing generated module back to its owning C
-file. Test execution reuses the generated crate for FileCheck, Rust compilation,
-and differential comparison; FileCheck does not trigger another translation.
-
-Pass repeated `--target PREFIX=TRIPLE` arguments to generate checks for
-multiple ABIs (currently exactly two per invocation). The updater diffs the two
-targets' check sequences positionally and interleaves them into one ordered
-block: lines identical across targets fall back to the bare `LOWERING`/
-`REWRITES` tag (always selected, regardless of which target's prefix a run
-adds), and lines that differ keep their own target prefix (e.g.
-`LOWERING-X86_64-GNU`) in place, at the exact point where they diverge. This
-preserves `CHECK-NEXT` adjacency for whichever single target a test run
-selects — unlike bag-based common/residual extraction, which would relocate a
-divergent line (e.g. a struct field whose pointee type differs by ABI) to a
-trailing block, breaking adjacency for any divergence that isn't at the very
-end of the file. For example:
-
-```bash
-python3 tools/update_filecheck.py --profile both --in-place \
-  --target X86_64-GNU=x86_64-unknown-linux-gnu \
-  --target AARCH64-GNU=aarch64-unknown-linux-gnu tests/fixtures/add.c
-```
-
-Target-conditional `translate` fixtures use `DIRECTIVES` prefixes against the
-translated output. Those checks are separate from lowering and rewrite profile
-selection because conditional-compilation reconstruction is its own producer.
-
-## Regenerate and isolate fixture failures
-
-For a normal fixture, use the `justfile` recipes so the default target checks
-are selected consistently:
-
-```bash
-just regen-filecheck tests/fixtures/<name>.c
-just regen-lowering tests/fixtures/<name>.c
-just regen-rewrites tests/fixtures/<name>.c
-```
-
-The profile-specific recipes leave the other generated block frozen. Pattern
-variants are available as `just regen-filecheck-match '<glob>'`,
-`just regen-lowering-match '<glob>'`, and `just regen-rewrites-match '<glob>'`.
-For a project or library fixture, pass its directory to
-`just regen-filecheck`; the recipe uses the project-aware updater mode.
-
-To refresh only assertions that failed during a whole profile run, use:
-
-```bash
-tools/regen-filecheck.sh lowering
-tools/regen-filecheck.sh rewrites
-```
-
-This reruns nextest, regenerates the failed fixture paths from the emitted
-FileCheck artifacts, and preserves the original nextest exit status. It is
-intentionally not a substitute for investigating a runtime, translation, or
-Rust compilation failure.
-
-To run one ordinary fixture end to end, select it by stem and select the
-profile whose behavior you are changing:
-
-```bash
-SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile lowering \
-  --test differential -E 'test(generated_differential)' --nocapture
-SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile rewrites \
-  --test differential -E 'test(generated_differential)' --nocapture
-```
-
-The selection applies to the shared, platform, and target-check fixture
-collectors. Corpus suites use their own selectors, such as
-`SLATE_GCC_TORTURE_FIXTURE`, `SLATE_GCC_DG_FIXTURE`, and
-`SLATE_LIBC_TEST_FIXTURE`; use their suite-specific ignored triage report when
-the case is in an unsupported bucket.
-
-## Acceptance workflow
-
-FileCheck generation is scaffolding, not a correctness oracle. Use this order
-when adding or changing a fixture:
-
-1. Select the fixture with its suite-specific environment variable and run the
-   relevant lowering or rewrites profile. First establish C/Rust differential
-   parity without relying on new shape checks.
-2. Add `@lowering-begin`/`@rewrite-begin` regions around the statements whose
-   generated form proves the change. Use the `*-fn-*` markers only when the
-   function signature itself is part of the contract.
-3. Run `tools/update_filecheck.py` or the corresponding `just` recipe for the
-   affected profile(s).
-4. Inspect the resulting C-file diff. Accept regenerated checks only when they
-   encode the intended, desirable lowering or rewrite. A check that merely
-   matches an accidental or worse code shape must be narrowed, rewritten, or
-   rejected.
-5. Rerun the isolated fixture; this time the generated FileCheck assertions must
-   pass as well as the runtime differential comparison.
-6. Run the complete relevant nextest profile. The profile must be green before
-   the change is considered complete; do not hide a failure by regenerating its
-   expected output.
-7. Run formatting and linting after the test gates. `cargo fmt` and `cargo
-   clippy` are final quality checks, not replacements for differential or
-   full-profile testing. Retest after them only if they modify test inputs or
-   generated sources.
-
-Cross-target differential runners have separate nextest profiles. ARM32 uses
-`arm-lowering` and `arm-rewrites` for `armv7-unknown-linux-gnueabihf`; AArch64
-uses `aarch64-lowering` and `aarch64-rewrites`; i686 uses `i686-lowering` and
-`i686-rewrites`. ARM32 also needs an installed Rust target, an ARM GNU sysroot
-and linker, and `qemu-arm-static`:
-
-The complete ARM32, AArch64, and i686 toolchain setup, including
-sysroot, QEMU, libc-shim, and ABI guidance, is in
-[cross-target toolchains](cross-target-toolchains.md).
-
-```bash
-rustup target add armv7-unknown-linux-gnueabihf
-export SLATE_ARM_SYSROOT="$HOME/toolchains/<arm-toolchain>/arm-none-linux-gnueabihf/libc"
-export SLATE_ARM_LINKER="$HOME/toolchains/<arm-toolchain>/bin/arm-none-linux-gnueabihf-gcc"
-cargo nextest r --release --profile arm-lowering
-cargo nextest r --release --profile arm-rewrites
-```
-
-The ARM runner also accepts `SLATE_ARM_CC`, `SLATE_ARM_QEMU`, and
-`SLATE_DIFF_FIXTURE=<name>`. The local `.env` uses fish `set` syntax and is not
-tracked, so bash users must export these variables themselves; fish users must
-make them exported variables with `set -gx`.
-
-## Region-scoped generation with `@begin`/`@end` directives
-
-**Every new fixture must carry both a `@lowering` and a `@rewrite` region** so
-the checked-in fixture asserts the generated Rust under both profiles, not just
-runtime stdout/exit parity. A fixture may — and often should — carry several
-disjoint region pairs: wrap each "interesting" statement (the ones whose
-generated form proves the change) in its own pair rather than settling for a
-single region. See "Multiple, disjoint regions" below; to assert a function
-signature, use the file-scope `@lowering-fn-begin`/`@rewrite-fn-begin` markers
-described later in this section. Scaffold the FileCheck blocks with
-`tools/update_filecheck.py` rather than hand-writing them. Wrap the C statements
-whose generated Rust you want to assert in comment directives, then let the tool
-emit the `SLATE-FILECHECK-BEGIN/END` blocks. See `tests/fixtures/global_bool.c`
-and the `buffer_const_bound*` fixtures for the pattern:
-
-```c
-// @lowering-begin
-// @rewrite-begin
-int r = sum_fixed(arr);
-// @rewrite-end
-// @lowering-end
-```
-
-`@lowering-begin`/`@lowering-end` scope the `LOWERING` block, `@rewrite-begin`/
-`@rewrite-end` the `REWRITES` block; the `-not` variants (`@rewrite-not-begin`,
-etc.) assert the region's pre-rewrite text is _absent_ after fixups. Regions
-must nest, not cross. Generate or refresh in place with:
-
-```bash
-python3 tools/update_filecheck.py --in-place tests/fixtures/<name>.c
-```
-
-The plain `@lowering-begin`/`@rewrite-begin` markers work **inside a function
-body** only. The tool injects `__asm__` sentinels around each region, and an asm
-statement outside a function fails to compile (`meaningless 'volatile' on asm
-outside function`), so those markers cannot wrap a function signature or a
-top-level definition.
-
-To assert a whole function **including its signature**, use the function-level
-markers `@lowering-fn-begin`/`@lowering-fn-end` (and the `@rewrite-fn-*` pair) at
-**file scope**, wrapping the entire definition:
-
-```c
-// @lowering-fn-begin
-// @rewrite-fn-begin
-int sum3(int a, int b, int c) {
-  return a + b + c;
-}
-// @rewrite-fn-end
-// @lowering-fn-end
-```
-
-The tool reads the wrapped definition's name out of the C source and then
-captures that named item — signature line and body — from the generated Rust,
-wherever it landed. Nothing is injected into the source for fn-scope markers, so
-the instrumented translation is byte-identical to the real one. Generated
-parameter indices (`arg0`, `arg1`, …) come from a global counter, so they are
-still genericized to `{{arg[0-9]+}}` in check output. See
-`tests/fixtures/fn_signature_filecheck.c`. Body-only assertions still prefer the
-plain in-body markers.
-
-`static` is fine, and so is anything else that moves a definition away from its
-source position. Clang defers emission of internal-linkage functions, so a
-`static` lands after every external definition that follows it in the source;
-matching by name rather than by position makes that irrelevant. Attributes on
-the definition (`__attribute__((target(...)))`, `[[...]]`) are stripped before
-the name is read.
-
-If the tool cannot find the wrapped definition it fails loudly:
-
-```
-error: generated Rust has no definition of fn <name>
-```
-
-That means the name scan misread the declarator, or the function was DCE'd —
-not that the region is empty.
-
-Multiple, disjoint regions in one fixture are fine — each `@lowering`/`@rewrite`
-pair contributes to the single `SLATE-FILECHECK-BEGIN/END` block the tool emits,
-so wrap every statement you care about.
-
-Scope the region to the smallest observable of the change — for a
-signature/call-site lift, wrapping the call statement is enough, since the
-bridged call only appears once the lift fires. Re-run the tool whenever the
-generated output legitimately changes so the checked-in block stays in sync.
-
-Generated blocks are identified by their `SLATE-FILECHECK-BEGIN` and
-`SLATE-FILECHECK-END` markers and are always regenerated at the end of the C
-file. Handwritten FileCheck directives remain before them. The updater also
-recognizes an end marker reflowed into another `//` comment by a formatter, so
-format-on-save followed by regeneration repairs the block instead of treating
-its checks as handwritten.
-
-## Per-fixture clang flags
-
-Fixtures emit CIR at `-O0` by default. Some bugs only exist in optimized CIR
-(e.g. a `const` pointer mem2reg promotes to an SSA temp reused across flattened
-goto/dispatch blocks — `slate-a28e.3`). Give one fixture different flags via
-`fixture_clang_arg_overrides(name) -> Vec<String>` in `tests/differential.rs`,
-e.g. `"my_fixture" => vec!["-O2".into()]`. Prefer a small harness hook like this
-over a one-off manual repro when a corpus bug won't reproduce at `-O0`.
+The tooling is still in the tree (`tools/update_filecheck.py`,
+`tests/support/filecheck.rs`, the `justfile` regen recipes). Its full
+documentation, covering region markers, `-fn-` markers, cross-target
+prefixes, and project mode, is in this page's history before commit
+`c6c92aef4`, for when shape checks return.

@@ -102,9 +102,8 @@ changes and decisions; query it with `llog search <keyword>`.
 
 ## Goal
 
-Slate-Parser is to be the new C front end for Slate. It exists to let Slate ingest
-real-world C headers and sources and eventually convert them to Rust.
-The pipeline, end to end:
+Slate-Parser is Slate's C front end. It lets Slate ingest real-world C
+headers and sources and convert them to Rust. The pipeline, end to end:
 
 1. **Preprocess for one configuration.** Like a normal compiler,
    command-line `-D` defines and target predefines become real macros
@@ -116,24 +115,24 @@ The pipeline, end to end:
 2. **Parse.** The preprocessed token stream is parsed into one AST.
    Owning the parser also leaves room for GNU/Clang/MSVC "personalities"
    where compilers give the same C different meanings.
-3. **Semantic analysis.** `sema.rs` resolves types, scopes, and
+3. **Semantic analysis.** `src/sema/` resolves types, scopes, and
    declarations over the AST, matching clang's semantics
    closely enough that output can be diffed against clang as an oracle.
-4. **Lower to a Clang-IR-like bytecode.** The concrete, semantically
-   analyzed AST is lowered to a small bytecode/IR modeled loosely on
-   Clang IR (CIR). This is the layer where full type resolution is
-   finalized and the representation is normalized into a form that's
-   easy to mechanically translate.
-5. **Rust conversion.** The bytecode/IR is the intended handoff point
-   for Slate to generate Rust — it's deliberately kept close to Clang
-   IR's shape so lowering C semantics to it (and then to Rust) doesn't
-   require re-deriving type/control-flow information already resolved
-   in steps 2-4.
+4. **Lower to a typed IR.** `Sema::lower` (`src/sema/module.rs`) produces
+   an `ir::Module` (`src/ir/`), modeled loosely on Clang IR (CIR). Types
+   are fully resolved, places and bindings are explicit, conversions and
+   arithmetic semantics are spelled out, and side effects are hoisted
+   into sequenced statements, so the IR is easy to translate
+   mechanically. [ir-spec](../../wiki/concepts/ir-spec.md) records what is
+   implemented.
+5. **Rust conversion.** `crates/slate` consumes `ir::Module` directly as a
+   library (`crates/slate/src/slate_parser_frontend/`) and lowers it to
+   Rust, so it never re-derives type or control-flow facts resolved in
+   steps 2-4. That lowering is being built out under the `slate-p58o`
+   epic.
 
-Steps 4-5 are not fully implemented yet; `src/` currently covers
-preprocessing, parsing, and sema. Check `bd ready`
-/ `bd list` for the current state of the bytecode-lowering and
-Rust-conversion work.
+When Slate lowering exposes a missing or wrong IR fact, fix it here rather
+than working around it in `crates/slate`.
 
 ## Coding
 
