@@ -1,65 +1,45 @@
 # slate-parser
 
-Slate-Parser is a C frontend for Slate. It is being built to ingest real C
-headers and source files and turn them into a structured, semantically
-resolved intermediate representation that Slate can translate to Rust.
+slate-parser is a C frontend for slate, which translates C23 to Rust.
+Slate used to use clang-ir, but having to join clang-ir with the
+clang-ast for comments, macro provenance, and any unsupported feature
+was suboptimal, since it requires a bunch of machinery on slate's side +
+requires the user compile their own clang (since clang-ir isn't in
+mainline yet).
 
-The frontend processes one compiler configuration at a time. Command-line
-defines, target predefines, and include files are resolved during preprocessing;
-conditional branches are selected there before parsing. The pipeline is:
+slate-parser's goal is to "emulate" the three major C compilers. It does
+this with its `--flavor` argument, which can be gcc, clang, or msvc.
+
+The pipeline is pretty classic:
 
 ```text
-source text
-    │
-    ▼
-lexing → preprocessing → parsing → sema → IR
+source text -> lexing -> preprocessing -> parsing -> sema -> IR
 ```
 
 ## Lexing
 
-The lexer turns source text into tokens while retaining source locations and
-the spelling and expansion provenance needed for diagnostics. It handles C
-identifiers, keywords, literals, comments, and punctuators.
-
 Implementation: [`src/lexer.rs`](src/lexer.rs)
 
 ## Preprocessing
-
-The preprocessor consumes lexer tokens, handles directives and macro
-expansion, resolves includes, and selects the active branch of `#if`-
-family directives for the requested configuration. Include provenance is
-retained so declarations can be traced back to their headers.
 
 Implementation: [`src/pp/`](src/pp/), with file and search-path handling in
 [`src/files.rs`](src/files.rs)
 
 ## Parsing
 
-The parser converts the preprocessed token stream into a C AST. It preserves
-the structure and source information of declarations, types, expressions,
-statements, attributes, and inline assembly so later stages can interpret the
-source without reparsing it.
-
 Implementation: [`src/parser/`](src/parser/), with the AST definitions in
 [`src/ast.rs`](src/ast.rs)
 
 ## Semantic analysis
 
-Semantic analysis resolves names, scopes, declarations, tags, and types. It
-also validates C type rules, performs implicit conversions and integer
-promotions, evaluates expressions where the target data layout matters, and
-records the information needed for lowering.
-
 Implementation: [`src/sema/`](src/sema/)
 
 ## Intermediate representation
 
-The IR is a small, Clang-IR-inspired representation designed as the handoff to
-Slate's Rust conversion. It normalizes resolved types, functions, globals,
-records, enumerators, places, values, conversions, arithmetic, calls, and
-control-flow statements. The IR is currently focused on declarations and
-simple function bodies; unsupported C constructs report an error during
-lowering.
+Our IR is inspired by clang-ir, except it's not mainly for optimization.
+We keep any data around that's useful for lowering to rust (say
+different externs) but if these aren't expressible in rust, the IR will
+apply them as well.
 
 Implementation: [`src/ir/`](src/ir/), with AST-to-IR lowering in
 [`src/sema/module.rs`](src/sema/module.rs)
@@ -118,7 +98,7 @@ validation logic is in [`src/compiler_args.rs`](src/compiler_args.rs) and
 
 ## Trophy case
 
-Popular C projects that slate-parser can parse with `--flavor=clang` on
+C projects that slate-parser can parse with `--flavor=clang` on
 `x86_64-unknown-linux-gnu`.
 
 | Project                                              | Revision                         |
@@ -138,10 +118,6 @@ Popular C projects that slate-parser can parse with `--flavor=clang` on
 | [chibicc](https://github.com/rui314/chibicc)         | `90d1f7f`                        |
 | [utf8proc](https://github.com/JuliaStrings/utf8proc) | `0075ed7`                        |
 | [yyjson](https://github.com/ibireme/yyjson)          | `757305b`                        |
-
-Every translation unit of each project's clang build passes. Last swept
-2026-09-30 with `tools/c_corpus_sweep.py --trophies`. Work toward the rest
-of the corpus is tracked in the `bd` epic `slate-parser-6x05`.
 
 ## Development
 
