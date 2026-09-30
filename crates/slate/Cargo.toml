@@ -18,7 +18,7 @@ miette = "7"
 rustc_apfloat = "0.2.3"
 unicode-ident = "1"
 rayon = "1.12"
-clang-ir = { path = "../clang-ir/clang-ir" }
+clang-ir = { path = "../../../clang-ir/clang-ir" }
 slate-parser = { path = "../slate-parser" }
 
 [profile.test]
