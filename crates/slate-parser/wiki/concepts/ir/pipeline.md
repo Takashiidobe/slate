@@ -138,6 +138,11 @@ root, so unused header contents are never resolved or emitted. The target
 design resolves first and prunes on resolved dependencies, so Rust emission
 never repeats name lookup.
 
+A reachable tag name also keeps the declaration that first names it at file
+scope, including a mention inside a member declaration (`struct g { struct
+e *p; };`) or a nested definition. Dropping it would leave a later
+prototype's `struct e` prototype-scoped and so a distinct type.
+
 Consequence: unreachable declarations are never validated. A header error
 surfaces only once something uses the declaration (e.g. glibc
 `__attr_dealloc` under the gcc flavor); clang and gcc reject it on include.

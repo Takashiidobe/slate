@@ -28,6 +28,48 @@ pub fn filter_translation_unit(
     }
 }
 
+// a tag first named inside a member declaration has file scope, like one named at top level
+#[derive(Default)]
+struct FileScopeNames<'a> {
+    referenced_tags: Vec<&'a str>,
+    defined: Vec<&'a str>,
+}
+
+impl<'a> FileScopeNames<'a> {
+    fn collect(&mut self, tu: &'a TranslationUnit, ty: &'a TypeSpecifier) {
+        match ty {
+            TypeSpecifier::Tag(TagSpecifier::Reference { name, .. }) => {
+                self.referenced_tags.push(&name.value)
+            }
+            TypeSpecifier::Tag(TagSpecifier::Definition(tag_id)) => {
+                let Some(tag) = tu.tag(*tag_id) else {
+                    return;
+                };
+                if let Some(name) = &tag.value.name {
+                    self.defined.push(name);
+                }
+                match &tag.value.body {
+                    TagBody::Enum { enumerators, .. } => {
+                        for item in enumerators {
+                            if let EnumItemKind::Enumerator(enumerator) = &item.value {
+                                self.defined.push(&enumerator.name);
+                            }
+                        }
+                    }
+                    TagBody::Record(fields) => {
+                        for field in fields {
+                            if let FieldItemKind::Field(field) = &field.value {
+                                self.collect(tu, &field.specifiers.ty);
+                            }
+                        }
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
 struct Reachability<'a> {
     tu: &'a TranslationUnit,
     nodes: &'a [Decl],
@@ -44,32 +86,21 @@ impl<'a> Reachability<'a> {
             for name in decl.names() {
                 symbols.entry(name.to_string()).or_default().push(id);
             }
-            let DeclKind::Declaration(declaration) = &decl.value else {
-                continue;
+            let specifiers = match &decl.value {
+                DeclKind::Declaration(declaration) => &declaration.specifiers.ty,
+                DeclKind::Function(function) => &function.specifiers.ty,
+                _ => continue,
             };
-            if let TypeSpecifier::Tag(TagSpecifier::Reference { name, .. }) =
-                &declaration.specifiers.ty
-                && introduced_tags.insert(name.value.as_str())
-            {
-                symbols.entry(name.value.clone()).or_default().push(id);
-            }
-            let TypeSpecifier::Tag(TagSpecifier::Definition(tag_id)) = &declaration.specifiers.ty
-            else {
-                continue;
-            };
-            let Some(tag) = tu.tag(*tag_id) else {
-                continue;
-            };
-            if let Some(name) = &tag.value.name {
-                introduced_tags.insert(name.as_str());
-                symbols.entry(name.clone()).or_default().push(id);
-            }
-            if let TagBody::Enum { enumerators, .. } = &tag.value.body {
-                for item in enumerators {
-                    if let EnumItemKind::Enumerator(enumerator) = &item.value {
-                        symbols.entry(enumerator.name.clone()).or_default().push(id);
-                    }
+            let mut introduced = FileScopeNames::default();
+            introduced.collect(tu, specifiers);
+            for name in introduced.referenced_tags {
+                if introduced_tags.insert(name) {
+                    symbols.entry(name.to_string()).or_default().push(id);
                 }
+            }
+            for name in introduced.defined {
+                introduced_tags.insert(name);
+                symbols.entry(name.to_string()).or_default().push(id);
             }
         }
         Self {
