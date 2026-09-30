@@ -798,7 +798,11 @@ fn lower_value(
             op,
             operand,
             semantics,
-        } if matches!(value.ty, ir::Type::Numeric(ir::NumericType::Integer { .. })) => {
+        } if matches!(
+            value.ty,
+            ir::Type::Bool | ir::Type::Numeric(ir::NumericType::Integer { .. })
+        ) =>
+        {
             let operand = lower_value(operand, names, bindings, strings)?;
             match (op, semantics) {
                 (ir::UnaryArithOp::Not, _) => Expr::Unary {
