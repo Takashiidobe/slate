@@ -243,6 +243,8 @@ impl Preprocessor<'_> {
                 },
             );
         }
+        let elide_comma =
+            self.comma_elision(&definition, parameters, arguments, &expanded_arguments)?;
         let replacement = self.substitute_function_macro(
             &definition,
             parameters,
@@ -250,6 +252,7 @@ impl Preprocessor<'_> {
                 raw: arguments,
                 expanded: &expanded_arguments,
                 commas: &invocation.commas,
+                elide_comma,
             },
             &stamp,
         );
@@ -724,6 +727,16 @@ struct Arguments<'a> {
     raw: &'a [Vec<PPToken>],
     expanded: &'a [Option<Vec<PPToken>>],
     commas: &'a [PPToken],
+    elide_comma: ElideComma,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ElideComma {
+    Never,
+    // gnu `, ## __VA_ARGS__` with the variadic argument omitted
+    Pasted,
+    // msvc's traditional preprocessor, before any empty __VA_ARGS__
+    Always,
 }
 
 impl Arguments<'_> {
@@ -815,6 +828,28 @@ impl Preprocessor<'_> {
                     continue;
                 }
             }
+            let elide = match arguments.elide_comma {
+                ElideComma::Never => false,
+                ElideComma::Pasted => token.value == Token::HashHash,
+                ElideComma::Always => true,
+            };
+            let next = if token.value == Token::HashHash {
+                definition.replacement.get(i + 1)
+            } else {
+                Some(token)
+            };
+            if elide
+                && next.is_some_and(
+                    |next| matches!(&next.value, Token::Ident(name) if name == "__VA_ARGS__"),
+                )
+                && output
+                    .last()
+                    .is_some_and(|last| last.token.value == Token::Comma)
+            {
+                output.pop();
+                i += if token.value == Token::HashHash { 2 } else { 1 };
+                continue;
+            }
             if token.value == Token::HashHash && i + 1 < definition.replacement.len() {
                 let Some(left) = output.pop() else {
                     i += 1;
@@ -842,6 +877,38 @@ impl Preprocessor<'_> {
             i += 1;
         }
         output
+    }
+
+    fn comma_elision(
+        &mut self,
+        definition: &MacroDef,
+        parameters: &[String],
+        arguments: &[Vec<PPToken>],
+        expanded: &[Option<Vec<PPToken>>],
+    ) -> Result<ElideComma, PPFailure> {
+        if !definition.variadic {
+            return Ok(ElideComma::Never);
+        }
+        if self.dialect.flavor() == CompilerFlavor::Msvc {
+            for (index, raw) in arguments.iter().enumerate().skip(parameters.len()) {
+                let empty = match expanded.get(index) {
+                    Some(Some(expanded)) => expanded.is_empty(),
+                    _ => raw.is_empty() || self.expand_isolated(raw.clone())?.is_empty(),
+                };
+                if !empty {
+                    return Ok(ElideComma::Never);
+                }
+            }
+            return Ok(ElideComma::Always);
+        }
+        // iso modes read `H()` of `H(...)` as one empty argument, gnu modes as none
+        let omitted = arguments.len() <= parameters.len()
+            && (!parameters.is_empty() || self.dialect.standard().is_gnu());
+        Ok(if omitted {
+            ElideComma::Pasted
+        } else {
+            ElideComma::Never
+        })
     }
 
     fn substitute_object_macro(&self, definition: &MacroDef, stamp: &Stamp) -> Vec<PPToken> {

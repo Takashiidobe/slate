@@ -153,6 +153,12 @@ token plus an interned `HideSet`; file tokens start empty.
   only where used outside `#`/`##` (all of them if `__VA_OPT__` appears).
   `substitute_function_macro` handles `#`, `##` (re-lex; a paste that
   doesn't form one token keeps both), `__VA_ARGS__`, `__VA_OPT__`.
+- Comma elision (`comma_elision`): gcc and clang drop the comma of
+  `, ## __VA_ARGS__` when the variadic argument is omitted (`F(a)`, not
+  `F(a,)`); for a macro whose only parameter is `...`, `H()` counts as
+  omitted in gnu modes only. msvc's traditional preprocessor drops a comma
+  before any `__VA_ARGS__` that is empty after expansion, with or without
+  `##`.
 - The first replacement token inherits the invocation's leading space.
 - `#if`, `#include`, `#embed` and `#line` operands expand with
   `expand_isolated` too (`expand_macros`), so they never read past the
