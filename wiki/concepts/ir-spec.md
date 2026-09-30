@@ -9,7 +9,7 @@
 What the IR means and what is implemented, split by area under
 [`ir/`](ir/). The printed syntax is in [IR Grammar](ir-grammar.md); the
 principles every IR change is judged against are in
-[architecture](architecture.md). Epic: `slate-parser-lh7`.
+[architecture](parser-architecture.md). Epic: `slate-parser-lh7`.
 
 The IR is not Clang IR and does not aim for CIR compatibility. It exists for
 translation to Rust, not optimization.

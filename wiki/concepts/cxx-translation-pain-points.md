@@ -9,7 +9,7 @@
 -emit-cir` and `-ast-dump` on small C++ snippets, so it isn't re-derived
 > from scratch when C++ support actually starts. See
 > [slate-overview.md](slate-overview.md) for the current C-only supported
-> subset and [architecture.md](architecture.md) for the CIR/AST join this
+> subset and [slate-architecture.md](slate-architecture.md) for the CIR/AST join this
 > all builds on.
 
 ## Templates: CIR only ever shows the monomorphized side

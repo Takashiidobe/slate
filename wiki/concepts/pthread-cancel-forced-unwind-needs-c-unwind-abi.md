@@ -215,7 +215,7 @@ reachability. Rationale:
   pad/abort guard exists, which is dead weight off the hot path unless an
   unwind actually happens.
 - Matches the existing "transliterate first, idiomatize later" convention
-  ([architecture.md](architecture.md)): get an unconditionally-correct
+  ([slate-architecture.md](slate-architecture.md)): get an unconditionally-correct
   baseline now; if profiling ever shows this mattering, a later verified
   fixup pass can narrow it via real call-graph reachability, the same way
   other idiomization fixups build on a correct raw-lowering baseline.

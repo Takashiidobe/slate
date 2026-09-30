@@ -5,7 +5,7 @@ temps, `libc`, `unsafe`); readability is recovered afterward by rewrites, never
 during lowering. This page catalogs the stages and the **current** rewrite
 passes. For the rewrite engine's mechanics see
 [rewrite-engine-v2.md](rewrite-engine-v2.md); for the whole-pipeline map see
-[architecture.md](architecture.md).
+[slate-architecture.md](slate-architecture.md).
 
 ## Pipeline
 

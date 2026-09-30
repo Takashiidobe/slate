@@ -3,7 +3,7 @@
 `slate` translates C to Rust by lowering **ClangIR (CIR)** — Clang's MLIR-based
 IR — rather than LLVM IR. CIR is high enough to retain structured control flow,
 integer signedness, and named local variables, so this is _transpilation_, not
-decompilation. (See [architecture.md](architecture.md) for more details)
+decompilation. (See [slate-architecture.md](slate-architecture.md) for more details)
 
 ## Approach in one line
 
@@ -88,7 +88,7 @@ a failed case. Library modules do not use `String` as an error type.
 - [fixups.md](../historical/fixups.md) — how to state
   query-driven rewrite cases, proofs, typed recipes, definition lifecycles,
   scheduling, and tracing.
-- [architecture.md](architecture.md) — sources, IRs, pipeline, shared context.
+- [slate-architecture.md](slate-architecture.md) — sources, IRs, pipeline, shared context.
 - [passes.md](passes.md) — the pass catalog: what runs, in what order, how.
 - [facts.md](../historical/facts.md) — the salsa-memoized facts analysis layer: what each
   collector proves and which rewrite pass consumes it.

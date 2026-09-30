@@ -15,7 +15,7 @@ Accepted extensions and incompatibilities carry a named `Warning` so flags
 can silence or promote them. `src/diagnostics.rs` holds the `Warning` enum
 (identity, default severity, pedantic membership) and `DiagnosticOptions`
 (resolved map, on `CompilerOptions`, read via `unit.dialect.options()`).
-Strictness policy: [architecture](architecture.md#strictness-policy).
+Strictness policy: [architecture](parser-architecture.md#strictness-policy).
 Error limit, poisoning, and locations:
 [sema-passes](sema-passes.md#error-reporting).
 Attribute registration and applicability: [attributes](attributes.md).

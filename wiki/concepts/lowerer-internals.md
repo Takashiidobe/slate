@@ -1,7 +1,7 @@
 # Lowerer internals
 
 > This is the module-level map of `src/frontend/lowerer.rs` and
-> `src/frontend/lowerer/`. See [architecture.md](architecture.md) for why the
+> `src/frontend/lowerer/`. See [slate-architecture.md](slate-architecture.md) for why the
 > lowerer exists and what it consumes; see [passes.md](passes.md) for where
 > `lower` sits in the overall pipeline. Read this before touching any `cir.*`
 > handler.

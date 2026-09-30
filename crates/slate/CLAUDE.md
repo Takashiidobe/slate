@@ -237,28 +237,28 @@ parses the generic-form CIR op-tree.
 
 **Read before making changes**
 
-- [wiki/](wiki/) — the `llog` wiki: `wiki/concepts/` holds durable
+- [wiki/](../../wiki/) — the `llog` wiki: `wiki/concepts/` holds durable
   design/decision docs `wiki/log/` holds point-in-time
   entries. Use `llog search "<query>"` before re-deriving a decision that may
   already be recorded, **always** write a log with `llog new` for changes
   and especially decisions made. No more than 30 lines per log entry.
-- [wiki/concepts/rewrite-engine-v2.md](wiki/concepts/rewrite-engine-v2.md) — start here for any
+- [wiki/concepts/rewrite-engine-v2.md](../../wiki/concepts/rewrite-engine-v2.md) — start here for any
   new or ported rewrite: the current worklist engine that replaced
   `src/backend/query/` + salsa. (The retired query/facts docs now live under
   `wiki/historical/`.)
-- [wiki/concepts/differential-fixtures.md](wiki/concepts/differential-fixtures.md) — how fixture
+- [wiki/concepts/differential-fixtures.md](../../wiki/concepts/differential-fixtures.md) — how fixture
   differential tests and FileCheck directives work: `@lowering`/`@rewrite`
   region markers, `tools/update_filecheck.py`, and per-fixture clang-arg
   overrides. Read before adding a fixture.
-- [wiki/concepts/architecture.md](wiki/concepts/architecture.md) — sources, the two IRs, the
+- [wiki/concepts/slate-architecture.md](../../wiki/concepts/slate-architecture.md) — sources, the two IRs, the
   pipeline, and why CIR over LLVM IR.
-- [wiki/concepts/lowerer-internals.md](wiki/concepts/lowerer-internals.md) — the lowerer's internal module split:
+- [wiki/concepts/lowerer-internals.md](../../wiki/concepts/lowerer-internals.md) — the lowerer's internal module split:
   `Lowerer` vs `FunctionLowerer`, the `src/frontend/lowerer/*.rs` submodule
   map, op dispatch, and how to wire in a new `cir.*` handler. Read this before
   touching anything under `src/frontend/lowerer.rs` or `src/frontend/lowerer/`.
-- [wiki/concepts/passes.md](wiki/concepts/passes.md) — the pass catalog: what runs, in what order.
-- [wiki/concepts/slate-overview.md](wiki/concepts/slate-overview.md) — the supported-subset surface.
-- [wiki/concepts/gcc-torture-triage.md](wiki/concepts/gcc-torture-triage.md) — working the
+- [wiki/concepts/passes.md](../../wiki/concepts/passes.md) — the pass catalog: what runs, in what order.
+- [wiki/concepts/slate-overview.md](../../wiki/concepts/slate-overview.md) — the supported-subset surface.
+- [wiki/concepts/gcc-torture-triage.md](../../wiki/concepts/gcc-torture-triage.md) — working the
   gcc-torture/c-testsuite/chibicc unsupported-corpus triage epics
   (`slate-os0h.3.1` and children): the three-test pattern, which nextest
   profile to use, how to dig into one failing case, where the compiled batch
@@ -277,7 +277,7 @@ parses the generic-form CIR op-tree.
   has interesting spots — wrap every statement worth asserting, not just one. In-body markers wrap
   statements; to assert a whole function **including its signature**, use the file-scope
   `@lowering-fn-begin`/`@rewrite-fn-begin` markers around the definition.
-  See [wiki/concepts/differential-fixtures.md](wiki/concepts/differential-fixtures.md).
+  See [wiki/concepts/differential-fixtures.md](../../wiki/concepts/differential-fixtures.md).
 - **Testing**: Feature testing is done with e2e fixture differential tests, **never unit tests**.
 - **Transliterate first, idiomatize later.** Baseline Rust may be ugly:
   `#[repr(C)]`, raw pointers, explicit temps, `libc`, and `unsafe` are all

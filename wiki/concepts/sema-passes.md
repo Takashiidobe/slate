@@ -11,7 +11,7 @@
 <!-- /toc -->
 
 How `src/sema/` turns a parsed `TranslationUnit` into an IR `Module`.
-Principles: [architecture](architecture.md#checker-first-lowering-trusts).
+Principles: [architecture](parser-architecture.md#checker-first-lowering-trusts).
 
 ## Pass order
 
@@ -52,7 +52,7 @@ Defined in `sema/numeric.rs`.
 
 | Variant | Meaning | Who returns it |
 | --- | --- | --- |
-| `Rejected(&str)` | Ill-formed C that every oracle rejects ([strictness](architecture.md#strictness-policy)) | checker, typer, shared rule functions |
+| `Rejected(&str)` | Ill-formed C that every oracle rejects ([strictness](parser-architecture.md#strictness-policy)) | checker, typer, shared rule functions |
 | `InvalidOperands` / `InvalidOperand` | Typed rejection of arithmetic operands | `numeric::binary_rule` / `unary_rule` |
 | `Unimplemented(&str)` | Valid C not modeled yet (LLVM NYI); not a rejection | anywhere |
 | `UnsupportedBuiltin(String)` | Known builtin without lowering; a kind of `Unimplemented` | `expression.rs` |
@@ -117,7 +117,7 @@ Rules:
 `TypeResolver::typed` (`typer.rs`) types an expression without lowering it.
 It is the only place expression types and conversions are decided:
 lowering reads its facts and derives no types
-([architecture](architecture.md#checker-first-lowering-trusts)).
+([architecture](parser-architecture.md#checker-first-lowering-trusts)).
 
 - Used by the checker (every expression, children first), unevaluated
   operands (`sizeof`, `_Generic` control, `typeof`, `__auto_type`
