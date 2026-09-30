@@ -27,7 +27,7 @@ stream of `PPNode`s (`Code`, `Comment`, `Pragma`) that the parser reads as
 | `has_checks.rs` | hand-maintained `__has_builtin` / `__has_feature` / … answers, seeded from clang tablegen and extended per flavor ([attributes](attributes.md#preprocessor-queries)) |
 
 Include directories come from `compiler_headers.rs` and `sysroot.rs`,
-which point at headers installed by `../slate-sysroots`.
+which point at headers installed by the `slate-sysroots` workspace package.
 
 ## Pipeline
 

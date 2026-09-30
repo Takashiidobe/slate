@@ -1,3 +1,3 @@
 [workspace]
-members = ["crates/slate", "crates/slate-parser"]
+members = ["crates/slate", "crates/slate-parser", "crates/slate-sysroots"]
 resolver = "3"

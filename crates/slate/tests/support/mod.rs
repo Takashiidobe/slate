@@ -91,6 +91,8 @@ debug = 0
 overflow-checks = false
 panic = "unwind"
 codegen-units = 256
+
+[workspace]
 "#,
         aligned_path().display(),
         bitint_path().display(),

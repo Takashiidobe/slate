@@ -50,6 +50,6 @@ instead of editing by hand.
 - `src/pp/has_checks.rs`: seeded from clang tablegen, now extended by hand
   because gcc, clang, and msvc answer differently.
 - Include trees: `sysroot.rs` / `compiler_headers.rs` point at headers
-  installed by `../slate-sysroots`.
+  installed by the `slate-sysroots` workspace package.
 - FileCheck `CHECK` lines: generated per fixture by `tools/update_filecheck.py`
   ([fixture-layout](fixture-layout.md)).

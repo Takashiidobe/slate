@@ -26,7 +26,7 @@ instead (all optional, all overriding a local-build default):
 | `SLATE_FILECHECK`                   | sibling of `SLATE_CLANG`, then `FileCheck`   | match profile-specific generated-Rust assertions in C fixtures                                    |
 | `SLATE_TARGET` / `SLATE_CLANG_ARGS` | N/A                                          | shared target triple / extra clang flags                                                          |
 | `SLATE_MACRO_DUMP_PLUGIN`           | `<$SLATE_CLANG build>/lib/SlateMacroDump.so` | the macro dump plugin binary (see below)                                                          |
-| `SLATE_SYSROOTS`                    | `~/.local/share/slate/sysroots`              | slate-parser target headers, read from `<dir>/<triple>` (installed by `../slate-sysroots`)        |
+| `SLATE_SYSROOTS`                    | `~/.local/share/slate/sysroots`              | slate-parser target headers, read from `<dir>/<triple>` (installed with `cargo run -p slate-sysroots -- install <triple>`) |
 
 ## Build the macro dump plugin
 

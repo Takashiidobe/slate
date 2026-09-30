@@ -72,7 +72,7 @@ default to a local build and are overridable via environment variables:
 | `SLATE_RUSTFMT`                     | `rustfmt`                                   | format generated Rust before writing it to files                                                                                     |
 | `SLATE_TARGET` / `SLATE_CLANG_ARGS` | —                                           | shared target triple / extra clang flags                                                                                             |
 | `SLATE_MACRO_DUMP_PLUGIN`           | `<SLATE_CLANG build>/lib/SlateMacroDump.so` | macro invocations plus include/function provenance, keyed by physical source offset                                                  |
-| `SLATE_SYSROOTS`                    | `~/.local/share/slate/sysroots`             | slate-parser reads target headers from `<dir>/<triple>`; install targets with `cargo run -- install <triple>` in `../slate-sysroots` |
+| `SLATE_SYSROOTS`                    | `~/.local/share/slate/sysroots`             | slate-parser reads target headers from `<dir>/<triple>`; install targets with `cargo run -p slate-sysroots -- install <triple>` |
 
 `src/frontend/c_ast.rs` always loads `SLATE_CLANG` with `-fplugin=$SLATE_MACRO_DUMP_PLUGIN`, so
 that plugin must be built against the same clang tree `SLATE_CLANG` points at

@@ -2,38 +2,40 @@
 
 This crate installs target sysroots for Slate. The library owns target selection,
 installation, and path lookup; the binary is a small command-line facade.
+Run the following commands from the workspace root; the package selector
+chooses this binary among the workspace's packages.
 
 Currently supported:
 
 ```sh
-cargo run -- install x86_64-pc-windows-msvc
-cargo run -- remove x86_64-pc-windows-msvc
-cargo run -- install i686-pc-windows-msvc
-cargo run -- path x86_64-pc-windows-msvc
-cargo run -- doctor x86_64-pc-windows-msvc
-cargo run -- install aarch64-pc-windows-msvc
-cargo run -- doctor aarch64-pc-windows-msvc
-cargo run -- install thumbv7a-pc-windows-msvc
-cargo run -- install x86_64-unknown-linux-gnu
-cargo run -- install aarch64-unknown-linux-gnu
-cargo run -- install i686-unknown-linux-gnu
-cargo run -- install armv7-unknown-linux-gnueabi
-cargo run -- install armv7-unknown-linux-gnueabihf
-cargo run -- install x86_64-unknown-linux-musl
-cargo run -- install aarch64-unknown-linux-musl
-cargo run -- install x86_64-unknown-freebsd
-cargo run -- install aarch64-unknown-freebsd
-cargo run -- install x86_64-linux-android
-cargo run -- install aarch64-linux-android
-cargo run -- install x86_64-apple-darwin --sdk /path/to/MacOSX.sdk
-cargo run -- install aarch64-apple-darwin --sdk /path/to/MacOSX.sdk
-cargo run -- install compiler-headers clang
-cargo run -- install compiler-headers apple-clang
-cargo run -- install compiler-headers gcc
-cargo run -- install compiler-headers msvc
-cargo run -- doctor compiler-headers clang
-cargo run -- path compiler-headers gcc
-cargo run -- path compiler-headers msvc x86_64-pc-windows-msvc
+cargo run -p slate-sysroots -- install x86_64-pc-windows-msvc
+cargo run -p slate-sysroots -- remove x86_64-pc-windows-msvc
+cargo run -p slate-sysroots -- install i686-pc-windows-msvc
+cargo run -p slate-sysroots -- path x86_64-pc-windows-msvc
+cargo run -p slate-sysroots -- doctor x86_64-pc-windows-msvc
+cargo run -p slate-sysroots -- install aarch64-pc-windows-msvc
+cargo run -p slate-sysroots -- doctor aarch64-pc-windows-msvc
+cargo run -p slate-sysroots -- install thumbv7a-pc-windows-msvc
+cargo run -p slate-sysroots -- install x86_64-unknown-linux-gnu
+cargo run -p slate-sysroots -- install aarch64-unknown-linux-gnu
+cargo run -p slate-sysroots -- install i686-unknown-linux-gnu
+cargo run -p slate-sysroots -- install armv7-unknown-linux-gnueabi
+cargo run -p slate-sysroots -- install armv7-unknown-linux-gnueabihf
+cargo run -p slate-sysroots -- install x86_64-unknown-linux-musl
+cargo run -p slate-sysroots -- install aarch64-unknown-linux-musl
+cargo run -p slate-sysroots -- install x86_64-unknown-freebsd
+cargo run -p slate-sysroots -- install aarch64-unknown-freebsd
+cargo run -p slate-sysroots -- install x86_64-linux-android
+cargo run -p slate-sysroots -- install aarch64-linux-android
+cargo run -p slate-sysroots -- install x86_64-apple-darwin --sdk /path/to/MacOSX.sdk
+cargo run -p slate-sysroots -- install aarch64-apple-darwin --sdk /path/to/MacOSX.sdk
+cargo run -p slate-sysroots -- install compiler-headers clang
+cargo run -p slate-sysroots -- install compiler-headers apple-clang
+cargo run -p slate-sysroots -- install compiler-headers gcc
+cargo run -p slate-sysroots -- install compiler-headers msvc
+cargo run -p slate-sysroots -- doctor compiler-headers clang
+cargo run -p slate-sysroots -- path compiler-headers gcc
+cargo run -p slate-sysroots -- path compiler-headers msvc x86_64-pc-windows-msvc
 ```
 
 The Windows installer uses the `xwin` library to acquire the Microsoft CRT and
@@ -126,9 +128,9 @@ automatic SDK discovery is unavailable and points to the explicit SDK path.
 Clang's framework search path is `SDK/System/Library/Frameworks` and must be
 passed with `-F` when translating framework includes.
 
-When this crate is integrated into the Slate binary, Slate should resolve the
-active macOS SDK automatically on macOS and pass that path to its translator
-and linker. Mac users should not need to export `SDKROOT` before running Slate.
+Slate and this crate now share a Cargo workspace. Automatic handoff of the
+active macOS SDK to Slate's translator and linker remains future integration
+work; Mac users currently provide the SDK with `OSX_CROSS_SDK` or `--sdk`.
 
 `doctor` checks the expected header and library paths for each target. It
 prints `✓` or `✗` for each group and exits unsuccessfully when any group is
