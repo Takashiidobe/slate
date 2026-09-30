@@ -1,11 +1,12 @@
 use super::builtins::{ClangBuiltin, CustomBuiltin};
 use super::ctype::convert::CastKind;
 use super::ctype::{CTypeKind, CTypes, QualType};
+use super::initializer::InitializerSource;
 use super::numeric::{Context, ResolveError};
 use super::operand::{Lvalue, Operand};
 use super::typer::{Choice, Lanes, Slot, Step, StepKind};
 use super::types::TypeResolver;
-use crate::ast::{Expr, ExprKind, Initializer, NodeId, Span, StmtKind};
+use crate::ast::{Expr, ExprKind, NodeId, Span, StmtKind};
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
 use crate::diagnostics::Warning;
 use crate::ir::*;
@@ -1197,8 +1198,9 @@ impl Lowerer {
                 let _declared = self.types.object_type(resolved, "void compound literal")?;
                 let anchor = e.derive(());
                 let value = self.initializer_value(
+                    e.id,
                     resolved,
-                    &Initializer::List(initializer.clone()),
+                    InitializerSource::CompoundLiteral(initializer),
                     &anchor,
                 )?;
                 let value = self.captured(e, extents, value);

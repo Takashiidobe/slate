@@ -1,6 +1,7 @@
 use super::attributes::{Subject, Use};
 use super::ctype::QualType;
 use super::expression::Lowerer;
+use super::initializer::InitializerSource;
 use super::numeric::{Context, ResolveError};
 use super::operand::Operand;
 use super::pragmas::{FloatingPragmas, PragmaPlacement};
@@ -1190,7 +1191,12 @@ impl Lowerer {
                     if storage != StorageDuration::Automatic {
                         self.context.region.floating = FloatingSemantics::default();
                     }
-                    let value = self.initializer_value(resolved, initializer, &anchor);
+                    let value = self.initializer_value(
+                        declarator.id,
+                        resolved,
+                        InitializerSource::Initializer(initializer),
+                        &anchor,
+                    );
                     self.context.region = region;
                     let mut value = value?;
                     if self.types.compiler_flavor() == CompilerFlavor::Msvc

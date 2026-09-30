@@ -52,9 +52,10 @@ zero_fill }` (`sema/initializer.rs`), printed
   partially overlapping range is split so members stay disjoint. Only the
   scalars an initializer reaches are overwritten: `{[2 ... 4] = .., [2] =
   2}` keeps the rest of `[2]`, while a braced `[2] = {2}` replaces it whole.
-- The checker runs the same walk over types
-  (`TypeResolver::check_initializer`); lowering's `convert_element` fails
-  `Internal` if its target disagrees, so change both together.
+- The checker walks once and records a plan of path writes
+  ([sema-passes](../sema-passes.md#checker-owned-rules)); lowering executes
+  it. An element range with nested designators stays one `Range` member
+  unless a later write splits it.
 - Excess items are dropped with a warning, as gcc and clang do. An unbraced
   item aimed at a zero-length aggregate is consumed as its whole initializer
   (`int a[][0] = {1, 2}` is `array<array<i32, 0>, 2>`). gcc's quirks for

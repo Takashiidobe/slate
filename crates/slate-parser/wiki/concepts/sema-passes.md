@@ -139,8 +139,7 @@ Rules:
   conversion; `lvalue_conversion` of the place a `read` loads; literal,
   character-constant, `__builtin_types_compatible_p` and
   `__builtin_classify_type` values, decoded from the facts. Declaration
-  entities are merged by both passes (`merge_redeclaration`), and
-  initializers walk twice (slate-parser-ygrj.4).
+  entities are merged by both passes (`merge_redeclaration`).
 - A typed `sizeof` operand is not lowered unless it is a VLA.
 - Null pointer constants: `integer_constant_zero`, an ICE by 6.6p6
   operand rules that folds to zero (`(void *)(1 - 1)` yes; `(void *)(0,
@@ -188,16 +187,21 @@ The checker rejects; lowering's copies are `Internal`.
   from an incomplete enum are rejected by `classify_conversion`.
 - **Conversions**: recorded per operand by `record_conversion`
   ([c-type-layer](c-type-layer.md#conversions)).
-- **Initializers**: `check_initializer` / `check_braced`
-  (`initializer.rs`) mirror lowering's `braced` / `fill` / `init_into` /
-  `item_entry` / `designate` / `resume` step for step (brace elision
+- **Initializers**: one walk, in the checker. `record_initializer`
+  (`initializer.rs`) walks the current object over types (brace elision
   ignores an already-claimed designator; a union is full once any member
-  is written). Records each element's conversion and target in
-  `element_targets`; `convert_element` fails `Internal` if its target is
-  not compatible (compatibility, because of provisional extents).
-  `inferred_array_length` runs the same walk unchecked. The mirror is
-  being replaced by one checker walk that emits a plan lowering executes
-  (slate-parser-ygrj.4); don't extend both walks.
+  is written), records each element's conversion, and stores an
+  `InitializerPlan` in `initializer_plans`, keyed by declarator or
+  compound-literal id. The plan is an ordered list of writes: a path of
+  `(AggregateTarget, QualType)` steps and an element, string, complex,
+  braced (replace the subobject) or open (create it if absent) value.
+  Designated ranges keep their `Range` step; the continuation after a
+  designator uses the range's last element. Lowering's `Builder` only
+  executes the writes, merging overlaps (`partitions`, `write`). A plan
+  whose root has unbound extents is planned again by lowering with the
+  bound type. A failed plan is stored as its error; lowering returns it
+  `checked`. `inferred_array_length` runs the same walk unchecked and
+  reads its reach.
 - **Expressions**: each rejection is reported once, at the innermost
   expression (`rejected_at`). The typer owns lvalue / const targets, `&`
   of bit-field / register / vector element / rvalue, members, `->`,

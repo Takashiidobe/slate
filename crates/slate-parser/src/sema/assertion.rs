@@ -16,7 +16,7 @@ use super::ctype::convert::ConversionContext;
 use super::ctype::{Extent, QualType};
 use super::entity::ObjectRequest;
 use super::function::{builtin_deallocator, deallocator_argument};
-use super::initializer::ElementError;
+use super::initializer::{ElementError, InitializerSource};
 use super::module::{applies, function_symbol, linkage as declared_linkage, symbol_attributes};
 use super::numeric::{Context, ResolveError};
 use super::pragmas::{FloatingPragmas, FloatingRegion, PragmaPlacement};
@@ -424,7 +424,11 @@ impl Checker<'_> {
                 }
                 self.initializer(initializer);
                 if let Some(to) = initialized {
-                    let result = self.types.check_initializer(to, initializer);
+                    let result = self.types.record_initializer(
+                        declarator.id,
+                        to,
+                        InitializerSource::Initializer(initializer),
+                    );
                     self.element(declarator, result);
                 }
             }
@@ -1182,7 +1186,11 @@ impl Checker<'_> {
                 if let Ok(literal) = self.types.typed(expr)
                     && !self.variable_array(literal.c)
                 {
-                    let result = self.types.check_braced(literal.c, initializer);
+                    let result = self.types.record_initializer(
+                        expr.id,
+                        literal.c,
+                        InitializerSource::CompoundLiteral(initializer),
+                    );
                     self.element(expr, result);
                 }
             }

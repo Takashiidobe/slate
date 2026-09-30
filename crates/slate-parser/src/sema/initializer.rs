@@ -1,10 +1,12 @@
+use std::collections::HashMap;
+use std::rc::Rc;
+
 use super::ctype::convert::ConversionContext;
 use super::ctype::{CTypeKind, Extent, QualType};
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
-use super::operand::Operand;
 use super::types::TypeResolver;
-use crate::ast::{Designator, Expr, ExprKind, Initializer, InitializerItem, Span};
+use crate::ast::{Designator, Expr, ExprKind, Initializer, InitializerItem, NodeId, Span};
 use crate::const_expr::{Encoding, StringLiteral};
 use crate::ir::*;
 
@@ -28,20 +30,54 @@ enum Entry {
 
 #[derive(Clone)]
 struct Builder {
-    c: QualType,
     ty: Type,
     shape: Shape,
     members: Vec<(AggregateTarget, Entry)>,
-    next: u64,
-}
-
-struct Cursor<'a> {
-    items: &'a [InitializerItem],
-    index: usize,
-    pending: Option<Operand>,
 }
 
 type Step = (AggregateTarget, Type);
+
+type Path = Vec<(AggregateTarget, QualType)>;
+
+pub(super) type RecordedPlan = Result<Rc<InitializerPlan>, ResolveError>;
+
+pub(super) struct InitializerPlan {
+    c: QualType,
+    writes: Vec<Write>,
+}
+
+#[derive(Clone, Copy)]
+pub(super) enum InitializerSource<'e> {
+    Initializer(&'e Initializer),
+    CompoundLiteral(&'e [InitializerItem]),
+}
+
+struct Write {
+    path: Path,
+    value: Planned,
+}
+
+enum Planned {
+    Element { expr: NodeId, to: QualType },
+    CodeUnits { expr: NodeId, c: QualType },
+    Braced(QualType),
+    Open(QualType),
+    Complex { c: QualType, parts: [NodeId; 2] },
+}
+
+struct Planner {
+    writes: Vec<Write>,
+    check: bool,
+}
+
+impl Planner {
+    fn write(&mut self, path: &[(AggregateTarget, QualType)], value: Planned) {
+        self.writes.push(Write {
+            path: path.to_vec(),
+            value,
+        });
+    }
+}
 
 fn initializable(field: &Field) -> bool {
     field.name.is_some() || field.bit_width.is_none()
@@ -107,18 +143,6 @@ fn shape_next_target(shape: &Shape, next: u64) -> Result<Step, ResolveError> {
 }
 
 impl Builder {
-    fn full(&self) -> bool {
-        shape_full(&self.shape, self.next, self.members.len())
-    }
-
-    fn next_target(&self) -> Result<Step, ResolveError> {
-        shape_next_target(&self.shape, self.next).map_err(ResolveError::checked)
-    }
-
-    fn advance(&mut self, target: AggregateTarget) {
-        self.next = bounds(target).1 + 1;
-    }
-
     fn split_out(&mut self, start: u64, end: u64) {
         let members = std::mem::take(&mut self.members);
         for (target, entry) in members {
@@ -152,11 +176,11 @@ impl Builder {
         start <= existing_start && existing_end <= end
     }
 
-    fn write(&mut self, target: AggregateTarget, entry: Entry) -> Result<(), ResolveError> {
+    fn write(&mut self, target: AggregateTarget, entry: Entry) {
         if matches!(self.shape, Shape::Union(_)) {
             self.members.clear();
             self.members.push((target, entry));
-            return Ok(());
+            return;
         }
         let (start, end) = bounds(target);
         self.split_out(start, end);
@@ -165,14 +189,12 @@ impl Builder {
             !(start <= existing_start && existing_end <= end)
         });
         self.members.push((target, entry));
-        Ok(())
     }
 
     fn partitions(
         &mut self,
         target: AggregateTarget,
         fresh: &Builder,
-        split_end: bool,
     ) -> Result<Vec<usize>, ResolveError> {
         if matches!(self.shape, Shape::Union(_)) {
             if self.members.iter().any(|(existing, _)| *existing != target) {
@@ -208,9 +230,6 @@ impl Builder {
                 self.members
                     .push((cover(gap_start, gap_end), Entry::Sub(fresh.clone())));
             }
-            if split_end {
-                self.split_out(end, end);
-            }
         }
         let (start, end) = bounds(target);
         let mut positions: Vec<usize> = (0..self.members.len())
@@ -225,6 +244,33 @@ impl Builder {
             }
         }
         Ok(positions)
+    }
+
+    fn place(
+        &mut self,
+        path: &[(AggregateTarget, QualType)],
+        entry: &Entry,
+        open: bool,
+        fresh: &impl Fn(QualType) -> Result<Builder, ResolveError>,
+    ) -> Result<(), ResolveError> {
+        let [(target, c), rest @ ..] = path else {
+            return Err(ResolveError::Internal("empty initializer path"));
+        };
+        if rest.is_empty() && !open {
+            self.write(*target, entry.clone());
+            return Ok(());
+        }
+        if rest.is_empty() {
+            self.partitions(*target, &fresh(*c)?)?;
+            return Ok(());
+        }
+        for position in self.partitions(*target, &fresh(*c)?)? {
+            let Entry::Sub(sub) = &mut self.members[position].1 else {
+                return Err(ResolveError::Internal("initializer path through a leaf"));
+            };
+            sub.place(rest, entry, open, fresh)?;
+        }
+        Ok(())
     }
 
     fn finish(mut self, anchor: &Span<()>) -> Result<Value, ResolveError> {
@@ -294,16 +340,6 @@ impl Builder {
     }
 }
 
-impl<'a> Cursor<'a> {
-    fn new(items: &'a [InitializerItem]) -> Self {
-        Self {
-            items,
-            index: 0,
-            pending: None,
-        }
-    }
-}
-
 pub(super) struct ElementError {
     pub(super) at: Option<Span<()>>,
     pub(super) error: ResolveError,
@@ -317,6 +353,7 @@ impl From<ResolveError> for ElementError {
 
 struct Walk {
     c: QualType,
+    path: Path,
     shape: Shape,
     next: u64,
     reach: u64,
@@ -332,6 +369,12 @@ impl Walk {
         self.next = bounds(target).1 + 1;
         self.reach = self.reach.max(self.next);
         self.written = true;
+    }
+
+    fn child(&self, target: AggregateTarget, c: QualType) -> Path {
+        let mut path = self.path.clone();
+        path.push((target, c));
+        path
     }
 }
 
@@ -350,9 +393,10 @@ impl TypeResolver {
         )
     }
 
-    fn walk(&self, c: QualType) -> Result<Walk, ResolveError> {
+    fn walk(&self, c: QualType, path: Path) -> Result<Walk, ResolveError> {
         Ok(Walk {
             c,
+            path,
             shape: self.shape(&self.ir_type(c))?,
             next: 0,
             reach: 0,
@@ -534,38 +578,71 @@ impl TypeResolver {
             element,
             extent: Extent::Incomplete,
         });
-        let mut walk = self.walk(c)?;
-        let mut index = 0;
-        self.walk_fill(&mut walk, items, &mut index, true, false, false)
+        let mut planner = Planner {
+            writes: Vec::new(),
+            check: false,
+        };
+        let mut walk = self.walk(c, Vec::new())?;
+        self.walk_fill(&mut planner, &mut walk, items, &mut 0, true, false)
             .map_err(|error| error.error)?;
         Ok(walk.reach)
     }
 
-    // lowering's current-object walk over types alone, recording each element's conversion
-    pub(super) fn check_initializer(
+    pub(super) fn record_initializer(
         &mut self,
+        key: NodeId,
+        c: QualType,
+        source: InitializerSource<'_>,
+    ) -> Result<(), ElementError> {
+        let mut planner = Planner {
+            writes: Vec::new(),
+            check: true,
+        };
+        let result = match source {
+            InitializerSource::Initializer(initializer) => {
+                self.plan_initializer(&mut planner, &[], c, initializer)
+            }
+            InitializerSource::CompoundLiteral(items) => {
+                self.plan_braced(&mut planner, &[], c, items)
+            }
+        };
+        let plan = match &result {
+            Ok(()) => Ok(Rc::new(InitializerPlan {
+                c,
+                writes: planner.writes,
+            })),
+            Err(error) => Err(error.error.clone()),
+        };
+        self.initializer_plans.insert(key, plan);
+        result
+    }
+
+    fn plan_initializer(
+        &mut self,
+        planner: &mut Planner,
+        path: &[(AggregateTarget, QualType)],
         c: QualType,
         initializer: &Initializer,
     ) -> Result<(), ElementError> {
         match initializer {
-            Initializer::List(items) => self.check_braced(c, items),
+            Initializer::List(items) => self.plan_braced(planner, path, c, items),
             Initializer::Expr(expr) => {
                 if let Some((target, items)) = self.array_compound_literal(c, expr) {
-                    return self.check_braced(target, items);
+                    return self.plan_braced(planner, path, target, items);
                 }
                 let ty = self.ir_type(c);
                 if matches!(self.shape(&ty)?, Shape::Array { .. })
                     && self.string_array(expr, &ty)?.is_some()
                 {
+                    planner.write(path, Planned::CodeUnits { expr: expr.id, c });
                     return Ok(());
                 }
-                self.record_element(expr, c)
+                self.plan_element(planner, path, expr, c)
             }
         }
     }
 
-    // gcc and clang initialize an array object from an array compound literal as from its braces
-    pub(super) fn array_compound_literal<'e>(
+    fn array_compound_literal<'e>(
         &mut self,
         c: QualType,
         e: &'e Expr,
@@ -588,8 +665,10 @@ impl TypeResolver {
         Some((target, initializer))
     }
 
-    pub(super) fn check_braced(
+    fn plan_braced(
         &mut self,
+        planner: &mut Planner,
+        path: &[(AggregateTarget, QualType)],
         c: QualType,
         items: &[InitializerItem],
     ) -> Result<(), ElementError> {
@@ -600,14 +679,21 @@ impl TypeResolver {
             && imaginary.designators.is_empty()
         {
             let component = self.ctypes.arithmetic_component(c);
-            self.check_initializer(component, &real.value)?;
-            return self.check_initializer(component, &imaginary.value);
+            let parts = [
+                self.complex_part(component, &real.value)?,
+                self.complex_part(component, &imaginary.value)?,
+            ];
+            planner.write(path, Planned::Complex { c, parts });
+            return Ok(());
         }
         if matches!(shape, Shape::Scalar) {
             return match items {
-                [] => Ok(()),
+                [] => {
+                    planner.write(path, Planned::Braced(c));
+                    Ok(())
+                }
                 [first, ..] if first.designators.is_empty() => {
-                    self.check_initializer(c, &first.value)
+                    self.plan_initializer(planner, path, c, &first.value)
                 }
                 _ => {
                     Err(ResolveError::Rejected("designator in initializer for scalar type").into())
@@ -626,11 +712,42 @@ impl TypeResolver {
             && designators.is_empty()
             && self.string_array(expr, &ty)?.is_some()
         {
+            planner.write(path, Planned::CodeUnits { expr: expr.id, c });
             return Ok(());
         }
-        let mut walk = self.walk(c)?;
-        let mut index = 0;
-        self.walk_fill(&mut walk, items, &mut index, true, false, true)
+        planner.write(path, Planned::Braced(c));
+        let mut walk = self.walk(c, path.to_vec())?;
+        self.walk_fill(planner, &mut walk, items, &mut 0, true, false)
+    }
+
+    fn complex_part(&mut self, c: QualType, value: &Initializer) -> Result<NodeId, ElementError> {
+        match value {
+            Initializer::Expr(expr) => {
+                self.record_element(expr, c)?;
+                Ok(expr.id)
+            }
+            Initializer::List(items) => match items.as_slice() {
+                [first, ..] if first.designators.is_empty() => self.complex_part(c, &first.value),
+                [] => Err(ResolveError::Unimplemented("empty braces for complex component").into()),
+                _ => {
+                    Err(ResolveError::Rejected("designator in initializer for scalar type").into())
+                }
+            },
+        }
+    }
+
+    fn plan_element(
+        &mut self,
+        planner: &mut Planner,
+        path: &[(AggregateTarget, QualType)],
+        expr: &Expr,
+        to: QualType,
+    ) -> Result<(), ElementError> {
+        if planner.check {
+            self.record_element(expr, to)?;
+        }
+        planner.write(path, Planned::Element { expr: expr.id, to });
+        Ok(())
     }
 
     fn record_element(&mut self, expr: &Expr, to: QualType) -> Result<(), ElementError> {
@@ -641,19 +758,17 @@ impl TypeResolver {
         let from = self.operand_type(expr).map_err(at)?;
         self.record_conversion(expr, from, to, ConversionContext::Assign)
             .map_err(at)?;
-        let to = self.ctypes.unqualified(to);
-        self.element_targets.insert(expr.id, to);
         Ok(())
     }
 
     fn walk_fill(
         &mut self,
+        planner: &mut Planner,
         walk: &mut Walk,
         items: &[InitializerItem],
         index: &mut usize,
         braced: bool,
         pending: bool,
-        check: bool,
     ) -> Result<(), ElementError> {
         let mut pending = pending;
         while *index < items.len() {
@@ -664,7 +779,8 @@ impl TypeResolver {
                 }
                 let ty = self.ir_type(walk.c);
                 let steps = self.designator_steps(&ty, designators)?;
-                self.walk_place(walk, &steps, items, index, check)?;
+                let designated = walk.path.clone();
+                self.walk_place(planner, walk, designated, &steps, items, index)?;
                 continue;
             }
             if walk.full() {
@@ -677,7 +793,8 @@ impl TypeResolver {
             }
             let (target, _) = shape_next_target(&walk.shape, walk.next)?;
             let c = self.subobject_type(walk.c, target)?;
-            *index = self.walk_item(c, items, *index, check)?;
+            let path = walk.child(target, c);
+            *index = self.walk_item(planner, &path, c, items, *index)?;
             pending = false;
             walk.advance(target);
         }
@@ -686,23 +803,25 @@ impl TypeResolver {
 
     fn walk_place(
         &mut self,
+        planner: &mut Planner,
         walk: &mut Walk,
+        mut designated: Path,
         steps: &[Step],
         items: &[InitializerItem],
         index: &mut usize,
-        check: bool,
     ) -> Result<(), ElementError> {
         let (target, _) = steps
             .first()
             .cloned()
             .ok_or(ResolveError::Internal("empty designator path"))?;
         let c = self.subobject_type(walk.c, target)?;
+        designated.push((target, c));
         if steps.len() == 1 {
-            *index = self.walk_item(c, items, *index, check)?;
+            *index = self.walk_item(planner, &designated, c, items, *index)?;
         } else {
-            let mut sub = self.walk(c)?;
-            self.walk_place(&mut sub, &steps[1..], items, index, check)?;
-            self.walk_fill(&mut sub, items, index, false, false, check)?;
+            let mut sub = self.walk(c, walk.child(last_position(target), c))?;
+            self.walk_place(planner, &mut sub, designated, &steps[1..], items, index)?;
+            self.walk_fill(planner, &mut sub, items, index, false, false)?;
         }
         walk.advance(target);
         Ok(())
@@ -710,15 +829,16 @@ impl TypeResolver {
 
     fn walk_item(
         &mut self,
+        planner: &mut Planner,
+        path: &[(AggregateTarget, QualType)],
         c: QualType,
         items: &[InitializerItem],
         index: usize,
-        check: bool,
     ) -> Result<usize, ElementError> {
         let expr = match &items[index].value {
             Initializer::List(inner) => {
-                if check {
-                    self.check_braced(c, inner)?;
+                if planner.check {
+                    self.plan_braced(planner, path, c, inner)?;
                 }
                 return Ok(index + 1);
             }
@@ -727,11 +847,12 @@ impl TypeResolver {
         let ty = self.ir_type(c);
         let shape = self.shape(&ty)?;
         if matches!(shape, Shape::Array { .. }) && self.string_array(expr, &ty)?.is_some() {
+            planner.write(path, Planned::CodeUnits { expr: expr.id, c });
             return Ok(index + 1);
         }
         let value = match self.operand_type(expr) {
             Ok(value) => Some(value),
-            Err(error) if check => {
+            Err(error) if planner.check => {
                 return Err(ElementError {
                     at: Some(expr.derive(())),
                     error,
@@ -749,16 +870,18 @@ impl TypeResolver {
             }
         };
         if whole {
-            if check {
-                self.record_element(expr, c)?;
-            }
+            self.plan_element(planner, path, expr, c)?;
             return Ok(index + 1);
         }
-        let mut sub = self.walk(c)?;
-        let reached = if sub.full() { index + 1 } else { index };
+        let mut sub = self.walk(c, path.to_vec())?;
+        let reached = if sub.full() {
+            planner.write(path, Planned::Open(c));
+            index + 1
+        } else {
+            index
+        };
         let mut next = index;
-        // the elided walk ignores the designator an outer walk already applied to this item
-        self.walk_fill(&mut sub, items, &mut next, false, true, check)?;
+        self.walk_fill(planner, &mut sub, items, &mut next, false, true)?;
         Ok(reached.max(next))
     }
 
@@ -807,314 +930,161 @@ impl TypeResolver {
     }
 }
 
+fn initializer_exprs<'e>(source: InitializerSource<'e>) -> HashMap<NodeId, &'e Expr> {
+    fn collect<'e>(value: &'e Initializer, exprs: &mut HashMap<NodeId, &'e Expr>) {
+        match value {
+            Initializer::List(items) => {
+                for item in items {
+                    collect(&item.value, exprs);
+                }
+            }
+            Initializer::Expr(expr) => {
+                exprs.insert(expr.id, expr);
+                if let ExprKind::CompoundLiteral { initializer, .. } = &expr.value {
+                    for item in initializer {
+                        collect(&item.value, exprs);
+                    }
+                }
+            }
+        }
+    }
+    let mut exprs = HashMap::new();
+    match source {
+        InitializerSource::Initializer(initializer) => collect(initializer, &mut exprs),
+        InitializerSource::CompoundLiteral(items) => {
+            for item in items {
+                collect(&item.value, &mut exprs);
+            }
+        }
+    }
+    exprs
+}
+
 impl Lowerer {
     pub(super) fn initializer_value(
         &mut self,
+        key: NodeId,
         c: QualType,
-        initializer: &Initializer,
+        source: InitializerSource<'_>,
         anchor: &Span<()>,
     ) -> Result<Value, ResolveError> {
-        match self.init_initializer(c, initializer)? {
-            Entry::Leaf(value) => Ok(value),
-            Entry::Sub(builder) => builder.finish(anchor),
+        let plan = self.plan(key, c, source)?;
+        let exprs = initializer_exprs(source);
+        let mut root: Option<Entry> = None;
+        for write in &plan.writes {
+            let entry = self.planned_entry(&write.value, &exprs)?;
+            match (&mut root, write.path.as_slice()) {
+                (_, []) => root = Some(entry),
+                (Some(Entry::Sub(builder)), path) => {
+                    let open = matches!(write.value, Planned::Open(_));
+                    builder.place(path, &entry, open, &|c| self.fresh_builder(c))?
+                }
+                _ => {
+                    return Err(ResolveError::Internal(
+                        "initializer path outside the object",
+                    ));
+                }
+            }
+        }
+        match root {
+            Some(Entry::Leaf(value)) => Ok(value),
+            Some(Entry::Sub(builder)) => builder.finish(anchor),
+            None => Err(ResolveError::Internal("empty initializer plan")),
         }
     }
 
-    fn shape(&self, ty: &Type) -> Result<Shape, ResolveError> {
-        self.types.shape(ty).map_err(ResolveError::checked)
-    }
-
-    fn builder(&self, c: QualType) -> Result<Builder, ResolveError> {
-        let ty = self.types.ir_type(c);
-        match self.shape(&ty)? {
-            Shape::Scalar => Err(ResolveError::Internal(
-                "braced initializer or designator for scalar",
-            )),
-            shape => Ok(Builder {
-                c,
-                ty: ty.clone(),
-                shape,
-                members: Vec::new(),
-                next: 0,
-            }),
-        }
-    }
-
-    fn init_initializer(
+    // the checker plans variably modified types with unbound extents, so lowering plans them again
+    fn plan(
         &mut self,
+        key: NodeId,
         c: QualType,
-        value: &Initializer,
+        source: InitializerSource<'_>,
+    ) -> Result<Rc<InitializerPlan>, ResolveError> {
+        let recorded = self
+            .types
+            .initializer_plans
+            .get(&key)
+            .ok_or(ResolveError::Internal(
+                "initializer plan not recorded by the checker",
+            ))?
+            .clone()
+            .map_err(ResolveError::checked)?;
+        if !self.types.ctypes.has_unbound_extent(recorded.c) {
+            return Ok(recorded);
+        }
+        self.types
+            .record_initializer(key, c, source)
+            .map_err(|error| error.error.checked())?;
+        self.types
+            .initializer_plans
+            .get(&key)
+            .cloned()
+            .ok_or(ResolveError::Internal("initializer plan not recorded"))?
+            .map_err(ResolveError::checked)
+    }
+
+    fn fresh_builder(&self, c: QualType) -> Result<Builder, ResolveError> {
+        let ty = self.types.ir_type(c);
+        Ok(Builder {
+            shape: self.types.shape(&ty).map_err(ResolveError::checked)?,
+            ty,
+            members: Vec::new(),
+        })
+    }
+
+    fn planned_entry(
+        &mut self,
+        planned: &Planned,
+        exprs: &HashMap<NodeId, &Expr>,
     ) -> Result<Entry, ResolveError> {
-        match value {
-            Initializer::List(items) => self.braced(c, items),
-            Initializer::Expr(expr) => {
-                if let Some((target, items)) = self.types.array_compound_literal(c, expr) {
-                    return self.braced(target, items);
-                }
-                let ty = self.types.ir_type(c);
-                if matches!(self.shape(&ty)?, Shape::Array { .. })
-                    && let Some(value) = self.string_array_initializer(expr, &ty)?
-                {
-                    return Ok(Entry::Leaf(value));
-                }
-                let value = self.expr(expr)?;
-                let value = self.convert_element(expr, value, c)?;
-                Ok(Entry::Leaf(value.value))
-            }
-        }
-    }
-
-    fn braced(&mut self, c: QualType, items: &[InitializerItem]) -> Result<Entry, ResolveError> {
-        let ty = &self.types.ir_type(c);
-        let shape = self.shape(ty)?;
-        if let (Type::Complex(_component), [real, imaginary]) = (self.types.unaliased(ty), items)
-            && real.designators.is_empty()
-            && imaginary.designators.is_empty()
-        {
-            let component = self.types.ctypes.arithmetic_component(c);
-            let mut members = Vec::new();
-            for (index, item) in [real, imaginary].into_iter().enumerate() {
-                let Entry::Leaf(value) = self.init_initializer(component, &item.value)? else {
-                    return Err(ResolveError::Internal(
-                        "braced initializer for complex component",
-                    ));
-                };
-                members.push(AggregateMember {
-                    target: AggregateTarget::Index(index as u64),
-                    value,
-                });
-            }
-            let node = members[0].value.node.clone();
-            return Ok(Entry::Leaf(Value {
-                ty: ty.clone(),
-                node: node.derive(ValueKind::Aggregate {
-                    members,
-                    zero_fill: false,
-                }),
-            }));
-        }
-        if matches!(shape, Shape::Scalar) {
-            return match items {
-                [] => Ok(Entry::Sub(Builder {
-                    c,
-                    ty: ty.clone(),
-                    shape,
-                    members: Vec::new(),
-                    next: 0,
-                })),
-                [first, ..] if first.designators.is_empty() => {
-                    self.init_initializer(c, &first.value)
-                }
-                _ => Err(ResolveError::Internal(
-                    "designator in initializer for scalar type",
-                )),
-            };
-        }
-        if let (
-            Shape::Array { .. },
-            [
-                InitializerItem {
-                    designators,
-                    value: Initializer::Expr(expr),
-                },
-            ],
-        ) = (&shape, items)
-            && designators.is_empty()
-            && let Some(value) = self.string_array_initializer(expr, ty)?
-        {
-            return Ok(Entry::Leaf(value));
-        }
-        let mut cursor = Cursor::new(items);
-        let mut builder = self.builder(c)?;
-        self.fill(&mut builder, &mut cursor, true)?;
-        Ok(Entry::Sub(builder))
-    }
-
-    fn fill(
-        &mut self,
-        builder: &mut Builder,
-        cursor: &mut Cursor<'_>,
-        braced: bool,
-    ) -> Result<(), ResolveError> {
-        let items = cursor.items;
-        while cursor.index < items.len() {
-            let designators = &items[cursor.index].designators;
-            if !designators.is_empty() && cursor.pending.is_none() {
-                if !braced {
-                    break;
-                }
-                let steps = self
-                    .types
-                    .designator_steps(&builder.ty, designators)
-                    .map_err(ResolveError::checked)?;
-                let start = cursor.index;
-                self.designate(builder, &steps, cursor)?;
-                self.resume(builder, &steps, cursor)?;
-                if cursor.index == start {
-                    return Err(ResolveError::Internal(
-                        "designated initializer consumed nothing",
-                    ));
-                }
-                continue;
-            }
-            if builder.full() {
-                if !braced {
-                    break;
-                }
-                cursor.index += 1;
-                cursor.pending = None;
-                continue;
-            }
-            let (target, _) = builder.next_target()?;
-            self.init_into(builder, target, cursor)?;
-            builder.advance(target);
-        }
-        Ok(())
-    }
-
-    fn init_into(
-        &mut self,
-        builder: &mut Builder,
-        target: AggregateTarget,
-        cursor: &mut Cursor<'_>,
-    ) -> Result<(), ResolveError> {
-        let c = self.types.subobject_type(builder.c, target)?;
-        if let Some(entry) = self.item_entry(c, cursor)? {
-            return builder.write(target, entry);
-        }
-        let pending = cursor.pending.take();
-        let saved = cursor.index;
-        let mut reached = saved;
-        let fresh = self.builder(c)?;
-        if fresh.full() {
-            reached += 1;
-        }
-        for position in builder.partitions(target, &fresh, false)? {
-            cursor.index = saved;
-            cursor.pending = pending.clone();
-            let Entry::Sub(sub) = &mut builder.members[position].1 else {
-                return Err(ResolveError::Unimplemented(
-                    "designator into initialized scalar or copied aggregate",
-                ));
-            };
-            sub.next = 0;
-            self.fill(sub, cursor, false)?;
-            reached = reached.max(cursor.index);
-        }
-        cursor.index = reached;
-        cursor.pending = None;
-        Ok(())
-    }
-
-    fn item_entry(
-        &mut self,
-        c: QualType,
-        cursor: &mut Cursor<'_>,
-    ) -> Result<Option<Entry>, ResolveError> {
-        let items = cursor.items;
-        let expr = match &items[cursor.index].value {
-            Initializer::List(inner) => {
-                cursor.index += 1;
-                return self.braced(c, inner).map(Some);
-            }
-            Initializer::Expr(expr) => expr,
+        let expr = |id: &NodeId| {
+            exprs.get(id).copied().ok_or(ResolveError::Internal(
+                "initializer element outside the initializer",
+            ))
         };
+        Ok(match planned {
+            Planned::Element { expr: id, to } => Entry::Leaf(self.element(expr(id)?, *to)?),
+            Planned::CodeUnits { expr: id, c } => {
+                Entry::Leaf(self.string_array_initializer(expr(id)?, *c)?)
+            }
+            Planned::Braced(c) | Planned::Open(c) => Entry::Sub(self.fresh_builder(*c)?),
+            Planned::Complex { c, parts } => {
+                let component = self.types.ctypes.arithmetic_component(*c);
+                let mut members = Vec::new();
+                for (index, id) in parts.iter().enumerate() {
+                    members.push(AggregateMember {
+                        target: AggregateTarget::Index(index as u64),
+                        value: self.element(expr(id)?, component)?,
+                    });
+                }
+                let node = members[0].value.node.clone();
+                Entry::Leaf(Value {
+                    ty: self.types.ir_type(*c),
+                    node: node.derive(ValueKind::Aggregate {
+                        members,
+                        zero_fill: false,
+                    }),
+                })
+            }
+        })
+    }
+
+    fn element(&mut self, e: &Expr, to: QualType) -> Result<Value, ResolveError> {
+        let value = self.expr(e)?;
+        let to = self.types.ctypes.unqualified(to);
+        Ok(self
+            .convert_recorded(e, value, to, ConversionReason::Assign)?
+            .value)
+    }
+
+    fn string_array_initializer(&mut self, e: &Expr, c: QualType) -> Result<Value, ResolveError> {
         let ty = self.types.ir_type(c);
-        let shape = self.shape(&ty)?;
-        if matches!(shape, Shape::Array { .. })
-            && let Some(value) = self.string_array_initializer(expr, &ty)?
-        {
-            cursor.index += 1;
-            return Ok(Some(Entry::Leaf(value)));
-        }
-        let value = match cursor.pending.take() {
-            Some(value) => value,
-            None => self.expr(expr)?,
-        };
-        let whole = match shape {
-            Shape::Scalar => true,
-            Shape::Struct(_) | Shape::Union(_) => self.types.initializes_whole(value.c, c),
-            Shape::Array { vector, .. } => vector && self.types.initializes_whole(value.c, c),
-        };
-        if whole {
-            cursor.index += 1;
-            let value = self.convert_element(expr, value, c)?;
-            return Ok(Some(Entry::Leaf(value.value)));
-        }
-        cursor.pending = Some(value);
-        Ok(None)
-    }
-
-    fn designate(
-        &mut self,
-        builder: &mut Builder,
-        steps: &[Step],
-        cursor: &mut Cursor<'_>,
-    ) -> Result<(), ResolveError> {
-        let (target, _) = *steps
-            .first()
-            .ok_or(ResolveError::Internal("empty designator path"))?;
-        if steps.len() == 1 {
-            return self.init_into(builder, target, cursor);
-        }
-        let c = self.types.subobject_type(builder.c, target)?;
-        let fresh = self.builder(c)?;
-        let saved = cursor.index;
-        let mut reached = saved;
-        for position in builder.partitions(target, &fresh, true)? {
-            cursor.index = saved;
-            let Entry::Sub(sub) = &mut builder.members[position].1 else {
-                return Err(ResolveError::Unimplemented(
-                    "designator into initialized scalar or copied aggregate",
-                ));
-            };
-            self.designate(sub, &steps[1..], cursor)?;
-            reached = cursor.index;
-        }
-        cursor.index = reached;
-        Ok(())
-    }
-
-    fn resume(
-        &mut self,
-        builder: &mut Builder,
-        steps: &[Step],
-        cursor: &mut Cursor<'_>,
-    ) -> Result<(), ResolveError> {
-        let (target, _) = *steps
-            .first()
-            .ok_or(ResolveError::Internal("empty designator path"))?;
-        if steps.len() > 1 {
-            let last = last_position(target);
-            let c = self.types.subobject_type(builder.c, last)?;
-            let fresh = self.builder(c)?;
-            let positions = builder.partitions(last, &fresh, false)?;
-            let position = *positions
-                .last()
-                .ok_or(ResolveError::Internal("empty designator path"))?;
-            let Entry::Sub(sub) = &mut builder.members[position].1 else {
-                return Err(ResolveError::Unimplemented(
-                    "designator into initialized scalar or copied aggregate",
-                ));
-            };
-            self.resume(sub, &steps[1..], cursor)?;
-            self.fill(sub, cursor, false)?;
-        }
-        builder.advance(target);
-        Ok(())
-    }
-
-    fn string_array_initializer(
-        &mut self,
-        e: &Expr,
-        ty: &Type,
-    ) -> Result<Option<Value>, ResolveError> {
         let Some(literal) = self
             .types
-            .string_array(e, ty)
+            .string_array(e, &ty)
             .map_err(ResolveError::checked)?
         else {
-            return Ok(None);
+            return Err(ResolveError::Internal("string initializer is not a string"));
         };
         let Type::Array { element, length } = ty else {
             return Err(ResolveError::Internal("string initializer for non-array"));
@@ -1124,34 +1094,13 @@ impl Lowerer {
         let length = length.unwrap_or(units.len() as u64);
         units.resize(length as usize, 0);
         let ty = Type::Array {
-            element: element.clone(),
+            element,
             length: Some(length),
         };
-        Ok(Some(self.value(e, ty, ValueKind::CodeUnits(units))))
-    }
-
-    fn convert_element(
-        &mut self,
-        e: &Expr,
-        value: Operand,
-        to: QualType,
-    ) -> Result<Operand, ResolveError> {
-        let to = self.types.ctypes.unqualified(to);
-        if !self
-            .types
-            .element_targets
-            .get(&e.id)
-            .is_some_and(|&checked| self.types.initializes_whole(checked, to))
-        {
-            return Err(ResolveError::Internal(
-                "initializer element target differs from the checker",
-            ));
-        }
-        self.convert_recorded(e, value, to, ConversionReason::Assign)
+        Ok(self.value(e, ty, ValueKind::CodeUnits(units)))
     }
 }
 
-// gcc and clang accept a parenthesized string literal wherever a bare one initializes an array
 fn string_literal(e: &Expr) -> Option<&StringLiteral> {
     match &e.value {
         ExprKind::Paren(inner) => string_literal(inner),
