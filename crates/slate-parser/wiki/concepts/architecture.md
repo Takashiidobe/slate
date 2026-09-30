@@ -30,8 +30,15 @@ argv → Dialect → preprocess → parse → sema: names → check → lower �
   declaration or expression is valid. Put as much logic as possible there.
 - Lowering assumes checked input. A failure there is an `Internal` error,
   which marks a gap in the checker, never a user diagnostic.
-- When a rule exists in both places today, the fix is to move it into the
-  checker or into a rule function both share. Don't grow a second copy.
+- Lowering reads what the checker recorded for a node (result type,
+  operand conversions, initializer layout) and derives no C types or
+  conversions of its own. Shared *emitters* (IR builders) are fine. Shared
+  *typing* functions called from both passes are not: the helper is
+  shared, but each pass's code that picks which helper applies drifts
+  (the enum `?:` bug, slate-parser-ygrj).
+- When a rule exists in both places today, move the decision into the
+  checker, record its result, and have lowering read it. Don't grow a
+  second copy, and don't add a new shared typing helper to paper over one.
 
 ## What goes in the IR
 

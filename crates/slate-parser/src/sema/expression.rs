@@ -1150,9 +1150,7 @@ impl Lowerer {
             && typed.lvalue
             && typed.c != place.c
         {
-            return Err(ResolveError::Internal(
-                "expression typer disagrees with lowering",
-            ));
+            return Err(self.disagreement(e, typed.c, place.c));
         }
         Ok(place)
     }
@@ -1918,14 +1916,23 @@ impl Lowerer {
 
     pub fn expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
         let lowered = self.lower_expr(e).map_err(|error| error.at(e.expansion))?;
-        if let Ok(typed) = self.types.typed(e)
-            && self.types.rvalue_type(typed) != lowered.c
-        {
-            return Err(ResolveError::Internal(
-                "expression typer disagrees with lowering",
-            ));
+        if let Ok(typed) = self.types.typed(e) {
+            let typer = self.types.rvalue_type(typed);
+            if typer != lowered.c {
+                return Err(self.disagreement(e, typer, lowered.c));
+            }
         }
         Ok(lowered)
+    }
+
+    fn disagreement(&self, e: &Expr, typer: QualType, lowering: QualType) -> ResolveError {
+        let spell = |c| self.types.ctypes.spelling(c, &self.types.definitions);
+        ResolveError::TypeDisagreement {
+            kind: e.value.name(),
+            typer: spell(typer),
+            lowering: spell(lowering),
+        }
+        .at(e.expansion)
     }
 
     fn lower_expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {

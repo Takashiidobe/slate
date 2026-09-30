@@ -57,6 +57,7 @@ Defined in `sema/numeric.rs`.
 | `Unimplemented(&str)` | Valid C not modeled yet (LLVM NYI); not a rejection | anywhere |
 | `UnsupportedBuiltin(String)` | Known builtin without lowering; a kind of `Unimplemented` | `expression.rs` |
 | `Internal(&str)` | An invariant the checker should guarantee; always a slate bug | lowering |
+| `TypeDisagreement { kind, typer, lowering }` | Typer and lowering derived different C types for one expression; prints the `ExprKind` name and both spellings. An `Internal` kind; goes away with the cross-check (slate-parser-ygrj.3) | `Lowerer::expr` / `place` |
 | `MissingExpressionBinding(String)` | Identifier without a binding | `expression.rs` |
 | `IntegerLiteral(String)` | Literal with no target type | `numeric.rs`, `operand.rs` |
 | `Names`, `Literal`, `Layout` | Wrapped `names::ResolveError`, `ConstExprError`, `LayoutError` | name resolution, literal decoding, `TargetInfo` |
@@ -124,11 +125,16 @@ Rules:
   Only successes are memoized (an enum body is typed before its
   enumerators exist). Missing rules return `Unimplemented`.
 - `Lowerer::expr` / `place` compare their type with the typer's and fail
-  `Internal` on mismatch. Shared rules are factored, not copied:
-  `binary_types`, `arithmetic_type`, `literal_type`, `derived_signature`,
+  `Internal` on mismatch. The rule helpers are shared (`binary_types`,
+  `arithmetic_type`, `literal_type`, `derived_signature`,
   `builtin_callee`, `chosen_expr`, `real_floating_component`,
   `statement_expression_parts`, `AtomicBuiltin::result`, `swizzle`,
-  `shuffle`, `predefined_name`.
+  `shuffle`, `predefined_name`), but lowering still has its own copy of
+  the logic that picks which helper applies, and the copies drift: the
+  typer converts enum `?:` arms to the underlying type, while lowering's
+  `Conditional` arm skips it for compatible arms. slate-parser-ygrj
+  replaces this with recorded facts that lowering reads, then removes the
+  cross-check. Don't add new lowering-side typing decisions.
 - A typed `sizeof` operand is not lowered unless it is a VLA.
 - Null pointer constants: `integer_constant_zero`, an ICE by 6.6p6
   operand rules that folds to zero (`(void *)(1 - 1)` yes; `(void *)(0,
@@ -183,7 +189,9 @@ The checker rejects; lowering's copies are `Internal`.
   is written). Records each element's conversion and target in
   `element_targets`; `convert_element` fails `Internal` if its target is
   not compatible (compatibility, because of provisional extents).
-  `inferred_array_length` runs the same walk unchecked.
+  `inferred_array_length` runs the same walk unchecked. The mirror is
+  being replaced by one checker walk that emits a plan lowering executes
+  (slate-parser-ygrj.4); don't extend both walks.
 - **Expressions**: each rejection is reported once, at the innermost
   expression (`rejected_at`). The typer owns lvalue / const targets, `&`
   of bit-field / register / vector element / rvalue, members, `->`,

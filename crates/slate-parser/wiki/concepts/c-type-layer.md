@@ -139,8 +139,17 @@ level), `compatible_unqualified`, `composite`.
   the recorded kind and warning; a missing record is `Internal`.
 - Also recorded: braced-initializer elements (initializer walk) and atomic
   value operands (`AtomicBuiltin::operands`). Still classified in lowering
-  (`convert_expr`): usual arithmetic conversions and other builtin arguments
-  (sizes, orders, fetch operands).
+  (`convert_expr`): usual arithmetic conversions (moving to the checker in
+  slate-parser-ygrj.2) and other builtin arguments such as sizes, orders
+  and fetch operands (slate-parser-ygrj.3).
+- Shape limits of the table: `conversions` is `HashMap<NodeId, Conversion>`
+  and `Conversion` is `{ kind, warning }`. It holds one conversion per
+  operand node with no target type; `convert_recorded`'s caller supplies
+  the target and the source `c` from its own derivation. A second record
+  for the same node silently replaces the first. Operand conversions need
+  a target type, several steps per operand (enum → underlying, promotion,
+  usual arithmetic), and one node in two roles (GNU `x ?: y`, compound
+  assignment); the design is in the slate-parser-ygrj.2 notes.
 - `record_conversion` rejects a `Vector` cast between different storage
   sizes.
 - The checker sees VM types with unbound extents (`vla<T, *>`), so a

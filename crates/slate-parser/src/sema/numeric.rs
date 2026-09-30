@@ -26,6 +26,14 @@ pub enum ResolveError {
     Unimplemented(&'static str),
     #[error("internal error: {0}")]
     Internal(&'static str),
+    #[error(
+        "internal error: expression typer disagrees with lowering on {kind}: typer `{typer}`, lowering `{lowering}`"
+    )]
+    TypeDisagreement {
+        kind: &'static str,
+        typer: String,
+        lowering: String,
+    },
     #[error("integer literal `{0}` has no supported target type")]
     IntegerLiteral(String),
     #[error("missing expression binding for `{0}`")]
