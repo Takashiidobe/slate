@@ -4,7 +4,7 @@ Slate is an idiomatic C to Rust transpiler inspired by
 [C2Rust](https://c2rust.com/).
 
 Slate aims to follow the path set by other C to Rust transpilers like
-C2Rust. First, lower to unidiomatic Rust, and then run a set of passes
+C2Rust. First, by lowering to unidiomatic Rust, and then run a set of passes
 on the generated Rust in order to refine it to safer Rust with only
 static analyses and rewrites.
 
@@ -13,63 +13,21 @@ and a simple user experience.
 
 ## Installation
 
-Clone this repo:
+Slate is still source only and not on crates.io, so for now:
 
 ```sh
 git clone https://github.com/takashiidobe/slate
 ```
 
-You'll need a fork of LLVM with some patches I added:
-
-```
-git clone -b takashiidobe/slate-cir-loc-patches https://github.com/Takashiidobe/llvm-project
-```
-
-For example, with a checkout of llvm-project in `$HOME`:
+and build it, to build `slate`, `slate-parser`, and `slate-sysroots`.
 
 ```sh
-$ cmake -G Ninja -S ~/llvm-project/llvm -B ~/llvm-project/build-cir
-  -DLLVM_ENABLE_PROJECTS="clang;mlir" -DCLANG_ENABLE_CIR=ON
-  -DLLVM_CCACHE_BUILD=ON -DCMAKE_BUILD_TYPE=Release
-  -DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++
-  -DLLVM_ENABLE_LLD=OFF -DLLVM_ENABLE_LTO=OFF -DLLVM_ENABLE_ASSERTIONS=OFF
-  -DCMAKE_INSTALL_PREFIX=/usr/local
+cargo build --release
 ```
 
-### Building the plugin against an installed clang
-
-Note: CIR isn't enabled on clang builds yet so this is just hypothetical
-for the future
-
-You'll need the headers and then point the tool to build properly
-
-**Debian/Ubuntu:**
-
-```sh
-sudo apt install clang-22 libclang-22-dev llvm-22-dev
-SLATE_CLANG=/usr/bin/clang-22 tools/macro-dump-plugin/build.sh
-```
-
-**Arch:**
-
-```sh
-sudo pacman -S clang llvm
-SLATE_CLANG=/usr/bin/clang tools/macro-dump-plugin/build.sh
-```
-
-**Fedora:**
-
-```sh
-sudo dnf install clang clang-devel llvm-devel
-SLATE_CLANG=/usr/bin/clang tools/macro-dump-plugin/build.sh
-```
-
-**macOS (w/ brew):**
-
-```sh
-brew install llvm
-SLATE_CLANG=$(brew --prefix llvm)/bin/clang tools/macro-dump-plugin/build.sh
-```
+I plan to merge `slate-sysroots` into plain slate, possibly leaving
+`slate-parser` as a separate crate if it's useful as a multi-dialect C
+parser + IR generator.
 
 ## Usage
 
@@ -154,15 +112,10 @@ slate translate add.c # translates add.c, prints to stdout
 ### In Progress
 
 - [ ] Passing the GCC Torture Test Suite
-  - ~50 tests left
-- [ ] Re-enabling rewriting to generate better code
-- [ ] Generating target specific headers for intrinsics
+  - ~10 tests left for clang
 - [ ] Support for other architectures
-  - Currently only x86_64, no testing done for x86_32, arm32, arm64,
-    riscv, risc32
-- [ ] Support for other targets
-  - Only linux w/ musl or glibc is supported for now, need to add libc
-    support for windows, mac, android, and the BSDs
+  - Currently only x86_64, no testing done for x86_32, arm32, arm64
+- [ ] Support for other compiler flavors, like gcc and msvc
 
 ## Acknowledgements
 
