@@ -1,7 +1,7 @@
-use super::atomic::{AtomicBuiltin, AtomicResult, atomic_builtin};
+use super::atomic::{AtomicBuiltin, AtomicResult, FetchOp, atomic_builtin};
 use super::builtins::{CustomBuiltin, DerivedSignature};
 use super::ctype::convert::{CastKind, Conversion, ConversionContext};
-use super::ctype::{CTypeKind, Extent, QualType};
+use super::ctype::{CTypeKind, Extent, QualType, Qualifiers};
 use super::expression::{
     SourceLocationBuiltin, VaBuiltin, choose_expr_operands, constant_p_operand,
     source_location_builtin, va_builtin,
@@ -9,8 +9,8 @@ use super::expression::{
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
 use crate::ast::{
-    DeclarationSpecifiers, Expr, ExprKind, InitDeclarator, Initializer, Span, Stmt, StmtKind,
-    StorageClass, TypeName, TypeSpecifier,
+    DeclarationSpecifiers, Expr, ExprKind, InitDeclarator, Initializer, NodeId, Span, Stmt,
+    StmtKind, StorageClass, TypeName, TypeSpecifier,
 };
 use crate::compiler_args::CompilerFlavor;
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
@@ -76,9 +76,19 @@ pub(super) enum Slot {
     Discriminant,
     CaseStart,
     CaseEnd,
+    Argument(usize),
+    Extent,
+    Parameter,
 }
 
 pub(super) type Lanes = Vec<Option<u32>>;
+
+#[derive(Clone)]
+pub(super) enum Choice {
+    Operand(NodeId),
+    Lanes(Lanes),
+    Member(usize),
+}
 
 const UNTYPED: ResolveError = ResolveError::Unimplemented("expression without a typing rule");
 const NON_SCALAR_CONDITION: ResolveError = ResolveError::Rejected("non-scalar condition");
@@ -245,7 +255,7 @@ impl TypeResolver {
         }
     }
 
-    pub(super) fn swizzle(
+    fn swizzle(
         &mut self,
         vector: QualType,
         field: &str,
@@ -366,6 +376,7 @@ impl TypeResolver {
                     }
                 };
                 let selected = self.select_association(controlling, associations)?;
+                self.choices.insert(e.id, Choice::Operand(selected.id));
                 self.typed(selected)?
             }
             ExprKind::Unary {
@@ -522,6 +533,7 @@ impl TypeResolver {
                 };
                 if self.vector_element(record).is_some() {
                     let (c, mask) = self.swizzle(record, &field.value)?;
+                    self.choices.insert(e.id, Choice::Lanes(mask.clone()));
                     let mut seen = Vec::with_capacity(mask.len());
                     let assignable = mask.iter().all(|lane| match lane {
                         Some(lane) if !seen.contains(lane) => {
@@ -628,7 +640,7 @@ impl TypeResolver {
                     ));
                 }
             }
-            ExprKind::Call { callee, arguments } => self.call_type(callee, arguments)?,
+            ExprKind::Call { callee, arguments } => self.call_type(e, callee, arguments)?,
             ExprKind::SizeOfType { ty } | ExprKind::AlignOf { ty } => {
                 let resolved = self.type_name(ty)?;
                 let sizeof = matches!(e.value, ExprKind::SizeOfType { .. });
@@ -744,9 +756,14 @@ impl TypeResolver {
         })
     }
 
-    fn call_type(&mut self, callee: &Expr, arguments: &[Expr]) -> Result<Typed, ResolveError> {
+    fn call_type(
+        &mut self,
+        e: &Expr,
+        callee: &Expr,
+        arguments: &[Expr],
+    ) -> Result<Typed, ResolveError> {
         if let Some(builtin) = atomic_builtin(callee) {
-            return self.atomic_type(builtin, arguments);
+            return self.atomic_type(e, builtin, arguments);
         }
         if let Some(operand) = constant_p_operand(callee, arguments) {
             self.typed(operand)?;
@@ -765,6 +782,7 @@ impl TypeResolver {
         }
         if choose_expr_operands(callee, arguments).is_some() {
             let chosen = self.chosen_expr(callee, arguments)?;
+            self.choices.insert(e.id, Choice::Operand(chosen.id));
             return self.typed(chosen);
         }
         if let Some(builtin) = va_builtin(callee) {
@@ -783,9 +801,14 @@ impl TypeResolver {
         if let Some((builtin, _)) = self.builtin_callee(callee, arguments)
             && let Some(custom) = super::builtins::custom_builtin(builtin)
         {
-            return self.custom_builtin_type(custom, arguments);
+            return self.custom_builtin_type(e, custom, arguments);
         }
         let signature = self.call_signature(callee, arguments)?;
+        if let Some((builtin, _)) = self.builtin_callee(callee, arguments)
+            && super::builtins::derived_signature(builtin).is_some()
+        {
+            self.derived_signatures.insert(e.id, signature);
+        }
         let (returned, parameters, variadic, prototyped) = self
             .ctypes
             .function_parts(signature)
@@ -811,6 +834,14 @@ impl TypeResolver {
                     .is_ok_and(|argument| self.is_incomplete_record(argument));
             if incomplete {
                 return Err(ResolveError::Rejected("argument type is incomplete"));
+            }
+            if index >= parameters.len() {
+                let from = self.operand_type(argument)?;
+                let promoted = self.ctypes.enum_underlying(from).unwrap_or(from);
+                let target = self.target_info().clone();
+                let to = self.ctypes.default_promotion(promoted, &target);
+                let reason = ConversionReason::Vararg;
+                self.record_casts(e, Slot::Argument(index), argument, from, &[to], reason)?;
             }
         }
         Ok(Typed::rvalue(returned))
@@ -867,6 +898,7 @@ impl TypeResolver {
 
     fn atomic_type(
         &mut self,
+        e: &Expr,
         builtin: AtomicBuiltin,
         arguments: &[Expr],
     ) -> Result<Typed, ResolveError> {
@@ -888,13 +920,38 @@ impl TypeResolver {
         }
         if let Some((op, object, operand)) = operands.fetch {
             let pointee = self.atomic_pointee(object)?;
-            let operand = self.operand_type(operand)?;
-            super::atomic::fetch_rule(
-                &self.ir_type(pointee),
-                op,
-                &self.ir_type(operand),
-                self.flavor(),
-            )?;
+            let from = self.operand_type(operand)?;
+            let object = self.ir_type(pointee);
+            let value = self.ir_type(from);
+            super::atomic::fetch_rule(&object, op, &value, self.flavor())?;
+            let target = self.target_info().clone();
+            // the builtin's value parameter has the object's declared type, so a
+            // `_Bool` object converts the operand to `_Bool` before widening it
+            let targets = match object {
+                Type::Pointer { .. } if !matches!(op, FetchOp::Add | FetchOp::Sub) => {
+                    vec![self.ctypes.size_type(&target)]
+                }
+                Type::Pointer { .. } if matches!(value, Type::Numeric(NumericType::Float(_))) => {
+                    vec![self.ctypes.ptrdiff_type(&target)]
+                }
+                Type::Pointer { .. } => Vec::new(),
+                Type::Bool => vec![pointee, self.ctypes.qual(CTypeKind::UChar)],
+                _ => vec![pointee],
+            };
+            let reason = ConversionReason::Arg;
+            self.record_casts(e, Slot::Argument(1), operand, from, &targets, reason)?;
+        }
+        if let Some((size, pointer)) = operands.lock_free {
+            let reason = ConversionReason::Arg;
+            let from = self.operand_type(size)?;
+            let target = self.target_info().clone();
+            let to = self.ctypes.size_type(&target);
+            self.record_casts(e, Slot::Argument(0), size, from, &[to], reason)?;
+            if let Some(pointer) = pointer {
+                let from = self.operand_type(pointer)?;
+                let to = self.lock_free_pointer();
+                self.record_casts(e, Slot::Argument(1), pointer, from, &[to], reason)?;
+            }
         }
         Ok(Typed::rvalue(match result {
             AtomicResult::Void => self.ctypes.qual(CTypeKind::Void),
@@ -922,6 +979,15 @@ impl TypeResolver {
         }))
     }
 
+    pub(super) fn lock_free_pointer(&mut self) -> QualType {
+        let void = self.ctypes.qual(CTypeKind::Void).with(Qualifiers {
+            is_const: true,
+            is_volatile: true,
+            ..Qualifiers::NONE
+        });
+        self.ctypes.pointer(void)
+    }
+
     fn atomic_pointee(&mut self, pointer: &Expr) -> Result<QualType, ResolveError> {
         let pointer = self.operand_type(pointer)?;
         self.ctypes.pointee(pointer).ok_or(ResolveError::Rejected(
@@ -931,6 +997,7 @@ impl TypeResolver {
 
     fn custom_builtin_type(
         &mut self,
+        e: &Expr,
         custom: CustomBuiltin,
         arguments: &[Expr],
     ) -> Result<Typed, ResolveError> {
@@ -952,25 +1019,33 @@ impl TypeResolver {
                 self.ctypes.qual(CTypeKind::Bool)
             }
             CustomBuiltin::FloatClass(_) | CustomBuiltin::InfSign => {
-                self.real_floating_operand(arguments)?;
+                let [operand] = arguments else {
+                    return Err(FLOAT_CLASS_ARITY);
+                };
+                self.real_floating_operand(e, 0, operand, &[])?;
                 self.ctypes.int()
             }
             CustomBuiltin::QuietCompare(_)
             | CustomBuiltin::Unordered
             | CustomBuiltin::LessGreater => {
-                self.real_floating_pair(arguments)?;
+                self.real_floating_pair(e, arguments)?;
                 self.ctypes.int()
             }
             CustomBuiltin::FloatClassify => {
-                let [.., value] = arguments else {
+                let [arms @ .., value] = arguments else {
                     return Err(ResolveError::Rejected("classification builtin arity"));
                 };
                 if arguments.len() != 6 {
                     return Err(ResolveError::Rejected("classification builtin arity"));
                 }
-                let value = self.operand_type(value)?;
-                self.real_floating_component(value)?;
-                self.ctypes.int()
+                self.real_floating_operand(e, arms.len(), value, &[])?;
+                let int = self.ctypes.int();
+                for (index, arm) in arms.iter().enumerate() {
+                    let from = self.operand_type(arm)?;
+                    let reason = ConversionReason::UsualArith;
+                    self.record_casts(e, Slot::Argument(index), arm, from, &[int], reason)?;
+                }
+                int
             }
             CustomBuiltin::ClassifyType => {
                 if arguments.len() != 1 {
@@ -987,7 +1062,7 @@ impl TypeResolver {
                 self.ctypes.pointer(typed.c)
             }
             CustomBuiltin::Complex => {
-                let common = self.real_floating_pair(arguments)?;
+                let common = self.real_floating_pair(e, arguments)?;
                 self.complex_of(common)
             }
             CustomBuiltin::Shuffle => {
@@ -1093,6 +1168,45 @@ impl TypeResolver {
         Ok(promotion.to)
     }
 
+    pub(super) fn record_extent(&mut self, size: &Expr) -> Result<(), ResolveError> {
+        if self.constant_integer(size).is_ok() {
+            return Ok(());
+        }
+        let Ok(from) = self.operand_type(size) else {
+            return Ok(());
+        };
+        let target = self.target_info().clone();
+        let to = self.ctypes.size_type(&target);
+        let reason = ConversionReason::Assign;
+        self.record_casts(size, Slot::Extent, size, from, &[to], reason)
+    }
+
+    pub(super) fn record_promoted_parameter(
+        &mut self,
+        parameter: &Span<impl Sized>,
+        resolved: QualType,
+        adjusted: QualType,
+    ) -> Result<(), ResolveError> {
+        let promoted = self.promoted_parameter(resolved);
+        let adjusted = self.ctypes.unqualified(adjusted);
+        if self.ctypes.canonical(promoted).local_unqualified()
+            == self.ctypes.canonical(adjusted).local_unqualified()
+        {
+            return Ok(());
+        }
+        let conversion =
+            self.ctypes
+                .classify_conversion(promoted, adjusted, ConversionContext::Arg, false)?;
+        let step = Step {
+            kind: StepKind::Cast(conversion.kind),
+            to: adjusted,
+            reason: ConversionReason::Arg,
+        };
+        self.promoted_parameters.insert(parameter.id, promoted);
+        self.record_steps(parameter, Slot::Parameter, vec![step]);
+        Ok(())
+    }
+
     pub(super) fn record_case(
         &mut self,
         label: &Stmt,
@@ -1124,23 +1238,52 @@ impl TypeResolver {
         to: QualType,
         reason: ConversionReason,
     ) -> Result<(), ResolveError> {
-        let to = self.ctypes.unqualified(to);
-        let null = self.null_pointer_constant(operand);
-        let conversion =
-            self.ctypes
-                .classify_conversion(from, to, ConversionContext::Cast, null)?;
-        let step = Step {
-            kind: StepKind::Cast(conversion.kind),
-            to,
-            reason,
+        self.record_casts(owner, slot, operand, from, &[to], reason)
+    }
+
+    pub(super) fn record_casts(
+        &mut self,
+        owner: &Span<impl Sized>,
+        slot: Slot,
+        operand: &Expr,
+        from: QualType,
+        targets: &[QualType],
+        reason: ConversionReason,
+    ) -> Result<(), ResolveError> {
+        let context = match reason {
+            ConversionReason::Assign => ConversionContext::Assign,
+            ConversionReason::Arg | ConversionReason::Vararg => ConversionContext::Arg,
+            ConversionReason::Return => ConversionContext::Return,
+            ConversionReason::Explicit
+            | ConversionReason::Promotion
+            | ConversionReason::UsualArith => ConversionContext::Cast,
         };
+        let mut null = self.null_pointer_constant(operand);
+        let mut current = from;
+        let mut steps = Vec::with_capacity(targets.len());
+        let mut warnings = Vec::new();
+        for &to in targets {
+            let to = self.ctypes.unqualified(to);
+            let conversion = self
+                .ctypes
+                .classify_conversion(current, to, context, null)?;
+            warnings.extend(conversion.warning);
+            steps.push(Step {
+                kind: StepKind::Cast(conversion.kind),
+                to,
+                reason,
+            });
+            current = to;
+            null = false;
+        }
         if self
             .operand_conversions
-            .insert((owner.id, slot), vec![step])
+            .insert((owner.id, slot), steps)
             .is_none()
-            && let Some((warning, message)) = conversion.warning
         {
-            self.warn(warning, message, operand);
+            for (warning, message) in warnings {
+                self.warn(warning, message, operand);
+            }
         }
         Ok(())
     }
@@ -1531,25 +1674,39 @@ impl TypeResolver {
         Ok(())
     }
 
-    fn real_floating_pair(&mut self, arguments: &[Expr]) -> Result<QualType, ResolveError> {
-        let [left, right] = arguments else {
+    fn real_floating_pair(
+        &mut self,
+        e: &Expr,
+        arguments: &[Expr],
+    ) -> Result<QualType, ResolveError> {
+        let [left_expr, right_expr] = arguments else {
             return Err(FLOAT_CLASS_ARITY);
         };
-        let left = self.operand_type(left)?;
+        let left = self.operand_type(left_expr)?;
         let left = self.real_floating_component(left)?;
-        let right = self.operand_type(right)?;
+        let right = self.operand_type(right_expr)?;
         let right = self.real_floating_component(right)?;
         let target = self.target_info().clone();
-        self.ctypes.usual_real_type(left, right, &target)
+        let common = self.ctypes.usual_real_type(left, right, &target)?;
+        self.real_floating_operand(e, 0, left_expr, &[common])?;
+        self.real_floating_operand(e, 1, right_expr, &[common])?;
+        Ok(common)
     }
 
-    fn real_floating_operand(&mut self, arguments: &[Expr]) -> Result<(), ResolveError> {
-        let [operand] = arguments else {
-            return Err(FLOAT_CLASS_ARITY);
-        };
-        let operand = self.operand_type(operand)?;
-        self.real_floating_component(operand)?;
-        Ok(())
+    fn real_floating_operand(
+        &mut self,
+        e: &Expr,
+        index: usize,
+        operand: &Expr,
+        then: &[QualType],
+    ) -> Result<(), ResolveError> {
+        let from = self.operand_type(operand)?;
+        let component = self.real_floating_component(from)?;
+        let targets: Vec<QualType> = std::iter::once(component)
+            .chain(then.iter().copied())
+            .collect();
+        let reason = ConversionReason::UsualArith;
+        self.record_casts(e, Slot::Argument(index), operand, from, &targets, reason)
     }
 
     // the result type, and for an operation lowering emits itself, the operand steps

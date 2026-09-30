@@ -307,6 +307,9 @@ fn lower_item(
             let return_type = return_type.as_ref().map(|ty| (**ty).clone());
             let abi = Some(lower.c_abi_signature(resolved, &ty, None)?);
             let previous = lower.types.entities.declare(id, resolved, false);
+            if let Some(message) = lower.types.merge_redeclaration(id, previous, resolved)? {
+                lower.warn(Warning::ConflictingTypes, message, declaration);
+            }
             let mut metadata = vec![
                 (
                     "c_storage".into(),
@@ -378,7 +381,7 @@ fn lower_item(
                 fallthrough: Some(fallthrough),
             });
             lower.module.annotate(&lowered, metadata);
-            lower.declare_function(lowered, previous)?;
+            lower.declare_function(lowered, None)?;
         }
     }
     Ok(())
@@ -844,12 +847,7 @@ impl Lowerer {
                 },
             )?;
             self.types.owner = owner;
-            let promoted = matches!(params, ParameterList::IdentifierList { .. })
-                .then(|| self.types.promoted_parameter(resolved))
-                .filter(|promoted| {
-                    self.types.ctypes.canonical(*promoted).local_unqualified()
-                        != self.types.ctypes.canonical(adjusted).local_unqualified()
-                });
+            let promoted = self.types.promoted_parameters.get(&parameter.id).copied();
             if let (Some(promoted), Some(prologue)) = (promoted, prologue.as_deref_mut()) {
                 let slot = self.fresh();
                 self.types.entities.declare(slot, promoted, false);
@@ -868,8 +866,7 @@ impl Lowerer {
                     },
                     c: promoted,
                 };
-                let unqualified = self.types.ctypes.unqualified(adjusted);
-                let initializer = self.convert(passed, unqualified, ConversionReason::Arg)?;
+                let initializer = self.converted_at(parameter, Slot::Parameter, passed)?;
                 let local = parameter.derive(Statement::Let(Variable {
                     id,
                     name: name.unwrap_or_default().into(),
@@ -1384,9 +1381,9 @@ impl Lowerer {
                 if self.types.constant_integer(expr).is_ok() {
                     return Ok(());
                 }
-                let extent_type = self.types.ctypes.size_type(&self.context.target);
                 let count = self.expr(expr)?;
-                let count = self.convert(count, extent_type, ConversionReason::Assign)?;
+                let count = self.converted(expr, Slot::Extent, count)?;
+                let extent_type = count.c;
                 let id = match self.reserved_extents.remove(&expr.id) {
                     Some(id) => id,
                     None => self.fresh(),
@@ -1417,7 +1414,7 @@ impl Lowerer {
         expr: &ast::Expr,
     ) -> Result<Value, ResolveError> {
         let value = self.expr(expr)?;
-        let value = self.converted_statement(label, slot, value)?;
+        let value = self.converted_at(label, slot, value)?;
         let number = super::fold::integer_constant(&value, self.types.compiler_flavor())
             .ok_or(ResolveError::Internal("nonconstant case expression"))?;
         Ok(self.value(
@@ -1577,8 +1574,7 @@ impl Lowerer {
             ),
             StmtKind::Switch { discriminant, body } => {
                 let value = self.expr(discriminant)?;
-                let discriminant =
-                    self.converted_statement(statement, Slot::Discriminant, value)?;
+                let discriminant = self.converted_at(statement, Slot::Discriminant, value)?;
                 if !matches!(discriminant.ty, Type::Numeric(NumericType::Integer { .. })) {
                     return Err(ResolveError::Internal("noninteger switch discriminant"));
                 }

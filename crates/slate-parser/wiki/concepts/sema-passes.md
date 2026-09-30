@@ -57,7 +57,6 @@ Defined in `sema/numeric.rs`.
 | `Unimplemented(&str)` | Valid C not modeled yet (LLVM NYI); not a rejection | anywhere |
 | `UnsupportedBuiltin(String)` | Known builtin without lowering; a kind of `Unimplemented` | `expression.rs` |
 | `Internal(&str)` | An invariant the checker should guarantee; always a slate bug | lowering |
-| `TypeDisagreement { kind, typer, lowering }` | Typer and lowering derived different C types for one expression; prints the `ExprKind` name and both spellings. An `Internal` kind; goes away with the cross-check (slate-parser-ygrj.3) | `Lowerer::expr` / `place` |
 | `MissingExpressionBinding(String)` | Identifier without a binding | `expression.rs` |
 | `IntegerLiteral(String)` | Literal with no target type | `numeric.rs`, `operand.rs` |
 | `Names`, `Literal`, `Layout` | Wrapped `names::ResolveError`, `ConstExprError`, `LayoutError` | name resolution, literal decoding, `TargetInfo` |
@@ -124,19 +123,24 @@ Rules:
 - Memoizes `Typed { c, lvalue, bits }` per `NodeId` in `expression_types`.
   Only successes are memoized (an enum body is typed before its
   enumerators exist). Missing rules return `Unimplemented`.
-- `Lowerer::expr` / `place` compare their type with the typer's and fail
-  `Internal` on mismatch. The rule helpers are shared (`binary_types`,
-  `arithmetic_type`, `literal_type`, `derived_signature`,
-  `builtin_callee`, `chosen_expr`, `real_floating_component`,
-  `statement_expression_parts`, `AtomicBuiltin::result`, `swizzle`,
-  `shuffle`, `predefined_name`), but lowering still derives result types,
-  selections and builtin argument conversions itself, and such copies
-  drift (the enum `?:` bug). Operand conversions of binary, unary, `?:`,
-  compound assignment, `++`/`--`, subscripts and `switch`/`case` are
-  recorded facts lowering applies
-  ([c-type-layer](c-type-layer.md#conversions)); slate-parser-ygrj.3 moves
-  the rest, then removes the cross-check. Don't add new lowering-side
-  typing decisions.
+- `Lowerer::expr` / `place` take the node's C type from the facts
+  (`result`, `lvalue_result`); arms that need it before building a node
+  call them too. A typer error there propagates as is; the facts are
+  total over what lowering visits. Operand conversions are recorded steps
+  ([c-type-layer](c-type-layer.md#conversions)), `binary` emits at the
+  recorded `computation_types` entry, and selections are recorded in
+  `choices`: `Choice::Operand` (the `_Generic` association or
+  `__builtin_choose_expr` operand), `Choice::Lanes` (a vector swizzle),
+  `Choice::Member` (a cast to union). Builtins whose signature derives
+  from an argument record it in `derived_signatures`. Don't add
+  lowering-side typing decisions.
+- Still decided in lowering, by design: `enum_operand` before a condition
+  (`&&`, `||`, `!`), since a truth test is an emitter step, not a C
+  conversion; `lvalue_conversion` of the place a `read` loads; literal,
+  character-constant, `__builtin_types_compatible_p` and
+  `__builtin_classify_type` values, decoded from the facts. Declaration
+  entities are merged by both passes (`merge_redeclaration`), and
+  initializers walk twice (slate-parser-ygrj.4).
 - A typed `sizeof` operand is not lowered unless it is a VLA.
 - Null pointer constants: `integer_constant_zero`, an ICE by 6.6p6
   operand rules that folds to zero (`(void *)(1 - 1)` yes; `(void *)(0,
@@ -149,7 +153,7 @@ Rules:
 - Variably modified operands: the typer sets `provisional_extents`, so
   unbound sizes become `vla<T, *>`; types with unbound extents
   (`CTypes::has_unbound_extent`) are never memoized, so lowering's
-  cross-check gets the bound `vla<T, %id>`.
+  `result` gets the bound `vla<T, %id>`.
   - `sizeof` lowers a VLA operand and keeps it if it has effects
     (capturing an extent counts).
   - `typeof` of a VM expression is evaluated where its extents are

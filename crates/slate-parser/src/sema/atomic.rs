@@ -1,7 +1,9 @@
-use super::ctype::{CTypeKind, QualType, Qualifiers};
+use super::ctype::convert::CastKind;
+use super::ctype::{CTypeKind, QualType};
 use super::expression::Lowerer;
 use super::numeric::ResolveError;
 use super::operand::{Lvalue, Operand};
+use super::typer::Slot;
 use crate::ast::{Expr, ExprKind, Span};
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::*;
@@ -279,6 +281,7 @@ pub(super) struct AtomicOperands<'e> {
     pub pointers: Vec<&'e Expr>,
     pub values: Vec<(&'e Expr, &'e Expr)>,
     pub fetch: Option<(FetchOp, &'e Expr, &'e Expr)>,
+    pub lock_free: Option<(&'e Expr, Option<&'e Expr>)>,
 }
 
 // the operand checks atomic lowering relies on: the loaded object's type and the fetch operand
@@ -400,6 +403,15 @@ impl AtomicBuiltin {
             }
             (AtomicOperation::TestAndSet | AtomicOperation::Clear, [object, _]) => {
                 operands.pointers.push(object);
+            }
+            (AtomicOperation::LockFree(LockFreeQuery::C11), [size]) => {
+                operands.lock_free = Some((size, None));
+            }
+            (
+                AtomicOperation::LockFree(LockFreeQuery::Always | LockFreeQuery::Runtime),
+                [size, pointer],
+            ) => {
+                operands.lock_free = Some((size, Some(pointer)));
             }
             _ => {}
         }
@@ -613,7 +625,7 @@ impl Lowerer {
                 [object, operand, order],
             ) => {
                 let object = self.arithmetic_object(object)?;
-                let computation = self.fetch_computation(&object, op, operand, byte_offsets)?;
+                let computation = self.fetch_computation(e, &object, op, operand, byte_offsets)?;
                 let ordering = self.atomicity(order, &scope)?;
                 let old = self.atomic_update(e, object.place, computation, postfix, ordering);
                 self.fetch_result(old, object.declared)
@@ -699,7 +711,7 @@ impl Lowerer {
         declared: Option<QualType>,
     ) -> Result<Operand, ResolveError> {
         match declared {
-            Some(c) => self.convert(old, c, ConversionReason::Arg),
+            Some(c) => self.apply_conversion(CastKind::Arithmetic, old, c, ConversionReason::Arg),
             None => Ok(old),
         }
     }
@@ -855,7 +867,7 @@ impl Lowerer {
         match (builtin, arguments) {
             (SyncBuiltin::Fetch { op, postfix }, [object, operand, ..]) => {
                 let object = self.arithmetic_object(object)?;
-                let computation = self.fetch_computation(&object, op, operand, true)?;
+                let computation = self.fetch_computation(e, &object, op, operand, true)?;
                 let old = self.atomic_update(
                     e,
                     object.place,
@@ -944,24 +956,15 @@ impl Lowerer {
                 ValueKind::Constant(Number::Bool(known)),
             ));
         }
-        let size_type = self.types.ctypes.size_type(&self.context.target);
-        let size = self.convert(size, size_type, ConversionReason::Arg)?;
-        let void = self.types.ctypes.qual(CTypeKind::Void).with(Qualifiers {
-            is_const: true,
-            is_volatile: true,
-            ..Qualifiers::NONE
-        });
-        let void_pointer = self.types.ctypes.pointer(void);
+        let size = self.converted(e, Slot::Argument(0), size)?;
+        let void_pointer = self.types.lock_free_pointer();
         let pointer = match pointer {
-            Some(pointer) => self.convert(pointer, void_pointer, ConversionReason::Arg)?,
+            Some(pointer) => self.converted(e, Slot::Argument(1), pointer)?,
             None => self.operand(e, void_pointer, ValueKind::Null),
         };
         let signature = Type::Function {
             return_type: Some(Box::new(Type::Bool)),
-            parameters: vec![
-                self.types.ir_type(size_type),
-                self.types.ir_type(void_pointer),
-            ],
+            parameters: vec![size.ty.clone(), self.types.ir_type(void_pointer)],
             variadic: false,
             prototyped: true,
             convention: CallConv::C,
@@ -1051,7 +1054,8 @@ impl Lowerer {
 
     fn fetch_computation(
         &mut self,
-        FetchObject { place, declared }: &FetchObject,
+        call: &Expr,
+        FetchObject { place, .. }: &FetchObject,
         op: FetchOp,
         e: &Expr,
         byte_offsets: bool,
@@ -1061,9 +1065,10 @@ impl Lowerer {
             .map_err(ResolveError::checked)?;
         let old = self.operand(e, place.c, ValueKind::OldValue);
         if matches!(place.ty, Type::Pointer { .. }) && !matches!(op, FetchOp::Add | FetchOp::Sub) {
-            let address = self.types.ctypes.size_type(&self.context.target);
-            let old = self.convert(old, address, ConversionReason::Explicit)?;
-            let operand = self.convert(operand, address, ConversionReason::Arg)?;
+            let operand = self.converted(call, Slot::Argument(1), operand)?;
+            let address = operand.c;
+            let explicit = ConversionReason::Explicit;
+            let old = self.apply_conversion(CastKind::PtrToInt, old, address, explicit)?;
             let (op, not) = match op {
                 FetchOp::And => (ArithOp::And, false),
                 FetchOp::Or => (ArithOp::Or, false),
@@ -1096,15 +1101,10 @@ impl Lowerer {
                     },
                 );
             }
-            return self.convert(computed, place.c, ConversionReason::Explicit);
+            return self.apply_conversion(CastKind::IntToPtr, computed, place.c, explicit);
         }
         if let Type::Pointer { pointee, .. } = &place.ty {
-            let operand = if matches!(operand.ty, Type::Numeric(NumericType::Float(_))) {
-                let offset = self.types.ctypes.ptrdiff_type(&self.context.target);
-                self.convert(operand, offset, ConversionReason::Arg)?
-            } else {
-                operand
-            };
+            let operand = self.converted(call, Slot::Argument(1), operand)?;
             let subtract = matches!(op, FetchOp::Sub);
             let element = if byte_offsets {
                 Type::integer(8, false)
@@ -1136,13 +1136,7 @@ impl Lowerer {
             (Type::Numeric(NumericType::Integer { .. }), _) => false,
             _ => return Err(ResolveError::Internal("atomic arithmetic on non-integer")),
         };
-        // the builtin's value parameter has the object's declared type, so a
-        // `_Bool` object converts the operand to `_Bool` before widening it
-        let operand = match declared {
-            Some(c) => self.convert(operand, *c, ConversionReason::Arg)?,
-            None => operand,
-        };
-        let operand = self.convert(operand, place.c, ConversionReason::Arg)?;
+        let operand = self.converted(call, Slot::Argument(1), operand)?;
         let arith = |this: &mut Self, op, left: Operand, right: Operand, semantics| {
             this.operand(
                 e,
@@ -1277,9 +1271,10 @@ impl Lowerer {
             return Ok((old.clone(), operand.clone()));
         }
         let compared = self.types.ctypes.integer_signedness(place.c, signed)?;
+        let (kind, reason) = (CastKind::Arithmetic, ConversionReason::Arg);
         Ok((
-            self.convert(old.clone(), compared, ConversionReason::Arg)?,
-            self.convert(operand.clone(), compared, ConversionReason::Arg)?,
+            self.apply_conversion(kind, old.clone(), compared, reason)?,
+            self.apply_conversion(kind, operand.clone(), compared, reason)?,
         ))
     }
 

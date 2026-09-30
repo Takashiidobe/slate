@@ -20,7 +20,7 @@ use super::initializer::ElementError;
 use super::module::{applies, function_symbol, linkage as declared_linkage, symbol_attributes};
 use super::numeric::{Context, ResolveError};
 use super::pragmas::{FloatingPragmas, FloatingRegion, PragmaPlacement};
-use super::typer::Slot;
+use super::typer::{Choice, Slot};
 use super::types::TypeResolver;
 use super::validate::{SemaError, error};
 use std::collections::{HashMap, HashSet};
@@ -241,6 +241,10 @@ impl Checker<'_> {
             },
         );
         let enclosing = std::mem::replace(&mut self.types.function_names, names);
+        let identifier_list = matches!(
+            function.declarator.function_parameters(),
+            Some(ParameterList::IdentifierList { .. })
+        );
         for parameter in function
             .declarator
             .function_parameters()
@@ -271,6 +275,13 @@ impl Checker<'_> {
                 let register = parameter.specifiers.storage == StorageClass::Register;
                 let declared = self.declare_object(parameter.id, adjusted, None, None, register);
                 self.report(parameter, declared);
+                if identifier_list
+                    && let Err(rejection) = self
+                        .types
+                        .record_promoted_parameter(parameter, resolved, adjusted)
+                {
+                    self.reject_with(parameter, rejection);
+                }
             }
         }
         self.compound(&function.body);
@@ -1022,6 +1033,13 @@ impl Checker<'_> {
         }
     }
 
+    fn reject_with<T>(&mut self, at: &Span<T>, rejection: ResolveError) {
+        if rejection.is_rejection() {
+            self.errors
+                .push(error(at.provenance, at.expansion, rejection.to_string()));
+        }
+    }
+
     fn reject<T>(&mut self, at: &Span<T>, reason: &'static str) {
         self.errors.push(error(
             at.provenance,
@@ -1218,10 +1236,13 @@ impl Checker<'_> {
             return;
         };
         let to = self.types.ctypes.unqualified(to);
-        if self.types.ctypes.is_void(to)
-            || !matches!(self.types.union_cast_member(to, from), Ok(None))
-        {
-            return;
+        match self.types.union_cast_member(to, from) {
+            Ok(Some(member)) => {
+                self.types.choices.insert(cast.id, Choice::Member(member));
+                return;
+            }
+            Ok(None) if !self.types.ctypes.is_void(to) => {}
+            _ => return,
         }
         self.convert_at(cast, value, from, to, ConversionContext::Cast);
     }
@@ -1244,29 +1265,18 @@ impl Checker<'_> {
             return;
         };
         let parameters = parameters.to_vec();
-        for (index, argument) in arguments.iter().enumerate() {
+        for (argument, &parameter) in arguments.iter().zip(&parameters) {
             let Ok(from) = self.types.operand_type(argument) else {
                 continue;
             };
-            match parameters.get(index) {
-                Some(&parameter) => {
-                    let mut to = self.types.ctypes.adjust_parameter(parameter);
-                    if let Some((index, member)) = self.types.transparent_member(to, argument, from)
-                    {
-                        self.types
-                            .transparent_arguments
-                            .insert(argument.id, (index, member));
-                        to = member;
-                    }
-                    self.convert_at(argument, argument, from, to, ConversionContext::Arg);
-                }
-                None => {
-                    let from = self.types.ctypes.enum_underlying(from).unwrap_or(from);
-                    let target = self.types.target_info().clone();
-                    let to = self.types.ctypes.default_promotion(from, &target);
-                    self.convert_at(argument, argument, from, to, ConversionContext::Arg);
-                }
+            let mut to = self.types.ctypes.adjust_parameter(parameter);
+            if let Some((index, member)) = self.types.transparent_member(to, argument, from) {
+                self.types
+                    .transparent_arguments
+                    .insert(argument.id, (index, member));
+                to = member;
             }
+            self.convert_at(argument, argument, from, to, ConversionContext::Arg);
         }
     }
 
@@ -1279,6 +1289,9 @@ impl Checker<'_> {
                 self.declarator(inner);
                 if let ArraySize::Expression(size) = size {
                     self.expression(size);
+                    if let Err(rejection) = self.types.record_extent(size) {
+                        self.reject_with(size, rejection);
+                    }
                 }
             }
             Declarator::Function { inner, parameters } => {

@@ -1,9 +1,9 @@
-use super::builtins::{ClangBuiltin, CustomBuiltin, DerivedSignature};
-use super::ctype::convert::{CastKind, ConversionContext};
+use super::builtins::{ClangBuiltin, CustomBuiltin};
+use super::ctype::convert::CastKind;
 use super::ctype::{CTypeKind, CTypes, QualType};
 use super::numeric::{Context, ResolveError};
 use super::operand::{Lvalue, Operand};
-use super::typer::{Slot, Step, StepKind};
+use super::typer::{Choice, Lanes, Slot, Step, StepKind};
 use super::types::TypeResolver;
 use crate::ast::{Expr, ExprKind, Initializer, NodeId, Span, StmtKind};
 use crate::const_expr::{AssignOp, BinaryOp, PostfixOp, UnaryOp};
@@ -72,17 +72,12 @@ impl Lowerer {
         let mut lowered = Vec::new();
         for (index, argument) in arguments.iter().enumerate() {
             let value = self.expr(argument)?;
-            let (value, to, reason) = if let Some(to) = params.get(index) {
-                let to = self.types.ctypes.adjust_parameter(*to);
-                (value, to, ConversionReason::Arg)
-            } else {
-                let value = self.enum_operand(value);
-                let to = self
-                    .types
-                    .ctypes
-                    .default_promotion(value.c, &self.context.target);
-                (value, to, ConversionReason::Vararg)
+            let Some(&parameter) = params.get(index) else {
+                lowered.push(self.converted(e, Slot::Argument(index), value)?.value);
+                continue;
             };
+            let to = self.types.ctypes.adjust_parameter(parameter);
+            let reason = ConversionReason::Arg;
             let value = match self.types.transparent_arguments.get(&argument.id).copied() {
                 Some((index, member)) => {
                     let member = self.convert_recorded(argument, value, member, reason)?;
@@ -206,7 +201,9 @@ impl Lowerer {
             return Ok(Some(value));
         }
         let signature = match super::builtins::derived_signature(builtin) {
-            Some(derived) => Some(self.derived_signature(builtin, derived, arguments)?),
+            Some(_) => Some(*self.types.derived_signatures.get(&e.id).ok_or(
+                ResolveError::Internal("builtin signature not recorded by the checker"),
+            )?),
             None => self.types.builtin_signature(builtin),
         };
         let Some(signature) = signature else {
@@ -236,7 +233,7 @@ impl Lowerer {
                 let [operand] = arguments else {
                     return Err(ResolveError::Internal("float class builtin arity"));
                 };
-                let operand = self.real_floating_operand(operand)?;
+                let operand = self.real_floating_operand(e, 0, operand)?;
                 Ok(self.truth(
                     e,
                     ValueKind::FloatClass {
@@ -246,7 +243,7 @@ impl Lowerer {
                 ))
             }
             CustomBuiltin::QuietCompare(op) => {
-                let (left, right) = self.real_floating_pair(arguments)?;
+                let (left, right) = self.real_floating_pair(e, arguments)?;
                 Ok(self.truth(
                     e,
                     ValueKind::Compare {
@@ -259,13 +256,13 @@ impl Lowerer {
                 ))
             }
             CustomBuiltin::Unordered => {
-                let (left, right) = self.real_floating_pair(arguments)?;
+                let (left, right) = self.real_floating_pair(e, arguments)?;
                 let left = self.float_class_int(e, FloatClassTest::Nan, left.value)?;
                 let right = self.float_class_int(e, FloatClassTest::Nan, right.value)?;
                 Ok(self.either(e, left, right))
             }
             CustomBuiltin::LessGreater => {
-                let (left, right) = self.real_floating_pair(arguments)?;
+                let (left, right) = self.real_floating_pair(e, arguments)?;
                 let less = self.quiet_compare_int(e, CompareOp::Lt, &left, &right)?;
                 let greater = self.quiet_compare_int(e, CompareOp::Gt, &left, &right)?;
                 Ok(self.either(e, less, greater))
@@ -274,7 +271,7 @@ impl Lowerer {
                 let [operand] = arguments else {
                     return Err(ResolveError::Internal("float class builtin arity"));
                 };
-                let operand = self.real_floating_operand(operand)?;
+                let operand = self.real_floating_operand(e, 0, operand)?;
                 let c = self.types.ctypes.int();
                 let int = self.types.ir_type(c);
                 let infinite = self.value(
@@ -324,8 +321,8 @@ impl Lowerer {
                 ))
             }
             CustomBuiltin::Complex => {
-                let (real, imaginary) = self.real_floating_pair(arguments)?;
-                let c = self.types.complex_of(real.c);
+                let (real, imaginary) = self.real_floating_pair(e, arguments)?;
+                let c = self.result(e)?;
                 Ok(self.operand(
                     e,
                     c,
@@ -348,17 +345,17 @@ impl Lowerer {
                 let [nan, infinite, normal, subnormal, zero, value] = arguments else {
                     return Err(ResolveError::Internal("classification builtin arity"));
                 };
-                let value = self.real_floating_operand(value)?;
+                let value = self.real_floating_operand(e, 5, value)?;
                 let c = self.types.ctypes.int();
                 let int = self.types.ir_type(c);
-                let mut selected = self.expr(zero)?;
-                selected = self.convert(selected, c, ConversionReason::UsualArith)?;
+                let selected = self.expr(zero)?;
+                let selected = self.converted(e, Slot::Argument(4), selected)?;
                 let mut selected = selected.value;
-                for (test, arm) in [
-                    (FloatClassTest::Subnormal, subnormal),
-                    (FloatClassTest::Normal, normal),
-                    (FloatClassTest::Infinite, infinite),
-                    (FloatClassTest::Nan, nan),
+                for (index, test, arm) in [
+                    (3, FloatClassTest::Subnormal, subnormal),
+                    (2, FloatClassTest::Normal, normal),
+                    (1, FloatClassTest::Infinite, infinite),
+                    (0, FloatClassTest::Nan, nan),
                 ] {
                     let condition = self.value(
                         e,
@@ -369,7 +366,7 @@ impl Lowerer {
                         },
                     );
                     let arm = self.expr(arm)?;
-                    let arm = self.convert(arm, c, ConversionReason::UsualArith)?;
+                    let arm = self.converted(e, Slot::Argument(index), arm)?;
                     selected = self.value(
                         e,
                         int.clone(),
@@ -394,7 +391,7 @@ impl Lowerer {
                 if temporary_rooted(&place.place) {
                     return Err(ResolveError::Internal("address of a temporary"));
                 }
-                let c = self.types.ctypes.pointer(place.c);
+                let c = self.result(e)?;
                 Ok(self.operand(e, c, ValueKind::AddressOf(place.place)))
             }
             CustomBuiltin::ClassifyType => {
@@ -405,7 +402,7 @@ impl Lowerer {
                 let resolved = self.types.ctypes.lvalue_conversion(resolved);
                 let class = type_class(&self.types.ctypes, resolved)
                     .ok_or(ResolveError::Unimplemented("classify builtin operand"))?;
-                let c = self.types.ctypes.int();
+                let c = self.result(e)?;
                 let number = match u32::try_from(class) {
                     Ok(class) => Number::Integer(class.into()),
                     Err(_) => Number::SignedInteger(class.into()),
@@ -413,23 +410,6 @@ impl Lowerer {
                 Ok(self.operand(e, c, ValueKind::Constant(number)))
             }
         }
-    }
-
-    fn derived_signature(
-        &mut self,
-        builtin: &ClangBuiltin,
-        derived: DerivedSignature,
-        arguments: &[Expr],
-    ) -> Result<QualType, ResolveError> {
-        let first = match (derived, arguments.first()) {
-            (DerivedSignature::Declared, _) | (_, None) => None,
-            (_, Some(argument)) => {
-                let (resolved, _) = self.operand_type(argument)?;
-                Some(self.types.ctypes.lvalue_conversion(resolved))
-            }
-        };
-        self.types
-            .derived_signature(builtin, derived, arguments.len(), first)
     }
 
     fn source_location(
@@ -623,28 +603,26 @@ impl Lowerer {
         )
     }
 
-    fn real_floating_operand(&mut self, argument: &Expr) -> Result<Operand, ResolveError> {
+    fn real_floating_operand(
+        &mut self,
+        e: &Expr,
+        index: usize,
+        argument: &Expr,
+    ) -> Result<Operand, ResolveError> {
         let operand = self.expr(argument)?;
-        let c = self.types.real_floating_component(operand.c)?;
-        self.convert(operand, c, ConversionReason::UsualArith)
+        self.converted(e, Slot::Argument(index), operand)
     }
 
     fn real_floating_pair(
         &mut self,
+        e: &Expr,
         arguments: &[Expr],
     ) -> Result<(Operand, Operand), ResolveError> {
         let [left, right] = arguments else {
             return Err(ResolveError::Internal("float class builtin arity"));
         };
-        let left = self.real_floating_operand(left)?;
-        let right = self.real_floating_operand(right)?;
-        let target = self.context.target.clone();
-        let common = self
-            .types
-            .ctypes
-            .usual_real_type(left.c, right.c, &target)?;
-        let left = self.convert(left, common, ConversionReason::UsualArith)?;
-        let right = self.convert(right, common, ConversionReason::UsualArith)?;
+        let left = self.real_floating_operand(e, 0, left)?;
+        let right = self.real_floating_operand(e, 1, right)?;
         Ok((left, right))
     }
 
@@ -669,24 +647,6 @@ impl Lowerer {
             value: self.value(e, Type::Bool, kind),
             c: self.types.ctypes.int(),
         }
-    }
-
-    pub(super) fn convert(
-        &mut self,
-        value: Operand,
-        to: QualType,
-        reason: ConversionReason,
-    ) -> Result<Operand, ResolveError> {
-        let c = self.types.ctypes.unqualified(to);
-        let null = self.is_null_pointer_constant(None, &value);
-        let conversion =
-            self.types
-                .ctypes
-                .classify_conversion(value.c, c, conversion_context(reason), null)?;
-        if let Some((warning, message)) = conversion.warning {
-            self.warn(warning, message, &value.value.node);
-        }
-        self.apply_conversion(conversion.kind, value, c, reason)
     }
 
     pub(super) fn convert_recorded(
@@ -716,9 +676,9 @@ impl Lowerer {
         self.apply_steps(value, &steps)
     }
 
-    pub(super) fn converted_statement(
+    pub(super) fn converted_at<T>(
         &mut self,
-        owner: &Span<StmtKind>,
+        owner: &Span<T>,
         slot: Slot,
         value: Operand,
     ) -> Result<Operand, ResolveError> {
@@ -754,6 +714,23 @@ impl Lowerer {
             ))
     }
 
+    fn computation(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
+        if let Some(&c) = self.types.computation_types.get(&e.id)
+            && !self.types.ctypes.has_unbound_extent(c)
+        {
+            return Ok(c);
+        }
+        self.types.expression_types.remove(&e.id);
+        self.types.typed(e)?;
+        self.types
+            .computation_types
+            .get(&e.id)
+            .copied()
+            .ok_or(ResolveError::Internal(
+                "operation type not recorded by the checker",
+            ))
+    }
+
     fn apply_steps(&mut self, mut value: Operand, steps: &[Step]) -> Result<Operand, ResolveError> {
         for step in steps {
             value = match step.kind {
@@ -767,7 +744,7 @@ impl Lowerer {
         Ok(value)
     }
 
-    fn apply_conversion(
+    pub(super) fn apply_conversion(
         &mut self,
         kind: CastKind,
         value: Operand,
@@ -877,16 +854,12 @@ impl Lowerer {
                 self.context.emit_arithmetic_conversion(value, ty, reason)
             }
             CastKind::Vector => self.context.vector_convert(value, ty, reason),
-            CastKind::EnumToInt => {
-                let integer = self.enum_integer(value);
-                let c = self
-                    .types
-                    .ctypes
-                    .enum_underlying(to)
-                    .unwrap_or(self.types.ctypes.int());
-                let operand = Operand { value: integer, c };
-                self.convert(operand, to, reason)
-                    .map(|operand| operand.value)
+            CastKind::EnumToInt(tail) => {
+                let integer = Operand {
+                    value: self.enum_integer(value),
+                    c: to,
+                };
+                self.emit_cast(tail.kind(), integer, to, reason)
             }
             CastKind::IntToEnum => {
                 let underlying = self
@@ -1179,29 +1152,23 @@ impl Lowerer {
 
     pub(super) fn place(&mut self, e: &Expr) -> Result<Lvalue, ResolveError> {
         let place = self.lower_place(e).map_err(|error| error.at(e.expansion))?;
-        if let Ok(typed) = self.types.typed(e)
-            && typed.lvalue
-            && typed.c != place.c
-        {
-            return Err(self.disagreement(e, typed.c, place.c));
-        }
-        Ok(place)
+        let c = self
+            .lvalue_result(e)
+            .map_err(|error| error.at(e.expansion))?;
+        Ok(Lvalue { c, ..place })
     }
 
     fn lower_place(&mut self, e: &Expr) -> Result<Lvalue, ResolveError> {
         match &e.value {
             ExprKind::Paren(inner) => self.place(inner),
-            ExprKind::Generic {
-                controlling,
-                associations,
-            } => {
-                let selected = self.generic_selected(controlling, associations)?;
+            ExprKind::Generic { associations, .. } => {
+                let selected = self.generic_selected(e, associations)?;
                 self.place(selected)
             }
             ExprKind::Call { callee, arguments }
                 if choose_expr_operands(callee, arguments).is_some() =>
             {
-                let chosen = self.types.chosen_expr(callee, arguments)?;
+                let chosen = self.chosen_expr(e, arguments)?;
                 self.place(chosen)
             }
             ExprKind::Identifier(name) if predefined_function_name(name) => {
@@ -1210,17 +1177,13 @@ impl Lowerer {
             }
             ExprKind::Identifier(_) => {
                 let id = self.reference(e)?;
-                let ty = self
-                    .types
-                    .entities
-                    .ty(&id)
-                    .ok_or(ResolveError::Internal("untyped binding"))?;
+                let c = self.lvalue_result(e)?;
                 Ok(Lvalue {
-                    c: ty,
+                    c,
                     place: Place {
-                        ty: self.types.ir_type(ty),
+                        ty: self.types.ir_type(c),
                         kind: PlaceKind::Binding(id),
-                        access: self.types.access_of(ty),
+                        access: self.types.access_of(c),
                     },
                 })
             }
@@ -1241,7 +1204,7 @@ impl Lowerer {
                 let value = self.captured(e, extents, value);
                 let object = self.fresh();
                 let ty = value.ty.clone();
-                let c = self.with_length(resolved, &ty);
+                let c = self.lvalue_result(e)?;
                 self.types.entities.declare(object, c, false);
                 let storage = if self.in_function {
                     StorageDuration::Automatic
@@ -1290,11 +1253,7 @@ impl Lowerer {
                         "complex component of non-complex place",
                     ));
                 };
-                let c = self
-                    .types
-                    .ctypes
-                    .arithmetic_component(base.c)
-                    .with(self.types.ctypes.quals(base.c));
+                let c = self.lvalue_result(e)?;
                 Ok(Lvalue {
                     c,
                     place: Place {
@@ -1342,14 +1301,14 @@ impl Lowerer {
         let object = match self.place(base) {
             Ok(object) if self.types.ctypes.is_vector(object.c) => {
                 let index = self.expr(index)?;
-                return Ok(Projection::Place(self.lane(object, index)?));
+                return Ok(Projection::Place(self.lane(e, object, index)?));
             }
             Ok(object) => self.read(base, object)?,
             Err(_) => self.expr(base)?,
         };
         let index = self.expr(index)?;
         if self.types.ctypes.is_vector(object.c) {
-            let c = self.vector_element(object.c, &index)?;
+            let c = self.result(e)?;
             return Ok(Projection::Value(self.operand(
                 e,
                 c,
@@ -1431,7 +1390,8 @@ impl Lowerer {
                     } else if !self.types.ctypes.is_vector(value.c) {
                         return Err(error);
                     } else {
-                        let (c, mask) = self.types.swizzle(value.c, field)?;
+                        let c = self.result(e)?;
+                        let mask = self.swizzle_lanes(e)?;
                         return Ok(Projection::Value(self.operand(
                             e,
                             c,
@@ -1451,7 +1411,7 @@ impl Lowerer {
                 .map(Projection::Place)
                 .ok_or(ResolveError::Internal("unknown member"));
         }
-        let (c, mask) = self.types.swizzle(object.c, field)?;
+        let mask = self.swizzle_lanes(e)?;
         let lanes: Option<Vec<u32>> = mask.iter().copied().collect();
         let assignable = lanes.as_ref().is_some_and(|lanes| {
             lanes
@@ -1467,21 +1427,25 @@ impl Lowerer {
                     index,
                     ValueKind::Constant(Number::Integer(lanes[0].into())),
                 );
-                Ok(Projection::Place(self.lane(object, index)?))
+                Ok(Projection::Place(self.lane(e, object, index)?))
             }
-            Some(lanes) => Ok(Projection::Place(Lvalue {
-                c,
-                place: Place {
-                    ty: self.types.ir_type(c),
-                    access: object.place.access,
-                    kind: PlaceKind::Swizzle {
-                        base: Box::new(object.place),
-                        lanes,
+            Some(lanes) => {
+                let c = self.lvalue_result(e)?;
+                Ok(Projection::Place(Lvalue {
+                    c,
+                    place: Place {
+                        ty: self.types.ir_type(c),
+                        access: object.place.access,
+                        kind: PlaceKind::Swizzle {
+                            base: Box::new(object.place),
+                            lanes,
+                        },
                     },
-                },
-            })),
+                }))
+            }
             None => {
                 let value = self.read(base, object)?;
+                let c = self.result(e)?;
                 Ok(Projection::Value(self.operand(
                     e,
                     c,
@@ -1495,9 +1459,8 @@ impl Lowerer {
         }
     }
 
-    fn lane(&mut self, object: Lvalue, index: Operand) -> Result<Lvalue, ResolveError> {
-        let element = self.vector_element(object.c, &index)?;
-        let c = element.with(self.types.ctypes.quals(object.c));
+    fn lane(&mut self, e: &Expr, object: Lvalue, index: Operand) -> Result<Lvalue, ResolveError> {
+        let c = self.lvalue_result(e)?;
         Ok(Lvalue {
             c,
             place: Place {
@@ -1509,20 +1472,6 @@ impl Lowerer {
                 },
             },
         })
-    }
-
-    fn vector_element(
-        &mut self,
-        vector: QualType,
-        index: &Operand,
-    ) -> Result<QualType, ResolveError> {
-        if !self.types.ctypes.is_integer(index.c) {
-            return Err(ResolveError::Internal("vector index is not an integer"));
-        }
-        match self.types.ctypes.canonical_kind(vector) {
-            CTypeKind::Vector { element, .. } => Ok(*element),
-            _ => Err(ResolveError::Internal("expected vector")),
-        }
     }
 
     fn record_body(&self, ty: &Type) -> Option<(Vec<Span<Field>>, Option<RecordLayout>)> {
@@ -1629,29 +1578,50 @@ impl Lowerer {
         Ok(None)
     }
 
-    pub(super) fn generic_selected<'e>(
-        &mut self,
-        controlling: &crate::ast::GenericControl,
+    fn generic_selected<'e>(
+        &self,
+        e: &Expr,
         associations: &'e [crate::ast::GenericAssociation],
     ) -> Result<&'e Expr, ResolveError> {
-        let controlling = match controlling {
-            crate::ast::GenericControl::Type { ty } => self.resolve_type_name(ty)?,
-            crate::ast::GenericControl::Expr(expr) => {
-                let ty = self.unevaluated(expr)?;
-                self.types.ctypes.lvalue_conversion(ty)
-            }
-        };
-        for association in associations {
-            if let crate::ast::GenericAssociation::Type { ty, .. } = association {
-                self.prepare_typeof(&ty.specifiers, &ty.declarator)?;
-            }
-        }
-        self.types.select_association(controlling, associations)
+        let id = self.selected_operand(e)?;
+        associations
+            .iter()
+            .map(|association| match association {
+                crate::ast::GenericAssociation::Default(value)
+                | crate::ast::GenericAssociation::Type { value, .. } => value,
+            })
+            .find(|value| value.id == id)
+            .ok_or(ResolveError::Internal(
+                "recorded generic association is missing",
+            ))
     }
 
-    fn unevaluated(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
-        let typed = self.types.typed(e)?;
-        Ok(self.types.ctypes.lvalue_conversion(typed.c))
+    fn chosen_expr<'e>(&self, e: &Expr, arguments: &'e [Expr]) -> Result<&'e Expr, ResolveError> {
+        let id = self.selected_operand(e)?;
+        arguments
+            .iter()
+            .find(|argument| argument.id == id)
+            .ok_or(ResolveError::Internal(
+                "recorded __builtin_choose_expr operand is missing",
+            ))
+    }
+
+    fn swizzle_lanes(&self, e: &Expr) -> Result<Lanes, ResolveError> {
+        match self.types.choices.get(&e.id) {
+            Some(Choice::Lanes(lanes)) => Ok(lanes.clone()),
+            _ => Err(ResolveError::Internal(
+                "swizzle not recorded by the checker",
+            )),
+        }
+    }
+
+    fn selected_operand(&self, e: &Expr) -> Result<NodeId, ResolveError> {
+        match self.types.choices.get(&e.id) {
+            Some(Choice::Operand(id)) => Ok(*id),
+            _ => Err(ResolveError::Internal(
+                "selection not recorded by the checker",
+            )),
+        }
     }
 
     fn callee(&mut self, e: &Expr) -> Result<(Callee, QualType), ResolveError> {
@@ -1704,11 +1674,16 @@ impl Lowerer {
                 };
                 let ordering = place.implicit_ordering();
                 let value = self.operand(e, c, ValueKind::Read { place, ordering });
-                return if bits.is_some() {
-                    self.types.promote_operand(&self.context, value, bits)
-                } else {
-                    Ok(value)
-                };
+                if bits.is_none() {
+                    return Ok(value);
+                }
+                let promoted = self.result(e)?;
+                return self.types.arithmetic_conversion(
+                    &self.context,
+                    value,
+                    promoted,
+                    ConversionReason::Promotion,
+                );
             }
         };
         Ok(self.operand(e, c, kind))
@@ -1721,18 +1696,13 @@ impl Lowerer {
         left: Operand,
         right: Operand,
     ) -> Result<Operand, ResolveError> {
+        let c = self.computation(e)?;
         let lp = self.types.ctypes.pointee(left.c);
         let rp = self.types.ctypes.pointee(right.c);
         match (op, lp, rp) {
-            (BinaryOp::Sub, Some(element), Some(other)) => {
-                let a = self.types.ctypes.canonical(element).local_unqualified();
-                let b = self.types.ctypes.canonical(other).local_unqualified();
-                if !self.types.ctypes.compatible(a, b) {
-                    return Err(ResolveError::Internal("incompatible pointer subtraction"));
-                }
+            (BinaryOp::Sub, Some(element), Some(_)) => {
                 let element = self.types.ir_type(element);
                 self.types.require_pointer_element(&element)?;
-                let c = self.types.ctypes.ptrdiff_type(&self.context.target);
                 Ok(self.operand(
                     e,
                     c,
@@ -1744,19 +1714,12 @@ impl Lowerer {
                 ))
             }
             (BinaryOp::Add | BinaryOp::Sub, Some(element), None) => {
-                self.pointer_offset(e, left, right, element, op == BinaryOp::Sub)
+                self.pointer_offset(e, c, left, right, element, op == BinaryOp::Sub)
             }
             (BinaryOp::Add, None, Some(element)) => {
-                self.pointer_offset(e, right, left, element, false)
+                self.pointer_offset(e, c, right, left, element, false)
             }
             _ => {
-                let c = *self
-                    .types
-                    .computation_types
-                    .get(&e.id)
-                    .ok_or(ResolveError::Internal(
-                        "operation type not recorded by the checker",
-                    ))?;
                 let (ty, kind) = self.context.emit_binary(op, left.value, right.value)?;
                 Ok(Operand {
                     value: self.value(e, ty, kind),
@@ -1769,6 +1732,7 @@ impl Lowerer {
     fn pointer_offset(
         &mut self,
         e: &Expr,
+        c: QualType,
         pointer: Operand,
         amount: Operand,
         element: QualType,
@@ -1781,7 +1745,7 @@ impl Lowerer {
         }
         Ok(self.operand(
             e,
-            pointer.c,
+            c,
             ValueKind::PointerOffset {
                 pointer: Box::new(pointer.value),
                 amount: Box::new(amount.value),
@@ -1833,9 +1797,6 @@ impl Lowerer {
     ) -> Result<(QualType, Option<Value>), ResolveError> {
         if let ExprKind::Paren(inner) = &operand.value {
             return self.unevaluated_type(inner);
-        }
-        if let ExprKind::StringLiteral(lit) = &operand.value {
-            return Ok((self.types.string_type(lit), None));
         }
         let typed = self.types.typed(operand)?;
         if typed.bits.is_some() {
@@ -1953,23 +1914,21 @@ impl Lowerer {
 
     pub fn expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
         let lowered = self.lower_expr(e).map_err(|error| error.at(e.expansion))?;
-        if let Ok(typed) = self.types.typed(e) {
-            let typer = self.types.rvalue_type(typed);
-            if typer != lowered.c {
-                return Err(self.disagreement(e, typer, lowered.c));
-            }
-        }
-        Ok(lowered)
+        let c = self.result(e).map_err(|error| error.at(e.expansion))?;
+        Ok(Operand { c, ..lowered })
     }
 
-    fn disagreement(&self, e: &Expr, typer: QualType, lowering: QualType) -> ResolveError {
-        let spell = |c| self.types.ctypes.spelling(c, &self.types.definitions);
-        ResolveError::TypeDisagreement {
-            kind: e.value.name(),
-            typer: spell(typer),
-            lowering: spell(lowering),
+    pub(super) fn result(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
+        let typed = self.types.typed(e)?;
+        Ok(self.types.rvalue_type(typed))
+    }
+
+    fn lvalue_result(&mut self, e: &Expr) -> Result<QualType, ResolveError> {
+        let typed = self.types.typed(e)?;
+        if !typed.lvalue {
+            return Err(ResolveError::Internal("place lowered for an rvalue"));
         }
-        .at(e.expansion)
+        Ok(typed.c)
     }
 
     fn lower_expr(&mut self, e: &Expr) -> Result<Operand, ResolveError> {
@@ -2010,8 +1969,9 @@ impl Lowerer {
                 self.read(e, place)
             }
             ExprKind::CharLiteral(lit) => {
-                let (ty, number) = self.types.character_constant(lit)?;
-                Ok(self.operand(e, ty, ValueKind::Constant(number)))
+                let (_, number) = self.types.character_constant(lit)?;
+                let c = self.result(e)?;
+                Ok(self.operand(e, c, ValueKind::Constant(number)))
             }
             ExprKind::LabelAddress(label) => {
                 let id = self
@@ -2021,18 +1981,17 @@ impl Lowerer {
                     .find(|r| r.id == label.id)
                     .map(|r| r.binding)
                     .ok_or(ResolveError::Internal("missing label address binding"))?;
-                let void = self.types.ctypes.qual(CTypeKind::Void);
-                let ty = self.types.ctypes.pointer(void);
-                Ok(self.operand(e, ty, ValueKind::LabelAddress(id)))
+                let c = self.result(e)?;
+                Ok(self.operand(e, c, ValueKind::LabelAddress(id)))
             }
             ExprKind::NullPtrLiteral => {
-                let ty = self.types.ctypes.qual(CTypeKind::NullPtr);
-                Ok(self.operand(e, ty, ValueKind::Null))
+                let c = self.result(e)?;
+                Ok(self.operand(e, c, ValueKind::Null))
             }
             ExprKind::StringLiteral(lit) => {
                 let mut units = lit.execution_units(self.context.target.wchar_width);
                 units.push(0);
-                let c = self.types.string_type(lit);
+                let c = self.lvalue_result(e)?;
                 let ty = self.types.ir_type(c);
                 let id = self.fresh();
                 let initializer = self.value(e, ty.clone(), ValueKind::CodeUnits(units));
@@ -2075,7 +2034,8 @@ impl Lowerer {
                 let is_void = self.types.ctypes.is_void(to);
                 let value_expr = value;
                 let value = self.expr(value)?;
-                let cast = if let Some(index) = self.types.union_cast_member(to, value.c)? {
+                let cast = if let Some(Choice::Member(index)) = self.types.choices.get(&e.id) {
+                    let index = *index;
                     self.operand(
                         e,
                         to,
@@ -2108,8 +2068,8 @@ impl Lowerer {
             } => {
                 let place = self.place(operand)?;
                 self.addressable(&place.place)?;
-                let ty = self.types.ctypes.pointer(place.c);
-                Ok(self.operand(e, ty, ValueKind::AddressOf(place.place)))
+                let c = self.result(e)?;
+                Ok(self.operand(e, c, ValueKind::AddressOf(place.place)))
             }
             ExprKind::Unary {
                 op: UnaryOp::PreIncrement | UnaryOp::PreDecrement,
@@ -2167,7 +2127,7 @@ impl Lowerer {
                         ValueKind::Constant(Number::Integer(0u8.into())),
                     ));
                 };
-                let c = self.types.ctypes.arithmetic_component(value.c);
+                let c = self.result(e)?;
                 Ok(self.operand(
                     e,
                     c,
@@ -2384,11 +2344,8 @@ impl Lowerer {
                     },
                 ))
             }
-            ExprKind::Generic {
-                controlling,
-                associations,
-            } => {
-                let selected = self.generic_selected(controlling, associations)?;
+            ExprKind::Generic { associations, .. } => {
+                let selected = self.generic_selected(e, associations)?;
                 self.expr(selected)
             }
             ExprKind::Call {
@@ -2405,7 +2362,7 @@ impl Lowerer {
                 let operand = constant_p_operand(callee, arguments)
                     .ok_or(ResolveError::Internal("__builtin_constant_p"))?;
                 let constant = super::types::is_folded(&self.expr(operand)?.value);
-                let c = self.types.ctypes.int();
+                let c = self.result(e)?;
                 let value = self.operand(
                     e,
                     c,
@@ -2427,7 +2384,7 @@ impl Lowerer {
             ExprKind::Call { callee, arguments }
                 if choose_expr_operands(callee, arguments).is_some() =>
             {
-                let chosen = self.types.chosen_expr(callee, arguments)?;
+                let chosen = self.chosen_expr(e, arguments)?;
                 self.expr(chosen)
             }
             ExprKind::Call { callee, arguments } if va_builtin(callee).is_some() => {
@@ -2518,7 +2475,7 @@ impl Lowerer {
             }
             ExprKind::TypesCompatible { left_ty, right_ty } => {
                 let (compatible, compared) = self.types.types_compatible(left_ty, right_ty)?;
-                let c = self.types.ctypes.int();
+                let c = self.result(e)?;
                 let value = self.operand(
                     e,
                     c,
@@ -2683,17 +2640,6 @@ pub(super) enum VaBuiltin {
     Start,
     End,
     Copy,
-}
-
-fn conversion_context(reason: ConversionReason) -> ConversionContext {
-    match reason {
-        ConversionReason::Assign => ConversionContext::Assign,
-        ConversionReason::Arg | ConversionReason::Vararg => ConversionContext::Arg,
-        ConversionReason::Return => ConversionContext::Return,
-        ConversionReason::Explicit | ConversionReason::Promotion | ConversionReason::UsualArith => {
-            ConversionContext::Cast
-        }
-    }
 }
 
 pub(super) fn specially_lowered(callee: &Expr, arguments: &[Expr]) -> bool {

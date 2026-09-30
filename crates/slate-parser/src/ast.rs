@@ -294,44 +294,6 @@ impl std::fmt::Display for ExprKind {
     }
 }
 
-impl ExprKind {
-    pub fn name(&self) -> &'static str {
-        match self {
-            Self::Identifier(_) => "Identifier",
-            Self::IntegerLiteral(_) => "IntegerLiteral",
-            Self::FloatLiteral(_) => "FloatLiteral",
-            Self::CharLiteral(_) => "CharLiteral",
-            Self::StringLiteral(_) => "StringLiteral",
-            Self::Paren(_) => "Paren",
-            Self::Unary { .. } => "Unary",
-            Self::Postfix { .. } => "Postfix",
-            Self::Binary { .. } => "Binary",
-            Self::Assign { .. } => "Assign",
-            Self::Conditional { .. } => "Conditional",
-            Self::Comma { .. } => "Comma",
-            Self::Call { .. } => "Call",
-            Self::Member { .. } => "Member",
-            Self::Index { .. } => "Index",
-            Self::Cast { .. } => "Cast",
-            Self::CompoundLiteral { .. } => "CompoundLiteral",
-            Self::SizeOfExpr(_) => "SizeOfExpr",
-            Self::SizeOfType { .. } => "SizeOfType",
-            Self::AlignOf { .. } => "AlignOf",
-            Self::AlignOfExpr(_) => "AlignOfExpr",
-            Self::OffsetOf { .. } => "OffsetOf",
-            Self::Generic { .. } => "Generic",
-            Self::VaArg { .. } => "VaArg",
-            Self::TypesCompatible { .. } => "TypesCompatible",
-            Self::BitCast { .. } => "BitCast",
-            Self::ConvertVector { .. } => "ConvertVector",
-            Self::LabelAddress(_) => "LabelAddress",
-            Self::StatementExpression(_) => "StatementExpression",
-            Self::BoolLiteral(_) => "BoolLiteral",
-            Self::NullPtrLiteral => "NullPtrLiteral",
-        }
-    }
-}
-
 #[derive(Debug, Clone, PartialEq)]
 pub enum Designator {
     Array(Expr),

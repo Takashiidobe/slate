@@ -69,7 +69,7 @@ One expression type, built by `const_expr::Parser` in every context
 (statements, initializers, bounds, bit widths, `typeof`, attributes,
 `#if`).
 
-- `src/ast.rs`: `impl Display for ExprKind` and `ExprKind::name`.
+- `src/ast.rs`: `impl Display for ExprKind`.
 - `src/const_expr.rs`: `Parser::evaluate_expr`; fold to `i64` or return
   `ConstExprError::NotConstant`. `evaluate_wide` / `contains_wide` only for
   new arithmetic.

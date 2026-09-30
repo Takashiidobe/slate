@@ -22,13 +22,34 @@ pub enum CastKind {
     RecordCopy,
     Arithmetic,
     Vector,
-    EnumToInt,
+    EnumToInt(EnumTail),
     IntToEnum,
     Pointer,
     PtrToInt,
     PtrToBool,
     IntToPtr,
     NullPointer,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum EnumTail {
+    Identity,
+    Arithmetic,
+    Vector,
+    IntToEnum,
+    IntToPtr,
+}
+
+impl EnumTail {
+    pub fn kind(self) -> CastKind {
+        match self {
+            Self::Identity => CastKind::Identity,
+            Self::Arithmetic => CastKind::Arithmetic,
+            Self::Vector => CastKind::Vector,
+            Self::IntToEnum => CastKind::IntToEnum,
+            Self::IntToPtr => CastKind::IntToPtr,
+        }
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -132,11 +153,27 @@ impl CTypes {
                 "conversion between a fixed-point type and a complex or imaginary type",
             ));
         }
-        if self.enum_underlying(from).is_some() {
+        if let Some(underlying) = self.enum_underlying(from) {
             if is_null_pointer_constant && self.is_pointer(to) {
                 return Ok(Conversion::plain(CastKind::NullPointer));
             }
-            return Ok(Conversion::plain(CastKind::EnumToInt));
+            let tail = self.classify_conversion(underlying, to, context, false)?;
+            let kind = match tail.kind {
+                CastKind::Identity => EnumTail::Identity,
+                CastKind::Arithmetic => EnumTail::Arithmetic,
+                CastKind::Vector => EnumTail::Vector,
+                CastKind::IntToEnum => EnumTail::IntToEnum,
+                CastKind::IntToPtr => EnumTail::IntToPtr,
+                _ => {
+                    return Err(ResolveError::Rejected(
+                        "incompatible or unsupported conversion",
+                    ));
+                }
+            };
+            return Ok(Conversion {
+                kind: CastKind::EnumToInt(kind),
+                warning: tail.warning,
+            });
         }
         if self.enum_underlying(to).is_some() {
             return Ok(Conversion::plain(CastKind::IntToEnum));

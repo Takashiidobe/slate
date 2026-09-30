@@ -138,18 +138,23 @@ level), `compatible_unqualified`, `composite`.
   ones are `SemaError`s from `analyze`. Lowering's `convert_recorded` emits
   the recorded kind and warning; a missing record is `Internal`.
 - Also recorded: braced-initializer elements (initializer walk) and atomic
-  value operands (`AtomicBuiltin::operands`). Still classified in lowering
-  (`convert`): builtin and atomic arguments such as sizes, orders and fetch
-  operands, K&R parameters and VLA extents (slate-parser-ygrj.3).
+  value operands (`AtomicBuiltin::operands`). Lowering has no unrecorded
+  `convert`; nothing classifies a conversion there.
 - `conversions` is `HashMap<NodeId, Conversion>` with `Conversion { kind,
-  warning }`: one per operand node, no target type; `convert_recorded`'s
-  caller still supplies the target (slate-parser-ygrj.3).
+  warning }`: one per operand node, no target type. `convert_recorded`'s
+  caller supplies the target from a fact: the callee signature's
+  parameter, the cast's type name, the assigned place, the declared return
+  type, the element target. Keeping the target out of the record keeps
+  VM targets bound to lowering's extents.
+- `CastKind::EnumToInt(EnumTail)` carries the second hop (underlying
+  integer to target: identity, arithmetic, vector, int-to-enum or
+  int-to-pointer), so `emit_cast` never classifies again.
 - Operand conversions are recorded per edge in `operand_conversions`:
   `(owner NodeId, Slot) → Vec<Step { kind, to, reason }>`. The owner is the
   operator (or the `switch` / case label statement); a slot names the
   operand (`Left`, `Right`, `Operand`, `Then`, `Else`, `Result`,
-  `Discriminant`, `CaseStart`, `CaseEnd`), so GNU `x ?: y` and compound
-  assignment never collide. `StepKind::Arithmetic` emits through
+  `Discriminant`, `CaseStart`, `CaseEnd`, `Argument(i)`, `Extent`,
+  `Parameter`), so GNU `x ?: y` and compound assignment never collide. `StepKind::Arithmetic` emits through
   `arithmetic_conversion` (it wraps enums itself), `StepKind::Cast` through
   `emit_cast`. An empty list means no conversion; a missing key is
   `Internal`. `computation_types` holds the type an arithmetic operation
@@ -157,10 +162,21 @@ level), `compatible_unqualified`, `composite`.
   `binary_type`, `record_update`, `record_pointer_comparison`, the `?:`,
   unary and `Index` arms; the checker records `switch` / `case`
   (`record_switch`, `record_case`). Lowering applies them with `converted`
-  / `converted_statement`.
+  / `converted_at`.
+- Call arguments beyond the parameters (variadic and unprototyped) record
+  their default promotion as `Argument(i)` on the call (`call_type`), as
+  do the float builtins, `__builtin_fpclassify` arms, the atomic fetch
+  operand and `__atomic_is_lock_free`'s size and pointer. VLA sizes record
+  `Extent` on the size expression (`record_extent`); K&R parameters whose
+  promoted type differs record `Parameter` on the parameter and the
+  promoted type in `promoted_parameters`. `record_casts` records a chain
+  of casts, classifying each hop from the previous target.
+- Atomic lowering's own values (a `_Bool` object handled as `unsigned
+  char`, pointer bitwise ops through `size_t`, min/max signedness) are
+  emitter choices: it names the `CastKind` directly.
 - Recorded targets may hold unbound extents (`vla<T, *>`); `operand_steps`
-  then drops the owner's memo and types it again under lowering's bound
-  extents.
+  and `computation` then drop the owner's memo and type it again under
+  lowering's bound extents.
 - Pointer comparisons convert both operands to one operand's type (the
   non-null pointer side), not clang's composite type; null pointer
   constants use the typer's rule, so `(const void *)0` is a pointer cast,
