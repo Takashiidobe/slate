@@ -29,30 +29,32 @@ impl fmt::Display for IncludeDirective {
     }
 }
 
+// a header name spelled out before expansion; tokens after it are ignored, as in clang and gcc
+pub(super) fn spells_header_name(arguments: &[Span<Token>]) -> bool {
+    match arguments.first().map(|token| &token.value) {
+        Some(Token::StringLit(_)) => true,
+        Some(Token::Less) => arguments.iter().any(|token| token.value == Token::Greater),
+        _ => false,
+    }
+}
+
 pub(super) fn include_target(
     src: &str,
     directive: &Directive,
 ) -> Result<IncludeDirective, PPFailure> {
-    let target = match directive.arguments.as_slice() {
-        [
-            Span {
-                value: Token::StringLit(name),
-                ..
-            },
-        ] => Some((name.to_string(), false)),
-        [open, middle @ .., close]
-            if open.value == Token::Less && close.value == Token::Greater =>
-        {
+    let arguments = directive.arguments.as_slice();
+    let close = arguments
+        .iter()
+        .position(|token| token.value == Token::Greater);
+    let target = match (arguments.first().map(|token| &token.value), close) {
+        (Some(Token::StringLit(name)), _) => Some((name.to_string(), false)),
+        (Some(Token::Less), Some(close_at)) => {
+            let (open, close) = (&arguments[0], &arguments[close_at]);
             let name = if open.macro_origin.is_none() && close.macro_origin.is_none() {
                 src.get(open.spelling.offset + open.spelling.length..close.spelling.offset)
                     .map(str::to_string)
             } else {
-                Some(
-                    middle
-                        .iter()
-                        .map(|token| String::from(&token.value))
-                        .collect(),
-                )
+                Some(joined_spelling(&arguments[1..close_at]))
             };
             name.map(|name| (name, true))
         }
@@ -72,6 +74,17 @@ pub(super) fn include_target(
         (_, true) => IncludeDirective::Angled(name),
         (_, false) => IncludeDirective::Quoted(name),
     })
+}
+
+fn joined_spelling(tokens: &[Span<Token>]) -> String {
+    let mut name = String::new();
+    for (index, token) in tokens.iter().enumerate() {
+        if index > 0 && token.leading_space {
+            name.push(' ');
+        }
+        name.push_str(&String::from(&token.value));
+    }
+    name
 }
 
 pub(super) fn read_source(path: &Path) -> Result<String, PPErrorKind> {

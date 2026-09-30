@@ -83,8 +83,12 @@ from `<command line>` ([compiler-arg-rules](compiler-arg-rules.md#forced-files-a
   include tries the includer's directory first and inherits its
   `HeaderKind`; `#include_next` resumes after the current file's
   directory.
-- Angled names are taken from raw source between `<` and `>`; from a macro,
-  the tokens are joined.
+- A header name spelled before expansion (`"..."`, or `<` with a `>` on the
+  line) is used as is, and tokens after it are ignored. Otherwise the
+  operands are expanded first (`#include <foo` with `#define foo stddef.h>`).
+  Angled names come from raw source between `<` and `>`, or, when either
+  bracket came from a macro, from the tokens joined with their leading
+  spaces.
 - `#pragma once` keys on the canonical path.
 - `MAX_INCLUDE_DEPTH = 200`. Cycles are detected only by the limit, as in
   clang and gcc.
@@ -145,21 +149,27 @@ token plus an interned `HideSet`; file tokens start empty.
 - `#if`, `#include`, `#embed` and `#line` operands expand with
   `expand_isolated` too (`expand_macros`), so they never read past the
   directive.
-- `emit_line` then classifies keywords per the dialect's features and
-  splits out `_Pragma` / `__pragma`.
+- `read_piece` takes each final token of a group and recognizes `_Pragma`
+  and `__pragma` there, with an expanded lookahead for `(`. The pragma
+  takes effect at that point, so a `pop_macro` changes the rest of the
+  line. `emit_line` classifies keywords per the dialect's features.
 
 ## Conditionals
 
 - `#ifdef`-family: `is_defined` = defined macro or `is_defined_operator`
   (`__has_include` etc. for the flavor).
-- `#if`: `expand_condition` (operands of `defined` and `__has_*` left
-  unexpanded) → `__has_embed` → `__has_include` → `expand_has_checks` →
-  `const_expr::Parser::evaluate_with_defined`.
+- `#if`: `expand_condition` → `__has_embed` → `__has_include` →
+  `expand_has_checks` → `const_expr::Parser::evaluate_with_defined`.
+  `expand_condition` runs the stream expander over the directive, and a
+  `defined` or `__has_*` name takes its operand unexpanded from the stream.
+  That includes a `defined` an expansion produced, with its operand from
+  the expansion or from the directive after it, as gcc and clang do.
 
 ## Pragmas and line control
 
 - `_Pragma("...")` is destringized and re-lexed at the operator's location;
   `__pragma(...)` (with `microsoft_extensions`) takes its balanced tokens.
+  Both are recognized in the expanded stream ([Expansion](#expansion)).
   Both become `Pragma` nodes, like `#pragma`.
 - `record_pragma` acts on `push_macro`, `pop_macro`, and `once`; every
   other pragma passes through to the parser.

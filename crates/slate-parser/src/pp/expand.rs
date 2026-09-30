@@ -1,6 +1,6 @@
 use super::error::PPFailure;
 use super::hide_set::HideSet;
-use super::syntax::Line;
+use super::syntax::{Directive, DirectiveName, Line};
 use super::{FileInput, MacroDef, Preprocessor, stringized_source};
 use crate::ast::{Loc, MacroOrigin, MacroOriginLink, Span};
 use crate::lexer::{Token, TokenSpanExt};
@@ -84,6 +84,15 @@ impl Stamp {
         token.macro_origin = Some(self.origin.clone());
         token
     }
+}
+
+pub(super) enum Piece {
+    Code(Span<Token>),
+    Pragma {
+        tokens: Vec<Span<Token>>,
+        spelling: Loc,
+        expansion: Loc,
+    },
 }
 
 struct Invocation {
@@ -304,27 +313,143 @@ impl Preprocessor<'_> {
             .collect())
     }
 
+    // `defined` and `__has_*` take their operands unexpanded, even when an expansion produced them
     pub(super) fn expand_condition(
         &mut self,
         tokens: &[Span<Token>],
     ) -> Result<Vec<Span<Token>>, PPFailure> {
-        let operands = unexpanded_operands(tokens);
-        let mut expanded = Vec::with_capacity(tokens.len());
-        let mut start = 0;
-        while start < tokens.len() {
-            let unexpanded = operands[start];
-            let end = operands[start..]
-                .iter()
-                .position(|&flag| flag != unexpanded)
-                .map_or(tokens.len(), |offset| start + offset);
-            if unexpanded {
-                expanded.extend_from_slice(&tokens[start..end]);
-            } else {
-                expanded.extend(self.expand_macros(&tokens[start..end])?);
+        let tokens = tokens.iter().cloned().map(PPToken::from).collect();
+        let mut stream = Stream::new(tokens, None);
+        let mut expanded = Vec::new();
+        while let Some(token) = self.next_raw(&mut stream, false)? {
+            let operator = match &token.token.value {
+                Token::Ident(name) if name == "defined" => Some(true),
+                Token::Ident(name) if name.starts_with("__has_") => Some(false),
+                _ => None,
+            };
+            let Some(defined) = operator else {
+                expanded.extend(
+                    self.expand_token(token, &mut stream)?
+                        .map(|token| token.token),
+                );
+                continue;
+            };
+            expanded.push(token.token);
+            if defined && !stream.next_is_lparen() {
+                expanded.extend(stream.pending.pop().map(|token| token.token));
+                continue;
             }
-            start = end;
+            let mut depth = 0usize;
+            while stream.next_is_lparen() || depth > 0 {
+                let Some(token) = stream.pending.pop() else {
+                    break;
+                };
+                match token.token.value {
+                    Token::LParen => depth += 1,
+                    Token::RParen => depth -= 1,
+                    _ => {}
+                }
+                expanded.push(token.token);
+                if depth == 0 {
+                    break;
+                }
+            }
         }
         Ok(expanded)
+    }
+
+    fn next_expanded(
+        &mut self,
+        stream: &mut Stream,
+        across_lines: bool,
+    ) -> Result<Option<PPToken>, PPFailure> {
+        while let Some(token) = self.next_raw(stream, across_lines)? {
+            if let Some(token) = self.expand_token(token, stream)? {
+                return Ok(Some(token));
+            }
+        }
+        Ok(None)
+    }
+
+    // false once the stream is exhausted
+    pub(super) fn read_piece(
+        &mut self,
+        stream: &mut Stream,
+        pieces: &mut Vec<Piece>,
+    ) -> Result<bool, PPFailure> {
+        let Some(token) = self.next_expanded(stream, false)? else {
+            return Ok(false);
+        };
+        let microsoft = match &token.token.value {
+            Token::Ident(name) if name == "_Pragma" => Some(false),
+            Token::Ident(name)
+                if name == "__pragma" && self.dialect.features().microsoft_extensions =>
+            {
+                Some(true)
+            }
+            _ => None,
+        };
+        let Some(microsoft) = microsoft else {
+            pieces.push(Piece::Code(token.token));
+            return Ok(true);
+        };
+        let lparen = match self.next_expanded(stream, true)? {
+            Some(lparen) if lparen.token.value == Token::LParen => lparen,
+            next => {
+                stream.push_front(next.into_iter().collect());
+                pieces.push(Piece::Code(token.token));
+                return Ok(true);
+            }
+        };
+        let mut consumed = vec![token.token, lparen.token];
+        let tokens = if microsoft {
+            let mut depth = 1usize;
+            while depth > 0
+                && let Some(token) = self.next_expanded(stream, true)?
+            {
+                match token.token.value {
+                    Token::LParen => depth += 1,
+                    Token::RParen => depth -= 1,
+                    _ => {}
+                }
+                consumed.push(token.token);
+            }
+            (depth == 0).then(|| consumed[2..consumed.len() - 1].to_vec())
+        } else {
+            for _ in 0..2 {
+                consumed.extend(self.next_expanded(stream, true)?.map(|token| token.token));
+            }
+            match (consumed.len(), consumed.value_at(2), consumed.value_at(3)) {
+                (4, Some(Token::StringLit(value)), Some(Token::RParen)) => {
+                    let origin = Span::cover((), &consumed);
+                    let decoded = value.replace("\\\"", "\"").replace("\\\\", "\\");
+                    Some(
+                        self.lex(&decoded)
+                            .into_iter()
+                            .map(|token| origin.clone().with_value(token))
+                            .collect(),
+                    )
+                }
+                _ => None,
+            }
+        };
+        let Some(tokens) = tokens else {
+            pieces.extend(consumed.into_iter().map(Piece::Code));
+            return Ok(true);
+        };
+        let origin = Span::cover((), &consumed);
+        self.record_pragma(&Directive {
+            name: DirectiveName::Pragma,
+            arguments: tokens.clone(),
+            name_loc: origin.expansion,
+            loc: origin.expansion,
+        });
+        pieces.push(Piece::Pragma {
+            tokens,
+            spelling: origin.spelling,
+            expansion: origin.expansion,
+        });
+        Ok(true)
     }
 }
 
@@ -459,35 +584,6 @@ fn local_calendar_time(seconds: i64) -> Option<(i64, i64, i64, i64, i64, i64)> {
         i64::from(local.tm_min),
         i64::from(local.tm_sec),
     ))
-}
-
-fn unexpanded_operands(tokens: &[Span<Token>]) -> Vec<bool> {
-    let mut operands = vec![false; tokens.len()];
-    let mut i = 0;
-    while i < tokens.len() {
-        let operand_end = match tokens.value_at(i) {
-            Some(Token::Ident(name)) if name == "defined" => {
-                Some(if tokens.value_at(i + 1) == Some(&Token::LParen) {
-                    i + 4
-                } else {
-                    i + 2
-                })
-            }
-            Some(Token::Ident(name)) if name.starts_with("__has_") => {
-                invocation_arguments(tokens, i + 1).map(|(_, _, end)| end)
-            }
-            _ => None,
-        };
-        match operand_end {
-            Some(end) => {
-                let end = end.min(tokens.len());
-                operands[i..end].fill(true);
-                i = end;
-            }
-            None => i += 1,
-        }
-    }
-    operands
 }
 
 type SplitArguments = (Vec<Vec<Span<Token>>>, Vec<Span<Token>>, usize);

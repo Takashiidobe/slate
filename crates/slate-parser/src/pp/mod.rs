@@ -16,7 +16,7 @@ use crate::files::{Files, SearchPaths, display_path};
 use crate::lexer::{Lexer, Token, TokenSpanExt, keyword_token};
 pub use error::{DirectiveDiagnostic, DirectiveErrors, PPError};
 use error::{PPErrorKind, PPFailure};
-use expand::{PPToken, Stream};
+use expand::{PPToken, Piece, Stream};
 use hide_set::HideSets;
 use include::{include_target, read_source};
 use miette::Severity;
@@ -709,16 +709,11 @@ impl<'a> Preprocessor<'a> {
             file.group.extend(&line.tokens);
             let tokens = line.tokens.into_iter().map(PPToken::from).collect();
             let mut stream = Stream::new(tokens, Some(&mut file));
-            let mut expanded = Vec::new();
-            while let Some(token) = self.next_raw(&mut stream, false)? {
-                expanded.extend(
-                    self.expand_token(token, &mut stream)?
-                        .map(|token| token.token),
-                );
-            }
+            let mut pieces = Vec::new();
+            while self.read_piece(&mut stream, &mut pieces)? {}
             let group = std::mem::take(&mut file.group);
             if let Some(loc) = group.loc() {
-                nodes.extend(self.emit_line(loc, expanded));
+                nodes.extend(self.emit_line(loc, pieces));
             }
             self.push_comments(&mut nodes, group.trailing);
             nodes.extend(group.deferred);
@@ -852,10 +847,7 @@ impl<'a> Preprocessor<'a> {
             DirectiveName::Define => self.record_define(directive)?,
             DirectiveName::Include | DirectiveName::IncludeNext => {
                 let mut expanded = directive.clone();
-                if !matches!(
-                    directive.arguments.value_at(0),
-                    Some(Token::StringLit(_) | Token::Less)
-                ) {
+                if !include::spells_header_name(&directive.arguments) {
                     expanded.arguments = self.expand_macros(&directive.arguments)?;
                 }
                 let include = include_target(self.source(directive.loc.file), &expanded)?;
@@ -884,121 +876,53 @@ impl<'a> Preprocessor<'a> {
         Ok(())
     }
 
-    fn emit_line(&mut self, loc: Loc, expanded: Vec<Span<Token>>) -> Vec<PPNode> {
+    fn emit_line(&self, loc: Loc, pieces: Vec<Piece>) -> Vec<PPNode> {
         let provenance = self.provenance(loc);
-        let expanded = expanded
-            .into_iter()
-            .map(|token| self.classify_keyword(token).with_provenance(provenance))
-            .collect::<Vec<_>>();
+        let finish = |token: Span<Token>| self.classify_keyword(token).with_provenance(provenance);
+        let code_node = |code: Vec<Span<Token>>| {
+            Span::new(
+                PPNodeKind::Code {
+                    tokens: code,
+                    provenance,
+                },
+                loc,
+                loc,
+            )
+            .with_provenance(provenance)
+        };
         let mut nodes = Vec::new();
-        let mut code_start = 0;
-        let mut index = 0;
-        while index < expanded.len() {
-            if let Some((pragma_tokens, end)) = self.pragma_operator(&expanded, index) {
-                if code_start < index {
-                    let code = expanded[code_start..index].to_vec();
+        let mut code = Vec::new();
+        for piece in pieces {
+            match piece {
+                Piece::Code(token) => code.push(finish(token)),
+                Piece::Pragma {
+                    tokens,
+                    spelling,
+                    expansion,
+                } => {
+                    if !code.is_empty() {
+                        nodes.push(code_node(std::mem::take(&mut code)));
+                    }
+                    let text = tokens_source(tokens.values());
                     nodes.push(
                         Span::new(
-                            PPNodeKind::Code {
-                                tokens: code,
+                            PPNodeKind::Pragma {
+                                text,
+                                tokens: tokens.into_iter().map(finish).collect(),
                                 provenance,
                             },
-                            loc,
-                            loc,
+                            spelling,
+                            expansion,
                         )
                         .with_provenance(provenance),
                     );
                 }
-                let origin = Span::cover((), &expanded[index..end]);
-                let classified_tokens = pragma_tokens
-                    .iter()
-                    .cloned()
-                    .map(|token| self.classify_keyword(token))
-                    .collect::<Vec<_>>();
-                let pragma_loc = expanded[index].spelling.through(expanded[end - 1].spelling);
-                self.record_pragma(&Directive {
-                    name: DirectiveName::Pragma,
-                    arguments: pragma_tokens.clone(),
-                    name_loc: origin.expansion,
-                    loc: origin.expansion,
-                });
-                nodes.push(
-                    Span::new(
-                        PPNodeKind::Pragma {
-                            text: tokens_source(pragma_tokens.values()),
-                            tokens: classified_tokens,
-                            provenance,
-                        },
-                        pragma_loc,
-                        origin.expansion,
-                    )
-                    .with_provenance(provenance),
-                );
-                index = end;
-                code_start = index;
-            } else {
-                index += 1;
             }
         }
-        if code_start < expanded.len() {
-            let code = expanded[code_start..].to_vec();
-            nodes.push(
-                Span::new(
-                    PPNodeKind::Code {
-                        tokens: code,
-                        provenance,
-                    },
-                    loc,
-                    loc,
-                )
-                .with_provenance(provenance),
-            );
+        if !code.is_empty() {
+            nodes.push(code_node(code));
         }
         nodes
-    }
-
-    fn pragma_operator(
-        &self,
-        tokens: &[Span<Token>],
-        index: usize,
-    ) -> Option<(Vec<Span<Token>>, usize)> {
-        let Some(Token::Ident(name)) = tokens.value_at(index) else {
-            return None;
-        };
-        if tokens.value_at(index + 1) != Some(&Token::LParen) {
-            return None;
-        }
-        match name.as_str() {
-            "_Pragma" => {
-                let Some(Token::StringLit(value)) = tokens.value_at(index + 2) else {
-                    return None;
-                };
-                if tokens.value_at(index + 3) != Some(&Token::RParen) {
-                    return None;
-                }
-                let origin = Span::cover((), &tokens[index..index + 4]);
-                let decoded = value.replace("\\\"", "\"").replace("\\\\", "\\");
-                let pragma_tokens = self
-                    .lex(&decoded)
-                    .into_iter()
-                    .map(|token| origin.clone().with_value(token))
-                    .collect();
-                Some((pragma_tokens, index + 4))
-            }
-            "__pragma" if self.dialect.features().microsoft_extensions => {
-                let mut depth = 0usize;
-                let close = (index + 1..tokens.len()).find(|&at| {
-                    match tokens[at].value {
-                        Token::LParen => depth += 1,
-                        Token::RParen => depth -= 1,
-                        _ => {}
-                    }
-                    depth == 0
-                })?;
-                Some((tokens[index + 2..close].to_vec(), close + 1))
-            }
-            _ => None,
-        }
     }
 
     fn expand_embed(&mut self, directive: &Directive) -> Result<PPNode, PPFailure> {
