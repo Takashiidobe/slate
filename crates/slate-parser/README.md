@@ -115,6 +115,27 @@ Compiler compatibility flags currently recognized include `-fwrapv`,
 validation logic is in [`src/compiler_args.rs`](src/compiler_args.rs) and
 [`src/compiler_options.rs`](src/compiler_options.rs).
 
+## Trophy case
+
+Popular C projects where every translation unit that `clang -fsyntax-only`
+accepts also goes through `slate-parser ir`. Each project uses its own
+`compile_commands.json` flags, with `--flavor=clang` on
+`x86_64-unknown-linux-gnu`.
+
+| Project | Revision | Translation units |
+| --- | --- | --- |
+| [SQLite](https://sqlite.org) | `0eaef28cf2` | 102 |
+| [giflib](https://giflib.sourceforge.net) | `6.1.3-4-ga8e3114` | 24 |
+| [cJSON](https://github.com/DaveGamble/cJSON) | `fb16e5c` | 23 |
+| [libyaml](https://github.com/yaml/libyaml) | `0.2.5-16-g893682b` | 22 |
+| [LZ4](https://github.com/lz4/lz4) | `0774d05` | 12 |
+| [chibicc](https://github.com/rui314/chibicc) | `90d1f7f` | 9 |
+| [yyjson](https://github.com/ibireme/yyjson) | `757305b` | 1 |
+| [utf8proc](https://github.com/JuliaStrings/utf8proc) | `0075ed7` | 1 |
+
+Last swept 2026-09-29. Work toward the rest of the corpus is tracked in
+the `bd` epic `slate-parser-6x05`.
+
 ## Development
 
 The standard test gate is:
