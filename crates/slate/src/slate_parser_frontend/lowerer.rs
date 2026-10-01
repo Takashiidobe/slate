@@ -1,14 +1,26 @@
 use crate::backend::rust_ast::{self as rust, BinOp, Expr, FnDef, FnParam, Item, Prim, Stmt};
 use crate::function_identity::CallBinding;
 use crate::function_identity::FunctionIdentity;
-use slate_parser::ir::{self, BindingId, Number, PlaceKind, ValueKind};
-use std::collections::HashMap;
+use slate_parser::ir::{self, BindingId, Number, PlaceKind, TypeId, ValueKind};
+use slate_parser::target_info::TargetInfo;
+use std::cell::RefCell;
+use std::collections::{BTreeMap, HashMap};
 
 type Result<T> = std::result::Result<T, super::Error>;
 
 struct FunctionName {
     rust: String,
     is_extern: bool,
+}
+
+struct Context<'a> {
+    names: HashMap<BindingId, FunctionName>,
+    bindings: HashMap<BindingId, String>,
+    strings: HashMap<BindingId, Vec<u8>>,
+    target: &'a TargetInfo,
+    types: HashMap<TypeId, &'a ir::TypeDefinition>,
+    record_names: HashMap<TypeId, String>,
+    records: RefCell<BTreeMap<u32, Option<std::result::Result<rust::RecordDef, String>>>>,
 }
 
 #[derive(Default)]
@@ -184,21 +196,41 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
             collect_statement_names(body, &mut bindings);
         }
     }
+    let cx = Context {
+        names,
+        bindings,
+        strings,
+        target: &module.target,
+        types: module
+            .types
+            .iter()
+            .map(|definition| (definition.value.id, &definition.value))
+            .collect(),
+        record_names: record_names(module),
+        records: RefCell::default(),
+    };
     let mut items = Vec::new();
     let mut externs = Vec::new();
     for function in &module.functions {
         let Some(body) = &function.body else {
-            let decl = lower_extern(function, &bindings);
+            let decl = lower_extern(function, &cx);
             if let Some(decl) = function_barrier(&mut report, &function.name, false, decl)? {
                 externs.push(decl);
             }
             continue;
         };
-        let item = lower_function(function, body, &names, &bindings, &strings);
+        let item = lower_function(function, body, &cx);
         if let Some(item) = function_barrier(&mut report, &function.name, true, item)? {
             items.push(item);
         }
     }
+    let records = cx
+        .records
+        .into_inner()
+        .into_values()
+        .filter_map(|record| record.and_then(|record| record.ok()))
+        .map(Item::Record);
+    items.splice(0..0, records);
     if !externs.is_empty() {
         items.insert(
             0,
@@ -208,7 +240,7 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
             },
         );
     }
-    if names.values().any(|name| name.rust == "__slate_main") {
+    if cx.names.values().any(|name| name.rust == "__slate_main") {
         items.push(Item::Fn(FnDef {
             attrs: Vec::new(),
             vis: rust::Visibility::Private,
@@ -256,10 +288,7 @@ fn lower_string_global(global: &ir::Global) -> Result<Vec<u8>> {
         .collect()
 }
 
-fn lower_extern(
-    function: &ir::Function,
-    bindings: &HashMap<BindingId, String>,
-) -> Result<rust::ExternDecl> {
+fn lower_extern(function: &ir::Function, cx: &Context) -> Result<rust::ExternDecl> {
     let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
         return Err(super::Error::Unsupported(format!(
             "unprototyped declaration {}",
@@ -276,14 +305,18 @@ fn lower_extern(
             .iter()
             .map(|parameter| {
                 Ok(FnParam {
-                    name: binding_name(parameter.value.id, bindings),
+                    name: binding_name(parameter.value.id, &cx.bindings),
                     mutable: false,
-                    ty: lower_type(&parameter.ty)?,
+                    ty: lower_type(cx, &parameter.ty)?,
                 })
             })
             .collect::<Result<Vec<_>>>()?,
         variadic: *variadic,
-        ret: function.return_type.as_ref().map(lower_type).transpose()?,
+        ret: function
+            .return_type
+            .as_ref()
+            .map(|ty| lower_type(cx, ty))
+            .transpose()?,
         safe: false,
     }))
 }
@@ -291,9 +324,7 @@ fn lower_extern(
 fn lower_function(
     function: &ir::Function,
     body: &[slate_parser::ast::Span<ir::Statement>],
-    names: &HashMap<BindingId, FunctionName>,
-    bindings: &HashMap<BindingId, String>,
-    strings: &HashMap<BindingId, Vec<u8>>,
+    cx: &Context,
 ) -> Result<Item> {
     let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
         return Err(super::Error::Unsupported(format!(
@@ -311,16 +342,16 @@ fn lower_function(
         .iter()
         .map(|param| {
             Ok(FnParam {
-                name: binding_name(param.value.id, bindings),
+                name: binding_name(param.value.id, &cx.bindings),
                 mutable: true,
-                ty: lower_type(&param.ty)?,
+                ty: lower_type(cx, &param.ty)?,
             })
         })
         .collect::<Result<Vec<_>>>()?;
     let mut continue_labels = Vec::new();
     let mut statements = body
         .iter()
-        .map(|statement| lower_statement(statement, names, bindings, strings, &mut continue_labels))
+        .map(|statement| lower_statement(statement, cx, &mut continue_labels))
         .collect::<Result<Vec<_>>>()?;
     if matches!(function.fallthrough, Some(ir::Fallthrough::ReturnZero))
         && !matches!(statements.last(), Some(Stmt::Return(_)))
@@ -332,9 +363,13 @@ fn lower_function(
         vis: rust::Visibility::Private,
         unsafe_: false,
         abi: None,
-        name: names[&function.id].rust.clone(),
+        name: cx.names[&function.id].rust.clone(),
         params,
-        ret: function.return_type.as_ref().map(lower_type).transpose()?,
+        ret: function
+            .return_type
+            .as_ref()
+            .map(|ty| lower_type(cx, ty))
+            .transpose()?,
         body: statements,
     }))
 }
@@ -400,9 +435,177 @@ fn collect_statement_names(
     }
 }
 
-fn lower_type(ty: &ir::Type) -> Result<rust::Type> {
+fn record_names(module: &ir::Module) -> HashMap<TypeId, String> {
+    let mut counts = HashMap::<&str, usize>::new();
+    for definition in &module.types {
+        if let (Some(name), ir::TypeDefinitionKind::Record { .. }) =
+            (&definition.name, &definition.kind)
+        {
+            *counts.entry(name).or_default() += 1;
+        }
+    }
+    module
+        .types
+        .iter()
+        .filter(|definition| matches!(definition.kind, ir::TypeDefinitionKind::Record { .. }))
+        .map(|definition| {
+            let id = definition.value.id;
+            let name = match definition.name.as_deref() {
+                Some(name) if counts[name] == 1 => name.to_owned(),
+                Some(name) => format!("{name}_{}", id.0),
+                None => format!("__SlateRecord{}", id.0),
+            };
+            (id, name)
+        })
+        .collect()
+}
+
+fn resolve_type<'a>(cx: &Context<'a>, mut ty: &'a ir::Type) -> &'a ir::Type {
+    while let ir::Type::Defined(id) = ty
+        && let Some(ir::TypeDefinitionKind::Alias(inner)) = cx.types.get(id).map(|d| &d.kind)
+    {
+        ty = inner;
+    }
+    ty
+}
+
+fn record_fields<'a>(
+    cx: &Context<'a>,
+    ty: &'a ir::Type,
+) -> Option<&'a [slate_parser::ast::Span<ir::Field>]> {
+    let ir::Type::Defined(id) = resolve_type(cx, ty) else {
+        return None;
+    };
+    match &cx.types.get(id)?.kind {
+        ir::TypeDefinitionKind::Record {
+            kind: ir::RecordKind::Struct,
+            fields: Some(fields),
+            ..
+        } => Some(fields),
+        _ => None,
+    }
+}
+
+fn storage_of(cx: &Context, ty: &ir::Type) -> Option<(u64, u64)> {
+    match resolve_type(cx, ty) {
+        ir::Type::Defined(id) => match &cx.types.get(id)?.kind {
+            ir::TypeDefinitionKind::Record {
+                layout: Some(layout),
+                ..
+            } => Some((layout.size, layout.align)),
+            _ => None,
+        },
+        ir::Type::Array {
+            element,
+            length: Some(length),
+        } => storage_of(cx, element).map(|(size, align)| (size * length, align)),
+        ty => cx
+            .target
+            .storage_of(ty.clone())
+            .ok()
+            .map(|layout| (layout.size_bytes, layout.alignment_bytes.into())),
+    }
+}
+
+fn lower_record(cx: &Context, id: TypeId) -> Result<String> {
+    let name = cx.record_names[&id].clone();
+    match cx.records.borrow().get(&id.0) {
+        Some(Some(Err(error))) => return Err(super::Error::Unsupported(error.clone())),
+        Some(_) => return Ok(name),
+        None => {}
+    }
+    cx.records.borrow_mut().insert(id.0, None);
+    let record = build_record(cx, &cx.types[&id].kind, &name).map_err(|error| match error {
+        super::Error::Unsupported(message) => message,
+        error => error.to_string(),
+    });
+    cx.records.borrow_mut().insert(id.0, Some(record.clone()));
+    record.map(|_| name).map_err(super::Error::Unsupported)
+}
+
+fn build_record(
+    cx: &Context,
+    kind: &ir::TypeDefinitionKind,
+    name: &str,
+) -> Result<rust::RecordDef> {
+    let ir::TypeDefinitionKind::Record {
+        kind: ir::RecordKind::Struct,
+        fields,
+        layout,
+    } = kind
+    else {
+        return Err(super::Error::Unsupported(format!("record {name}")));
+    };
+    let mut lowered = Vec::new();
+    let mut end = 0u64;
+    let mut align = 1u64;
+    for (index, field) in fields.iter().flatten().enumerate() {
+        let (Some(field_name), None, true) =
+            (&field.name, field.bit_width, field.access.is_plain())
+        else {
+            return Err(super::Error::Unsupported(format!(
+                "field {index} of record {name}"
+            )));
+        };
+        let (field_size, field_align) = storage_of(cx, &field.ty)
+            .ok_or_else(|| super::Error::Unsupported(format!("layout of {}", field.ty)))?;
+        let offset = end.next_multiple_of(field_align);
+        if layout.as_ref().map(|layout| layout.offsets[index]) != Some(offset) {
+            return Err(super::Error::Unsupported(format!(
+                "layout of record {name}"
+            )));
+        }
+        end = offset + field_size;
+        align = align.max(field_align);
+        lowered.push(rust::RecordField {
+            comments: Vec::new(),
+            name: field_name.as_str().into(),
+            ty: lower_type(cx, &field.ty)?,
+        });
+    }
+    if let Some(layout) = layout
+        && (layout.align != align || layout.size != end.next_multiple_of(align))
+    {
+        return Err(super::Error::Unsupported(format!(
+            "layout of record {name}"
+        )));
+    }
+    Ok(rust::RecordDef {
+        comments: Vec::new(),
+        vis: rust::Visibility::Private,
+        field_vis: rust::Visibility::Private,
+        is_union: false,
+        allow_non_camel_case: !is_camel_case(name),
+        name: name.to_owned(),
+        fields: lowered,
+        packed: None,
+        align: None,
+    })
+}
+
+fn is_camel_case(name: &str) -> bool {
+    let name = name.trim_matches('_');
+    let chars: Vec<char> = name.chars().collect();
+    !chars.first().is_some_and(|first| first.is_lowercase())
+        && !name.contains("__")
+        && !chars.windows(2).any(|pair| {
+            let has_case = |c: char| c.is_lowercase() || c.is_uppercase();
+            (has_case(pair[0]) && pair[1] == '_') || (has_case(pair[1]) && pair[0] == '_')
+        })
+}
+
+fn lower_type(cx: &Context, ty: &ir::Type) -> Result<rust::Type> {
     let primitive = match ty {
         ir::Type::Void => return Ok(rust::Type::Unit),
+        ir::Type::Defined(id) => {
+            return match cx.types.get(id).map(|definition| &definition.kind) {
+                Some(ir::TypeDefinitionKind::Alias(inner)) => lower_type(cx, inner),
+                Some(ir::TypeDefinitionKind::Record { .. }) => {
+                    Ok(rust::Type::Custom(lower_record(cx, *id)?))
+                }
+                _ => Err(super::Error::Unsupported(format!("type {ty}"))),
+            };
+        }
         ir::Type::Bool => Prim::Bool,
         ir::Type::Numeric(ir::NumericType::Integer { width, signed, .. }) => {
             match (*width, *signed) {
@@ -434,9 +637,12 @@ fn lower_type(ty: &ir::Type) -> Result<rust::Type> {
             };
             return Ok(rust::Type::FnPtr {
                 abi: rust::Abi::Rust,
-                params: parameters.iter().map(lower_type).collect::<Result<_>>()?,
+                params: parameters
+                    .iter()
+                    .map(|ty| lower_type(cx, ty))
+                    .collect::<Result<_>>()?,
                 ret: Box::new(match return_type {
-                    Some(ret) => lower_type(ret)?,
+                    Some(ret) => lower_type(cx, ret)?,
                     None => rust::Type::Unit,
                 }),
             });
@@ -446,7 +652,7 @@ fn lower_type(ty: &ir::Type) -> Result<rust::Type> {
         } => {
             return Ok(rust::Type::Ptr {
                 mutable: !is_const,
-                inner: Box::new(lower_type(pointee)?),
+                inner: Box::new(lower_type(cx, pointee)?),
             });
         }
         ir::Type::Array {
@@ -454,7 +660,7 @@ fn lower_type(ty: &ir::Type) -> Result<rust::Type> {
             length: Some(length),
         } => {
             return Ok(rust::Type::Array {
-                elem: Box::new(lower_type(element)?),
+                elem: Box::new(lower_type(cx, element)?),
                 len: *length,
             });
         }
@@ -465,9 +671,7 @@ fn lower_type(ty: &ir::Type) -> Result<rust::Type> {
 
 fn lower_statement(
     statement: &ir::Statement,
-    names: &HashMap<BindingId, FunctionName>,
-    bindings: &HashMap<BindingId, String>,
-    strings: &HashMap<BindingId, Vec<u8>>,
+    cx: &Context,
     continue_labels: &mut Vec<Option<rust::Label>>,
 ) -> Result<Stmt> {
     Ok(match statement {
@@ -477,19 +681,19 @@ fn lower_statement(
             initializer,
             ..
         } => Stmt::Let {
-            name: binding_name(*id, bindings),
+            name: binding_name(*id, &cx.bindings),
             mutable: false,
-            ty: Some(lower_type(ty)?),
+            ty: Some(lower_type(cx, ty)?),
             init: initializer
                 .as_ref()
-                .map(|value| lower_value(value, names, bindings, strings))
+                .map(|value| lower_value(value, cx))
                 .transpose()?,
         },
         ir::Statement::Let(variable) => {
             let init = variable
                 .initializer
                 .as_ref()
-                .map(|value| lower_value(value, names, bindings, strings))
+                .map(|value| lower_value(value, cx))
                 .transpose()?;
             let init = match (init, &variable.ty) {
                 (Some(init), _) => Some(init),
@@ -502,16 +706,26 @@ fn lower_statement(
                 ) => Some(Expr::ArrayRepeat {
                     elem: Box::new(Expr::Cast {
                         expr: Box::new(Expr::Value(rust::RustValue::I64(0))),
-                        ty: lower_type(element)?,
+                        ty: lower_type(cx, element)?,
                     }),
                     len: *length as usize,
                 }),
+                (None, ty) if record_fields(cx, ty).is_some() => {
+                    Some(Expr::Unsafe(Box::new(rust::Block {
+                        stmts: Vec::new(),
+                        tail: Some(Box::new(Expr::Call {
+                            func: Box::new(Expr::Var("std::mem::zeroed".into())),
+                            args: Vec::new(),
+                            binding: CallBinding::Generated,
+                        })),
+                    })))
+                }
                 (None, _) => None,
             };
             Stmt::Let {
-                name: binding_name(variable.id, bindings),
+                name: binding_name(variable.id, &cx.bindings),
                 mutable: true,
-                ty: Some(lower_type(&variable.ty)?),
+                ty: Some(lower_type(cx, &variable.ty)?),
                 init,
             }
         }
@@ -519,14 +733,14 @@ fn lower_statement(
             if matches!(value.node.value, ValueKind::Void) {
                 Stmt::Block(rust::Block::default())
             } else {
-                Stmt::Expr(lower_value(value, names, bindings, strings)?)
+                Stmt::Expr(lower_value(value, cx)?)
             }
         }
         ir::Statement::Write { place, value, .. } => {
-            let target = lower_place(place, names, bindings, strings)?;
-            let value = lower_value(value, names, bindings, strings)?;
+            let target = lower_place(place, cx)?;
+            let value = lower_value(value, cx)?;
             let assignment = Stmt::Assign { target, value };
-            if matches!(place.kind, PlaceKind::Deref(_)) {
+            if place_dereferences(place) {
                 Stmt::Unsafe {
                     body: rust::Block {
                         stmts: vec![assignment],
@@ -540,15 +754,13 @@ fn lower_statement(
         ir::Statement::Return(value) => Stmt::Return(
             value
                 .as_ref()
-                .map(|value| lower_value(value, names, bindings, strings))
+                .map(|value| lower_value(value, cx))
                 .transpose()?,
         ),
         ir::Statement::Block(body) => Stmt::Scope {
             body: body
                 .iter()
-                .map(|statement| {
-                    lower_statement(statement, names, bindings, strings, continue_labels)
-                })
+                .map(|statement| lower_statement(statement, cx, continue_labels))
                 .collect::<Result<Vec<_>>>()?,
         },
         ir::Statement::If {
@@ -556,11 +768,11 @@ fn lower_statement(
             then_body,
             else_body,
         } => Stmt::If {
-            cond: lower_condition(condition, names, bindings, strings)?,
-            then_body: lower_statement_list(then_body, names, bindings, strings, continue_labels)?,
+            cond: lower_condition(condition, cx)?,
+            then_body: lower_statement_list(then_body, cx, continue_labels)?,
             else_body: else_body
                 .as_ref()
-                .map(|body| lower_statement_list(body, names, bindings, strings, continue_labels))
+                .map(|body| lower_statement_list(body, cx, continue_labels))
                 .transpose()?
                 .unwrap_or_default(),
         },
@@ -568,9 +780,9 @@ fn lower_statement(
             condition, body, ..
         } => {
             continue_labels.push(None);
-            let body = lower_statement_list(body, names, bindings, strings, continue_labels)?;
+            let body = lower_statement_list(body, cx, continue_labels)?;
             continue_labels.pop();
-            let (mut prefix, condition) = lower_evaluation(condition, names, bindings, strings)?;
+            let (mut prefix, condition) = lower_evaluation(condition, cx)?;
             prefix.push(Stmt::If {
                 cond: Expr::Unary {
                     op: rust::UnaryOp::Not,
@@ -592,15 +804,14 @@ fn lower_statement(
             increment,
             body,
         } => {
-            let mut statements =
-                lower_statement_list(init, names, bindings, strings, continue_labels)?;
+            let mut statements = lower_statement_list(init, cx, continue_labels)?;
             let label = rust::Label::new(format!("__slate_continue_{}", id.0));
             continue_labels.push(Some(label.clone()));
-            let body = lower_statement_list(body, names, bindings, strings, continue_labels)?;
+            let body = lower_statement_list(body, cx, continue_labels)?;
             continue_labels.pop();
             let mut loop_body = Vec::new();
             if let Some(condition) = condition {
-                let (prefix, condition) = lower_evaluation(condition, names, bindings, strings)?;
+                let (prefix, condition) = lower_evaluation(condition, cx)?;
                 loop_body.extend(prefix);
                 loop_body.push(Stmt::If {
                     cond: Expr::Unary {
@@ -613,9 +824,7 @@ fn lower_statement(
             }
             loop_body.push(Stmt::LabeledBlock { label, body });
             if let Some(increment) = increment {
-                loop_body.extend(lower_evaluation_statements(
-                    increment, names, bindings, strings,
-                )?);
+                loop_body.extend(lower_evaluation_statements(increment, cx)?);
             }
             statements.push(Stmt::Loop {
                 label: None,
@@ -630,10 +839,10 @@ fn lower_statement(
         } => {
             let label = rust::Label::new(format!("__slate_continue_{}", id.0));
             continue_labels.push(Some(label.clone()));
-            let body = lower_statement_list(body, names, bindings, strings, continue_labels)?;
+            let body = lower_statement_list(body, cx, continue_labels)?;
             continue_labels.pop();
             let mut loop_body = vec![Stmt::LabeledBlock { label, body }];
-            let (prefix, condition) = lower_evaluation(condition, names, bindings, strings)?;
+            let (prefix, condition) = lower_evaluation(condition, cx)?;
             loop_body.extend(prefix);
             loop_body.push(Stmt::If {
                 cond: Expr::Unary {
@@ -664,127 +873,79 @@ fn lower_statement(
 
 fn lower_statement_list(
     statements: &[slate_parser::ast::Span<ir::Statement>],
-    names: &HashMap<BindingId, FunctionName>,
-    bindings: &HashMap<BindingId, String>,
-    strings: &HashMap<BindingId, Vec<u8>>,
+    cx: &Context,
     continue_labels: &mut Vec<Option<rust::Label>>,
 ) -> Result<Vec<Stmt>> {
     statements
         .iter()
-        .map(|statement| lower_statement(statement, names, bindings, strings, continue_labels))
+        .map(|statement| lower_statement(statement, cx, continue_labels))
         .collect()
 }
 
-fn lower_evaluation_statements(
-    evaluation: &ir::Evaluation,
-    names: &HashMap<BindingId, FunctionName>,
-    bindings: &HashMap<BindingId, String>,
-    strings: &HashMap<BindingId, Vec<u8>>,
-) -> Result<Vec<Stmt>> {
-    let mut statements = lower_statement_list(
-        &evaluation.statements,
-        names,
-        bindings,
-        strings,
-        &mut Vec::new(),
-    )?;
+fn lower_evaluation_statements(evaluation: &ir::Evaluation, cx: &Context) -> Result<Vec<Stmt>> {
+    let mut statements = lower_statement_list(&evaluation.statements, cx, &mut Vec::new())?;
     if !matches!(evaluation.value.node.value, ValueKind::Void) {
-        statements.push(Stmt::Expr(lower_value(
-            &evaluation.value,
-            names,
-            bindings,
-            strings,
-        )?));
+        statements.push(Stmt::Expr(lower_value(&evaluation.value, cx)?));
     }
     Ok(statements)
 }
 
-fn lower_evaluation(
-    evaluation: &ir::Evaluation,
-    names: &HashMap<BindingId, FunctionName>,
-    bindings: &HashMap<BindingId, String>,
-    strings: &HashMap<BindingId, Vec<u8>>,
-) -> Result<(Vec<Stmt>, Expr)> {
-    let statements = lower_statement_list(
-        &evaluation.statements,
-        names,
-        bindings,
-        strings,
-        &mut Vec::new(),
-    )?;
-    let condition = lower_condition(&evaluation.value, names, bindings, strings)?;
+fn lower_evaluation(evaluation: &ir::Evaluation, cx: &Context) -> Result<(Vec<Stmt>, Expr)> {
+    let statements = lower_statement_list(&evaluation.statements, cx, &mut Vec::new())?;
+    let condition = lower_condition(&evaluation.value, cx)?;
     Ok((statements, condition))
 }
 
-fn lower_condition(
-    value: &ir::Value,
-    names: &HashMap<BindingId, FunctionName>,
-    bindings: &HashMap<BindingId, String>,
-    strings: &HashMap<BindingId, Vec<u8>>,
-) -> Result<Expr> {
-    let condition = lower_value(value, names, bindings, strings)?;
+fn lower_condition(value: &ir::Value, cx: &Context) -> Result<Expr> {
+    let condition = lower_value(value, cx)?;
     if matches!(value.ty, ir::Type::Bool) {
         Ok(condition)
     } else {
         Ok(Expr::Binary {
             op: BinOp::Ne,
             lhs: Box::new(condition),
-            rhs: Box::new(lower_number(&Number::Integer(0u32.into()), &value.ty)?),
+            rhs: Box::new(lower_number(cx, &Number::Integer(0u32.into()), &value.ty)?),
         })
     }
 }
 
-fn lower_value(
-    value: &ir::Value,
-    names: &HashMap<BindingId, FunctionName>,
-    bindings: &HashMap<BindingId, String>,
-    strings: &HashMap<BindingId, Vec<u8>>,
-) -> Result<Expr> {
+fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
     Ok(match &value.node.value {
-        ValueKind::Constant(number) => lower_number(number, &value.ty)?,
+        ValueKind::Constant(number) => lower_number(cx, number, &value.ty)?,
         ValueKind::Read {
             place,
             ordering: None,
         } => {
-            let place = lower_place(place, names, bindings, strings)?;
-            if matches!(
-                value.node.value,
-                ValueKind::Read {
-                    place: ir::Place {
-                        kind: PlaceKind::Deref(_),
-                        ..
-                    },
-                    ..
-                }
-            ) {
+            let lowered = lower_place(place, cx)?;
+            if place_dereferences(place) {
                 Expr::Unsafe(Box::new(rust::Block {
                     stmts: Vec::new(),
-                    tail: Some(Box::new(place)),
+                    tail: Some(Box::new(lowered)),
                 }))
             } else {
-                place
+                lowered
             }
         }
-        ValueKind::Copy { operand, .. } => lower_value(operand, names, bindings, strings)?,
+        ValueKind::Copy { operand, .. } => lower_value(operand, cx)?,
         ValueKind::AddressOf(place) => match place.kind {
-            PlaceKind::Deref(ref pointer) => lower_value(pointer, names, bindings, strings)?,
+            PlaceKind::Deref(ref pointer) => lower_value(pointer, cx)?,
             _ => Expr::AddrOf {
                 mutable: true,
-                expr: Box::new(lower_place(place, names, bindings, strings)?),
+                expr: Box::new(lower_place(place, cx)?),
             },
         },
         ValueKind::Convert { operand, .. } => Expr::Cast {
-            expr: Box::new(lower_value(operand, names, bindings, strings)?),
-            ty: lower_type(&value.ty)?,
+            expr: Box::new(lower_value(operand, cx)?),
+            ty: lower_type(cx, &value.ty)?,
         },
         ValueKind::ArrayDecay { place, .. } => {
             let PlaceKind::Binding(id) = place.kind else {
                 return Err(super::Error::Unsupported(format!("array decay {place:?}")));
             };
-            let Some(bytes) = strings.get(&id) else {
+            let Some(bytes) = cx.strings.get(&id) else {
                 return Ok(Expr::Cast {
                     expr: Box::new(Expr::MethodCall {
-                        recv: Box::new(Expr::Var(binding_name(id, bindings).as_str().into())),
+                        recv: Box::new(Expr::Var(binding_name(id, &cx.bindings).as_str().into())),
                         method: if matches!(value.ty, ir::Type::Pointer { is_const: true, .. }) {
                             "as_ptr"
                         } else {
@@ -793,7 +954,7 @@ fn lower_value(
                         .into(),
                         args: Vec::new(),
                     }),
-                    ty: lower_type(&value.ty)?,
+                    ty: lower_type(cx, &value.ty)?,
                 });
             };
             Expr::Cast {
@@ -802,7 +963,7 @@ fn lower_value(
                     method: "as_ptr".into(),
                     args: Vec::new(),
                 }),
-                ty: lower_type(&value.ty)?,
+                ty: lower_type(cx, &value.ty)?,
             }
         }
         ValueKind::Arith {
@@ -821,8 +982,8 @@ fn lower_value(
                 ir::ArithOp::Shr => BinOp::Shr,
                 _ => return Err(super::Error::Unsupported(format!("arithmetic {op}"))),
             },
-            lhs: Box::new(lower_value(left, names, bindings, strings)?),
-            rhs: Box::new(lower_value(right, names, bindings, strings)?),
+            lhs: Box::new(lower_value(left, cx)?),
+            rhs: Box::new(lower_value(right, cx)?),
         },
         ValueKind::Unary {
             op: ir::UnaryArithOp::Neg,
@@ -837,7 +998,7 @@ fn lower_value(
         {
             Expr::Unary {
                 op: rust::UnaryOp::Neg,
-                expr: Box::new(lower_value(operand, names, bindings, strings)?),
+                expr: Box::new(lower_value(operand, cx)?),
             }
         }
         ValueKind::Unary {
@@ -849,7 +1010,7 @@ fn lower_value(
             ir::Type::Bool | ir::Type::Numeric(ir::NumericType::Integer { .. })
         ) =>
         {
-            let operand = lower_value(operand, names, bindings, strings)?;
+            let operand = lower_value(operand, cx)?;
             match (op, semantics) {
                 (ir::UnaryArithOp::Not, _) => Expr::Unary {
                     op: rust::UnaryOp::Not,
@@ -888,8 +1049,8 @@ fn lower_value(
                     ir::LogicalOp::And => BinOp::And,
                     ir::LogicalOp::Or => BinOp::Or,
                 },
-                lhs: Box::new(lower_condition(left, names, bindings, strings)?),
-                rhs: Box::new(lower_condition(right, names, bindings, strings)?),
+                lhs: Box::new(lower_condition(left, cx)?),
+                rhs: Box::new(lower_condition(right, cx)?),
             }
         }
         ValueKind::Compare {
@@ -903,8 +1064,8 @@ fn lower_value(
                 ir::CompareOp::Gt => BinOp::Gt,
                 ir::CompareOp::Ge => BinOp::Ge,
             },
-            lhs: Box::new(lower_value(left, names, bindings, strings)?),
-            rhs: Box::new(lower_value(right, names, bindings, strings)?),
+            lhs: Box::new(lower_value(left, cx)?),
+            rhs: Box::new(lower_value(right, cx)?),
         },
         ValueKind::PointerOffset {
             pointer,
@@ -913,7 +1074,7 @@ fn lower_value(
             ..
         } => {
             let offset = Expr::Cast {
-                expr: Box::new(lower_value(amount, names, bindings, strings)?),
+                expr: Box::new(lower_value(amount, cx)?),
                 ty: rust::Type::Prim(Prim::Isize),
             };
             let offset = if *subtract {
@@ -927,7 +1088,7 @@ fn lower_value(
             Expr::Unsafe(Box::new(rust::Block {
                 stmts: Vec::new(),
                 tail: Some(Box::new(Expr::MethodCall {
-                    recv: Box::new(lower_value(pointer, names, bindings, strings)?),
+                    recv: Box::new(lower_value(pointer, cx)?),
                     method: "offset".into(),
                     args: vec![offset],
                 })),
@@ -941,15 +1102,15 @@ fn lower_value(
             expr: Box::new(Expr::Unsafe(Box::new(rust::Block {
                 stmts: Vec::new(),
                 tail: Some(Box::new(Expr::MethodCall {
-                    recv: Box::new(lower_value(left, names, bindings, strings)?),
+                    recv: Box::new(lower_value(left, cx)?),
                     method: "offset_from".into(),
                     args: vec![Expr::Cast {
-                        expr: Box::new(lower_value(right, names, bindings, strings)?),
-                        ty: lower_type(&left.ty)?,
+                        expr: Box::new(lower_value(right, cx)?),
+                        ty: lower_type(cx, &left.ty)?,
                     }],
                 })),
             }))),
-            ty: lower_type(&value.ty)?,
+            ty: lower_type(cx, &value.ty)?,
         },
         ValueKind::FunctionDecay {
             place:
@@ -957,7 +1118,7 @@ fn lower_value(
                     kind: PlaceKind::Binding(id),
                     ..
                 },
-        } => match names.get(id) {
+        } => match cx.names.get(id) {
             Some(name) if !name.is_extern => Expr::Call {
                 func: Box::new(Expr::Var("Some".into())),
                 args: vec![Expr::Var(name.rust.as_str().into())],
@@ -972,7 +1133,7 @@ fn lower_value(
         },
         ValueKind::Null if matches!(&value.ty, ir::Type::Pointer { pointee, .. } if matches!(**pointee, ir::Type::Function { .. })) =>
         {
-            lower_type(&value.ty)?;
+            lower_type(cx, &value.ty)?;
             Expr::Var("None".into())
         }
         ValueKind::Call {
@@ -980,7 +1141,7 @@ fn lower_value(
         } => {
             let func = match callee {
                 ir::Callee::Direct(id) => Expr::Var(
-                    names
+                    cx.names
                         .get(id)
                         .ok_or_else(|| {
                             super::Error::Unsupported(format!("unknown callee %{}", id.0))
@@ -990,7 +1151,7 @@ fn lower_value(
                         .into(),
                 ),
                 ir::Callee::Indirect(pointer) => Expr::MethodCall {
-                    recv: Box::new(lower_value(pointer, names, bindings, strings)?),
+                    recv: Box::new(lower_value(pointer, cx)?),
                     method: "unwrap".into(),
                     args: Vec::new(),
                 },
@@ -999,12 +1160,14 @@ fn lower_value(
                 func: Box::new(func),
                 args: arguments
                     .iter()
-                    .map(|argument| lower_value(argument, names, bindings, strings))
+                    .map(|argument| lower_value(argument, cx))
                     .collect::<Result<Vec<_>>>()?,
                 binding: CallBinding::unknown(),
             };
             let unsafe_call = match callee {
-                ir::Callee::Direct(id) => names.get(id).is_some_and(|name| name.rust == "printf"),
+                ir::Callee::Direct(id) => {
+                    cx.names.get(id).is_some_and(|name| name.rust == "printf")
+                }
                 ir::Callee::Indirect(_) => true,
             };
             if unsafe_call {
@@ -1025,30 +1188,47 @@ fn lower_value(
     })
 }
 
-fn lower_place(
-    place: &ir::Place,
-    names: &HashMap<BindingId, FunctionName>,
-    bindings: &HashMap<BindingId, String>,
-    strings: &HashMap<BindingId, Vec<u8>>,
-) -> Result<Expr> {
+fn lower_place(place: &ir::Place, cx: &Context) -> Result<Expr> {
     match place.kind {
-        PlaceKind::Binding(id) => Ok(Expr::Var(binding_name(id, bindings).as_str().into())),
+        PlaceKind::Binding(id) => Ok(Expr::Var(binding_name(id, &cx.bindings).as_str().into())),
         PlaceKind::Deref(ref pointer) => Ok(Expr::Unary {
             op: rust::UnaryOp::Deref,
-            expr: Box::new(lower_value(pointer, names, bindings, strings)?),
+            expr: Box::new(lower_value(pointer, cx)?),
         }),
         PlaceKind::Index {
             ref base,
             ref index,
         } => Ok(Expr::Index {
-            base: Box::new(lower_value(base, names, bindings, strings)?),
-            index: Box::new(lower_value(index, names, bindings, strings)?),
+            base: Box::new(lower_value(base, cx)?),
+            index: Box::new(lower_value(index, cx)?),
         }),
+        PlaceKind::Field {
+            ref base,
+            index,
+            bits: None,
+        } if let Some(Some(name)) = record_fields(cx, &base.ty)
+            .and_then(|fields| fields.get(index))
+            .map(|field| &field.name) =>
+        {
+            lower_type(cx, &base.ty)?;
+            Ok(Expr::Field {
+                base: Box::new(lower_place(base, cx)?),
+                field: name.clone(),
+            })
+        }
         _ => Err(super::Error::Unsupported(format!("place {place:?}"))),
     }
 }
 
-fn lower_number(number: &Number, ty: &ir::Type) -> Result<Expr> {
+fn place_dereferences(place: &ir::Place) -> bool {
+    match &place.kind {
+        PlaceKind::Deref(_) => true,
+        PlaceKind::Field { base, .. } => place_dereferences(base),
+        _ => false,
+    }
+}
+
+fn lower_number(cx: &Context, number: &Number, ty: &ir::Type) -> Result<Expr> {
     let value = match number {
         Number::Bool(value) => rust::RustValue::Bool(*value),
         Number::Integer(value) => rust::RustValue::U128(
@@ -1090,6 +1270,6 @@ fn lower_number(number: &Number, ty: &ir::Type) -> Result<Expr> {
     };
     Ok(Expr::Cast {
         expr: Box::new(Expr::Value(value)),
-        ty: lower_type(ty)?,
+        ty: lower_type(cx, ty)?,
     })
 }
