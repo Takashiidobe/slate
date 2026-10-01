@@ -87,6 +87,10 @@ Macro expansion chains are not in the IR yet (only atomic builtins record
 - `Module::display(false)` prints required semantics (target, layout,
   linkage, storage duration, operation contracts); `display(true)` adds
   metadata. Metadata is ordered per node and string values are escaped.
+- `Span<Statement>::display()` prints one statement (and its nested body)
+  exactly as the module printer does, without metadata, for library
+  consumers such as Slate's lowering barriers. `Value::display` and
+  `Place`'s `Display` cover values and places.
 - The module header's `storage` lines cover every directly nameable scalar
   format (`bool`, every standard integer width, all nine float formats). A
   line is omitted only when the target lacks the type.

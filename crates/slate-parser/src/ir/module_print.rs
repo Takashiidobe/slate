@@ -147,9 +147,52 @@ fn asm_attributes(f: &mut fmt::Formatter<'_>, asm: &InlineAsm) -> fmt::Result {
     }
 }
 
+#[derive(Clone, Copy)]
+struct Printer<'a> {
+    metadata: Option<&'a Metadata>,
+    compact: bool,
+}
+
 impl DisplayModule<'_> {
+    fn printer(&self) -> Printer<'_> {
+        Printer {
+            metadata: self.show_metadata.then_some(&self.module.metadata),
+            compact: self.compact,
+        }
+    }
+}
+
+pub struct DisplayStatement<'a> {
+    statement: &'a Span<Statement>,
+}
+
+impl Span<Statement> {
+    pub fn display(&self) -> DisplayStatement<'_> {
+        DisplayStatement { statement: self }
+    }
+}
+
+struct StatementLines<'a>(&'a Span<Statement>);
+
+impl fmt::Display for StatementLines<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        Printer {
+            metadata: None,
+            compact: false,
+        }
+        .statements(f, std::slice::from_ref(self.0), 0)
+    }
+}
+
+impl fmt::Display for DisplayStatement<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(StatementLines(self.statement).to_string().trim_end())
+    }
+}
+
+impl Printer<'_> {
     fn table(&self) -> Option<&Metadata> {
-        self.show_metadata.then_some(&self.module.metadata)
+        self.metadata
     }
 
     fn variable(&self, f: &mut fmt::Formatter<'_>, variable: &Variable) -> fmt::Result {
@@ -595,6 +638,7 @@ impl DisplayModule<'_> {
 
 impl fmt::Display for DisplayModule<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let printer = self.printer();
         writeln!(f, "module {{")?;
         let target = &self.module.target;
         writeln!(f, "    target \"{}\" {{", target.triple)?;
@@ -645,12 +689,12 @@ impl fmt::Display for DisplayModule<'_> {
             asm_attributes(f, asm)?;
             if asm.has_sections() {
                 f.write_str(" {")?;
-                metadata(f, self.table(), asm.id)?;
+                metadata(f, printer.table(), asm.id)?;
                 writeln!(f)?;
-                self.asm_sections(f, asm, 8)?;
+                printer.asm_sections(f, asm, 8)?;
                 writeln!(f, "    }}")?;
             } else {
-                metadata(f, self.table(), asm.id)?;
+                metadata(f, printer.table(), asm.id)?;
                 writeln!(f, ";")?;
             }
         }
@@ -688,7 +732,7 @@ impl fmt::Display for DisplayModule<'_> {
                             if let Some(width) = field.bit_width {
                                 write!(f, " : {width}")?;
                             }
-                            metadata(f, self.table(), field.id)?;
+                            metadata(f, printer.table(), field.id)?;
                             writeln!(f, ";")?;
                         }
                         f.write_str("    }")?;
@@ -738,10 +782,10 @@ impl fmt::Display for DisplayModule<'_> {
                                 enumerator
                                     .value
                                     .value
-                                    .display_metadata(false, self.table())
+                                    .display_metadata(false, printer.table())
                                     .with_compact(self.compact)
                             )?;
-                            metadata(f, self.table(), enumerator.id)?;
+                            metadata(f, printer.table(), enumerator.id)?;
                             writeln!(f, ";")?;
                         }
                         f.write_str("    }")?;
@@ -757,7 +801,7 @@ impl fmt::Display for DisplayModule<'_> {
                     }
                 }
             }
-            metadata(f, self.table(), definition.id)?;
+            metadata(f, printer.table(), definition.id)?;
             writeln!(f, ";")?;
         }
         for global in &self.module.globals {
@@ -770,12 +814,12 @@ impl fmt::Display for DisplayModule<'_> {
                     "extern"
                 }
             )?;
-            self.variable(f, &global.variable)?;
+            printer.variable(f, &global.variable)?;
             write!(f, " [linkage={}]{}", global.linkage, global.symbol)?;
             if global.common {
                 f.write_str(" [common]")?;
             }
-            metadata(f, self.table(), global.id)?;
+            metadata(f, printer.table(), global.id)?;
             writeln!(f, ";")?;
         }
         for function in &self.module.functions {
@@ -806,7 +850,7 @@ impl fmt::Display for DisplayModule<'_> {
                         {
                             write!(f, " {array}")?;
                         }
-                        metadata(f, self.table(), parameter.id)?;
+                        metadata(f, printer.table(), parameter.id)?;
                     }
                     if *variadic {
                         write!(f, "{}...", if fixed.is_empty() { "" } else { ", " })?;
@@ -871,7 +915,7 @@ impl fmt::Display for DisplayModule<'_> {
                         f,
                         "ret({})",
                         value
-                            .display_metadata(false, self.table())
+                            .display_metadata(false, printer.table())
                             .with_compact(self.compact)
                     )?,
                     Fallthrough::Undefined => f.write_str("ub")?,
@@ -881,10 +925,10 @@ impl fmt::Display for DisplayModule<'_> {
                 }
                 f.write_str("]")?;
             }
-            metadata(f, self.table(), function.id)?;
+            metadata(f, printer.table(), function.id)?;
             if let Some(body) = &function.body {
                 writeln!(f, " {{")?;
-                self.statements(f, body, 8)?;
+                printer.statements(f, body, 8)?;
                 writeln!(f, "    }}")?;
             } else {
                 writeln!(f, ";")?;

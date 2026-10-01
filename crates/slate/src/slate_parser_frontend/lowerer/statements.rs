@@ -26,8 +26,11 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
-    pub(super) fn lower_statement(&mut self, statement: &ir::Statement) -> Result<Stmt> {
-        Ok(match statement {
+    fn lower_statement_node(
+        &mut self,
+        statement: &slate_parser::ast::Span<ir::Statement>,
+    ) -> Result<Stmt> {
+        Ok(match &statement.value {
             ir::Statement::Temporary {
                 id,
                 ty,
@@ -218,8 +221,8 @@ impl FunctionLowerer<'_, '_> {
             ir::Statement::Null => Stmt::Block(rust::Block::default()),
             _ => {
                 return Err(Construct::Statement {
-                    kind: variant_name(statement),
-                    ir: format!("{statement:?}"),
+                    kind: variant_name(&statement.value),
+                    ir: statement.display().to_string(),
                 }
                 .into());
             }
@@ -232,15 +235,15 @@ impl FunctionLowerer<'_, '_> {
     ) -> Result<Vec<Stmt>> {
         statements
             .iter()
-            .map(|statement| self.lower_spanned_statement(statement))
+            .map(|statement| self.lower_statement(statement))
             .collect()
     }
 
-    pub(super) fn lower_spanned_statement(
+    pub(super) fn lower_statement(
         &mut self,
         statement: &slate_parser::ast::Span<ir::Statement>,
     ) -> Result<Stmt> {
-        self.lower_statement(statement)
+        self.lower_statement_node(statement)
             .map_err(|error| error.at(Site::of(statement)))
     }
 }

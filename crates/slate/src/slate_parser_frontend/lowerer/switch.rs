@@ -193,7 +193,7 @@ impl FunctionLowerer<'_, '_> {
     fn lower_switch_arm(&mut self, arm: &SwitchArm) -> Result<Vec<Stmt>> {
         arm.body
             .iter()
-            .map(|statement| self.lower_spanned_statement(statement))
+            .map(|statement| self.lower_statement(statement))
             .collect()
     }
 }

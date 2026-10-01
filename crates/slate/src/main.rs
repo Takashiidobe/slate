@@ -183,7 +183,15 @@ fn lowering_barriers(path: &Path, compiler_args: &[String]) -> ExitCode {
             barrier.function.as_deref().unwrap_or("<module>"),
             barrier.site.render(&files),
             barrier.construct.kind(),
-            lowerer::describe_types(&barrier.construct.to_string(), &module)
+            lowerer::describe_types(
+                barrier
+                    .construct
+                    .to_string()
+                    .lines()
+                    .next()
+                    .unwrap_or_default(),
+                &module
+            )
         );
     }
     for function in module
