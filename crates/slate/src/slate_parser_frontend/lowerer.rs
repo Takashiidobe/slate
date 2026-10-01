@@ -163,10 +163,6 @@ impl<'m> ModuleLowerer<'m> {
                 None => statics.push(&global.value),
             }
         }
-        let static_names: HashSet<_> = statics
-            .iter()
-            .map(|global| rust_binding_name(&global.variable.name))
-            .collect();
         let names: HashMap<_, _> = module
             .functions
             .iter()
@@ -196,13 +192,11 @@ impl<'m> ModuleLowerer<'m> {
                 )
             })
             .collect();
-        let mut bindings = HashMap::new();
-        for global in &module.globals {
-            bindings.insert(
-                global.value.variable.id,
-                rust_binding_name(&global.value.variable.name),
-            );
-        }
+        let mut bindings = global_names(module, names.values().map(|name| name.rust.as_str()));
+        let static_names: HashSet<_> = statics
+            .iter()
+            .map(|global| bindings[&global.variable.id].clone())
+            .collect();
         for function in &module.functions {
             if let ir::Parameters::Prototype { fixed, .. } = &function.value.parameters {
                 for parameter in fixed {

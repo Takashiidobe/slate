@@ -23,6 +23,40 @@ pub(super) fn local_binding_name(name: &str, id: BindingId, statics: &HashSet<St
     }
 }
 
+pub(super) fn global_names<'a>(
+    module: &ir::Module,
+    function_names: impl IntoIterator<Item = &'a str>,
+) -> HashMap<BindingId, String> {
+    let mut owners = HashMap::<String, HashSet<Option<BindingId>>>::new();
+    for name in function_names {
+        owners
+            .entry(rust_binding_name(name))
+            .or_default()
+            .insert(None);
+    }
+    for global in &module.globals {
+        owners
+            .entry(rust_binding_name(&global.variable.name))
+            .or_default()
+            .insert(Some(global.variable.id));
+    }
+    module
+        .globals
+        .iter()
+        .map(|global| {
+            let id = global.variable.id;
+            let name = rust_binding_name(&global.variable.name);
+            let name = if matches!(global.linkage, ir::Linkage::Internal) && owners[&name].len() > 1
+            {
+                format!("{}_{}", name.trim_start_matches("r#"), id.0)
+            } else {
+                name
+            };
+            (id, name)
+        })
+        .collect()
+}
+
 pub(super) fn binding_name(id: BindingId, bindings: &HashMap<BindingId, String>) -> String {
     bindings
         .get(&id)
