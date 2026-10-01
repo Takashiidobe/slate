@@ -224,7 +224,7 @@ The base type; never pointers, arrays, or functions (those are declarators).
 | `TypeOf { unqual: bool, operand: TypeOfOperand }` | `typeof(expr)` / `typeof(type-name)` |
 | `TypedefName(Span<String>)` | known typedef name; `NodeId` keys the reference |
 | `Tag(TagSpecifier)` | `struct`/`union`/`enum` |
-| `TargetBuiltin(String)` | `__builtin_va_list` etc. |
+| `TargetBuiltin(String)` | `__builtin_va_list` |
 | `Inferred` | `__auto_type`, C23 `auto` |
 | `Vector { element, size }` | GNU vectors |
 | `Mode { base, mode }` | `__attribute__((mode(M)))`, name as spelled |

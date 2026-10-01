@@ -194,7 +194,9 @@ TagKind      = "Struct" | "Union" | "Enum" ;
 - `Char { signed: None }` is plain `char`, distinct from `signed char` and
   `unsigned char`.
 - `Named` is a typedef name; `TargetBuiltin` is a compiler-provided type
-  name such as `__builtin_va_list`. `Inferred` is `__auto_type`, or C23
+  name, currently only `__builtin_va_list`. `__m128`, `__m256i` and the
+  like are `Named`: no compiler predeclares them, the intrinsics headers
+  typedef them. `Inferred` is `__auto_type`, or C23
   `auto` with no type specifier (alone or beside another storage class).
 - `Definition(TagId(N))` is where a tag body was written; the body is
   `tag[N]`. `Reference` names a tag without a body.
