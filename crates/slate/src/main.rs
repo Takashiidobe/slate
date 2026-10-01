@@ -596,6 +596,8 @@ name = "{package}"
 version = "0.0.0"
 edition = "2024"
 {autobins_line}
+[workspace]
+
 [dependencies]
 libc = "0.2"
 aligned = {{ path = "aligned" }}
