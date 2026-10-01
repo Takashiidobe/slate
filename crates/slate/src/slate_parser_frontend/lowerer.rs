@@ -1265,10 +1265,20 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
         ValueKind::Copy { operand, .. } => lower_value(operand, cx)?,
         ValueKind::AddressOf(place) => match place.kind {
             PlaceKind::Deref(ref pointer) => lower_value(pointer, cx)?,
-            _ => Expr::AddrOf {
-                mutable: true,
-                expr: Box::new(lower_place(place, cx)?),
-            },
+            _ => {
+                let address = Expr::AddrOf {
+                    mutable: true,
+                    expr: Box::new(lower_place(place, cx)?),
+                };
+                if place_is_unsafe(cx, place) {
+                    Expr::Unsafe(Box::new(rust::Block {
+                        stmts: Vec::new(),
+                        tail: Some(Box::new(address)),
+                    }))
+                } else {
+                    address
+                }
+            }
         },
         ValueKind::Convert { operand, .. } => Expr::Cast {
             expr: Box::new(lower_value(operand, cx)?),
