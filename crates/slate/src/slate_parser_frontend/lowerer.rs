@@ -293,6 +293,9 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
 }
 
 fn lower_string_global(global: &ir::Global) -> Option<Result<Vec<u8>>> {
+    if !global.variable.name.starts_with('.') {
+        return None;
+    }
     let ir::ValueKind::CodeUnits(units) = &global.variable.initializer.as_ref()?.node.value else {
         return None;
     };
@@ -326,7 +329,7 @@ fn lower_static(global: &ir::Global, cx: &Context) -> Result<(rust::Type, Option
     }
     let init = match &variable.initializer {
         None => zeroed(),
-        Some(value) if is_constant_initializer(value) => lower_value(value, cx)?,
+        Some(value) if is_constant_initializer(value, cx) => lower_value(value, cx)?,
         Some(_) => {
             return Err(super::Error::Unsupported(format!(
                 "initialized global {}",
@@ -337,13 +340,16 @@ fn lower_static(global: &ir::Global, cx: &Context) -> Result<(rust::Type, Option
     Ok((ty, Some(init)))
 }
 
-fn is_constant_initializer(value: &ir::Value) -> bool {
+fn is_constant_initializer(value: &ir::Value, cx: &Context) -> bool {
     match &value.node.value {
-        ValueKind::Constant(_) => true,
-        ValueKind::Convert { operand, .. } => is_constant_initializer(operand),
+        ValueKind::Constant(_) | ValueKind::CodeUnits(_) => true,
+        ValueKind::ArrayDecay { place, .. } => {
+            matches!(place.kind, PlaceKind::Binding(id) if cx.strings.contains_key(&id))
+        }
+        ValueKind::Convert { operand, .. } => is_constant_initializer(operand, cx),
         ValueKind::Aggregate { members, .. } => members
             .iter()
-            .all(|member| is_constant_initializer(&member.value)),
+            .all(|member| is_constant_initializer(&member.value, cx)),
         _ => false,
     }
 }
@@ -983,6 +989,37 @@ fn lower_condition(value: &ir::Value, cx: &Context) -> Result<Expr> {
 fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
     Ok(match &value.node.value {
         ValueKind::Constant(number) => lower_number(cx, number, &value.ty)?,
+        ValueKind::CodeUnits(units) => {
+            let ir::Type::Array { element, .. } = &value.ty else {
+                return Err(super::Error::Unsupported(format!(
+                    "code units of {}",
+                    value.ty
+                )));
+            };
+            let signed_width = match **element {
+                ir::Type::Numeric(ir::NumericType::Integer {
+                    width,
+                    signed: true,
+                    ..
+                }) => Some(128 - width),
+                _ => None,
+            };
+            let element = lower_type(cx, element)?;
+            Expr::ArrayLit(
+                units
+                    .iter()
+                    .map(|unit| Expr::Cast {
+                        expr: Box::new(Expr::Value(match signed_width {
+                            Some(shift) => {
+                                rust::RustValue::I128((i128::from(*unit) << shift) >> shift)
+                            }
+                            None => rust::RustValue::U128(u128::from(*unit)),
+                        })),
+                        ty: element.clone(),
+                    })
+                    .collect(),
+            )
+        }
         ValueKind::Read {
             place,
             ordering: None,
