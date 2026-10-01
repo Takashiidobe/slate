@@ -5,19 +5,19 @@ edition = "2024"
 default-run = "slate"
 
 [dependencies]
-clap = { version = "4", features = ["derive"] }
-libc = "0.2"
-serde_json = "1"
-shlex = "2"
-thiserror = "2.0.19"
-ordered-float = "5.3.0"
-mimalloc = "0.1.52"
-miette = { version = "7", features = ["fancy", "syntect-highlighter"] }
-rayon = "1.12"
-slate-parser = { path = "../slate-parser" }
-slate-sysroots = { path = "../slate-sysroots" }
-prettyplease = "0.3"
-syn = { version = "3", default-features = false, features = ["full", "parsing"] }
+clap = { workspace = true, features = ["derive"] }
+libc.workspace = true
+serde_json.workspace = true
+shlex.workspace = true
+thiserror.workspace = true
+ordered-float.workspace = true
+mimalloc.workspace = true
+miette.workspace = true
+rayon.workspace = true
+slate-parser.workspace = true
+slate-sysroots.workspace = true
+prettyplease.workspace = true
+syn = { workspace = true, features = ["full", "parsing"] }
 
 [lints.clippy]
 large_enum_variant = "allow"
