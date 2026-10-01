@@ -4,7 +4,7 @@ use crate::function_identity::FunctionIdentity;
 use slate_parser::ir::{self, BindingId, Number, PlaceKind, TypeId, ValueKind};
 use slate_parser::target_info::TargetInfo;
 use std::cell::RefCell;
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 type Result<T> = std::result::Result<T, super::Error>;
 
@@ -17,6 +17,7 @@ struct Context<'a> {
     names: HashMap<BindingId, FunctionName>,
     bindings: HashMap<BindingId, String>,
     strings: HashMap<BindingId, Vec<u8>>,
+    statics: HashSet<BindingId>,
     target: &'a TargetInfo,
     types: HashMap<TypeId, &'a ir::TypeDefinition>,
     record_names: HashMap<TypeId, String>,
@@ -146,14 +147,20 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
         )?;
     }
     let mut strings = HashMap::new();
+    let mut statics = Vec::new();
     for global in &module.globals {
         match lower_string_global(global) {
-            Ok(bytes) => {
+            Some(Ok(bytes)) => {
                 strings.insert(global.variable.id, bytes);
             }
-            Err(error) => module_barrier(&mut report, error)?,
+            Some(Err(error)) => module_barrier(&mut report, error)?,
+            None => statics.push(&global.value),
         }
     }
+    let static_names: HashSet<_> = statics
+        .iter()
+        .map(|global| rust_binding_name(&global.variable.name))
+        .collect();
     let names: HashMap<_, _> = module
         .functions
         .iter()
@@ -181,25 +188,27 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
     for function in &module.functions {
         if let ir::Parameters::Prototype { fixed, .. } = &function.value.parameters {
             for parameter in fixed {
+                let id = parameter.value.id;
                 bindings.insert(
-                    parameter.value.id,
+                    id,
                     parameter
                         .value
                         .name
                         .as_deref()
-                        .map(rust_binding_name)
-                        .unwrap_or_else(|| format!("__v{}", parameter.value.id.0)),
+                        .map(|name| local_binding_name(name, id, &static_names))
+                        .unwrap_or_else(|| format!("__v{}", id.0)),
                 );
             }
         }
         if let Some(body) = &function.value.body {
-            collect_statement_names(body, &mut bindings);
+            collect_statement_names(body, &mut bindings, &static_names);
         }
     }
     let cx = Context {
         names,
         bindings,
         strings,
+        statics: statics.iter().map(|global| global.variable.id).collect(),
         target: &module.target,
         types: module
             .types
@@ -211,6 +220,26 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
     };
     let mut items = Vec::new();
     let mut externs = Vec::new();
+    for global in &statics {
+        let name = binding_name(global.variable.id, &cx.bindings);
+        match lower_static(global, &cx) {
+            Ok((ty, Some(init))) => items.push(Item::Static {
+                attrs: Vec::new(),
+                vis: rust::Visibility::Private,
+                mutable: true,
+                name,
+                ty,
+                init,
+            }),
+            Ok((ty, None)) => externs.push(rust::ExternDecl::Static {
+                attrs: Vec::new(),
+                mutable: true,
+                name,
+                ty,
+            }),
+            Err(error) => module_barrier(&mut report, error)?,
+        }
+    }
     for function in &module.functions {
         let Some(body) = &function.body else {
             let decl = lower_extern(function, &cx);
@@ -263,29 +292,60 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
     Ok(rust::Program { items })
 }
 
-fn lower_string_global(global: &ir::Global) -> Result<Vec<u8>> {
-    let Some(ir::ValueKind::CodeUnits(units)) = global
-        .variable
-        .initializer
-        .as_ref()
-        .map(|value| &value.node.value)
-    else {
-        let kind = match (global.definition, &global.variable.initializer) {
-            (false, _) => "extern",
-            (true, None) => "zero-initialized",
-            (true, Some(_)) => "initialized",
-        };
-        return Err(super::Error::Unsupported(format!(
-            "{kind} global {}",
-            global.variable.name
-        )));
+fn lower_string_global(global: &ir::Global) -> Option<Result<Vec<u8>>> {
+    let ir::ValueKind::CodeUnits(units) = &global.variable.initializer.as_ref()?.node.value else {
+        return None;
     };
-    units
-        .iter()
-        .map(|unit| {
-            u8::try_from(*unit).map_err(|_| super::Error::Unsupported("wide string".into()))
-        })
-        .collect()
+    Some(
+        units
+            .iter()
+            .map(|unit| {
+                u8::try_from(*unit).map_err(|_| super::Error::Unsupported("wide string".into()))
+            })
+            .collect(),
+    )
+}
+
+fn lower_static(global: &ir::Global, cx: &Context) -> Result<(rust::Type, Option<Expr>)> {
+    let variable = &global.variable;
+    let abi_alignment = matches!(variable.ty, ir::Type::Array { .. })
+        && variable.alignment == cx.target.large_array_alignment();
+    if !matches!(variable.storage, ir::StorageDuration::Static)
+        || (variable.alignment.is_some() && !abi_alignment)
+        || !variable.access.is_plain()
+        || global.symbol != ir::SymbolAttributes::default()
+    {
+        return Err(super::Error::Unsupported(format!(
+            "global {} attributes",
+            variable.name
+        )));
+    }
+    let ty = lower_type(cx, &variable.ty)?;
+    if !global.definition {
+        return Ok((ty, None));
+    }
+    let init = match &variable.initializer {
+        None => zeroed(),
+        Some(value) if is_constant_initializer(value) => lower_value(value, cx)?,
+        Some(_) => {
+            return Err(super::Error::Unsupported(format!(
+                "initialized global {}",
+                variable.name
+            )));
+        }
+    };
+    Ok((ty, Some(init)))
+}
+
+fn is_constant_initializer(value: &ir::Value) -> bool {
+    match &value.node.value {
+        ValueKind::Constant(_) => true,
+        ValueKind::Convert { operand, .. } => is_constant_initializer(operand),
+        ValueKind::Aggregate { members, .. } => members
+            .iter()
+            .all(|member| is_constant_initializer(&member.value)),
+        _ => false,
+    }
 }
 
 fn lower_extern(function: &ir::Function, cx: &Context) -> Result<rust::ExternDecl> {
@@ -388,6 +448,15 @@ fn rust_binding_name(name: &str) -> String {
     }
 }
 
+fn local_binding_name(name: &str, id: BindingId, statics: &HashSet<String>) -> String {
+    let name = rust_binding_name(name);
+    if statics.contains(&name) {
+        format!("{}_{}", name.trim_start_matches("r#"), id.0)
+    } else {
+        name
+    }
+}
+
 fn binding_name(id: BindingId, bindings: &HashMap<BindingId, String>) -> String {
     bindings
         .get(&id)
@@ -398,11 +467,15 @@ fn binding_name(id: BindingId, bindings: &HashMap<BindingId, String>) -> String 
 fn collect_statement_names(
     statements: &[slate_parser::ast::Span<ir::Statement>],
     bindings: &mut HashMap<BindingId, String>,
+    reserved: &HashSet<String>,
 ) {
     for statement in statements {
         match &statement.value {
             ir::Statement::Let(variable) => {
-                bindings.insert(variable.id, rust_binding_name(&variable.name));
+                bindings.insert(
+                    variable.id,
+                    local_binding_name(&variable.name, variable.id, reserved),
+                );
             }
             ir::Statement::Temporary { id, .. } => {
                 bindings
@@ -415,19 +488,21 @@ fn collect_statement_names(
             | ir::Statement::Switch { body, .. }
             | ir::Statement::Label { body, .. }
             | ir::Statement::Case { body, .. }
-            | ir::Statement::Default { body, .. } => collect_statement_names(body, bindings),
+            | ir::Statement::Default { body, .. } => {
+                collect_statement_names(body, bindings, reserved)
+            }
             ir::Statement::For { init, body, .. } => {
-                collect_statement_names(init, bindings);
-                collect_statement_names(body, bindings);
+                collect_statement_names(init, bindings, reserved);
+                collect_statement_names(body, bindings, reserved);
             }
             ir::Statement::If {
                 then_body,
                 else_body,
                 ..
             } => {
-                collect_statement_names(then_body, bindings);
+                collect_statement_names(then_body, bindings, reserved);
                 if let Some(else_body) = else_body {
-                    collect_statement_names(else_body, bindings);
+                    collect_statement_names(else_body, bindings, reserved);
                 }
             }
             _ => {}
@@ -736,7 +811,7 @@ fn lower_statement(
             let target = lower_place(place, cx)?;
             let value = lower_value(value, cx)?;
             let assignment = Stmt::Assign { target, value };
-            if place_dereferences(place) {
+            if place_is_unsafe(cx, place) {
                 Stmt::Unsafe {
                     body: rust::Block {
                         stmts: vec![assignment],
@@ -913,7 +988,7 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
             ordering: None,
         } => {
             let lowered = lower_place(place, cx)?;
-            if place_dereferences(place) {
+            if place_is_unsafe(cx, place) {
                 Expr::Unsafe(Box::new(rust::Block {
                     stmts: Vec::new(),
                     tail: Some(Box::new(lowered)),
@@ -940,20 +1015,29 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
                 _ => None,
             };
             let Some(bytes) = bytes else {
+                let array = lower_place(place, cx)?;
                 let decayed = Expr::Cast {
-                    expr: Box::new(Expr::MethodCall {
-                        recv: Box::new(lower_place(place, cx)?),
-                        method: if matches!(value.ty, ir::Type::Pointer { is_const: true, .. }) {
-                            "as_ptr"
-                        } else {
-                            "as_mut_ptr"
+                    expr: Box::new(if place_is_static(cx, place) {
+                        Expr::AddrOf {
+                            mutable: true,
+                            expr: Box::new(array),
                         }
-                        .into(),
-                        args: Vec::new(),
+                    } else {
+                        Expr::MethodCall {
+                            recv: Box::new(array),
+                            method: if matches!(value.ty, ir::Type::Pointer { is_const: true, .. })
+                            {
+                                "as_ptr"
+                            } else {
+                                "as_mut_ptr"
+                            }
+                            .into(),
+                            args: Vec::new(),
+                        }
                     }),
                     ty: lower_type(cx, &value.ty)?,
                 };
-                return Ok(if place_dereferences(place) {
+                return Ok(if place_is_unsafe(cx, place) {
                     Expr::Unsafe(Box::new(rust::Block {
                         stmts: Vec::new(),
                         tail: Some(Box::new(decayed)),
@@ -1313,10 +1397,18 @@ fn lower_place(place: &ir::Place, cx: &Context) -> Result<Expr> {
     }
 }
 
-fn place_dereferences(place: &ir::Place) -> bool {
+fn place_is_unsafe(cx: &Context, place: &ir::Place) -> bool {
     match &place.kind {
         PlaceKind::Deref(_) => true,
-        PlaceKind::Field { base, .. } => place_dereferences(base),
+        PlaceKind::Field { base, .. } => place_is_unsafe(cx, base),
+        _ => place_is_static(cx, place),
+    }
+}
+
+fn place_is_static(cx: &Context, place: &ir::Place) -> bool {
+    match &place.kind {
+        PlaceKind::Binding(id) => cx.statics.contains(id),
+        PlaceKind::Field { base, .. } => place_is_static(cx, base),
         _ => false,
     }
 }
