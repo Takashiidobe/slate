@@ -282,15 +282,8 @@ fn filecheck() -> PathBuf {
     if let Some(path) = std::env::var_os("SLATE_FILECHECK") {
         return path.into();
     }
-    let clang = std::env::var_os("SLATE_CLANG")
-        .map(PathBuf::from)
-        .or_else(|| {
-            std::env::var_os("HOME")
-                .map(PathBuf::from)
-                .map(|home| home.join("llvm-project/build-cir/bin/clang"))
-        });
-    if let Some(clang) = clang {
-        let sibling = clang.with_file_name("FileCheck");
+    if let Some(home) = std::env::var_os("HOME") {
+        let sibling = PathBuf::from(home).join("llvm-project/build-cir/bin/FileCheck");
         if sibling.is_file() {
             return sibling;
         }

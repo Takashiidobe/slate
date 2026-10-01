@@ -945,7 +945,7 @@ fn generated_weak_symbols_lose_to_strong_external_definitions() {
     );
 
     let bin = work.join("strong_wins");
-    let cc = slate::frontend::toolchain::clang();
+    let cc = support::cc();
     let output = std::process::Command::new(cc)
         .args(["-O0", "-std=c23"])
         .arg(dir.join("strong_main.c"))

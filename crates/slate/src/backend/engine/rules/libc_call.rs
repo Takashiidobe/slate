@@ -518,14 +518,6 @@ fn saturate_int(v: i128, prim: Prim) -> i128 {
     }
 }
 
-fn long_prim() -> Prim {
-    if crate::frontend::toolchain::active_long_bits() == 64 {
-        Prim::I64
-    } else {
-        Prim::I32
-    }
-}
-
 fn fold_atoi(ctx: &CallCtx, prim: Prim) -> Option<Expr> {
     let lit = ctx.const_str_arg(0)?;
     let value = saturate_int(c_atoi_prefix(&lit), prim);
@@ -538,18 +530,18 @@ fn fold_atof(ctx: &CallCtx) -> Option<Expr> {
     Some(Expr::Value(RustValue::from(value)))
 }
 
-fn const_char_ptr() -> Type {
+fn const_char_ptr(char_prim: Prim) -> Type {
     Type::Ptr {
         mutable: false,
-        inner: Box::new(Type::Prim(crate::backend::engine::prelude::char_prim())),
+        inner: Box::new(Type::Prim(char_prim)),
     }
 }
 
-fn ato_helper(ctx: &CallCtx, name: &str) -> Option<Expr> {
+fn ato_helper(ctx: &CallCtx, name: &str, char_prim: Prim) -> Option<Expr> {
     let arg = ctx.args().first()?.clone();
     let arg = match &arg {
-        Expr::Cast { ty, .. } if *ty == const_char_ptr() => arg,
-        _ => cast(arg, const_char_ptr()),
+        Expr::Cast { ty, .. } if *ty == const_char_ptr(char_prim) => arg,
+        _ => cast(arg, const_char_ptr(char_prim)),
     };
     Some(Expr::Call {
         binding: CallBinding::Generated,
@@ -751,7 +743,9 @@ fn node_discards_result(arena: &Arena, kind: &NodeKind) -> bool {
     }
 }
 
-pub(super) fn rules() -> Vec<Box<dyn NodeRule>> {
+pub(super) fn rules(target: &slate_parser::target_info::TargetInfo) -> Vec<Box<dyn NodeRule>> {
+    let char_prim = crate::backend::engine::prelude::char_prim(target);
+    let long_prim = crate::backend::engine::prelude::long_prim(target);
     vec![
         libc_call(Known::Exit, |ctx| {
             Some(free_call(&["std", "process", "exit"], ctx.args().to_vec()))
@@ -777,14 +771,14 @@ pub(super) fn rules() -> Vec<Box<dyn NodeRule>> {
         libc_call(Known::StrNLen, str_n_len),
         libc_call(Known::StrSpn, |ctx| str_span(ctx, true)),
         libc_call(Known::StrCSpn, |ctx| str_span(ctx, false)),
-        libc_call(Known::Atoi, |ctx| {
-            fold_atoi(ctx, Prim::I32).or_else(|| ato_helper(ctx, "__slate_atoi"))
+        libc_call(Known::Atoi, move |ctx| {
+            fold_atoi(ctx, Prim::I32).or_else(|| ato_helper(ctx, "__slate_atoi", char_prim))
         }),
-        libc_call(Known::Atol, |ctx| {
-            fold_atoi(ctx, long_prim()).or_else(|| ato_helper(ctx, "__slate_atol"))
+        libc_call(Known::Atol, move |ctx| {
+            fold_atoi(ctx, long_prim).or_else(|| ato_helper(ctx, "__slate_atol", char_prim))
         }),
-        libc_call(Known::Atoll, |ctx| {
-            fold_atoi(ctx, Prim::I64).or_else(|| ato_helper(ctx, "__slate_atoll"))
+        libc_call(Known::Atoll, move |ctx| {
+            fold_atoi(ctx, Prim::I64).or_else(|| ato_helper(ctx, "__slate_atoll", char_prim))
         }),
         libc_call(Known::Atof, fold_atof),
         libc_call(Known::MemCpy, |ctx| {

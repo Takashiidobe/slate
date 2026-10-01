@@ -340,7 +340,7 @@ fn records_have_same_shape(a: &c_ast::Record, b: &c_ast::Record) -> bool {
 }
 
 fn target_cfg(target: &str) -> Result<rust_ast::Cfg, String> {
-    let target = cli_result(frontend::toolchain::target_config(target))?;
+    let target = cli_result(slate::target::target_config(target))?;
     Ok(rust_ast::Cfg::All(vec![
         rust_ast::Cfg::Opt {
             key: "target_arch".into(),
@@ -943,7 +943,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
 }
 
 fn compile_command_args(command: &compile_commands::CompileCommand) -> Result<Vec<String>, String> {
-    let mut args = cli_result(frontend::toolchain::target_override_args(&command.target))?;
+    let mut args = cli_result(slate::target::target_override_args(&command.target))?;
     args.extend(
         command
             .args
@@ -1711,7 +1711,9 @@ fn translate_slate_project(
 fn record_cfg(path: &Path, clang_args: &[String]) -> Result<String, String> {
     let (source, _raw) =
         preprocess::read_source(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-    let pp = cli_result(preprocess::record_file(&source, clang_args))?;
+    let pp = cli_result(preprocess::record_translation_unit(
+        path, &source, clang_args,
+    ))?;
     let directives: Vec<serde_json::Value> = pp
         .directives
         .iter()

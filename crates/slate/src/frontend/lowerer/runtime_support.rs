@@ -137,9 +137,7 @@ pub(super) fn is_quad_long_double(ty: &CirType) -> bool {
 }
 
 pub(super) fn is_wrapped_long_double(ty: &CirType) -> bool {
-    is_long_double(ty)
-        && !is_quad_long_double(ty)
-        && crate::frontend::toolchain::active_long_double_bits() != 64
+    is_long_double(ty) && !is_quad_long_double(ty) && crate::target::active_long_double_bits() != 64
 }
 
 pub(super) fn is_complex_runtime_call(name: &str) -> bool {

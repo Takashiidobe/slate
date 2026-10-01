@@ -2381,7 +2381,7 @@ fn parse_c_type(s: &str) -> CType {
         CType::Float { bits: 64 }
     } else if s == "long double" {
         CType::Float {
-            bits: toolchain::long_double_bits(&toolchain::active_target()),
+            bits: crate::target::long_double_bits(&crate::target::active_target()),
         }
     } else if s == "_Float16" {
         CType::Float { bits: 16 }
@@ -2394,7 +2394,7 @@ fn parse_c_type(s: &str) -> CType {
     } else {
         let signed = !s.contains("unsigned");
         if s.contains("char") && !s.contains("signed") {
-            let signed = toolchain::char_is_signed_default(&toolchain::active_target());
+            let signed = crate::target::char_is_signed_default(&crate::target::active_target());
             CType::Char { signed }
         } else {
             CType::Int {
@@ -2535,7 +2535,7 @@ fn int_bits(s: &str) -> u32 {
     } else if s.contains("long long") {
         64
     } else if s.contains("long") {
-        toolchain::active_long_bits()
+        crate::target::active_long_bits()
     } else {
         32
     }

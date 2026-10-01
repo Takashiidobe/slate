@@ -8,7 +8,7 @@ fi
 
 source_dir=$(realpath "$1")
 output_dir=$(realpath -m "$2")
-clang_bin=${SLATE_CLANG:-$HOME/llvm-project/build-cir/bin/clang}
+clang_bin=clang
 jobs=${SLATE_GCC_DG_FILTER_JOBS:-8}
 timeout_seconds=${SLATE_GCC_DG_FILTER_TIMEOUT:-5}
 work_dir=$(mktemp -d /tmp/slate-gcc-dg-filter.XXXXXX)
@@ -84,6 +84,10 @@ run_case() {
 
     if ! has_run_directive "$source"; then
         printf '%s\tskipped-no-run\n' "$relative" >"$status"
+        return
+    fi
+    if grep -Eq "dg-shouldfail([[:space:]}]|$)" "$source"; then
+        printf '%s\tskipped-expected-failure\n' "$relative" >"$status"
         return
     fi
     if has_optimization_flags "$source"; then

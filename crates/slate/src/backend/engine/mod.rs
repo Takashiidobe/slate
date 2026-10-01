@@ -74,15 +74,18 @@ impl RuleRegistry {
     }
 }
 
-pub(in crate::backend) fn apply(program: &mut Program) {
+pub(in crate::backend) fn apply(
+    program: &mut Program,
+    target: &slate_parser::target_info::TargetInfo,
+) {
     crate::backend::interproc::string_params::run(program);
     crate::backend::interproc::pointer_lattice::apply(program);
 
-    let registry = RuleRegistry::build(rules::registry());
+    let registry = RuleRegistry::build(rules::registry(target));
     for item in &mut program.items {
         apply_item(item, &registry);
     }
-    prelude::inject(program);
+    prelude::inject(program, target);
     printf_format::rewrite(program);
 }
 

@@ -175,3 +175,60 @@ fn fixtures_unsupported_triage_report() {
         }
     }
 }
+
+#[test]
+fn translation_is_self_hosted() {
+    let source = fixtures_dir().join("atoi_atol_prelude_dynamic.c");
+    let work = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/self-hosted");
+    std::fs::create_dir_all(&work).expect("create self-hosted test directory");
+    let commands = work.join("compile_commands.json");
+    std::fs::write(
+        &commands,
+        serde_json::to_vec(&serde_json::json!([{
+            "directory": env!("CARGO_MANIFEST_DIR"),
+            "file": source,
+            "arguments": ["clang", "--target=x86_64-unknown-linux-gnu", "-c", source],
+        }]))
+        .expect("encode compile commands"),
+    )
+    .expect("write compile commands");
+    let target = "--target=x86_64-unknown-linux-gnu";
+    let inputs = [
+        vec![
+            "translate",
+            "--frontend=slate",
+            target,
+            source.to_str().unwrap(),
+        ],
+        vec![
+            "translate-lowered",
+            "--frontend=slate",
+            target,
+            source.to_str().unwrap(),
+        ],
+        vec!["record-cfg", source.to_str().unwrap(), target],
+        vec![
+            "translate-project",
+            "--frontend=slate",
+            "--compile-commands",
+            commands.to_str().unwrap(),
+            env!("CARGO_MANIFEST_DIR"),
+            work.to_str().unwrap(),
+        ],
+    ];
+    for args in inputs {
+        let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+            .args(&args)
+            .env("PATH", "")
+            .env("SLATE_TARGET", "invalid-default-target")
+            .env_remove("SLATE_CLANG_ARGS")
+            .output()
+            .expect("run Slate without external tools");
+        assert!(
+            output.status.success(),
+            "{} failed without external tools:\n{}",
+            args[0],
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+}

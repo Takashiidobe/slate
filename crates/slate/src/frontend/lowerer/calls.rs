@@ -356,7 +356,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
             return true;
         }
-        if crate::frontend::toolchain::active_long_double_bits() == 64 {
+        if crate::target::active_long_double_bits() == 64 {
             return false;
         }
         let cf80_shim = match callee_name {

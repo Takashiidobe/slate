@@ -214,9 +214,7 @@ pub(super) fn fp_literal_expr_for_type(ty: Option<&Type>, fp: String) -> Expr {
         };
         return Expr::HexFloat(format!("{name}::from_bits(0x{bits:0width$x})"));
     }
-    if matches!(ty, Some(Type::LongDouble))
-        && crate::frontend::toolchain::active_long_double_bits() != 64
-    {
+    if matches!(ty, Some(Type::LongDouble)) && crate::target::active_long_double_bits() != 64 {
         f80_literal_expr(&fp).unwrap_or_else(|| {
             let value = fp_literal_expr(fp);
             Expr::Call {

@@ -29,8 +29,8 @@ pub struct CrossTarget {
     pub qemu_args: Vec<String>,
 }
 
-fn cc() -> String {
-    slate::frontend::toolchain::clang()
+pub fn cc() -> String {
+    "clang".into()
 }
 
 fn cargo() -> String {

@@ -10,7 +10,7 @@ tools/filter-gcc-torture.sh gcc/gcc/testsuite/gcc.c-torture/execute /tmp/gcc-tor
 ```
 
 The filter copies each C file without auxiliary sources or headers, compiles it
-with the CIR-enabled `SLATE_CLANG` using `-O0 -std=c23`, and admits it only when
+with `clang` on PATH using `-O0 -std=c23`, and admits it only when
 the resulting executable exits 0 within five seconds. Nested upstream paths
 are flattened with `__`. `FILTER.tsv` records the disposition of every
 upstream C file.

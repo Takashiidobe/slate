@@ -70,16 +70,15 @@ pub enum PreprocessError {
         #[source]
         source: std::io::Error,
     },
-    #[error("query predefined macros: {source}")]
-    PredefinedMacros {
+    #[error("parse preprocessing arguments: {source}")]
+    Arguments {
         #[source]
-        source: crate::frontend::toolchain::EmitError,
+        source: slate_parser::compiler_args::CompilerArgError,
     },
-    #[error("run preprocessing diagnostics for {path}: {source}")]
-    Diagnostics {
-        path: PathBuf,
+    #[error("preprocess: {source}")]
+    Preprocess {
         #[source]
-        source: crate::frontend::toolchain::EmitError,
+        source: Box<slate_parser::pp::PPError>,
     },
 }
 
@@ -936,52 +935,95 @@ fn collect_unmapped(expr: &PredExpr, out: &mut Vec<String>) {
     }
 }
 
-/// Convenience: query Clang's predefined macros for `clang_args` and record.
-pub fn record_file(source: &str, clang_args: &[String]) -> Result<Preprocessing, PreprocessError> {
-    let macros = crate::frontend::toolchain::predefined_macros(clang_args)
-        .map_err(|source| PreprocessError::PredefinedMacros { source })?;
-    Ok(record(source, &macros))
+fn parser_preprocessor<'a>(
+    search: &'a slate_parser::files::SearchPaths,
+    dialect: &'a slate_parser::dialect::Dialect,
+    inputs: &slate_parser::pp::PreprocessorInputs,
+) -> Result<slate_parser::pp::Preprocessor<'a>, PreprocessError> {
+    let mut pp = slate_parser::pp::Preprocessor::new(search, dialect).map_err(|source| {
+        PreprocessError::Preprocess {
+            source: Box::new(source),
+        }
+    })?;
+    pp.apply_macro_options(&inputs.macros)
+        .map_err(|source| PreprocessError::Preprocess {
+            source: Box::new(source),
+        })?;
+    for path in inputs.imacros.iter().chain(&inputs.includes) {
+        pp.process_forced_file(path)
+            .map_err(|source| PreprocessError::Preprocess {
+                source: Box::new(source),
+            })?;
+    }
+    Ok(pp)
+}
+
+fn parser_macros(pp: &slate_parser::pp::Preprocessor<'_>) -> BTreeMap<String, String> {
+    pp.macros
+        .iter()
+        .map(|(name, entry)| {
+            let value = entry
+                .definition
+                .replacement
+                .iter()
+                .map(|token| String::from(&token.value))
+                .collect::<Vec<_>>()
+                .join(" ");
+            (name.clone(), value)
+        })
+        .collect()
+}
+
+pub fn record_file(
+    source: &str,
+    compiler_args: &[String],
+) -> Result<Preprocessing, PreprocessError> {
+    let args = crate::target::parse_args(compiler_args)
+        .map_err(|source| PreprocessError::Arguments { source })?;
+    let search = args.search_paths();
+    let dialect =
+        slate_parser::dialect::Dialect::new(args.flavor, args.standard, args.target, args.options);
+    let pp = parser_preprocessor(&search, &dialect, &args.preprocessor_inputs)?;
+    Ok(record(source, &parser_macros(&pp)))
 }
 
 pub fn record_translation_unit(
     path: &Path,
     source: &str,
-    clang_args: &[String],
+    compiler_args: &[String],
 ) -> Result<Preprocessing, PreprocessError> {
-    let macros = crate::frontend::toolchain::source_macros(path, clang_args)
-        .map_err(|source| PreprocessError::PredefinedMacros { source })?;
-    let mut pp = record(source, &macros);
-    if pp
-        .directives
-        .iter()
-        .any(|directive| directive.name == DirectiveName::Error && directive.active.is_none())
-    {
-        let (success, stderr) = crate::frontend::toolchain::preprocess_diagnostics(
-            path, clang_args,
-        )
-        .map_err(|source| PreprocessError::Diagnostics {
-            path: path.to_path_buf(),
-            source,
+    let args = crate::target::parse_args(compiler_args)
+        .map_err(|source| PreprocessError::Arguments { source })?;
+    let search = args.search_paths();
+    let dialect =
+        slate_parser::dialect::Dialect::new(args.flavor, args.standard, args.target, args.options);
+    let mut parser = parser_preprocessor(&search, &dialect, &args.preprocessor_inputs)?;
+    parser
+        .parse_file_with_source(path, source)
+        .map_err(|source| PreprocessError::Preprocess {
+            source: Box::new(source),
         })?;
-        let path = path
-            .canonicalize()
-            .unwrap_or_else(|_| path.to_path_buf())
-            .to_string_lossy()
-            .into_owned();
-        for directive in &mut pp.directives {
-            if directive.name != DirectiveName::Error || directive.active.is_some() {
-                continue;
-            }
-            directive.active = if success {
-                Some(false)
-            } else {
-                let prefix = format!("{path}:{}:", directive.line_start);
-                stderr
-                    .lines()
-                    .any(|line| line.starts_with(&prefix))
-                    .then_some(true)
-            };
+    let mut pp = record(source, &parser_macros(&parser));
+    let file_name = slate_parser::files::display_path(
+        parser.files.path(
+            parser
+                .main_file
+                .expect("preprocessed translation unit has a main file"),
+        ),
+    );
+    for directive in &mut pp.directives {
+        if !matches!(
+            directive.name,
+            DirectiveName::Error | DirectiveName::Warning
+        ) {
+            continue;
         }
+        directive.active = Some(parser.directive_diagnostics.iter().any(|diagnostic| {
+            diagnostic.error.source_code.name() == file_name
+                && diagnostic.error.span.is_some_and(|span| {
+                    (directive.byte_start..directive.byte_end).contains(&span.offset())
+                })
+        }));
     }
     Ok(pp)
 }

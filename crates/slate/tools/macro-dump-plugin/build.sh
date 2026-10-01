@@ -1,34 +1,9 @@
 #!/usr/bin/env bash
-# Builds the macro-dump Clang plugin (tools/macro-dump-plugin/MacroDump.cpp)
-# against the same Clang/LLVM SLATE_CLANG points at, so the resulting .so
-# can be loaded with `-fplugin=` into that exact clang binary. A plugin
-# built against one clang is ABI-incompatible with any other clang, even a
-# different minor version -- there is no cross-version compatibility here.
-#
-# Two source modes, auto-detected from SLATE_CLANG:
-#   source tree  SLATE_CLANG points into a CMake build dir (has
-#                CMakeCache.txt) -- headers come from that checkout, and the
-#                built plugin is installed to <build dir>/lib/.
-#   installed    SLATE_CLANG points at a package-managed or release clang
-#                with no build dir alongside it -- headers come from
-#                `llvm-config --includedir` and no source checkout is
-#                needed. The built plugin is left under tools/macro-dump-plugin/build/.
-#
-# Env vars (all optional):
-#   SLATE_CLANG   path to the clang binary to build against
-#                 (default: $HOME/llvm-project/build-cir/bin/clang, else
-#                 whatever `clang` resolves to on PATH)
-#   CXX           C++ compiler used to build the plugin
-#                 (default: the clang++ next to SLATE_CLANG, else clang++ on PATH)
-#   LLVM_CONFIG   llvm-config binary to query for installed-mode include dirs
-#                 (default: llvm-config next to SLATE_CLANG, else on PATH)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if [[ -n "${SLATE_CLANG:-}" ]]; then
-  CLANG_BIN="$SLATE_CLANG"
-elif [[ -x "$HOME/llvm-project/build-cir/bin/clang" ]]; then
+if [[ -x "$HOME/llvm-project/build-cir/bin/clang" ]]; then
   CLANG_BIN="$HOME/llvm-project/build-cir/bin/clang"
 else
   CLANG_BIN="$(command -v clang || true)"
@@ -36,7 +11,6 @@ fi
 
 if [[ -z "$CLANG_BIN" || ! -x "$CLANG_BIN" ]]; then
   echo "error: clang binary not found or not executable: ${CLANG_BIN:-<unset>}" >&2
-  echo "set SLATE_CLANG to the clang binary to build the plugin against" >&2
   exit 1
 fi
 

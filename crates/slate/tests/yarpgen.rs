@@ -198,15 +198,6 @@ fn find_default_yarpgen() -> PathBuf {
 }
 
 fn find_default_clang() -> PathBuf {
-    if let Ok(env_path) = std::env::var("SLATE_CLANG") {
-        return PathBuf::from(env_path);
-    }
-    if let Ok(home) = std::env::var("HOME") {
-        let candidate = PathBuf::from(home).join("llvm-project/build-cir/bin/clang");
-        if candidate.is_file() {
-            return candidate;
-        }
-    }
     PathBuf::from("clang")
 }
 

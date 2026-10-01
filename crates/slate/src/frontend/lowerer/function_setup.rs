@@ -618,9 +618,7 @@ impl<'a> Lowerer<'a> {
             method: name.into(),
             args,
         };
-        let char_prim = if crate::frontend::toolchain::char_is_signed_default(
-            &crate::frontend::toolchain::active_target(),
-        ) {
+        let char_prim = if crate::target::char_is_signed_default(&crate::target::active_target()) {
             Prim::I8
         } else {
             Prim::U8
@@ -754,7 +752,7 @@ impl<'a> Lowerer<'a> {
         let mut attrs = Vec::new();
         if rust_name != name {
             let mut link_name = name.strip_prefix('\u{1}').unwrap_or(name);
-            if crate::frontend::toolchain::active_target() == "aarch64-apple-darwin" {
+            if crate::target::active_target() == "aarch64-apple-darwin" {
                 link_name = link_name.strip_prefix('_').unwrap_or(link_name);
             }
             attrs.push(RustAttr::LinkName(link_name.to_string()));

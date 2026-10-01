@@ -1071,7 +1071,7 @@ pub(super) fn asm_operand_bits(ty: &Type, pointer_bits: u32) -> u32 {
         Type::Prim(Prim::F32) => 32,
         Type::Prim(Prim::F64) => 64,
         Type::Prim(Prim::F128) => 128,
-        Type::LongDouble => crate::frontend::toolchain::active_long_double_bits(),
+        Type::LongDouble => crate::target::active_long_double_bits(),
         Type::Array { elem, len } => match u32::try_from(*len) {
             Ok(len) => asm_operand_bits(elem, pointer_bits)
                 .checked_mul(len)

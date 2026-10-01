@@ -305,10 +305,7 @@ fn normalize(
         args.push(word.clone());
         word_index += 1;
     }
-    Ok((
-        args,
-        target.unwrap_or_else(crate::frontend::toolchain::active_target),
-    ))
+    Ok((args, target.unwrap_or_else(crate::target::active_target)))
 }
 
 fn compiler_target(compiler: &str) -> Option<String> {

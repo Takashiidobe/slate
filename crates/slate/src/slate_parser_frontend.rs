@@ -1,4 +1,3 @@
-use slate_parser::compiler_args::CompilerArgParser;
 use slate_parser::dialect::Dialect;
 use slate_parser::files::Files;
 use slate_parser::ir::Module;
@@ -191,7 +190,7 @@ pub fn parse_module_with_source(
     source: Option<String>,
     args: &[String],
 ) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
-    let args = CompilerArgParser::parse(args.iter().cloned())?;
+    let args = crate::target::parse_args(args)?;
     let search = args.search_paths();
     let dialect = Dialect::new(args.flavor, args.standard, args.target, args.options);
     let mut parser =

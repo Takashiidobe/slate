@@ -17,13 +17,20 @@ pub use format::{format_rust, pretty_rust, write_pretty_rust, write_rust};
 
 /// Applies the backend rewrite pipeline to a generated Rust program.
 pub fn apply(program: Program) -> Program {
+    apply_with_target(program, &crate::target::active_info())
+}
+
+pub fn apply_with_target(
+    program: Program,
+    target: &slate_parser::target_info::TargetInfo,
+) -> Program {
     if std::env::var_os("SLATE_RAW_LOWER").is_some()
         || std::env::var("NEXTEST_PROFILE").is_ok_and(|profile| profile == "lowering")
     {
         return program;
     }
     let mut program = program;
-    engine::apply(&mut program);
+    engine::apply(&mut program, target);
     program
 }
 

@@ -23,7 +23,7 @@ mod zero_init;
 
 use super::NodeRule;
 
-pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
+pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Box<dyn NodeRule>> {
     let mut rules: Vec<Box<dyn NodeRule>> = vec![
         Box::new(structure_dispatch::StructureDispatch),
         Box::new(structure_goto::StructureGoto),
@@ -53,6 +53,6 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(dead_store::DeadStore),
         Box::new(return_cleanup::FinalReturnTail),
     ];
-    rules.extend(libc_call::rules());
+    rules.extend(libc_call::rules(target));
     rules
 }

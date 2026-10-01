@@ -836,7 +836,7 @@ fn translate_one(path: &Path, compiler_args: &[String]) -> Result<Translation, D
     )?;
     Ok(Translation {
         item_lines: item_lines(path, &module, &files),
-        program: backend::apply(program),
+        program: backend::apply_with_target(program, &module.target),
     })
 }
 

@@ -8,17 +8,18 @@ pub(super) const ATOI: &str = "__slate_atoi";
 pub(super) const ATOL: &str = "__slate_atol";
 pub(super) const ATOLL: &str = "__slate_atoll";
 
-pub(in crate::backend) fn char_prim() -> Prim {
-    if crate::frontend::toolchain::char_is_signed_default(
-        &crate::frontend::toolchain::active_target(),
-    ) {
+pub(in crate::backend) fn char_prim(target: &slate_parser::target_info::TargetInfo) -> Prim {
+    if target.char_signed {
         Prim::I8
     } else {
         Prim::U8
     }
 }
 
-pub(in crate::backend) fn inject(program: &mut Program) {
+pub(in crate::backend) fn inject(
+    program: &mut Program,
+    target: &slate_parser::target_info::TargetInfo,
+) {
     let mut needed: Vec<&'static str> = Vec::new();
     {
         let mut calls = Vec::new();
@@ -34,7 +35,7 @@ pub(in crate::backend) fn inject(program: &mut Program) {
     if needed.is_empty() {
         return;
     }
-    let helpers: Vec<Item> = needed.iter().map(|&name| build(name)).collect();
+    let helpers: Vec<Item> = needed.iter().map(|&name| build(name, target)).collect();
     let pos = insert_pos(&program.items);
     program.items.splice(pos..pos, helpers);
 }
@@ -76,16 +77,16 @@ fn insert_pos(items: &[Item]) -> usize {
         .unwrap_or(items.len())
 }
 
-fn build(name: &str) -> Item {
+fn build(name: &str, target: &slate_parser::target_info::TargetInfo) -> Item {
     match name {
-        ATOL => ato_int_prelude(ATOL, long_prim()),
-        ATOLL => ato_int_prelude(ATOLL, Prim::I64),
-        _ => ato_int_prelude(ATOI, Prim::I32),
+        ATOL => ato_int_prelude(ATOL, long_prim(target), target),
+        ATOLL => ato_int_prelude(ATOLL, Prim::I64, target),
+        _ => ato_int_prelude(ATOI, Prim::I32, target),
     }
 }
 
-fn long_prim() -> Prim {
-    if crate::frontend::toolchain::active_long_bits() == 64 {
+pub(in crate::backend) fn long_prim(target: &slate_parser::target_info::TargetInfo) -> Prim {
+    if target.long_width == 64 {
         Prim::I64
     } else {
         Prim::I32
@@ -175,7 +176,7 @@ fn let_stmt(name: &str, mutable: bool, init: Expr) -> Stmt {
     }
 }
 
-fn ato_int_prelude(name: &str, ret: Prim) -> Item {
+fn ato_int_prelude(name: &str, ret: Prim, target: &slate_parser::target_info::TargetInfo) -> Item {
     let cstr = Expr::Call {
         binding: CallBinding::Generated,
         func: Box::new(Expr::Path(Path::new(
@@ -269,7 +270,7 @@ fn ato_int_prelude(name: &str, ret: Prim) -> Item {
             mutable: false,
             ty: Type::Ptr {
                 mutable: false,
-                inner: Box::new(Type::Prim(char_prim())),
+                inner: Box::new(Type::Prim(char_prim(target))),
             },
         }],
         ret: Some(Type::Prim(ret)),

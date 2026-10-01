@@ -174,7 +174,7 @@ pub fn translate_with_frontend_args(
                 })
                 .collect(),
         );
-        let source = backend::apply(program).emit();
+        let source = backend::apply_with_target(program, &module.target).emit();
         return backend::pretty_rust(&source).map_err(|message| Error::Format { message });
     }
     let (_, program) = lowered_program_with_args(path, extra_args)?;

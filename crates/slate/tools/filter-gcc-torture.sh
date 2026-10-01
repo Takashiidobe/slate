@@ -8,7 +8,7 @@ fi
 
 gcc_torture_source=$(realpath "$1")
 gcc_torture_output=$(realpath -m "$2")
-gcc_torture_clang=${SLATE_CLANG:-$HOME/llvm-project/build-cir/bin/clang}
+gcc_torture_clang=clang
 gcc_torture_jobs=${SLATE_GCC_TORTURE_JOBS:-8}
 gcc_torture_timeout=${SLATE_GCC_TORTURE_TIMEOUT:-5}
 

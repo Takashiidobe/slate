@@ -87,12 +87,10 @@ impl Drop for Case {
 }
 
 fn clang() -> String {
-    std::env::var("SLATE_CLANG").unwrap_or_else(|_| {
-        format!(
-            "{}/llvm-project/build-cir/bin/clang",
-            std::env::var("HOME").expect("HOME not set")
-        )
-    })
+    format!(
+        "{}/llvm-project/build-cir/bin/clang",
+        std::env::var("HOME").expect("HOME not set")
+    )
 }
 
 fn plugin() -> PathBuf {
