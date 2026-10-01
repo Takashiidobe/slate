@@ -17,53 +17,100 @@ pub(super) fn lower_string_global(global: &ir::Global) -> Option<Result<Vec<u8>>
     )
 }
 
-pub(super) fn over_alignment(cx: &Context, variable: &ir::Variable) -> Option<u64> {
-    let alignment = variable.alignment?;
-    let abi_alignment = matches!(variable.ty, ir::Type::Array { .. })
-        && variable.alignment == cx.target.large_array_alignment();
-    let (_, natural) = storage_of(cx, &variable.ty)?;
-    (!abi_alignment && alignment > natural).then_some(alignment)
-}
-
 pub(super) fn align_wrapper(alignment: u64) -> String {
     format!("__SlateAlign{alignment}")
 }
 
-pub(super) fn lower_static(
-    global: &ir::Global,
-    cx: &Context,
-) -> Result<(rust::Type, Option<Expr>)> {
-    let variable = &global.variable;
-    let abi_alignment = matches!(variable.ty, ir::Type::Array { .. })
-        && variable.alignment == cx.target.large_array_alignment();
-    if !matches!(variable.storage, ir::StorageDuration::Static)
-        || (variable.alignment.is_some()
-            && !abi_alignment
-            && storage_of(cx, &variable.ty).is_none())
-        || !variable.access.is_plain()
-        || global.symbol != ir::SymbolAttributes::default()
-    {
-        return Err(super::Error::Unsupported(format!(
-            "global {} attributes",
-            variable.name
-        )));
+impl Tables<'_> {
+    pub(super) fn over_alignment(&self, variable: &ir::Variable) -> Option<u64> {
+        let alignment = variable.alignment?;
+        let abi_alignment = matches!(variable.ty, ir::Type::Array { .. })
+            && variable.alignment == self.target.large_array_alignment();
+        let (_, natural) = self.storage_of(&variable.ty)?;
+        (!abi_alignment && alignment > natural).then_some(alignment)
     }
-    let ty = lower_type(cx, &variable.ty)?;
-    if !global.definition {
-        return Ok((ty, None));
+
+    pub(super) fn is_constant_initializer(&self, value: &ir::Value) -> bool {
+        match &value.node.value {
+            ValueKind::Constant(_) | ValueKind::CodeUnits(_) | ValueKind::Null => true,
+            ValueKind::ArrayDecay { place, .. } | ValueKind::AddressOf(place) => {
+                self.is_constant_address(place)
+            }
+            ValueKind::PointerOffset {
+                pointer, amount, ..
+            } => {
+                self.is_constant_initializer(pointer)
+                    && matches!(amount.node.value, ValueKind::Constant(_))
+            }
+            ValueKind::Convert { operand, .. } => {
+                !self.is_long_double(&operand.ty)
+                    && !self.is_long_double(&value.ty)
+                    && self.is_constant_initializer(operand)
+            }
+            ValueKind::Aggregate { members, .. } => members
+                .iter()
+                .all(|member| self.is_constant_initializer(&member.value)),
+            _ => false,
+        }
     }
-    let init = match &variable.initializer {
-        None => zeroed(),
-        Some(value) if is_constant_initializer(value, cx) => lower_value(value, cx)?,
-        Some(_) => {
+
+    pub(super) fn is_constant_address(&self, place: &ir::Place) -> bool {
+        match &place.kind {
+            PlaceKind::Binding(id) => self.statics.contains(id) || self.strings.contains_key(id),
+            PlaceKind::Field { base, .. } => self.is_constant_address(base),
+            PlaceKind::Deref(pointer) => self.is_constant_initializer(pointer),
+            PlaceKind::Index { base, index } => {
+                self.is_constant_initializer(base)
+                    && matches!(index.node.value, ValueKind::Constant(_))
+            }
+            _ => false,
+        }
+    }
+}
+
+impl FunctionLowerer<'_, '_> {
+    pub(super) fn lower_static(
+        &mut self,
+        global: &ir::Global,
+    ) -> Result<(rust::Type, Option<Expr>)> {
+        let tables = self.tables;
+        let variable = &global.variable;
+        let abi_alignment = matches!(variable.ty, ir::Type::Array { .. })
+            && variable.alignment == tables.target.large_array_alignment();
+        if !matches!(variable.storage, ir::StorageDuration::Static)
+            || (variable.alignment.is_some()
+                && !abi_alignment
+                && tables.storage_of(&variable.ty).is_none())
+            || !variable.access.is_plain()
+            || global.symbol != ir::SymbolAttributes::default()
+        {
             return Err(super::Error::Unsupported(format!(
-                "initialized global {}",
+                "global {} attributes",
                 variable.name
             )));
         }
-    };
-    Ok(match cx.over_aligned.get(&variable.id) {
-        Some(&alignment) => (
+        let ty = self.lower_type(&variable.ty)?;
+        if !global.definition {
+            return Ok((ty, None));
+        }
+        let init = match &variable.initializer {
+            None => zeroed(),
+            Some(value) if tables.is_constant_initializer(value) => self.lower_value(value)?,
+            Some(_) => {
+                return Err(super::Error::Unsupported(format!(
+                    "initialized global {}",
+                    variable.name
+                )));
+            }
+        };
+        let Some(&alignment) = tables.over_aligned.get(&variable.id) else {
+            return Ok((ty, Some(init)));
+        };
+        self.needs.align_wrappers.insert(
+            u32::try_from(alignment)
+                .map_err(|_| super::Error::Unsupported(format!("alignment {alignment}")))?,
+        );
+        Ok((
             rust::Type::Generic {
                 name: align_wrapper(alignment),
                 args: vec![ty],
@@ -73,43 +120,6 @@ pub(super) fn lower_static(
                 args: vec![init],
                 binding: CallBinding::Generated,
             }),
-        ),
-        None => (ty, Some(init)),
-    })
-}
-
-pub(super) fn is_constant_initializer(value: &ir::Value, cx: &Context) -> bool {
-    match &value.node.value {
-        ValueKind::Constant(_) | ValueKind::CodeUnits(_) | ValueKind::Null => true,
-        ValueKind::ArrayDecay { place, .. } | ValueKind::AddressOf(place) => {
-            is_constant_address(place, cx)
-        }
-        ValueKind::PointerOffset {
-            pointer, amount, ..
-        } => {
-            is_constant_initializer(pointer, cx)
-                && matches!(amount.node.value, ValueKind::Constant(_))
-        }
-        ValueKind::Convert { operand, .. } => {
-            !is_long_double(cx, &operand.ty)
-                && !is_long_double(cx, &value.ty)
-                && is_constant_initializer(operand, cx)
-        }
-        ValueKind::Aggregate { members, .. } => members
-            .iter()
-            .all(|member| is_constant_initializer(&member.value, cx)),
-        _ => false,
-    }
-}
-
-pub(super) fn is_constant_address(place: &ir::Place, cx: &Context) -> bool {
-    match &place.kind {
-        PlaceKind::Binding(id) => cx.statics.contains(id) || cx.strings.contains_key(id),
-        PlaceKind::Field { base, .. } => is_constant_address(base, cx),
-        PlaceKind::Deref(pointer) => is_constant_initializer(pointer, cx),
-        PlaceKind::Index { base, index } => {
-            is_constant_initializer(base, cx) && matches!(index.node.value, ValueKind::Constant(_))
-        }
-        _ => false,
+        ))
     }
 }

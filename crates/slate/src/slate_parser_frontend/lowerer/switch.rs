@@ -108,87 +108,90 @@ pub(super) fn ends_in_jump(statement: &ir::Statement) -> bool {
     }
 }
 
-pub(super) fn lower_switch(
-    id: BindingId,
-    discriminant: &ir::Value,
-    body: &[slate_parser::ast::Span<ir::Statement>],
-    cx: &Context,
-) -> Result<Stmt> {
-    let statements = match body {
-        [single] => match &**single {
-            ir::Statement::Block(inner) => inner.as_slice(),
-            _ => body,
-        },
-        _ => body,
-    };
-    let mut arms: Vec<SwitchArm> = Vec::new();
-    for statement in statements {
-        match switch_label(statement, id)? {
-            Some(arm) => arms.push(arm),
-            None => match arms.last_mut() {
-                Some(arm) => arm.body.push(statement),
-                None => {
-                    return Err(super::Error::Unsupported(
-                        "statement before first switch case".into(),
-                    ));
-                }
+impl FunctionLowerer<'_, '_> {
+    pub(super) fn lower_switch(
+        &mut self,
+        id: BindingId,
+        discriminant: &ir::Value,
+        body: &[slate_parser::ast::Span<ir::Statement>],
+    ) -> Result<Stmt> {
+        let statements = match body {
+            [single] => match &**single {
+                ir::Statement::Block(inner) => inner.as_slice(),
+                _ => body,
             },
+            _ => body,
+        };
+        let mut arms: Vec<SwitchArm> = Vec::new();
+        for statement in statements {
+            match switch_label(statement, id)? {
+                Some(arm) => arms.push(arm),
+                None => match arms.last_mut() {
+                    Some(arm) => arm.body.push(statement),
+                    None => {
+                        return Err(super::Error::Unsupported(
+                            "statement before first switch case".into(),
+                        ));
+                    }
+                },
+            }
         }
+        for (index, arm) in arms.iter().enumerate() {
+            if contains_switch_label(&arm.body, id) {
+                return Err(super::Error::Unsupported("nested switch case label".into()));
+            }
+            if !arm.body.last().is_some_and(|last| ends_in_jump(last)) && index + 1 < arms.len() {
+                return Err(super::Error::Unsupported("switch fallthrough".into()));
+            }
+        }
+        let selector = self.next_temp();
+        let mut chain = match arms.iter().find(|arm| arm.default) {
+            Some(arm) => self.lower_switch_arm(arm)?,
+            None => Vec::new(),
+        };
+        for arm in arms.iter().rev().filter(|arm| !arm.default) {
+            let mut cond: Option<Expr> = None;
+            for value in &arm.values {
+                let test = Expr::Binary {
+                    op: BinOp::Eq,
+                    lhs: Box::new(Expr::Var(selector.clone().into())),
+                    rhs: Box::new(self.lower_value(value)?),
+                };
+                cond = Some(match cond {
+                    Some(previous) => Expr::Binary {
+                        op: BinOp::Or,
+                        lhs: Box::new(previous),
+                        rhs: Box::new(test),
+                    },
+                    None => test,
+                });
+            }
+            let Some(cond) = cond else {
+                continue;
+            };
+            chain = vec![Stmt::If {
+                cond,
+                then_body: self.lower_switch_arm(arm)?,
+                else_body: chain,
+            }];
+        }
+        let mut block = vec![Stmt::Let {
+            name: selector,
+            mutable: false,
+            ty: Some(self.lower_type(&discriminant.ty)?),
+            init: Some(self.lower_value(discriminant)?),
+        }];
+        block.extend(chain);
+        Ok(Stmt::LabeledBlock {
+            label: break_label(id),
+            body: block,
+        })
     }
-    for (index, arm) in arms.iter().enumerate() {
-        if contains_switch_label(&arm.body, id) {
-            return Err(super::Error::Unsupported("nested switch case label".into()));
-        }
-        if !arm.body.last().is_some_and(|last| ends_in_jump(last)) && index + 1 < arms.len() {
-            return Err(super::Error::Unsupported("switch fallthrough".into()));
-        }
-    }
-    let selector = cx.next_temp();
-    let lower_arm = |arm: &SwitchArm| -> Result<Vec<Stmt>> {
+
+    fn lower_switch_arm(&mut self, arm: &SwitchArm) -> Result<Vec<Stmt>> {
         arm.body
             .iter()
-            .map(|statement| lower_statement(statement, cx))
+            .map(|statement| self.lower_statement(statement))
             .collect()
-    };
-    let mut chain = match arms.iter().find(|arm| arm.default) {
-        Some(arm) => lower_arm(arm)?,
-        None => Vec::new(),
-    };
-    for arm in arms.iter().rev().filter(|arm| !arm.default) {
-        let mut cond: Option<Expr> = None;
-        for value in &arm.values {
-            let test = Expr::Binary {
-                op: BinOp::Eq,
-                lhs: Box::new(Expr::Var(selector.clone().into())),
-                rhs: Box::new(lower_value(value, cx)?),
-            };
-            cond = Some(match cond {
-                Some(previous) => Expr::Binary {
-                    op: BinOp::Or,
-                    lhs: Box::new(previous),
-                    rhs: Box::new(test),
-                },
-                None => test,
-            });
-        }
-        let Some(cond) = cond else {
-            continue;
-        };
-        chain = vec![Stmt::If {
-            cond,
-            then_body: lower_arm(arm)?,
-            else_body: chain,
-        }];
     }
-    let mut block = vec![Stmt::Let {
-        name: selector,
-        mutable: false,
-        ty: Some(lower_type(cx, &discriminant.ty)?),
-        init: Some(lower_value(discriminant, cx)?),
-    }];
-    block.extend(chain);
-    Ok(Stmt::LabeledBlock {
-        label: break_label(id),
-        body: block,
-    })
 }
