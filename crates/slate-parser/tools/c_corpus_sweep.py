@@ -24,6 +24,7 @@ import pp_diff
 ROOT = Path(__file__).resolve().parents[1]
 SLATE = ROOT.parents[1] / "target/test-cache/release/slate-parser"
 PROVIDERS = {"zlib": ["", "build-{flavor}"]}
+HOST_INCLUDE_DIRS = {"redis": ["/usr/include"]}
 PROJECTS = {
     "cJSON": "https://github.com/DaveGamble/cJSON",
     "chibicc": "https://github.com/rui314/chibicc",
@@ -80,6 +81,7 @@ def jobs(corpus: Path, projects: list[str], flavor: str) -> list[Job]:
             if provider != project
             for sub in subs
         ]
+        extra += [f"-idirafter{directory}" for directory in HOST_INCLUDE_DIRS.get(project, [])]
         database = corpus / project / f"build-{flavor}" / "compile_commands.json"
         if not database.exists():
             print(f"{project}: no {database.relative_to(corpus)}; run tools/c_corpus_setup.py", file=sys.stderr)

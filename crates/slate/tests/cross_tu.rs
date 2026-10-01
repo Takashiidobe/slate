@@ -1002,3 +1002,98 @@ fn visibility_attrs_lower_best_effort() {
         "expected protected visibility warnings, got:\n{stderr}"
     );
 }
+
+fn translate_host_include_project(
+    database: &Path,
+    project: &Path,
+    crate_dir: &Path,
+    include_args: &[&str],
+) -> std::process::Output {
+    let _ = std::fs::remove_dir_all(crate_dir);
+    std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args([
+            "translate-project",
+            "--frontend=slate",
+            "--compile-commands",
+        ])
+        .arg(database)
+        .args(include_args)
+        .arg(project)
+        .arg(crate_dir)
+        .output()
+        .expect("run slate translate-project")
+}
+
+#[test]
+fn project_translation_takes_include_dirs_from_cli_and_joined_options() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.host-include");
+    let project = root.join("project");
+    let vendor = root.join("vendor");
+    let work = cross_tu_work_dir("host-include");
+    std::fs::create_dir_all(&work).expect("create work dir");
+    let entries = serde_json::json!([
+        {
+            "directory": project,
+            "file": "main.c",
+            "arguments": ["clang", "-std=gnu17", "-c", "main.c"],
+        },
+        {
+            "directory": project,
+            "file": "common.c",
+            "arguments": ["clang", "-std=gnu17", "-isystem../internal", "-c", "common.c"],
+        },
+    ]);
+    let database = work.join("compile_commands.json");
+    std::fs::write(
+        &database,
+        serde_json::to_vec(&entries).expect("encode database"),
+    )
+    .expect("write database");
+    let crate_dir = work.join("rs");
+
+    let missing = translate_host_include_project(&database, &project, &crate_dir, &[]);
+    let stderr = String::from_utf8_lossy(&missing.stderr);
+    assert!(
+        !missing.status.success() && stderr.contains("greet/greet.h"),
+        "expected main.c to miss <greet/greet.h> without an include dir, got:\n{stderr}"
+    );
+
+    let vendor_arg = vendor.display().to_string();
+    let output = translate_host_include_project(
+        &database,
+        &project,
+        &crate_dir,
+        &["-idirafter", &vendor_arg],
+    );
+    assert!(
+        output.status.success(),
+        "translate-project failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let case = support::MultiBinCase {
+        name: "host_include".into(),
+        main_rs: crate_dir.join("src/main.rs"),
+        common_rs: crate_dir.join("src/common.rs"),
+        types_rs: None,
+    };
+    let rs_bin = support::build_multi_bin_batch(&[case], &work.join("batch_cargo"))
+        .expect("spawn Rust build")
+        .executable("host_include")
+        .expect("build Rust project");
+    let c_bin = work.join("c_bin");
+    support::compile_c_multi_with_std_include_and_args(
+        &[project.join("main.c"), project.join("common.c")],
+        &c_bin,
+        "gnu17",
+        Some(&vendor),
+        &[format!("-I{}", root.join("internal").display())],
+    )
+    .expect("compile C reference");
+    let run_dir = work.join("run");
+    let _ = std::fs::remove_dir_all(&run_dir);
+    std::fs::create_dir_all(&run_dir).expect("create run dir");
+    let cfg = support::RunConfig::default();
+    let c = support::run_with_config(&c_bin, &cfg, &run_dir).expect("run C");
+    let r = support::run_with_config(&rs_bin, &cfg, &run_dir).expect("run Rust");
+    support::compare_runs(&c, &r, false).expect("C and Rust outputs differ");
+}

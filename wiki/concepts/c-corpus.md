@@ -92,13 +92,21 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--jobs N] [--trophies]
 
 ## Missing dependencies
 
-Third-party headers absent from the slate sysroot (`crypt.h`,
-`systemd/sd-daemon.h`, `bzlib.h`, `readline/readline.h`) are reported as
-`missing-dependency`, not as slate failures: slate-parser only sees its
-sysroot, and adding host libraries there is out of scope. Where a corpus
-project provides the header (`zlib`), the sweep appends its source and
-build directories as `-idirafter` for every other project, and libpng is
-built against that zlib so clang and slate read the same header.
+Third-party headers absent from the slate sysroot (`crypt.h`, `bzlib.h`,
+`readline/readline.h`) are reported as `missing-dependency`, not as slate
+failures. The sysroot holds only the C library and compiler headers and
+gets no more: a project that needs a host library is given its include
+directory explicitly, as a user would pass `-idirafter` to `slate-parser`
+or `slate translate-project`.
+
+- `HOST_INCLUDE_DIRS` in the sweep is that manual list, appended as
+  `-idirafter` so the sysroot still wins for libc headers. redis needs
+  `/usr/include` for `systemd/sd-daemon.h` (its build detects systemd on
+  the host).
+- Where a corpus project provides the header (`zlib`), the sweep appends
+  its source and build directories as `-idirafter` for every other
+  project, and libpng is built against that zlib so clang and slate read
+  the same header.
 
 ## Gotchas
 

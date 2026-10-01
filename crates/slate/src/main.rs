@@ -24,7 +24,7 @@ fn usage() -> ExitCode {
     );
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
     eprintln!(
-        "  translate-project --compile-commands <file>... <project_dir> <crate_dir>  cross-TU C project -> Cargo crate (bin if a unit defines main, else lib)"
+        "  translate-project --compile-commands <file>... [-I|-isystem|-iquote|-idirafter <dir>]... <project_dir> <crate_dir>  cross-TU C project -> Cargo crate (bin if a unit defines main, else lib); include dirs apply to every unit"
     );
     ExitCode::from(2)
 }
@@ -845,7 +845,9 @@ fn project_warning_items(
 fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut paths = Vec::new();
     let mut compile_command_paths = Vec::new();
+    let mut include_args = Vec::new();
     let mut selected = api::Frontend::Cir;
+    let current_dir = std::env::current_dir().map_err(|e| format!("current directory: {e}"))?;
     let mut index = 0;
     while index < args.len() {
         match args[index].as_str() {
@@ -859,7 +861,26 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                 compile_command_paths.push(PathBuf::from(commands));
             }
             flag if flag.starts_with('-') => {
-                return Err(format!("unknown translate-project option: {flag}"));
+                let (option, dir) = match compile_commands::path_option(flag) {
+                    Some(compile_commands::PathOption::Separate(option)) => {
+                        index += 1;
+                        let dir = args
+                            .get(index)
+                            .ok_or_else(|| format!("{option} requires a directory"))?;
+                        (option, dir.as_str())
+                    }
+                    Some(compile_commands::PathOption::Joined(option, dir)) => (option, dir),
+                    None => return Err(format!("unknown translate-project option: {flag}")),
+                };
+                if !compile_commands::INCLUDE_DIR_OPTIONS.contains(&option) {
+                    return Err(format!("unknown translate-project option: {flag}"));
+                }
+                include_args.push(option.to_string());
+                include_args.push(
+                    compile_commands::absolute_path(&current_dir, Path::new(dir))
+                        .display()
+                        .to_string(),
+                );
             }
             path => paths.push(path),
         }
@@ -871,14 +892,14 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     if compile_command_paths.is_empty() {
         return Err("translate-project requires at least one --compile-commands <file>".into());
     }
-    if selected == api::Frontend::Slate {
-        return translate_slate_project(Path::new(paths[1]), &compile_command_paths);
+    let mut commands = cli_result(compile_commands::read(&compile_command_paths))?;
+    for command in &mut commands {
+        command.args.extend(include_args.iter().cloned());
     }
-    translate_project_with_compile_commands(
-        Path::new(paths[0]),
-        Path::new(paths[1]),
-        &compile_command_paths,
-    )
+    if selected == api::Frontend::Slate {
+        return translate_slate_project(Path::new(paths[1]), commands);
+    }
+    translate_project_with_compile_commands(Path::new(paths[0]), Path::new(paths[1]), commands)
 }
 
 fn compile_command_args(command: &compile_commands::CompileCommand) -> Result<Vec<String>, String> {
@@ -1019,9 +1040,8 @@ fn lower_macro_forked_program(
 fn translate_project_with_compile_commands(
     project_dir: &Path,
     crate_dir: &Path,
-    database_paths: &[PathBuf],
+    commands: Vec<compile_commands::CompileCommand>,
 ) -> Result<String, String> {
-    let commands = cli_result(compile_commands::read(database_paths))?;
     let mut command_map: BTreeMap<(PathBuf, rust_ast::Cfg), compile_commands::CompileCommand> =
         BTreeMap::new();
     let mut paths_by_stem: BTreeMap<String, PathBuf> = BTreeMap::new();
@@ -1529,9 +1549,12 @@ fn imported_commons(units: &[SlateUnit]) -> BTreeMap<String, BTreeSet<String>> {
         .collect()
 }
 
-fn translate_slate_project(crate_dir: &Path, database_paths: &[PathBuf]) -> Result<String, String> {
+fn translate_slate_project(
+    crate_dir: &Path,
+    commands: Vec<compile_commands::CompileCommand>,
+) -> Result<String, String> {
     use slate::slate_parser_frontend::{self, lowerer};
-    let units = parse_slate_units(cli_result(compile_commands::read(database_paths))?)?;
+    let units = parse_slate_units(commands)?;
     let roots: Vec<&str> = units
         .iter()
         .filter(|unit| {

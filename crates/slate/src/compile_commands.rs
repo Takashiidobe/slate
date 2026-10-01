@@ -161,7 +161,40 @@ fn string_field<'a>(
         })
 }
 
-fn absolute_path(base: &Path, path: &Path) -> PathBuf {
+const PATH_OPTIONS: [&str; 8] = [
+    "-isystem",
+    "-iquote",
+    "-idirafter",
+    "-include",
+    "-imacros",
+    "-isysroot",
+    "--sysroot=",
+    "-I",
+];
+
+pub const INCLUDE_DIR_OPTIONS: [&str; 4] = ["-I", "-isystem", "-iquote", "-idirafter"];
+
+pub enum PathOption<'a> {
+    Separate(&'a str),
+    Joined(&'a str, &'a str),
+}
+
+pub fn path_option(word: &str) -> Option<PathOption<'_>> {
+    if word == "--sysroot" {
+        return Some(PathOption::Separate(word));
+    }
+    PATH_OPTIONS.iter().find_map(|option| {
+        let value = word.strip_prefix(option)?;
+        match value {
+            "" if option.ends_with('=') => None,
+            "" => Some(PathOption::Separate(option)),
+            value if value.starts_with('-') => None,
+            value => Some(PathOption::Joined(option, value)),
+        }
+    })
+}
+
+pub fn absolute_path(base: &Path, path: &Path) -> PathBuf {
     let path = if path.is_absolute() {
         path.to_path_buf()
     } else {
@@ -217,47 +250,33 @@ fn normalize(
             word_index += 1;
             continue;
         }
-        if matches!(
-            word.as_str(),
-            "-I" | "-isystem"
-                | "-iquote"
-                | "-idirafter"
-                | "-include"
-                | "-imacros"
-                | "-isysroot"
-                | "--sysroot"
-        ) {
-            let value = words.get(word_index + 1).ok_or_else(|| {
-                CompileCommandsError::MissingOptionValue {
-                    path: database.to_path_buf(),
-                    index,
-                    option: word.clone(),
-                }
-            })?;
-            args.push(word.clone());
-            args.push(
-                absolute_path(directory, Path::new(value))
-                    .to_string_lossy()
-                    .into_owned(),
-            );
-            word_index += 2;
-            continue;
-        }
-        if let Some(value) = word.strip_prefix("-I").filter(|value| !value.is_empty()) {
-            args.push(format!(
-                "-I{}",
-                absolute_path(directory, Path::new(value)).display()
-            ));
-            word_index += 1;
-            continue;
-        }
-        if let Some(value) = word.strip_prefix("--sysroot=") {
-            args.push(format!(
-                "--sysroot={}",
-                absolute_path(directory, Path::new(value)).display()
-            ));
-            word_index += 1;
-            continue;
+        match path_option(word) {
+            Some(PathOption::Separate(option)) => {
+                let value = words.get(word_index + 1).ok_or_else(|| {
+                    CompileCommandsError::MissingOptionValue {
+                        path: database.to_path_buf(),
+                        index,
+                        option: word.clone(),
+                    }
+                })?;
+                args.push(option.to_string());
+                args.push(
+                    absolute_path(directory, Path::new(value))
+                        .to_string_lossy()
+                        .into_owned(),
+                );
+                word_index += 2;
+                continue;
+            }
+            Some(PathOption::Joined(option, value)) => {
+                args.push(format!(
+                    "{option}{}",
+                    absolute_path(directory, Path::new(value)).display()
+                ));
+                word_index += 1;
+                continue;
+            }
+            None => {}
         }
         if matches!(word.as_str(), "-target" | "--target") {
             let value = words.get(word_index + 1).ok_or_else(|| {
