@@ -1013,9 +1013,14 @@ fn lower_statement(statement: &ir::Statement, cx: &Context) -> Result<Stmt> {
                     }
                     _ => Some(zeroed()),
                 },
-                (None, ir::Type::VaList) => Some(zeroed()),
-                (None, ty) if record_fields(cx, ty).is_some() => Some(zeroed()),
-                (None, _) => None,
+                (None, ty) => Some(match lower_type(cx, ty)? {
+                    rust::Type::Prim(Prim::Bool) => Expr::Value(rust::RustValue::Bool(false)),
+                    ty @ rust::Type::Prim(_) => Expr::Cast {
+                        expr: Box::new(Expr::Value(rust::RustValue::I64(0))),
+                        ty,
+                    },
+                    _ => zeroed(),
+                }),
             };
             Stmt::Let {
                 name: binding_name(variable.id, &cx.bindings),
