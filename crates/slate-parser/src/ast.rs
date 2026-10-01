@@ -4,7 +4,7 @@ use crate::const_expr::{
 };
 use custom_debug::Debug as CustomDebug;
 use std::cell::Cell;
-use std::rc::Rc;
+use std::sync::Arc;
 use std::sync::atomic::{AtomicU32, Ordering};
 
 pub(crate) fn is_false(value: &bool) -> bool {
@@ -435,7 +435,7 @@ pub struct Span<T> {
     pub spelling: Loc,
     pub expansion: Loc,
     pub provenance: Provenance,
-    pub macro_origin: Option<Rc<MacroOrigin>>,
+    pub macro_origin: Option<Arc<MacroOrigin>>,
     pub leading_space: bool,
 }
 
@@ -474,7 +474,7 @@ impl<T> Span<T> {
         self
     }
 
-    pub fn with_macro_origin(mut self, macro_origin: Option<Rc<MacroOrigin>>) -> Self {
+    pub fn with_macro_origin(mut self, macro_origin: Option<Arc<MacroOrigin>>) -> Self {
         self.macro_origin = macro_origin;
         self
     }
@@ -559,7 +559,7 @@ impl<T> Span<T> {
     pub(crate) fn cover_with_origin<U>(
         value: T,
         spans: &[Span<U>],
-        macro_origin: Option<Rc<MacroOrigin>>,
+        macro_origin: Option<Arc<MacroOrigin>>,
     ) -> Self {
         let Some(first) = spans.first() else {
             let loc = Loc::new(FileId(0), 0, 0);
@@ -637,16 +637,16 @@ impl Provenance {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MacroOrigin {
-    pub name: Rc<str>,
+    pub name: Arc<str>,
     pub definition: Provenance,
-    pub inner: Option<Rc<MacroOriginLink>>,
+    pub inner: Option<Arc<MacroOriginLink>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MacroOriginLink {
-    pub name: Rc<str>,
+    pub name: Arc<str>,
     pub definition: Provenance,
-    pub parent: Option<Rc<MacroOriginLink>>,
+    pub parent: Option<Arc<MacroOriginLink>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

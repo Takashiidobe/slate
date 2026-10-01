@@ -18,6 +18,11 @@ pub struct Module {
     pub metadata: Metadata,
 }
 
+const _: fn() = || {
+    fn assert_send_sync<T: Send + Sync>() {}
+    assert_send_sync::<Module>();
+};
+
 #[derive(Debug, Clone, Copy)]
 pub enum Linkage {
     Internal,

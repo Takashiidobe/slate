@@ -5,7 +5,7 @@ use super::{FileInput, MacroDef, Preprocessor, stringized_source};
 use crate::ast::{Loc, MacroOrigin, MacroOriginLink, Span};
 use crate::compiler_args::CompilerFlavor;
 use crate::lexer::{Token, TokenSpanExt};
-use std::rc::Rc;
+use std::sync::Arc;
 
 #[derive(Debug, Clone)]
 pub(super) struct PPToken {
@@ -57,19 +57,19 @@ fn origin_for_expansion(
     name: &str,
     provenance: crate::ast::Provenance,
     token: &Span<Token>,
-) -> Rc<MacroOrigin> {
+) -> Arc<MacroOrigin> {
     match &token.macro_origin {
-        Some(existing) => Rc::new(MacroOrigin {
+        Some(existing) => Arc::new(MacroOrigin {
             name: existing.name.clone(),
             definition: existing.definition,
-            inner: Some(Rc::new(MacroOriginLink {
-                name: Rc::from(name),
+            inner: Some(Arc::new(MacroOriginLink {
+                name: Arc::from(name),
                 definition: provenance,
                 parent: existing.inner.clone(),
             })),
         }),
-        None => Rc::new(MacroOrigin {
-            name: Rc::from(name),
+        None => Arc::new(MacroOrigin {
+            name: Arc::from(name),
             definition: provenance,
             inner: None,
         }),
@@ -79,7 +79,7 @@ fn origin_for_expansion(
 struct Stamp {
     expansion: Loc,
     end: Loc,
-    origin: Rc<MacroOrigin>,
+    origin: Arc<MacroOrigin>,
 }
 
 impl Stamp {
