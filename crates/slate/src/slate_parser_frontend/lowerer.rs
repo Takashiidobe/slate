@@ -790,9 +790,37 @@ fn lower_type(cx: &Context, ty: &ir::Type) -> Result<rust::Type> {
                 len: *length,
             });
         }
+        ir::Type::VaList => return Ok(rust::Type::VaList),
         _ => return Err(super::Error::Unsupported(format!("type {ty}"))),
     };
     Ok(rust::Type::Prim(primitive))
+}
+
+const VA_ARGS: &str = "__va_args";
+
+fn clone_va_list(list: Expr) -> Expr {
+    Expr::MethodCall {
+        recv: Box::new(list),
+        method: "clone".into(),
+        args: Vec::new(),
+    }
+}
+
+fn lower_assignment(cx: &Context, place: &ir::Place, value: Expr) -> Result<Stmt> {
+    let assignment = Stmt::Assign {
+        target: lower_place(place, cx)?,
+        value,
+    };
+    Ok(if place_is_unsafe(cx, place) {
+        Stmt::Unsafe {
+            body: rust::Block {
+                stmts: vec![assignment],
+                tail: None,
+            },
+        }
+    } else {
+        assignment
+    })
 }
 
 fn lower_statement(statement: &ir::Statement, cx: &Context) -> Result<Stmt> {
@@ -837,6 +865,7 @@ fn lower_statement(statement: &ir::Statement, cx: &Context) -> Result<Stmt> {
                     }
                     _ => Some(zeroed()),
                 },
+                (None, ir::Type::VaList) => Some(zeroed()),
                 (None, ty) if record_fields(cx, ty).is_some() => Some(zeroed()),
                 (None, _) => None,
             };
@@ -847,27 +876,19 @@ fn lower_statement(statement: &ir::Statement, cx: &Context) -> Result<Stmt> {
                 init,
             }
         }
-        ir::Statement::Expression(value) => {
-            if matches!(value.node.value, ValueKind::Void) {
-                Stmt::Block(rust::Block::default())
-            } else {
-                Stmt::Expr(lower_value(value, cx)?)
+        ir::Statement::Expression(value) => match &value.node.value {
+            ValueKind::Void | ValueKind::VaEnd { .. } => Stmt::Block(rust::Block::default()),
+            ValueKind::VaStart { list } => {
+                lower_assignment(cx, list, clone_va_list(Expr::Var(VA_ARGS.into())))?
             }
-        }
+            ValueKind::VaCopy {
+                destination,
+                source,
+            } => lower_assignment(cx, destination, clone_va_list(lower_place(source, cx)?))?,
+            _ => Stmt::Expr(lower_value(value, cx)?),
+        },
         ir::Statement::Write { place, value, .. } => {
-            let target = lower_place(place, cx)?;
-            let value = lower_value(value, cx)?;
-            let assignment = Stmt::Assign { target, value };
-            if place_is_unsafe(cx, place) {
-                Stmt::Unsafe {
-                    body: rust::Block {
-                        stmts: vec![assignment],
-                        tail: None,
-                    },
-                }
-            } else {
-                assignment
-            }
+            lower_assignment(cx, place, lower_value(value, cx)?)?
         }
         ir::Statement::Return(value) => Stmt::Return(
             value
@@ -1266,11 +1287,25 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
                     .collect(),
             )
         }
+        ValueKind::VaArg { list } => Expr::Unsafe(Box::new(rust::Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::MethodCallGeneric {
+                recv: Box::new(lower_place(list, cx)?),
+                method: "next_arg".into(),
+                type_args: vec![lower_type(cx, &value.ty)?],
+                args: Vec::new(),
+            })),
+        })),
         ValueKind::Read {
             place,
             ordering: None,
         } => {
             let lowered = lower_place(place, cx)?;
+            let lowered = if matches!(value.ty, ir::Type::VaList) {
+                clone_va_list(lowered)
+            } else {
+                lowered
+            };
             if place_is_unsafe(cx, place) {
                 Expr::Unsafe(Box::new(rust::Block {
                     stmts: Vec::new(),
