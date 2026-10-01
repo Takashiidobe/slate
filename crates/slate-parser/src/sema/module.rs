@@ -1427,7 +1427,7 @@ impl Lowerer {
         Ok(self.value(
             expr,
             value.ty.clone(),
-            ValueKind::Constant(Number::SignedInteger(number)),
+            ValueKind::Constant(super::fold::integer_number(&value.ty, number)),
         ))
     }
 

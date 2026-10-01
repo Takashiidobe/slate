@@ -336,14 +336,11 @@ fn case_number(value: &ir::Value) -> Result<CaseNumber> {
             .parse()
             .map(CaseNumber::Unsigned)
             .map_err(|_| unsupported_switch("case value")),
-        ValueKind::Constant(Number::SignedInteger(number)) => {
-            let digits = number.to_string();
-            digits
-                .parse()
-                .map(CaseNumber::Signed)
-                .or_else(|_| digits.parse().map(CaseNumber::Unsigned))
-                .map_err(|_| unsupported_switch("case value"))
-        }
+        ValueKind::Constant(Number::SignedInteger(number)) => number
+            .to_string()
+            .parse()
+            .map(CaseNumber::Signed)
+            .map_err(|_| unsupported_switch("case value")),
         ValueKind::Constant(_) => Err(unsupported_switch("case value")),
         _ => Err(Invariant::NonConstantCase.into()),
     }
