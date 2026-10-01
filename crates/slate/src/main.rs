@@ -987,12 +987,8 @@ fn load_variants_parallel(
     project_dir: &Path,
     context: &str,
 ) -> Result<Vec<LoadedVariant>, String> {
-    let pool = rayon::ThreadPoolBuilder::new()
-        .num_threads(slate_job_count())
-        .build()
-        .map_err(|error| format!("build worker pool: {error}"))?;
     let entries: Vec<_> = command_map.iter().collect();
-    let results: Vec<Result<LoadedVariant, String>> = pool.install(|| {
+    let results: Vec<Result<LoadedVariant, String>> = slate_worker_pool()?.install(|| {
         entries
             .par_iter()
             .map(|((path, cfg), command)| load_variant(path, project_dir, cfg, command, context))
@@ -1471,23 +1467,44 @@ fn parse_slate_units(
     if by_stem.is_empty() {
         return Err("translate-project: no C translation units in compile commands".into());
     }
-    let mut units = Vec::new();
+    let results: Vec<Result<SlateUnit, String>> = slate_worker_pool()?.install(|| {
+        by_stem
+            .into_par_iter()
+            .map(|(stem, command)| {
+                let mut args = command.args;
+                args.push(format!("--target={}", command.target));
+                api::slate_ir_with_args(&command.file, &args)
+                    .map(|(module, files)| SlateUnit {
+                        stem,
+                        path: command.file.clone(),
+                        module,
+                        files,
+                    })
+                    .map_err(|error| format!("{}: {error}", command.file.display()))
+            })
+            .collect()
+    });
+    collect_all_errors(results)
+}
+
+fn slate_worker_pool() -> Result<rayon::ThreadPool, String> {
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(slate_job_count())
+        .build()
+        .map_err(|error| format!("build worker pool: {error}"))
+}
+
+fn collect_all_errors<T>(results: Vec<Result<T, String>>) -> Result<Vec<T>, String> {
+    let mut values = Vec::new();
     let mut errors = Vec::new();
-    for (stem, command) in by_stem {
-        let mut args = command.args;
-        args.push(format!("--target={}", command.target));
-        match api::slate_ir_with_args(&command.file, &args) {
-            Ok((module, files)) => units.push(SlateUnit {
-                stem,
-                path: command.file,
-                module,
-                files,
-            }),
-            Err(error) => errors.push(format!("{}: {error}", command.file.display())),
+    for result in results {
+        match result {
+            Ok(value) => values.push(value),
+            Err(error) => errors.push(error),
         }
     }
     if errors.is_empty() {
-        Ok(units)
+        Ok(values)
     } else {
         Err(errors.join("\n"))
     }
@@ -1554,21 +1571,26 @@ fn translate_slate_project(crate_dir: &Path, database_paths: &[PathBuf]) -> Resu
         return Err("a non-root unit maps to module main".into());
     }
     let mut imported = imported_commons(&units);
-    let mut programs = Vec::new();
-    let mut errors = Vec::new();
-    for unit in &units {
-        let options = lowerer::LowerOptions {
-            export_symbols: true,
-            imported_commons: imported.remove(&unit.stem).unwrap_or_default(),
-        };
-        match slate_parser_frontend::lower_module(&unit.module, &unit.files, &options) {
-            Ok(program) => programs.push((unit.stem.clone(), program)),
-            Err(error) => errors.push(format!("{}: {error}", unit.path.display())),
-        }
-    }
-    if !errors.is_empty() {
-        return Err(errors.join("\n"));
-    }
+    let jobs: Vec<_> = units
+        .iter()
+        .map(|unit| {
+            let options = lowerer::LowerOptions {
+                export_symbols: true,
+                imported_commons: imported.remove(&unit.stem).unwrap_or_default(),
+            };
+            (unit, options)
+        })
+        .collect();
+    let results: Vec<Result<_, String>> = slate_worker_pool()?.install(|| {
+        jobs.into_par_iter()
+            .map(|(unit, options)| {
+                slate_parser_frontend::lower_module(&unit.module, &unit.files, &options)
+                    .map(|program| (unit.stem.clone(), program))
+                    .map_err(|error| format!("{}: {error}", unit.path.display()))
+            })
+            .collect()
+    });
+    let programs = collect_all_errors(results)?;
 
     init_crate(crate_dir, false)?;
     let crate_src = crate_dir.join("src");
