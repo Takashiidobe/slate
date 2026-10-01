@@ -353,13 +353,31 @@ fn lower_static(global: &ir::Global, cx: &Context) -> Result<(rust::Type, Option
 fn is_constant_initializer(value: &ir::Value, cx: &Context) -> bool {
     match &value.node.value {
         ValueKind::Constant(_) | ValueKind::CodeUnits(_) | ValueKind::Null => true,
-        ValueKind::ArrayDecay { place, .. } => {
-            matches!(place.kind, PlaceKind::Binding(id) if cx.strings.contains_key(&id))
+        ValueKind::ArrayDecay { place, .. } | ValueKind::AddressOf(place) => {
+            is_constant_address(place, cx)
+        }
+        ValueKind::PointerOffset {
+            pointer, amount, ..
+        } => {
+            is_constant_initializer(pointer, cx)
+                && matches!(amount.node.value, ValueKind::Constant(_))
         }
         ValueKind::Convert { operand, .. } => is_constant_initializer(operand, cx),
         ValueKind::Aggregate { members, .. } => members
             .iter()
             .all(|member| is_constant_initializer(&member.value, cx)),
+        _ => false,
+    }
+}
+
+fn is_constant_address(place: &ir::Place, cx: &Context) -> bool {
+    match &place.kind {
+        PlaceKind::Binding(id) => cx.statics.contains(id) || cx.strings.contains_key(id),
+        PlaceKind::Field { base, .. } => is_constant_address(base, cx),
+        PlaceKind::Deref(pointer) => is_constant_initializer(pointer, cx),
+        PlaceKind::Index { base, index } => {
+            is_constant_initializer(base, cx) && matches!(index.node.value, ValueKind::Constant(_))
+        }
         _ => false,
     }
 }
