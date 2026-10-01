@@ -23,8 +23,8 @@ through `slate-parser ir --flavor=clang` on `x86_64-unknown-linux-gnu`.
 
 - Each flavor's database comes from a build with that compiler, so
   configure results (`config.h`, feature probes) match it.
-- The sweep reads only `build-clang` for now. The gcc and msvc databases
-  exist for later flavors.
+- The sweep reads the selected flavor's build database and checks acceptance
+  with the corresponding compiler.
 - Older `compile_commands.json` files at a project's top level or in
   `build/` came from `cc` (gcc) and are ignored.
 
@@ -70,7 +70,7 @@ invented one.
 ## Sweep
 
 ```
-python3 tools/c_corpus_sweep.py [PROJECT ...] [--jobs N] [--trophies]
+python3 tools/c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs N] [--trophies]
 ```
 
 - Deduplicates each database by file and drops entries whose file is
@@ -78,15 +78,18 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--jobs N] [--trophies]
   `-isystem`, `-iquote`, `-idirafter`, `-include`, `-imacros`, `-std`
   (`pp_diff.kept_args`); pins `-std=gnu17` when absent
   (slate-parser-6x05.6).
-- Oracle: `clang <flags> -fsyntax-only -w` against host headers. Slate
-  uses its own sysroot.
+- `--flavor` selects `build-<flavor>`, the Slate flavor, and the compiler
+  oracle; it defaults to clang. MSVC uses `cl.exe /Zs` and the Windows x64
+  target.
+- Clang and GCC use `-fsyntax-only -w` against host headers. Slate uses its
+  own sysroot.
 - Status per TU: `ok`, `internal`, `unimplemented`, `rejected` (from the
   first detailed `×` diagnostic), `timeout` (300 s), `missing-dependency`,
-  `clang-rejects`.
+  `oracle-rejects`.
 - Writes `target/c-corpus-sweep.md` (per-project table, failure clusters,
   slowest TUs) and `target/c-corpus-sweep.json`.
 - `--trophies` prints the README trophy-case table: projects where every
-  TU is `ok`. A `clang-rejects` disqualifies, since it means the setup
+  TU is `ok`. An `oracle-rejects` disqualifies, since it means the setup
   is wrong, not slate.
 - A full run takes about 3 minutes.
 

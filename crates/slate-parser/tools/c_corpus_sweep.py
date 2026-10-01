@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Sweep ~/c-corpus through `slate-parser ir` with clang -fsyntax-only as the oracle.
+"""Sweep ~/c-corpus through `slate-parser ir` with the selected compiler as oracle.
 
-usage: c_corpus_sweep.py [PROJECT ...] [--flavor clang] [--jobs N] [--trophies]
+usage: c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs N] [--trophies]
 
 Reads <corpus>/<project>/build-<flavor>/compile_commands.json, written by
 tools/c_corpus_setup.py. Needs target/test-cache/release/slate-parser.
@@ -51,7 +51,7 @@ PROJECTS = {
 }
 DISPLAY = {"sqlite": "SQLite", "lua": "Lua", "pcre2": "PCRE2", "quickjs": "QuickJS", "lz4": "LZ4", "tinycc": "TinyCC", "mbedtls": "Mbed TLS", "redis": "Redis"}
 DETAIL = re.compile(r"^\s*(?:Error:\s*)?×\s+(.*)$")
-STATUSES = ("ok", "internal", "unimplemented", "rejected", "timeout", "missing-dependency", "clang-rejects")
+STATUSES = ("ok", "internal", "unimplemented", "rejected", "timeout", "missing-dependency", "oracle-rejects")
 
 
 @dataclass
@@ -94,7 +94,14 @@ def jobs(corpus: Path, projects: list[str], flavor: str) -> list[Job]:
             seen.add(source)
             argv = entry.get("arguments") or shlex.split(entry["command"])
             args = pp_diff.kept_args(argv, entry["directory"])
-            if not any(arg.startswith("-std=") for arg in args):
+            if flavor == "msvc":
+                path_flags = ("-isystem", "-iquote", "-idirafter", "-I", "-include", "-imacros")
+                normalized = []
+                for arg in args:
+                    flag = next((flag for flag in path_flags if arg.startswith(flag)), None)
+                    normalized.append(flag + arg[len(flag):].replace("\\", "/") if flag else arg)
+                args = normalized
+            if flavor != "msvc" and not any(arg.startswith("-std=") for arg in args):
                 args.append(pp_diff.CLANG_DEFAULT_STANDARD)
             found.append(Job(project, source, entry["directory"], [*args, *extra]))
     return found
@@ -112,22 +119,41 @@ def classify(stderr: str) -> tuple[str, str]:
     return "rejected", detail
 
 
-def run(job: Job, timeout: int) -> Result:
+def oracle_args(job: Job, flavor: str) -> list[str]:
+    if flavor != "msvc":
+        return [flavor, *job.args, "-fsyntax-only", "-w", job.source]
+    args = []
+    for arg in job.args:
+        if arg.startswith(("-D", "-U")):
+            args.append("/" + arg[1:])
+        elif (flag := next((f for f in ("-isystem", "-iquote", "-idirafter", "-I") if arg.startswith(f)), None)):
+            path = arg[len(flag):]
+            args.append("/I" + path)
+    return [str(ROOT / "tools/cl.exe"), "/nologo", "/Zs", "/std:c17", *args, job.source]
+
+
+def run(job: Job, flavor: str, timeout: int) -> Result:
     start = time.monotonic()
 
     def result(status: str, detail: str = "") -> Result:
         return Result(job.project, job.source, status, detail[:200], round(time.monotonic() - start, 3))
 
-    clang = subprocess.run(
-        ["clang", *job.args, "-fsyntax-only", "-w", job.source],
+    oracle = subprocess.run(
+        oracle_args(job, flavor),
         cwd=job.directory, capture_output=True, text=True, errors="replace",
     )
-    if clang.returncode:
-        first = next((line for line in clang.stderr.splitlines() if "error:" in line), clang.stderr[:200])
-        return result("clang-rejects", first.split("error:", 1)[-1].strip())
+    if oracle.returncode:
+        output = oracle.stdout + oracle.stderr
+        first = next((line for line in output.splitlines() if "error:" in line or " error " in line or "fatal error C" in line), output[:200])
+        return result("oracle-rejects", first.split("error:", 1)[-1].strip())
     try:
+        slate_args = [str(SLATE), "ir", job.source, f"--flavor={flavor}", *job.args]
+        if flavor == "msvc":
+            slate_args.extend(("--target=x86_64-pc-windows-msvc", "-std=c17"))
+        elif not any(arg.startswith("-std=") for arg in job.args):
+            slate_args.append(pp_diff.CLANG_DEFAULT_STANDARD)
         slate = subprocess.run(
-            [str(SLATE), "ir", job.source, "--flavor=clang", *job.args],
+            slate_args,
             cwd=job.directory, capture_output=True, text=True, errors="replace", timeout=timeout,
         )
     except subprocess.TimeoutExpired:
@@ -186,7 +212,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("projects", nargs="*")
     parser.add_argument("--corpus", type=Path, default=Path(os.environ.get("SLATE_CORPUS", Path.home() / "c-corpus")))
-    parser.add_argument("--flavor", default="clang", choices=("clang",))
+    parser.add_argument("--flavor", default="clang", choices=("clang", "gcc", "msvc"))
     parser.add_argument("--jobs", type=int, default=os.cpu_count() or 8)
     parser.add_argument("--timeout", type=int, default=300)
     parser.add_argument("--report", type=Path, default=ROOT / "target/c-corpus-sweep.md")
@@ -198,7 +224,7 @@ def main() -> int:
     )
     work = jobs(args.corpus, projects, args.flavor)
     with concurrent.futures.ThreadPoolExecutor(args.jobs) as pool:
-        results = list(pool.map(lambda job: run(job, args.timeout), work))
+        results = list(pool.map(lambda job: run(job, args.flavor, args.timeout), work))
     table = collections.defaultdict(collections.Counter)
     for r in results:
         table[r.project][r.status] += 1
