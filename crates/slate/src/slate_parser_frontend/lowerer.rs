@@ -352,7 +352,7 @@ fn lower_static(global: &ir::Global, cx: &Context) -> Result<(rust::Type, Option
 
 fn is_constant_initializer(value: &ir::Value, cx: &Context) -> bool {
     match &value.node.value {
-        ValueKind::Constant(_) | ValueKind::CodeUnits(_) => true,
+        ValueKind::Constant(_) | ValueKind::CodeUnits(_) | ValueKind::Null => true,
         ValueKind::ArrayDecay { place, .. } => {
             matches!(place.kind, PlaceKind::Binding(id) if cx.strings.contains_key(&id))
         }
@@ -1515,6 +1515,26 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
         {
             lower_type(cx, &value.ty)?;
             Expr::Var("None".into())
+        }
+        ValueKind::Null => {
+            let rust::Type::Ptr { mutable, inner } = lower_type(cx, &value.ty)? else {
+                return Err(super::Error::Unsupported(format!(
+                    "value {}",
+                    value.display(false)
+                )));
+            };
+            Expr::Call {
+                func: Box::new(Expr::Var(
+                    format!(
+                        "std::ptr::{}::<{}>",
+                        if mutable { "null_mut" } else { "null" },
+                        crate::backend::codegen::type_to_string(&inner)
+                    )
+                    .into(),
+                )),
+                args: Vec::new(),
+                binding: CallBinding::Generated,
+            }
         }
         ValueKind::Call {
             callee, arguments, ..
