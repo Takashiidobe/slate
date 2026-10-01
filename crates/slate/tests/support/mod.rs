@@ -1152,7 +1152,7 @@ fn write_long_double_shim(project: &Path) -> Result<(), String> {
     .map_err(|e| format!("write build.rs: {e}"))?;
 
     let names = collect_long_double_shim_names(&project.join("src"))?;
-    let source = slate::frontend::c_shim::render_shim_c_source_for_names(&names);
+    let source = slate::slate_parser_frontend::c_shim::render_shim_c_source_for_names(&names);
     write_if_changed(project.join("src/slate_long_double.c"), source.as_bytes())
         .map(|_| ())
         .map_err(|e| format!("write slate_long_double.c: {e}"))

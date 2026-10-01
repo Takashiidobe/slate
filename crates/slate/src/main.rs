@@ -3,7 +3,8 @@ use clang_ir::model::Module;
 use clap::{Args, Parser, Subcommand};
 use rayon::prelude::*;
 use slate::backend::{self, codegen, rust_ast};
-use slate::frontend::{self, c_ast, c_shim, directive_translate, preprocess};
+use slate::frontend::{self, c_ast, directive_translate, preprocess};
+use slate::slate_parser_frontend::c_shim;
 use slate::{api, compile_commands, ctx};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -842,7 +843,7 @@ fn write_c_shims(crate_dir: &Path, shims: &[rust_ast::ExternFnDecl]) -> Result<(
 "#,
     )?;
     let shim_path = crate_dir.join("src/slate_shims.c");
-    std::fs::write(&shim_path, c_shim::render_shim_c_source(shims))
+    std::fs::write(&shim_path, frontend::c_shim::render_shim_c_source(shims))
         .map_err(|e| format!("write {}: {e}", shim_path.display()))
 }
 

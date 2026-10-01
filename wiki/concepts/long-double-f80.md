@@ -24,7 +24,7 @@ with an f80 side calls `__slate_f80_from_<t>` / `__slate_f80_to_<t>`.
 A call to a body-less function whose return or argument holds f80 by value
 (including inside a struct) becomes a call to a C bridge named
 `__slate_<callee>__r<ret>_<arg tags>`. The test harness renders it from the
-name (`c_shim::render_shim_c_source_for_names`) and links it with
+name (`slate_parser_frontend::c_shim::render_shim_c_source_for_names`) and links it with
 `shims/long_double.c`, and the direct extern declaration is dropped. Barriers
 remain for variadic callees missing from `function_identity::Known` (the
 bridge needs their header), and for non-pointer aggregate arguments to a
@@ -45,6 +45,11 @@ signature. On the callee side, `va_arg(ap, long double)` lowers to
 `__slate_f80_va_arg(&mut ap)`, which relies on x86_64 `VaList` sharing C's
 `__va_list_tag` layout so C advances the Rust list in place.
 
+- Runtime and name-based bridges: `slate_parser_frontend/c_shim.rs` and
+  `slate_parser_frontend/shims/{long_double,fenv}.c`.
+- Legacy typed bridges: `frontend/c_shim.rs`; retained for CIR callers.
+- Generated crates compile `src/slate_long_double.c` with `cc` in `build.rs`.
+
 ## Why not just `f64`
 
 C `long double` and `double` are not interchangeable on the targets slate
@@ -55,7 +60,7 @@ different rounding/precision behavior than `f64`. Silently widening it to
 anything precision-sensitive. So slate models it as its own type,
 `LongDouble` (`slate_parser_frontend/long_double.rs::LONG_DOUBLE_TY`), backed
 by a `[u8; 10]` byte representation, with every x87 operation delegated to C
-helpers in `frontend/shims/long_double.c` since Rust has no native 80-bit
+helpers in `slate_parser_frontend/shims/long_double.c` since Rust has no native 80-bit
 float type.
 
 ## ABI varies by target — `uses_f64_long_double_abi()`
@@ -82,7 +87,7 @@ it rather than assuming the x87 80-bit shape unconditionally.
   rather than special-casing every bit-width pairing directly.
 - **libc functions**: f80-returning/accepting libc functions (`strtold`,
   `fabsl`, `copysignl`, etc.) route through the same shim table as other
-  known-libc calls in `frontend/c_shim.rs` — no bespoke special-casing per
+  known-libc calls in `slate_parser_frontend/c_shim.rs` — no bespoke special-casing per
   function.
 - **`_Complex long double`**: composes with slate's general `_Complex`
   support, which is implemented via the `num-complex` crate rather than a

@@ -8,6 +8,7 @@ use slate_parser::sema::Sema;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 
+pub mod c_shim;
 pub(crate) mod long_double;
 pub mod lowerer;
 
