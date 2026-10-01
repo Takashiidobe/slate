@@ -49,7 +49,7 @@ PROJECTS = {
     "zlib": "https://zlib.net",
     "zstd": "https://github.com/facebook/zstd",
 }
-DISPLAY = {"sqlite": "SQLite", "lua": "Lua", "pcre2": "PCRE2", "quickjs": "QuickJS", "lz4": "LZ4", "tinycc": "TinyCC", "mbedtls": "Mbed TLS"}
+DISPLAY = {"sqlite": "SQLite", "lua": "Lua", "pcre2": "PCRE2", "quickjs": "QuickJS", "lz4": "LZ4", "tinycc": "TinyCC", "mbedtls": "Mbed TLS", "redis": "Redis"}
 DETAIL = re.compile(r"^\s*(?:Error:\s*)?×\s+(.*)$")
 STATUSES = ("ok", "internal", "unimplemented", "rejected", "timeout", "missing-dependency", "clang-rejects")
 

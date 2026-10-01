@@ -1108,31 +1108,30 @@ impl TypeResolver {
         let Type::Defined(id) = ty else {
             return Err(ResolveError::Rejected("offsetof field of non-record"));
         };
-        let Some(TypeDefinition {
-            kind:
-                TypeDefinitionKind::Record {
-                    fields: Some(fields),
-                    layout: Some(layout),
-                    ..
-                },
-            ..
-        }) = self.definitions.get(id.0 as usize)
-        else {
+        if self.record_fields(id).is_none() {
             return Err(ResolveError::Rejected("offsetof incomplete or non-record"));
-        };
-        let (index, field) = fields
-            .iter()
-            .enumerate()
-            .find(|(_, f)| f.name.as_deref() == Some(name))
+        }
+        let (field, offset) = self
+            .offsetof_lookup(id, name)
             .ok_or(ResolveError::Rejected("unknown offsetof member"))?;
         if field.bit_width.is_some() {
             return Err(ResolveError::Rejected("offsetof bit-field"));
         }
-        let offset = *layout
-            .offsets
-            .get(index)
-            .ok_or(ResolveError::Internal("missing field offset"))?;
         Ok((field.ty.clone(), offset))
+    }
+
+    fn offsetof_lookup(&self, id: TypeId, name: &str) -> Option<(&Field, u64)> {
+        let (fields, offsets) = self.record_fields(id)?;
+        fields
+            .iter()
+            .zip(offsets)
+            .find_map(|(field, &offset)| match (&field.name, &field.ty) {
+                (Some(field_name), _) if field_name == name => Some((&field.value, offset)),
+                (None, Type::Defined(inner)) => self
+                    .offsetof_lookup(*inner, name)
+                    .map(|(field, inner_offset)| (field, offset + inner_offset)),
+                _ => None,
+            })
     }
 
     pub(super) fn ms_asm_field(

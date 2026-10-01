@@ -2,12 +2,14 @@
 // SLATE-FILECHECK-DEFINES INCOMPLETE -DINCOMPLETE
 // SLATE-FILECHECK-DEFINES BITFIELD -DBITFIELD
 // SLATE-FILECHECK-DEFINES WIDTH -DWIDTH
+// SLATE-FILECHECK-DEFINES ANON_BITFIELD -DANON_BITFIELD
 // SLATE-FILECHECK-ERROR FIELD
 // SLATE-FILECHECK-ERROR INCOMPLETE
 // SLATE-FILECHECK-ERROR BITFIELD
 // SLATE-FILECHECK-ERROR WIDTH
+// SLATE-FILECHECK-ERROR ANON_BITFIELD
 // SLATE-FILECHECK-ARGS --dump-ir
-struct S { int field; unsigned bits : 2; };
+struct S { int field; unsigned bits : 2; struct { unsigned flag : 1; }; };
 #ifdef FIELD
 unsigned long bad(void) { return __builtin_offsetof(struct S, missing); }
 #endif
@@ -20,6 +22,9 @@ unsigned long bad(void) { return __builtin_offsetof(struct S, bits); }
 #endif
 #ifdef WIDTH
 void bad(void) { (_BitInt(sizeof(int) - 4))1; }
+#endif
+#ifdef ANON_BITFIELD
+unsigned long bad(void) { return __builtin_offsetof(struct S, flag); }
 #endif
 
 // SLATE-FILECHECK-BEGIN FIELD
@@ -66,3 +71,14 @@ void bad(void) { (_BitInt(sizeof(int) - 4))1; }
 // WIDTH: 14 │ #endif
 // WIDTH: ╰────
 // SLATE-FILECHECK-END WIDTH
+// SLATE-FILECHECK-BEGIN ANON_BITFIELD
+// ANON_BITFIELD: Error:   × semantic analysis failed
+// ANON_BITFIELD: Error:
+// ANON_BITFIELD: × offsetof bit-field
+// ANON_BITFIELD: ╭─[tests/fixtures/error/clang/linux/x86_64/ir_layout_constants.c:16:34]
+// ANON_BITFIELD: 15 │ #ifdef ANON_BITFIELD
+// ANON_BITFIELD: 16 │ unsigned long bad(void) { return __builtin_offsetof(struct S, flag); }
+// ANON_BITFIELD: ·                                  ──────────────────────────────────
+// ANON_BITFIELD: 17 │ #endif
+// ANON_BITFIELD: ╰────
+// SLATE-FILECHECK-END ANON_BITFIELD

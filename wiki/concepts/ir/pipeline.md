@@ -108,6 +108,10 @@ Macro expansion chains are not in the IR yet (only atomic builtins record
   bounds, `_BitInt` widths, case labels, bit-field widths, alignment
   requests, atomic orderings. `sizeof(int) * 8` folds the leaf and keeps the
   `mul`.
+- An `offsetof` member name resolves through anonymous struct and union
+  members at any depth, as member access does, and adds each level's offset
+  (`clang/linux/x86_64/offsetof_anonymous_members.c`). A bit-field found that
+  way is still `Rejected` (`error/.../ir_layout_constants.c` `ANON_BITFIELD`).
 - `sizeof` of a VLA type is a runtime computation over captured extents,
   never a constant.
 - `sema/fold.rs` goes past C's integer-constant-expression rule, as clang,
