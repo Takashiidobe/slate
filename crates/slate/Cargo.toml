@@ -14,7 +14,7 @@ thiserror = "2.0.19"
 ordered-float = "5.3.0"
 triplers = { version = "0.1.1", path = "vendor/triplers" }
 mimalloc = "0.1.52"
-miette = "7"
+miette = { version = "7", features = ["fancy", "syntect-highlighter"] }
 rustc_apfloat = "0.2.3"
 unicode-ident = "1"
 rayon = "1.12"

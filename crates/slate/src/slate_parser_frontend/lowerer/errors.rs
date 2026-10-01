@@ -23,16 +23,15 @@ impl Site {
 impl Site {
     pub fn render(&self, files: &Files) -> String {
         let expansion = render_loc(self.expansion, files);
-        if (self.spelling.file, self.spelling.offset)
-            == (self.expansion.file, self.expansion.offset)
-        {
-            expansion
-        } else {
-            format!(
-                "{expansion} (spelled at {})",
-                render_loc(self.spelling, files)
-            )
+        match self.spelling(files) {
+            Some(spelling) => format!("{expansion} (spelled at {spelling})"),
+            None => expansion,
         }
+    }
+
+    pub fn spelling(&self, files: &Files) -> Option<String> {
+        ((self.spelling.file, self.spelling.offset) != (self.expansion.file, self.expansion.offset))
+            .then(|| render_loc(self.spelling, files))
     }
 }
 

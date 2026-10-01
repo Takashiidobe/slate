@@ -20,16 +20,84 @@ pub enum Error {
     Analyze { path: PathBuf, message: String },
     #[error("lower {path} to slate-parser IR: {message}")]
     Lower { path: PathBuf, message: String },
-    #[error("unsupported slate-parser IR at {location}: {barrier}")]
+    #[error("{report}")]
     Unsupported {
         barrier: Box<lowerer::Barrier>,
-        location: String,
+        report: String,
     },
-    #[error("invalid slate-parser IR at {location}: {invalid}")]
+    #[error("{report}")]
     Invalid {
         invalid: Box<lowerer::InvalidIr>,
-        location: String,
+        report: String,
     },
+}
+
+#[derive(Debug, Error, miette::Diagnostic)]
+#[error("{message}")]
+struct SiteDiagnostic {
+    message: String,
+    #[source_code]
+    code: miette::NamedSource<String>,
+    #[label("{label}")]
+    span: miette::SourceSpan,
+    label: String,
+    #[help]
+    help: String,
+}
+
+fn render_site(
+    site: &lowerer::Site,
+    files: &Files,
+    message: String,
+    label: &str,
+    ir: String,
+) -> String {
+    let help = match site.spelling(files) {
+        Some(spelling) => format!("{ir}\nspelled at {spelling}"),
+        None => ir,
+    };
+    let path = files.get_path(site.expansion.file);
+    let Some((path, source)) = path.and_then(|path| Some((path, std::fs::read(path).ok()?))) else {
+        return format!("{message} at {}\n{help}", site.render(files));
+    };
+    let diagnostic = SiteDiagnostic {
+        message,
+        code: miette::NamedSource::new(
+            path.display().to_string(),
+            String::from_utf8_lossy(&source).into_owned(),
+        )
+        .with_language("C"),
+        span: (site.expansion.offset, site.expansion.length).into(),
+        label: label.to_owned(),
+        help,
+    };
+    let mut report = String::new();
+    let handler = if std::io::IsTerminal::is_terminal(&std::io::stderr()) {
+        miette::GraphicalReportHandler::new_themed(miette::GraphicalTheme::unicode())
+            .with_syntax_highlighting(miette::highlighters::SyntectHighlighter::default())
+    } else {
+        miette::GraphicalReportHandler::new_themed(miette::GraphicalTheme::unicode_nocolor())
+            .without_syntax_highlighting()
+    };
+    match handler
+        .with_context_lines(2)
+        .render_report(&mut report, &diagnostic)
+    {
+        Ok(()) => report,
+        Err(_) => format!(
+            "{} at {}\n{}",
+            diagnostic.message,
+            site.render(files),
+            diagnostic.help
+        ),
+    }
+}
+
+fn function_suffix(function: &Option<String>) -> String {
+    function
+        .as_ref()
+        .map(|function| format!(" in {function}"))
+        .unwrap_or_default()
 }
 
 pub fn lower_module(
@@ -38,13 +106,31 @@ pub fn lower_module(
 ) -> Result<crate::backend::rust_ast::Program, Error> {
     let lowered = lowerer::lower(module, &lowerer::LowerOptions::default()).map_err(|invalid| {
         Error::Invalid {
-            location: invalid.site.render(files),
+            report: render_site(
+                &invalid.site,
+                files,
+                format!(
+                    "invalid slate-parser IR{}",
+                    function_suffix(&invalid.function)
+                ),
+                "broken IR invariant",
+                invalid.invariant.to_string(),
+            ),
             invalid: Box::new(invalid),
         }
     })?;
     match lowered.barriers.into_iter().next() {
         Some(barrier) => Err(Error::Unsupported {
-            location: barrier.site.render(files),
+            report: render_site(
+                &barrier.site,
+                files,
+                format!(
+                    "unsupported slate-parser IR{}",
+                    function_suffix(&barrier.function)
+                ),
+                &format!("cannot lower {} to Rust", barrier.construct.kind()),
+                barrier.construct.to_string(),
+            ),
             barrier: Box::new(barrier),
         }),
         None => Ok(lowered.program),
