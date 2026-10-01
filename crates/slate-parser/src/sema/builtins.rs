@@ -219,6 +219,7 @@ pub(super) enum DerivedSignature {
     },
     Scaled,
     BitCount,
+    Reduction(OperandClass),
     Declared,
 }
 
@@ -234,6 +235,11 @@ pub(super) fn derived_signature(builtin: &ClangBuiltin) -> Option<DerivedSignatu
             class: OperandClass::Any,
         },
         "Clzg" | "Ctzg" => DerivedSignature::BitCount,
+        "ReduceAdd" | "ReduceMul" | "ReduceAnd" | "ReduceOr" | "ReduceXor" => {
+            DerivedSignature::Reduction(OperandClass::Integer)
+        }
+        "ReduceMax" | "ReduceMin" => DerivedSignature::Reduction(OperandClass::Arithmetic),
+        "ReduceMaximum" | "ReduceMinimum" => DerivedSignature::Reduction(OperandClass::Floating),
         _ => return None,
     })
 }
@@ -456,6 +462,18 @@ impl TypeResolver {
                 let mut params = vec![operand];
                 params.extend((1..arity).map(|_| count));
                 Ok(self.function_type(count, params))
+            }
+            (DerivedSignature::Reduction(class), Some(first)) if arity == 1 => {
+                const OPERAND: ResolveError =
+                    ResolveError::Rejected("reduction builtin operand type");
+                let CTypeKind::Vector { element, .. } = *self.ctypes.canonical_kind(first) else {
+                    return Err(OPERAND);
+                };
+                let operand = self.classified_operand(first, class).map_err(|_| OPERAND)?;
+                Ok(self.function_type(element, vec![operand]))
+            }
+            (DerivedSignature::Reduction(_), _) => {
+                Err(ResolveError::Rejected("reduction builtin arity"))
             }
             (DerivedSignature::Uniform { .. } | DerivedSignature::Scaled, _) => {
                 Err(ResolveError::Rejected("elementwise builtin arity"))

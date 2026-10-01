@@ -38,6 +38,15 @@ Part of the [IR spec](../ir-spec.md). Atomic builtins are in
   `CustomTypeChecking`, variadic prototypes with no named parameters, and
   prototypes naming types outside the model (`FILE`, `jmp_buf`, ObjC `id`,
   HLSL resources, C++ references, ext-vectors).
+- Some `CustomTypeChecking` builtins get a signature derived from the first
+  argument instead (`derived_signature`). `__builtin_reduce_*` takes a vector
+  and returns its element type: `add`/`mul`/`and`/`or`/`xor` need integer
+  elements, `max`/`min` arithmetic ones, `maximum`/`minimum` floating ones
+  (`clang/linux/x86_64/ir_reduce_builtins.c`,
+  `error/clang/linux/x86_64/reduce-builtin-operand.c`). Clang 22 does not
+  know `__builtin_reduce_assoc_fadd`/`in_order_fadd`, so they stay
+  unsupported. The implicit declaration takes the first call's signature;
+  each call carries its own.
 - Named types resolve to the target's canonical types, not to typedefs the
   unit declares.
 
