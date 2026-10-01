@@ -1,10 +1,10 @@
-use crate::backend::rust_ast::{self as rust, BinOp, Expr, FnDef, FnParam, Item, Prim, Stmt};
+use crate::backend::rust_ast::{self as rust, Attr, BinOp, Expr, FnDef, FnParam, Item, Prim, Stmt};
 use crate::function_identity::CallBinding;
 use crate::function_identity::FunctionIdentity;
 use slate_parser::ir::{self, BindingId, Number, PlaceKind, TypeId, ValueKind};
 use slate_parser::target_info::TargetInfo;
 use std::cell::{Cell, RefCell};
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 type Result<T> = std::result::Result<T, super::Error>;
 
@@ -19,6 +19,7 @@ struct Context<'a> {
     bindings: HashMap<BindingId, String>,
     strings: HashMap<BindingId, Vec<u8>>,
     statics: HashSet<BindingId>,
+    over_aligned: HashMap<BindingId, u64>,
     target: &'a TargetInfo,
     types: HashMap<TypeId, &'a ir::TypeDefinition>,
     record_names: HashMap<TypeId, String>,
@@ -219,11 +220,12 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
             collect_statement_names(body, &mut bindings, &static_names);
         }
     }
-    let cx = Context {
+    let mut cx = Context {
         names,
         bindings,
         strings,
         statics: statics.iter().map(|global| global.variable.id).collect(),
+        over_aligned: HashMap::new(),
         target: &module.target,
         types: module
             .types
@@ -234,6 +236,11 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
         records: RefCell::default(),
         temps: Cell::new(0),
     };
+    cx.over_aligned = statics
+        .iter()
+        .filter(|global| global.definition)
+        .filter_map(|global| Some((global.variable.id, over_alignment(&cx, &global.variable)?)))
+        .collect();
     let mut items = Vec::new();
     let mut externs = Vec::new();
     for global in &statics {
@@ -269,13 +276,38 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
             items.push(item);
         }
     }
+    let wrappers = cx
+        .over_aligned
+        .values()
+        .copied()
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .map(|alignment| {
+            Ok(Item::Struct(rust::StructDef {
+                attrs: vec![Attr::Repr(vec![
+                    rust::Repr::C,
+                    rust::Repr::Align(u32::try_from(alignment).map_err(|_| {
+                        super::Error::Unsupported(format!("alignment {alignment}"))
+                    })?),
+                ])],
+                vis: rust::Visibility::Private,
+                field_vis: rust::Visibility::Private,
+                generics: vec![rust::GenericParam {
+                    name: "T".into(),
+                    bounds: Vec::new(),
+                }],
+                name: align_wrapper(alignment),
+                fields: rust::StructFields::Tuple(vec![rust::Type::Custom("T".into())]),
+            }))
+        })
+        .collect::<Result<Vec<_>>>()?;
     let records = cx
         .records
         .into_inner()
         .into_values()
         .filter_map(|record| record.and_then(|record| record.ok()))
         .map(Item::Record);
-    items.splice(0..0, records);
+    items.splice(0..0, records.chain(wrappers));
     if !externs.is_empty() {
         items.insert(
             0,
@@ -325,12 +357,26 @@ fn lower_string_global(global: &ir::Global) -> Option<Result<Vec<u8>>> {
     )
 }
 
+fn over_alignment(cx: &Context, variable: &ir::Variable) -> Option<u64> {
+    let alignment = variable.alignment?;
+    let abi_alignment = matches!(variable.ty, ir::Type::Array { .. })
+        && variable.alignment == cx.target.large_array_alignment();
+    let (_, natural) = storage_of(cx, &variable.ty)?;
+    (!abi_alignment && alignment > natural).then_some(alignment)
+}
+
+fn align_wrapper(alignment: u64) -> String {
+    format!("__SlateAlign{alignment}")
+}
+
 fn lower_static(global: &ir::Global, cx: &Context) -> Result<(rust::Type, Option<Expr>)> {
     let variable = &global.variable;
     let abi_alignment = matches!(variable.ty, ir::Type::Array { .. })
         && variable.alignment == cx.target.large_array_alignment();
     if !matches!(variable.storage, ir::StorageDuration::Static)
-        || (variable.alignment.is_some() && !abi_alignment)
+        || (variable.alignment.is_some()
+            && !abi_alignment
+            && storage_of(cx, &variable.ty).is_none())
         || !variable.access.is_plain()
         || global.symbol != ir::SymbolAttributes::default()
     {
@@ -353,7 +399,20 @@ fn lower_static(global: &ir::Global, cx: &Context) -> Result<(rust::Type, Option
             )));
         }
     };
-    Ok((ty, Some(init)))
+    Ok(match cx.over_aligned.get(&variable.id) {
+        Some(&alignment) => (
+            rust::Type::Generic {
+                name: align_wrapper(alignment),
+                args: vec![ty],
+            },
+            Some(Expr::Call {
+                func: Box::new(Expr::Var(align_wrapper(alignment).into())),
+                args: vec![init],
+                binding: CallBinding::Generated,
+            }),
+        ),
+        None => (ty, Some(init)),
+    })
 }
 
 fn is_constant_initializer(value: &ir::Value, cx: &Context) -> bool {
@@ -1748,7 +1807,17 @@ fn lower_aggregate(
 
 fn lower_place(place: &ir::Place, cx: &Context) -> Result<Expr> {
     match place.kind {
-        PlaceKind::Binding(id) => Ok(Expr::Var(binding_name(id, &cx.bindings).as_str().into())),
+        PlaceKind::Binding(id) => {
+            let binding = Expr::Var(binding_name(id, &cx.bindings).as_str().into());
+            Ok(if cx.over_aligned.contains_key(&id) {
+                Expr::TupleField {
+                    base: Box::new(binding),
+                    index: 0,
+                }
+            } else {
+                binding
+            })
+        }
         PlaceKind::Deref(ref pointer) => Ok(Expr::Unary {
             op: rust::UnaryOp::Deref,
             expr: Box::new(lower_value(pointer, cx)?),
