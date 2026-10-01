@@ -88,7 +88,10 @@ impl FunctionLowerer<'_, '_> {
 }
 
 #[derive(Debug, Default, Clone)]
-pub struct LowerOptions {}
+pub struct LowerOptions {
+    pub export_symbols: bool,
+    pub imported_commons: BTreeSet<String>,
+}
 
 pub struct Lowered {
     pub program: rust::Program,
@@ -97,9 +100,9 @@ pub struct Lowered {
 
 pub fn lower(
     module: &ir::Module,
-    _options: &LowerOptions,
+    options: &LowerOptions,
 ) -> std::result::Result<Lowered, InvalidIr> {
-    let mut lowerer = ModuleLowerer::new(module)?;
+    let mut lowerer = ModuleLowerer::new(module, options)?;
     lowerer.declare()?;
     lowerer.lower_bodies()?;
     Ok(lowerer.assemble())
@@ -146,6 +149,7 @@ pub fn describe_types(message: &str, module: &ir::Module) -> String {
 
 struct ModuleLowerer<'m> {
     module: &'m ir::Module,
+    options: &'m LowerOptions,
     tables: Tables<'m>,
     dependencies: Dependencies,
     items: Vec<Item>,
@@ -154,7 +158,10 @@ struct ModuleLowerer<'m> {
 }
 
 impl<'m> ModuleLowerer<'m> {
-    fn new(module: &'m ir::Module) -> std::result::Result<Self, InvalidIr> {
+    fn new(
+        module: &'m ir::Module,
+        options: &'m LowerOptions,
+    ) -> std::result::Result<Self, InvalidIr> {
         let mut barriers = Vec::new();
         if let Some(asm) = module.asm.first() {
             barriers.push(Failure::from(Construct::ModuleAsm).into_public(None, Site::of(asm))?);
@@ -247,6 +254,7 @@ impl<'m> ModuleLowerer<'m> {
             .collect();
         Ok(Self {
             module,
+            options,
             tables,
             dependencies: Dependencies::default(),
             items: Vec::new(),
@@ -271,9 +279,26 @@ impl<'m> ModuleLowerer<'m> {
                 continue;
             }
             let name = binding_name(global.variable.id, &self.tables.bindings);
+            let imported = global.common
+                && self
+                    .options
+                    .imported_commons
+                    .contains(&global.variable.name);
+            let exported =
+                self.options.export_symbols && matches!(global.linkage, ir::Linkage::External);
             match self.lowerer().lower_static(global) {
-                Ok((ty, Some(init))) => self.items.push(Item::Static {
+                Ok((ty, Some(_))) if imported => self.externs.push(rust::ExternDecl::Static {
                     attrs: Vec::new(),
+                    mutable: true,
+                    name,
+                    ty,
+                }),
+                Ok((ty, Some(init))) => self.items.push(Item::Static {
+                    attrs: if exported {
+                        vec![Attr::NoMangle]
+                    } else {
+                        Vec::new()
+                    },
                     vis: rust::Visibility::Private,
                     mutable: true,
                     name,
@@ -322,6 +347,16 @@ impl<'m> ModuleLowerer<'m> {
                 continue;
             };
             match self.lowerer().lower_function(function, body) {
+                Ok(Item::Fn(mut definition))
+                    if self.options.export_symbols
+                        && matches!(function.linkage, ir::Linkage::External)
+                        && !function.semantics.inline_only
+                        && function.name != "main" =>
+                {
+                    definition.attrs.push(Attr::NoMangle);
+                    definition.abi.get_or_insert(rust::Abi::CUnwind);
+                    self.items.push(Item::Fn(definition));
+                }
                 Ok(item) => self.items.push(item),
                 Err(error) => self.barriers.push(
                     error
@@ -368,7 +403,12 @@ impl<'m> ModuleLowerer<'m> {
                 Record::Built(record) => Some(Item::Record(record)),
                 Record::Building | Record::Failed(_) => None,
             });
-        items.splice(0..0, records.chain(wrappers).chain(dependencies.bit_units));
+        let bit_units = (!dependencies.bit_units.is_empty()).then(|| Item::InlineMod {
+            vis: rust::Visibility::Private,
+            name: rust::Ident::new(BIT_UNIT_MODULE),
+            items: dependencies.bit_units,
+        });
+        items.splice(0..0, records.chain(wrappers).chain(bit_units));
         items.extend(dependencies.compound_literals);
         for item in &mut items {
             if let Item::Fn(function) = item

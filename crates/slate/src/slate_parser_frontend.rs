@@ -138,23 +138,22 @@ fn function_suffix(function: &Option<String>) -> String {
 pub fn lower_module(
     module: &Module,
     files: &Files,
+    options: &lowerer::LowerOptions,
 ) -> Result<crate::backend::rust_ast::Program, Error> {
-    let lowered = lowerer::lower(module, &lowerer::LowerOptions::default()).map_err(|invalid| {
-        Error::Invalid {
-            report: render_site(
-                &invalid.site,
-                files,
-                format!(
-                    "invalid slate-parser IR{}",
-                    function_suffix(&invalid.function)
-                ),
-                "broken IR invariant",
-                invalid.invariant.to_string(),
-                &invalid.context,
-                false,
+    let lowered = lowerer::lower(module, options).map_err(|invalid| Error::Invalid {
+        report: render_site(
+            &invalid.site,
+            files,
+            format!(
+                "invalid slate-parser IR{}",
+                function_suffix(&invalid.function)
             ),
-            invalid: Box::new(invalid),
-        }
+            "broken IR invariant",
+            invalid.invariant.to_string(),
+            &invalid.context,
+            false,
+        ),
+        invalid: Box::new(invalid),
     })?;
     match lowered.barriers.into_iter().next() {
         Some(barrier) => Err(Error::Unsupported {

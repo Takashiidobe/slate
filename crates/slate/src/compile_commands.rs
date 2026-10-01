@@ -195,7 +195,7 @@ fn normalize(
             word_index += 1;
             continue;
         }
-        if word.starts_with("-O") {
+        if word.starts_with("-g") {
             word_index += 1;
             continue;
         }

@@ -64,8 +64,10 @@ cargo nextest r --release --profile slate
 ```
 
 The `slate` profile runs `differential` (`tests/fixtures`) plus the
-c-testsuite, gcc-torture, and gcc-dg corpus suites, all through the slate
-frontend. Other test binaries in this crate exercise the legacy CIR pipeline
+c-testsuite, gcc-torture, gcc-dg, and chibicc corpus suites, all through the
+slate frontend. `chibicc_suite` translates each two-TU fixture with
+`translate-project --frontend=slate`; external definitions become
+`#[unsafe(no_mangle)]` items and the linker resolves symbols across modules. Other test binaries in this crate exercise the legacy CIR pipeline
 and are not gates.
 
 Each suite is a ratchet: `tests/fixtures/` must pass, and
@@ -88,8 +90,9 @@ cargo nextest r --release -p slate --test differential -E 'test(fixtures_unsuppo
 
 Corpus suites use their own selectors: `SLATE_GCC_TORTURE_FIXTURE`,
 `SLATE_GCC_DG_FIXTURE`, `SLATE_C_TESTSUITE_FIXTURE`.
-`gcc_torture_unsupported_triage_report` and
-`c_testsuite_unsupported_triage_report` are the corpus triage reports.
+`gcc_torture_unsupported_triage_report`,
+`c_testsuite_unsupported_triage_report`, and
+`chibicc_unsupported_triage_report` are the corpus triage reports.
 
 Batch suites write translated Rust under `crates/slate/target/*-suite/` and
 build it under `crates/slate/target/test-cache/`. A `could not parse/generate

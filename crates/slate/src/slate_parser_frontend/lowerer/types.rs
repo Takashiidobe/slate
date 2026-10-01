@@ -1,6 +1,8 @@
 use super::*;
 use slate_parser::target_info::Endian;
 
+pub(super) const BIT_UNIT_MODULE: &str = "__slate_bits";
+
 impl<'m> Tables<'m> {
     pub(super) fn resolve_type<'a>(&self, mut ty: &'a ir::Type) -> &'a ir::Type
     where
@@ -311,13 +313,16 @@ impl FunctionLowerer<'_, '_> {
                     path: rust::Path::new(["bitfields", "bitfield"].map(rust::Ident::from)),
                     args,
                 }],
-                vis: rust::Visibility::Private,
-                field_vis: rust::Visibility::Private,
+                vis: rust::Visibility::Pub,
+                field_vis: rust::Visibility::Pub,
                 generics: Vec::new(),
                 name: wrapper.clone(),
                 fields: rust::StructFields::Named(members),
             }));
-        Ok((rust::Type::Custom(wrapper), unit_align))
+        Ok((
+            rust::Type::Custom(format!("{BIT_UNIT_MODULE}::{wrapper}")),
+            unit_align,
+        ))
     }
 
     pub(super) fn lower_type(&mut self, ty: &ir::Type) -> Result<rust::Type> {

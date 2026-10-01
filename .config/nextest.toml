@@ -4,6 +4,7 @@ default-filter = '''
   + binary_id(=slate::c_testsuite_suite)
   + binary_id(=slate::gcc_torture_suite)
   + binary_id(=slate::gcc_dg_suite)
+  + binary_id(=slate::chibicc_suite)
 '''
 
 [profile.parser]

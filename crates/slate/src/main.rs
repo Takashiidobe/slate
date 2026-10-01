@@ -865,9 +865,12 @@ fn project_warning_items(
 fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut paths = Vec::new();
     let mut compile_command_paths = Vec::new();
+    let mut selected = api::Frontend::Cir;
     let mut index = 0;
     while index < args.len() {
         match args[index].as_str() {
+            "--frontend=cir" => selected = api::Frontend::Cir,
+            "--frontend=slate" => selected = api::Frontend::Slate,
             "--compile-commands" => {
                 index += 1;
                 let commands = args
@@ -888,6 +891,9 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     if compile_command_paths.is_empty() {
         return Err("translate-project requires at least one --compile-commands <file>".into());
     }
+    if selected == api::Frontend::Slate {
+        return translate_slate_project(Path::new(paths[1]), &compile_command_paths);
+    }
     translate_project_with_compile_commands(
         Path::new(paths[0]),
         Path::new(paths[1]),
@@ -897,7 +903,13 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
 
 fn compile_command_args(command: &compile_commands::CompileCommand) -> Result<Vec<String>, String> {
     let mut args = cli_result(frontend::toolchain::target_override_args(&command.target))?;
-    args.extend(command.args.iter().cloned());
+    args.extend(
+        command
+            .args
+            .iter()
+            .filter(|arg| !arg.starts_with("-O"))
+            .cloned(),
+    );
     Ok(args)
 }
 
@@ -1416,6 +1428,207 @@ fn translate_project_with_compile_commands(
         )?;
     }
 
+    Ok(written
+        .into_iter()
+        .map(|path| format!("wrote {}\n", path.display()))
+        .collect())
+}
+
+struct SlateUnit {
+    stem: String,
+    path: PathBuf,
+    module: slate_parser::ir::Module,
+    files: slate_parser::files::Files,
+}
+
+fn parse_slate_units(
+    commands: Vec<compile_commands::CompileCommand>,
+) -> Result<Vec<SlateUnit>, String> {
+    let mut by_stem: BTreeMap<String, compile_commands::CompileCommand> = BTreeMap::new();
+    for command in commands {
+        let stem = command
+            .file
+            .file_stem()
+            .and_then(|stem| stem.to_str())
+            .map(rust_ident)
+            .ok_or_else(|| format!("bad file stem: {}", command.file.display()))?;
+        if let Some(previous) = by_stem.get(&stem) {
+            return Err(if previous.file == command.file {
+                format!(
+                    "slate frontend does not yet support multiple compile commands for {}",
+                    command.file.display()
+                )
+            } else {
+                format!(
+                    "compile commands map both {} and {} to module {stem}",
+                    previous.file.display(),
+                    command.file.display()
+                )
+            });
+        }
+        by_stem.insert(stem, command);
+    }
+    if by_stem.is_empty() {
+        return Err("translate-project: no C translation units in compile commands".into());
+    }
+    let mut units = Vec::new();
+    let mut errors = Vec::new();
+    for (stem, command) in by_stem {
+        let mut args = command.args;
+        args.push(format!("--target={}", command.target));
+        match api::slate_ir_with_args(&command.file, &args) {
+            Ok((module, files)) => units.push(SlateUnit {
+                stem,
+                path: command.file,
+                module,
+                files,
+            }),
+            Err(error) => errors.push(format!("{}: {error}", command.file.display())),
+        }
+    }
+    if errors.is_empty() {
+        Ok(units)
+    } else {
+        Err(errors.join("\n"))
+    }
+}
+
+fn imported_commons(units: &[SlateUnit]) -> BTreeMap<String, BTreeSet<String>> {
+    let mut owners: BTreeMap<&str, (&str, bool)> = BTreeMap::new();
+    for unit in units {
+        for global in &unit.module.globals {
+            if !global.definition || !matches!(global.linkage, slate_parser::ir::Linkage::External)
+            {
+                continue;
+            }
+            let strong = !global.common;
+            owners
+                .entry(&global.variable.name)
+                .and_modify(|owner| {
+                    if strong && !owner.1 {
+                        *owner = (&unit.stem, true);
+                    }
+                })
+                .or_insert((&unit.stem, strong));
+        }
+    }
+    units
+        .iter()
+        .map(|unit| {
+            let imported = unit
+                .module
+                .globals
+                .iter()
+                .filter(|global| {
+                    global.common
+                        && owners
+                            .get(global.variable.name.as_str())
+                            .is_some_and(|(owner, _)| *owner != unit.stem)
+                })
+                .map(|global| global.variable.name.clone())
+                .collect();
+            (unit.stem.clone(), imported)
+        })
+        .collect()
+}
+
+fn translate_slate_project(crate_dir: &Path, database_paths: &[PathBuf]) -> Result<String, String> {
+    use slate::slate_parser_frontend::{self, lowerer};
+    let units = parse_slate_units(cli_result(compile_commands::read(database_paths))?)?;
+    let roots: Vec<&str> = units
+        .iter()
+        .filter(|unit| {
+            unit.module
+                .functions
+                .iter()
+                .any(|function| function.name == "main" && function.body.is_some())
+        })
+        .map(|unit| unit.stem.as_str())
+        .collect();
+    let root = match roots.as_slice() {
+        [root] => root.to_string(),
+        [] => return Err("slate frontend does not yet support library projects".into()),
+        _ => return Err(format!("multiple units define main: {}", roots.join(", "))),
+    };
+    if root != "main" && units.iter().any(|unit| unit.stem == "main") {
+        return Err("a non-root unit maps to module main".into());
+    }
+    let mut imported = imported_commons(&units);
+    let mut programs = Vec::new();
+    let mut errors = Vec::new();
+    for unit in &units {
+        let options = lowerer::LowerOptions {
+            export_symbols: true,
+            imported_commons: imported.remove(&unit.stem).unwrap_or_default(),
+        };
+        match slate_parser_frontend::lower_module(&unit.module, &unit.files, &options) {
+            Ok(program) => programs.push((unit.stem.clone(), program)),
+            Err(error) => errors.push(format!("{}: {error}", unit.path.display())),
+        }
+    }
+    if !errors.is_empty() {
+        return Err(errors.join("\n"));
+    }
+
+    init_crate(crate_dir, false)?;
+    let crate_src = crate_dir.join("src");
+    std::fs::create_dir_all(&crate_src)
+        .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
+    let mut cargo_features = BTreeSet::new();
+    let mut shim_names = BTreeSet::new();
+    let mut written = Vec::new();
+    let children: Vec<rust_ast::Item> = programs
+        .iter()
+        .filter(|(stem, _)| *stem != root)
+        .map(|(stem, _)| rust_ast::Item::Mod {
+            name: rust_ast::Ident::new(stem.as_str()),
+        })
+        .collect();
+    for (stem, mut program) in programs {
+        program.cargo_features(&mut cargo_features);
+        shim_names.extend(
+            c_shim::collect_program_shims(&program)
+                .into_iter()
+                .map(|shim| shim.name)
+                .filter(|name| name.starts_with("__slate_")),
+        );
+        let file = if stem == root {
+            program.items.splice(0..0, children.iter().cloned());
+            "main".to_string()
+        } else {
+            stem
+        };
+        let output = crate_src.join(file).with_extension("rs");
+        backend::write_rust(&output, &program.emit())?;
+        written.push(output);
+    }
+    let has_shims = !shim_names.is_empty();
+    if has_shims {
+        backend::write_rust(
+            &crate_dir.join("build.rs"),
+            r#"fn main() {
+    println!("cargo:rerun-if-changed=src/slate_long_double.c");
+    cc::Build::new().file("src/slate_long_double.c").compile("slate_long_double");
+}
+"#,
+        )?;
+        let shim_path = crate_src.join("slate_long_double.c");
+        std::fs::write(
+            &shim_path,
+            c_shim::render_shim_c_source_for_names(&shim_names),
+        )
+        .map_err(|e| format!("write {}: {e}", shim_path.display()))?;
+        written.push(shim_path);
+    }
+    write_crate_manifest(
+        crate_dir,
+        &package_name(crate_dir),
+        &[],
+        false,
+        has_shims,
+        true,
+        &cargo_features,
+    )?;
     Ok(written
         .into_iter()
         .map(|path| format!("wrote {}\n", path.display()))

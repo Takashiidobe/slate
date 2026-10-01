@@ -164,7 +164,12 @@ pub fn lowered_slate_program_with_args(
     extra_args: &[String],
 ) -> Result<rust_ast::Program, Error> {
     let (module, files) = slate_ir_with_args(path, extra_args)?;
-    slate_parser_frontend::lower_module(&module, &files).map_err(Error::from)
+    slate_parser_frontend::lower_module(
+        &module,
+        &files,
+        &slate_parser_frontend::lowerer::LowerOptions::default(),
+    )
+    .map_err(Error::from)
 }
 
 /// Translates a C source file for the requested target triples.

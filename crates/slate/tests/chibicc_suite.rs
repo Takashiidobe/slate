@@ -64,26 +64,23 @@ fn fixture_extra_clang_args(dir: &Path) -> Vec<String> {
 fn attempt_translate(name: &str, dir: &Path, work: &Path) -> Attempt {
     let out_dir = work.join("translated").join(name);
     let _ = std::fs::remove_dir_all(&out_dir);
-    match support::translate_project_with_std_and_args(
+    match support::translate_slate_project(
         dir,
         &out_dir,
         fixture_std(dir),
         &fixture_extra_clang_args(dir),
     ) {
-        Ok(()) => {
-            let types_rs = out_dir.join("src/types.rs");
-            Attempt {
+        Ok(()) => Attempt {
+            name: name.to_string(),
+            dir: dir.to_path_buf(),
+            multi_bin: Some(support::MultiBinCase {
                 name: name.to_string(),
-                dir: dir.to_path_buf(),
-                multi_bin: Some(support::MultiBinCase {
-                    name: name.to_string(),
-                    main_rs: out_dir.join("src/main.rs"),
-                    common_rs: out_dir.join("src/common.rs"),
-                    types_rs: types_rs.is_file().then_some(types_rs),
-                }),
-                translate_error: None,
-            }
-        }
+                main_rs: out_dir.join("src/main.rs"),
+                common_rs: out_dir.join("src/common.rs"),
+                types_rs: None,
+            }),
+            translate_error: None,
+        },
         Err(e) => Attempt {
             name: name.to_string(),
             dir: dir.to_path_buf(),

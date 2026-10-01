@@ -358,14 +358,41 @@ pub fn translate_project_with_std_and_args(
     std: &str,
     extra_args: &[String],
 ) -> Result<(), String> {
+    let database = project_database(dir, crate_dir, std, extra_args)?;
+    translate_project_from_database(dir, crate_dir, &database)
+}
+
+pub fn translate_slate_project(
+    dir: &Path,
+    crate_dir: &Path,
+    std: &str,
+    extra_args: &[String],
+) -> Result<(), String> {
+    let database = project_database(dir, crate_dir, std, extra_args)?;
+    let result = run_translate_project(dir, crate_dir, &database, &["--frontend=slate"]);
+    if let Err(error) = &result {
+        assert!(
+            !error.contains("invalid slate-parser IR"),
+            "{}: {error}",
+            dir.display()
+        );
+    }
+    result
+}
+
+fn project_database(
+    dir: &Path,
+    crate_dir: &Path,
+    std: &str,
+    extra_args: &[String],
+) -> Result<PathBuf, String> {
     let mut synth_args = vec![
         "-I".to_string(),
         dir.display().to_string(),
         "-fcommon".into(),
     ];
     synth_args.extend(extra_args.iter().cloned());
-    let database = compile_commands_database(dir, crate_dir, std, &synth_args)?;
-    translate_project_from_database(dir, crate_dir, &database)
+    compile_commands_database(dir, crate_dir, std, &synth_args)
 }
 
 fn compile_commands_database(
@@ -413,8 +440,19 @@ pub fn translate_project_from_database(
     crate_dir: &Path,
     database: &Path,
 ) -> Result<(), String> {
+    run_translate_project(dir, crate_dir, database, &[])
+}
+
+fn run_translate_project(
+    dir: &Path,
+    crate_dir: &Path,
+    database: &Path,
+    flags: &[&str],
+) -> Result<(), String> {
     let o = Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--compile-commands"])
+        .arg("translate-project")
+        .args(flags)
+        .arg("--compile-commands")
         .arg(database)
         .arg(dir)
         .arg(crate_dir)
