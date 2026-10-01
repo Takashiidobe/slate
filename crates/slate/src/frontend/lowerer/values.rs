@@ -446,6 +446,15 @@ impl FunctionLowerer<'_, '_> {
                         kind: PlaceKind::Binding(id),
                         ..
                     },
+            } if self.tables.intrinsics.contains_key(id) => {
+                return Err(unsupported_value(value));
+            }
+            ValueKind::FunctionDecay {
+                place:
+                    ir::Place {
+                        kind: PlaceKind::Binding(id),
+                        ..
+                    },
             } => match self.tables.names.get(id) {
                 Some(name) if !name.is_extern => {
                     self.dependencies.address_taken.insert(name.rust.clone());
@@ -474,6 +483,13 @@ impl FunctionLowerer<'_, '_> {
                 }
             },
             ValueKind::Null => self.lower_null(value)?,
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if self.tables.intrinsics.contains_key(id) => {
+                self.lower_intrinsic(*id, self.tables.intrinsics[id], arguments, &value.ty)?
+            }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),
                 arguments,

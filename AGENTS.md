@@ -9,6 +9,7 @@ and `target/test-cache/release/slate-parser`. `target/release/` is not used.
 | ---------------------- | ---------------------------------------------------- | ------------------------------ |
 | `crates/slate`         | C -> Rust translator; lowers slate-parser IR to Rust | `crates/slate/CLAUDE.md`       |
 | `crates/slate-parser`  | C preprocessor, parser, sema, and typed IR           | `crates/slate-parser/AGENTS.md` |
+| `crates/slate-intrinsic-gen` | Generates the frontend intrinsic catalog from LLVM | `crates/slate-intrinsic-gen/README.md` |
 | `crates/slate-sysroots`| Installs per-target C headers for slate-parser       | `crates/slate-sysroots/README.md` |
 
 ## Routing work by bead ID

@@ -13,6 +13,8 @@ mod errors;
 mod f80;
 mod functions;
 mod globals;
+mod intrinsics;
+mod intrinsics_table;
 mod names;
 mod places;
 mod pointers;
@@ -45,6 +47,7 @@ struct FunctionName {
 
 struct Tables<'m> {
     names: HashMap<BindingId, FunctionName>,
+    intrinsics: HashMap<BindingId, &'static intrinsics_table::IntrinsicSignature>,
     bindings: HashMap<BindingId, String>,
     strings: HashMap<BindingId, Vec<u8>>,
     statics: HashSet<BindingId>,
@@ -58,6 +61,7 @@ struct Tables<'m> {
 #[derive(Default)]
 struct Dependencies {
     long_double: bool,
+    intrinsics: BTreeMap<String, rust::ExternFnDecl>,
     bridges: BTreeMap<String, rust::ExternFnDecl>,
     align_wrappers: BTreeSet<u32>,
     records: BTreeMap<u32, Record>,
@@ -269,6 +273,16 @@ impl<'m> ModuleLowerer<'m> {
         }
         let mut tables = Tables {
             names,
+            intrinsics: module
+                .functions
+                .iter()
+                .filter_map(|function| {
+                    Some((
+                        function.value.id,
+                        intrinsics::builtin_intrinsic(module, function)?,
+                    ))
+                })
+                .collect(),
             bindings,
             strings,
             statics: statics.iter().map(|global| global.variable.id).collect(),
@@ -359,7 +373,10 @@ impl<'m> ModuleLowerer<'m> {
             }
         }
         for function in &module.functions {
-            if function.body.is_some() || self.tables.passes_long_double(function) {
+            if function.body.is_some()
+                || self.tables.intrinsics.contains_key(&function.value.id)
+                || self.tables.passes_long_double(function)
+            {
                 continue;
             }
             match self.lowerer().lower_extern(function) {
@@ -468,9 +485,28 @@ impl<'m> ModuleLowerer<'m> {
                     .map(rust::ExternDecl::Fn),
             );
         }
-        if !externs.is_empty() {
+        if !dependencies.intrinsics.is_empty() {
             items.insert(
                 0,
+                Item::CrateAttrs(vec![rust::CrateAttr::Feature(
+                    rust::Feature::LinkLlvmIntrinsics,
+                )]),
+            );
+            items.insert(
+                1,
+                Item::ExternBlock {
+                    abi: "llvm-intrinsic".into(),
+                    decls: dependencies
+                        .intrinsics
+                        .into_values()
+                        .map(rust::ExternDecl::Fn)
+                        .collect(),
+                },
+            );
+        }
+        if !externs.is_empty() {
+            items.insert(
+                usize::from(matches!(items.first(), Some(Item::CrateAttrs(_)))),
                 Item::ExternBlock {
                     abi: "C".into(),
                     decls: externs,

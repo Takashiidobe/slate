@@ -33,6 +33,7 @@ with `crates/`.
 - C types, layout, conversions and evaluation order belong to slate-parser.
 - Slate consumes typed IR as a library; [IR semantics](ir-spec.md) define the boundary.
 - Baseline Rust may use raw pointers, `unsafe`, `libc` and explicit temporaries.
+- Intrinsic generation and builtin dispatch: [intrinsic lowering](intrinsic-lowering.md).
 - Unsupported constructs produce source-located `Barrier` records. Broken IR invariants produce `InvalidIr`; they are bugs, not unsupported features.
 - The backend remains available. Its worklist and pointer analyses are described in [rewrite engine](rewrite-engine-v2.md) and [pointer capability lattice](pointer-capability-lattice.md).
 

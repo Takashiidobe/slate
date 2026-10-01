@@ -1755,6 +1755,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "slate-intrinsic-gen"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "serde",
+ "serde_json",
+ "shlex",
+ "tempfile",
+]
+
+[[package]]
 name = "slate-parser"
 version = "0.1.0"
 dependencies = [
