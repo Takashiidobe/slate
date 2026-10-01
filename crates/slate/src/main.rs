@@ -156,13 +156,13 @@ fn emit_cir(path: &Path) -> Result<String, String> {
 }
 
 fn emit_slate_ir(path: &Path, compiler_args: &[String]) -> Result<String, String> {
-    let module = cli_result(api::slate_ir_with_args(path, compiler_args))?;
+    let (module, _) = cli_result(api::slate_ir_with_args(path, compiler_args))?;
     Ok(module.display(false).to_string())
 }
 
 fn lowering_barriers(path: &Path, compiler_args: &[String]) -> ExitCode {
-    let module = match cli_result(api::slate_ir_with_args(path, compiler_args)) {
-        Ok(module) => module,
+    let (module, files) = match cli_result(api::slate_ir_with_args(path, compiler_args)) {
+        Ok(parsed) => parsed,
         Err(error) => return run(Err(error)),
     };
     use slate::slate_parser_frontend::lowerer;
@@ -170,7 +170,8 @@ fn lowering_barriers(path: &Path, compiler_args: &[String]) -> ExitCode {
         Ok(lowered) => lowered,
         Err(invalid) => {
             println!(
-                "<invalid>\t{}",
+                "<invalid>\t{}\t{}",
+                invalid.site.render(&files),
                 lowerer::describe_types(&invalid.to_string(), &module)
             );
             return ExitCode::FAILURE;
@@ -178,8 +179,9 @@ fn lowering_barriers(path: &Path, compiler_args: &[String]) -> ExitCode {
     };
     for barrier in &lowered.barriers {
         println!(
-            "{}\t{}\t{}",
+            "{}\t{}\t{}\t{}",
             barrier.function.as_deref().unwrap_or("<module>"),
+            barrier.site.render(&files),
             barrier.construct.kind(),
             lowerer::describe_types(&barrier.construct.to_string(), &module)
         );

@@ -1,5 +1,6 @@
 use slate_parser::compiler_args::CompilerArgParser;
 use slate_parser::dialect::Dialect;
+use slate_parser::files::Files;
 use slate_parser::ir::Module;
 use slate_parser::parser::Parser;
 use slate_parser::sema::Sema;
@@ -19,13 +20,38 @@ pub enum Error {
     Analyze { path: PathBuf, message: String },
     #[error("lower {path} to slate-parser IR: {message}")]
     Lower { path: PathBuf, message: String },
-    #[error("unsupported slate-parser IR: {0}")]
-    Unsupported(#[from] Box<lowerer::Barrier>),
-    #[error("invalid slate-parser IR: {0}")]
-    Invalid(#[from] Box<lowerer::InvalidIr>),
+    #[error("unsupported slate-parser IR at {location}: {barrier}")]
+    Unsupported {
+        barrier: Box<lowerer::Barrier>,
+        location: String,
+    },
+    #[error("invalid slate-parser IR at {location}: {invalid}")]
+    Invalid {
+        invalid: Box<lowerer::InvalidIr>,
+        location: String,
+    },
 }
 
-pub fn parse_module_with_args(path: &Path, args: &[String]) -> Result<Module, Error> {
+pub fn lower_module(
+    module: &Module,
+    files: &Files,
+) -> Result<crate::backend::rust_ast::Program, Error> {
+    let lowered = lowerer::lower(module, &lowerer::LowerOptions::default()).map_err(|invalid| {
+        Error::Invalid {
+            location: invalid.site.render(files),
+            invalid: Box::new(invalid),
+        }
+    })?;
+    match lowered.barriers.into_iter().next() {
+        Some(barrier) => Err(Error::Unsupported {
+            location: barrier.site.render(files),
+            barrier: Box::new(barrier),
+        }),
+        None => Ok(lowered.program),
+    }
+}
+
+pub fn parse_module_with_args(path: &Path, args: &[String]) -> Result<(Module, Files), Error> {
     let args = CompilerArgParser::parse(args.iter().cloned())?;
     let search = args.search_paths();
     let dialect = Dialect::new(args.flavor, args.standard, args.target, args.options);
@@ -59,5 +85,5 @@ pub fn parse_module_with_args(path: &Path, args: &[String]) -> Result<Module, Er
         path: path.to_path_buf(),
         message: error.to_string(),
     })?;
-    Ok(module)
+    Ok((module, files))
 }

@@ -112,7 +112,7 @@ pub enum Frontend {
 pub fn slate_ir_with_args(
     path: &Path,
     compiler_args: &[String],
-) -> Result<slate_parser::ir::Module, Error> {
+) -> Result<(slate_parser::ir::Module, slate_parser::files::Files), Error> {
     slate_parser_frontend::parse_module_with_args(path, compiler_args).map_err(Error::from)
 }
 
@@ -163,16 +163,8 @@ pub fn lowered_slate_program_with_args(
     path: &Path,
     extra_args: &[String],
 ) -> Result<rust_ast::Program, Error> {
-    let module = slate_ir_with_args(path, extra_args)?;
-    let lowered = slate_parser_frontend::lowerer::lower(
-        &module,
-        &slate_parser_frontend::lowerer::LowerOptions::default(),
-    )
-    .map_err(|invalid| slate_parser_frontend::Error::from(Box::new(invalid)))?;
-    match lowered.barriers.into_iter().next() {
-        Some(barrier) => Err(slate_parser_frontend::Error::from(Box::new(barrier)).into()),
-        None => Ok(lowered.program),
-    }
+    let (module, files) = slate_ir_with_args(path, extra_args)?;
+    slate_parser_frontend::lower_module(&module, &files).map_err(Error::from)
 }
 
 /// Translates a C source file for the requested target triples.

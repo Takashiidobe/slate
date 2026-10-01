@@ -1,4 +1,5 @@
 use slate_parser::ast::{Loc, NodeId, Span};
+use slate_parser::files::Files;
 use slate_parser::ir::{BindingId, TypeId};
 use thiserror::Error;
 
@@ -19,13 +20,30 @@ impl Site {
     }
 }
 
-impl std::fmt::Display for Site {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "#{} file {} offset {}",
-            self.node.0, self.expansion.file.0, self.expansion.offset
-        )
+impl Site {
+    pub fn render(&self, files: &Files) -> String {
+        let expansion = render_loc(self.expansion, files);
+        if (self.spelling.file, self.spelling.offset)
+            == (self.expansion.file, self.expansion.offset)
+        {
+            expansion
+        } else {
+            format!(
+                "{expansion} (spelled at {})",
+                render_loc(self.spelling, files)
+            )
+        }
+    }
+}
+
+fn render_loc(loc: Loc, files: &Files) -> String {
+    let path = files.get_path(loc.file).map_or_else(
+        || format!("<file {}>", loc.file.0),
+        |path| path.display().to_string(),
+    );
+    match files.position(loc.file, loc.offset) {
+        Some((line, column)) => format!("{path}:{}:{}", line + 1, column + 1),
+        None => format!("{path}@{}", loc.offset),
     }
 }
 
@@ -78,7 +96,7 @@ pub enum Invariant {
 }
 
 #[derive(Debug, Clone, Error)]
-#[error("{}{construct} at {site}", function_prefix(.function))]
+#[error("{}{construct}", function_prefix(.function))]
 pub struct Barrier {
     pub function: Option<String>,
     pub construct: Construct,
@@ -86,7 +104,7 @@ pub struct Barrier {
 }
 
 #[derive(Debug, Clone, Error)]
-#[error("{}{invariant} at {site}", function_prefix(.function))]
+#[error("{}{invariant}", function_prefix(.function))]
 pub struct InvalidIr {
     pub function: Option<String>,
     pub invariant: Invariant,

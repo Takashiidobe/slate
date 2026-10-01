@@ -60,7 +60,7 @@ impl FunctionLowerer<'_, '_> {
                 })
             }
             _ => Err(Construct::Place {
-                ir: format!("{place:?}"),
+                ir: place.to_string(),
             }
             .into()),
         }
