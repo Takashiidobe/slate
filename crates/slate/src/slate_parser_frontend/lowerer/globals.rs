@@ -66,6 +66,14 @@ impl Tables<'_> {
                     && self.is_constant_initializer(left)
                     && self.is_constant_initializer(right)
             }
+            ValueKind::Compare { left, right, .. } => [left, right].iter().all(|operand| {
+                !self.is_long_double(&operand.ty)
+                    && !matches!(self.resolve_type(&operand.ty), ir::Type::Pointer { .. })
+                    && self.is_constant_initializer(operand)
+            }),
+            ValueKind::Logical { left, right, .. } => {
+                self.is_constant_initializer(left) && self.is_constant_initializer(right)
+            }
             _ => false,
         }
     }
