@@ -414,15 +414,19 @@ fn lower_function(
             })
         })
         .collect::<Result<Vec<_>>>()?;
-    let mut continue_labels = Vec::new();
     let mut statements = body
         .iter()
-        .map(|statement| lower_statement(statement, cx, &mut continue_labels))
+        .map(|statement| lower_statement(statement, cx))
         .collect::<Result<Vec<_>>>()?;
     if matches!(function.fallthrough, Some(ir::Fallthrough::ReturnZero))
         && !matches!(statements.last(), Some(Stmt::Return(_)))
     {
         statements.push(Stmt::Return(Some(Expr::Value(rust::RustValue::I64(0)))));
+    }
+    if matches!(function.fallthrough, Some(ir::Fallthrough::UndefinedIfUsed))
+        && !matches!(statements.last(), Some(Stmt::Return(_)))
+    {
+        statements.push(Stmt::Return(Some(zeroed())));
     }
     Ok(Item::Fn(FnDef {
         attrs: Vec::new(),
@@ -762,11 +766,7 @@ fn lower_type(cx: &Context, ty: &ir::Type) -> Result<rust::Type> {
     Ok(rust::Type::Prim(primitive))
 }
 
-fn lower_statement(
-    statement: &ir::Statement,
-    cx: &Context,
-    continue_labels: &mut Vec<Option<rust::Label>>,
-) -> Result<Stmt> {
+fn lower_statement(statement: &ir::Statement, cx: &Context) -> Result<Stmt> {
     Ok(match statement {
         ir::Statement::Temporary {
             id,
@@ -849,7 +849,7 @@ fn lower_statement(
         ir::Statement::Block(body) => Stmt::Scope {
             body: body
                 .iter()
-                .map(|statement| lower_statement(statement, cx, continue_labels))
+                .map(|statement| lower_statement(statement, cx))
                 .collect::<Result<Vec<_>>>()?,
         },
         ir::Statement::If {
@@ -858,19 +858,19 @@ fn lower_statement(
             else_body,
         } => Stmt::If {
             cond: lower_condition(condition, cx)?,
-            then_body: lower_statement_list(then_body, cx, continue_labels)?,
+            then_body: lower_statement_list(then_body, cx)?,
             else_body: else_body
                 .as_ref()
-                .map(|body| lower_statement_list(body, cx, continue_labels))
+                .map(|body| lower_statement_list(body, cx))
                 .transpose()?
                 .unwrap_or_default(),
         },
         ir::Statement::While {
-            condition, body, ..
+            id,
+            condition,
+            body,
         } => {
-            continue_labels.push(None);
-            let body = lower_statement_list(body, cx, continue_labels)?;
-            continue_labels.pop();
+            let body = lower_statement_list(body, cx)?;
             let (mut prefix, condition) = lower_evaluation(condition, cx)?;
             prefix.push(Stmt::If {
                 cond: Expr::Unary {
@@ -880,9 +880,12 @@ fn lower_statement(
                 then_body: vec![Stmt::Break(None)],
                 else_body: Vec::new(),
             });
-            prefix.extend(body);
+            prefix.push(Stmt::LabeledBlock {
+                label: continue_label(*id),
+                body,
+            });
             Stmt::Loop {
-                label: None,
+                label: Some(break_label(*id)),
                 body: prefix,
             }
         }
@@ -893,11 +896,8 @@ fn lower_statement(
             increment,
             body,
         } => {
-            let mut statements = lower_statement_list(init, cx, continue_labels)?;
-            let label = rust::Label::new(format!("__slate_continue_{}", id.0));
-            continue_labels.push(Some(label.clone()));
-            let body = lower_statement_list(body, cx, continue_labels)?;
-            continue_labels.pop();
+            let mut statements = lower_statement_list(init, cx)?;
+            let body = lower_statement_list(body, cx)?;
             let mut loop_body = Vec::new();
             if let Some(condition) = condition {
                 let (prefix, condition) = lower_evaluation(condition, cx)?;
@@ -911,12 +911,15 @@ fn lower_statement(
                     else_body: Vec::new(),
                 });
             }
-            loop_body.push(Stmt::LabeledBlock { label, body });
+            loop_body.push(Stmt::LabeledBlock {
+                label: continue_label(*id),
+                body,
+            });
             if let Some(increment) = increment {
                 loop_body.extend(lower_evaluation_statements(increment, cx)?);
             }
             statements.push(Stmt::Loop {
-                label: None,
+                label: Some(break_label(*id)),
                 body: loop_body,
             });
             Stmt::Scope { body: statements }
@@ -926,11 +929,11 @@ fn lower_statement(
             body,
             condition,
         } => {
-            let label = rust::Label::new(format!("__slate_continue_{}", id.0));
-            continue_labels.push(Some(label.clone()));
-            let body = lower_statement_list(body, cx, continue_labels)?;
-            continue_labels.pop();
-            let mut loop_body = vec![Stmt::LabeledBlock { label, body }];
+            let body = lower_statement_list(body, cx)?;
+            let mut loop_body = vec![Stmt::LabeledBlock {
+                label: continue_label(*id),
+                body,
+            }];
             let (prefix, condition) = lower_evaluation(condition, cx)?;
             loop_body.extend(prefix);
             loop_body.push(Stmt::If {
@@ -942,15 +945,17 @@ fn lower_statement(
                 else_body: Vec::new(),
             });
             Stmt::Loop {
-                label: None,
+                label: Some(break_label(*id)),
                 body: loop_body,
             }
         }
-        ir::Statement::Break(_) => Stmt::Break(None),
-        ir::Statement::Continue(_) => match continue_labels.last().cloned().flatten() {
-            Some(label) => Stmt::Break(Some(label)),
-            None => Stmt::Continue(None),
-        },
+        ir::Statement::Switch {
+            id,
+            discriminant,
+            body,
+        } => lower_switch(*id, discriminant, body, cx)?,
+        ir::Statement::Break(id) => Stmt::Break(Some(break_label(*id))),
+        ir::Statement::Continue(id) => Stmt::Break(Some(continue_label(*id))),
         ir::Statement::Null => Stmt::Block(rust::Block::default()),
         _ => {
             return Err(super::Error::Unsupported(format!(
@@ -963,16 +968,216 @@ fn lower_statement(
 fn lower_statement_list(
     statements: &[slate_parser::ast::Span<ir::Statement>],
     cx: &Context,
-    continue_labels: &mut Vec<Option<rust::Label>>,
 ) -> Result<Vec<Stmt>> {
     statements
         .iter()
-        .map(|statement| lower_statement(statement, cx, continue_labels))
+        .map(|statement| lower_statement(statement, cx))
         .collect()
 }
 
+fn break_label(id: BindingId) -> rust::Label {
+    rust::Label::new(format!("__slate_break_{}", id.0))
+}
+
+fn continue_label(id: BindingId) -> rust::Label {
+    rust::Label::new(format!("__slate_continue_{}", id.0))
+}
+
+struct SwitchArm<'a> {
+    values: Vec<&'a ir::Value>,
+    default: bool,
+    body: Vec<&'a ir::Statement>,
+}
+
+fn switch_label<'a>(
+    statement: &'a ir::Statement,
+    switch: BindingId,
+) -> Result<Option<SwitchArm<'a>>> {
+    let (value, body) = match statement {
+        ir::Statement::Case {
+            switch: owner,
+            start,
+            end,
+            body,
+        } if *owner == switch => {
+            if end.is_some() {
+                return Err(super::Error::Unsupported("switch case range".into()));
+            }
+            (Some(start), body)
+        }
+        ir::Statement::Default {
+            switch: owner,
+            body,
+        } if *owner == switch => (None, body),
+        _ => return Ok(None),
+    };
+    let mut arm = match body.first() {
+        Some(first) => match switch_label(first, switch)? {
+            Some(mut nested) => {
+                nested
+                    .body
+                    .extend(body[1..].iter().map(|statement| &**statement));
+                nested
+            }
+            None => SwitchArm {
+                values: Vec::new(),
+                default: false,
+                body: body.iter().map(|statement| &**statement).collect(),
+            },
+        },
+        None => SwitchArm {
+            values: Vec::new(),
+            default: false,
+            body: Vec::new(),
+        },
+    };
+    match value {
+        Some(value) => arm.values.insert(0, value),
+        None => arm.default = true,
+    }
+    Ok(Some(arm))
+}
+
+fn contains_switch_label(statements: &[&ir::Statement], switch: BindingId) -> bool {
+    statements.iter().any(|statement| match statement {
+        ir::Statement::Case { switch: owner, .. }
+        | ir::Statement::Default { switch: owner, .. }
+            if *owner == switch =>
+        {
+            true
+        }
+        ir::Statement::Block(body)
+        | ir::Statement::While { body, .. }
+        | ir::Statement::DoWhile { body, .. }
+        | ir::Statement::Switch { body, .. }
+        | ir::Statement::Label { body, .. }
+        | ir::Statement::Case { body, .. }
+        | ir::Statement::Default { body, .. } => contains_switch_label(
+            &body
+                .iter()
+                .map(|statement| &**statement)
+                .collect::<Vec<_>>(),
+            switch,
+        ),
+        ir::Statement::For { init, body, .. } => contains_switch_label(
+            &init
+                .iter()
+                .chain(body)
+                .map(|statement| &**statement)
+                .collect::<Vec<_>>(),
+            switch,
+        ),
+        ir::Statement::If {
+            then_body,
+            else_body,
+            ..
+        } => contains_switch_label(
+            &then_body
+                .iter()
+                .chain(else_body.iter().flatten())
+                .map(|statement| &**statement)
+                .collect::<Vec<_>>(),
+            switch,
+        ),
+        _ => false,
+    })
+}
+
+fn ends_in_jump(statement: &ir::Statement) -> bool {
+    match statement {
+        ir::Statement::Break(_) | ir::Statement::Continue(_) | ir::Statement::Return(_) => true,
+        ir::Statement::Block(body) => body.last().is_some_and(|last| ends_in_jump(last)),
+        _ => false,
+    }
+}
+
+fn lower_switch(
+    id: BindingId,
+    discriminant: &ir::Value,
+    body: &[slate_parser::ast::Span<ir::Statement>],
+    cx: &Context,
+) -> Result<Stmt> {
+    let statements = match body {
+        [single] => match &**single {
+            ir::Statement::Block(inner) => inner.as_slice(),
+            _ => body,
+        },
+        _ => body,
+    };
+    let mut arms: Vec<SwitchArm> = Vec::new();
+    for statement in statements {
+        match switch_label(statement, id)? {
+            Some(arm) => arms.push(arm),
+            None => match arms.last_mut() {
+                Some(arm) => arm.body.push(statement),
+                None => {
+                    return Err(super::Error::Unsupported(
+                        "statement before first switch case".into(),
+                    ));
+                }
+            },
+        }
+    }
+    for (index, arm) in arms.iter().enumerate() {
+        if contains_switch_label(&arm.body, id) {
+            return Err(super::Error::Unsupported("nested switch case label".into()));
+        }
+        if !arm.body.last().is_some_and(|last| ends_in_jump(last)) && index + 1 < arms.len() {
+            return Err(super::Error::Unsupported("switch fallthrough".into()));
+        }
+    }
+    let selector = format!("__slate_switch_{}", id.0);
+    let lower_arm = |arm: &SwitchArm| -> Result<Vec<Stmt>> {
+        arm.body
+            .iter()
+            .map(|statement| lower_statement(statement, cx))
+            .collect()
+    };
+    let mut chain = match arms.iter().find(|arm| arm.default) {
+        Some(arm) => lower_arm(arm)?,
+        None => Vec::new(),
+    };
+    for arm in arms.iter().rev().filter(|arm| !arm.default) {
+        let mut cond: Option<Expr> = None;
+        for value in &arm.values {
+            let test = Expr::Binary {
+                op: BinOp::Eq,
+                lhs: Box::new(Expr::Var(selector.clone().into())),
+                rhs: Box::new(lower_value(value, cx)?),
+            };
+            cond = Some(match cond {
+                Some(previous) => Expr::Binary {
+                    op: BinOp::Or,
+                    lhs: Box::new(previous),
+                    rhs: Box::new(test),
+                },
+                None => test,
+            });
+        }
+        let Some(cond) = cond else {
+            continue;
+        };
+        chain = vec![Stmt::If {
+            cond,
+            then_body: lower_arm(arm)?,
+            else_body: chain,
+        }];
+    }
+    let mut block = vec![Stmt::Let {
+        name: selector,
+        mutable: false,
+        ty: Some(lower_type(cx, &discriminant.ty)?),
+        init: Some(lower_value(discriminant, cx)?),
+    }];
+    block.extend(chain);
+    Ok(Stmt::LabeledBlock {
+        label: break_label(id),
+        body: block,
+    })
+}
+
 fn lower_evaluation_statements(evaluation: &ir::Evaluation, cx: &Context) -> Result<Vec<Stmt>> {
-    let mut statements = lower_statement_list(&evaluation.statements, cx, &mut Vec::new())?;
+    let mut statements = lower_statement_list(&evaluation.statements, cx)?;
     if !matches!(evaluation.value.node.value, ValueKind::Void) {
         statements.push(Stmt::Expr(lower_value(&evaluation.value, cx)?));
     }
@@ -980,7 +1185,7 @@ fn lower_evaluation_statements(evaluation: &ir::Evaluation, cx: &Context) -> Res
 }
 
 fn lower_evaluation(evaluation: &ir::Evaluation, cx: &Context) -> Result<(Vec<Stmt>, Expr)> {
-    let statements = lower_statement_list(&evaluation.statements, cx, &mut Vec::new())?;
+    let statements = lower_statement_list(&evaluation.statements, cx)?;
     let condition = lower_condition(&evaluation.value, cx)?;
     Ok((statements, condition))
 }
