@@ -51,6 +51,15 @@ bd close <id>         # Complete work
 
 **Architecture in one line:** issues live in a local Dolt DB; sync uses `refs/dolt/data` on your git remote; `.beads/issues.jsonl` is a passive export. See https://github.com/gastownhall/beads/blob/main/docs/SYNC_CONCEPTS.md for details and anti-patterns.
 
+## Navigating code
+
+Always use the LSP (rust-analyzer) to navigate Rust: `hover`,
+`goToDefinition`, `findReferences`, `workspaceSymbol`, and `documentSymbol`
+for an enum's variants or a file's outline. Use grep only for text outside
+Rust, such as the wiki, fixtures, and C sources. Right after startup,
+rust-analyzer may still be indexing and return nothing. Retry before you fall
+back to grep.
+
 ## Wiki
 
 `wiki/` is shared by both crates: `wiki/concepts/` holds durable design and

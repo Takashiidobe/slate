@@ -1561,8 +1561,11 @@ impl<W: Write> Codegen<W> {
             }
             Type::FnPtr { abi, params, ret } => {
                 self.out.write_str("Option<unsafe ")?;
-                self.abi(*abi)?;
-                self.out.write_str(" fn(")?;
+                if *abi != Abi::Rust {
+                    self.abi(*abi)?;
+                    self.out.write_char(' ')?;
+                }
+                self.out.write_str("fn(")?;
                 for (i, p) in params.iter().enumerate() {
                     if i > 0 {
                         self.out.write_str(", ")?;

@@ -6,6 +6,11 @@ use std::collections::HashMap;
 
 type Result<T> = std::result::Result<T, super::Error>;
 
+struct FunctionName {
+    rust: String,
+    is_extern: bool,
+}
+
 #[derive(Default)]
 pub struct Report {
     pub module: Vec<String>,
@@ -143,10 +148,13 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
         .map(|function| {
             (
                 function.value.id,
-                if function.name == "main" {
-                    "__slate_main".into()
-                } else {
-                    function.name.clone()
+                FunctionName {
+                    rust: if function.name == "main" {
+                        "__slate_main".into()
+                    } else {
+                        function.name.clone()
+                    },
+                    is_extern: function.body.is_none(),
                 },
             )
         })
@@ -200,7 +208,7 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
             },
         );
     }
-    if names.values().any(|name| name == "__slate_main") {
+    if names.values().any(|name| name.rust == "__slate_main") {
         items.push(Item::Fn(FnDef {
             attrs: Vec::new(),
             vis: rust::Visibility::Private,
@@ -283,7 +291,7 @@ fn lower_extern(
 fn lower_function(
     function: &ir::Function,
     body: &[slate_parser::ast::Span<ir::Statement>],
-    names: &HashMap<BindingId, String>,
+    names: &HashMap<BindingId, FunctionName>,
     bindings: &HashMap<BindingId, String>,
     strings: &HashMap<BindingId, Vec<u8>>,
 ) -> Result<Item> {
@@ -324,7 +332,7 @@ fn lower_function(
         vis: rust::Visibility::Private,
         unsafe_: false,
         abi: None,
-        name: names[&function.id].clone(),
+        name: names[&function.id].rust.clone(),
         params,
         ret: function.return_type.as_ref().map(lower_type).transpose()?,
         body: statements,
@@ -413,6 +421,26 @@ fn lower_type(ty: &ir::Type) -> Result<rust::Type> {
         }
         ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => Prim::F32,
         ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => Prim::F64,
+        ir::Type::Pointer { pointee, .. } if matches!(**pointee, ir::Type::Function { .. }) => {
+            let ir::Type::Function {
+                return_type,
+                parameters,
+                variadic: false,
+                prototyped: true,
+                convention: ir::CallConv::C,
+            } = &**pointee
+            else {
+                return Err(super::Error::Unsupported(format!("type {ty}")));
+            };
+            return Ok(rust::Type::FnPtr {
+                abi: rust::Abi::Rust,
+                params: parameters.iter().map(lower_type).collect::<Result<_>>()?,
+                ret: Box::new(match return_type {
+                    Some(ret) => lower_type(ret)?,
+                    None => rust::Type::Unit,
+                }),
+            });
+        }
         ir::Type::Pointer {
             pointee, is_const, ..
         } => {
@@ -437,7 +465,7 @@ fn lower_type(ty: &ir::Type) -> Result<rust::Type> {
 
 fn lower_statement(
     statement: &ir::Statement,
-    names: &HashMap<BindingId, String>,
+    names: &HashMap<BindingId, FunctionName>,
     bindings: &HashMap<BindingId, String>,
     strings: &HashMap<BindingId, Vec<u8>>,
     continue_labels: &mut Vec<Option<rust::Label>>,
@@ -636,7 +664,7 @@ fn lower_statement(
 
 fn lower_statement_list(
     statements: &[slate_parser::ast::Span<ir::Statement>],
-    names: &HashMap<BindingId, String>,
+    names: &HashMap<BindingId, FunctionName>,
     bindings: &HashMap<BindingId, String>,
     strings: &HashMap<BindingId, Vec<u8>>,
     continue_labels: &mut Vec<Option<rust::Label>>,
@@ -649,7 +677,7 @@ fn lower_statement_list(
 
 fn lower_evaluation_statements(
     evaluation: &ir::Evaluation,
-    names: &HashMap<BindingId, String>,
+    names: &HashMap<BindingId, FunctionName>,
     bindings: &HashMap<BindingId, String>,
     strings: &HashMap<BindingId, Vec<u8>>,
 ) -> Result<Vec<Stmt>> {
@@ -673,7 +701,7 @@ fn lower_evaluation_statements(
 
 fn lower_evaluation(
     evaluation: &ir::Evaluation,
-    names: &HashMap<BindingId, String>,
+    names: &HashMap<BindingId, FunctionName>,
     bindings: &HashMap<BindingId, String>,
     strings: &HashMap<BindingId, Vec<u8>>,
 ) -> Result<(Vec<Stmt>, Expr)> {
@@ -690,7 +718,7 @@ fn lower_evaluation(
 
 fn lower_condition(
     value: &ir::Value,
-    names: &HashMap<BindingId, String>,
+    names: &HashMap<BindingId, FunctionName>,
     bindings: &HashMap<BindingId, String>,
     strings: &HashMap<BindingId, Vec<u8>>,
 ) -> Result<Expr> {
@@ -708,7 +736,7 @@ fn lower_condition(
 
 fn lower_value(
     value: &ir::Value,
-    names: &HashMap<BindingId, String>,
+    names: &HashMap<BindingId, FunctionName>,
     bindings: &HashMap<BindingId, String>,
     strings: &HashMap<BindingId, Vec<u8>>,
 ) -> Result<Expr> {
@@ -905,28 +933,63 @@ fn lower_value(
                 })),
             }))
         }
+        ValueKind::FunctionDecay {
+            place:
+                ir::Place {
+                    kind: PlaceKind::Binding(id),
+                    ..
+                },
+        } => match names.get(id) {
+            Some(name) if !name.is_extern => Expr::Call {
+                func: Box::new(Expr::Var("Some".into())),
+                args: vec![Expr::Var(name.rust.as_str().into())],
+                binding: CallBinding::Generated,
+            },
+            _ => {
+                return Err(super::Error::Unsupported(format!(
+                    "value {}",
+                    value.display(false)
+                )));
+            }
+        },
+        ValueKind::Null if matches!(&value.ty, ir::Type::Pointer { pointee, .. } if matches!(**pointee, ir::Type::Function { .. })) =>
+        {
+            lower_type(&value.ty)?;
+            Expr::Var("None".into())
+        }
         ValueKind::Call {
-            callee: ir::Callee::Direct(id),
-            arguments,
-            ..
+            callee, arguments, ..
         } => {
-            let call = Expr::Call {
-                func: Box::new(Expr::Var(
+            let func = match callee {
+                ir::Callee::Direct(id) => Expr::Var(
                     names
                         .get(id)
                         .ok_or_else(|| {
                             super::Error::Unsupported(format!("unknown callee %{}", id.0))
                         })?
+                        .rust
                         .as_str()
                         .into(),
-                )),
+                ),
+                ir::Callee::Indirect(pointer) => Expr::MethodCall {
+                    recv: Box::new(lower_value(pointer, names, bindings, strings)?),
+                    method: "unwrap".into(),
+                    args: Vec::new(),
+                },
+            };
+            let call = Expr::Call {
+                func: Box::new(func),
                 args: arguments
                     .iter()
                     .map(|argument| lower_value(argument, names, bindings, strings))
                     .collect::<Result<Vec<_>>>()?,
                 binding: CallBinding::unknown(),
             };
-            if names.get(id).is_some_and(|name| name == "printf") {
+            let unsafe_call = match callee {
+                ir::Callee::Direct(id) => names.get(id).is_some_and(|name| name.rust == "printf"),
+                ir::Callee::Indirect(_) => true,
+            };
+            if unsafe_call {
                 Expr::Unsafe(Box::new(rust::Block {
                     stmts: Vec::new(),
                     tail: Some(Box::new(call)),
@@ -946,7 +1009,7 @@ fn lower_value(
 
 fn lower_place(
     place: &ir::Place,
-    names: &HashMap<BindingId, String>,
+    names: &HashMap<BindingId, FunctionName>,
     bindings: &HashMap<BindingId, String>,
     strings: &HashMap<BindingId, Vec<u8>>,
 ) -> Result<Expr> {

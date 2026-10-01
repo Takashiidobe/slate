@@ -293,12 +293,14 @@ pub enum UsedKind {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Abi {
     CUnwind,
+    Rust,
 }
 
 impl Abi {
     pub fn spelling(self) -> &'static str {
         match self {
             Abi::CUnwind => "C-unwind",
+            Abi::Rust => "Rust",
         }
     }
 }
