@@ -1,9 +1,15 @@
 use super::*;
 
 pub(super) struct SwitchArm<'a> {
-    values: Vec<&'a ir::Value>,
+    values: Vec<CaseValue<'a>>,
     default: bool,
     body: Vec<&'a slate_parser::ast::Span<ir::Statement>>,
+}
+
+#[derive(Clone, Copy)]
+struct CaseValue<'a> {
+    start: &'a ir::Value,
+    end: Option<&'a ir::Value>,
 }
 
 pub(super) fn switch_label<'a>(
@@ -16,12 +22,13 @@ pub(super) fn switch_label<'a>(
             start,
             end,
             body,
-        } if *owner == switch => {
-            if end.is_some() {
-                return Err(unsupported_switch("case range"));
-            }
-            (Some(start), body)
-        }
+        } if *owner == switch => (
+            Some(CaseValue {
+                start,
+                end: end.as_ref(),
+            }),
+            body,
+        ),
         ir::Statement::Default {
             switch: owner,
             body,
@@ -287,11 +294,12 @@ fn is_empty(statement: &ir::Statement) -> bool {
 }
 
 fn switch_arm_pattern(arm: &SwitchArm) -> Result<Option<rust::Pattern>> {
-    let mut patterns = arm
-        .values
-        .iter()
-        .map(|value| case_pattern(value).map_err(|error| error.at(Site::of(&value.node))))
-        .collect::<Result<Vec<_>>>()?;
+    let mut patterns = Vec::new();
+    for value in &arm.values {
+        let pattern =
+            case_pattern(*value).map_err(|error| error.at(Site::of(&value.start.node)))?;
+        patterns.extend(pattern);
+    }
     Ok(match patterns.len() {
         0 => None,
         1 => patterns.pop(),
@@ -299,32 +307,70 @@ fn switch_arm_pattern(arm: &SwitchArm) -> Result<Option<rust::Pattern>> {
     })
 }
 
-fn case_pattern(value: &ir::Value) -> Result<rust::Pattern> {
-    let pattern = match &value.node.value {
-        ValueKind::Constant(Number::Integer(number)) => {
-            let number: u128 = number
-                .to_string()
-                .parse()
-                .map_err(|_| unsupported_switch("case value"))?;
-            match i64::try_from(number) {
-                Ok(number) => rust::Pattern::I64(number),
-                Err(_) => rust::Pattern::U128(number),
-            }
+#[derive(Clone, Copy)]
+enum CaseNumber {
+    Signed(i128),
+    Unsigned(u128),
+}
+
+impl CaseNumber {
+    fn signed(self) -> Option<i128> {
+        match self {
+            CaseNumber::Signed(number) => Some(number),
+            CaseNumber::Unsigned(number) => i128::try_from(number).ok(),
         }
+    }
+
+    fn unsigned(self) -> Option<u128> {
+        match self {
+            CaseNumber::Signed(number) => u128::try_from(number).ok(),
+            CaseNumber::Unsigned(number) => Some(number),
+        }
+    }
+}
+
+fn case_number(value: &ir::Value) -> Result<CaseNumber> {
+    match &value.node.value {
+        ValueKind::Constant(Number::Integer(number)) => number
+            .to_string()
+            .parse()
+            .map(CaseNumber::Unsigned)
+            .map_err(|_| unsupported_switch("case value")),
         ValueKind::Constant(Number::SignedInteger(number)) => {
-            let number: i128 = number
-                .to_string()
+            let digits = number.to_string();
+            digits
                 .parse()
-                .map_err(|_| unsupported_switch("case value"))?;
-            match i64::try_from(number) {
-                Ok(number) => rust::Pattern::I64(number),
-                Err(_) => rust::Pattern::I128(number),
-            }
+                .map(CaseNumber::Signed)
+                .or_else(|_| digits.parse().map(CaseNumber::Unsigned))
+                .map_err(|_| unsupported_switch("case value"))
         }
-        ValueKind::Constant(_) => return Err(unsupported_switch("case value")),
-        _ => return Err(Failure::from(Invariant::NonConstantCase)),
+        ValueKind::Constant(_) => Err(unsupported_switch("case value")),
+        _ => Err(Invariant::NonConstantCase.into()),
+    }
+}
+
+fn case_pattern(value: CaseValue) -> Result<Option<rust::Pattern>> {
+    let start = case_number(value.start)?;
+    let Some(end) = value.end else {
+        return Ok(Some(match start {
+            CaseNumber::Signed(number) => {
+                i64::try_from(number).map_or(rust::Pattern::I128(number), rust::Pattern::I64)
+            }
+            CaseNumber::Unsigned(number) => {
+                i64::try_from(number).map_or(rust::Pattern::U128(number), rust::Pattern::I64)
+            }
+        }));
     };
-    Ok(pattern)
+    let end = case_number(end)?;
+    if let (Some(start), Some(end)) = (start.signed(), end.signed()) {
+        return Ok((start <= end).then_some(rust::Pattern::InclusiveRange { start, end }));
+    }
+    match (start.unsigned(), end.unsigned()) {
+        (Some(start), Some(end)) => {
+            Ok((start <= end).then_some(rust::Pattern::InclusiveRangeU128 { start, end }))
+        }
+        _ => Err(unsupported_switch("case range")),
+    }
 }
 
 fn falls_through(arm: &SwitchArm) -> bool {
