@@ -84,9 +84,9 @@ fn run() -> miette::Result<()> {
     {
         return Err(miette::miette!("IR dump modes are mutually exclusive"));
     }
-    if show_spans && !dump_ir_expressions {
+    if show_spans && !(dump_ir || dump_ir_expressions) {
         return Err(miette::miette!(
-            "--show-spans requires --dump-ir-expressions"
+            "--show-spans requires ir, --dump-ir, or --dump-ir-expressions"
         ));
     }
     if show_metadata && !(dump_ir || dump_ir_types) {
@@ -135,7 +135,7 @@ fn run() -> miette::Result<()> {
             }
             module
         };
-        let display = module.display(show_metadata);
+        let display = module.display(show_metadata).with_spans(show_spans);
         print!(
             "{}",
             if compact_ir {

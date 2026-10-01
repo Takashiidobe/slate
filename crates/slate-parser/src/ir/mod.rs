@@ -745,18 +745,7 @@ impl Value {
         }?;
         module_print::metadata(f, metadata, self.node.id)?;
         if show_spans {
-            let spelling = self.node.spelling;
-            let expansion = self.node.expansion;
-            write!(
-                f,
-                " [spelling={}:{}+{}, expansion={}:{}+{}]",
-                spelling.file.0,
-                spelling.offset,
-                spelling.length,
-                expansion.file.0,
-                expansion.offset,
-                expansion.length
-            )?;
+            module_print::locations(f, self.node.spelling, self.node.expansion)?;
         }
         Ok(())
     }

@@ -705,8 +705,19 @@ impl Lowerer {
         let merged_ty = self.types.ir_type(merged);
         let merged_quals = self.types.ctypes.quals(merged);
         let merged_access = self.types.access_of(merged);
+        let existing = &mut self.module.globals[index];
+        if global.value.variable.initializer.is_some()
+            || global.value.definition && !existing.value.definition
+        {
+            existing.spelling = global.spelling;
+            existing.expansion = global.expansion;
+            existing.provenance = global.provenance;
+            existing.macro_origin = global.macro_origin;
+            existing.leading_space = global.leading_space;
+        }
         let global = global.value;
-        let existing = &mut self.module.globals[index].value;
+        let existing = &mut existing.value;
+        existing.definition |= global.definition;
         existing.variable.ty = merged_ty;
         existing.variable.restrict = merged_quals.is_restrict;
         existing.variable.is_const = merged_quals.is_const;
@@ -756,12 +767,15 @@ impl Lowerer {
             self.warn(Warning::DeprecatedNonPrototype, &message, &anchor);
         }
         let existing = &mut self.module.functions[index];
-        let function = function.value;
-        let replaces = function.body.is_some()
-            || (existing.value.body.is_none()
-                && matches!(existing.value.parameters, Parameters::Unprototyped));
-        if replaces {
-            existing.value = function;
+        if function.value.body.is_some() {
+            *existing = Span {
+                id: existing.id,
+                ..function
+            };
+        } else if existing.value.body.is_none()
+            && matches!(existing.value.parameters, Parameters::Unprototyped)
+        {
+            existing.value = function.value;
         }
         Ok(())
     }

@@ -81,6 +81,7 @@ Macro expansion chains are not in the IR yet (only atomic builtins record
 | `slate-parser ir src.c` / `parse src.c --dump-ir` | the module; lowering must succeed for the whole module first |
 | `+ --show-metadata` | adds the `NodeId`-keyed metadata, nested values included |
 | `+ --compact-ir` | hides conversion reasons, operation policies, and call signatures (print only) |
+| `+ --show-spans` | adds `[spelling=file:offset+len, expansion=file:offset+len]` to each global and function |
 | `parse src.c --dump-ir-types --show-metadata` | aliases and function signatures, without lowering bodies |
 | `parse src.c --dump-ir-expressions [--show-spans]` | expression roots only: no module header, declarations, return conversions, or control flow |
 

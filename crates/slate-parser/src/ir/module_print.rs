@@ -5,7 +5,7 @@ use super::{
     Variable, Visibility,
 };
 use crate::{
-    ast::{NodeId, Span},
+    ast::{Loc, NodeId, Span},
     ir::Fallthrough,
 };
 use std::fmt;
@@ -13,6 +13,7 @@ use std::fmt;
 pub struct DisplayModule<'a> {
     module: &'a Module,
     show_metadata: bool,
+    show_spans: bool,
     compact: bool,
 }
 
@@ -21,6 +22,7 @@ impl Module {
         DisplayModule {
             module: self,
             show_metadata,
+            show_spans: false,
             compact: false,
         }
     }
@@ -31,6 +33,24 @@ impl DisplayModule<'_> {
         self.compact = true;
         self
     }
+
+    pub fn with_spans(mut self, show_spans: bool) -> Self {
+        self.show_spans = show_spans;
+        self
+    }
+}
+
+pub(super) fn locations(f: &mut fmt::Formatter<'_>, spelling: Loc, expansion: Loc) -> fmt::Result {
+    write!(
+        f,
+        " [spelling={}:{}+{}, expansion={}:{}+{}]",
+        spelling.file.0,
+        spelling.offset,
+        spelling.length,
+        expansion.file.0,
+        expansion.offset,
+        expansion.length
+    )
 }
 
 impl fmt::Display for Linkage {
@@ -820,6 +840,9 @@ impl fmt::Display for DisplayModule<'_> {
                 f.write_str(" [common]")?;
             }
             metadata(f, printer.table(), global.id)?;
+            if self.show_spans {
+                locations(f, global.spelling, global.expansion)?;
+            }
             writeln!(f, ";")?;
         }
         for function in &self.module.functions {
@@ -926,6 +949,9 @@ impl fmt::Display for DisplayModule<'_> {
                 f.write_str("]")?;
             }
             metadata(f, printer.table(), function.id)?;
+            if self.show_spans {
+                locations(f, function.spelling, function.expansion)?;
+            }
             if let Some(body) = &function.body {
                 writeln!(f, " {{")?;
                 printer.statements(f, body, 8)?;

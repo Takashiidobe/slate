@@ -25,6 +25,12 @@ printing in the [grammar](../ir-grammar.md#globals).
   any non-`extern` declaration, initializer, or `alias`) and one `Function`
   per function (body and parameters from the definition, else the first
   prototype). Linkage stays internal once any declaration is `static`.
+- The merged node's span (spelling, expansion, provenance) is its
+  definition's: the function body, else the global's initializer, else its
+  first non-`extern` declaration, else the first declaration. Its `NodeId`,
+  and so its metadata, stays the first declaration's. Slate's directive
+  translation uses the span to place each item in its `#if` branch.
+  Fixture: `definition_spans.c`.
 - Tentative definitions and `extern`s merge into one global; an incomplete
   tentative array completes to one element.
 - A block-scope `static` is a module `Global` with `storage=static`,

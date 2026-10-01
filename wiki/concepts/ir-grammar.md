@@ -40,8 +40,8 @@ what they print.
 - This is the default form. `--show-metadata` adds [metadata](#metadata);
   `--compact-ir` removes parts as listed in [Compact form](#compact-form).
 - Out of scope: the diagnostic dumps `--dump-ir-types`,
-  `--dump-ir-expressions` (which can add `--show-spans`), and
-  `--dump-ir-names`.
+  `--dump-ir-expressions`, and `--dump-ir-names`, and the
+  `[spelling=..., expansion=...]` suffixes `--show-spans` adds.
 
 ## Lexical
 
