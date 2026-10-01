@@ -118,6 +118,7 @@ C projects that slate-parser can parse with `--flavor=clang` on
 | [chibicc](https://github.com/rui314/chibicc)         | `90d1f7f`                        |
 | [utf8proc](https://github.com/JuliaStrings/utf8proc) | `0075ed7`                        |
 | [yyjson](https://github.com/ibireme/yyjson)          | `757305b`                        |
+| [zstd](https://github.com/facebook/zstd)             | `10da6ba`                        |
 
 ## Development
 
