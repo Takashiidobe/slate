@@ -68,3 +68,5 @@
 export.auto: true
 export:
     git-add: true
+dolt:
+    local-only: true
