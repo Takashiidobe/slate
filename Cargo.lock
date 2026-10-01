@@ -1791,6 +1791,7 @@ name = "slate"
 version = "0.1.0"
 dependencies = [
  "clang-ir",
+ "clap",
  "libc",
  "miette",
  "mimalloc",
@@ -1803,6 +1804,7 @@ dependencies = [
  "serde_stacker",
  "shlex",
  "slate-parser",
+ "slate-sysroots",
  "syn 3.0.6",
  "thiserror",
  "triplers",

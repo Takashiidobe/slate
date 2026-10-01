@@ -47,7 +47,7 @@ profile.
 | `SLATE_CARGO`    | `cargo`                              | compiles the generated Rust                                   |
 | `SLATE_RUSTFMT`  | `rustfmt`                            | formats CIR output; slate output uses prettyplease (rustfmt only if syn rejects it) |
 
-Install a sysroot with `cargo run -p slate-sysroots -- install <triple>`.
+Install a sysroot with `cargo run -p slate -- sysroot install <triple>`.
 
 ## Debugging a fixture
 

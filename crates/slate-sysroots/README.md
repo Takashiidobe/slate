@@ -1,41 +1,40 @@
 # Slate sysroots
 
-This crate installs target sysroots for Slate. The library owns target selection,
-installation, and path lookup; the binary is a small command-line facade.
-Run the following commands from the workspace root; the package selector
-chooses this binary among the workspace's packages.
+This crate installs target sysroots for Slate. The library provides target
+selection, installation, and path lookup. Manage sysroots through Slate's
+`sysroot` command. Run the following commands from the workspace root:
 
 Currently supported:
 
 ```sh
-cargo run -p slate-sysroots -- install x86_64-pc-windows-msvc
-cargo run -p slate-sysroots -- remove x86_64-pc-windows-msvc
-cargo run -p slate-sysroots -- install i686-pc-windows-msvc
-cargo run -p slate-sysroots -- path x86_64-pc-windows-msvc
-cargo run -p slate-sysroots -- doctor x86_64-pc-windows-msvc
-cargo run -p slate-sysroots -- install aarch64-pc-windows-msvc
-cargo run -p slate-sysroots -- doctor aarch64-pc-windows-msvc
-cargo run -p slate-sysroots -- install thumbv7a-pc-windows-msvc
-cargo run -p slate-sysroots -- install x86_64-unknown-linux-gnu
-cargo run -p slate-sysroots -- install aarch64-unknown-linux-gnu
-cargo run -p slate-sysroots -- install i686-unknown-linux-gnu
-cargo run -p slate-sysroots -- install armv7-unknown-linux-gnueabi
-cargo run -p slate-sysroots -- install armv7-unknown-linux-gnueabihf
-cargo run -p slate-sysroots -- install x86_64-unknown-linux-musl
-cargo run -p slate-sysroots -- install aarch64-unknown-linux-musl
-cargo run -p slate-sysroots -- install x86_64-unknown-freebsd
-cargo run -p slate-sysroots -- install aarch64-unknown-freebsd
-cargo run -p slate-sysroots -- install x86_64-linux-android
-cargo run -p slate-sysroots -- install aarch64-linux-android
-cargo run -p slate-sysroots -- install x86_64-apple-darwin --sdk /path/to/MacOSX.sdk
-cargo run -p slate-sysroots -- install aarch64-apple-darwin --sdk /path/to/MacOSX.sdk
-cargo run -p slate-sysroots -- install compiler-headers clang
-cargo run -p slate-sysroots -- install compiler-headers apple-clang
-cargo run -p slate-sysroots -- install compiler-headers gcc
-cargo run -p slate-sysroots -- install compiler-headers msvc
-cargo run -p slate-sysroots -- doctor compiler-headers clang
-cargo run -p slate-sysroots -- path compiler-headers gcc
-cargo run -p slate-sysroots -- path compiler-headers msvc x86_64-pc-windows-msvc
+cargo run -p slate -- sysroot install x86_64-pc-windows-msvc
+cargo run -p slate -- sysroot remove x86_64-pc-windows-msvc
+cargo run -p slate -- sysroot install i686-pc-windows-msvc
+cargo run -p slate -- sysroot path x86_64-pc-windows-msvc
+cargo run -p slate -- sysroot doctor x86_64-pc-windows-msvc
+cargo run -p slate -- sysroot install aarch64-pc-windows-msvc
+cargo run -p slate -- sysroot doctor aarch64-pc-windows-msvc
+cargo run -p slate -- sysroot install thumbv7a-pc-windows-msvc
+cargo run -p slate -- sysroot install x86_64-unknown-linux-gnu
+cargo run -p slate -- sysroot install aarch64-unknown-linux-gnu
+cargo run -p slate -- sysroot install i686-unknown-linux-gnu
+cargo run -p slate -- sysroot install armv7-unknown-linux-gnueabi
+cargo run -p slate -- sysroot install armv7-unknown-linux-gnueabihf
+cargo run -p slate -- sysroot install x86_64-unknown-linux-musl
+cargo run -p slate -- sysroot install aarch64-unknown-linux-musl
+cargo run -p slate -- sysroot install x86_64-unknown-freebsd
+cargo run -p slate -- sysroot install aarch64-unknown-freebsd
+cargo run -p slate -- sysroot install x86_64-linux-android
+cargo run -p slate -- sysroot install aarch64-linux-android
+cargo run -p slate -- sysroot install x86_64-apple-darwin --sdk /path/to/MacOSX.sdk
+cargo run -p slate -- sysroot install aarch64-apple-darwin --sdk /path/to/MacOSX.sdk
+cargo run -p slate -- sysroot install compiler-headers clang
+cargo run -p slate -- sysroot install compiler-headers apple-clang
+cargo run -p slate -- sysroot install compiler-headers gcc
+cargo run -p slate -- sysroot install compiler-headers msvc
+cargo run -p slate -- sysroot doctor compiler-headers clang
+cargo run -p slate -- sysroot path compiler-headers gcc
+cargo run -p slate -- sysroot path compiler-headers msvc x86_64-pc-windows-msvc
 ```
 
 The Windows installer uses the `xwin` library to acquire the Microsoft CRT and

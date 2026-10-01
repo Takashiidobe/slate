@@ -5,6 +5,7 @@ edition = "2024"
 default-run = "slate"
 
 [dependencies]
+clap = { version = "4", features = ["derive"] }
 libc = "0.2"
 serde = "1"
 serde_json = { version = "1", features = ["unbounded_depth"] }
@@ -20,6 +21,7 @@ unicode-ident = "1"
 rayon = "1.12"
 clang-ir = { path = "../../../clang-ir/clang-ir" }
 slate-parser = { path = "../slate-parser" }
+slate-sysroots = { path = "../slate-sysroots" }
 prettyplease = "0.3"
 syn = { version = "3", default-features = false, features = ["full", "parsing"] }
 

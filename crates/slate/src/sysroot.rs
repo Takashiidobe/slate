@@ -1,16 +1,19 @@
 use slate_sysroots::{CompilerHeaders, GccFamily, Paths, Target};
-use std::env;
 use std::path::Path;
 use std::process::ExitCode;
 
-fn run() -> std::io::Result<ExitCode> {
-    let mut args = env::args();
-    let program = args.next().unwrap_or_else(|| "slate-sysroots".into());
+pub fn run(args: impl IntoIterator<Item = String>) -> std::io::Result<ExitCode> {
+    let mut args = args.into_iter();
+    let program = "slate sysroot";
     let command = args.next();
     let subject = args.next();
     let usage = format!(
         "usage: {program} <install|remove|path|doctor> <Rust target triple>\n       {program} install <Darwin target> [--sdk <path>]\n       {program} <install|path|doctor> compiler-headers <clang|apple-clang>\n       {program} <install|path|doctor> compiler-headers gcc [x86|aarch64|arm]\n       {program} <install|path|doctor> compiler-headers msvc [MSVC target triple]"
     );
+    if matches!(command.as_deref(), Some("-h" | "--help")) {
+        println!("{usage}");
+        return Ok(ExitCode::SUCCESS);
+    }
     if !matches!(
         command.as_deref(),
         Some("install" | "remove" | "path" | "doctor")
@@ -149,8 +152,8 @@ fn run() -> std::io::Result<ExitCode> {
     Ok(ExitCode::SUCCESS)
 }
 
-fn main() -> ExitCode {
-    match run() {
+pub fn main_result(args: impl IntoIterator<Item = String>) -> ExitCode {
+    match run(args) {
         Ok(code) => code,
         Err(error) => {
             eprintln!("error: {error}");

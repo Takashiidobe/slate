@@ -1,5 +1,6 @@
 use clang_ir::ast::Type as CirType;
 use clang_ir::model::Module;
+use clap::{Args, Parser, Subcommand};
 use rayon::prelude::*;
 use slate::backend::{self, codegen, rust_ast};
 use slate::frontend::{self, c_ast, c_shim, directive_translate, preprocess};
@@ -8,61 +9,104 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
+mod sysroot;
+
 #[global_allocator]
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
-fn usage() -> ExitCode {
-    eprintln!("usage: slate <command> [file.c]");
-    eprintln!("  emit-cir    print ClangIR (generic form)");
-    eprintln!("  emit-slate-ir [compiler args...] <file.c>  print slate-parser typed IR");
-    eprintln!(
-        "  translate   [--frontend=cir|slate] [--targets=<t1>,<t2>,...] [compiler args...] <file.c>  C -> Rust"
-    );
-    eprintln!("  translate-lowered [--frontend=cir|slate] <file.c>  C -> raw Rust");
-    eprintln!(
-        "  lowering-barriers [compiler args...] <file.c>  first slate lowering barrier per function"
-    );
-    eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
-    eprintln!(
-        "  translate-project --compile-commands <file>... [-I|-isystem|-iquote|-idirafter <dir>]... <project_dir> <crate_dir>  cross-TU C project -> Cargo crate (bin if a unit defines main, else lib); include dirs apply to every unit"
-    );
-    ExitCode::from(2)
+#[derive(Parser)]
+#[command(name = "slate", version, about = "Translate C to Rust")]
+struct Cli {
+    #[command(subcommand)]
+    command: Command,
+}
+
+#[derive(Subcommand)]
+enum Command {
+    EmitCir(RawArgs),
+    EmitSlateIr(RawArgs),
+    Translate(RawArgs),
+    TranslateLowered(RawArgs),
+    LoweringBarriers(RawArgs),
+    RecordCfg(RawArgs),
+    TranslateProject(RawArgs),
+    Sysroot(SysrootArgs),
+}
+
+#[derive(Args)]
+#[command(disable_help_flag = true)]
+struct RawArgs {
+    #[arg(allow_hyphen_values = true, trailing_var_arg = true)]
+    args: Vec<String>,
+}
+
+#[derive(Args)]
+struct SysrootArgs {
+    #[command(subcommand)]
+    action: SysrootAction,
+}
+
+#[derive(Subcommand)]
+enum SysrootAction {
+    Install(SysrootRawArgs),
+    Remove(SysrootRawArgs),
+    Path(SysrootRawArgs),
+    Doctor(SysrootRawArgs),
+}
+
+#[derive(Args)]
+struct SysrootRawArgs {
+    #[arg(allow_hyphen_values = true, trailing_var_arg = true)]
+    args: Vec<String>,
 }
 
 fn main() -> ExitCode {
-    let args: Vec<String> = std::env::args().collect();
-    match args.get(1).map(String::as_str) {
-        Some("emit-cir") => match args.get(2) {
+    let cli = Cli::parse();
+    match cli.command {
+        Command::EmitCir(raw) => match raw.args.first() {
             Some(path) => run(emit_cir(Path::new(path))),
-            None => usage(),
+            None => ExitCode::from(2),
         },
-        Some("emit-slate-ir") => match args[2..].split_last() {
+        Command::EmitSlateIr(raw) => match raw.args.split_last() {
             Some((path, compiler_args)) => run(emit_slate_ir(Path::new(path), compiler_args)),
-            None => usage(),
+            None => ExitCode::from(2),
         },
-        Some("translate") => match args[2..].split_last() {
+        Command::Translate(raw) => match raw.args.split_last() {
             Some((path, clang_args)) => run(translate_with_clang_args(Path::new(path), clang_args)),
-            None => usage(),
+            None => ExitCode::from(2),
         },
-        Some("translate-lowered") => match args[2..].split_last() {
+        Command::TranslateLowered(raw) => match raw.args.split_last() {
             Some((path, compiler_args)) => {
                 run(lowered_rust_with_args(Path::new(path), compiler_args))
             }
-            None => usage(),
+            None => ExitCode::from(2),
         },
-        Some("lowering-barriers") => match args[2..].split_last() {
+        Command::LoweringBarriers(raw) => match raw.args.split_last() {
             Some((path, compiler_args)) => lowering_barriers(Path::new(path), compiler_args),
-            None => usage(),
+            None => ExitCode::from(2),
         },
-        Some("record-cfg") => match args.get(2) {
-            Some(path) => run(record_cfg(Path::new(path), &args[3..])),
-            None => usage(),
+        Command::RecordCfg(raw) => match raw.args.first() {
+            Some(path) => run(record_cfg(Path::new(path), &raw.args[1..])),
+            None => ExitCode::from(2),
         },
-        Some("translate-project") => match args.get(2) {
-            Some(_) => run(translate_project_command(&args[2..])),
-            None => usage(),
+        Command::TranslateProject(raw) => match raw.args.first() {
+            Some(_) => run(translate_project_command(&raw.args)),
+            None => ExitCode::from(2),
         },
-        _ => usage(),
+        Command::Sysroot(args) => match args.action {
+            SysrootAction::Install(raw) => {
+                sysroot::main_result(std::iter::once("install".into()).chain(raw.args))
+            }
+            SysrootAction::Remove(raw) => {
+                sysroot::main_result(std::iter::once("remove".into()).chain(raw.args))
+            }
+            SysrootAction::Path(raw) => {
+                sysroot::main_result(std::iter::once("path".into()).chain(raw.args))
+            }
+            SysrootAction::Doctor(raw) => {
+                sysroot::main_result(std::iter::once("doctor".into()).chain(raw.args))
+            }
+        },
     }
 }
 
