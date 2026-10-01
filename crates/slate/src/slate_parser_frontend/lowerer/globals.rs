@@ -102,12 +102,12 @@ impl FunctionLowerer<'_, '_> {
         let init = match &variable.initializer {
             None => zeroed(),
             Some(value) if tables.is_constant_initializer(value) => self.lower_value(value)?,
-            Some(_) => {
-                return Err(Construct::Global {
+            Some(value) => {
+                return Err(Failure::from(Construct::Global {
                     name: variable.name.clone(),
-                    detail: "non-constant initializer".into(),
-                }
-                .into());
+                    detail: format!("non-constant initializer {}", value.display(false)),
+                })
+                .at(Site::of(&value.node)));
             }
         };
         let Some(&alignment) = tables.over_aligned.get(&variable.id) else {

@@ -29,6 +29,12 @@ impl Site {
         }
     }
 
+    fn contains(&self, other: &Site) -> bool {
+        self.expansion.file == other.expansion.file
+            && (self.expansion.offset..=self.expansion.offset + self.expansion.length)
+                .contains(&other.expansion.offset)
+    }
+
     pub fn spelling(&self, files: &Files) -> Option<String> {
         ((self.spelling.file, self.spelling.offset) != (self.expansion.file, self.expansion.offset))
             .then(|| render_loc(self.spelling, files))
@@ -100,6 +106,13 @@ pub struct Barrier {
     pub function: Option<String>,
     pub construct: Construct,
     pub site: Site,
+    pub context: Vec<Context>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Context {
+    pub site: Site,
+    pub label: String,
 }
 
 #[derive(Debug, Clone, Error)]
@@ -108,6 +121,7 @@ pub struct InvalidIr {
     pub function: Option<String>,
     pub invariant: Invariant,
     pub site: Site,
+    pub context: Vec<Context>,
 }
 
 fn function_prefix(function: &Option<String>) -> String {
@@ -124,14 +138,39 @@ pub(super) enum Kind {
 }
 
 #[derive(Debug, Clone)]
-pub(super) struct Failure {
+pub(super) struct Failure(Box<Failed>);
+
+#[derive(Debug, Clone)]
+struct Failed {
     kind: Kind,
     site: Option<Site>,
+    context: Vec<Context>,
+    used: bool,
 }
 
 impl Failure {
     pub(super) fn at(mut self, site: Site) -> Self {
-        self.site.get_or_insert(site);
+        self.0.site.get_or_insert(site);
+        self
+    }
+
+    pub(super) fn used_at(mut self, site: Site) -> Self {
+        match self.0.site {
+            None => self.0.site = Some(site),
+            Some(inner) if !self.0.used && !site.contains(&inner) => {
+                self.0.used = true;
+                self.0.context.push(Context {
+                    site,
+                    label: "used here".into(),
+                });
+            }
+            Some(_) => {}
+        }
+        self
+    }
+
+    pub(super) fn within(mut self, site: Site, label: String) -> Self {
+        self.0.context.push(Context { site, label });
         self
     }
 
@@ -141,17 +180,22 @@ impl Failure {
         fallback: Site,
     ) -> Result<Barrier, InvalidIr> {
         let function = function.map(str::to_owned);
-        let site = self.site.unwrap_or(fallback);
-        match self.kind {
+        let site = self.0.site.unwrap_or(fallback);
+        let mut context = self.0.context;
+        context.retain(|context| context.site != site);
+        context.dedup();
+        match self.0.kind {
             Kind::Unsupported(construct) => Ok(Barrier {
                 function,
                 construct,
                 site,
+                context,
             }),
             Kind::Invalid(invariant) => Err(InvalidIr {
                 function,
                 invariant,
                 site,
+                context,
             }),
         }
     }
@@ -159,19 +203,23 @@ impl Failure {
 
 impl From<Construct> for Failure {
     fn from(construct: Construct) -> Self {
-        Self {
+        Self(Box::new(Failed {
             kind: Kind::Unsupported(construct),
             site: None,
-        }
+            context: Vec::new(),
+            used: false,
+        }))
     }
 }
 
 impl From<Invariant> for Failure {
     fn from(invariant: Invariant) -> Self {
-        Self {
+        Self(Box::new(Failed {
             kind: Kind::Invalid(invariant),
             site: None,
-        }
+            context: Vec::new(),
+            used: false,
+        }))
     }
 }
 

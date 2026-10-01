@@ -23,7 +23,7 @@ mod values;
 
 use arithmetic::*;
 use calls::*;
-pub use errors::{Barrier, Construct, InvalidIr, Invariant, Site};
+pub use errors::{Barrier, Construct, Context, InvalidIr, Invariant, Site};
 use errors::{Failure, variant_name};
 use f80::*;
 use globals::*;
@@ -282,9 +282,14 @@ impl<'m> ModuleLowerer<'m> {
                     name,
                     ty,
                 }),
-                Err(error) => self
-                    .barriers
-                    .push(error.into_public(None, Site::of(global))?),
+                Err(error) => self.barriers.push(
+                    error
+                        .within(
+                            Site::of(global),
+                            format!("in global `{}`", global.variable.name),
+                        )
+                        .into_public(None, Site::of(global))?,
+                ),
             }
         }
         for function in &module.functions {
@@ -293,9 +298,14 @@ impl<'m> ModuleLowerer<'m> {
             }
             match self.lowerer().lower_extern(function) {
                 Ok(decl) => self.externs.push(decl),
-                Err(error) => self
-                    .barriers
-                    .push(error.into_public(Some(&function.name), Site::of(function))?),
+                Err(error) => self.barriers.push(
+                    error
+                        .within(
+                            Site::of(function),
+                            format!("in declaration of `{}`", function.name),
+                        )
+                        .into_public(Some(&function.name), Site::of(function))?,
+                ),
             }
         }
         Ok(())
@@ -309,9 +319,14 @@ impl<'m> ModuleLowerer<'m> {
             };
             match self.lowerer().lower_function(function, body) {
                 Ok(item) => self.items.push(item),
-                Err(error) => self
-                    .barriers
-                    .push(error.into_public(Some(&function.name), Site::of(function))?),
+                Err(error) => self.barriers.push(
+                    error
+                        .within(
+                            Site::of(function),
+                            format!("in function `{}`", function.name),
+                        )
+                        .into_public(Some(&function.name), Site::of(function))?,
+                ),
             }
         }
         Ok(())

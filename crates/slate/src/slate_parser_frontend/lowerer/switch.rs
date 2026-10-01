@@ -140,10 +140,13 @@ impl FunctionLowerer<'_, '_> {
                     .collect::<Vec<_>>(),
                 id,
             ) {
-                return Err(unsupported_switch("nested case label"));
+                return Err(at_arm(
+                    unsupported_switch("nested case label"),
+                    arm.body.first(),
+                ));
             }
             if !arm.body.last().is_some_and(|last| ends_in_jump(last)) && index + 1 < arms.len() {
-                return Err(unsupported_switch("fallthrough"));
+                return Err(at_arm(unsupported_switch("fallthrough"), arm.body.last()));
             }
         }
         let selector = self.next_temp();
@@ -203,4 +206,14 @@ fn unsupported_switch(detail: &str) -> Failure {
         detail: detail.into(),
     }
     .into()
+}
+
+fn at_arm(
+    failure: Failure,
+    statement: Option<&&slate_parser::ast::Span<ir::Statement>>,
+) -> Failure {
+    match statement {
+        Some(statement) => failure.at(Site::of(*statement)),
+        None => failure,
+    }
 }

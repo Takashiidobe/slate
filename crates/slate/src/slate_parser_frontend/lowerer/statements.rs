@@ -215,7 +215,9 @@ impl FunctionLowerer<'_, '_> {
                 id,
                 discriminant,
                 body,
-            } => self.lower_switch(*id, discriminant, body)?,
+            } => self
+                .lower_switch(*id, discriminant, body)
+                .map_err(|error| error.within(Site::of(statement), "in switch".into()))?,
             ir::Statement::Break(id) => Stmt::Break(Some(break_label(*id))),
             ir::Statement::Continue(id) => Stmt::Break(Some(continue_label(*id))),
             ir::Statement::Null => Stmt::Block(rust::Block::default()),
@@ -244,6 +246,6 @@ impl FunctionLowerer<'_, '_> {
         statement: &slate_parser::ast::Span<ir::Statement>,
     ) -> Result<Stmt> {
         self.lower_statement_node(statement)
-            .map_err(|error| error.at(Site::of(statement)))
+            .map_err(|error| error.used_at(Site::of(statement)))
     }
 }

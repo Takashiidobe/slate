@@ -38,9 +38,8 @@ struct SiteDiagnostic {
     message: String,
     #[source_code]
     code: miette::NamedSource<String>,
-    #[label("{label}")]
-    span: miette::SourceSpan,
-    label: String,
+    #[label(collection)]
+    labels: Vec<miette::LabeledSpan>,
     #[help]
     help: String,
 }
@@ -51,24 +50,54 @@ fn render_site(
     message: String,
     label: &str,
     ir: String,
+    context: &[lowerer::Context],
 ) -> String {
-    let help = match site.spelling(files) {
-        Some(spelling) => format!("{ir}\nspelled at {spelling}"),
-        None => ir,
-    };
+    let mut help = ir;
+    if let Some(spelling) = site.spelling(files) {
+        help.push_str(&format!("\nspelled at {spelling}"));
+    }
+    for context in context
+        .iter()
+        .filter(|context| context.site.expansion.file != site.expansion.file)
+    {
+        help.push_str(&format!(
+            "\n{} at {}",
+            context.label,
+            context.site.render(files)
+        ));
+    }
     let path = files.get_path(site.expansion.file);
     let Some((path, source)) = path.and_then(|path| Some((path, std::fs::read(path).ok()?))) else {
         return format!("{message} at {}\n{help}", site.render(files));
     };
+    let source = String::from_utf8_lossy(&source).into_owned();
+    let first_line = |offset: usize| {
+        let end = source
+            .get(offset..)
+            .and_then(|rest| rest.find('\n'))
+            .unwrap_or(0);
+        miette::SourceSpan::from((offset, end))
+    };
+    let labels = std::iter::once(miette::LabeledSpan::new_primary_with_span(
+        Some(label.to_owned()),
+        (site.expansion.offset, site.expansion.length),
+    ))
+    .chain(
+        context
+            .iter()
+            .filter(|context| context.site.expansion.file == site.expansion.file)
+            .map(|context| {
+                miette::LabeledSpan::new_with_span(
+                    Some(context.label.clone()),
+                    first_line(context.site.expansion.offset),
+                )
+            }),
+    )
+    .collect();
     let diagnostic = SiteDiagnostic {
         message,
-        code: miette::NamedSource::new(
-            path.display().to_string(),
-            String::from_utf8_lossy(&source).into_owned(),
-        )
-        .with_language("C"),
-        span: (site.expansion.offset, site.expansion.length).into(),
-        label: label.to_owned(),
+        code: miette::NamedSource::new(path.display().to_string(), source).with_language("C"),
+        labels,
         help,
     };
     let mut report = String::new();
@@ -115,6 +144,7 @@ pub fn lower_module(
                 ),
                 "broken IR invariant",
                 invalid.invariant.to_string(),
+                &invalid.context,
             ),
             invalid: Box::new(invalid),
         }
@@ -130,6 +160,7 @@ pub fn lower_module(
                 ),
                 &format!("cannot lower {} to Rust", barrier.construct.kind()),
                 barrier.construct.to_string(),
+                &barrier.context,
             ),
             barrier: Box::new(barrier),
         }),

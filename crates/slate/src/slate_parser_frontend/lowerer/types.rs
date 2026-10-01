@@ -81,7 +81,9 @@ impl FunctionLowerer<'_, '_> {
                 Ok(name)
             }
             Err(error) => {
-                let error = error.at(Site::of(tables.types[&id]));
+                let error = error
+                    .at(Site::of(tables.types[&id]))
+                    .within(Site::of(tables.types[&id]), format!("in record `{name}`"));
                 self.dependencies
                     .records
                     .insert(id.0, Record::Failed(error.clone()));
