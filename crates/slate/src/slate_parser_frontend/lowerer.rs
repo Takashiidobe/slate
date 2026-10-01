@@ -1575,6 +1575,28 @@ fn lower_condition(value: &ir::Value, cx: &Context) -> Result<Expr> {
     }
 }
 
+fn byte_pointer_type() -> rust::Type {
+    rust::Type::Ptr {
+        mutable: false,
+        inner: Box::new(rust::Type::Prim(Prim::U8)),
+    }
+}
+
+fn byte_pointer(pointer: &ir::Value, cx: &Context) -> Result<Expr> {
+    let expr = Box::new(lower_value(pointer, cx)?);
+    Ok(match lower_type(cx, &pointer.ty)? {
+        from @ rust::Type::FnPtr { .. } => Expr::Transmute {
+            from,
+            to: byte_pointer_type(),
+            expr,
+        },
+        _ => Expr::Cast {
+            expr,
+            ty: byte_pointer_type(),
+        },
+    })
+}
+
 fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
     Ok(match &value.node.value {
         ValueKind::Constant(number) => lower_number(cx, number, &value.ty)?,
@@ -1863,6 +1885,7 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
             pointer,
             amount,
             subtract,
+            element,
             ..
         } => {
             let offset = Expr::Cast {
@@ -1877,20 +1900,71 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
             } else {
                 offset
             };
-            Expr::Unsafe(Box::new(rust::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(Expr::MethodCall {
-                    recv: Box::new(lower_value(pointer, cx)?),
-                    method: "offset".into(),
-                    args: vec![offset],
+            match element {
+                ir::Type::Void => Expr::Cast {
+                    expr: Box::new(Expr::Unsafe(Box::new(rust::Block {
+                        stmts: Vec::new(),
+                        tail: Some(Box::new(Expr::MethodCall {
+                            recv: Box::new(byte_pointer(pointer, cx)?),
+                            method: "offset".into(),
+                            args: vec![offset],
+                        })),
+                    }))),
+                    ty: lower_type(cx, &value.ty)?,
+                },
+                ir::Type::Function { .. } => Expr::Transmute {
+                    from: byte_pointer_type(),
+                    to: lower_type(cx, &value.ty)?,
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(byte_pointer(pointer, cx)?),
+                        method: "wrapping_offset".into(),
+                        args: vec![offset],
+                    }),
+                },
+                _ => Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::MethodCall {
+                        recv: Box::new(lower_value(pointer, cx)?),
+                        method: "offset".into(),
+                        args: vec![offset],
+                    })),
                 })),
-            }))
+            }
         }
         ValueKind::PointerDifference {
             left,
             right,
-            element,
-        } if !matches!(element, ir::Type::Void | ir::Type::Function { .. }) => Expr::Cast {
+            element: ir::Type::Void,
+        } => Expr::Cast {
+            expr: Box::new(Expr::Unsafe(Box::new(rust::Block {
+                stmts: Vec::new(),
+                tail: Some(Box::new(Expr::MethodCall {
+                    recv: Box::new(byte_pointer(left, cx)?),
+                    method: "offset_from".into(),
+                    args: vec![byte_pointer(right, cx)?],
+                })),
+            }))),
+            ty: lower_type(cx, &value.ty)?,
+        },
+        ValueKind::PointerDifference {
+            left,
+            right,
+            element: ir::Type::Function { .. },
+        } => Expr::Cast {
+            expr: Box::new(Expr::MethodCall {
+                recv: Box::new(Expr::Cast {
+                    expr: Box::new(byte_pointer(left, cx)?),
+                    ty: rust::Type::Prim(Prim::Isize),
+                }),
+                method: "wrapping_sub".into(),
+                args: vec![Expr::Cast {
+                    expr: Box::new(byte_pointer(right, cx)?),
+                    ty: rust::Type::Prim(Prim::Isize),
+                }],
+            }),
+            ty: lower_type(cx, &value.ty)?,
+        },
+        ValueKind::PointerDifference { left, right, .. } => Expr::Cast {
             expr: Box::new(Expr::Unsafe(Box::new(rust::Block {
                 stmts: Vec::new(),
                 tail: Some(Box::new(Expr::MethodCall {
