@@ -642,18 +642,10 @@ impl Drop for ClangInput {
     }
 }
 
-pub fn clang_input(
-    path: &Path,
+pub fn blank_directives(
     raw: &[u8],
     directives: &[&DirectiveRecord],
-) -> Result<ClangInput, PreprocessError> {
-    if directives.is_empty() {
-        return Ok(ClangInput {
-            extra_args: Vec::new(),
-            temp_dir: None,
-        });
-    }
-
+) -> Result<Vec<u8>, PreprocessError> {
     let mut bytes = raw.to_vec();
     let source_len = bytes.len();
     for directive in directives {
@@ -670,7 +662,22 @@ pub fn clang_input(
             }
         }
     }
+    Ok(bytes)
+}
 
+pub fn clang_input(
+    path: &Path,
+    raw: &[u8],
+    directives: &[&DirectiveRecord],
+) -> Result<ClangInput, PreprocessError> {
+    if directives.is_empty() {
+        return Ok(ClangInput {
+            extra_args: Vec::new(),
+            temp_dir: None,
+        });
+    }
+
+    let bytes = blank_directives(raw, directives)?;
     let temp_dir = create_sanitized_temp_dir()?;
     let mut input = ClangInput {
         extra_args: Vec::new(),

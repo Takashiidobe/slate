@@ -616,11 +616,20 @@ impl<'a> Preprocessor<'a> {
         let canon = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
         let src =
             read_source(&canon).map_err(|kind| self.render_error(PPFailure::unlocated(kind)))?;
+        self.parse_file_with_source(path, &src)
+    }
+
+    pub fn parse_file_with_source(
+        &mut self,
+        path: &Path,
+        src: &str,
+    ) -> Result<Vec<PPNode>, PPError> {
+        let canon = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
         let file = self.files.intern(canon.clone(), HeaderKind::User);
         self.main_file = Some(file);
         self.open_stack.push(canon);
         let nodes = self
-            .parse_source(&src, file)
+            .parse_source(src, file)
             .map_err(|failure| self.render_error(failure))?;
         self.open_stack.pop();
         Ok(nodes)
@@ -1285,17 +1294,25 @@ impl<'a> Preprocessor<'a> {
         } else {
             "#error"
         };
-        let message = if directive.arguments.is_empty() {
+        let text = if directive.arguments.is_empty() {
+            String::new()
+        } else {
+            self.spelling(directive.arguments_loc()).to_string()
+        };
+        let message = if text.is_empty() {
             keyword.to_string()
         } else {
-            format!("{keyword} {}", self.spelling(directive.arguments_loc()))
+            format!("{keyword} {text}")
         };
         let error = self.render_error(PPFailure::at(
             directive.loc,
             PPErrorKind::Directive(message),
         ));
-        self.directive_diagnostics
-            .push(DirectiveDiagnostic { severity, error });
+        self.directive_diagnostics.push(DirectiveDiagnostic {
+            severity,
+            text,
+            error,
+        });
     }
 
     fn record_pragma(&mut self, directive: &Directive) {

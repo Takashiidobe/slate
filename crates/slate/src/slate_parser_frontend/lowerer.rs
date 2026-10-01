@@ -108,6 +108,47 @@ pub fn lower(
     Ok(lowerer.assemble())
 }
 
+fn function_rust_name(function: &ir::Function) -> String {
+    if function.name == "main" {
+        "__slate_main".into()
+    } else {
+        function.name.clone()
+    }
+}
+
+pub fn definition_items(module: &ir::Module) -> Vec<(String, slate_parser::ast::Loc)> {
+    let function_names: Vec<_> = module
+        .functions
+        .iter()
+        .map(|function| function_rust_name(function))
+        .collect();
+    let names = global_names(module, function_names.iter().map(String::as_str));
+    let functions = module
+        .functions
+        .iter()
+        .filter(|function| function.body.is_some())
+        .flat_map(|function| {
+            let rust = (
+                format!("fn:{}", function_rust_name(function)),
+                function.expansion,
+            );
+            let wrapper =
+                (function.name == "main").then(|| ("fn:main".to_owned(), function.expansion));
+            std::iter::once(rust).chain(wrapper)
+        });
+    let statics = module
+        .globals
+        .iter()
+        .filter(|global| global.definition)
+        .map(|global| {
+            (
+                format!("static:{}", names[&global.variable.id]),
+                global.expansion,
+            )
+        });
+    functions.chain(statics).collect()
+}
+
 pub fn describe_types(message: &str, module: &ir::Module) -> String {
     let mut out = String::with_capacity(message.len());
     let mut rest = message;
@@ -184,11 +225,7 @@ impl<'m> ModuleLowerer<'m> {
                 (
                     function.value.id,
                     FunctionName {
-                        rust: if function.name == "main" {
-                            "__slate_main".into()
-                        } else {
-                            function.name.clone()
-                        },
+                        rust: function_rust_name(function),
                         is_extern: function.body.is_none(),
                         is_unsafe: function.body.is_none()
                             || matches!(

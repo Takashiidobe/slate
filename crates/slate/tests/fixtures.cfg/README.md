@@ -2,9 +2,10 @@
 
 `slate translate` auto-detects whole-item `#if`/`#ifdef` regions gated
 solely by target/arch/os macros (`__x86_64__`, `__linux__`, `NDEBUG`, ...)
-and expands them into a multi-config build: one clang invocation per branch,
+and expands them into a multi-config build: one slate-parser run per branch,
 merged back behind Rust `#[cfg(...)]` attributes
-(`src/frontend/directive_translate.rs`). Project-defined feature macros are
+(`src/frontend/directive_translate.rs`). `--targets` runs slate-parser once
+per `--target=` and gates divergent items by `target_arch`/`target_os`/`target_env`. Project-defined feature macros are
 explicitly out of scope for this expansion and always fall back to plain
 single-config translation of whichever branch the host's default macro
 state selects. These fixtures are not part of `tests/fixtures/` because the

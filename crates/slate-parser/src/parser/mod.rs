@@ -403,12 +403,11 @@ impl Parser {
     }
 
     pub fn parse_file(&mut self, path: &Path) -> Result<(TranslationUnit, Files), FrontendError> {
-        self.source_name = display_path(path);
-        self.source = std::fs::read(path)
+        let source = std::fs::read(path)
             .map(|bytes| decode_source_bytes(&bytes))
             .map_err(|error| {
                 ParseError::new(
-                    self.source_name.clone(),
+                    display_path(path),
                     "",
                     0,
                     0,
@@ -416,11 +415,24 @@ impl Parser {
                 )
             })
             .map_err(FrontendError::Parse)?;
+        self.parse_file_with_source(path, source)
+    }
+
+    pub fn parse_file_with_source(
+        &mut self,
+        path: &Path,
+        source: String,
+    ) -> Result<(TranslationUnit, Files), FrontendError> {
+        self.source_name = display_path(path);
+        self.source = source;
         let search = self.search.clone();
         let dialect = self.dialect.clone();
         let mut pp = Preprocessor::new(&search, &dialect).map_err(FrontendError::PP)?;
         let mut nodes = self.prepare_preprocessor(&mut pp)?;
-        nodes.extend(pp.parse_file(path).map_err(FrontendError::PP)?);
+        nodes.extend(
+            pp.parse_file_with_source(path, &self.source)
+                .map_err(FrontendError::PP)?,
+        );
         self.files = pp.files.clone();
         self.directive_diagnostics = std::mem::take(&mut pp.directive_diagnostics);
         self.biggest_alignment = resolve_biggest_alignment(&pp.macros, &dialect);

@@ -134,10 +134,7 @@ impl Diagnosable for api::Error {
 
 impl Diagnosable for directive_translate::DirectiveError {
     fn nyi_diagnostic(&self) -> Option<Vec<&str>> {
-        match self {
-            Self::Cir { source, .. } => source.nyi_diagnostic(),
-            _ => None,
-        }
+        None
     }
 }
 
@@ -232,10 +229,6 @@ fn translate_with_clang_args(path: &Path, clang_args: &[String]) -> Result<Strin
         }
     }
     match targets {
-        Some(targets) if selected == api::Frontend::Slate => Err(format!(
-            "slate frontend does not yet support target merging: {}",
-            targets.join(", ")
-        )),
         Some(targets) => cli_report(api::translate_targets_with_args(path, &remaining, &targets)),
         None => cli_report(api::translate_with_frontend_args(
             path, &remaining, selected,

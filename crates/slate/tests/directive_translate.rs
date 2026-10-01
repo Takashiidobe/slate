@@ -83,23 +83,22 @@ fn translate(name: &str) -> String {
     translate_with_clang_args(name, None)
 }
 
-fn translate_with_clang_args(name: &str, clang_args: Option<&str>) -> String {
-    let src = cfg_fixtures_dir().join(name);
+fn translate_command(name: &str, compiler_args: Option<&str>) -> Command {
     let mut command = Command::new(env!("CARGO_BIN_EXE_slate"));
-    command.arg("translate");
+    command.args(["translate", "--frontend=slate"]);
     if let Some(targets) = fixture_targets(name) {
         command.arg(format!("--targets={targets}"));
     }
-    command.arg(&src);
-    match clang_args {
-        Some(args) => {
-            command.env("SLATE_CLANG_ARGS", args);
-        }
-        None => {
-            command.env_remove("SLATE_CLANG_ARGS");
-        }
-    }
-    let out = command.output().expect("run slate translate");
+    command
+        .args(compiler_args.unwrap_or_default().split_whitespace())
+        .arg(cfg_fixtures_dir().join(name));
+    command
+}
+
+fn translate_with_clang_args(name: &str, clang_args: Option<&str>) -> String {
+    let out = translate_command(name, clang_args)
+        .output()
+        .expect("run slate translate");
     assert!(
         out.status.success(),
         "translate failed for {name}:\n{}",
@@ -109,18 +108,9 @@ fn translate_with_clang_args(name: &str, clang_args: Option<&str>) -> String {
 }
 
 fn translate_err_with_clang_args(name: &str, clang_args: Option<&str>) -> String {
-    let src = cfg_fixtures_dir().join(name);
-    let mut command = Command::new(env!("CARGO_BIN_EXE_slate"));
-    command.arg("translate").arg(&src);
-    match clang_args {
-        Some(args) => {
-            command.env("SLATE_CLANG_ARGS", args);
-        }
-        None => {
-            command.env_remove("SLATE_CLANG_ARGS");
-        }
-    }
-    let out = command.output().expect("run slate translate");
+    let out = translate_command(name, clang_args)
+        .output()
+        .expect("run slate translate");
     assert!(
         !out.status.success(),
         "translate unexpectedly succeeded for {name}:\n{}",

@@ -18,6 +18,7 @@ pub struct PPError {
 #[error("{}", .error.message)]
 pub struct DirectiveDiagnostic {
     pub severity: Severity,
+    pub text: String,
     pub error: PPError,
 }
 

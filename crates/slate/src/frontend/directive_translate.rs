@@ -1,11 +1,11 @@
 use super::preprocess::{
     self, Branch, DirectiveDisposition, DirectiveKind, DirectiveName, PredExpr, Preprocessing,
 };
-use super::{self as frontend, c_ast};
 use crate::backend;
 use crate::backend::rust_ast::{Attr, Cfg, Expr, Item, Program, TraitRef, Type};
-use crate::ctx;
+use crate::slate_parser_frontend;
 use rayon::prelude::*;
+use slate_parser::target_info::{TargetEnvironment, TargetFamily, TargetInfo, TargetOs};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use thiserror::Error;
@@ -75,30 +75,15 @@ pub enum DirectiveError {
         #[source]
         source: preprocess::PreprocessError,
     },
-    #[error("load CIR for {path}: {source}")]
-    Cir {
-        path: PathBuf,
-        #[source]
-        source: crate::frontend::cir_input::ModuleError,
-    },
-    #[error("load Clang AST for {path}: {source}")]
-    Ast {
-        path: PathBuf,
-        #[source]
-        source: c_ast::AstError,
-    },
-    #[error("lowering failed for {path}:{diagnostics}")]
-    Lowering {
-        path: PathBuf,
-        diagnostics: ctx::Diagnostics,
-    },
+    #[error(transparent)]
+    Slate(#[from] slate_parser_frontend::Error),
     #[error("format generated Rust: {message}")]
     Format { message: String },
     #[error("resolve target `{target}`: {source}")]
     Target {
         target: String,
         #[source]
-        source: super::toolchain::TargetError,
+        source: slate_parser::target_info::TargetError,
     },
 }
 
@@ -200,14 +185,34 @@ struct TargetVariant {
     program: Program,
 }
 
-fn os_cfg(os: &str) -> Cfg {
-    match os {
-        "windows" => Cfg::Flag("windows".into()),
-        _ => Cfg::Opt {
-            key: "target_os".into(),
-            value: os.into(),
-        },
-    }
+fn target_cfg(target: &TargetInfo) -> Cfg {
+    let opt = |key: &str, value: &str| Cfg::Opt {
+        key: key.into(),
+        value: value.into(),
+    };
+    let arch = match target.family {
+        TargetFamily::X86_64 => "x86_64",
+        TargetFamily::X86 => "x86",
+        TargetFamily::AArch64 => "aarch64",
+        TargetFamily::Arm32 => "arm",
+    };
+    let os = match target.os {
+        TargetOs::Windows => Cfg::Flag("windows".into()),
+        TargetOs::Linux => opt("target_os", "linux"),
+        TargetOs::Darwin => opt("target_os", "macos"),
+        TargetOs::Android => opt("target_os", "android"),
+        TargetOs::FreeBsd => opt("target_os", "freebsd"),
+    };
+    let env = match target.environment {
+        TargetEnvironment::Gnu | TargetEnvironment::GnuEabi | TargetEnvironment::GnuEabiHf => {
+            Some("gnu")
+        }
+        TargetEnvironment::Msvc => Some("msvc"),
+        TargetEnvironment::Darwin | TargetEnvironment::Android | TargetEnvironment::FreeBsd => None,
+    };
+    let mut atoms = vec![opt("target_arch", arch), os];
+    atoms.extend(env.map(|env| opt("target_env", env)));
+    Cfg::All(atoms)
 }
 
 pub fn translate_targets_with_args(
@@ -226,31 +231,15 @@ pub fn translate_targets_with_args(
     let variants: Vec<TargetVariant> = deduped_targets
         .par_iter()
         .map(|target| {
-            let config = super::toolchain::target_config(target).map_err(|source| {
-                DirectiveError::Target {
-                    target: target.clone(),
-                    source,
-                }
+            let info = TargetInfo::for_triple(target).map_err(|source| DirectiveError::Target {
+                target: target.clone(),
+                source,
             })?;
-            let program = super::toolchain::with_target_override(target, || {
-                translate_directives_program_with_args(path, extra_args)
-            })?;
-            let mut atoms = vec![
-                Cfg::Opt {
-                    key: "target_arch".into(),
-                    value: config.arch.into(),
-                },
-                os_cfg(config.os),
-            ];
-            if !config.env.is_empty() {
-                atoms.push(Cfg::Opt {
-                    key: "target_env".into(),
-                    value: config.env.into(),
-                });
-            }
+            let mut args = extra_args.to_vec();
+            args.push(format!("--target={target}"));
             Ok(TargetVariant {
-                cfg: Cfg::All(atoms),
-                program,
+                cfg: target_cfg(&info),
+                program: translate_directives_program_with_args(path, &args)?,
             })
         })
         .collect::<Result<_, DirectiveError>>()?;
@@ -404,7 +393,7 @@ pub fn should_auto_expand(source: &str) -> bool {
 }
 
 fn format_program(program: &Program) -> Result<String, DirectiveError> {
-    backend::format_rust(&program.emit()).map_err(|message| DirectiveError::Format { message })
+    backend::pretty_rust(&program.emit()).map_err(|message| DirectiveError::Format { message })
 }
 
 fn directive_items(pp: &Preprocessing) -> Result<Vec<Item>, DirectiveError> {
@@ -811,7 +800,7 @@ fn line_start_depths(source: &str) -> Vec<i32> {
     depths
 }
 
-fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, DirectiveError> {
+fn translate_one(path: &Path, compiler_args: &[String]) -> Result<Translation, DirectiveError> {
     let (source, raw) = preprocess::read_source(path).map_err(|source| DirectiveError::Read {
         path: path.to_path_buf(),
         source,
@@ -829,53 +818,39 @@ fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, Dire
                     || directive.condition.is_some() && !directive.is_poison_pragma())
         })
         .collect();
-    let input = preprocess::clang_input(path, &raw, &sanitized).map_err(|source| {
-        DirectiveError::Preprocess {
+    let source = (!sanitized.is_empty())
+        .then(|| preprocess::blank_directives(&raw, &sanitized))
+        .transpose()
+        .map_err(|source| DirectiveError::Preprocess {
             path: path.to_path_buf(),
             source,
-        }
-    })?;
-    let mut frontend_args = clang_args.to_vec();
-    frontend_args.extend_from_slice(input.extra_args());
-    let module =
-        crate::frontend::cir_input::emit_module(path, &frontend_args).map_err(|source| {
-            DirectiveError::Cir {
-                path: path.to_path_buf(),
-                source,
-            }
-        })?;
-    let unit = c_ast::parse_file_with_args(path, &frontend_args).map_err(|source| {
-        DirectiveError::Ast {
-            path: path.to_path_buf(),
-            source,
-        }
-    })?;
-    let item_lines = item_lines(&unit);
-
-    let mut ctx = ctx::Ctx::default();
-    let program = frontend::lower(&module, &unit, &mut ctx);
-    if ctx.diagnostics.has_errors() {
-        return Err(DirectiveError::Lowering {
-            path: path.to_path_buf(),
-            diagnostics: ctx.diagnostics,
-        });
-    }
+        })?
+        .map(|bytes| slate_parser::files::decode_source_bytes(&bytes));
+    let (module, files, diagnostics) =
+        slate_parser_frontend::parse_module_with_source(path, source, compiler_args)?;
+    slate_parser_frontend::reject_directive_errors(path, &diagnostics)?;
+    let program = slate_parser_frontend::lower_module(
+        &module,
+        &files,
+        &slate_parser_frontend::lowerer::LowerOptions::default(),
+    )?;
     Ok(Translation {
+        item_lines: item_lines(path, &module, &files),
         program: backend::apply(program),
-        item_lines,
     })
 }
 
-fn item_lines(unit: &c_ast::Unit) -> BTreeMap<String, usize> {
-    let mut lines = BTreeMap::new();
-    for function in &unit.functions {
-        if function.body.is_some()
-            && let Some(loc) = function.loc
-        {
-            lines.insert(format!("fn:{}", function.name), loc.line as usize);
-        }
-    }
-    lines
+fn item_lines(
+    path: &Path,
+    module: &slate_parser::ir::Module,
+    files: &slate_parser::files::Files,
+) -> BTreeMap<String, usize> {
+    let main = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
+    slate_parser_frontend::lowerer::definition_items(module)
+        .into_iter()
+        .filter(|(_, loc)| files.get_path(loc.file) == Some(main.as_path()))
+        .filter_map(|(key, loc)| Some((key, files.position(loc.file, loc.offset)?.0 + 1)))
+        .collect()
 }
 
 fn merge_variants(baseline: &Translation, variants: &[Variant], pp: &Preprocessing) -> Program {

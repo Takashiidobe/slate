@@ -3,6 +3,7 @@ use slate_parser::dialect::Dialect;
 use slate_parser::files::Files;
 use slate_parser::ir::Module;
 use slate_parser::parser::Parser;
+use slate_parser::pp::DirectiveDiagnostic;
 use slate_parser::sema::Sema;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
@@ -179,30 +180,29 @@ pub fn lower_module(
 }
 
 pub fn parse_module_with_args(path: &Path, args: &[String]) -> Result<(Module, Files), Error> {
+    let (module, files, diagnostics) = parse_module_with_source(path, None, args)?;
+    reject_directive_errors(path, &diagnostics)?;
+    Ok((module, files))
+}
+
+pub fn parse_module_with_source(
+    path: &Path,
+    source: Option<String>,
+    args: &[String],
+) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
     let args = CompilerArgParser::parse(args.iter().cloned())?;
     let search = args.search_paths();
     let dialect = Dialect::new(args.flavor, args.standard, args.target, args.options);
     let mut parser =
         Parser::new(search, dialect).with_preprocessor_inputs(args.preprocessor_inputs);
-    let (unit, files) = parser.parse_file(path).map_err(|error| Error::Parse {
+    let (unit, files) = match source {
+        Some(source) => parser.parse_file_with_source(path, source),
+        None => parser.parse_file(path),
+    }
+    .map_err(|error| Error::Parse {
         path: path.to_path_buf(),
         message: error.to_string(),
     })?;
-    let diagnostics: Vec<_> = parser
-        .directive_diagnostics()
-        .iter()
-        .filter(|diagnostic| diagnostic.severity != miette::Severity::Warning)
-        .collect();
-    if !diagnostics.is_empty() {
-        return Err(Error::Analyze {
-            path: path.to_path_buf(),
-            message: diagnostics
-                .iter()
-                .map(ToString::to_string)
-                .collect::<Vec<_>>()
-                .join("\n"),
-        });
-    }
     let mut sema = Sema::new(&unit);
     sema.analyze(&files).map_err(|error| Error::Analyze {
         path: path.to_path_buf(),
@@ -212,5 +212,23 @@ pub fn parse_module_with_args(path: &Path, args: &[String]) -> Result<(Module, F
         path: path.to_path_buf(),
         message: error.to_string(),
     })?;
-    Ok((module, files))
+    Ok((module, files, parser.directive_diagnostics().to_vec()))
+}
+
+pub fn reject_directive_errors(
+    path: &Path,
+    diagnostics: &[DirectiveDiagnostic],
+) -> Result<(), Error> {
+    let errors: Vec<_> = diagnostics
+        .iter()
+        .filter(|diagnostic| diagnostic.severity != miette::Severity::Warning)
+        .map(ToString::to_string)
+        .collect();
+    if errors.is_empty() {
+        return Ok(());
+    }
+    Err(Error::Analyze {
+        path: path.to_path_buf(),
+        message: errors.join("\n"),
+    })
 }

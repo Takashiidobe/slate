@@ -140,19 +140,42 @@ pub fn translate_with_frontend_args(
     selected: Frontend,
 ) -> Result<String, Error> {
     if selected == Frontend::Slate {
-        let program = lowered_slate_program_with_args(path, extra_args)?;
+        let (contents, _raw) = preprocess::read_source(path).map_err(|source| Error::Read {
+            path: path.to_path_buf(),
+            source,
+        })?;
+        if directive_translate::should_auto_expand(&contents) {
+            return directive_translate::translate_directives_with_args(path, extra_args)
+                .map_err(Error::Directive);
+        }
+        let (module, files, diagnostics) =
+            slate_parser_frontend::parse_module_with_source(path, None, extra_args)?;
+        let mut program = slate_parser_frontend::lower_module(
+            &module,
+            &files,
+            &slate_parser_frontend::lowerer::LowerOptions::default(),
+        )?;
+        directive_translate::insert_directive_items(
+            &mut program,
+            diagnostics
+                .iter()
+                .enumerate()
+                .flat_map(|(index, diagnostic)| match diagnostic.severity {
+                    miette::Severity::Warning => directive_translate::warning_items(
+                        &diagnostic.text,
+                        index,
+                        None,
+                        directive_translate::WarningBackend::Standalone,
+                    ),
+                    _ => vec![rust_ast::Item::Macro {
+                        name: "compile_error".into(),
+                        args: vec![rust_ast::Expr::Str(diagnostic.text.clone())],
+                    }],
+                })
+                .collect(),
+        );
         let source = backend::apply(program).emit();
         return backend::pretty_rust(&source).map_err(|message| Error::Format { message });
-    }
-    let (contents, _raw) = preprocess::read_source(path).map_err(|source| Error::Read {
-        path: path.to_path_buf(),
-        source,
-    })?;
-    if frontend::toolchain::target_is_host_default()
-        && directive_translate::should_auto_expand(&contents)
-    {
-        return directive_translate::translate_directives_with_args(path, extra_args)
-            .map_err(Error::Directive);
     }
     let (_, program) = lowered_program_with_args(path, extra_args)?;
     let source = backend::apply(program).emit();
