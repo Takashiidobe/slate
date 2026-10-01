@@ -181,7 +181,8 @@ pub struct BitfieldArguments {
     /// effect on integer-backed bitfields.
     array_heap_no_std: bool,
 
-    /// Whether to force a panic during macro generation.
+    c_names: bool,
+
     force_panic: bool,
 }
 
@@ -266,6 +267,7 @@ impl Default for BitfieldArguments {
             array_heap_no_std: ENABLE_ARRAY_HEAP_NO_STD_FEATURE_ENABLED
                 && !DISABLE_ARRAY_HEAP_NO_STD_FEATURE_ENABLED,
             user_set_generate_write_bit_ops: false,
+            c_names: false,
             force_panic: false,
         }
     }
@@ -351,6 +353,9 @@ enum BitfieldArgumentKey {
 
     #[strum(serialize = "array_heap_no_std")]
     ArrayHeapNoStd,
+
+    #[strum(serialize = "c_names")]
+    CNames,
 
     #[strum(serialize = "force_panic")]
     ForcePanic,
@@ -455,6 +460,9 @@ impl Parse for BitfieldArguments {
                 },
                 BitfieldArgumentKey::Copy => {
                     bitfield_arguments.derive_copy = parse_boolean_attribute_argument(argument)?;
+                },
+                BitfieldArgumentKey::CNames => {
+                    bitfield_arguments.c_names = parse_boolean_attribute_argument(argument)?;
                 },
                 BitfieldArgumentKey::ForcePanic => {
                     bitfield_arguments.force_panic = parse_boolean_attribute_argument(argument)?;

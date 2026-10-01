@@ -10,9 +10,16 @@ pub(super) fn continue_label(id: BindingId) -> rust::Label {
 
 impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_assignment(&mut self, place: &ir::Place, value: Expr) -> Result<Stmt> {
-        let assignment = Stmt::Assign {
-            target: self.lower_place(place)?,
-            value,
+        let assignment = match self.bit_field_accessor(place, "set")? {
+            Some((storage, setter)) => Stmt::Expr(Expr::MethodCall {
+                recv: Box::new(storage),
+                method: setter,
+                args: vec![value],
+            }),
+            None => Stmt::Assign {
+                target: self.lower_place(place)?,
+                value,
+            },
         };
         Ok(if self.tables.place_is_unsafe(place) {
             Stmt::Unsafe {

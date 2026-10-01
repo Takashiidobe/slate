@@ -44,7 +44,8 @@ impl FieldGettersFeature {
                 let visibility_tokens = field.visibility().to_tokens();
                 let documentation = Self::get_getter_documentation(bitfield, field);
                 let function_modifier_tokens = get_function_modifier_tokens(bitfield);
-                let name_tokens = field.name_tokens();
+                let name_tokens = field.getter_ident_tokens();
+                let c_names_allow_tokens = field.c_names_allow_tokens();
                 let field_data_type_tokens = field.spanned_data_type_token().to_tokens();
                 let extract_field_bits_from_source_into_variable_tokens =
                     generate_extract_field_bits_from_source_into_variable_tokens(
@@ -60,6 +61,7 @@ impl FieldGettersFeature {
 
                 quote! {
                     #[doc = #documentation]
+                    #c_names_allow_tokens
                     #visibility_tokens #function_modifier_tokens fn #name_tokens(&self) -> #field_data_type_tokens {
                         let this = self;
                         #extract_field_bits_from_source_into_variable_tokens

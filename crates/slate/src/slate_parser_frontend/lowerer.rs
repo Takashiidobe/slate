@@ -63,6 +63,7 @@ struct Dependencies {
     records: BTreeMap<u32, Record>,
     compound_literals: Vec<Item>,
     address_taken: BTreeSet<String>,
+    bit_units: Vec<Item>,
 }
 
 enum Record {
@@ -367,7 +368,7 @@ impl<'m> ModuleLowerer<'m> {
                 Record::Built(record) => Some(Item::Record(record)),
                 Record::Building | Record::Failed(_) => None,
             });
-        items.splice(0..0, records.chain(wrappers));
+        items.splice(0..0, records.chain(wrappers).chain(dependencies.bit_units));
         items.extend(dependencies.compound_literals);
         for item in &mut items {
             if let Item::Fn(function) = item

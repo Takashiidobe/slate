@@ -60,6 +60,7 @@ impl FieldSettersFeature {
         let field_data_type_tokens = field.spanned_data_type_token().to_tokens();
         let field_setter_ident_tokens = field.setter_ident_tokens();
         let checked_field_setter_ident_tokens = field.checked_setter_ident_tokens();
+        let c_names_allow_tokens = field.c_names_allow_tokens();
         let set_bits_logic_tokens = generate_setting_field_from_variable_tokens(
             bitfield, field, /* use_setter= */ false, /* cast_bits= */ true,
             /* check_bit_size= */ false, /* builder_caller= */ false,
@@ -71,12 +72,14 @@ impl FieldSettersFeature {
 
         quote! {
             #[doc = #setter_documentation]
+            #c_names_allow_tokens
             #visibility_tokens #function_modifier_tokens fn #field_setter_ident_tokens(&mut self, bits: #field_data_type_tokens) {
                 let this = self;
                 #set_bits_logic_tokens
             }
 
             #[doc = #checked_setter_documentation]
+            #c_names_allow_tokens
             #visibility_tokens #function_modifier_tokens fn #checked_field_setter_ident_tokens(&mut self, bits: #field_data_type_tokens) -> ::core::result::Result<(), &'static str> {
                 let this = self;
                 #checked_set_bits_logic_tokens

@@ -52,6 +52,7 @@ impl FieldConstantsFeature {
                 let field_offset = field.offset();
                 let field_bits_constant_ident_tokens = field.bits_constant_ident_tokens();
                 let field_offset_constant_ident_tokens = field.offset_constant_ident_tokens();
+                let c_names_allow_tokens = field.c_names_allow_tokens();
 
                 let (unit, units) = get_field_unit_terms(field);
                 let bits_documentation =
@@ -60,8 +61,10 @@ impl FieldConstantsFeature {
                     format!("The {unit} offset of `{}` in the bitfield.", field.name());
                 quote! {
                     #[doc = #bits_documentation]
+                    #c_names_allow_tokens
                     #visibility_tokens const #field_bits_constant_ident_tokens: u32 = #field_bits;
                     #[doc = #offset_documentation]
+                    #c_names_allow_tokens
                     #visibility_tokens const #field_offset_constant_ident_tokens: u32 = #field_offset;
         }
             })

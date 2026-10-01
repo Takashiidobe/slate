@@ -1,6 +1,7 @@
 use getset::{CloneGetters, Getters};
 use proc_macro2::{Ident, TokenStream};
-use quote::ToTokens;
+use quote::{ToTokens, format_ident};
+use syn::ext::IdentExt;
 
 use crate::parsing::bitfields::bitfield_attribute::bitfield_arguments::BitfieldArguments;
 use crate::parsing::bitfields::bits_attribute::bits_arguments::{BitsArguments, FieldAccess};
@@ -116,11 +117,39 @@ pub struct Field {
     /// The arguments of the field, if any.
     arguments: Option<BitsArguments>,
 
-    /// Indicates if the field is ignored.
     ignored: bool,
+
+    #[getset(skip)]
+    c_names: bool,
 }
 
 impl Field {
+    pub fn with_c_names(mut self, c_names: bool) -> Self {
+        self.c_names = c_names;
+        self
+    }
+
+    pub fn c_name_ident(&self, kind: &str) -> Option<Ident> {
+        self.c_names.then(|| {
+            format_ident!("__{}_{}", kind, self.name_ident.unraw(), span = self.name_ident.span())
+        })
+    }
+
+    pub fn c_names_allow_tokens(&self) -> TokenStream {
+        if self.c_names {
+            quote::quote! { #[allow(non_snake_case, non_upper_case_globals)] }
+        } else {
+            TokenStream::new()
+        }
+    }
+
+    pub fn getter_ident_tokens(&self) -> TokenStream {
+        match self.c_name_ident("get") {
+            Some(ident) => ident.to_token_stream(),
+            None => self.name_tokens(),
+        }
+    }
+
     /// Creates a new `[Field]` instance.
     #[allow(clippy::too_many_arguments)]
     pub fn new(
@@ -146,6 +175,7 @@ impl Field {
             access,
             arguments,
             ignored,
+            c_names: false,
         }
     }
 

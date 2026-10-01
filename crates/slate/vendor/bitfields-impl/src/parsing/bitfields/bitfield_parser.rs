@@ -116,7 +116,8 @@ fn parse_field_helper(
     }
 
     let visibility = get_field_visibility(bitfield_visibility, field_tokens);
-    let reserved = is_reserved_field(field_tokens);
+    let c_names = bitfield_attribute.arguments().c_names();
+    let reserved = !c_names && is_reserved_field(field_tokens);
     let spanned_data_type_token = get_field_data_type_spanned_token(field_tokens)?;
     let bits = get_field_bits(bits_attribute.as_ref(), &spanned_data_type_token)?;
 
@@ -144,8 +145,9 @@ fn parse_field_helper(
         reserved,
         access,
         arguments,
-        /* ignored= */ false,
-    ))
+         false,
+    )
+    .with_c_names(c_names))
 }
 
 fn parse_ignored_field(field_tokens: &syn::Field) -> Field {

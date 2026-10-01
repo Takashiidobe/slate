@@ -1,4 +1,5 @@
 use super::*;
+use slate_parser::target_info::Endian;
 
 impl<'m> Tables<'m> {
     pub(super) fn resolve_type<'a>(&self, mut ty: &'a ir::Type) -> &'a ir::Type
@@ -36,6 +37,25 @@ impl<'m> Tables<'m> {
             } => Some(fields),
             _ => None,
         }
+    }
+
+    pub(super) fn bit_unit_of(&self, ty: &ir::Type, index: usize) -> Option<usize> {
+        let ir::Type::Defined(id) = self.resolve_type(ty) else {
+            return None;
+        };
+        match &self.types.get(id)?.kind {
+            ir::TypeDefinitionKind::Record {
+                fields: Some(fields),
+                layout: Some(layout),
+                ..
+            } if fields.get(index)?.bit_width.is_some() => layout.field_units[index],
+            _ => None,
+        }
+    }
+
+    pub(super) fn has_bit_fields(&self, ty: &ir::Type) -> bool {
+        self.record_fields(ty)
+            .is_some_and(|fields| fields.iter().any(|field| field.bit_width.is_some()))
     }
 
     pub(super) fn is_union(&self, ty: &ir::Type) -> bool {
@@ -85,7 +105,7 @@ impl FunctionLowerer<'_, '_> {
             None => {}
         }
         self.dependencies.records.insert(id.0, Record::Building);
-        match self.build_record(&tables.types[&id].kind, &name) {
+        match self.build_record(id, &tables.types[&id].kind, &name) {
             Ok(record) => {
                 self.dependencies
                     .records
@@ -106,6 +126,7 @@ impl FunctionLowerer<'_, '_> {
 
     pub(super) fn build_record(
         &mut self,
+        id: TypeId,
         kind: &ir::TypeDefinitionKind,
         name: &str,
     ) -> Result<rust::RecordDef> {
@@ -118,50 +139,185 @@ impl FunctionLowerer<'_, '_> {
             return Err(unsupported_record(name, "kind"));
         };
         let is_union = matches!(record_kind, ir::RecordKind::Union);
-        let mut lowered = Vec::new();
-        let mut end = 0u64;
-        let mut align = 1u64;
-        for (index, field) in fields.iter().flatten().enumerate() {
-            let (None, true) = (field.bit_width, field.access.is_plain()) else {
-                return Err(unsupported_record(name, &format!("field {index}")).at(Site::of(field)));
-            };
-            let (field_size, field_align) = self.tables.storage_of(&field.ty).ok_or_else(|| {
-                unsupported_record(name, &format!("layout of {}", field.ty)).at(Site::of(field))
-            })?;
-            let offset = if is_union {
-                0
-            } else {
-                end.next_multiple_of(field_align)
-            };
-            if layout.as_ref().map(|layout| layout.offsets[index]) != Some(offset) {
-                return Err(unsupported_record(name, "layout"));
-            }
-            end = end.max(offset + field_size);
-            align = align.max(field_align);
-            lowered.push(rust::RecordField {
-                comments: Vec::new(),
-                name: field_name(field, index).into(),
-                ty: self
-                    .lower_type(&field.ty)
-                    .map_err(|error| error.at(Site::of(field)))?,
-            });
-        }
-        if let Some(layout) = layout
-            && (layout.align != align || layout.size != end.next_multiple_of(align))
-        {
-            return Err(unsupported_record(name, "layout"));
-        }
-        Ok(rust::RecordDef {
+        let record = |fields, align: Option<u64>| rust::RecordDef {
             comments: Vec::new(),
             vis: rust::Visibility::Private,
             field_vis: rust::Visibility::Private,
             is_union,
             allow_non_camel_case: !is_camel_case(name),
             name: name.to_owned(),
-            fields: lowered,
+            fields,
             packed: None,
-            align: None,
-        })
+            align: align.map(|align| align as u32),
+        };
+        let fields = fields.as_deref().unwrap_or_default();
+        let Some(layout) = layout else {
+            return match fields {
+                [] => Ok(record(Vec::new(), None)),
+                _ => Err(unsupported_record(name, "layout")),
+            };
+        };
+        let mut lowered = Vec::new();
+        let mut end = 0u64;
+        let mut align = 1u64;
+        let mut units = BTreeSet::new();
+        for (index, field) in fields.iter().enumerate() {
+            if !field.access.is_plain() {
+                return Err(unsupported_record(name, &format!("field {index}")).at(Site::of(field)));
+            }
+            let (field_name, ty, offset, size, field_align) = if field.bit_width.is_some() {
+                let Some(unit) = layout.field_units[index] else {
+                    continue;
+                };
+                if !units.insert(unit) {
+                    continue;
+                }
+                let storage = &layout.bit_units[unit];
+                let (ty, unit_align) = self.lower_bit_unit(id, name, fields, layout, unit)?;
+                (
+                    bit_unit_name(unit),
+                    ty,
+                    storage.offset,
+                    storage.size,
+                    unit_align,
+                )
+            } else {
+                let (size, field_align) = self.tables.storage_of(&field.ty).ok_or_else(|| {
+                    unsupported_record(name, &format!("layout of {}", field.ty)).at(Site::of(field))
+                })?;
+                let ty = self
+                    .lower_type(&field.ty)
+                    .map_err(|error| error.at(Site::of(field)))?;
+                (
+                    field_name(field, index),
+                    ty,
+                    layout.offsets[index],
+                    size,
+                    field_align,
+                )
+            };
+            if is_union {
+                if offset != 0 {
+                    return Err(unsupported_record(name, "layout"));
+                }
+            } else {
+                let natural = end.next_multiple_of(field_align);
+                if natural != offset {
+                    if offset < natural || offset % field_align != 0 {
+                        return Err(unsupported_record(name, "layout"));
+                    }
+                    lowered.push(padding_field(lowered.len(), offset - end));
+                }
+            }
+            end = end.max(offset + size);
+            align = align.max(field_align);
+            lowered.push(rust::RecordField {
+                comments: Vec::new(),
+                name: field_name.into(),
+                ty,
+            });
+        }
+        if layout.align < align {
+            return Err(unsupported_record(name, "layout"));
+        }
+        let raised = (layout.align > align).then_some(layout.align);
+        if end.next_multiple_of(layout.align) != layout.size {
+            if layout.size < end || layout.size % layout.align != 0 {
+                return Err(unsupported_record(name, "layout"));
+            }
+            let padding = if is_union {
+                layout.size
+            } else {
+                layout.size - end
+            };
+            lowered.push(padding_field(lowered.len(), padding));
+        }
+        Ok(record(lowered, raised))
+    }
+
+    fn lower_bit_unit(
+        &mut self,
+        id: TypeId,
+        name: &str,
+        fields: &[slate_parser::ast::Span<ir::Field>],
+        layout: &ir::RecordLayout,
+        unit: usize,
+    ) -> Result<(rust::Type, u64)> {
+        if !matches!(self.tables.target.endian, Endian::Little) {
+            return Err(unsupported_record(name, "big-endian bit-fields"));
+        }
+        let storage = &layout.bit_units[unit];
+        let (backing, unit_align) = match storage.size {
+            1 | 2 | 4 | 8 | 16
+                if storage.offset.is_multiple_of(storage.size) && storage.size <= layout.align =>
+            {
+                let prim = match storage.size {
+                    1 => Prim::U8,
+                    2 => Prim::U16,
+                    4 => Prim::U32,
+                    8 => Prim::U64,
+                    _ => Prim::U128,
+                };
+                (rust::Type::Prim(prim), storage.size)
+            }
+            size => (byte_array(size), 1),
+        };
+        let mut members = Vec::new();
+        let mut cursor = 0u64;
+        for (index, field) in fields.iter().enumerate() {
+            if layout.field_units[index] != Some(unit) || field.name.is_none() {
+                continue;
+            }
+            let (Some(width), Some(bit_offset)) = (field.bit_width, layout.bit_offsets[index])
+            else {
+                continue;
+            };
+            let start = bit_offset - storage.offset * 8;
+            push_bit_padding(&mut members, start - cursor);
+            members.push(rust::StructField {
+                attrs: vec![bits_attr(u64::from(width), false)],
+                name: field_name(field, index),
+                ty: self
+                    .lower_type(&field.ty)
+                    .map_err(|error| error.at(Site::of(field)))?,
+            });
+            cursor = start + u64::from(width);
+        }
+        push_bit_padding(&mut members, storage.size * 8 - cursor);
+        let wrapper = format!("__SlateBits{}U{unit}", id.0);
+        let mut args = vec![rust::AttrArg::Type(backing)];
+        args.push(rust::AttrArg::Named(
+            "c_names".into(),
+            Box::new(rust::AttrArg::Bool(true)),
+        ));
+        for feature in [
+            "new",
+            "from_into_bits",
+            "from_traits",
+            "default",
+            "debug",
+            "builder",
+            "bit_ops",
+        ] {
+            args.push(rust::AttrArg::Named(
+                feature.into(),
+                Box::new(rust::AttrArg::Bool(false)),
+            ));
+        }
+        self.dependencies
+            .bit_units
+            .push(Item::Struct(rust::StructDef {
+                attrs: vec![Attr::Call {
+                    path: rust::Path::new(["bitfields", "bitfield"].map(rust::Ident::from)),
+                    args,
+                }],
+                vis: rust::Visibility::Private,
+                field_vis: rust::Visibility::Private,
+                generics: Vec::new(),
+                name: wrapper.clone(),
+                fields: rust::StructFields::Named(members),
+            }));
+        Ok((rust::Type::Custom(wrapper), unit_align))
     }
 
     pub(super) fn lower_type(&mut self, ty: &ir::Type) -> Result<rust::Type> {
@@ -256,6 +412,58 @@ pub(super) fn field_name(field: &ir::Field, index: usize) -> String {
     match &field.name {
         Some(name) => name.as_str().into(),
         None => format!("__slate_anon_{index}"),
+    }
+}
+
+pub(super) fn bit_unit_name(unit: usize) -> String {
+    format!("__slate_bits_{unit}")
+}
+
+fn byte_array(len: u64) -> rust::Type {
+    rust::Type::Array {
+        elem: Box::new(rust::Type::Prim(Prim::U8)),
+        len,
+    }
+}
+
+fn padding_field(position: usize, len: u64) -> rust::RecordField {
+    rust::RecordField {
+        comments: Vec::new(),
+        name: format!("__slate_pad_{position}").into(),
+        ty: byte_array(len),
+    }
+}
+
+fn bits_attr(width: u64, padding: bool) -> Attr {
+    let mut args = vec![rust::AttrArg::UInt(width)];
+    if padding {
+        args.push(rust::AttrArg::Named(
+            "access".into(),
+            Box::new(rust::AttrArg::Type(rust::Type::Custom("na".into()))),
+        ));
+    }
+    Attr::Call {
+        path: rust::Path::new([rust::Ident::from("bits")]),
+        args,
+    }
+}
+
+fn push_bit_padding(members: &mut Vec<rust::StructField>, mut width: u64) {
+    while width > 0 {
+        let chunk = width.min(128);
+        let prim = match chunk {
+            0..=8 => Prim::U8,
+            9..=16 => Prim::U16,
+            17..=32 => Prim::U32,
+            33..=64 => Prim::U64,
+            _ => Prim::U128,
+        };
+        members.push(rust::StructField {
+            attrs: vec![bits_attr(chunk, true)],
+            name: format!("__slate_pad_{}", members.len()),
+            ty: rust::Type::Prim(prim),
+        });
+        width -= chunk;
     }
 }
 

@@ -1,5 +1,35 @@
 use super::*;
 
+fn odd_width(ty: &ir::Type) -> Option<(u32, bool, Prim)> {
+    let ir::Type::Numeric(ir::NumericType::Integer { width, signed, .. }) = *ty else {
+        return None;
+    };
+    let container = match (width, signed) {
+        (8 | 16 | 32 | 64 | 128, _) | (129.., _) | (0, _) => return None,
+        (..8, true) => Prim::I8,
+        (..8, false) => Prim::U8,
+        (..16, true) => Prim::I16,
+        (..16, false) => Prim::U16,
+        (..32, true) => Prim::I32,
+        (..32, false) => Prim::U32,
+        (..64, true) => Prim::I64,
+        (..64, false) => Prim::U64,
+        (_, true) => Prim::I128,
+        (_, false) => Prim::U128,
+    };
+    Some((width, signed, container))
+}
+
+fn prim_width(prim: Prim) -> u32 {
+    match prim {
+        Prim::I8 | Prim::U8 => 8,
+        Prim::I16 | Prim::U16 => 16,
+        Prim::I32 | Prim::U32 => 32,
+        Prim::I64 | Prim::U64 => 64,
+        _ => 128,
+    }
+}
+
 pub(super) fn zeroed() -> Expr {
     Expr::Unsafe(Box::new(rust::Block {
         stmts: Vec::new(),
@@ -113,7 +143,14 @@ impl FunctionLowerer<'_, '_> {
                 place,
                 ordering: None,
             } => {
-                let lowered = self.lower_place(place)?;
+                let lowered = match self.bit_field_accessor(place, "get")? {
+                    Some((storage, getter)) => Expr::MethodCall {
+                        recv: Box::new(storage),
+                        method: getter,
+                        args: Vec::new(),
+                    },
+                    None => self.lower_place(place)?,
+                };
                 let lowered = if matches!(value.ty, ir::Type::VaList) {
                     clone_va_list(lowered)
                 } else {
@@ -153,10 +190,49 @@ impl FunctionLowerer<'_, '_> {
                 self.lower_long_double_conversion(operand, &value.ty)?
             }
             ValueKind::Convert { operand, .. } => {
-                let from = self.lower_type(&operand.ty)?;
-                let to = self.lower_type(&value.ty)?;
+                let from = match odd_width(self.tables.resolve_type(&operand.ty)) {
+                    Some((_, _, container)) => rust::Type::Prim(container),
+                    None => self.lower_type(&operand.ty)?,
+                };
                 let expr = Box::new(self.lower_value(operand)?);
-                convert_function_pointer(from, to, expr)
+                let Some((width, signed, container)) =
+                    odd_width(self.tables.resolve_type(&value.ty))
+                else {
+                    return Ok(convert_function_pointer(
+                        from,
+                        self.lower_type(&value.ty)?,
+                        expr,
+                    ));
+                };
+                let contained = Expr::Cast {
+                    expr,
+                    ty: rust::Type::Prim(container),
+                };
+                if signed {
+                    let shift = Box::new(Expr::Value(rust::RustValue::I64(i64::from(
+                        prim_width(container) - width,
+                    ))));
+                    Expr::Binary {
+                        op: BinOp::Shr,
+                        lhs: Box::new(Expr::Binary {
+                            op: BinOp::Shl,
+                            lhs: Box::new(contained),
+                            rhs: shift.clone(),
+                        }),
+                        rhs: shift,
+                    }
+                } else {
+                    Expr::Binary {
+                        op: BinOp::BitAnd,
+                        lhs: Box::new(contained),
+                        rhs: Box::new(Expr::Cast {
+                            expr: Box::new(Expr::Value(rust::RustValue::U128(
+                                (1u128 << width) - 1,
+                            ))),
+                            ty: rust::Type::Prim(container),
+                        }),
+                    }
+                }
             }
             ValueKind::ArrayDecay { place, .. } => {
                 let bytes = match place.kind {
@@ -467,7 +543,7 @@ impl FunctionLowerer<'_, '_> {
                 .map(|field| field_name(field, index))
                 .ok_or_else(unsupported)
         };
-        let complete = !zero_fill && !self.tables.is_union(ty) && members.iter().enumerate().all(|(position, member)| {
+        let complete = !zero_fill && !self.tables.is_union(ty) && !self.tables.has_bit_fields(ty) && members.iter().enumerate().all(|(position, member)| {
             matches!(
                 (&member.target, fields),
                 (ir::AggregateTarget::Field(index), Some(_)) if *index == position
@@ -502,6 +578,29 @@ impl FunctionLowerer<'_, '_> {
             init: Some(zeroed()),
         }];
         for member in members {
+            if let ir::AggregateTarget::Field(index) = member.target
+                && let Some(unit) = self.tables.bit_unit_of(ty, index)
+            {
+                let setter = Stmt::Expr(Expr::MethodCall {
+                    recv: Box::new(Expr::Field {
+                        base: Box::new(Expr::Var(target.as_str().into())),
+                        field: bit_unit_name(unit),
+                    }),
+                    method: format!("__set_{}", field_name(index)?),
+                    args: vec![self.lower_value(&member.value)?],
+                });
+                stmts.push(if self.tables.is_union(ty) {
+                    Stmt::Unsafe {
+                        body: rust::Block {
+                            stmts: vec![setter],
+                            tail: None,
+                        },
+                    }
+                } else {
+                    setter
+                });
+                continue;
+            }
             let place = match member.target {
                 ir::AggregateTarget::Field(index) => Expr::Field {
                     base: Box::new(Expr::Var(target.as_str().into())),

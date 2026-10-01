@@ -74,6 +74,50 @@ impl FunctionLowerer<'_, '_> {
         }
     }
 
+    pub(super) fn bit_field_accessor(
+        &mut self,
+        place: &ir::Place,
+        kind: &str,
+    ) -> Result<Option<(Expr, String)>> {
+        let PlaceKind::Field {
+            ref base,
+            index,
+            bits: Some(ref bits),
+        } = place.kind
+        else {
+            return Ok(None);
+        };
+        let field = self
+            .tables
+            .record_fields(&base.ty)
+            .and_then(|fields| fields.get(index))
+            .ok_or_else(|| {
+                Failure::from(Construct::Place {
+                    ir: place.to_string(),
+                })
+            })?;
+        self.lower_type(&base.ty)?;
+        let storage = Expr::Field {
+            base: Box::new(self.lower_place(base)?),
+            field: bit_unit_name(bits.unit),
+        };
+        let storage = if self.tables.place_is_static(base) {
+            Expr::Unary {
+                op: rust::UnaryOp::Deref,
+                expr: Box::new(Expr::AddrOf {
+                    mutable: kind == "set",
+                    expr: Box::new(storage),
+                }),
+            }
+        } else {
+            storage
+        };
+        Ok(Some((
+            storage,
+            format!("__{kind}_{}", field_name(field, index)),
+        )))
+    }
+
     fn lower_compound_literal(
         &mut self,
         object: BindingId,
