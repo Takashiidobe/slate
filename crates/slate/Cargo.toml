@@ -20,6 +20,8 @@ unicode-ident = "1"
 rayon = "1.12"
 clang-ir = { path = "../../../clang-ir/clang-ir" }
 slate-parser = { path = "../slate-parser" }
+prettyplease = "0.3"
+syn = { version = "3", default-features = false, features = ["full", "parsing"] }
 
 [lints.clippy]
 large_enum_variant = "allow"

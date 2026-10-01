@@ -708,14 +708,18 @@ fn write_aligned_support(crate_dir: &Path) -> Result<(), String> {
             aligned_dir.join("LICENSE-APACHE"),
             include_str!("../vendor/aligned/LICENSE-APACHE"),
         ),
+        (
+            src_dir.join("lib.rs"),
+            include_str!("../vendor/aligned/src/lib.rs"),
+        ),
     ] {
-        std::fs::write(&path, contents).map_err(|e| format!("write {}: {e}", path.display()))?;
+        write_file(&path, contents)?;
     }
-    backend::write_rust(
-        &src_dir.join("lib.rs"),
-        include_str!("../vendor/aligned/src/lib.rs"),
-    )?;
     Ok(())
+}
+
+fn write_file(path: &Path, contents: &str) -> Result<(), String> {
+    std::fs::write(path, contents).map_err(|e| format!("write {}: {e}", path.display()))
 }
 
 fn write_bitint_support(crate_dir: &Path) -> Result<(), String> {
@@ -725,7 +729,7 @@ fn write_bitint_support(crate_dir: &Path) -> Result<(), String> {
     let manifest = bitint_dir.join("Cargo.toml");
     std::fs::write(&manifest, include_str!("../vendor/bitint/Cargo.toml"))
         .map_err(|e| format!("write {}: {e}", manifest.display()))?;
-    backend::write_rust(
+    write_file(
         &src_dir.join("lib.rs"),
         include_str!("../vendor/bitint/src/lib.rs"),
     )?;
@@ -765,7 +769,7 @@ fn write_num_complex_support(crate_dir: &Path) -> Result<(), String> {
         ),
         ("pow.rs", include_str!("../vendor/num-complex/src/pow.rs")),
     ] {
-        backend::write_rust(&src_dir.join(source), contents)?;
+        write_file(&src_dir.join(source), contents)?;
     }
     Ok(())
 }
@@ -786,7 +790,7 @@ proc-macro = true
 "#,
     )
     .map_err(|e| format!("write {}: {e}", support_dir.join("Cargo.toml").display()))?;
-    backend::write_rust(
+    write_file(
         &src_dir.join("lib.rs"),
         r#"#![feature(proc_macro_diagnostic, proc_macro_value)]
 
@@ -814,7 +818,7 @@ pub fn warning(input: TokenStream) -> TokenStream {
 }
 
 fn write_c_shims(crate_dir: &Path, shims: &[rust_ast::ExternFnDecl]) -> Result<(), String> {
-    backend::write_rust(
+    write_file(
         &crate_dir.join("build.rs"),
         r#"fn main() {
     println!("cargo:rerun-if-changed=src/slate_shims.c");
@@ -1598,7 +1602,6 @@ fn translate_slate_project(crate_dir: &Path, database_paths: &[PathBuf]) -> Resu
         .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
     let mut cargo_features = BTreeSet::new();
     let mut shim_names = BTreeSet::new();
-    let mut written = Vec::new();
     let children: Vec<rust_ast::Item> = programs
         .iter()
         .filter(|(stem, _)| *stem != root)
@@ -1606,6 +1609,7 @@ fn translate_slate_project(crate_dir: &Path, database_paths: &[PathBuf]) -> Resu
             name: rust_ast::Ident::new(stem.as_str()),
         })
         .collect();
+    let mut outputs = Vec::new();
     for (stem, mut program) in programs {
         program.cargo_features(&mut cargo_features);
         shim_names.extend(
@@ -1620,13 +1624,21 @@ fn translate_slate_project(crate_dir: &Path, database_paths: &[PathBuf]) -> Resu
         } else {
             stem
         };
-        let output = crate_src.join(file).with_extension("rs");
-        backend::write_rust(&output, &program.emit())?;
-        written.push(output);
+        outputs.push((crate_src.join(file).with_extension("rs"), program));
     }
+    let results: Vec<Result<PathBuf, String>> = slate_worker_pool()?.install(|| {
+        outputs
+            .into_par_iter()
+            .map(|(output, program)| {
+                backend::write_pretty_rust(&output, &program.emit())?;
+                Ok(output)
+            })
+            .collect()
+    });
+    let mut written = collect_all_errors(results)?;
     let has_shims = !shim_names.is_empty();
     if has_shims {
-        backend::write_rust(
+        write_file(
             &crate_dir.join("build.rs"),
             r#"fn main() {
     println!("cargo:rerun-if-changed=src/slate_long_double.c");
@@ -1748,11 +1760,14 @@ fn lowered_rust_with_args(path: &Path, args: &[String]) -> Result<String, String
     if selected == api::Frontend::Cir && compiler_args.is_empty() {
         return lowered_rust(path);
     }
-    let program = match selected {
-        api::Frontend::Cir => cli_report(api::lowered_program_with_args(path, &compiler_args))?.1,
-        api::Frontend::Slate => {
-            cli_report(api::lowered_slate_program_with_args(path, &compiler_args))?
+    match selected {
+        api::Frontend::Cir => {
+            let program = cli_report(api::lowered_program_with_args(path, &compiler_args))?.1;
+            backend::format_rust(&program.emit())
         }
-    };
-    backend::format_rust(&program.emit())
+        api::Frontend::Slate => {
+            let program = cli_report(api::lowered_slate_program_with_args(path, &compiler_args))?;
+            backend::pretty_rust(&program.emit())
+        }
+    }
 }

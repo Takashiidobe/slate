@@ -32,3 +32,15 @@ pub fn write_rust(path: &Path, source: &str) -> Result<(), String> {
     let formatted = format_rust(source)?;
     std::fs::write(path, formatted).map_err(|error| format!("write {}: {error}", path.display()))
 }
+
+pub fn pretty_rust(source: &str) -> Result<String, String> {
+    match syn::parse_file(source) {
+        Ok(file) => Ok(prettyplease::unparse(&file)),
+        Err(_) => format_rust(source),
+    }
+}
+
+pub fn write_pretty_rust(path: &Path, source: &str) -> Result<(), String> {
+    let formatted = pretty_rust(source)?;
+    std::fs::write(path, formatted).map_err(|error| format!("write {}: {error}", path.display()))
+}

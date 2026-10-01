@@ -13,7 +13,7 @@ pub mod rust_ast;
 
 use crate::backend::rust_ast::Program;
 
-pub use format::{format_rust, write_rust};
+pub use format::{format_rust, pretty_rust, write_pretty_rust, write_rust};
 
 /// Applies the backend rewrite pipeline to a generated Rust program.
 pub fn apply(program: Program) -> Program {

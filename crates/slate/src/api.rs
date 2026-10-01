@@ -142,7 +142,7 @@ pub fn translate_with_frontend_args(
     if selected == Frontend::Slate {
         let program = lowered_slate_program_with_args(path, extra_args)?;
         let source = backend::apply(program).emit();
-        return backend::format_rust(&source).map_err(|message| Error::Format { message });
+        return backend::pretty_rust(&source).map_err(|message| Error::Format { message });
     }
     let (contents, _raw) = preprocess::read_source(path).map_err(|source| Error::Read {
         path: path.to_path_buf(),

@@ -1353,6 +1353,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "439ee305def115ba05938db6eb1644ff94165c5ab5e9420d1c1bcedbba909391"
 
 [[package]]
+name = "prettyplease"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2bfe0f4c752e450fc2faf62654f1c134747922825d5b04ca717b8874f41a40c0"
+dependencies = [
+ "proc-macro2",
+ "syn 3.0.6",
+]
+
+[[package]]
 name = "proc-macro2"
 version = "1.0.107"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1785,6 +1795,7 @@ dependencies = [
  "miette",
  "mimalloc",
  "ordered-float",
+ "prettyplease",
  "rayon",
  "rustc_apfloat",
  "serde",
@@ -1792,6 +1803,7 @@ dependencies = [
  "serde_stacker",
  "shlex",
  "slate-parser",
+ "syn 3.0.6",
  "thiserror",
  "triplers",
  "unicode-ident",

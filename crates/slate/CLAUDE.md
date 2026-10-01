@@ -45,7 +45,7 @@ profile.
 | `SLATE_SYSROOTS` | `~/.local/share/slate/sysroots`      | slate-parser reads target headers from `<dir>/<triple>`       |
 | `SLATE_CLANG`    | `~/llvm-project/build-cir/bin/clang` | compiles the C side of differential tests (the oracle)        |
 | `SLATE_CARGO`    | `cargo`                              | compiles the generated Rust                                   |
-| `SLATE_RUSTFMT`  | `rustfmt`                            | formats generated Rust                                        |
+| `SLATE_RUSTFMT`  | `rustfmt`                            | formats CIR output; slate output uses prettyplease (rustfmt only if syn rejects it) |
 
 Install a sysroot with `cargo run -p slate-sysroots -- install <triple>`.
 
