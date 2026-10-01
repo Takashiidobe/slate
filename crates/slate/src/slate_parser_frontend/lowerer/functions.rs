@@ -21,7 +21,9 @@ impl FunctionLowerer<'_, '_> {
                     Ok(FnParam {
                         name: binding_name(parameter.value.id, &self.tables.bindings),
                         mutable: false,
-                        ty: self.lower_type(&parameter.ty)?,
+                        ty: self
+                            .lower_type(&parameter.ty)
+                            .map_err(|e| e.used_at(Site::of(parameter)))?,
                     })
                 })
                 .collect::<Result<Vec<_>>>()?,
@@ -53,7 +55,9 @@ impl FunctionLowerer<'_, '_> {
                 Ok(FnParam {
                     name: binding_name(param.value.id, &self.tables.bindings),
                     mutable: true,
-                    ty: self.lower_type(&param.ty)?,
+                    ty: self
+                        .lower_type(&param.ty)
+                        .map_err(|e| e.used_at(Site::of(param)))?,
                 })
             })
             .collect::<Result<Vec<_>>>()?;
