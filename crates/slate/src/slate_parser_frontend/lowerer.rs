@@ -11,6 +11,7 @@ type Result<T> = std::result::Result<T, super::Error>;
 struct FunctionName {
     rust: String,
     is_extern: bool,
+    is_unsafe: bool,
 }
 
 struct Context<'a> {
@@ -183,6 +184,11 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
                         function.name.clone()
                     },
                     is_extern: function.body.is_none(),
+                    is_unsafe: function.body.is_none()
+                        || matches!(
+                            function.parameters,
+                            ir::Parameters::Prototype { variadic: true, .. }
+                        ),
                 },
             )
         })
@@ -427,13 +433,7 @@ fn lower_function(
             function.name
         )));
     };
-    if *variadic {
-        return Err(super::Error::Unsupported(format!(
-            "variadic definition {}",
-            function.name
-        )));
-    }
-    let params = fixed
+    let mut params = fixed
         .iter()
         .map(|param| {
             Ok(FnParam {
@@ -443,6 +443,13 @@ fn lower_function(
             })
         })
         .collect::<Result<Vec<_>>>()?;
+    if *variadic {
+        params.push(FnParam {
+            name: VA_ARGS.into(),
+            mutable: true,
+            ty: rust::Type::Variadic,
+        });
+    }
     let mut statements = body
         .iter()
         .map(|statement| lower_statement(statement, cx))
@@ -460,8 +467,8 @@ fn lower_function(
     Ok(Item::Fn(FnDef {
         attrs: Vec::new(),
         vis: rust::Visibility::Private,
-        unsafe_: false,
-        abi: None,
+        unsafe_: *variadic,
+        abi: variadic.then_some(rust::Abi::CUnwind),
         name: cx.names[&function.id].rust.clone(),
         params,
         ret: function
@@ -1628,7 +1635,7 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
                 binding: CallBinding::unknown(),
             };
             let unsafe_call = match callee {
-                ir::Callee::Direct(id) => cx.names.get(id).is_some_and(|name| name.is_extern),
+                ir::Callee::Direct(id) => cx.names.get(id).is_some_and(|name| name.is_unsafe),
                 ir::Callee::Indirect(_) => true,
             };
             if unsafe_call {
