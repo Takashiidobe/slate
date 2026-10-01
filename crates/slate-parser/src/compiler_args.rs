@@ -172,6 +172,7 @@ struct ParsedCompilerArgs {
     ms_compatibility: Option<bool>,
     long_double: Option<LongDoubleFormat>,
     asm_dialect: Option<AsmDialect>,
+    optimization: Option<Optimization>,
     isa: IsaRequest,
     diagnostics: DiagnosticOptions,
     present: BTreeSet<Opt>,
@@ -214,6 +215,14 @@ enum Opt {
     SveVectorBits,
     Warning,
     Pedantic,
+    Optimize,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Optimization {
+    None,
+    Speed,
+    Size,
 }
 
 impl std::fmt::Display for Opt {
@@ -254,6 +263,7 @@ impl std::fmt::Display for Opt {
             Self::SveVectorBits => "msve-vector-bits",
             Self::Warning => "W",
             Self::Pedantic => "pedantic",
+            Self::Optimize => "O",
         };
         formatter.write_str(name)
     }
@@ -572,6 +582,15 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if let Some(name) = argument.strip_prefix("-W") {
             parsed.present.insert(Opt::Warning);
             apply_warning_flag(name, &mut parsed.diagnostics);
+        } else if let Some(level) = argument.strip_prefix("-O") {
+            parsed.present.insert(Opt::Optimize);
+            parsed.optimization = Some(match level {
+                "0" => Optimization::None,
+                "" | "1" | "2" | "3" | "g" => Optimization::Speed,
+                "s" | "z" => Optimization::Size,
+                "fast" => return Err(invalid(argument, "fast-math is not emulated")),
+                _ => return Err(invalid(argument, "unknown optimization level")),
+            });
         } else if let Some(format) = long_double_flag(argument) {
             parsed.present.insert(Opt::LongDouble);
             parsed.long_double = Some(format);
@@ -581,6 +600,21 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         index += 1;
     }
     parsed.signed_overflow = signed_overflow(parsed.flavor, arguments);
+    let optimization_macros = match parsed.optimization {
+        None | Some(Optimization::None) => Vec::new(),
+        Some(Optimization::Speed) => vec!["__OPTIMIZE__"],
+        Some(Optimization::Size) => vec!["__OPTIMIZE__", "__OPTIMIZE_SIZE__"],
+    };
+    if !optimization_macros.is_empty() {
+        parsed.preprocessor_inputs.macros.splice(
+            0..0,
+            std::iter::once(MacroOption::Undef("__NO_INLINE__".into())).chain(
+                optimization_macros
+                    .into_iter()
+                    .map(|name| MacroOption::Define(name.into())),
+            ),
+        );
+    }
     Ok(parsed)
 }
 
@@ -838,7 +872,7 @@ fn clang_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
 }
 
 fn msvc_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
-    const UNSUPPORTED: [Opt; 19] = [
+    const UNSUPPORTED: [Opt; 20] = [
         Opt::Gnu89Inline,
         Opt::Common,
         Opt::MsExtensions,
@@ -858,6 +892,7 @@ fn msvc_rules<'a>() -> Rule<'a, ParsedCompilerArgs> {
         Opt::Fpu,
         Opt::Thumb,
         Opt::SveVectorBits,
+        Opt::Optimize,
     ];
     Rule::validate(
         "MSVC stack alignment options",

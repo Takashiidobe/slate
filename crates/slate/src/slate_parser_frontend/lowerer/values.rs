@@ -152,10 +152,12 @@ impl FunctionLowerer<'_, '_> {
             {
                 self.lower_long_double_conversion(operand, &value.ty)?
             }
-            ValueKind::Convert { operand, .. } => Expr::Cast {
-                expr: Box::new(self.lower_value(operand)?),
-                ty: self.lower_type(&value.ty)?,
-            },
+            ValueKind::Convert { operand, .. } => {
+                let from = self.lower_type(&operand.ty)?;
+                let to = self.lower_type(&value.ty)?;
+                let expr = Box::new(self.lower_value(operand)?);
+                convert_function_pointer(from, to, expr)
+            }
             ValueKind::ArrayDecay { place, .. } => {
                 let bytes = match place.kind {
                     PlaceKind::Binding(id) => self.tables.strings.get(&id),

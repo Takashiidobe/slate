@@ -34,6 +34,7 @@ each stage is in [configuration-threading](configuration-threading.md).
 | `-D` / `-U` / `-include` / `-imacros` | gcc/clang | [compiler-arg-rules](compiler-arg-rules.md) |
 | `-I` / `-iquote` / `-isystem` / `-idirafter` / `-nostdlibinc` / `-isysroot` / `--sysroot` | gcc/clang | include search |
 | `-std=` | gcc/clang | `LanguageStandard` → `StandardFeatures`, `__STDC_VERSION__` |
+| `-O` / `-O0`..`-O3` / `-Os` / `-Oz` / `-Og` | gcc, clang | predefines only; the last one wins. Above `-O0`: undefines `__NO_INLINE__`, defines `__OPTIMIZE__`, and `-Os`/`-Oz` also define `__OPTIMIZE_SIZE__`. `-Ofast` is rejected (fast-math is not emulated); msvc rejects all |
 | `-target` | clang | selects `TargetSpec` ([adding-a-target](adding-a-target.md)) |
 | `-fwrapv` / `-ftrapv` / `-fstrict-overflow` (and `-fno-`) | gcc, clang | signed `overflow=wrap\|trap\|ub`. gcc: the last active one wins. clang: an active `-ftrapv` beats `-fwrapv` |
 | `-frounding-math` | gcc, clang | `rounding=environment`; gcc also defines `__ROUNDING_MATH__` |

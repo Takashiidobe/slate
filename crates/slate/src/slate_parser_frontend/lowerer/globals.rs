@@ -37,7 +37,10 @@ impl Tables<'_> {
 
     pub(super) fn is_constant_initializer(&self, value: &ir::Value) -> bool {
         match &value.node.value {
-            ValueKind::Constant(_) | ValueKind::CodeUnits(_) | ValueKind::Null => true,
+            ValueKind::Constant(_)
+            | ValueKind::CodeUnits(_)
+            | ValueKind::Null
+            | ValueKind::FunctionDecay { .. } => true,
             ValueKind::ArrayDecay { place, .. } | ValueKind::AddressOf(place) => {
                 self.is_constant_address(place)
             }
@@ -55,6 +58,14 @@ impl Tables<'_> {
             ValueKind::Aggregate { members, .. } => members
                 .iter()
                 .all(|member| self.is_constant_initializer(&member.value)),
+            ValueKind::Unary { operand, .. } => {
+                !self.is_long_double(&value.ty) && self.is_constant_initializer(operand)
+            }
+            ValueKind::Arith { left, right, .. } => {
+                !self.is_long_double(&value.ty)
+                    && self.is_constant_initializer(left)
+                    && self.is_constant_initializer(right)
+            }
             _ => false,
         }
     }

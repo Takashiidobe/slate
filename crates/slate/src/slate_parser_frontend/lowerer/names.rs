@@ -15,8 +15,9 @@ pub(super) fn rust_binding_name(name: &str) -> String {
 }
 
 pub(super) fn local_binding_name(name: &str, id: BindingId, statics: &HashSet<String>) -> String {
+    const PRELUDE_VARIANTS: &[&str] = &["Some", "None", "Ok", "Err"];
     let name = rust_binding_name(name);
-    if statics.contains(&name) {
+    if statics.contains(&name) || PRELUDE_VARIANTS.contains(&name.as_str()) {
         format!("{}_{}", name.trim_start_matches("r#"), id.0)
     } else {
         name

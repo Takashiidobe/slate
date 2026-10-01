@@ -10,8 +10,14 @@ static const char *describe(int code) {
   return Err;
 }
 
+static int pick(int Ok, int None) {
+  int Some = Ok + None;
+  return Some * 2;
+}
+
 int main(void) {
   printf("%s\n", describe(0));
   printf("%s\n", describe(1));
+  printf("%d\n", pick(3, 4));
   return 0;
 }

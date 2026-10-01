@@ -69,3 +69,36 @@ after its missing headers are supplied. `c23_language.c` also uses
 `nullptr_t` (`slate-parser-dyd.51`) after auto inference. The sysroot and
 independent C oracle need aligned target headers and runtime libraries;
 `slate-p58o.1.5` tracks that integration.
+
+## Phase 3 close-out (2026-10-01)
+
+The inventory tool was retired when the triage reports landed; use
+`fixtures_unsupported_triage_report` for current first barriers. This section
+records the `slate-p58o.3.24` audit against the TSV above.
+
+- All 113 fixtures routed to `slate-p58o.3.24` now pass and live in
+  `tests/fixtures/`. The last five (`enum_return_type_function_pointer_field`,
+  `pointer_to_function_pointer_field`, `function_pointer_to_void_ptr_cast`,
+  `local_named_err`, `ptr_param_field_addr_of_mut`) were fixed in this audit.
+- 172 host fixtures remain in `tests/fixtures.unsupported/`. 132 are TSV rows
+  owned by `slate-p58o.4`; 40 were added after the snapshot.
+- The 40 post-snapshot fixtures are Phase 4 by family: inline/basic/goto asm
+  and register operands, x86 SIMD intrinsics and vector builtins, GNU builtin
+  and attribute surveys, `_BitInt`, zero-width bit-field ABI, and
+  `printf_specifier_survey` (`slate-p58o.4.6`). `gnu_language` is a parser
+  failure.
+- The name-based route sent seven common-semantics fixtures to Phase 4. They
+  are rerouted to Phase 3 children:
+
+| Gap | Fixtures | Ticket |
+| --- | --- | --- |
+| switch fallthrough | `switch_fallthrough`, `switch_default_first_fallthrough`, `switch_default_middle_fallthrough` | `slate-p58o.3.41` |
+| compound literals | `compound_literal_address` | `slate-p58o.3.42` |
+| pointers to extern C functions | `fn_ptr_cmp_libc`, `libc_address_taken_safe_callback` | `slate-p58o.3.43` |
+| anonymous members | `anonymous_members` | `slate-p58o.3.44` |
+
+The remaining Phase 4 rows were spot-checked by first barrier: atomics,
+volatile and `_Atomic` globals, bit-fields, packed/aligned records, complex,
+VLAs, `goto`, GNU case ranges and statement-expression labels, constructors
+and destructors, aliases and weakrefs, thread-locals, varargs forwarding,
+long double and `_Float128`, FILE-based stdio, and builtins that do not link.

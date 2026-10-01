@@ -7,6 +7,29 @@ pub(super) fn byte_pointer_type() -> rust::Type {
     }
 }
 
+pub(super) fn convert_function_pointer(from: rust::Type, to: rust::Type, expr: Box<Expr>) -> Expr {
+    let usize_ty = rust::Type::Prim(Prim::Usize);
+    match (&from, &to) {
+        (rust::Type::FnPtr { .. }, _) | (_, rust::Type::FnPtr { .. }) if from == to => *expr,
+        (rust::Type::FnPtr { .. }, rust::Type::Ptr { .. } | rust::Type::FnPtr { .. })
+        | (rust::Type::Ptr { .. }, rust::Type::FnPtr { .. }) => Expr::Transmute { from, to, expr },
+        (rust::Type::FnPtr { .. }, _) => Expr::Cast {
+            expr: Box::new(Expr::Transmute {
+                from,
+                to: usize_ty,
+                expr,
+            }),
+            ty: to,
+        },
+        (_, rust::Type::FnPtr { .. }) => Expr::Transmute {
+            from: usize_ty.clone(),
+            to,
+            expr: Box::new(Expr::Cast { expr, ty: usize_ty }),
+        },
+        _ => Expr::Cast { expr, ty: to },
+    }
+}
+
 impl FunctionLowerer<'_, '_> {
     pub(super) fn byte_pointer(&mut self, pointer: &ir::Value) -> Result<Expr> {
         let expr = Box::new(self.lower_value(pointer)?);

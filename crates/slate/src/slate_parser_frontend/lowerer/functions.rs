@@ -1,5 +1,107 @@
 use super::*;
 
+pub(super) fn main_wrapper(arity: usize) -> Item {
+    let call = |path: &str, args: Vec<Expr>| Expr::Call {
+        func: Box::new(Expr::Var(path.into())),
+        args,
+        binding: CallBinding::Generated,
+    };
+    let method = |recv: Expr, name: &str, args: Vec<Expr>| Expr::MethodCall {
+        recv: Box::new(recv),
+        method: name.into(),
+        args,
+    };
+    let inferred = || rust::Type::Custom("_".into());
+    let mut body = Vec::new();
+    if arity > 0 {
+        body.extend([
+            Stmt::Let {
+                name: "__slate_argv_storage".into(),
+                mutable: false,
+                ty: Some(rust::Type::Generic {
+                    name: "Vec".into(),
+                    args: vec![rust::Type::Custom("std::ffi::CString".into())],
+                }),
+                init: Some(method(
+                    method(
+                        call("std::env::args", Vec::new()),
+                        "map",
+                        vec![Expr::Closure {
+                            params: vec!["arg".into()],
+                            body: Box::new(method(
+                                call("std::ffi::CString::new", vec![Expr::Var("arg".into())]),
+                                "unwrap",
+                                Vec::new(),
+                            )),
+                        }],
+                    ),
+                    "collect",
+                    Vec::new(),
+                )),
+            },
+            Stmt::Let {
+                name: "__slate_argv".into(),
+                mutable: true,
+                ty: Some(rust::Type::Generic {
+                    name: "Vec".into(),
+                    args: vec![inferred()],
+                }),
+                init: Some(method(
+                    method(
+                        method(Expr::Var("__slate_argv_storage".into()), "iter", Vec::new()),
+                        "map",
+                        vec![Expr::Closure {
+                            params: vec!["arg".into()],
+                            body: Box::new(Expr::Cast {
+                                expr: Box::new(method(
+                                    Expr::Var("arg".into()),
+                                    "as_ptr",
+                                    Vec::new(),
+                                )),
+                                ty: inferred(),
+                            }),
+                        }],
+                    ),
+                    "collect",
+                    Vec::new(),
+                )),
+            },
+            Stmt::Expr(method(
+                Expr::Var("__slate_argv".into()),
+                "push",
+                vec![call("std::ptr::null_mut", Vec::new())],
+            )),
+        ]);
+    }
+    let args = (0..arity)
+        .map(|index| match index {
+            0 => Expr::Cast {
+                expr: Box::new(method(
+                    Expr::Var("__slate_argv_storage".into()),
+                    "len",
+                    Vec::new(),
+                )),
+                ty: inferred(),
+            },
+            _ => method(Expr::Var("__slate_argv".into()), "as_mut_ptr", Vec::new()),
+        })
+        .collect();
+    body.push(Stmt::Expr(call(
+        "std::process::exit",
+        vec![call("__slate_main", args)],
+    )));
+    Item::Fn(FnDef {
+        attrs: Vec::new(),
+        vis: rust::Visibility::Private,
+        unsafe_: false,
+        abi: None,
+        name: "main".into(),
+        params: Vec::new(),
+        ret: None,
+        body,
+    })
+}
+
 impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_extern(
         &mut self,

@@ -26,8 +26,10 @@ use calls::*;
 pub use errors::{Barrier, Construct, Context, InvalidIr, Invariant, Site};
 use errors::{Failure, variant_name};
 use f80::*;
+use functions::*;
 use globals::*;
 use names::*;
+use pointers::*;
 use statements::*;
 use values::*;
 
@@ -383,29 +385,19 @@ impl<'m> ModuleLowerer<'m> {
                 },
             );
         }
-        if tables
-            .names
-            .values()
-            .any(|name| name.rust == "__slate_main")
+        if let Some(main) = self
+            .module
+            .functions
+            .iter()
+            .find(|function| tables.names[&function.value.id].rust == "__slate_main")
         {
-            items.push(Item::Fn(FnDef {
-                attrs: Vec::new(),
-                vis: rust::Visibility::Private,
-                unsafe_: false,
-                abi: None,
-                name: "main".into(),
-                params: Vec::new(),
-                ret: None,
-                body: vec![Stmt::Expr(Expr::Call {
-                    func: Box::new(Expr::Var("std::process::exit".into())),
-                    args: vec![Expr::Call {
-                        func: Box::new(Expr::Var("__slate_main".into())),
-                        args: Vec::new(),
-                        binding: CallBinding::Generated,
-                    }],
-                    binding: CallBinding::Generated,
-                })],
-            }));
+            let arity = match &main.parameters {
+                ir::Parameters::Prototype { fixed, .. } => fixed.len(),
+                _ => 0,
+            };
+            if matches!(arity, 0 | 2) {
+                items.push(main_wrapper(arity));
+            }
         }
         Lowered {
             program: rust::Program { items },
