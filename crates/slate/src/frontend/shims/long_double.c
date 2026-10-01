@@ -1,6 +1,7 @@
 #include <complex.h>
 #include <float.h>
 #include <math.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -186,6 +187,10 @@ __slate_f80 __slate_f80_div(__slate_f80 a, __slate_f80 b) {
 
 __slate_f80 __slate_f80_powi(__slate_f80 a, int n) {
   return __slate_f80_store(powl(__slate_f80_load(a), n));
+}
+
+__slate_f80 __slate_f80_va_arg(va_list *ap) {
+  return __slate_f80_store(va_arg(*ap, long double));
 }
 
 __float128 __slate_f128_nexttoward(__float128 from, __float128 toward) {

@@ -18,9 +18,21 @@ A call to a body-less function whose return or argument holds f80 by value
 name (`c_shim::render_shim_c_source_for_names`) and links it with
 `shims/long_double.c`, and the direct extern declaration is dropped. Barriers
 remain for variadic callees missing from `function_identity::Known` (the
-bridge needs their header), for non-pointer aggregate arguments to a bridge,
-and for `va_arg` of `long double`. Non-variadic bridged callees depend on
-`long_double.c` including `<math.h>`.
+bridge needs their header), and for non-pointer aggregate arguments to a
+bridge. Non-variadic bridged callees depend on `long_double.c` including
+`<math.h>`.
+
+Variadic `long double` arguments must reach the callee as real x87 values in
+memory; Rust would pass `LongDouble` as an INTEGER-class struct. A call to a
+Rust-defined variadic function with f80 variadic arguments becomes a call to
+`__slate_va_<callee>__r<ret>_<fixed tags>__<variadic tags>`. The C trampoline
+(`c_shim::render_variadic_trampoline`) declares the callee as
+`<ret> callee(<fixed>, ...)` with fixed f80 parameters and the return kept as
+`__slate_f80`, and loads only the variadic f80 arguments into `long double`.
+The callee is exported with `#[unsafe(no_mangle)]` so the trampoline can call
+it. On the callee side, `va_arg(ap, long double)` lowers to
+`__slate_f80_va_arg(&mut ap)`, which relies on x86_64 `VaList` sharing C's
+`__va_list_tag` layout so C advances the Rust list in place.
 
 ## Why not just `f64`
 

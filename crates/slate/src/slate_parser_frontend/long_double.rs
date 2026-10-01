@@ -362,6 +362,20 @@ pub(crate) fn f80_shim_decls() -> Vec<ExternFnDecl> {
             Some(Type::Prim(Prim::F128)),
         ),
         f80_extern_decl("__slate_f80_neg", vec![f80_param("a", f80())], Some(f80())),
+        ExternFnDecl {
+            safe: false,
+            ..f80_extern_decl(
+                "__slate_f80_va_arg",
+                vec![f80_param(
+                    "ap",
+                    Type::Ptr {
+                        mutable: true,
+                        inner: Box::new(Type::VaList),
+                    },
+                )],
+                Some(f80()),
+            )
+        },
     ];
     for shim in [
         "__slate_f80_abs",

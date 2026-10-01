@@ -29,6 +29,7 @@ struct Context<'a> {
     temps: Cell<u32>,
     long_double: Cell<bool>,
     bridges: RefCell<BTreeMap<String, rust::ExternFnDecl>>,
+    exports: RefCell<BTreeSet<String>>,
 }
 
 impl Context<'_> {
@@ -248,6 +249,7 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
         temps: Cell::new(0),
         long_double: Cell::new(false),
         bridges: RefCell::default(),
+        exports: RefCell::default(),
     };
     cx.over_aligned = statics
         .iter()
@@ -290,6 +292,14 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
         let item = lower_function(function, body, &cx);
         if let Some(item) = function_barrier(&mut report, &function.name, true, item)? {
             items.push(item);
+        }
+    }
+    let exports = cx.exports.take();
+    for item in &mut items {
+        if let Item::Fn(function) = item
+            && exports.contains(&function.name)
+        {
+            function.attrs.push(Attr::NoMangle);
         }
     }
     let wrappers = cx
@@ -560,8 +570,47 @@ fn lower_long_double_bridge(
         .map(|argument| lower_type(cx, &argument.ty))
         .collect::<Result<Vec<_>>>()?;
     let ret = lower_type(cx, ret)?;
-    let tags = std::iter::once(&ret)
-        .chain(&params)
+    let tags = long_double_bridge_tags(callee, std::iter::once(&ret).chain(&params))?;
+    let name = format!("__slate_{callee}__r{}", tags.join("_"));
+    call_long_double_bridge(cx, name, params, ret, arguments)
+}
+
+fn lower_long_double_variadic_trampoline(
+    cx: &Context,
+    function: &FunctionName,
+    arguments: &[ir::Value],
+    fixed: usize,
+    ret: &ir::Type,
+) -> Result<Expr> {
+    let callee = function.rust.as_str();
+    if callee.contains("__") {
+        return Err(super::Error::Unsupported(format!(
+            "long double variadic call to {callee}"
+        )));
+    }
+    let params = arguments
+        .iter()
+        .map(|argument| lower_type(cx, &argument.ty))
+        .collect::<Result<Vec<_>>>()?;
+    let ret = lower_type(cx, ret)?;
+    let fixed_tags =
+        long_double_bridge_tags(callee, std::iter::once(&ret).chain(&params[..fixed]))?;
+    let variadic_tags = long_double_bridge_tags(callee, &params[fixed..])?;
+    let name = format!(
+        "__slate_va_{callee}__r{}__{}",
+        fixed_tags.join("_"),
+        variadic_tags.join("_")
+    );
+    cx.exports.borrow_mut().insert(callee.to_string());
+    call_long_double_bridge(cx, name, params, ret, arguments)
+}
+
+fn long_double_bridge_tags<'a>(
+    callee: &str,
+    types: impl IntoIterator<Item = &'a rust::Type>,
+) -> Result<Vec<String>> {
+    types
+        .into_iter()
         .map(|ty| match long_double::long_double_shim_type_tag(ty) {
             tag if tag == "x" => Err(super::Error::Unsupported(format!(
                 "long double call to {callee} passing {}",
@@ -569,8 +618,16 @@ fn lower_long_double_bridge(
             ))),
             tag => Ok(tag),
         })
-        .collect::<Result<Vec<_>>>()?;
-    let name = format!("__slate_{callee}__r{}", tags.join("_"));
+        .collect()
+}
+
+fn call_long_double_bridge(
+    cx: &Context,
+    name: String,
+    params: Vec<rust::Type>,
+    ret: rust::Type,
+    arguments: &[ir::Value],
+) -> Result<Expr> {
     cx.bridges
         .borrow_mut()
         .entry(name.clone())
@@ -1631,8 +1688,18 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
                     .collect(),
             )
         }
-        ValueKind::VaArg { .. } if is_long_double(cx, &value.ty) => {
-            return Err(super::Error::Unsupported("va_arg of long double".into()));
+        ValueKind::VaArg { list } if is_long_double(cx, &value.ty) => {
+            Expr::Unsafe(Box::new(rust::Block {
+                stmts: Vec::new(),
+                tail: Some(Box::new(Expr::Call {
+                    func: Box::new(Expr::Var("__slate_f80_va_arg".into())),
+                    args: vec![Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(lower_place(list, cx)?),
+                    }],
+                    binding: CallBinding::Generated,
+                })),
+            }))
         }
         ValueKind::VaArg { list } => Expr::Unsafe(Box::new(rust::Block {
             stmts: Vec::new(),
@@ -2032,6 +2099,25 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
                 .any(|ty| holds_long_double(cx, ty)) =>
         {
             lower_long_double_bridge(cx, &cx.names[id], arguments, &value.ty)?
+        }
+        ValueKind::Call {
+            callee: ir::Callee::Direct(id),
+            signature: ir::Type::Function { parameters, .. },
+            arguments,
+            ..
+        } if cx.names.get(id).is_some_and(|name| name.is_variadic)
+            && arguments
+                .iter()
+                .skip(parameters.len())
+                .any(|argument| holds_long_double(cx, &argument.ty)) =>
+        {
+            lower_long_double_variadic_trampoline(
+                cx,
+                &cx.names[id],
+                arguments,
+                parameters.len(),
+                &value.ty,
+            )?
         }
         ValueKind::Call {
             callee, arguments, ..
