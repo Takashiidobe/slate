@@ -933,6 +933,24 @@ fn lower_value(
                 })),
             }))
         }
+        ValueKind::PointerDifference {
+            left,
+            right,
+            element,
+        } if !matches!(element, ir::Type::Void | ir::Type::Function { .. }) => Expr::Cast {
+            expr: Box::new(Expr::Unsafe(Box::new(rust::Block {
+                stmts: Vec::new(),
+                tail: Some(Box::new(Expr::MethodCall {
+                    recv: Box::new(lower_value(left, names, bindings, strings)?),
+                    method: "offset_from".into(),
+                    args: vec![Expr::Cast {
+                        expr: Box::new(lower_value(right, names, bindings, strings)?),
+                        ty: lower_type(&left.ty)?,
+                    }],
+                })),
+            }))),
+            ty: lower_type(&value.ty)?,
+        },
         ValueKind::FunctionDecay {
             place:
                 ir::Place {
