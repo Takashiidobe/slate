@@ -120,8 +120,7 @@ semantics beside the target. Today the ordered arguments stay on
 
 ## References
 
-CIR bindings in `~/Projects/clang-ir/clang-ir-types` (`ops/control_flow.rs`,
-`types.rs`, `attrs.rs`, `ops/globals.rs`, `ops/calls.rs`) motivated regions,
-the logical-field vs storage-unit split, and the symbol / callable type /
-body separation. This IR uses typed ids instead of symbolic lookup and keeps
-concrete source-level signatures.
+The [historical index](../../historical/index.md) preserves earlier IR design
+comparisons. This IR uses typed ids and concrete source-level signatures;
+regions, logical fields versus storage units, and symbol/callable/body
+separation are defined by the current specification.

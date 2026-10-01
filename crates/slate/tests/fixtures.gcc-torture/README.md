@@ -6,7 +6,7 @@ The source snapshot is filtered with:
 ```bash
 git clone --depth 1 --filter=blob:none --sparse https://github.com/gcc-mirror/gcc.git
 git -C gcc sparse-checkout set gcc/testsuite/gcc.c-torture/execute
-tools/filter-gcc-torture.sh gcc/gcc/testsuite/gcc.c-torture/execute /tmp/gcc-torture-filtered
+crates/slate/tools/filter-gcc-torture.sh gcc/gcc/testsuite/gcc.c-torture/execute /tmp/gcc-torture-filtered
 ```
 
 The filter copies each C file without auxiliary sources or headers, compiles it
@@ -24,21 +24,21 @@ compile time, and rejected 7 that aborted. Differential classification placed
 output is preserved as `../fixtures.gcc-torture.unsupported/TRIAGE.log.gz` and
 follow-up classification is tracked by `slate-os0h.3.1`.
 
-The supported bucket runs under `cargo nextest r --release --profile lowering` and uses every
+The supported bucket runs under `cargo nextest r --release --profile slate` and uses every
 available CPU through one shared work queue and cached `src/bin` batch crate.
 Set `SLATE_GCC_TORTURE_JOBS` or `SLATE_TEST_JOBS` to limit it. The unsupported
-guards are ignored during the normal gate. To check the full unsupported
-bucket for cases ready to promote, run:
+ratchet runs in the normal Slate profile and fails when a fixture is ready to
+promote. To run just that check:
 
 ```bash
-cargo nextest r --release --test gcc_torture_suite -E 'test(gcc_torture_unsupported_tests_still_fail)' --run-ignored ignored-only
+cargo nextest r --release --profile slate --test gcc_torture_suite -E 'test(gcc_torture_unsupported_tests_still_fail)'
 ```
 
 To inspect one unsupported case through the shared cached `src/bin` batch
 crate, run:
 
 ```bash
-SLATE_GCC_TORTURE_FIXTURE=<case-stem> cargo nextest r --release --test gcc_torture_suite -E 'test(gcc_torture_unsupported_triage_report)' --run-ignored ignored-only --nocapture
+SLATE_GCC_TORTURE_FIXTURE=<case-stem> cargo nextest r --release --profile slate --test gcc_torture_suite -E 'test(gcc_torture_unsupported_triage_report)' --run-ignored ignored-only --nocapture
 ```
 
 The vendored sources remain under GCC's GPLv3 terms; `COPYING3` is retained

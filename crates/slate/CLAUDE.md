@@ -27,7 +27,9 @@ C -> slate-parser (preprocess, parse, sema) -> ir::Module
 - IR semantics are specified in [ir-spec](../../wiki/concepts/ir-spec.md) and
   its `wiki/concepts/ir/` subpages. Read the relevant subpage before lowering
   a new `ValueKind`, `Statement`, `PlaceKind`, or `Type`.
-- The migration plan is the `slate-p58o` epic (`bd show slate-p58o`).
+- [Slate architecture](../../wiki/concepts/slate-architecture.md) defines the
+  single frontend and backend boundary. [Historical records](../../wiki/historical/index.md)
+  preserve prior designs.
 
 The frontend consumes slate-parser IR exclusively. `src/backend/` retains
 rewrites and code generation; differential tests exercise raw lowering through
@@ -65,8 +67,8 @@ c-testsuite, gcc-torture, gcc-dg, and chibicc corpus suites, all through the
 slate frontend. `chibicc_suite` translates each two-TU fixture with
 `translate-project`; external definitions become
 `#[unsafe(no_mangle)]` items and the linker resolves symbols across modules.
-Legacy CIR test drivers were removed; their fixtures remain for the suite
-restoration beads under `slate-p58o.6`.
+Additional suites are tracked for restoration under `slate-p58o.6`; their
+fixture directories remain.
 
 Each suite is a ratchet: `tests/fixtures/` must pass, and
 `tests/fixtures.unsupported/` must still fail. When an unsupported fixture

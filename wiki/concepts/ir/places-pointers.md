@@ -157,8 +157,8 @@ representation: `Type::Pointer.space`, printed `ptr<T, space>`.
 
 ## Qualified access
 
-Each qualifier lives where its meaning does, following CIR's flags on the
-memory op rather than the type:
+Each qualifier lives where its meaning does, on the place or memory operation
+rather than the value type:
 
 - `volatile` belongs to the place. Every place carries an `access`
   (volatile, `_Atomic` object), printed on the node that touches memory:

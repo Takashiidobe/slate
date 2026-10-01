@@ -75,34 +75,15 @@ slate translate add.c # translates add.c, prints to stdout
 
 ### C Feature Support
 
-- Features up to C23
-  - long double (f64, f80, f128) (double-double is unsupported)
-  - floating-point environment
-  - Complex numbers
-  - Atomics
-  - Attribute support
-  - `_BitInt(N)` to arbitrary size
-  - `#embed`
-  - C17 style attributes like `[[deprecated]]`
-  - `alignof`, `alignas`, `thread_local`
-  - `_Decimal32/64/128`
-- Support for most gnuisms too, like
-  - gnu style attributes like `__attribute__(...)`
+C23 support is a goal. Current end-to-end coverage is defined by the supported
+C differential fixtures and corpus buckets; parser acceptance alone does not
+establish Rust translation support. Remaining cases live in the corresponding
+unsupported buckets and are tracked with beads.
 
-### Caveats
-
-- setjmp/longjmp: because Rust doesn't have
-  [`#[ffi_returns_twice]`](https://github.com/rust-lang/rust/issues/58314)
-  removed in (https://github.com/rust-lang/rust/pull/120502)
-  anymore, slate will translate your code that uses setjmp/longjmp, but
-  there's no way to guarantee llvm won't break your code by over
-  optimizing.
-- protected visibility. In Rust there's no way to set visibility as
-  protected.
-- no support for naked asm.
-- your C and Rust may link to different compiler runtimes, which can
-  cause differences in precise mathematical operations that run in
-  software (like for complex or large numbers)
+See [feature coverage](crates/slate/docs/src/features.md) and
+[testing](wiki/concepts/differential-fixtures.md) for the runtime contract.
+Target ABI details, runtime bridges and nonlocal jumps require coverage for the
+specific input and target.
 
 ### In Progress
 
@@ -114,10 +95,7 @@ slate translate add.c # translates add.c, prints to stdout
 ## Acknowledgements
 
 - [C2Rust](https://c2rust.com/) the original C to Rust transpiler
-- [Clang IR](https://llvm.github.io/clangir/) for providing an easy
-  interface to translate C to Rust
-- [Musl](https://musl.libc.org/) the libc that most of the headers from
-  libc-shim are based on
+- [Musl](https://musl.libc.org/) for target libc headers
 - [Glibc](https://ftp.gnu.org/gnu/glibc/) for extra headers that are
   supported on most linux-likes
 - [Aligned](https://crates.io/crates/aligned) for the aligned type to
@@ -126,13 +104,9 @@ slate translate add.c # translates add.c, prints to stdout
   how to implement the `_Bitint(N)` type from C
 - [num-complex](https://crates.io/crates/num-complex) for complex types
   in rust
-- [triplers](https://crates.io/crates/triplers) for rust target
-  detection
 - [chibicc](https://github.com/rui314/chibicc) for a readable c
   compiler and test-suite that I learned about compiler supported
   headers from
-- [libc-test](https://wiki.musl-libc.org/libc-test) A set of tests that
-  validate your libc implementation
 - [GCC Torture Test
   Suite](https://gcc.gnu.org/onlinedocs/gccint/Torture-Tests.html) for a
   comprehensive list of extremely difficult C tests to translate to Rust

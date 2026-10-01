@@ -1,111 +1,40 @@
 # Setup
 
-## Prerequisite: a CIR-enabled Clang
+Run every command from the workspace root.
 
-Slate lowers ClangIR, not LLVM IR, so it needs a Clang built with
-`CLANG_ENABLE_CIR=ON`. No distro or upstream binary build ships this, so you
-have to build it yourself:
+## Build
 
-```bash
-git clone https://github.com/llvm/llvm-project
-cmake -S llvm-project/llvm -B llvm-project/build-cir -G Ninja \
-  -DLLVM_ENABLE_PROJECTS=clang -DCLANG_ENABLE_CIR=ON \
-  -DCMAKE_BUILD_TYPE=Release
-ninja -C llvm-project/build-cir clang
-```
-
-Slate defaults to `~/llvm-project/build-cir/bin/clang`. If yours lives
-elsewhere, every tool that needs it reads these environment variables
-instead (all optional, all overriding a local-build default):
-
-| Var                                 | Default                                      | Role                                                                                              |
-| ----------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `SLATE_CLANG`                       | `~/llvm-project/build-cir/bin/clang`         | emit CIR + Clang AST JSON                                                                         |
-| `SLATE_CIR_OPT`                     | `~/llvm-project/build-cir/bin/cir-opt`       | CIR -> MLIR generic form                                                                          |
-| `SLATE_CARGO`                       | `cargo`                                      | compile the generated Rust                                                                        |
-| `SLATE_FILECHECK`                   | sibling of `SLATE_CLANG`, then `FileCheck`   | match profile-specific generated-Rust assertions in C fixtures                                    |
-| `SLATE_TARGET` / `SLATE_CLANG_ARGS` | N/A                                          | shared target triple / extra clang flags                                                          |
-| `SLATE_MACRO_DUMP_PLUGIN`           | `<$SLATE_CLANG build>/lib/SlateMacroDump.so` | the macro dump plugin binary (see below)                                                          |
-| `SLATE_SYSROOTS`                    | `~/.local/share/slate/sysroots`              | slate-parser target headers, read from `<dir>/<triple>` (installed with `cargo run -p slate -- sysroot install <triple>`) |
-
-## Build the macro dump plugin
-
-Slate always loads a Clang plugin
-([Macro Dump Plugin](./macro-dump-plugin.md)) when it parses C, and that
-plugin links against the exact Clang tree `SLATE_CLANG` points at:
+Slate requires a Rust nightly toolchain. It links slate-parser and
+slate-sysroots as workspace libraries.
 
 ```bash
-SLATE_CLANG=~/llvm-project/build-cir/bin/clang ./tools/macro-dump-plugin/build.sh
+cargo build --release -p slate
+cargo run --release -p slate -- sysroot install x86_64-unknown-linux-gnu
 ```
 
-Rerun this every time you rebuild `SLATE_CLANG`, a stale plugin built
-against a different llvm-project could crash or silently misbehave, since it links
-against that build's internal headers rather than a stable ABI.
+Release binaries live under `target/test-cache/release/` because
+`.cargo/config.toml` selects that target directory.
 
-## Build Slate itself
+## Configuration
+
+| Variable | Purpose |
+| --- | --- |
+| `SLATE_SYSROOTS` | Header installation root; defaults to `~/.local/share/slate/sysroots` |
+| `SLATE_TARGET` | Default target; otherwise the Cargo build target |
+| `SLATE_CLANG_ARGS` | Inherited compiler arguments consumed by slate-parser; explicit arguments follow them |
+| `SLATE_JOBS` | Project translation workers |
+| `SLATE_CARGO` | Cargo used to compile generated code |
+| `SLATE_RUSTFMT` | Fallback formatter when prettyplease cannot parse output |
+
+## Tests
+
+Differential tests require `clang` on PATH to compile the C oracle. Generated
+crates containing runtime bridges also use a C compiler through the `cc` crate.
 
 ```bash
-cargo build --release
-cargo run -- translate tests/fixtures/add.c   # prints Rust to stdout
+cargo nextest r --release --profile slate
+cargo nextest r --release --profile parser
 ```
 
-## Running tests
-
-**Always use a release nextest profile**, never plain `cargo test` — the
-suites are slow enough uncompiled that iterating on them is impractical, and
-some fixtures assume optimized codegen.
-
-```bash
-cargo nextest r --release --profile lowering # frontend/lowering runtime differential, no fixups
-cargo nextest r --release --profile rewrites # backend/fixups and every other test
-```
-
-- `lowering` for `src/frontend/`, `src/cir/`, and the lowerer
-  against differential fixtures (`tests/fixtures/*.c`) plus the chibicc,
-  gcc-torture, and c-testsuite suites, run through only lowering
-  Run for changes in `src/frontend/`, `src/cir/`, or the CIR/AST parsing layer.
-- `rewrites` for fixup/idiomatization passes
-  (`src/backend/engine/rules/`) Run for changes in `src/backend/`.
-
-Only the profile matching what you changed needs to pass; run more than one
-only when a change genuinely crosses those boundaries (e.g. a shared type
-used by both the lowerer and a fixup pass).
-
-To run just one fixture, run `SLATE_DIFF_FIXTURE`:
-
-```bash
-SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile lowering \
-  --test differential -E 'test(generated_differential)' --nocapture
-SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile rewrites \
-  --test differential -E 'test(generated_differential)' --nocapture
-```
-
-Fixtures can carry `COMMON`, `LOWERING`, and `REWRITES` FileCheck directives.
-The active nextest profile selects only its own directives plus `COMMON`.
-See `wiki/concepts/differential-fixtures.md` for function-scoped unordered
-checks and the complete syntax.
-
-Cross-target differential profiles are available when the matching runtime
-toolchain is installed:
-
-| Target | Profiles | Required runtime pieces |
-| --- | --- | --- |
-| ARM32 GNU (`armv7-unknown-linux-gnueabihf`) | `arm-lowering`, `arm-rewrites` | ARM GNU sysroot/linker and `qemu-arm-static` |
-| AArch64 GNU (`aarch64-unknown-linux-gnu`) | `aarch64-lowering`, `aarch64-rewrites` | AArch64 sysroot/linker and `qemu-aarch64-static` |
-
-ARM32 overrides are `SLATE_ARM_SYSROOT`, `SLATE_ARM_LINKER`,
-`SLATE_ARM_CC`, and `SLATE_ARM_QEMU`. The runner commonly needs
-`arm-none-linux-gnueabihf-gcc` explicitly as `SLATE_ARM_LINKER`.
-
-For unsupported corpus cases, use the suite-specific selectors documented in
-`wiki/concepts/gcc-torture-triage.md`, rather than forcing
-`SLATE_DIFF_FIXTURE`.
-
-When a batch test reports stale dependency metadata, remove only the specific
-`target/test-cache/target-*` directory named by the failing suite and rerun.
-Generated Rust and runnable debug binaries remain under the suite's `target/`
-directories for direct inspection.
-
-## Cleanup
-
-Make sure to run `cargo fmt --all-targets` and `cargo clippy --all-targets` and fix any violations.
+Run the profile for each crate changed. See [testing](testing.md) for fixture
+selection and triage.

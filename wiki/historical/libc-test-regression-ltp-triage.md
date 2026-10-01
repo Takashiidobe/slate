@@ -1,7 +1,7 @@
 # Triage: musl libc-test `src/regression` and LTP, for vendoring value
 
 > Filed under `slate-b66b.5.3`. This is a triage report, not a vendoring
-> commitment -- see [cross-target-toolchains.md](cross-target-toolchains.md)
+> commitment -- see [cross-target-toolchains.md](cross-target-toolchains-cir.md)
 > and [libc-test-functional-harness.md](libc-test-functional-harness.md) for
 > the already-vendored `functional`/`api` buckets this compares against.
 
@@ -17,7 +17,7 @@ Slate's Rust codegen could diverge from clang's native C codegen even when
 both link the identical libc"** -- variadic marshaling, struct-by-value
 passing/return, signal-frame/register-save layouts, raw syscall argument
 encoding, TLS/DTV, and float-representation edge cases (Slate's own `f80`
-emulation in particular, see [long-double-f80.md](long-double-f80.md)).
+emulation in particular, see [long-double-f80.md](../concepts/long-double-f80.md)).
 
 Filtered that way, most of `src/regression` is out of scope. Five cases are in.
 

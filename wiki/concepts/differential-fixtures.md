@@ -18,8 +18,7 @@ stdout and exit status. Runtime parity is the only correctness gate.
 `generated_differential`, `gcc_torture_suite`, `gcc_dg_suite`, and
 `c_testsuite_suite` translate every fixture through the slate-parser frontend
 (`support::translate_slate`, i.e. `slate translate-lowered`).
-That emits raw lowered Rust: rewrites are not enabled for the slate frontend,
-and there is no CIR fallback. Headers come from slate-sysroots, and fixtures
+That emits raw lowered Rust. Headers come from slate-sysroots, and fixtures
 run for the host target only. Together with `chibicc_suite`, these suites make
 up the `slate` nextest profile:
 
@@ -28,8 +27,8 @@ cargo nextest r --release --profile slate
 ```
 
 Run it from the workspace root. `chibicc_suite` uses `translate-project` for
-two-TU fixtures. CIR-only test drivers were removed; their fixture directories
-remain, with restoration tracked in `slate-p58o.6.7` through `slate-p58o.6.17`.
+two-TU fixtures. Additional suite coverage is tracked for restoration in
+`slate-p58o.6.7` through `slate-p58o.6.17`; the fixture directories remain.
 
 ## Supported/unsupported ratchet
 
@@ -89,14 +88,7 @@ directive.
 ## FileCheck (suspended)
 
 FileCheck shape assertions are suspended until lowering coverage makes them
-signal rather than noise. All `SLATE-FILECHECK` blocks and `@lowering`,
-`@rewrite`, and `@slate-lowerer` markers were stripped from single-file
-fixtures, and the differential suites do not run FileCheck. Do not add
-markers or blocks, and do not run `tools/update_filecheck.py` for
-single-file fixtures.
-
-The tooling is still in the tree (`tools/update_filecheck.py`,
-`tests/support/filecheck.rs`, the `justfile` regen recipes). Its full
-documentation, covering region markers, `-fn-` markers, cross-target
-prefixes, and project mode, is in this page's history before commit
-`c6c92aef4`, for when shape checks return.
+signal rather than noise. Differential suites do not run FileCheck; do not add
+`SLATE-FILECHECK` blocks or `@lowering`, `@rewrite`, or `@slate-lowerer` markers.
+Earlier shape-check workflows and tools are documented in the
+[historical index](../historical/index.md).

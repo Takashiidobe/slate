@@ -1,22 +1,22 @@
-# Cross Compilation
+# Cross compilation
 
-Slate can translate a C project once and produce Rust that still runs
-correctly on every target you ask for, even targets whose libc headers
-aren't installed on the machine doing the translation. Target headers
-come from slate-sysroots, so there's no dependency on the host's system
-libc. Supply one compilation database per target to `translate-project`:
+Install the target headers, then pass compiler arguments before the input:
 
-```sh
-slate translate-project \
-  --compile-commands x86_64/compile_commands.json \
-  --compile-commands aarch64/compile_commands.json \
-  ./project ./project-rs
+```bash
+cargo run --release -p slate -- sysroot install aarch64-unknown-linux-gnu
+cargo run --release -p slate -- translate-lowered \
+  --target=aarch64-unknown-linux-gnu input.c
 ```
 
-C code that branches on the target with `#ifdef`/`#if defined(...)`
-(architecture, OS, libc, endianness, ...) gets translated once per target and
-merged into a single crate, with each variant gated behind the matching Rust
-`#[cfg(...)]` — `target_arch`, `target_os`, `target_endian`, so
-the output crate cross-compiles from `cargo build --target <triple>` the same
-way the C project would have from a cross toolchain. See
-[translate directives](./translate-directives.md) for the mechanism.
+slate-parser supplies target layout and predefines. Translation uses target
+headers from slate-sysroots. Building and running generated Rust also requires
+the matching Rust target, linker, C libraries and, when runtime bridges are
+used, a C cross compiler.
+
+Single-file `translate --targets=<triple>,<triple> input.c` can merge supported
+whole-item configuration branches into Rust cfg items. Project translation
+rejects multiple configurations of one translation unit; it does not merge
+several target builds of a project into one crate.
+
+The current differential profile executes host-target tests. Successful
+cross-target translation alone is not runtime validation.

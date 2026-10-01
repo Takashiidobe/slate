@@ -77,29 +77,17 @@ x87 lowers as `LongDouble` with the C runtime bridges.
 
 ## Integration points
 
-- **Casts to/from arbitrary-width integers**: `_BitInt(N)`/unsigned
-  `_BitInt(N)` values cast to/from `LongDouble` by routing through `i128`/
-  `u128` as an intermediate width (`bitint_to_int_expr`,
-  `f80_cast_from_name`/`f80_cast_to_name` in `frontend/lowerer/f80.rs`),
-  rather than special-casing every bit-width pairing directly.
-- **libc functions**: f80-returning/accepting libc functions (`strtold`,
-  `fabsl`, `copysignl`, etc.) route through the same shim table as other
-  known-libc calls in `frontend/c_shim.rs` — no bespoke special-casing per
-  function.
-- **`_Complex long double`**: composes with slate's general `_Complex`
-  support, which is implemented via the `num-complex` crate rather than a
-  hand-rolled complex type.
-- **variadics**: `long double` arguments passed through `va_list` (e.g. a
-  `scanf`-family call) are covered by dedicated test fixtures
-  (`tests/fixtures/bionic/long_double_pointer.c`) since va_list argument
-  promotion/passing for an oversized non-native type is an easy place for
-  ABI bugs to hide.
-- **Records**: a per-`Lowerer` `uses_long_double` flag is set whenever any
-  lowered record field's type needs it, gating whether the generated program
-  needs the `LongDouble` support code emitted at all.
+| Concern | Source under `crates/slate/src` |
+| --- | --- |
+| Prelude and bridge type tags | `frontend/long_double.rs` |
+| Conversion and call lowering | `frontend/lowerer/f80.rs`, `frontend/lowerer/calls.rs` |
+| Name-based bridge rendering | `frontend/c_shim.rs` |
+| Runtime implementation | `frontend/shims/{long_double,fenv}.c` |
+
+Current coverage comes from differential fixtures. A target format or source
+construct being parsed does not establish runtime support.
 
 ## History
 
-Implemented 2026-08-12 through 2026-08-14 (`wiki/log/2026-08-13-00-00.md`);
-closed slate's "raw lowering failure" epic once the long double test suite
-passed end to end.
+Earlier ABI and lowering records are available from the
+[historical index](../historical/index.md).

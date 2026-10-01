@@ -1,174 +1,22 @@
-# Translate Directives/Cross Compilation
+# Translate directives
 
-## Why we can't trust clang-ast
+`frontend::preprocess` records source directives and their activity using
+slate-parser's preprocessor. `record-cfg <file.c> [compiler arguments]` prints
+that information as JSON.
 
-Preprocessing a file picks one branch of every `#if` and throws the
-rest away that's what preprocessing means. If Slate preprocessed on an
-x86_64 Linux host and lowered the result, an `#ifdef __aarch64__` branch
-would be deleted by the preprocessor.
+`frontend::directive_translate` translates supported whole-item conditional
+branches into Rust cfg items. It rejects conditions that cannot be mapped or
+selected, conditional boundaries inside bodies, and excessive variant counts.
+Source spans are preserved while diagnostic directives are blanked for variant
+parsing.
 
-To keep every target's code path, Slate has to run the
-whole `C -> CIR -> parse -> lower` pipeline once per relevant preprocessor
-configuration and then merge the results back into one file, using
-`#[cfg(...)]`.
-
-## Translating Directives (`src/frontend/directive_translate.rs`)
-
-`slate translate` runs this automatically -- there is no separate subcommand.
-For a single source, `--targets=<t1>,<t2>,...` explicitly compiles a target
-matrix and merges structurally different items behind target `cfg` attributes;
-identical items are emitted once. Two things must both hold for the implicit
-host expansion:
-
-- `SLATE_TARGET` is unset (or set to the host's own default target). Under
-  an explicit non-host `SLATE_TARGET`, clang's predefined macros for that
-  triple and `-D`/`-U` pins from a second synthetic config can disagree with
-  target-specific ABI facts (struct layouts, `va_list` shape, ...) that
-  aren't macro-driven, so cross-target builds always go through
-  `translate-project` with one compilation database per target instead, which
-  spawns one real clang invocation per compilation command.
-- `should_auto_expand` says the source qualifies: every conditional chain in
-  the file is a whole top-level `#if` region (not nested inside a function
-  or struct body) whose non-`#else` branches each reference at least one
-  macro, and every referenced macro is a recognized clang-builtin
-  target/arch/os macro (`known_cfg` in `preprocess.rs` -- not Slate's own
-  `__SLATE_*` toolchain-identity macros, which `target_args()` re-asserts on
-  every invocation and so can't be selectively pinned per variant either).
-
-If either check fails -- a region sits inside a
-function body, a branch is gated by a project-defined feature macro, or a
-branch's condition is a literal/opaque predicate with no macro to pin at
-all -- the whole file falls back to ordinary single-config translation of
-whichever branch the active macro state happens to select, silently, with no
-error. Feature-flag macros (project build config, not target detection) are
-explicitly out of scope for this expansion.
-
-When a file passes the gate:
-
-1. Scan the source for conditional chains without touching Clang at all
-   (`preprocess::record`) every `#if`/`#ifdef`/`#elif`/`#else`/`#endif`
-   region and its predicate expression.
-2. Map each branch's predicate to a Rust `Cfg` (`pred_to_cfg`). Slate
-   only accepts a fixed list of macros, like `__x86_64__`/`_M_X64`=
-   `target_arch = "x86_64"`, `__linux__` = `target_os = "linux"`,
-   `__APPLE__` = `target_vendor = "apple"`, `_WIN32` = the `windows` flag,
-   `__LP64__`/`_ILP32` = `target_pointer_width`, `__ARMEB__`/`__AARCH64EB__`
-   = a combined `target_arch` + `target_endian = "big"`, `NDEBUG` =
-   `not(debug_assertions)`, and so on plus boolean combinations
-   (`&&`/`||`/`!`) of those atoms.
-3. Enumerate one clang invocation per branch (`plan_configs`), each
-   pinning the cfgs that decide branching with `-D`/`-U` flags so Clang
-   only ever sees one selected configuration at a time this is what keeps
-   the CIR/AST/lowering pipeline unchanged; it never has to know about
-   multi-config.
-4. Translate each configuration independently (`translate_one`).
-5. Merge variants: for each conditional region,
-   every item (function, static, ...) produced by a branch's translation is
-   wrapped in `#[cfg(<branch's Rust cfg>)]` and spliced back into the
-   file. Code outside any conditional region is taken once from a baseline
-   (unconfigured) translation.
-
-There's also a cap (`MAX_CFG_VARIANTS`, currently 16) on how many branch
-variants a file can expand to, since each one is a full clang invocation and
-we don't want to run exponentially long.
-
-Project translation uses `compile_commands.json` entries as its target axis.
-When a source has one top-level feature-macro chain, the project path also
-recompiles that source per branch and declares the resulting `cfg(feature =
-...)` names in the generated Cargo manifest. Multiple independent feature
-chains remain single-config until their per-file cross-product is supported.
-
-## Example
-
-Here's an example, `tests/fixtures.cfg/arch_targets.c`:
-
-```c
-#include <stdio.h>
-
-#if deokd(__x86_64__) || deokd(_M_X64)
-static int arch_code(void) { return 64; }
-#elif deokd(__i386__) || deokd(_M_IX86)
-static int arch_code(void) { return 86; }
-#elif deokd(__aarch64__) || deokd(_M_ARM64)
-static int arch_code(void) { return 128; }
-#else
-static int arch_code(void) { return 0; }
-#endif
-
-int main(void) {
-  printf("%d\n", arch_code());
-  return 0;
-}
+```bash
+cargo run --release -p slate -- record-cfg input.c --target=x86_64-unknown-linux-gnu
+cargo run --release -p slate -- translate \
+  --targets=x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu input.c
 ```
 
-`slate translate arch_targets.c` produces one `arch_code` per
-branch, each gated by the matching `target_arch`, with the final `#else`
-becoming the negation of every other branch's condition (bodies abbreviated
-below; the real output is baseline, unfixed-up lowering):
-
-```rust
-#[cfg(target_arch = "x86_64")]
-fn arch_code() -> i32 {
-    64
-}
-
-#[cfg(target_arch = "x86")]
-fn arch_code() -> i32 {
-    86
-}
-
-#[cfg(target_arch = "aarch64")]
-fn arch_code() -> i32 {
-    128
-}
-
-
-#[cfg(not(any(target_arch = "x86_64", target_arch = "x86", target_arch = "aarch64")))]
-fn arch_code() -> i32 {
-    0
-}
-
-fn main() {
-   arch_code(); // returns 0, 64, 86, 128
-}
-```
-
-The result is one crate where `cargo build --target aarch64-unknown-linux-gnu`
-and `cargo build --target x86_64-pc-windows-msvc` each pick a different
-`arch_code`, matching what the original C would have compiled to under a
-cross toolchain for that target. Combined with `libc-shim`, you can
-cross compile for any target that slate supports, since any external C
-calls are also provided. This doesn't extend to non-libc code (Slate
-cannot shim your custom code) but if that's also provided, then slate
-can also handle that case too.
-
-## Supported pragma table
-
-Recognized pragmas translate cleanly on their own. Inside a target-gated
-`#if` branch, multi-config expansion still hard-errors on all of them
-(per-branch record layout / attribute merging isn't supported), so
-"recognized" below means "unconditional use is fine," not "safe everywhere."
-
-| Pragma                                                                  | Recognized? | Notes                                                                                       |
-| ----------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------- |
-| `#pragma once`                                                          | yes         | No-output; the preprocessor consumes it before Slate sees anything.                         |
-| `#pragma GCC/clang diagnostic ...`                                      | yes         | Diagnostic-only, no program effect.                                                         |
-| `#pragma pack`                                                          | yes         | Recovered from Clang's `MaxFieldAlignmentAttr` into `repr(C, packed)`/`repr(C, packed(N))`. |
-| `#pragma GCC visibility push/pop`                                       | yes         | Clang-resolved before Slate runs.                                                           |
-| `#pragma weak`                                                          | yes         | Clang-resolved before Slate runs.                                                           |
-| `#pragma redefine_extname`                                              | yes         | Clang-resolved before Slate runs.                                                           |
-| `#pragma push_macro`/`pop_macro`                                        | yes         | Clang-resolved before Slate runs.                                                           |
-| `#pragma GCC poison`                                                    | yes         | Always skipped; never blocks translation, conditional or not.                               |
-| `#pragma STDC CX_LIMITED_RANGE`                                         | yes         | Clang-resolved before Slate runs.                                                           |
-| `#pragma STDC FP_CONTRACT`                                              | yes         | Folds into a `cir.fmuladd` choice in CIR (`handoffs/floating-point-env.md`).                |
-| `#pragma STDC FENV_ACCESS`/`FENV_ROUND`/`FENV_DEC_ROUND`                | yes         | Supported through C shims.                                                                  |
-| `#pragma clang optimize off/on`                                         | yes         | Codegen-only hint.                                                                          |
-| `#pragma unroll`/`nounroll`                                             | yes         | Codegen-only loop hint.                                                                     |
-| `#pragma clang loop ...`                                                | yes         | Codegen-only loop hints.                                                                    |
-| `#pragma clang attribute push/pop`                                      | yes         | Clang applies the wrapped attribute to each matching decl before CIR/AST emission           |
-| `#pragma clang fp contract/reassociate/exceptions`                      | partial     | `on`/`off`/`default` supported, `contract(fast)` blocked upstream in ClangIR                |
-| `#pragma GCC optimize`/`GCC target`/other vendor or unknown             | no          | Explicit error, always.                                                                     |
-| MSVC `section`/`data_seg`/`code_seg`/`intrinsic` (no `-fms-extensions`) | n/a         | Clang itself warns `unknown pragma ignored` and drops it                                    |
-| `#pragma comment(lib, ...)`                                             | no          | Clang parses it, but ClangIR codegen crashes.                                               |
-| `#pragma GCC target`/`push_options`/`pop_options`                       | n/a         | Clang doesn't implement these.                                                              |
-| unrecognized directive (`#slate_unknown ...`)                           | no          | Explicit error, always.                                                                     |
+`translate` may expand supported directives automatically. `translate-lowered`
+uses the selected concrete preprocessing configuration. Target headers come
+from slate-sysroots. Project generation consumes one compile-command
+configuration per translation unit and does not merge target variants.

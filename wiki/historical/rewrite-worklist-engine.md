@@ -1,9 +1,9 @@
 # Rewrite Worklist Engine (proposed)
 
-> Superseded by [rewrite-engine-v2.md](../concepts/rewrite-engine-v2.md). The arena and
+> Superseded by [rewrite-engine-v2.md](rewrite-engine-v2-design.md). The arena and
 > worklist engine described here has landed, but the implementation no longer
 > uses the Salsa/query scaffolding proposed below. Keep this page as the
-> original 2026-08-26 design record; use the v2 page and [passes.md](../concepts/passes.md)
+> original 2026-08-26 design record; use the v2 page and [passes.md](passes.md)
 > for current behavior.
 
 Tracked by `slate-y0qs` (epic: rewrite pipeline performance). This is the
@@ -27,7 +27,7 @@ loop over a whole-program reduction until stable, which is effectively
 
 CIR was considered and rejected as an alternative analysis substrate: Slate
 doesn't link MLIR's C++ analysis infrastructure (it parses `cir-opt`'s text
-dump — see [architecture.md](../concepts/architecture.md)), so moving analysis there
+dump — see [architecture.md](slate-architecture-cir.md)), so moving analysis there
 would mean rebuilding the same tracked/memoized/incremental machinery salsa
 already provides, while giving up the query engine's `EditSet`/conflict
 detection/tracing and per-fixture `COMMON`/`REWRITES` gating. The fix is

@@ -99,10 +99,9 @@ the result in `Option<...>`.
 
 ## Why not SSA
 
-`architecture.md`'s rationale for CIR over LLVM IR is precisely that SSA+phi
-nodes replace source variables, and slate wants named locals preserved
-end to end. Building real SSA for this one analysis would fight that,
-and it doesn't solve the problem this analysis actually has: SSA gives a
+The lowered Rust AST preserves named locals. Building SSA solely for this
+analysis would change that representation without solving cross-binding
+aliasing: SSA gives a
 clean def/use-list for _one variable's own reassignments_, which the arena
 already provides for free (`Arena::def_use_neighbors`, `src/backend/engine/
 arena.rs:383`). The hard part of `UNIQUE` is _cross-binding_ aliasing, which
@@ -161,7 +160,7 @@ _before_ the per-function arena is even built — see `engine::run_function`,
   own `Drop` instead. Skipping that deletion would double-free: the
   lifted `Box<T>` frees on scope exit _and_ the untouched `free()` call
   would free the same allocation again. `collect_owned_aliases` exists
-  because CIR routinely hoists parameter derefs through an intermediate
+  because generated Rust can hoist parameter derefs through an intermediate
   local (`let mut y: *mut i32 = arg0; ...; free(y);`) rather than
   dereferencing the param directly — the `free()` call's argument has to
   be traced back through that alias to the lifted binding, not just
@@ -251,9 +250,8 @@ call conservatively to `ESCAPE`.
 - [rewrite-worklist-engine.md](../historical/rewrite-worklist-engine.md) — original lattice
   proposal and the interproc-vs-local-worklist split.
 - [rewrite-engine-v2.md](rewrite-engine-v2.md) — the arena/worklist engine
-  this plugs into; "Known risks" section flags interprocedural rules as a
-  distinct phase.
-- [passes.md](passes.md) — the pass catalog; the interproc analyses (this
+  this plugs into; interprocedural analyses run before local worklist rules.
+- [passes.md](../historical/passes.md) — the pass catalog; the interproc analyses (this
   lattice, `length_lattice`, `string_params`) run before the per-function
   worklist.
 - `wiki/log/2026-08-28-07-48.md` — the session that extended the lattice

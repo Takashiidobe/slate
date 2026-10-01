@@ -2,7 +2,7 @@
 
 > **Historical.** Describes the retired `src/backend/query/` engine, which no
 > longer exists in the tree. Kept for context. For the current design see
-> [rewrite-engine-v2.md](../concepts/rewrite-engine-v2.md).
+> [rewrite-engine-v2.md](rewrite-engine-v2-design.md).
 
 Use `src/backend/query/` when a rewrite can replace a selected expression,
 delete a definition, replace a function body, splice a run of adjacent

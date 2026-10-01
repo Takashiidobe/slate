@@ -1,64 +1,17 @@
-# Landing a Change
+# Landing a change
 
-Every feature and fixup starts with a C fixture. There are no unit tests
-for Slate, so if you want to fix a regression, it should be a C file to
-start.
+- C semantics and IR construction belong in slate-parser.
+- Rust lowering belongs in `crates/slate/src/frontend/lowerer/`.
+- Rust analyses and rewrites belong in `crates/slate/src/backend/`.
+- Every feature starts with a failing C differential fixture.
 
-## Where changes go
+## Lowering workflow
 
-```
-C -> CIR -> parse -> lower -> Rust source -> Fixup Rust
-```
+1. Place or find the fixture in an unsupported bucket and inspect its first barrier.
+2. Fix the owning layer; use `emit-slate-ir`, `lowering-barriers` and `translate-lowered` to inspect the result.
+3. Promote fixtures that now pass differential execution into the supported bucket.
+4. Run `cargo clippy -p slate --allow-dirty --fix`, `cargo fmt`, and `cargo nextest r --release --profile slate` from the workspace root. Run the parser gates too if its Rust changed.
+5. Update the bead, log the change with `llog new`, and commit.
 
-- `src/frontend/`, `src/cir/` parsing CIR/the Clang AST and lowering
-  to baseline Rust. Baseline is unsafe, and unidiomatic to start.
-  Test changes with the `lowering` profile.
-- `src/backend/` fixup/idiomatization passes that run after baseline
-  lowering to recover idiom (safe references, `Vec`/`Box`, `for x in ..`,
-  compound assignment, ...) without changing behavior. Current rules live in
-  `src/backend/engine/rules/` and are scheduled by the worklist engine. See
-  [Rewriting](./writing-a-rewrite.md).
-  Covered by the `rewrites` profile.
-- `vendor/` crates Slate ships fixed/adapted versions of
-  (`bitint`, `num-complex`, `aligned`, `triplers`); see
-  [Vendored Crates](./vendored-crates.md). These have their own unit
-  tests, but Slate should also have e2e tests using them.
-
-See [Setup](./setup.md) for how to build the CIR-enabled Clang and macro
-dump plugin.
-
-## Landing a lowering change
-
-1. Write or extend a fixture in `tests/fixtures/*.c` that reproduces the gap
-   a construct that fails to lower, or lowers to Rust that diverges from
-   the C at runtime.
-2. Isolate it while iterating, instead of running all the tests
-   ```sh
-   SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile lowering \
-     --test differential -E 'test(generated_differential)' --nocapture
-   ```
-3. Establish differential parity before adding shape assertions. Then wrap
-   only the interesting statements with `@lowering-*` and `@rewrite-*` markers
-   and regenerate with `tools/update_filecheck.py` or the `justfile` recipes.
-4. Review the generated FileCheck diff manually. Accept it only when it
-   captures desirable code generation; regeneration is not approval of a
-   regression.
-5. Rerun the isolated fixture so both differential execution and FileCheck
-   pass.
-6. Use `cargo run -- translate-lowered <file.c>` to see baseline output
-   before any fixups run, so you can tell whether a failure belongs in
-   lowering or in a fixup pass.
-7. Implement the change in `src/frontend/`.
-   Every op inside a function body goes through
-   `FunctionLowerer::lower_op` (`lowerer.rs`), which matches on
-   a `self.lower_xxx(op)` handler per op.
-   New ops get a new `Op::X(v) => self.lower_x(&v)` arm
-   plus a `lower_x` implementation in the matching file.
-8. Run the full `lowering` profile; it also covers the chibicc,
-   gcc-torture, and c-testsuite suites, since a change can
-   regress other fixtures.
-9. Run `cargo fmt` and `cargo clippy` as final gates. They do not replace the
-   differential test or the full profile; rerun tests after them only if they
-   changed source or fixture inputs.
-10. Do not close the task until the relevant full profile is green and the
-    FileCheck diff has been reviewed.
+FileCheck is suspended. For rewrite work, use fixtures that execute the backend
+path; the raw lowering suite alone cannot verify a rewrite.

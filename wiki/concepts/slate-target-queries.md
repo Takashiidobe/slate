@@ -35,7 +35,5 @@
 ## Oracle
 
 - Differential tests and corpus filters use `clang` on PATH.
-- `SLATE_CLANG` is removed; no compiler override in translation or test support.
-- CIR ingestion and its fixed compiler path are removed.
 - GCC corpus admission excludes `dg-shouldfail` cases; sanitizer UB tests cannot
   serve as uninstrumented differential references.

@@ -22,13 +22,10 @@ that Slate can't translate is a bug.
 
 ## Cross-platform by default
 
-Translated Rust code should keep working everywhere the original C project
-did, not just on the machine that ran the translator. [Cross Compilation](./compilation.md)
-covers how `--target` produces one crate that cross-compiles for every
-requested triple, with `#ifdef`-gated C translated once per target and
-merged behind matching `#[cfg(...)]` attributes. That only works because
-translation never depends on the host's system headers: target headers come
-from slate-sysroots.
+Translated Rust should preserve behavior on each supported target. Target facts
+come from slate-parser and target headers from slate-sysroots. [Cross
+compilation](compilation.md) documents current translation and runtime limits;
+a merged multi-target project remains a goal.
 
 ## Idiomatic output, without an LLM
 

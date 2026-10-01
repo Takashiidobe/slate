@@ -1,55 +1,26 @@
 # Architecture
 
-![Slate architecture](./diagrams/architecture.svg)
+![Slate architecture](diagrams/architecture.svg)
 
-## Parse
+| Stage | Owner | Output |
+| --- | --- | --- |
+| Preprocessing, parsing and semantic analysis | `crates/slate-parser` | Typed `ir::Module` and source locations |
+| Rust lowering | `crates/slate/src/frontend/lowerer` | `rust_ast::Program` |
+| Analyses and rewrites | `crates/slate/src/backend` | Transformed Rust AST |
+| Emission and formatting | Backend codegen and prettyplease | Rust source |
+| Project generation | Slate CLI | Cargo crate and optional C runtime bridges |
 
-`SLATE_CLANG` a Clang built with `CLANG_ENABLE_CIR=ON` is invoked once
-per translation unit with the [macro dump plugin](./macro-dump-plugin.md)
-attached (see [Cross Compilation](./compilation.md)). The
-parsing stage emits CIR and AST.
+C semantics, conversions and target layout belong to slate-parser. Slate
+translates that typed IR directly. Unsupported constructs produce barriers;
+broken IR invariants produce invalid-IR diagnostics.
 
-- CIR (`-fclangir`), parsed by `src/cir` into a structured op-tree. CIR
-  is the primary lowering input since it has already resolved types, linkage,
-  and control flow, so lowering doesn't have to re-derive them from a raw
-  AST.
-- The Clang AST (`-ast-dump=json`), parsed by
-  `src/frontend/c_ast.rs`. CIR throws away doc comments, macro identity, header
-  provenance for libc calls, bit-field widths, packing attributes, and exact
-  `long double` bit patterns so these come from the AST (and from the
-  macro dump plugin's provenance events) instead. More details in
-  [Clang AST Integration](./clang-ast.md).
+`translate-lowered` and project generation emit raw lowered Rust. `translate`
+runs the retained backend pipeline. The current differential profile tests raw
+lowering; rewrite changes need fixtures that exercise backend translation.
 
-## Lower
+Target headers come from slate-sysroots. Supported whole-item directive
+branches can be merged into Rust cfg items; project generation currently
+requires one configuration per translation unit.
 
-`src/frontend/lowerer.rs` walks the CIR op-tree and looks up AST-side facts
-by source-location offset as it goes, producing baseline Rust: correct
-but intentionally unpolished `unsafe`, `#[repr(C)]`, raw pointers,
-explicit temporaries. Correctness at this stage is checked by differential
-testing (compile + run the C, compile + run the Rust, require identical
-stdout and exit code), not by how the output looks.
-
-## Analyze
-
-Baseline Rust is not idiomatized in place. `src/backend/facts` runs
-read-only analysis over the lowered `Program`, like callers, purity,
-etc. This is the shared fact base every fixup pass queries instead of
-re-deriving the same analysis independently.
-
-## Rewrite
-
-`src/backend/engine/rules` holds the current worklist fixup passes. Each rule
-selects candidates and applies conservative edits over the lowered `Program`;
-the engine schedules the registered rules to a fixed point. They
-recover idiom safe references, `Vec`/`Box`, `for x in ..`, compound
-assignment without changing behavior, and each pass is independently
-verified the same way baseline lowering is (differential testing), so
-disabling any one of them still leaves correct Rust. More in
-[Rewriting](./writing-a-rewrite.md).
-
-## Cross compiling
-
-This whole pipeline runs once per preprocessor configuration when a file
-branches on `#ifdef`/target macros, and the resulting programs are merged
-behind Rust `#[cfg(...)]`; see
-[target-conditional translation](./translate-directives.md) for that mechanism.
+The [wiki architecture](https://github.com/takashiidobe/slate/blob/main/wiki/concepts/slate-architecture.md)
+defines the source boundaries and command behavior.
