@@ -1,7 +1,10 @@
 use super::*;
 
 impl FunctionLowerer<'_, '_> {
-    pub(super) fn lower_extern(&mut self, function: &ir::Function) -> Result<rust::ExternDecl> {
+    pub(super) fn lower_extern(
+        &mut self,
+        function: &slate_parser::ast::Span<ir::Function>,
+    ) -> Result<rust::ExternDecl> {
         let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
             return Err(Construct::Function {
                 name: function.name.clone(),
@@ -9,6 +12,7 @@ impl FunctionLowerer<'_, '_> {
             }
             .into());
         };
+        let ret = self.lower_return(function)?;
         Ok(rust::ExternDecl::Fn(rust::ExternFnDecl {
             attrs: Vec::new(),
             name: function.name.clone(),
@@ -28,18 +32,14 @@ impl FunctionLowerer<'_, '_> {
                 })
                 .collect::<Result<Vec<_>>>()?,
             variadic: *variadic,
-            ret: function
-                .return_type
-                .as_ref()
-                .map(|ty| self.lower_type(ty))
-                .transpose()?,
+            ret,
             safe: false,
         }))
     }
 
     pub(super) fn lower_function(
         &mut self,
-        function: &ir::Function,
+        function: &slate_parser::ast::Span<ir::Function>,
         body: &[slate_parser::ast::Span<ir::Statement>],
     ) -> Result<Item> {
         let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
@@ -49,6 +49,7 @@ impl FunctionLowerer<'_, '_> {
             }
             .into());
         };
+        let ret = self.lower_return(function)?;
         let mut params = fixed
             .iter()
             .map(|param| {
@@ -84,14 +85,28 @@ impl FunctionLowerer<'_, '_> {
             vis: rust::Visibility::Private,
             unsafe_: *variadic,
             abi: variadic.then_some(rust::Abi::CUnwind),
-            name: self.tables.names[&function.id].rust.clone(),
+            name: self.tables.names[&function.value.id].rust.clone(),
             params,
-            ret: function
-                .return_type
-                .as_ref()
-                .map(|ty| self.lower_type(ty))
-                .transpose()?,
+            ret,
             body: statements,
         }))
+    }
+
+    fn lower_return(
+        &mut self,
+        function: &slate_parser::ast::Span<ir::Function>,
+    ) -> Result<Option<rust::Type>> {
+        let Some(ty) = &function.return_type else {
+            return Ok(None);
+        };
+        let returns = self.tables.metadata.get(&function.id).and_then(|entries| {
+            entries
+                .iter()
+                .find(|(key, _)| key == "c_return")
+                .map(|(_, value)| value.clone())
+        });
+        self.lower_type(ty)
+            .map(Some)
+            .map_err(|e| e.returned_by(Site::of(function), returns))
     }
 }

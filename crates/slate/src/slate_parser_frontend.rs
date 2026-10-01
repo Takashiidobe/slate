@@ -51,6 +51,7 @@ fn render_site(
     label: &str,
     ir: String,
     context: &[lowerer::Context],
+    clip_to_first_line: bool,
 ) -> String {
     let mut help = ir;
     if let Some(spelling) = site.spelling(files) {
@@ -80,7 +81,12 @@ fn render_site(
     };
     let labels = std::iter::once(miette::LabeledSpan::new_primary_with_span(
         Some(label.to_owned()),
-        (site.expansion.offset, site.expansion.length),
+        if clip_to_first_line {
+            let line = first_line(site.expansion.offset);
+            (site.expansion.offset, line.len().min(site.expansion.length)).into()
+        } else {
+            miette::SourceSpan::from((site.expansion.offset, site.expansion.length))
+        },
     ))
     .chain(
         context
@@ -145,6 +151,7 @@ pub fn lower_module(
                 "broken IR invariant",
                 invalid.invariant.to_string(),
                 &invalid.context,
+                false,
             ),
             invalid: Box::new(invalid),
         }
@@ -158,9 +165,13 @@ pub fn lower_module(
                     "unsupported slate-parser IR{}",
                     function_suffix(&barrier.function)
                 ),
-                &format!("cannot lower {} to Rust", barrier.construct.kind()),
+                &barrier.construct.label(),
                 barrier.construct.to_string(),
                 &barrier.context,
+                matches!(
+                    barrier.construct,
+                    lowerer::Construct::Function { .. } | lowerer::Construct::Return { .. }
+                ),
             ),
             barrier: Box::new(barrier),
         }),

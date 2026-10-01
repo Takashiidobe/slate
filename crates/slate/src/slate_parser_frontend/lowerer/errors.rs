@@ -68,6 +68,8 @@ pub enum Construct {
     Place { ir: String },
     #[error("type {ty}")]
     Type { ty: String },
+    #[error("return type {ty}")]
+    Return { returns: Option<String>, ty: String },
     #[error("record {name}: {detail}")]
     Record { name: String, detail: String },
     #[error("switch: {detail}")]
@@ -85,10 +87,25 @@ impl Construct {
             Self::Statement { kind, .. } | Self::Value { kind, .. } => kind,
             Self::Place { .. } => "place",
             Self::Type { .. } => "type",
+            Self::Return { .. } => "return",
             Self::Record { .. } => "record",
             Self::Switch { .. } => "switch",
             Self::LongDouble { .. } => "long-double",
         }
+    }
+
+    pub fn label(&self) -> String {
+        match self {
+            Self::Return { returns, .. } => return_label(returns.as_deref()),
+            construct => format!("cannot lower {} to Rust", construct.kind()),
+        }
+    }
+}
+
+fn return_label(returns: Option<&str>) -> String {
+    match returns {
+        Some(returns) => format!("cannot lower a function returning `{returns}`"),
+        None => "return type could not be lowered to Rust".into(),
     }
 }
 
@@ -169,6 +186,22 @@ impl Failure {
         self
     }
 
+    pub(super) fn returned_by(self, site: Site, returns: Option<String>) -> Self {
+        match &self.0.kind {
+            Kind::Unsupported(Construct::Type { ty }) if self.0.site.is_none() => {
+                Self::from(Construct::Return {
+                    returns,
+                    ty: ty.clone(),
+                })
+                .at(site)
+            }
+            _ => {
+                let label = return_label(returns.as_deref());
+                self.at(site).within(site, label)
+            }
+        }
+    }
+
     pub(super) fn within(mut self, site: Site, label: String) -> Self {
         self.0.context.push(Context { site, label });
         self
@@ -182,8 +215,12 @@ impl Failure {
         let function = function.map(str::to_owned);
         let site = self.0.site.unwrap_or(fallback);
         let mut context = self.0.context;
-        context.retain(|context| context.site != site);
-        context.dedup();
+        let mut seen = vec![site];
+        context.retain(|context| {
+            let first = !seen.contains(&context.site);
+            seen.push(context.site);
+            first
+        });
         match self.0.kind {
             Kind::Unsupported(construct) => Ok(Barrier {
                 function,

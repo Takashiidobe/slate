@@ -47,6 +47,7 @@ struct Tables<'m> {
     statics: HashSet<BindingId>,
     over_aligned: HashMap<BindingId, u64>,
     target: &'m TargetInfo,
+    metadata: &'m ir::Metadata,
     types: HashMap<TypeId, &'m Span<ir::TypeDefinition>>,
     record_names: HashMap<TypeId, String>,
 }
@@ -228,6 +229,7 @@ impl<'m> ModuleLowerer<'m> {
             statics: statics.iter().map(|global| global.variable.id).collect(),
             over_aligned: HashMap::new(),
             target: &module.target,
+            metadata: &module.metadata,
             types: module
                 .types
                 .iter()
