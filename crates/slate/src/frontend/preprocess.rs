@@ -1,10 +1,7 @@
 use crate::backend::rust_ast::Cfg;
 use std::collections::BTreeMap;
-use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::path::Path;
 use thiserror::Error;
-
-static NEXT_SANITIZED_INPUT: AtomicU64 = AtomicU64::new(0);
 
 pub fn read_source(path: &Path) -> std::io::Result<(String, Vec<u8>)> {
     let raw = std::fs::read(path)?;
@@ -39,36 +36,6 @@ pub enum PreprocessError {
         start: usize,
         end: usize,
         source_len: usize,
-    },
-    #[error("create {path}: {source}")]
-    CreateTempDir {
-        path: PathBuf,
-        #[source]
-        source: std::io::Error,
-    },
-    #[error("could not allocate a temporary directory for sanitized Clang input")]
-    TempDirExhausted,
-    #[error("write sanitized Clang input {path}: {source}")]
-    WriteSanitizedInput {
-        path: PathBuf,
-        #[source]
-        source: std::io::Error,
-    },
-    #[error("get current directory: {source}")]
-    CurrentDir {
-        #[source]
-        source: std::io::Error,
-    },
-    #[error("encode VFS overlay: {source}")]
-    EncodeOverlay {
-        #[source]
-        source: serde_json::Error,
-    },
-    #[error("write VFS overlay {path}: {source}")]
-    WriteOverlay {
-        path: PathBuf,
-        #[source]
-        source: std::io::Error,
     },
     #[error("parse preprocessing arguments: {source}")]
     Arguments {
@@ -622,25 +589,6 @@ pub struct Preprocessing {
     pub diagnostics: Vec<Diagnostic>,
 }
 
-pub struct ClangInput {
-    extra_args: Vec<String>,
-    temp_dir: Option<PathBuf>,
-}
-
-impl ClangInput {
-    pub fn extra_args(&self) -> &[String] {
-        &self.extra_args
-    }
-}
-
-impl Drop for ClangInput {
-    fn drop(&mut self) {
-        if let Some(path) = &self.temp_dir {
-            let _ = std::fs::remove_dir_all(path);
-        }
-    }
-}
-
 pub fn blank_directives(
     raw: &[u8],
     directives: &[&DirectiveRecord],
@@ -662,78 +610,6 @@ pub fn blank_directives(
         }
     }
     Ok(bytes)
-}
-
-pub fn clang_input(
-    path: &Path,
-    raw: &[u8],
-    directives: &[&DirectiveRecord],
-) -> Result<ClangInput, PreprocessError> {
-    if directives.is_empty() {
-        return Ok(ClangInput {
-            extra_args: Vec::new(),
-            temp_dir: None,
-        });
-    }
-
-    let bytes = blank_directives(raw, directives)?;
-    let temp_dir = create_sanitized_temp_dir()?;
-    let mut input = ClangInput {
-        extra_args: Vec::new(),
-        temp_dir: Some(temp_dir.clone()),
-    };
-    let sanitized_path = temp_dir.join("source.c");
-    let overlay_path = temp_dir.join("overlay.json");
-    std::fs::write(&sanitized_path, bytes).map_err(|source| {
-        PreprocessError::WriteSanitizedInput {
-            path: sanitized_path.clone(),
-            source,
-        }
-    })?;
-    let virtual_path = if path.is_absolute() {
-        path.to_path_buf()
-    } else {
-        std::env::current_dir()
-            .map_err(|source| PreprocessError::CurrentDir { source })?
-            .join(path)
-    };
-    let overlay = serde_json::json!({
-        "version": 0,
-        "use-external-names": false,
-        "roots": [{
-            "type": "file",
-            "name": virtual_path,
-            "external-contents": sanitized_path,
-        }],
-    });
-    std::fs::write(
-        &overlay_path,
-        serde_json::to_vec(&overlay).map_err(|source| PreprocessError::EncodeOverlay { source })?,
-    )
-    .map_err(|source| PreprocessError::WriteOverlay {
-        path: overlay_path.clone(),
-        source,
-    })?;
-
-    input.extra_args = vec![
-        "-ivfsoverlay".to_string(),
-        overlay_path.to_string_lossy().into_owned(),
-    ];
-    Ok(input)
-}
-
-fn create_sanitized_temp_dir() -> Result<PathBuf, PreprocessError> {
-    for _ in 0..100 {
-        let id = NEXT_SANITIZED_INPUT.fetch_add(1, Ordering::Relaxed);
-        let path =
-            std::env::temp_dir().join(format!("slate-sanitized-{}-{id}", std::process::id()));
-        match std::fs::create_dir(&path) {
-            Ok(()) => return Ok(path),
-            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
-            Err(source) => return Err(PreprocessError::CreateTempDir { path, source }),
-        }
-    }
-    Err(PreprocessError::TempDirExhausted)
 }
 
 pub fn record(source: &str, macros: &BTreeMap<String, String>) -> Preprocessing {
@@ -770,9 +646,6 @@ fn resolve_directive_activity(
     initial_macros: &BTreeMap<String, String>,
 ) {
     let mut macros = initial_macros.clone();
-    for macro_definition in crate::frontend::macros::MACROS {
-        macros.entry(macro_definition.name.to_string()).or_default();
-    }
     let mut stack: Vec<ConditionalState> = Vec::new();
     for directive in directives {
         let parsed = conditional_directive(directive.name.as_str(), &directive.raw_payload);

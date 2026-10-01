@@ -1,575 +1,691 @@
 use super::*;
 
-impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn materialize_expr(&mut self, result: &str, expr: Expr, cir_ty: Option<&CirType>) {
-        let ty = cir_ty
-            .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or(Type::Prim(Prim::I32));
-        self.materialize_expr_as(result, expr, ty);
-    }
+fn odd_width(ty: &ir::Type) -> Option<(u32, bool, Prim)> {
+    let ir::Type::Numeric(ir::NumericType::Integer { width, signed, .. }) = *ty else {
+        return None;
+    };
+    let container = match (width, signed) {
+        (8 | 16 | 32 | 64 | 128, _) | (129.., _) | (0, _) => return None,
+        (..8, true) => Prim::I8,
+        (..8, false) => Prim::U8,
+        (..16, true) => Prim::I16,
+        (..16, false) => Prim::U16,
+        (..32, true) => Prim::I32,
+        (..32, false) => Prim::U32,
+        (..64, true) => Prim::I64,
+        (..64, false) => Prim::U64,
+        (_, true) => Prim::I128,
+        (_, false) => Prim::U128,
+    };
+    Some((width, signed, container))
+}
 
-    pub(super) fn materialize_expr_as(&mut self, result: &str, expr: Expr, ty: Type) {
-        if let Some(name) = self
-            .dispatch
-            .as_ref()
-            .and_then(|dispatch| dispatch.cross_block_names.get(result).cloned())
-        {
-            let default = self.parent.default_value_expr(&ty);
-            self.dispatch
-                .as_mut()
-                .unwrap()
-                .pending_hoists
-                .push(Stmt::Let {
-                    name: name.clone(),
-                    mutable: true,
-                    ty: Some(ty),
-                    init: Some(default),
-                });
-            self.push_stmt(Self::assign_stmt(Expr::Var(name.into()), expr));
-            return;
-        }
-        let name = self.next_temp();
-        self.push_stmt(Stmt::Let {
-            name: name.clone(),
-            mutable: false,
-            ty: Some(ty),
-            init: Some(expr),
-        });
-        self.immutable_temps.insert(name.clone());
-        self.values
-            .insert(result.to_string(), Val::Expr(Expr::Var(name.into())));
+fn prim_width(prim: Prim) -> u32 {
+    match prim {
+        Prim::I8 | Prim::U8 => 8,
+        Prim::I16 | Prim::U16 => 16,
+        Prim::I32 | Prim::U32 => 32,
+        Prim::I64 | Prim::U64 => 64,
+        _ => 128,
     }
+}
 
-    pub(super) fn forward_safe_value(&mut self, value: Expr, cir_ty: Option<&CirType>) -> Expr {
-        let stable = match &value {
-            Expr::Value(_) => true,
-            Expr::Var(name) => self.immutable_temps.contains(name.as_str()),
-            _ => false,
-        };
-        if stable {
-            return value;
-        }
-        let name = self.next_temp();
-        self.push_stmt(Stmt::Let {
-            name: name.clone(),
-            mutable: false,
-            ty: cir_ty.map(|ty| self.parent.rust_type(ty)),
-            init: Some(value),
-        });
-        self.immutable_temps.insert(name.clone());
-        Expr::Var(name.into())
-    }
-
-    pub(super) fn operand_expr(&self, operand: &str) -> Expr {
-        if let Some(val) = self.values.get(operand) {
-            return val.to_expr(&self.parent.strings);
-        }
-        if let Some(slot) = self.slot_place(operand) {
-            return slot;
-        }
-        Expr::Var(sanitize_ident(operand))
-    }
-
-    pub(super) fn typed_operand_expr(&self, operand: &str, ty: &CirType) -> Expr {
-        if is_cir_function_pointer_type(ty) {
-            self.function_pointer_operand_expr(operand)
-        } else if matches!(ty, CirType::Pointer { .. }) {
-            self.whole_aggregate_pointer_expr(operand, ty)
-                .unwrap_or_else(|| self.pointer_operand_expr(operand))
-        } else {
-            self.operand_expr(operand)
-        }
-    }
-
-    pub(super) fn value_or_place_address_expr(&self, operand: &str) -> Expr {
-        if self.values.contains_key(operand) {
-            return self.operand_expr(operand);
-        }
-        if self.slot_place(operand).is_some()
-            || self.member_ptrs.contains_key(operand)
-            || self.element_ptrs.contains_key(operand)
-            || self.global_name(operand).is_some()
-        {
-            return self.pointer_operand_expr(operand);
-        }
-        self.operand_expr(operand)
-    }
-
-    pub(super) fn slot_place(&self, operand: &str) -> Option<Expr> {
-        self.slot_places.get(operand).cloned().or_else(|| {
-            self.slots
-                .get(operand)
-                .map(|slot| Expr::Var(slot.clone().into()))
-        })
-    }
-
-    pub(super) fn slot_receiver(&self, operand: &str) -> Option<Expr> {
-        let place = self.slot_place(operand)?;
-        if !self.aligned_slots.contains(operand) {
-            return Some(place);
-        }
-        match place {
-            Expr::Unary {
-                op: UnaryOp::Deref,
-                expr,
-            } => Some(*expr),
-            _ => Some(place),
-        }
-    }
-
-    pub(super) fn element_place_expr(&self, element: &ElementPtr) -> Expr {
-        let index = Expr::Cast {
-            expr: Box::new(element.index.clone()),
-            ty: Type::Prim(Prim::Usize),
-        };
-        if element.unbounded || element.out_of_bounds {
-            let array_ptr = if element.unaligned {
-                Expr::MethodCallGeneric {
-                    recv: Box::new(Expr::AddrOf {
-                        mutable: true,
-                        expr: Box::new(element.base.clone()),
-                    }),
-                    method: "cast".into(),
-                    type_args: vec![element.elem_ty.clone().unwrap_or(Type::Prim(Prim::U8))],
-                    args: Vec::new(),
-                }
-            } else {
-                self.global_array_ptr_expr(&element.base, element.elem_ty.as_ref())
-                    .unwrap_or_else(|| Expr::ArrayPtr {
-                        array: Box::new(element.base.clone()),
-                        mutable: true,
-                    })
-            };
-            return Expr::Unary {
-                op: UnaryOp::Deref,
-                expr: Box::new(Expr::MethodCall {
-                    recv: Box::new(array_ptr),
-                    method: "add".into(),
-                    args: vec![index],
-                }),
-            };
-        }
-        Expr::Index {
-            base: Box::new(element.base.clone()),
-            index: Box::new(index),
-        }
-    }
-
-    fn place_root_is_global(&self, expr: &Expr) -> bool {
-        match expr {
-            Expr::Var(name) => {
-                let name = name.as_str();
-                self.parent.globals.contains_key(name)
-                    || self.parent.extern_globals.contains_key(name)
-            }
-            Expr::Field { base, .. } | Expr::TupleField { base, .. } | Expr::Index { base, .. } => {
-                self.place_root_is_global(base)
-            }
-            _ => false,
-        }
-    }
-
-    fn global_array_ptr_expr(&self, base: &Expr, elem_ty: Option<&Type>) -> Option<Expr> {
-        if !self.place_root_is_global(base) {
-            return None;
-        }
-        Some(Expr::MethodCallGeneric {
-            recv: Box::new(Expr::AddrOf {
-                mutable: true,
-                expr: Box::new(base.clone()),
-            }),
-            method: "cast".into(),
-            type_args: vec![elem_ty.cloned()?],
+pub(super) fn zeroed() -> Expr {
+    Expr::Unsafe(Box::new(rust::Block {
+        stmts: Vec::new(),
+        tail: Some(Box::new(Expr::Call {
+            func: Box::new(Expr::Var("std::mem::zeroed".into())),
             args: Vec::new(),
-        })
-    }
+            binding: CallBinding::Generated,
+        })),
+    }))
+}
 
-    pub(super) fn pointer_operand_expr(&self, operand: &str) -> Expr {
-        if self.member_ptrs.contains_key(operand) || self.element_ptrs.contains_key(operand) {
-            return self.store_address_expr(operand);
-        }
-        if self.global_name(operand).is_some() {
-            return self.store_address_expr(operand);
-        }
-        if let Some(value) = self.values.get(operand) {
-            return value.to_expr(&self.parent.strings);
-        }
-        if let Some(slot) = self.slot_place(operand) {
-            return if self
-                .slot_types
-                .get(operand)
-                .is_some_and(|ty| matches!(ty, Type::Array { .. }))
-            {
-                Expr::MethodCall {
-                    recv: Box::new(self.slot_receiver(operand).unwrap_or(slot)),
-                    method: "as_mut_ptr".into(),
-                    args: vec![],
-                }
-            } else {
-                self.store_address_expr(operand)
-            };
-        }
-        Expr::Var(sanitize_ident(operand))
-    }
-
-    pub(super) fn store_function_pointer_value(
+impl FunctionLowerer<'_, '_> {
+    pub(super) fn lower_evaluation_statements(
         &mut self,
-        operand: &str,
-        ptr: &str,
-        source_cir_ty: &CirType,
-    ) -> Expr {
-        let target_ty = self
-            .member_ptrs
-            .get(ptr)
-            .and_then(|member| member.field_ty.as_ref())
-            .or_else(|| self.slot_types.get(ptr))
-            .cloned()
-            .or_else(|| {
-                let name = self.global_name(ptr)?;
-                self.parent
-                    .globals
-                    .get(&name)
-                    .map(|global| global.ty.clone())
-                    .or_else(|| {
-                        self.parent
-                            .extern_globals
-                            .get(&name)
-                            .map(|global| global.ty.clone())
-                    })
-            });
-        let operand_is_named_function = matches!(self.values.get(operand), Some(Val::Global(_)));
-        if let Some(target_ty) = target_ty.clone()
-            && let Some(Val::Global(fn_name)) = self.values.get(operand).cloned()
-            && !self.parent.strings.contains_key(&fn_name)
-            && let Some(wrapped) = self.parent.enum_return_mismatch_wrap(&fn_name, &target_ty)
-        {
-            return wrapped;
+        evaluation: &ir::Evaluation,
+    ) -> Result<Vec<Stmt>> {
+        let mut statements = self.lower_statement_list(&evaluation.statements)?;
+        if !matches!(evaluation.value.node.value, ValueKind::Void) {
+            statements.push(Stmt::Expr(self.lower_value(&evaluation.value)?));
         }
-        if let Some(target_ty) = target_ty.clone()
-            && let Some(Val::Global(fn_name)) = self.values.get(operand).cloned()
-            && !self.parent.strings.contains_key(&fn_name)
-        {
-            let target = self
-                .parent
-                .long_double_callback_trampolines
-                .get(&fn_name)
-                .cloned()
-                .or_else(|| {
-                    self.parent
-                        .long_double_extern_pointer_shim(&fn_name, &target_ty)
-                })
-                .unwrap_or(fn_name);
-            let raw_ptr = Type::Ptr {
-                mutable: false,
-                inner: Box::new(Type::Unit),
-            };
-            return Expr::Transmute {
-                from: raw_ptr.clone(),
-                to: target_ty,
-                expr: Box::new(Expr::Cast {
-                    expr: Box::new(Expr::Var(sanitize_ident(&target))),
-                    ty: raw_ptr,
-                }),
-            };
-        }
-        let mut value = self.function_pointer_operand_expr(operand);
-        if let Some(target_ty) = target_ty.as_ref()
-            && let source_ty = self
-                .loaded_field_types
-                .get(operand)
-                .cloned()
-                .unwrap_or_else(|| self.parent.rust_type(source_cir_ty))
-            && source_ty != *target_ty
-        {
-            value = Expr::Transmute {
-                from: source_ty,
-                to: target_ty.clone(),
-                expr: Box::new(value),
-            };
-        }
-        if !operand_is_named_function
-            && let Some(Type::FnPtr { ret, .. }) = target_ty
-            && matches!(ret.as_ref(), Type::Custom(enum_name) if self.parent.enums.contains_key(enum_name))
-        {
-            return Self::unsafe_expr(Expr::Call {
-                binding: crate::function_identity::CallBinding::Generated,
-                func: Box::new(Expr::Path(Path::new(
-                    ["std", "mem", "transmute"].map(Ident::from),
-                ))),
-                args: vec![value],
-            });
-        }
-        value
+        Ok(statements)
     }
 
-    pub(super) fn named_function_coerced_to(
-        &self,
-        operand: &str,
-        target_ty: &Type,
-    ) -> Option<Expr> {
-        let Some(Val::Global(fn_name)) = self.values.get(operand).cloned() else {
-            return None;
-        };
-        if self.parent.strings.contains_key(&fn_name) {
-            return None;
-        }
-        let target = self
-            .parent
-            .long_double_callback_trampolines
-            .get(&fn_name)
-            .cloned()
-            .unwrap_or(fn_name);
-        let raw_ptr = Type::Ptr {
-            mutable: false,
-            inner: Box::new(Type::Unit),
-        };
-        Some(Expr::Transmute {
-            from: raw_ptr.clone(),
-            to: target_ty.clone(),
-            expr: Box::new(Expr::Cast {
-                expr: Box::new(Expr::Var(sanitize_ident(&target))),
-                ty: raw_ptr,
-            }),
-        })
+    pub(super) fn lower_evaluation(
+        &mut self,
+        evaluation: &ir::Evaluation,
+    ) -> Result<(Vec<Stmt>, Expr)> {
+        let statements = self.lower_statement_list(&evaluation.statements)?;
+        let condition = self.lower_condition(&evaluation.value)?;
+        Ok((statements, condition))
     }
 
-    pub(super) fn function_pointer_operand_expr(&self, operand: &str) -> Expr {
-        if self.function_pointer_null_values.contains(operand) {
-            return Expr::Value(RustValue::None);
-        }
-        match self.values.get(operand) {
-            Some(Val::Global(name)) if !self.parent.strings.contains_key(name) => {
-                if name == "main" {
-                    return Expr::Value(RustValue::None);
-                }
-                let target = self
-                    .parent
-                    .long_double_callback_trampolines
-                    .get(name)
-                    .map(String::as_str)
-                    .unwrap_or(name);
-                let extern_fn_ptr_ty = self
-                    .parent
-                    .extern_fn_ptr_types
-                    .get(target)
-                    .cloned()
-                    .or_else(|| {
-                        self.parent
-                            .long_double_shims
-                            .get(target)
-                            .map(extern_fn_ptr_type)
-                    });
-                if let Some(target_ty) = extern_fn_ptr_ty {
-                    let raw_ptr = Type::Ptr {
-                        mutable: false,
-                        inner: Box::new(Type::Unit),
-                    };
-                    return Expr::Transmute {
-                        from: raw_ptr.clone(),
-                        to: target_ty,
-                        expr: Box::new(Expr::Cast {
-                            expr: Box::new(Expr::Var(sanitize_ident(target))),
-                            ty: raw_ptr,
-                        }),
-                    };
-                }
-                Expr::Call {
-                    binding: crate::function_identity::CallBinding::Generated,
-                    func: Box::new(Expr::Var("Some".into())),
-                    args: vec![Expr::Var(sanitize_ident(target))],
-                }
-            }
-            Some(Val::Expr(expr)) if self.is_function_pointer_none_expr(expr) => {
-                Expr::Value(RustValue::None)
-            }
-            Some(value) => value.to_expr(&self.parent.strings),
-            None => self.operand_expr(operand),
-        }
-    }
-
-    pub(super) fn fn_ptr_aware_operand_expr(
-        &self,
-        operand: &str,
-        ty: Option<&CirType>,
-        fn_ptr_expr: fn(&Self, &str) -> Expr,
-        plain_expr: fn(&Self, &str) -> Expr,
-    ) -> Expr {
-        if ty.is_some_and(is_cir_function_pointer_type) {
-            fn_ptr_expr(self, operand)
+    pub(super) fn lower_condition(&mut self, value: &ir::Value) -> Result<Expr> {
+        let condition = self.lower_value(value)?;
+        if matches!(value.ty, ir::Type::Bool) {
+            Ok(condition)
+        } else if self.tables.is_long_double(&value.ty) {
+            Ok(Expr::Binary {
+                op: BinOp::Ne,
+                lhs: Box::new(condition),
+                rhs: Box::new(long_double_literal(0)),
+            })
         } else {
-            plain_expr(self, operand)
+            Ok(Expr::Binary {
+                op: BinOp::Ne,
+                lhs: Box::new(condition),
+                rhs: Box::new(self.lower_number(&Number::Integer(0u32.into()), &value.ty)?),
+            })
         }
     }
 
-    pub(super) fn function_pointer_byte_operand_expr(&self, operand: &str) -> Expr {
-        Expr::Cast {
-            expr: Box::new(Expr::MethodCall {
-                recv: Box::new(self.function_pointer_operand_expr(operand)),
-                method: "unwrap".into(),
-                args: Vec::new(),
-            }),
-            ty: Type::Ptr {
-                mutable: false,
-                inner: Box::new(Type::Prim(Prim::U8)),
-            },
-        }
+    pub(super) fn lower_value(&mut self, value: &ir::Value) -> Result<Expr> {
+        self.lower_value_node(value)
+            .map_err(|error| error.at(Site::of(&value.node)))
     }
 
-    pub(super) fn is_function_pointer_null_operand(&self, operand: &str) -> bool {
-        if self.function_pointer_null_values.contains(operand) {
-            return true;
-        }
-        matches!(
-            self.values.get(operand),
-            Some(Val::Expr(expr)) if self.is_function_pointer_none_expr(expr)
-        )
-    }
-
-    pub(super) fn is_function_pointer_none_expr(&self, expr: &Expr) -> bool {
-        matches!(
-            expr,
-            Expr::Value(RustValue::None) | Expr::Value(RustValue::NullPtr)
-        )
-    }
-
-    pub(super) fn whole_aggregate_pointer_expr(&self, operand: &str, ty: &CirType) -> Option<Expr> {
-        let is_array_slot = self
-            .slot_types
-            .get(operand)
-            .is_some_and(|slot_ty| matches!(slot_ty, Type::Array { .. }));
-        let points_to_whole_aggregate = ty
-            .pointee()
-            .is_some_and(|inner| inner.as_array().is_some() || inner.as_vector().is_some());
-        (is_array_slot && points_to_whole_aggregate).then(|| Expr::AddrOf {
-            mutable: true,
-            expr: Box::new(self.slot_place(operand).expect("checked slot_types above")),
-        })
-    }
-
-    pub(super) fn call_arg_expr(&self, operand: &str, ty: &CirType) -> Expr {
-        if is_boxed_va_args_type(&self.parent.rust_type(ty))
-            && let Some(place) = self.va_target_place(operand)
-        {
-            Expr::MethodCall {
-                recv: Box::new(place),
-                method: "clone".into(),
-                args: vec![],
+    fn lower_value_node(&mut self, value: &ir::Value) -> Result<Expr> {
+        Ok(match &value.node.value {
+            ValueKind::Constant(number) => self.lower_number(number, &value.ty)?,
+            ValueKind::CodeUnits(units) => {
+                let ir::Type::Array { element, .. } = &value.ty else {
+                    return Err(unsupported_value(value));
+                };
+                let signed_width = match **element {
+                    ir::Type::Numeric(ir::NumericType::Integer {
+                        width,
+                        signed: true,
+                        ..
+                    }) => Some(128 - width),
+                    _ => None,
+                };
+                let element = self.lower_type(element)?;
+                Expr::ArrayLit(
+                    units
+                        .iter()
+                        .map(|unit| Expr::Cast {
+                            expr: Box::new(Expr::Value(match signed_width {
+                                Some(shift) => {
+                                    rust::RustValue::I128((i128::from(*unit) << shift) >> shift)
+                                }
+                                None => rust::RustValue::U128(u128::from(*unit)),
+                            })),
+                            ty: element.clone(),
+                        })
+                        .collect(),
+                )
             }
-        } else if matches!(ty, CirType::Pointer { .. }) {
-            let expr = self.typed_operand_expr(operand, ty);
-            let operand_field_ty = self
-                .member_ptrs
-                .get(operand)
-                .and_then(|member| member.field_ty.as_ref())
-                .or_else(|| {
-                    self.element_ptrs
-                        .get(operand)
-                        .and_then(|element| element.elem_ty.as_ref())
-                })
-                .or_else(|| self.slot_types.get(operand));
-            if operand_field_ty.is_some_and(|field_ty| self.parent.type_is_enum(field_ty))
-                && matches!(self.parent.rust_type(ty), Type::Ptr { .. })
+            ValueKind::VaArg { list } if self.tables.is_long_double(&value.ty) => {
+                Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::Call {
+                        func: Box::new(Expr::Var("__slate_f80_va_arg".into())),
+                        args: vec![Expr::AddrOf {
+                            mutable: true,
+                            expr: Box::new(self.lower_place(list)?),
+                        }],
+                        binding: CallBinding::Generated,
+                    })),
+                }))
+            }
+            ValueKind::VaArg { list } => Expr::Unsafe(Box::new(rust::Block {
+                stmts: Vec::new(),
+                tail: Some(Box::new(Expr::MethodCallGeneric {
+                    recv: Box::new(self.lower_place(list)?),
+                    method: "next_arg".into(),
+                    type_args: vec![self.lower_type(&value.ty)?],
+                    args: Vec::new(),
+                })),
+            })),
+            ValueKind::Read {
+                place,
+                ordering: None,
+            } => {
+                let lowered = match self.bit_field_accessor(place, "get")? {
+                    Some((storage, getter)) => Expr::MethodCall {
+                        recv: Box::new(storage),
+                        method: getter,
+                        args: Vec::new(),
+                    },
+                    None => self.lower_place(place)?,
+                };
+                let lowered = if matches!(value.ty, ir::Type::VaList) {
+                    clone_va_list(lowered)
+                } else {
+                    lowered
+                };
+                if self.tables.place_is_unsafe(place) {
+                    Expr::Unsafe(Box::new(rust::Block {
+                        stmts: Vec::new(),
+                        tail: Some(Box::new(lowered)),
+                    }))
+                } else {
+                    lowered
+                }
+            }
+            ValueKind::Copy { operand, .. } => self.lower_value(operand)?,
+            ValueKind::AddressOf(place) => match place.kind {
+                PlaceKind::Deref(ref pointer) => self.lower_value(pointer)?,
+                _ => {
+                    let address = Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(self.lower_place(place)?),
+                    };
+                    if self.tables.place_is_unsafe(place) {
+                        Expr::Unsafe(Box::new(rust::Block {
+                            stmts: Vec::new(),
+                            tail: Some(Box::new(address)),
+                        }))
+                    } else {
+                        address
+                    }
+                }
+            },
+            ValueKind::Convert { operand, .. }
+                if self.tables.is_long_double(&operand.ty)
+                    || self.tables.is_long_double(&value.ty) =>
             {
-                Expr::Cast {
-                    expr: Box::new(expr),
-                    ty: self.parent.rust_type(ty),
+                self.lower_long_double_conversion(operand, &value.ty)?
+            }
+            ValueKind::Convert { operand, .. } => {
+                let from = match odd_width(self.tables.resolve_type(&operand.ty)) {
+                    Some((_, _, container)) => rust::Type::Prim(container),
+                    None => self.lower_type(&operand.ty)?,
+                };
+                let expr = Box::new(self.lower_value(operand)?);
+                let Some((width, signed, container)) =
+                    odd_width(self.tables.resolve_type(&value.ty))
+                else {
+                    return Ok(convert_function_pointer(
+                        from,
+                        self.lower_type(&value.ty)?,
+                        expr,
+                    ));
+                };
+                let contained = Expr::Cast {
+                    expr,
+                    ty: rust::Type::Prim(container),
+                };
+                if signed {
+                    let shift = Box::new(Expr::Value(rust::RustValue::I64(i64::from(
+                        prim_width(container) - width,
+                    ))));
+                    Expr::Binary {
+                        op: BinOp::Shr,
+                        lhs: Box::new(Expr::Binary {
+                            op: BinOp::Shl,
+                            lhs: Box::new(contained),
+                            rhs: shift.clone(),
+                        }),
+                        rhs: shift,
+                    }
+                } else {
+                    Expr::Binary {
+                        op: BinOp::BitAnd,
+                        lhs: Box::new(contained),
+                        rhs: Box::new(Expr::Cast {
+                            expr: Box::new(Expr::Value(rust::RustValue::U128(
+                                (1u128 << width) - 1,
+                            ))),
+                            ty: rust::Type::Prim(container),
+                        }),
+                    }
                 }
-            } else {
-                expr
             }
-        } else {
-            self.typed_operand_expr(operand, ty)
-        }
-    }
-
-    pub(super) fn next_temp(&mut self) -> String {
-        let name = format!("__v{}", self.temp_counter);
-        self.temp_counter += 1;
-        name
-    }
-
-    pub(super) fn emit_todo(&mut self, note: &str) {
-        self.push_stmt(Stmt::Expr(Expr::Todo(note.to_string())));
-    }
-
-    pub(super) fn push_stmt(&mut self, stmt: Stmt) {
-        self.body.push(stmt);
-    }
-
-    pub(super) fn unsafe_expr(value: Expr) -> Expr {
-        Expr::Unsafe(Box::new(crate::backend::rust_ast::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(value)),
-        }))
-    }
-
-    pub(super) fn unsafe_deref_expr(value: Expr) -> Expr {
-        match value {
-            Expr::Unsafe(block) if block.stmts.is_empty() && block.tail.is_some() => {
-                Self::unsafe_expr(Expr::Unary {
-                    op: UnaryOp::Deref,
-                    expr: block.tail.expect("checked above"),
-                })
+            ValueKind::ArrayDecay { place, .. } => {
+                let bytes = match place.kind {
+                    PlaceKind::Binding(id) => self.tables.strings.get(&id),
+                    _ => None,
+                };
+                let Some(bytes) = bytes else {
+                    let array = self.lower_place(place)?;
+                    let decayed = Expr::Cast {
+                        expr: Box::new(if self.tables.place_is_static(place) {
+                            Expr::AddrOf {
+                                mutable: true,
+                                expr: Box::new(array),
+                            }
+                        } else {
+                            Expr::MethodCall {
+                                recv: Box::new(array),
+                                method: if matches!(
+                                    value.ty,
+                                    ir::Type::Pointer { is_const: true, .. }
+                                ) {
+                                    "as_ptr"
+                                } else {
+                                    "as_mut_ptr"
+                                }
+                                .into(),
+                                args: Vec::new(),
+                            }
+                        }),
+                        ty: self.lower_type(&value.ty)?,
+                    };
+                    return Ok(if self.tables.place_is_unsafe(place) {
+                        Expr::Unsafe(Box::new(rust::Block {
+                            stmts: Vec::new(),
+                            tail: Some(Box::new(decayed)),
+                        }))
+                    } else {
+                        decayed
+                    });
+                };
+                Expr::Cast {
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(Expr::ByteStr(bytes.clone())),
+                        method: "as_ptr".into(),
+                        args: Vec::new(),
+                    }),
+                    ty: self.lower_type(&value.ty)?,
+                }
             }
-            value => Self::unsafe_expr(Expr::Unary {
-                op: UnaryOp::Deref,
-                expr: Box::new(value),
-            }),
-        }
-    }
-
-    pub(super) fn without_empty_unsafe(value: Expr) -> Expr {
-        match value {
-            Expr::Unsafe(block) if block.stmts.is_empty() && block.tail.is_some() => {
-                Self::without_empty_unsafe(*block.tail.expect("checked above"))
-            }
-            Expr::Cast { expr, ty } => Expr::Cast {
-                expr: Box::new(Self::without_empty_unsafe(*expr)),
-                ty,
+            ValueKind::Arith {
+                op: op @ (ir::ArithOp::Add | ir::ArithOp::Sub | ir::ArithOp::Mul),
+                left,
+                right,
+                semantics:
+                    ir::ArithSema::Integer {
+                        overflow: ir::Overflow::Wrap,
+                    },
+            } => Expr::MethodCall {
+                recv: Box::new(self.lower_value(left)?),
+                method: format!(
+                    "wrapping_{}",
+                    overflow_method(*op).ok_or_else(|| unsupported_value(value))?
+                ),
+                args: vec![self.lower_value(right)?],
             },
-            value => value,
-        }
-    }
-
-    pub(super) fn and_expr(lhs: Expr, rhs: Expr) -> Expr {
-        Expr::Binary {
-            op: BinOp::And,
-            lhs: Box::new(lhs),
-            rhs: Box::new(rhs),
-        }
-    }
-
-    pub(super) fn or_exprs(mut exprs: Vec<Expr>) -> Expr {
-        let first = exprs.remove(0);
-        exprs.into_iter().fold(first, |lhs, rhs| Expr::Binary {
-            op: BinOp::Or,
-            lhs: Box::new(lhs),
-            rhs: Box::new(rhs),
+            ValueKind::Overflow {
+                op,
+                left,
+                right,
+                result,
+            } => self.lower_overflow(value, *op, left, right, result)?,
+            ValueKind::Arith {
+                op, left, right, ..
+            } => Expr::Binary {
+                op: match op {
+                    ir::ArithOp::Add => BinOp::Add,
+                    ir::ArithOp::Sub => BinOp::Sub,
+                    ir::ArithOp::Mul => BinOp::Mul,
+                    ir::ArithOp::Div => BinOp::Div,
+                    ir::ArithOp::Rem => BinOp::Rem,
+                    ir::ArithOp::And => BinOp::BitAnd,
+                    ir::ArithOp::Or => BinOp::BitOr,
+                    ir::ArithOp::Xor => BinOp::BitXor,
+                    ir::ArithOp::Shl => BinOp::Shl,
+                    ir::ArithOp::Shr => BinOp::Shr,
+                    _ => return Err(unsupported_value(value)),
+                },
+                lhs: Box::new(self.lower_value(left)?),
+                rhs: Box::new(self.lower_value(right)?),
+            },
+            ValueKind::Unary {
+                op: ir::UnaryArithOp::Neg,
+                operand,
+                ..
+            } if matches!(
+                value.ty,
+                ir::Type::Numeric(ir::NumericType::Float(
+                    ir::FloatType::F32 | ir::FloatType::F64 | ir::FloatType::F80
+                ))
+            ) =>
+            {
+                Expr::Unary {
+                    op: rust::UnaryOp::Neg,
+                    expr: Box::new(self.lower_value(operand)?),
+                }
+            }
+            ValueKind::Unary {
+                op,
+                operand,
+                semantics,
+            } if matches!(
+                value.ty,
+                ir::Type::Bool | ir::Type::Numeric(ir::NumericType::Integer { .. })
+            ) =>
+            {
+                let operand = self.lower_value(operand)?;
+                match (op, semantics) {
+                    (ir::UnaryArithOp::Not, _) => Expr::Unary {
+                        op: rust::UnaryOp::Not,
+                        expr: Box::new(operand),
+                    },
+                    (
+                        ir::UnaryArithOp::Neg,
+                        ir::ArithSema::Integer {
+                            overflow: ir::Overflow::Undefined,
+                        },
+                    ) => Expr::Unary {
+                        op: rust::UnaryOp::Neg,
+                        expr: Box::new(operand),
+                    },
+                    (
+                        ir::UnaryArithOp::Neg,
+                        ir::ArithSema::Integer {
+                            overflow: ir::Overflow::Wrap,
+                        },
+                    ) => Expr::MethodCall {
+                        recv: Box::new(operand),
+                        method: "wrapping_neg".into(),
+                        args: Vec::new(),
+                    },
+                    _ => {
+                        return Err(unsupported_value(value));
+                    }
+                }
+            }
+            ValueKind::Logical { op, left, right } if matches!(value.ty, ir::Type::Bool) => {
+                Expr::Binary {
+                    op: match op {
+                        ir::LogicalOp::And => BinOp::And,
+                        ir::LogicalOp::Or => BinOp::Or,
+                    },
+                    lhs: Box::new(self.lower_condition(left)?),
+                    rhs: Box::new(self.lower_condition(right)?),
+                }
+            }
+            ValueKind::Conditional {
+                condition,
+                then_value,
+                else_value,
+            } => {
+                let select = Expr::If {
+                    cond: Box::new(self.lower_condition(condition)?),
+                    then_expr: Box::new(self.lower_value(then_value)?),
+                    else_expr: Box::new(self.lower_value(else_value)?),
+                };
+                match self.lower_type(&value.ty)? {
+                    ty @ rust::Type::FnPtr { .. } => {
+                        let temp = self.next_temp();
+                        Expr::Block(Box::new(rust::Block {
+                            stmts: vec![Stmt::Let {
+                                name: temp.clone(),
+                                mutable: false,
+                                ty: Some(ty),
+                                init: Some(select),
+                            }],
+                            tail: Some(Box::new(Expr::Var(temp.into()))),
+                        }))
+                    }
+                    _ => select,
+                }
+            }
+            ValueKind::Compare {
+                op, left, right, ..
+            } => Expr::Binary {
+                op: match op {
+                    ir::CompareOp::Eq => BinOp::Eq,
+                    ir::CompareOp::Ne => BinOp::Ne,
+                    ir::CompareOp::Lt => BinOp::Lt,
+                    ir::CompareOp::Le => BinOp::Le,
+                    ir::CompareOp::Gt => BinOp::Gt,
+                    ir::CompareOp::Ge => BinOp::Ge,
+                },
+                lhs: Box::new(self.lower_value(left)?),
+                rhs: Box::new(self.lower_value(right)?),
+            },
+            ValueKind::PointerOffset {
+                pointer,
+                amount,
+                subtract,
+                element,
+                ..
+            } => self.lower_pointer_offset(value, pointer, amount, *subtract, element)?,
+            ValueKind::PointerDifference {
+                left,
+                right,
+                element,
+            } => self.lower_pointer_difference(value, left, right, element)?,
+            ValueKind::FunctionDecay {
+                place:
+                    ir::Place {
+                        kind: PlaceKind::Binding(id),
+                        ..
+                    },
+            } => match self.tables.names.get(id) {
+                Some(name) if !name.is_extern => {
+                    self.dependencies.address_taken.insert(name.rust.clone());
+                    Expr::Call {
+                        func: Box::new(Expr::Var("Some".into())),
+                        args: vec![Expr::Var(name.rust.as_str().into())],
+                        binding: CallBinding::Generated,
+                    }
+                }
+                Some(name) => {
+                    let address = rust::Type::Ptr {
+                        mutable: false,
+                        inner: Box::new(rust::Type::Unit),
+                    };
+                    Expr::Transmute {
+                        from: address.clone(),
+                        to: self.lower_type(&value.ty)?,
+                        expr: Box::new(Expr::Cast {
+                            expr: Box::new(Expr::Var(name.rust.as_str().into())),
+                            ty: address,
+                        }),
+                    }
+                }
+                None => {
+                    return Err(unsupported_value(value));
+                }
+            },
+            ValueKind::Null => self.lower_null(value)?,
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if self.tables.names.get(id).is_some_and(|name| name.is_extern)
+                && std::iter::once(&value.ty)
+                    .chain(arguments.iter().map(|argument| &argument.ty))
+                    .any(|ty| self.tables.holds_long_double(ty)) =>
+            {
+                self.lower_long_double_bridge(&self.tables.names[id], arguments, &value.ty)?
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                signature: ir::Type::Function { parameters, .. },
+                arguments,
+                ..
+            } if self
+                .tables
+                .names
+                .get(id)
+                .is_some_and(|name| name.is_variadic)
+                && arguments
+                    .iter()
+                    .skip(parameters.len())
+                    .any(|argument| self.tables.holds_long_double(&argument.ty)) =>
+            {
+                self.lower_long_double_variadic_trampoline(
+                    &self.tables.names[id],
+                    arguments,
+                    parameters.len(),
+                    &value.ty,
+                )?
+            }
+            ValueKind::Call {
+                callee, arguments, ..
+            } => self.lower_call(callee, arguments)?,
+            ValueKind::Aggregate { members, zero_fill } => {
+                self.lower_aggregate(&value.ty, members, *zero_fill)?
+            }
+            _ => {
+                return Err(unsupported_value(value));
+            }
         })
     }
 
-    pub(super) fn unsafe_stmt(stmt: Stmt) -> Stmt {
-        Stmt::Unsafe {
-            body: crate::backend::rust_ast::Block {
-                stmts: vec![stmt],
-                tail: None,
-            },
+    pub(super) fn lower_aggregate(
+        &mut self,
+        ty: &ir::Type,
+        members: &[ir::AggregateMember],
+        zero_fill: bool,
+    ) -> Result<Expr> {
+        let unsupported = || {
+            Failure::from(Construct::Value {
+                kind: "Aggregate".into(),
+                ir: ty.to_string(),
+            })
+        };
+        let lowered_ty = self.lower_type(ty)?;
+        let fields = self.tables.record_fields(ty);
+        let resolved = self.tables.resolve_type(ty);
+        if fields.is_none() && !matches!(resolved, ir::Type::Array { .. }) {
+            return Err(unsupported());
         }
+        let field_name = |index: usize| {
+            fields
+                .and_then(|fields| fields.get(index))
+                .map(|field| field_name(field, index))
+                .ok_or_else(unsupported)
+        };
+        let complete = !zero_fill && !self.tables.is_union(ty) && !self.tables.has_bit_fields(ty) && members.iter().enumerate().all(|(position, member)| {
+            matches!(
+                (&member.target, fields),
+                (ir::AggregateTarget::Field(index), Some(_)) if *index == position
+            ) || matches!(
+                (&member.target, resolved),
+                (ir::AggregateTarget::Index(index), ir::Type::Array { .. }) if *index == position as u64
+            )
+        });
+        if complete {
+            let values = members
+                .iter()
+                .map(|member| self.lower_value(&member.value))
+                .collect::<Result<Vec<_>>>()?;
+            return Ok(match (&lowered_ty, fields) {
+                (rust::Type::Custom(name), Some(_)) => Expr::StructLit {
+                    name: name.clone(),
+                    fields: (0..values.len())
+                        .map(field_name)
+                        .collect::<Result<Vec<_>>>()?
+                        .into_iter()
+                        .zip(values)
+                        .collect(),
+                },
+                _ => Expr::ArrayLit(values),
+            });
+        }
+        let target = self.next_temp();
+        let mut stmts = vec![Stmt::Let {
+            name: target.clone(),
+            mutable: true,
+            ty: Some(lowered_ty),
+            init: Some(zeroed()),
+        }];
+        for member in members {
+            if let ir::AggregateTarget::Field(index) = member.target
+                && let Some(unit) = self.tables.bit_unit_of(ty, index)
+            {
+                let setter = Stmt::Expr(Expr::MethodCall {
+                    recv: Box::new(Expr::Field {
+                        base: Box::new(Expr::Var(target.as_str().into())),
+                        field: bit_unit_name(unit),
+                    }),
+                    method: format!("__set_{}", field_name(index)?),
+                    args: vec![self.lower_value(&member.value)?],
+                });
+                stmts.push(if self.tables.is_union(ty) {
+                    Stmt::Unsafe {
+                        body: rust::Block {
+                            stmts: vec![setter],
+                            tail: None,
+                        },
+                    }
+                } else {
+                    setter
+                });
+                continue;
+            }
+            let place = match member.target {
+                ir::AggregateTarget::Field(index) => Expr::Field {
+                    base: Box::new(Expr::Var(target.as_str().into())),
+                    field: field_name(index)?,
+                },
+                ir::AggregateTarget::Index(index) => Expr::Index {
+                    base: Box::new(Expr::Var(target.as_str().into())),
+                    index: Box::new(Expr::Value(rust::RustValue::U128(index.into()))),
+                },
+                ir::AggregateTarget::Range { .. } => return Err(unsupported()),
+            };
+            stmts.push(Stmt::Assign {
+                target: place,
+                value: self.lower_value(&member.value)?,
+            });
+        }
+        Ok(Expr::Block(Box::new(rust::Block {
+            stmts,
+            tail: Some(Box::new(Expr::Var(target.as_str().into()))),
+        })))
     }
 
-    pub(super) fn assign_stmt(target: Expr, value: Expr) -> Stmt {
-        Stmt::Assign { target, value }
+    pub(super) fn lower_number(&mut self, number: &Number, ty: &ir::Type) -> Result<Expr> {
+        let value = match number {
+            Number::Bool(value) => rust::RustValue::Bool(*value),
+            Number::Integer(value) => rust::RustValue::U128(
+                value
+                    .to_string()
+                    .parse()
+                    .map_err(|_| unsupported_constant(number))?,
+            ),
+            Number::SignedInteger(value) => rust::RustValue::I128(
+                value
+                    .to_string()
+                    .parse()
+                    .map_err(|_| unsupported_constant(number))?,
+            ),
+            Number::FloatBits(bits) => {
+                let (literal, finite, name) = match ty {
+                    ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => {
+                        let value = f32::from_bits(*bits as u32);
+                        (format!("{value:?}"), value.is_finite(), "f32")
+                    }
+                    ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => {
+                        let value = f64::from_bits(*bits as u64);
+                        (format!("{value:?}"), value.is_finite(), "f64")
+                    }
+                    ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F80)) => {
+                        self.lower_type(ty)?;
+                        return Ok(long_double_literal(*bits));
+                    }
+                    _ => return Err(unsupported_constant(number)),
+                };
+                if !finite {
+                    return Ok(Expr::HexFloat(format!("{name}::from_bits({bits:#x})")));
+                }
+                return Ok(match literal.strip_prefix('-') {
+                    Some(magnitude) => Expr::Unary {
+                        op: rust::UnaryOp::Neg,
+                        expr: Box::new(Expr::HexFloat(format!("{magnitude}{name}"))),
+                    },
+                    None => Expr::HexFloat(format!("{literal}{name}")),
+                });
+            }
+            _ => return Err(unsupported_constant(number)),
+        };
+        Ok(Expr::Cast {
+            expr: Box::new(Expr::Value(value)),
+            ty: self.lower_type(ty)?,
+        })
     }
+}
 
-    pub(super) fn push_assign(&mut self, target: Expr, value: Expr) {
-        self.push_stmt(Self::assign_stmt(target, value));
+pub(super) fn unsupported_value(value: &ir::Value) -> Failure {
+    Construct::Value {
+        kind: variant_name(&value.node.value),
+        ir: value.display(false).to_string(),
     }
+    .into()
+}
 
-    pub(super) fn push_unsafe_assign(&mut self, target: Expr, value: Expr) {
-        self.push_stmt(Self::unsafe_stmt(Self::assign_stmt(target, value)));
+fn unsupported_constant(number: &Number) -> Failure {
+    Construct::Value {
+        kind: "Constant".into(),
+        ir: format!("{number:?}"),
     }
-
-    pub(super) fn pointee_type(&self, ty: &CirType) -> Option<Type> {
-        ty.pointee().map(|ty| self.parent.rust_type(ty))
-    }
+    .into()
 }

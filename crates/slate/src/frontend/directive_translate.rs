@@ -3,7 +3,7 @@ use super::preprocess::{
 };
 use crate::backend;
 use crate::backend::rust_ast::{Attr, Cfg, Expr, Item, Program, TraitRef, Type};
-use crate::slate_parser_frontend;
+use crate::frontend;
 use rayon::prelude::*;
 use slate_parser::target_info::{TargetEnvironment, TargetFamily, TargetInfo, TargetOs};
 use std::collections::{BTreeMap, BTreeSet};
@@ -76,7 +76,7 @@ pub enum DirectiveError {
         source: preprocess::PreprocessError,
     },
     #[error(transparent)]
-    Slate(#[from] slate_parser_frontend::Error),
+    Slate(#[from] frontend::Error),
     #[error("format generated Rust: {message}")]
     Format { message: String },
     #[error("resolve target `{target}`: {source}")]
@@ -827,13 +827,10 @@ fn translate_one(path: &Path, compiler_args: &[String]) -> Result<Translation, D
         })?
         .map(|bytes| slate_parser::files::decode_source_bytes(&bytes));
     let (module, files, diagnostics) =
-        slate_parser_frontend::parse_module_with_source(path, source, compiler_args)?;
-    slate_parser_frontend::reject_directive_errors(path, &diagnostics)?;
-    let program = slate_parser_frontend::lower_module(
-        &module,
-        &files,
-        &slate_parser_frontend::lowerer::LowerOptions::default(),
-    )?;
+        frontend::parse_module_with_source(path, source, compiler_args)?;
+    frontend::reject_directive_errors(path, &diagnostics)?;
+    let program =
+        frontend::lower_module(&module, &files, &frontend::lowerer::LowerOptions::default())?;
     Ok(Translation {
         item_lines: item_lines(path, &module, &files),
         program: backend::apply_with_target(program, &module.target),
@@ -846,7 +843,7 @@ fn item_lines(
     files: &slate_parser::files::Files,
 ) -> BTreeMap<String, usize> {
     let main = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
-    slate_parser_frontend::lowerer::definition_items(module)
+    frontend::lowerer::definition_items(module)
         .into_iter()
         .filter(|(_, loc)| files.get_path(loc.file) == Some(main.as_path()))
         .filter_map(|(key, loc)| Some((key, files.position(loc.file, loc.offset)?.0 + 1)))

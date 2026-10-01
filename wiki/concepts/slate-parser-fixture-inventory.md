@@ -10,7 +10,7 @@ python3 tools/inventory_slate_frontend.py
 ```
 
 The tool uses `target/test-cache/release/slate`, the configured release binary.
-It invokes `translate-lowered --frontend=slate` for each fixture and inspects
+It invokes `translate-lowered` for each fixture and inspects
 `emit-slate-ir` when the lowerer stops at its module type gate. The TSV is a
 snapshot; rerun the command after either lowerer or parser changes.
 

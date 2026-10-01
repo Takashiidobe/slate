@@ -31,24 +31,19 @@ parser + IR generator.
 
 ## Usage
 
-Use `translate-project` with one or more compilation databases. It generates a
-binary crate when any translation unit defines `main`, and a library crate
-otherwise.
+Slate uses its built-in slate-parser frontend. Use `translate-project` with one
+or more compilation databases to generate an executable Cargo crate. Library
+projects and multiple configurations of the same translation unit are not yet
+supported.
 
-```
-translate   [clang args...] <file.c>  C -> Rust");
-translate-project --compile-commands <file>... <dir> <crate_dir>  cross-TU C project -> Cargo crate, driven by compilation databases"
-```
-
-For example, to translate a library, say `libexpat`:
-
-```sh
-slate translate-project \
---compile-commands ~/c-corpus/libexpat/expat/build/compile_commands.json \
-~/libexpat ./libexpat-rs
+```text
+translate [compiler args...] <file.c>                         C -> Rust
+translate-lowered [compiler args...] <file.c>                 raw Rust output
+emit-slate-ir [compiler args...] <file.c>                     typed parser IR
+translate-project --compile-commands <file>... <dir> <crate_dir>
 ```
 
-Or to translate a binary (in this case, `chibicc`):
+For example, to translate `chibicc`:
 
 ```sh
 slate translate-project --compile-commands ~/chibicc/compile_commands.json \
@@ -104,7 +99,7 @@ slate translate add.c # translates add.c, prints to stdout
   optimizing.
 - protected visibility. In Rust there's no way to set visibility as
   protected.
-- no support for naked asm. CIR doesn't lower naked asm yet.
+- no support for naked asm.
 - your C and Rust may link to different compiler runtimes, which can
   cause differences in precise mathematical operations that run in
   software (like for complex or large numbers)
@@ -112,7 +107,6 @@ slate translate add.c # translates add.c, prints to stdout
 ### In Progress
 
 - [ ] Passing the GCC Torture Test Suite
-  - ~10 tests left for clang
 - [ ] Support for other architectures
   - Currently only x86_64, no testing done for x86_32, arm32, arm64
 - [ ] Support for other compiler flavors, like gcc and msvc

@@ -1,8 +1,7 @@
 #![allow(
     dead_code,
-    reason = "test helper toolbox; helpers may sit unused between runs"
+    reason = "shared helpers are used by different integration test binaries"
 )]
-pub mod filecheck;
 
 use std::collections::BTreeMap;
 use std::io::Write;
@@ -35,22 +34,6 @@ pub fn cc() -> String {
 
 fn cargo() -> String {
     std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into())
-}
-
-fn std_clang_args(std: &str) -> String {
-    let existing = std::env::var("SLATE_CLANG_ARGS").unwrap_or_default();
-    format!("{existing} -std={std}").trim().to_string()
-}
-
-fn c23_clang_args() -> String {
-    std_clang_args("c23")
-}
-
-fn ensure_c23_clang_args() {
-    static ONCE: std::sync::Once = std::sync::Once::new();
-    ONCE.call_once(|| {
-        unsafe { std::env::set_var("SLATE_CLANG_ARGS", c23_clang_args()) };
-    });
 }
 
 fn aligned_path() -> PathBuf {
@@ -187,14 +170,6 @@ where
         .collect()
 }
 
-pub fn compile_c(src: &Path, out: &Path) -> Result<(), String> {
-    compile_c_with_args(src, out, &[])
-}
-
-pub fn compile_c_with_args(src: &Path, out: &Path, extra_args: &[String]) -> Result<(), String> {
-    compile_c_with_args_for_target(src, out, extra_args, None)
-}
-
 pub fn compile_c_with_args_for_target(
     src: &Path,
     out: &Path,
@@ -235,42 +210,7 @@ fn c_cache_sidecar(binary: &Path, suffix: &str) -> PathBuf {
 }
 
 /// Compile a single C translation unit into an object file for later linking.
-pub fn compile_c_object(src: &Path, out: &Path) -> Result<(), String> {
-    let cache_key = serde_json::to_string(&(2, src, cc()))
-        .map_err(|e| format!("encode C object cache key: {e}"))?;
-    compile_c_cached(
-        &[src],
-        out,
-        &cache_key,
-        "C object compile failed",
-        |temporary| {
-            Command::new(cc())
-                .args(["-O0", "-std=c23", "-c", "-o"])
-                .arg(temporary)
-                .arg(src)
-                .output()
-                .map_err(|e| format!("spawn {}: {e}", cc()))
-        },
-    )
-}
-
 /// Compile several C translation units together into one binary (cross-TU link).
-pub fn compile_c_multi(srcs: &[PathBuf], out: &Path) -> Result<(), String> {
-    compile_c_multi_with_std(srcs, out, "c23")
-}
-
-pub fn compile_c_multi_with_std(srcs: &[PathBuf], out: &Path, std: &str) -> Result<(), String> {
-    compile_c_multi_with_std_and_include(srcs, out, std, None)
-}
-
-pub fn compile_c_multi_with_std_and_include(
-    srcs: &[PathBuf],
-    out: &Path,
-    std: &str,
-    include_dir: Option<&Path>,
-) -> Result<(), String> {
-    compile_c_multi_with_std_include_and_args(srcs, out, std, include_dir, &[])
-}
 
 pub fn compile_c_multi_with_std_include_and_args(
     srcs: &[PathBuf],
@@ -344,24 +284,6 @@ fn compile_c_cached(
     Ok(())
 }
 
-pub fn translate_project(dir: &Path, crate_dir: &Path) -> Result<(), String> {
-    translate_project_with_std_and_args(dir, crate_dir, "c23", &[])
-}
-
-pub fn translate_project_with_std(dir: &Path, crate_dir: &Path, std: &str) -> Result<(), String> {
-    translate_project_with_std_and_args(dir, crate_dir, std, &[])
-}
-
-pub fn translate_project_with_std_and_args(
-    dir: &Path,
-    crate_dir: &Path,
-    std: &str,
-    extra_args: &[String],
-) -> Result<(), String> {
-    let database = project_database(dir, crate_dir, std, extra_args)?;
-    translate_project_from_database(dir, crate_dir, &database)
-}
-
 pub fn translate_slate_project(
     dir: &Path,
     crate_dir: &Path,
@@ -369,7 +291,7 @@ pub fn translate_slate_project(
     extra_args: &[String],
 ) -> Result<(), String> {
     let database = project_database(dir, crate_dir, std, extra_args)?;
-    let result = run_translate_project(dir, crate_dir, &database, &["--frontend=slate"]);
+    let result = run_translate_project(dir, crate_dir, &database, &[]);
     if let Err(error) = &result {
         assert!(
             !error.contains("invalid slate-parser IR"),
@@ -435,14 +357,6 @@ fn compile_commands_database(
     Ok(database)
 }
 
-pub fn translate_project_from_database(
-    dir: &Path,
-    crate_dir: &Path,
-    database: &Path,
-) -> Result<(), String> {
-    run_translate_project(dir, crate_dir, database, &[])
-}
-
 fn run_translate_project(
     dir: &Path,
     crate_dir: &Path,
@@ -472,270 +386,6 @@ fn run_translate_project(
 /// if needed), so this just invokes `cargo build` and reads back the produced
 /// binary's path from cargo's own JSON build messages, rather than guessing
 /// the binary name from the crate's package name.
-pub fn compile_rs_project(crate_dir: &Path) -> Result<PathBuf, String> {
-    let target_dir = test_target_dir_for_project(crate_dir);
-    std::fs::create_dir_all(&target_dir)
-        .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
-    let o = Command::new(cargo())
-        .args([
-            "build",
-            "--quiet",
-            "--message-format=json",
-            "--manifest-path",
-        ])
-        .arg(crate_dir.join("Cargo.toml"))
-        .arg("--target-dir")
-        .arg(&target_dir)
-        .output()
-        .map_err(|e| format!("spawn {}: {e}", cargo()))?;
-    if !o.status.success() {
-        let rendered: Vec<String> = String::from_utf8_lossy(&o.stdout)
-            .lines()
-            .filter_map(|line| serde_json::from_str::<serde_json::Value>(line).ok())
-            .filter(|message| {
-                message.get("reason").and_then(serde_json::Value::as_str)
-                    == Some("compiler-message")
-            })
-            .filter_map(|message| message["message"]["rendered"].as_str().map(str::to_string))
-            .collect();
-        return Err(format!(
-            "Rust cargo build failed:\n{}\n{}",
-            rendered.join("\n"),
-            String::from_utf8_lossy(&o.stderr)
-        ));
-    }
-    for line in String::from_utf8_lossy(&o.stdout).lines() {
-        let Ok(message) = serde_json::from_str::<serde_json::Value>(line) else {
-            continue;
-        };
-        if message.get("reason").and_then(serde_json::Value::as_str) != Some("compiler-artifact") {
-            continue;
-        }
-        let is_bin = message["target"]["kind"]
-            .as_array()
-            .is_some_and(|kinds| kinds.iter().any(|kind| kind.as_str() == Some("bin")));
-        if let (true, Some(executable)) = (
-            is_bin,
-            message
-                .get("executable")
-                .and_then(serde_json::Value::as_str),
-        ) {
-            return Ok(PathBuf::from(executable));
-        }
-    }
-    Err(format!(
-        "cargo build at {} did not report a binary artifact",
-        crate_dir.display()
-    ))
-}
-
-pub fn compile_rs_cargo(src: &Path, work_dir: &Path, package: &str) -> Result<PathBuf, String> {
-    let project = work_dir.join(format!("{package}_cargo"));
-    if project.exists() {
-        std::fs::remove_dir_all(&project)
-            .map_err(|e| format!("remove {}: {e}", project.display()))?;
-    }
-    std::fs::create_dir_all(project.join("src"))
-        .map_err(|e| format!("create {}: {e}", project.display()))?;
-    std::fs::write(
-        project.join("Cargo.toml"),
-        generated_crate_manifest(package),
-    )
-    .map_err(|e| format!("write Cargo.toml: {e}"))?;
-    std::fs::copy(src, project.join("src/main.rs"))
-        .map_err(|e| format!("copy {} to cargo project: {e}", src.display()))?;
-    write_long_double_shim(&project)?;
-
-    let target_dir = test_target_dir_for_project(&project);
-    std::fs::create_dir_all(&target_dir)
-        .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
-    let o = Command::new(cargo())
-        .args(["build", "--quiet", "--manifest-path"])
-        .arg(project.join("Cargo.toml"))
-        .arg("--target-dir")
-        .arg(&target_dir)
-        .output()
-        .map_err(|e| format!("spawn {}: {e}", cargo()))?;
-    if !o.status.success() {
-        return Err(format!(
-            "Rust cargo build failed:\n{}",
-            String::from_utf8_lossy(&o.stderr)
-        ));
-    }
-    Ok(target_dir.join("debug").join(package))
-}
-
-pub fn compile_rs_cargo_with_link(
-    src: &Path,
-    work_dir: &Path,
-    package: &str,
-    link_dir: &Path,
-) -> Result<PathBuf, String> {
-    compile_rs_cargo_with_link_and_shims(src, work_dir, package, link_dir, None)
-}
-
-pub fn compile_rs_cargo_with_link_and_shims(
-    src: &Path,
-    work_dir: &Path,
-    package: &str,
-    link_dir: &Path,
-    shim_source: Option<&str>,
-) -> Result<PathBuf, String> {
-    let project = work_dir.join(format!("{package}_cargo"));
-    if project.exists() {
-        std::fs::remove_dir_all(&project)
-            .map_err(|e| format!("remove {}: {e}", project.display()))?;
-    }
-    std::fs::create_dir_all(project.join("src"))
-        .map_err(|e| format!("create {}: {e}", project.display()))?;
-    std::fs::write(
-        project.join("Cargo.toml"),
-        generated_crate_manifest(package),
-    )
-    .map_err(|e| format!("write Cargo.toml: {e}"))?;
-    std::fs::copy(src, project.join("src/main.rs"))
-        .map_err(|e| format!("copy {} to cargo project: {e}", src.display()))?;
-
-    if link_dir.exists() {
-        let dest_dir = project.join("linkfiles");
-        std::fs::create_dir_all(&dest_dir)
-            .map_err(|e| format!("create {}: {e}", dest_dir.display()))?;
-        for entry in
-            std::fs::read_dir(link_dir).map_err(|e| format!("read {}: {e}", link_dir.display()))?
-        {
-            let path = entry
-                .map_err(|e| format!("read {} entry: {e}", link_dir.display()))?
-                .path();
-            if path.is_file() {
-                let fname = path.file_name().unwrap();
-                std::fs::copy(&path, dest_dir.join(fname))
-                    .map_err(|e| format!("copy link file {}: {e}", path.display()))?;
-            }
-        }
-    }
-
-    if let Some(shim_source) = shim_source {
-        std::fs::write(
-            project.join("build.rs"),
-            r#"fn main() {
-    if let Ok(entries) = std::fs::read_dir("linkfiles") {
-        for e in entries.flatten() {
-            let p = e.path();
-            if p.is_file() {
-                println!("cargo:rerun-if-changed={}", p.display());
-                println!("cargo:rustc-link-arg={}", p.display());
-            }
-        }
-    }
-    cc::Build::new()
-        .file("src/slate_long_double.c")
-        .compile("slate_long_double");
-}
-"#,
-        )
-        .map_err(|e| format!("write build.rs: {e}"))?;
-        std::fs::write(project.join("src/slate_long_double.c"), shim_source)
-            .map_err(|e| format!("write slate_long_double.c: {e}"))?;
-    } else {
-        write_long_double_shim(&project)?;
-        let build_rs = r#"fn main() {
-    if let Ok(entries) = std::fs::read_dir("linkfiles") {
-        for e in entries.flatten() {
-            let p = e.path();
-            if p.is_file() {
-                println!("cargo:rerun-if-changed={}", p.display());
-                println!("cargo:rustc-link-arg={}", p.display());
-            }
-        }
-    }
-    cc::Build::new()
-        .file("src/slate_long_double.c")
-        .compile("slate_long_double");
-}
-"#;
-        std::fs::write(project.join("build.rs"), build_rs)
-            .map_err(|e| format!("write build.rs: {e}"))?;
-    }
-
-    let target_dir = test_target_dir_for_project(&project);
-    std::fs::create_dir_all(&target_dir)
-        .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
-    let o = Command::new(cargo())
-        .args(["build", "--quiet", "--manifest-path"])
-        .arg(project.join("Cargo.toml"))
-        .arg("--target-dir")
-        .arg(&target_dir)
-        .output()
-        .map_err(|e| format!("spawn {}: {e}", cargo()))?;
-    if !o.status.success() {
-        return Err(format!(
-            "Rust cargo build failed:\n{}",
-            String::from_utf8_lossy(&o.stderr)
-        ));
-    }
-    Ok(target_dir.join("debug").join(package))
-}
-
-pub fn compile_rs_cargo_with_syslibs(
-    src: &Path,
-    work_dir: &Path,
-    package: &str,
-    libs: &[String],
-    shim_source: Option<&str>,
-) -> Result<PathBuf, String> {
-    let project = work_dir.join(format!("{package}_cargo"));
-    if project.exists() {
-        std::fs::remove_dir_all(&project)
-            .map_err(|e| format!("remove {}: {e}", project.display()))?;
-    }
-    std::fs::create_dir_all(project.join("src"))
-        .map_err(|e| format!("create {}: {e}", project.display()))?;
-    std::fs::write(
-        project.join("Cargo.toml"),
-        generated_crate_manifest(package),
-    )
-    .map_err(|e| format!("write Cargo.toml: {e}"))?;
-    std::fs::copy(src, project.join("src/main.rs"))
-        .map_err(|e| format!("copy {} to cargo project: {e}", src.display()))?;
-
-    let link_lib_lines: String = libs
-        .iter()
-        .map(|lib| format!("    println!(\"cargo:rustc-link-lib={lib}\");\n"))
-        .collect();
-    let shim_source = shim_source.unwrap_or("");
-    std::fs::write(
-        project.join("build.rs"),
-        format!(
-            r#"fn main() {{
-{link_lib_lines}    cc::Build::new()
-        .file("src/slate_long_double.c")
-        .compile("slate_long_double");
-}}
-"#
-        ),
-    )
-    .map_err(|e| format!("write build.rs: {e}"))?;
-    std::fs::write(project.join("src/slate_long_double.c"), shim_source)
-        .map_err(|e| format!("write slate_long_double.c: {e}"))?;
-
-    let target_dir = test_target_dir_for_project(&project);
-    std::fs::create_dir_all(&target_dir)
-        .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
-    let o = Command::new(cargo())
-        .args(["build", "--quiet", "--manifest-path"])
-        .arg(project.join("Cargo.toml"))
-        .arg("--target-dir")
-        .arg(&target_dir)
-        .output()
-        .map_err(|e| format!("spawn {}: {e}", cargo()))?;
-    if !o.status.success() {
-        return Err(format!(
-            "Rust cargo build failed:\n{}",
-            String::from_utf8_lossy(&o.stderr)
-        ));
-    }
-    Ok(target_dir.join("debug").join(package))
-}
 
 pub struct Case {
     pub name: String,
@@ -826,14 +476,6 @@ pub fn compare_batch_with_jobs(
     compare_batch_with_jobs_for_target(cases, work_dir, jobs, None)
 }
 
-pub fn compare_batch_for_target(
-    cases: &[Case],
-    work_dir: &Path,
-    cross: Option<&CrossTarget>,
-) -> Vec<(String, Result<(), String>)> {
-    compare_batch_with_jobs_for_target(cases, work_dir, test_jobs(), cross)
-}
-
 pub fn compare_batch_with_jobs_for_target(
     cases: &[Case],
     work_dir: &Path,
@@ -890,26 +532,6 @@ pub fn compare_batch_with_jobs_for_target(
                 case.config.compare_stderr,
             )
         })();
-        (case.name.clone(), result)
-    })
-}
-
-pub fn compile_rs_batch(cases: &[RustCase], work_dir: &Path) -> Vec<(String, Result<(), String>)> {
-    if cases.is_empty() {
-        return Vec::new();
-    }
-    let project = work_dir.join("batch_cargo");
-    let bin_dir = project.join("src/bin");
-    let batch = build_batch(cases, &project, &bin_dir, test_jobs(), None);
-    parallel_map(cases, |case| {
-        let bn = bin_name(&case.name);
-        let result = match &batch {
-            Ok(build) => build
-                .executable(&bn)
-                .map(|_| ())
-                .map_err(|error| format!("Rust batch build failed:\n{error}")),
-            Err(error) => Err(format!("Rust batch build failed:\n{error}")),
-        };
         (case.name.clone(), result)
     })
 }
@@ -1037,12 +659,6 @@ pub struct MultiBinCase {
     pub types_rs: Option<PathBuf>,
 }
 
-pub fn multi_bin_batch_path(project: &Path, name: &str) -> PathBuf {
-    test_target_dir_for_project(project)
-        .join("debug")
-        .join(bin_name(name))
-}
-
 pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<BatchBuild, String> {
     let bin_dir = project.join("src/bin");
     std::fs::create_dir_all(&bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
@@ -1152,7 +768,7 @@ fn write_long_double_shim(project: &Path) -> Result<(), String> {
     .map_err(|e| format!("write build.rs: {e}"))?;
 
     let names = collect_long_double_shim_names(&project.join("src"))?;
-    let source = slate::slate_parser_frontend::c_shim::render_shim_c_source_for_names(&names);
+    let source = slate::frontend::c_shim::render_shim_c_source_for_names(&names);
     write_if_changed(project.join("src/slate_long_double.c"), source.as_bytes())
         .map(|_| ())
         .map_err(|e| format!("write slate_long_double.c: {e}"))
@@ -1363,29 +979,6 @@ fn target_clause_matches(text: &str, triple: &str) -> bool {
     if negated { !any_match } else { any_match }
 }
 
-pub fn list_c_fixtures(dir: &Path) -> Vec<PathBuf> {
-    let mut paths: Vec<PathBuf> = std::fs::read_dir(dir)
-        .into_iter()
-        .flatten()
-        .filter_map(|entry| entry.ok())
-        .map(|entry| entry.path())
-        .filter(|path| path.extension().and_then(|e| e.to_str()) == Some("c"))
-        .collect();
-    paths.sort();
-    paths
-}
-
-pub fn fixture_target_restriction(path: &Path, triple: &str) -> Option<String> {
-    let text = std::fs::read_to_string(path).ok()?;
-    text.lines()
-        .find(|line| {
-            line.contains("dg-do")
-                && line.contains("target")
-                && !target_clause_matches(line, triple)
-        })
-        .map(|line| format!("{} (does not apply to {triple})", line.trim()))
-}
-
 fn is_semantic_fixture_flag(flag: &str) -> bool {
     is_semantic_dg_flag(flag) || matches!(flag, "-O0" | "-O1" | "-O2" | "-O3")
 }
@@ -1429,26 +1022,9 @@ pub fn fixture_dg_additional_options(path: &Path) -> Vec<String> {
     fixture_dg_directive_flags(path, "dg-additional-options")
 }
 
-pub fn translate(c_src: &Path, rs_out: &Path) -> Result<(), String> {
-    translate_with_args(c_src, rs_out, &[])
-}
-
-pub fn translate_with_args(
-    c_src: &Path,
-    rs_out: &Path,
-    extra_args: &[String],
-) -> Result<(), String> {
-    ensure_c23_clang_args();
-    let rust =
-        slate::api::translate_with_args(c_src, extra_args).map_err(|error| error.to_string())?;
-    write_if_changed(rs_out, rust.as_bytes())
-        .map(|_| ())
-        .map_err(|e| format!("write {}: {e}", rs_out.display()))
-}
-
 pub fn translate_slate(c_src: &Path, rs_out: &Path, extra_args: &[String]) -> Result<(), String> {
     let o = Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-lowered", "--frontend=slate", "-std=c23"])
+        .args(["translate-lowered", "-std=c23"])
         .args(extra_args)
         .arg(c_src)
         .output()

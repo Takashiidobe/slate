@@ -194,22 +194,11 @@ fn translation_is_self_hosted() {
     .expect("write compile commands");
     let target = "--target=x86_64-unknown-linux-gnu";
     let inputs = [
-        vec![
-            "translate",
-            "--frontend=slate",
-            target,
-            source.to_str().unwrap(),
-        ],
-        vec![
-            "translate-lowered",
-            "--frontend=slate",
-            target,
-            source.to_str().unwrap(),
-        ],
+        vec!["translate", target, source.to_str().unwrap()],
+        vec!["translate-lowered", target, source.to_str().unwrap()],
         vec!["record-cfg", source.to_str().unwrap(), target],
         vec![
             "translate-project",
-            "--frontend=slate",
             "--compile-commands",
             commands.to_str().unwrap(),
             env!("CARGO_MANIFEST_DIR"),

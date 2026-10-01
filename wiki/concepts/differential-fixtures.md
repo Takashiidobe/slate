@@ -17,19 +17,19 @@ stdout and exit status. Runtime parity is the only correctness gate.
 
 `generated_differential`, `gcc_torture_suite`, `gcc_dg_suite`, and
 `c_testsuite_suite` translate every fixture through the slate-parser frontend
-(`support::translate_slate`, i.e. `slate translate-lowered --frontend=slate`).
+(`support::translate_slate`, i.e. `slate translate-lowered`).
 That emits raw lowered Rust: rewrites are not enabled for the slate frontend,
 and there is no CIR fallback. Headers come from slate-sysroots, and fixtures
-run for the host target only. These four suites make up the `slate` nextest
-profile:
+run for the host target only. Together with `chibicc_suite`, these suites make
+up the `slate` nextest profile:
 
 ```bash
 cargo nextest r --release --profile slate
 ```
 
-Run it from the workspace root. `chibicc_suite`, `cross_tu`, `link`, `syslink`,
-`yarpgen`, `directive_translate`, and the `differential_{arm,aarch64,i686}`
-binaries still exercise the legacy CIR pipeline and are not gates.
+Run it from the workspace root. `chibicc_suite` uses `translate-project` for
+two-TU fixtures. CIR-only test drivers were removed; their fixture directories
+remain, with restoration tracked in `slate-p58o.6.7` through `slate-p58o.6.17`.
 
 ## Supported/unsupported ratchet
 
@@ -65,7 +65,7 @@ SLATE_DIFF_FIXTURE=<stem> cargo nextest r --release -p slate --test differential
 defined in one translation unit with `ok` or its first lowering barrier, plus
 `<module>` lines for top-level barriers (unsupported globals, top-level asm).
 It never emits Rust and exits non-zero when any barrier exists. Strict
-translation (`translate-lowered --frontend=slate`) still fails on the first
+translation (`translate-lowered`) still fails on the first
 barrier. Record and enum definitions only block the functions that use them;
 sema already resolves typedefs, so the module's type list is not a gate.
 

@@ -13,7 +13,8 @@
 | --- | --- |
 | Scalar widths, char signedness, long double, endianness | `slate-parser::target_info::TargetInfo` |
 | Supported triples and predefine snapshots | `slate-parser::target_registry` |
-| Rust target cfg fields and active target selection | `slate::target` |
+| Active target selection | `slate::target` |
+| Rust target cfg fields | `slate::frontend::{preprocess,directive_translate}` |
 | Target facts used by rewrites | IR module's `target`, passed to `backend::apply_with_target` |
 
 ## Configuration
@@ -35,6 +36,6 @@
 
 - Differential tests and corpus filters use `clang` on PATH.
 - `SLATE_CLANG` is removed; no compiler override in translation or test support.
-- CIR ingestion temporarily retains its fixed compiler path until Phase 6 deletion.
+- CIR ingestion and its fixed compiler path are removed.
 - GCC corpus admission excludes `dg-shouldfail` cases; sanitizer UB tests cannot
   serve as uninstrumented differential references.

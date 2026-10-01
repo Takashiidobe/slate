@@ -12,14 +12,14 @@ then require identical stdout and exit code.
 
 ```
 C -> slate-parser (preprocess, parse, sema) -> ir::Module
-  -> src/slate_parser_frontend/lowerer.rs -> rust_ast::Program -> Rust source
+  -> src/frontend/lowerer.rs -> rust_ast::Program -> Rust source
 ```
 
 - `crates/slate-parser` produces a typed `ir::Module` (places, bindings,
   explicit conversions, hoisted side effects). Slate consumes it directly as a
   library; never parse its printed IR.
-- `src/slate_parser_frontend.rs` drives slate-parser;
-  `src/slate_parser_frontend/lowerer.rs` lowers IR to `rust_ast`.
+- `src/frontend.rs` drives slate-parser;
+  `src/frontend/lowerer.rs` lowers IR to `rust_ast`.
   `lower()` collects a `Barrier` (an unsupported `Construct` plus the IR
   node's `Site`) per function or global it cannot lower yet. A broken IR
   invariant aborts lowering with `InvalidIr`; it is never a barrier, and any
@@ -29,14 +29,9 @@ C -> slate-parser (preprocess, parse, sema) -> ir::Module
   a new `ValueKind`, `Statement`, `PlaceKind`, or `Type`.
 - The migration plan is the `slate-p58o` epic (`bd show slate-p58o`).
 
-**Legacy code:** `src/frontend/` (ClangIR + Clang AST lowering) and
-`src/backend/engine/` (rewrites/fixups) belong to the old CIR pipeline. Do not
-extend them or cite their wiki pages (`lowerer-internals.md`, `passes.md`,
-`rewrite-engine-v2.md`) for slate-frontend work. They are removed in Phase 6.
-
-**Rewrites are not enabled for the slate frontend yet.** Only raw lowering
-(`translate-lowered --frontend=slate`) is tested; there is no rewrites
-profile.
+The frontend consumes slate-parser IR exclusively. `src/backend/` retains
+rewrites and code generation; differential tests exercise raw lowering through
+`translate-lowered`.
 
 ## Toolchain
 
@@ -44,7 +39,7 @@ profile.
 | ---------------- | ------------------------------------ | ------------------------------------------------------------- |
 | `SLATE_SYSROOTS` | `~/.local/share/slate/sysroots`      | slate-parser reads target headers from `<dir>/<triple>`       |
 | `SLATE_CARGO`    | `cargo`                              | compiles the generated Rust                                   |
-| `SLATE_RUSTFMT`  | `rustfmt`                            | formats CIR output; slate output uses prettyplease (rustfmt only if syn rejects it) |
+| `SLATE_RUSTFMT`  | `rustfmt`                            | fallback formatter when syn rejects generated Rust |
 
 Differential tests use `clang` on PATH as the C oracle. Slate frontend translation does not
 invoke Clang.
@@ -55,7 +50,7 @@ Install a sysroot with `cargo run -p slate -- sysroot install <triple>`.
 
 ```bash
 cargo run --release -p slate -- emit-slate-ir <file.c>                         # the IR slate receives
-cargo run --release -p slate -- translate-lowered --frontend=slate <file.c>   # raw Rust output
+cargo run --release -p slate -- translate-lowered <file.c>                    # raw Rust output
 cargo run --release -p slate -- lowering-barriers <file.c>                    # first barrier per function
 ```
 
@@ -68,9 +63,10 @@ cargo nextest r --release --profile slate
 The `slate` profile runs `differential` (`tests/fixtures`) plus the
 c-testsuite, gcc-torture, gcc-dg, and chibicc corpus suites, all through the
 slate frontend. `chibicc_suite` translates each two-TU fixture with
-`translate-project --frontend=slate`; external definitions become
-`#[unsafe(no_mangle)]` items and the linker resolves symbols across modules. Other test binaries in this crate exercise the legacy CIR pipeline
-and are not gates.
+`translate-project`; external definitions become
+`#[unsafe(no_mangle)]` items and the linker resolves symbols across modules.
+Legacy CIR test drivers were removed; their fixtures remain for the suite
+restoration beads under `slate-p58o.6`.
 
 Each suite is a ratchet: `tests/fixtures/` must pass, and
 `tests/fixtures.unsupported/` must still fail. When an unsupported fixture
@@ -113,8 +109,7 @@ that `target-*` directory and rerun.
 
 **FileCheck is suspended** until lowering covers enough that shape checks are
 signal rather than noise. Do not add `@lowering`, `@rewrite`, or
-`@slate-lowerer` markers or `SLATE-FILECHECK` blocks, and do not run
-`tools/update_filecheck.py`.
+`@slate-lowerer` markers or `SLATE-FILECHECK` blocks.
 
 ## Conventions
 

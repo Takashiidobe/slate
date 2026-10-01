@@ -7,16 +7,6 @@ use crate::function_identity::{CallBinding, FunctionIdentity};
 
 pub(crate) const LONG_DOUBLE_TY: &str = "LongDouble";
 
-pub(crate) fn long_double_zero_expr() -> Expr {
-    Expr::TupleStructLit {
-        name: LONG_DOUBLE_TY.into(),
-        fields: vec![Expr::ArrayRepeat {
-            elem: Box::new(Expr::Value(RustValue::I64(0))),
-            len: 10,
-        }],
-    }
-}
-
 // x86-64 SysV long double is the 10-byte x87 payload in a 16-byte slot.
 pub(crate) fn long_double_prelude(vis: Visibility) -> Vec<Item> {
     let mut items = vec![Item::Struct(StructDef {

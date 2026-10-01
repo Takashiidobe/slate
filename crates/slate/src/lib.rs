@@ -4,8 +4,6 @@ pub mod api;
 pub mod backend;
 /// The [compile_commands] module contains parsing for compile_commands.json
 pub mod compile_commands;
-pub mod ctx;
 pub mod frontend;
 pub mod function_identity;
-pub mod slate_parser_frontend;
 pub mod target;

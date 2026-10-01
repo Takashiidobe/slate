@@ -1,11 +1,5 @@
 [profile.slate]
-default-filter = '''
-  binary_id(=slate::differential)
-  + binary_id(=slate::c_testsuite_suite)
-  + binary_id(=slate::gcc_torture_suite)
-  + binary_id(=slate::gcc_dg_suite)
-  + binary_id(=slate::chibicc_suite)
-'''
+default-filter = 'package(slate)'
 
 [profile.parser]
 default-filter = 'package(slate-parser)'

@@ -100,9 +100,8 @@ def scope_owner(stem):
 
 def run(binary, command, fixture):
     try:
-        command_args = ["--frontend=slate"] if command == "translate-lowered" else []
         result = subprocess.run(
-            [str(binary), command, *command_args, str(fixture)],
+            [str(binary), command, str(fixture)],
             text=True,
             capture_output=True,
             timeout=15,
