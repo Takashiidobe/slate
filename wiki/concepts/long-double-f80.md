@@ -25,12 +25,14 @@ bridge. Non-variadic bridged callees depend on `long_double.c` including
 Variadic `long double` arguments must reach the callee as real x87 values in
 memory; Rust would pass `LongDouble` as an INTEGER-class struct. A call to a
 Rust-defined variadic function with f80 variadic arguments becomes a call to
-`__slate_va_<callee>__r<ret>_<fixed tags>__<variadic tags>`. The C trampoline
-(`c_shim::render_variadic_trampoline`) declares the callee as
-`<ret> callee(<fixed>, ...)` with fixed f80 parameters and the return kept as
+`__slate_vcall__r<ret>_<fixed tags>__<variadic tags>(callee as *const (), ...)`.
+The C trampoline (`c_shim::render_variadic_trampoline`) calls the pointer as
+`<ret> (*)(<fixed>, ...)` with fixed f80 parameters and the return kept as
 `__slate_f80`, and loads only the variadic f80 arguments into `long double`.
-The callee is exported with `#[unsafe(no_mangle)]` so the trampoline can call
-it. On the callee side, `va_arg(ap, long double)` lowers to
+The callee is passed by pointer rather than exported by symbol, so static
+functions with the same name in different TUs, or named like a libc or Rust
+runtime symbol (`exit`), never collide, and trampolines are shared per
+signature. On the callee side, `va_arg(ap, long double)` lowers to
 `__slate_f80_va_arg(&mut ap)`, which relies on x86_64 `VaList` sharing C's
 `__va_list_tag` layout so C advances the Rust list in place.
 

@@ -211,9 +211,7 @@ fn render_declared_prototype(name: &str, declared_type: &str) -> Option<String> 
 }
 
 fn render_variadic_trampoline(name: &str) -> Option<String> {
-    let rest = name.strip_prefix("__slate_va_")?;
-    let (callee, tags) = rest.split_once("__")?;
-    let (fixed, variadic) = tags.split_once("__")?;
+    let (fixed, variadic) = name.strip_prefix("__slate_vcall__")?.split_once("__")?;
     let mut fixed = fixed.split('_');
     let ret = c_type_for_tag(fixed.next()?.strip_prefix('r')?);
     let fixed = fixed.map(c_type_for_tag).collect::<Vec<_>>();
@@ -238,20 +236,19 @@ fn render_variadic_trampoline(name: &str) -> Option<String> {
         }))
         .collect::<Vec<_>>()
         .join(", ");
-    let call = format!("{callee}({args})");
+    let call = format!("(({ret} (*)({}, ...))_f)({args})", fixed.join(", "));
     let body = if ret == "void" {
         format!("{call};")
     } else {
         format!("return {call};")
     };
     Some(format!(
-        "{ret} {callee}({}, ...);\n{ret} {name}({params}) {{\n    {body}\n}}\n",
-        fixed.join(", ")
+        "{ret} {name}(void *_f, {params}) {{\n    {body}\n}}\n"
     ))
 }
 
 fn render_trampoline(name: &str) -> Option<String> {
-    if name.starts_with("__slate_va_") {
+    if name.starts_with("__slate_vcall__") {
         return render_variadic_trampoline(name);
     }
     let rest = name.strip_prefix("__slate_")?;

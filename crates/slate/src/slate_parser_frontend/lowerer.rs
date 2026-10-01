@@ -29,7 +29,6 @@ struct Context<'a> {
     temps: Cell<u32>,
     long_double: Cell<bool>,
     bridges: RefCell<BTreeMap<String, rust::ExternFnDecl>>,
-    exports: RefCell<BTreeSet<String>>,
 }
 
 impl Context<'_> {
@@ -249,7 +248,6 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
         temps: Cell::new(0),
         long_double: Cell::new(false),
         bridges: RefCell::default(),
-        exports: RefCell::default(),
     };
     cx.over_aligned = statics
         .iter()
@@ -292,14 +290,6 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
         let item = lower_function(function, body, &cx);
         if let Some(item) = function_barrier(&mut report, &function.name, true, item)? {
             items.push(item);
-        }
-    }
-    let exports = cx.exports.take();
-    for item in &mut items {
-        if let Item::Fn(function) = item
-            && exports.contains(&function.name)
-        {
-            function.attrs.push(Attr::NoMangle);
         }
     }
     let wrappers = cx
@@ -572,7 +562,11 @@ fn lower_long_double_bridge(
     let ret = lower_type(cx, ret)?;
     let tags = long_double_bridge_tags(callee, std::iter::once(&ret).chain(&params))?;
     let name = format!("__slate_{callee}__r{}", tags.join("_"));
-    call_long_double_bridge(cx, name, params, ret, arguments)
+    let args = arguments
+        .iter()
+        .map(|argument| lower_value(argument, cx))
+        .collect::<Result<Vec<_>>>()?;
+    Ok(call_long_double_bridge(cx, name, params, ret, args))
 }
 
 fn lower_long_double_variadic_trampoline(
@@ -583,11 +577,6 @@ fn lower_long_double_variadic_trampoline(
     ret: &ir::Type,
 ) -> Result<Expr> {
     let callee = function.rust.as_str();
-    if callee.contains("__") {
-        return Err(super::Error::Unsupported(format!(
-            "long double variadic call to {callee}"
-        )));
-    }
     let params = arguments
         .iter()
         .map(|argument| lower_type(cx, &argument.ty))
@@ -597,12 +586,27 @@ fn lower_long_double_variadic_trampoline(
         long_double_bridge_tags(callee, std::iter::once(&ret).chain(&params[..fixed]))?;
     let variadic_tags = long_double_bridge_tags(callee, &params[fixed..])?;
     let name = format!(
-        "__slate_va_{callee}__r{}__{}",
+        "__slate_vcall__r{}__{}",
         fixed_tags.join("_"),
         variadic_tags.join("_")
     );
-    cx.exports.borrow_mut().insert(callee.to_string());
-    call_long_double_bridge(cx, name, params, ret, arguments)
+    let code_pointer = rust::Type::Ptr {
+        mutable: false,
+        inner: Box::new(rust::Type::Unit),
+    };
+    let args = std::iter::once(Ok(Expr::Cast {
+        expr: Box::new(Expr::Var(callee.into())),
+        ty: code_pointer.clone(),
+    }))
+    .chain(arguments.iter().map(|argument| lower_value(argument, cx)))
+    .collect::<Result<Vec<_>>>()?;
+    Ok(call_long_double_bridge(
+        cx,
+        name,
+        std::iter::once(code_pointer).chain(params).collect(),
+        ret,
+        args,
+    ))
 }
 
 fn long_double_bridge_tags<'a>(
@@ -626,8 +630,8 @@ fn call_long_double_bridge(
     name: String,
     params: Vec<rust::Type>,
     ret: rust::Type,
-    arguments: &[ir::Value],
-) -> Result<Expr> {
+    args: Vec<Expr>,
+) -> Expr {
     cx.bridges
         .borrow_mut()
         .entry(name.clone())
@@ -650,17 +654,14 @@ fn call_long_double_bridge(
             ret: (!matches!(ret, rust::Type::Unit)).then_some(ret),
             safe: false,
         });
-    Ok(Expr::Unsafe(Box::new(rust::Block {
+    Expr::Unsafe(Box::new(rust::Block {
         stmts: Vec::new(),
         tail: Some(Box::new(Expr::Call {
             func: Box::new(Expr::Var(name.into())),
-            args: arguments
-                .iter()
-                .map(|argument| lower_value(argument, cx))
-                .collect::<Result<Vec<_>>>()?,
+            args,
             binding: CallBinding::Generated,
         })),
-    })))
+    }))
 }
 
 fn lower_extern(function: &ir::Function, cx: &Context) -> Result<rust::ExternDecl> {
