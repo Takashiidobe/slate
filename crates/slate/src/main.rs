@@ -6,7 +6,7 @@ use slate::frontend::{self, c_ast, c_shim, directive_translate, preprocess};
 use slate::{api, compile_commands, ctx};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
-use std::process::{Command, ExitCode};
+use std::process::ExitCode;
 
 #[global_allocator]
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
@@ -534,10 +534,6 @@ fn merge_target_programs(variants: &[(rust_ast::Cfg, rust_ast::Program)]) -> rus
     rust_ast::Program { items }
 }
 
-fn cargo() -> String {
-    std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into())
-}
-
 fn package_name(crate_dir: &Path) -> String {
     let name = crate_dir
         .file_name()
@@ -646,29 +642,9 @@ fn write_crate_manifest(
 /// `main` must not collide with Cargo's `src/main.rs` binary detection. An
 /// executable crate keeps `src/main.rs` as its one binary entry point.
 fn init_crate(crate_dir: &Path, wants_lib: bool) -> Result<(), String> {
-    std::fs::create_dir_all(crate_dir)
-        .map_err(|e| format!("create {}: {e}", crate_dir.display()))?;
+    let src_dir = crate_dir.join("src");
+    std::fs::create_dir_all(&src_dir).map_err(|e| format!("create {}: {e}", src_dir.display()))?;
     let package = package_name(crate_dir);
-    if !crate_dir.join("Cargo.toml").exists() {
-        let mut init = Command::new(cargo());
-        init.arg("init");
-        if wants_lib {
-            init.arg("--lib");
-        }
-        let out = init
-            .args(["--vcs", "none", "--name"])
-            .arg(&package)
-            .arg(crate_dir)
-            .output()
-            .map_err(|e| format!("spawn cargo init: {e}"))?;
-        if !out.status.success() {
-            return Err(format!(
-                "cargo init failed:\n{}",
-                String::from_utf8_lossy(&out.stderr)
-            ));
-        }
-    }
-
     write_crate_manifest(
         crate_dir,
         &package,
