@@ -1,5 +1,14 @@
 # Extending intrinsic lowering to ARM/AArch64/RISC-V
 
+<!-- toc -->
+- [What's already generic vs. what's
+  x86-only](#whats-already-generic-vs-whats-x86-only)
+- [Risk profile per target](#risk-profile-per-target)
+- [Blocker: no cross-execution
+  capability](#blocker-no-cross-execution-capability)
+- [Suggested order of work](#suggested-order-of-work)
+<!-- /toc -->
+
 Builds on [x86-intrinsic-lowering.md](x86-intrinsic-lowering.md) — the whole
 `call_llvm_intrinsic` path, `slate-intrinsic-gen`, `intrinsics_table.rs`, and
 the `std::simd::Simd<T,N>` extern-boundary conversion are already

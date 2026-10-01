@@ -1,5 +1,18 @@
 # Goto Lowering
 
+<!-- toc -->
+- [Why this needs a state machine at
+  all](#why-this-needs-a-state-machine-at-all)
+- [Phase 1: does this function need flattening?
+  (`src/frontend/cir_input.rs`)](#phase-1-does-this-function-need-flattening-srcfrontendcir_inputrs)
+- [Phase 2: `lower_dispatch`
+  (`src/frontend/lowerer/control_flow.rs`)](#phase-2-lower_dispatch-srcfrontendlowerercontrol_flowrs)
+- [Phase 3: structuring the dispatch loop back
+  down](#phase-3-structuring-the-dispatch-loop-back-down)
+- [Where to look for each half](#where-to-look-for-each-half)
+- [Related](#related)
+<!-- /toc -->
+
 _updated 2026-09-19_
 
 How C `goto`/labels turn into Rust, end to end: three phases across two

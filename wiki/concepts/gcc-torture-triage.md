@@ -1,5 +1,22 @@
 # Debugging the gcc-torture (and sibling) unsupported corpora
 
+<!-- toc -->
+- [The three-test pattern](#the-three-test-pattern)
+  - [Reproducing one case](#reproducing-one-case)
+  - [Directory layout (this varies per suite — check before
+    assuming)](#directory-layout-this-varies-per-suite--check-before-assuming)
+  - [The `.ignored` bucket](#the-ignored-bucket)
+- [How to dig into one failing case](#how-to-dig-into-one-failing-case)
+  - [Where the actually-compiled batch binary
+    lives](#where-the-actually-compiled-batch-binary-lives)
+- [Why the `lowering` profile
+  matters](#why-the-lowering-profile-matters)
+- [Signs to look for](#signs-to-look-for)
+- [Testing strategy: corpora over formal
+  verification/fuzzing](#testing-strategy-corpora-over-formal-verificationfuzzing)
+- [Filing focused bugs](#filing-focused-bugs)
+<!-- /toc -->
+
 > Scope: working `slate-os0h.3.1` (triage the gcc-torture unsupported corpus
 > into focused bugs) and its children, or the equivalent triage epics for
 > `c-testsuite`, `chibicc`, and `libc-test/functional`. Read

@@ -1,5 +1,24 @@
 # Hybrid C++ migration with residual fallback
 
+<!-- toc -->
+- [The baseline may be a C++
+  launcher](#the-baseline-may-be-a-c-launcher)
+- [Native Rust and C++ representations may
+  coexist](#native-rust-and-c-representations-may-coexist)
+- [Use a lazy shadow with one authoritative
+  side](#use-a-lazy-shadow-with-one-authoritative-side)
+- [Rewrite and deletion are fixed-point
+  operations](#rewrite-and-deletion-are-fixed-point-operations)
+- [Evidence levels for increasingly interpretive
+  rewrites](#evidence-levels-for-increasingly-interpretive-rewrites)
+- [Shadow execution can validate rewrite
+  rules](#shadow-execution-can-validate-rewrite-rules)
+- [Migration diagnostics are part of the
+  product](#migration-diagnostics-are-part-of-the-product)
+- [Suggested implementation
+  sequence](#suggested-implementation-sequence)
+<!-- /toc -->
+
 > Design sketch, not implemented. This extends
 > [cxx-stdlib-shim-lowering.md](cxx-stdlib-shim-lowering.md): unsupported C++
 > does not have to abort translation. Slate can retain it as residual C++ and

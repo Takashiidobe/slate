@@ -1,5 +1,15 @@
 # Lowerer internals
 
+<!-- toc -->
+- [Two-tier state: `Lowerer` vs
+  `FunctionLowerer`](#two-tier-state-lowerer-vs-functionlowerer)
+- [Op dispatch](#op-dispatch)
+- [Submodule map](#submodule-map)
+- [Constant global-initializer resolution
+  (`#cir.global_view`)](#constant-global-initializer-resolution-cirglobal_view)
+- [Adding a new `cir.*` handler](#adding-a-new-cir-handler)
+<!-- /toc -->
+
 > This is the module-level map of `src/frontend/lowerer.rs` and
 > `src/frontend/lowerer/`. See [slate-architecture.md](slate-architecture.md) for why the
 > lowerer exists and what it consumes; see [passes.md](passes.md) for where

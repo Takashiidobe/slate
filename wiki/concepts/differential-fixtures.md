@@ -1,5 +1,14 @@
 # Differential fixtures
 
+<!-- toc -->
+- [Suites](#suites)
+- [Supported/unsupported ratchet](#supportedunsupported-ratchet)
+- [Triage](#triage)
+- [Workflow](#workflow)
+- [Per-fixture compiler flags](#per-fixture-compiler-flags)
+- [FileCheck (suspended)](#filecheck-suspended)
+<!-- /toc -->
+
 Fixtures are C programs. Slate compiles and runs the C source with
 `SLATE_CLANG` (the oracle) and the generated Rust, then requires identical
 stdout and exit status. Runtime parity is the only correctness gate.

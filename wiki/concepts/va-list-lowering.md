@@ -1,5 +1,13 @@
 # va_list lowering
 
+<!-- toc -->
+- [Type and place recognition](#type-and-place-recognition)
+- [Known gap: `va_list*` pointer
+  places](#known-gap-va_list-pointer-places)
+- [The hard case: malloc'd va_list arrays with a real `vprintf`
+  call](#the-hard-case-mallocd-va_list-arrays-with-a-real-vprintf-call)
+<!-- /toc -->
+
 Two representations, chosen per translation unit. `module_requires_native_va_list`
 (`src/frontend/lowerer/analysis.rs`) decides **once per file**, not per
 function: every va*list use in the file can be the boxed `__SlateVaArgs`

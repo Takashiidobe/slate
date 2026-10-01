@@ -1,5 +1,16 @@
 # slate
 
+<!-- toc -->
+- [Approach in one line](#approach-in-one-line)
+- [Current state](#current-state)
+- [Not handled yet](#not-handled-yet)
+- [Pipeline](#pipeline)
+- [Three sources](#three-sources)
+- [Error ownership](#error-ownership)
+- [Docs](#docs)
+- [Toolchain](#toolchain)
+<!-- /toc -->
+
 `slate` translates C to Rust by lowering **ClangIR (CIR)** — Clang's MLIR-based
 IR — rather than LLVM IR. CIR is high enough to retain structured control flow,
 integer signedness, and named local variables, so this is _transpilation_, not

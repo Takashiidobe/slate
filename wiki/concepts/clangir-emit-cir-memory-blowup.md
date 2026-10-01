@@ -1,5 +1,14 @@
 # ClangIR `-emit-cir` memory blowup on large, type-recursive TUs
 
+<!-- toc -->
+- [Symptom](#symptom)
+- [Root cause: non-cyclic alias re-expansion during printing, not
+  CIRGen](#root-cause-non-cyclic-alias-re-expansion-during-printing-not-cirgen)
+- [Fix attempted, then judged insufficient for the general
+  case](#fix-attempted-then-judged-insufficient-for-the-general-case)
+- [Conclusion](#conclusion)
+<!-- /toc -->
+
 > Upstream ClangIR/MLIR limitation, not a slate bug. Recorded so the sqlite
 > translation epic (`slate-wcf7`) doesn't get re-blocked by the same
 > investigation, and so an upstream bug report can be filed without

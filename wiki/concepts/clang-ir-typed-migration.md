@@ -1,5 +1,19 @@
 # clang-ir typed-CIR migration
 
+<!-- toc -->
+- [Phase 1 — typed `Attribute`/`Type`
+  layer](#phase-1--typed-attributetype-layer)
+- [Phase 2 — `CirOpKind` → `model::Instruction`
+  dispatch](#phase-2--ciropkind--modelinstruction-dispatch)
+  - [Phase 2.5 — pass the whole `Instruction`, not just a
+    discriminant](#phase-25--pass-the-whole-instruction-not-just-a-discriminant)
+- [Phase 3 (in progress) — fully self-sufficient
+  `Instruction`](#phase-3-in-progress--fully-self-sufficient-instruction)
+- [cir-opt invocation ownership](#cir-opt-invocation-ownership)
+- [Completion (`slate-jedr`,
+  `slate-3hkk`)](#completion-slate-jedr-slate-3hkk)
+<!-- /toc -->
+
 Tracked by epic `slate-cevu` (phases 1–3 below) and completed by the
 follow-on `slate-jedr`/`slate-3hkk` epics (see "Completion" below). Moved
 slate's CIR handling off generic, raw-text `Operation`/`Attribute` matching

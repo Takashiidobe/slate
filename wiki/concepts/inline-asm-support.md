@@ -1,5 +1,21 @@
 # GNU inline asm support
 
+<!-- toc -->
+- [Direction](#direction)
+- [Storage class](#storage-class)
+  - [Output wiring for addressed (`maybe_memory`)
+    operands](#output-wiring-for-addressed-maybe_memory-operands)
+- [`ebx`/`rbx` handling (from zstd to work around gcc's
+  limitation)](#ebxrbx-handling-from-zstd-to-work-around-gccs-limitation)
+- [Byte-sized `Q`/`q` widen hack](#byte-sized-qq-widen-hack)
+- [Explicit / non-constraint
+  operands](#explicit--non-constraint-operands)
+- [Known x86 gaps](#known-x86-gaps)
+- [AArch64](#aarch64)
+- [ARM (32-bit)](#arm-32-bit)
+- [Fixture layout](#fixture-layout)
+<!-- /toc -->
+
 How Slate resolves a GCC/Clang inline-asm constraint to a concrete Rust
 `asm!` operand. Epic: `slate-3f8g.4.15` (extends `slate-3f8g.4`). Code:
 `src/frontend/lowerer/asm.rs`, `intrinsics.rs::lower_extended_asm`.

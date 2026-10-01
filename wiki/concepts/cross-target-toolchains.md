@@ -1,5 +1,20 @@
 # Cross-target toolchains
 
+<!-- toc -->
+- [Musl oracle sysroots](#musl-oracle-sysroots)
+- [Runtime differential matrix](#runtime-differential-matrix)
+- [Standards baseline vs. glibc oracle vs. musl
+  oracle](#standards-baseline-vs-glibc-oracle-vs-musl-oracle)
+- [Cache locations](#cache-locations)
+- [Target matrix](#target-matrix)
+- [ARM32](#arm32)
+- [AArch64](#aarch64)
+- [i686](#i686)
+- [libc-shim work](#libc-shim-work)
+- [Inline assembly](#inline-assembly)
+- [Validation checklist](#validation-checklist)
+<!-- /toc -->
+
 Slate's cross-target differential tests compile the C oracle and generated Rust
 for the same target, then run both programs under a user-mode emulator. A
 target setup therefore needs all of the following:

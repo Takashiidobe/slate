@@ -1,5 +1,14 @@
 # Directive-translate cfg atom classification
 
+<!-- toc -->
+- [Evidence (zstd)](#evidence-zstd)
+- [Three buckets](#three-buckets)
+- [Algorithm](#algorithm)
+- [Feature macros belong in the fixed
+  bucket](#feature-macros-belong-in-the-fixed-bucket)
+- [Tracking](#tracking)
+<!-- /toc -->
+
 _created 2026-09-06_
 
 `plan_configs` (`src/frontend/directive_translate.rs`) enumerates one clang

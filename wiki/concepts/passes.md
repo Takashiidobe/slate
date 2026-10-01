@@ -1,5 +1,15 @@
 # Passes
 
+<!-- toc -->
+- [Pipeline](#pipeline)
+- [The rewrite stage](#the-rewrite-stage)
+  - [Interproc analyses (phase 1)](#interproc-analyses-phase-1)
+  - [Per-function worklist rules (phase
+    2)](#per-function-worklist-rules-phase-2)
+- [Debugging the rewrite stage](#debugging-the-rewrite-stage)
+- [Adding a feature vs. a rewrite](#adding-a-feature-vs-a-rewrite)
+<!-- /toc -->
+
 Baseline lowering is deliberately ugly (`#[repr(C)]`, raw pointers, explicit
 temps, `libc`, `unsafe`); readability is recovered afterward by rewrites, never
 during lowering. This page catalogs the stages and the **current** rewrite

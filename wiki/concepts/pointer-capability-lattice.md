@@ -1,5 +1,16 @@
 # Pointer capability lattice
 
+<!-- toc -->
+- [The tables](#the-tables)
+- [Why not SSA](#why-not-ssa)
+- [Monotonicity](#monotonicity)
+- [Two-phase design: interproc solve, then local
+  consumption](#two-phase-design-interproc-solve-then-local-consumption)
+- [Interprocedural propagation](#interprocedural-propagation)
+- [Status](#status)
+- [Related](#related)
+<!-- /toc -->
+
 Tracked by `slate-y0qs.4` (SCC-ordered call-graph worklist for interprocedural
 fixpoint families). As of 2026-09-19, this page is the canonical reference for
 the capability analysis and the scalar/owned parameter rewrite. It implements

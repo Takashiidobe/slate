@@ -1,5 +1,16 @@
 # x86/ARM/RISC-V intrinsic (`call_llvm_intrinsic`) lowering
 
+<!-- toc -->
+- [Design](#design)
+- [The `slate-intrinsic-gen` sibling
+  crate](#the-slate-intrinsic-gen-sibling-crate)
+- [Legacy vs. canonical naming divergence (AVX512
+  masks)](#legacy-vs-canonical-naming-divergence-avx512-masks)
+- [`target_feature` propagation](#target_feature-propagation)
+- [Cross-execution gap for
+  ARM/RISC-V](#cross-execution-gap-for-armrisc-v)
+<!-- /toc -->
+
 CIR represents `<immintrin.h>`/`<arm_neon.h>`/`__builtin_ia32_*` calls as
 `cir.call_llvm_intrinsic`. The op carries fully concrete, resolved operand and
 result types at every call site, even for LLVM-level _overloaded_ intrinsics

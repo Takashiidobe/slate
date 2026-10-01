@@ -1,5 +1,18 @@
 # C++ exceptions lowering
 
+<!-- toc -->
+- [Correction to prior scoping: CIR already models this in
+  detail](#correction-to-prior-scoping-cir-already-models-this-in-detail)
+- [What `-emit-cir` produces](#what--emit-cir-produces)
+- [Raw-lowering target: `panic_any` / `catch_unwind`, not signals or a
+  manual state
+  machine](#raw-lowering-target-panic_any--catch_unwind-not-signals-or-a-manual-state-machine)
+- [Planned follow-up: rewrite to `Result`, gated on raw lowering
+  compiling
+  first](#planned-follow-up-rewrite-to-result-gated-on-raw-lowering-compiling-first)
+- [Open questions (not yet resolved)](#open-questions-not-yet-resolved)
+<!-- /toc -->
+
 > Scoping doc, not implemented. Companion to
 > [cxx-translation-pain-points.md](cxx-translation-pain-points.md) (the "RAII
 >

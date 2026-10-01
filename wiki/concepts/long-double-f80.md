@@ -1,5 +1,14 @@
 # long double (f80) representation
 
+<!-- toc -->
+- [Slate frontend](#slate-frontend)
+- [Why not just `f64`](#why-not-just-f64)
+- [ABI varies by target —
+  `uses_f64_long_double_abi()`](#abi-varies-by-target--uses_f64_long_double_abi)
+- [Integration points](#integration-points)
+- [History](#history)
+<!-- /toc -->
+
 > The `LongDouble` prelude, the `__slate_f80_*` shim declarations, and the
 > bridge type tags live in `slate_parser_frontend/long_double.rs`, shared by
 > the slate frontend and the legacy CIR lowerer.

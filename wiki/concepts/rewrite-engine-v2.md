@@ -1,5 +1,23 @@
 # Rewrite engine v2: ground-up replacement for src/backend/query + salsa
 
+<!-- toc -->
+- [The mandate](#the-mandate)
+- [Rejected: retrofit the existing
+  engine](#rejected-retrofit-the-existing-engine)
+- [Facts: keep the algorithms, replace the
+  plumbing](#facts-keep-the-algorithms-replace-the-plumbing)
+- [Target architecture](#target-architecture)
+- [Known risks to carry forward, not
+  rediscover](#known-risks-to-carry-forward-not-rediscover)
+- [Historical handoff snapshot
+  (2026-08-27)](#historical-handoff-snapshot-2026-08-27)
+- [Validation contract (non-negotiable regardless of internal
+  architecture)](#validation-contract-non-negotiable-regardless-of-internal-architecture)
+- [Baseline numbers to beat](#baseline-numbers-to-beat)
+- [Historical first slice](#historical-first-slice)
+- [Related](#related)
+<!-- /toc -->
+
 > **Where this stands (2026-09-19).** This is the design spec that guided the
 > engine that now ships in `src/backend/engine/` + `src/backend/interproc/`.
 > The replacement is real, not hypothetical: `src/backend/query/` and

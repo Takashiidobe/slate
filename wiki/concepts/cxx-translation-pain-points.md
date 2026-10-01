@@ -1,5 +1,35 @@
 # C++ translation pain points (pre-implementation scoping)
 
+<!-- toc -->
+- [Templates: CIR only ever shows the monomorphized
+  side](#templates-cir-only-ever-shows-the-monomorphized-side)
+- [The AST join needs a second key for
+  templates](#the-ast-join-needs-a-second-key-for-templates)
+- [Value-level constexpr metaprogramming is a
+  non-issue](#value-level-constexpr-metaprogramming-is-a-non-issue)
+- [SFINAE: CIR shows "what was chosen," never "what were the
+  choices"](#sfinae-cir-shows-what-was-chosen-never-what-were-the-choices)
+  - [The autoref trick only works as a per-call-site macro, never inside
+    a generic
+    function](#the-autoref-trick-only-works-as-a-per-call-site-macro-never-inside-a-generic-function)
+  - [Disjunctive *gating* is solvable via `#[marker]`; correction to an
+    earlier claim
+    here](#disjunctive-gating-is-solvable-via-marker-correction-to-an-earlier-claim-here)
+  - [Disjunctive dispatch with real overlap and a priority tie-break:
+    genuinely
+    unsupported](#disjunctive-dispatch-with-real-overlap-and-a-priority-tie-break-genuinely-unsupported)
+- [Move semantics are a different ownership model, not a syntax
+  gap](#move-semantics-are-a-different-ownership-model-not-a-syntax-gap)
+- [RAII + exceptions have no direct Rust control-flow
+  shape](#raii--exceptions-have-no-direct-rust-control-flow-shape)
+- [Multiple/virtual inheritance has no Rust
+  equivalent](#multiplevirtual-inheritance-has-no-rust-equivalent)
+- [Static initialization order (SIOF) is a genuinely new pass
+  category](#static-initialization-order-siof-is-a-genuinely-new-pass-category)
+- [Standard library surface is a scale problem, not a design
+  problem](#standard-library-surface-is-a-scale-problem-not-a-design-problem)
+<!-- /toc -->
+
 > Exploratory scoping, not implemented. CIR's C++ support is uneven: some
 > constructs (exceptions — see
 > [cxx-exceptions-lowering.md](cxx-exceptions-lowering.md)) already lower to

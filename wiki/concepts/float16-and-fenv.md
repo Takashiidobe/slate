@@ -1,5 +1,13 @@
 # `_Float16` and FENV-constrained floating point
 
+<!-- toc -->
+- [`_Float16` scope](#_float16-scope)
+- [TS 18661-3 library surface for `_Float16`
+  (`slate-5exy.3.8`)](#ts-18661-3-library-surface-for-_float16-slate-5exy38)
+- [Constrained floating point
+  (`FENV_ACCESS`)](#constrained-floating-point-fenv_access)
+<!-- /toc -->
+
 Two related floating-point correctness areas: scope-limiting the `_FloatN`
 family to what Clang actually implements, and shimming ops that need to
 honor a dynamic FP environment (`#pragma STDC FENV_ACCESS`).

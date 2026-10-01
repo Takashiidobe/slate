@@ -1,5 +1,21 @@
 # C++ stdlib shim lowering
 
+<!-- toc -->
+- [Why not reimplement, why not `cxx`](#why-not-reimplement-why-not-cxx)
+- [Design: opaque blob + generated C++ wrapper, every crossing goes
+  through a
+  shim](#design-opaque-blob--generated-c-wrapper-every-crossing-goes-through-a-shim)
+  - [Why this closes the two hardest structural gaps for
+    free](#why-this-closes-the-two-hardest-structural-gaps-for-free)
+- [Exceptions crossing the shim
+  boundary](#exceptions-crossing-the-shim-boundary)
+- [Known limits — things the shim mechanism cannot directly
+  cross](#known-limits--things-the-shim-mechanism-cannot-directly-cross)
+- [Sequencing (matches the setjmp/longjmp and exceptions
+  precedent)](#sequencing-matches-the-setjmplongjmp-and-exceptions-precedent)
+- [Open questions (not yet resolved)](#open-questions-not-yet-resolved)
+<!-- /toc -->
+
 > Scoping doc, not implemented. Companion to
 > [cxx-translation-pain-points.md](cxx-translation-pain-points.md) (the
 > "standard library surface is a scale problem" section) and

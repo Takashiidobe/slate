@@ -1,5 +1,13 @@
 # Porting a pass to the worklist engine (slate-y0qs.3 fast path)
 
+<!-- toc -->
+- [Picking which pass to port next](#picking-which-pass-to-port-next)
+- [Porting the logic](#porting-the-logic)
+- [Verifying it](#verifying-it)
+- [Benchmarking](#benchmarking)
+- [Related](#related)
+<!-- /toc -->
+
 Read this before picking up "port another pass" work under `slate-y0qs.3`.
 It exists so that loop doesn't re-derive the same context (and the same
 dead ends) every session. For the target architecture itself, read

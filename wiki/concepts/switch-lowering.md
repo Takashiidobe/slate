@@ -1,5 +1,15 @@
 # Switch lowering and recovery
 
+<!-- toc -->
+- [The CIR shape](#the-cir-shape)
+- [Lowering: one shape, no
+  cleverness](#lowering-one-shape-no-cleverness)
+- [The Duff's-device exception](#the-duffs-device-exception)
+- [Rewrite: recovering `match` without a fallback
+  path](#rewrite-recovering-match-without-a-fallback-path)
+- [Related](#related)
+<!-- /toc -->
+
 How `cir.switch` becomes Rust, in two stages that don't share a code path:
 `lower_switch` (`src/frontend/lowerer/control_flow.rs:128`) always emits one
 mechanical trampoline shape, and `structure_dispatch`

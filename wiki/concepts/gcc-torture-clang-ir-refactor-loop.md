@@ -1,5 +1,15 @@
 # Recovering from a clang-ir typed-operation refactor
 
+<!-- toc -->
+- [Loop](#loop)
+- [Stale-artifact trap](#stale-artifact-trap)
+- [Comparison-kind trap](#comparison-kind-trap)
+- [Long double: AST facts, never CIR-text
+  fallback](#long-double-ast-facts-never-cir-text-fallback)
+- [Where semantic loss tends to hide after this class of
+  refactor](#where-semantic-loss-tends-to-hide-after-this-class-of-refactor)
+<!-- /toc -->
+
 When `clang-ir`'s typed-operation model changes underneath Slate (e.g. the
 0.1.3 refactor, `slate-cevu.7`), the lowerer can compile clean while being
 semantically wrong — most failures are invalid generated Rust or runtime

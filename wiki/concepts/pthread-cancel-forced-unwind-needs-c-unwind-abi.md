@@ -1,5 +1,18 @@
 # pthread_cancel forced unwind requires `extern "C-unwind"`, not `extern "C"`
 
+<!-- toc -->
+- [Symptom](#symptom)
+- [Root cause](#root-cause)
+- [Minimal reproducer](#minimal-reproducer)
+- [Not a rustc bug](#not-a-rustc-bug)
+- [Why an "override list of known-cancellable functions" doesn't fully
+  solve
+  it](#why-an-override-list-of-known-cancellable-functions-doesnt-fully-solve-it)
+- [Decision](#decision)
+- [Investigation notes (tooling that
+  worked)](#investigation-notes-tooling-that-worked)
+<!-- /toc -->
+
 Root cause of the `pthread_cancel-points` libc-test SIGABRT
 (`slate-cu47`). Kept as a reference doc because this bites any generated
 function that can be on the stack under a cancellable libc call, and the

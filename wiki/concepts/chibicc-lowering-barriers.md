@@ -1,5 +1,13 @@
 # Slate lowering barriers: /home/takashi/c-corpus/chibicc/compile_commands.json
 
+<!-- toc -->
+- [Defined functions by first
+  barrier](#defined-functions-by-first-barrier)
+- [Module-level barriers](#module-level-barriers)
+- [Declaration barriers](#declaration-barriers)
+- [TUs by first reported barrier](#tus-by-first-reported-barrier)
+<!-- /toc -->
+
 Regenerate with `python3 tools/corpus_barriers.py --output wiki/concepts/chibicc-lowering-barriers.md`.
 
 - slate `def0421abc26-dirty`

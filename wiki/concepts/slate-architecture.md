@@ -1,5 +1,25 @@
 # Architecture
 
+<!-- toc -->
+- [The pipeline at a glance](#the-pipeline-at-a-glance)
+- [Why CIR, not LLVM IR](#why-cir-not-llvm-ir)
+- [The clang-ir crate (CIR
+  ingestion)](#the-clang-ir-crate-cir-ingestion)
+- [The three sources, joined by
+  location](#the-three-sources-joined-by-location)
+  - [Provenance from the plugin](#provenance-from-the-plugin)
+- [libc-shim (what "the system headers"
+  are)](#libc-shim-what-the-system-headers-are)
+- [Target-conditional translation (`#if`/`#cfg`
+  reconstruction)](#target-conditional-translation-ifcfg-reconstruction)
+- [Lowering (CIR + AST → baseline Rust
+  AST)](#lowering-cir--ast--baseline-rust-ast)
+- [Rewriting (baseline Rust AST → idiomatic Rust
+  AST)](#rewriting-baseline-rust-ast--idiomatic-rust-ast)
+- [Verification](#verification)
+- [Where to target a fix](#where-to-target-a-fix)
+<!-- /toc -->
+
 A one-stop map of the pipeline: what each stage consumes and produces, which
 crate or module owns it, and **where to target a given fix**. Deep-dives live in
 [lowerer-internals.md](lowerer-internals.md), [rewrite-engine-v2.md](rewrite-engine-v2.md),
