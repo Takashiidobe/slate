@@ -115,6 +115,8 @@ pub enum Invariant {
     UnknownCallee(BindingId),
     #[error("unresolved type @type{}", .0.0)]
     UnresolvedType(TypeId),
+    #[error("non-constant case value")]
+    NonConstantCase,
 }
 
 #[derive(Debug, Clone, Error)]
