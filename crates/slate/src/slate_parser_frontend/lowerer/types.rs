@@ -122,9 +122,7 @@ impl FunctionLowerer<'_, '_> {
         let mut end = 0u64;
         let mut align = 1u64;
         for (index, field) in fields.iter().flatten().enumerate() {
-            let (Some(field_name), None, true) =
-                (&field.name, field.bit_width, field.access.is_plain())
-            else {
+            let (None, true) = (field.bit_width, field.access.is_plain()) else {
                 return Err(unsupported_record(name, &format!("field {index}")).at(Site::of(field)));
             };
             let (field_size, field_align) = self.tables.storage_of(&field.ty).ok_or_else(|| {
@@ -142,7 +140,7 @@ impl FunctionLowerer<'_, '_> {
             align = align.max(field_align);
             lowered.push(rust::RecordField {
                 comments: Vec::new(),
-                name: field_name.as_str().into(),
+                name: field_name(field, index).into(),
                 ty: self
                     .lower_type(&field.ty)
                     .map_err(|error| error.at(Site::of(field)))?,
@@ -251,6 +249,13 @@ impl FunctionLowerer<'_, '_> {
             _ => return Err(unsupported_type(ty)),
         };
         Ok(rust::Type::Prim(primitive))
+    }
+}
+
+pub(super) fn field_name(field: &ir::Field, index: usize) -> String {
+    match &field.name {
+        Some(name) => name.as_str().into(),
+        None => format!("__slate_anon_{index}"),
     }
 }
 

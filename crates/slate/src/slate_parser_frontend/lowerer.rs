@@ -31,6 +31,7 @@ use globals::*;
 use names::*;
 use pointers::*;
 use statements::*;
+use types::*;
 use values::*;
 
 type Result<T> = std::result::Result<T, Failure>;
@@ -60,6 +61,7 @@ struct Dependencies {
     bridges: BTreeMap<String, rust::ExternFnDecl>,
     align_wrappers: BTreeSet<u32>,
     records: BTreeMap<u32, Record>,
+    compound_literals: Vec<Item>,
 }
 
 enum Record {
@@ -72,6 +74,7 @@ struct FunctionLowerer<'a, 'm> {
     tables: &'a Tables<'m>,
     dependencies: &'a mut Dependencies,
     temps: u32,
+    hoisted: Vec<Stmt>,
 }
 
 impl FunctionLowerer<'_, '_> {
@@ -255,6 +258,7 @@ impl<'m> ModuleLowerer<'m> {
             tables: &self.tables,
             dependencies: &mut self.dependencies,
             temps: 0,
+            hoisted: Vec::new(),
         }
     }
 
@@ -363,6 +367,7 @@ impl<'m> ModuleLowerer<'m> {
                 Record::Building | Record::Failed(_) => None,
             });
         items.splice(0..0, records.chain(wrappers));
+        items.extend(dependencies.compound_literals);
         if dependencies.long_double {
             items.splice(
                 0..0,

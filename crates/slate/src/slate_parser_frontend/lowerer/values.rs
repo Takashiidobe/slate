@@ -447,7 +447,7 @@ impl FunctionLowerer<'_, '_> {
         let field_name = |index: usize| {
             fields
                 .and_then(|fields| fields.get(index))
-                .and_then(|field| field.name.clone())
+                .map(|field| field_name(field, index))
                 .ok_or_else(unsupported)
         };
         let complete = !zero_fill && !self.tables.is_union(ty) && members.iter().enumerate().all(|(position, member)| {

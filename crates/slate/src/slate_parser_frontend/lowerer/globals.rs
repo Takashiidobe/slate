@@ -74,6 +74,11 @@ impl Tables<'_> {
         match &place.kind {
             PlaceKind::Binding(id) => self.statics.contains(id) || self.strings.contains_key(id),
             PlaceKind::Field { base, .. } => self.is_constant_address(base),
+            PlaceKind::CompoundLiteral {
+                storage: ir::StorageDuration::Static,
+                initializer,
+                ..
+            } => self.is_constant_initializer(initializer),
             PlaceKind::Deref(pointer) => self.is_constant_initializer(pointer),
             PlaceKind::Index { base, index } => {
                 self.is_constant_initializer(base)

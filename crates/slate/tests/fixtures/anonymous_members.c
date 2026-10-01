@@ -22,5 +22,11 @@ int main(void) {
          sizeof(value));
   value.real = 2.5f;
   printf("%d\n", (int)value.real);
+  struct container positional = {1, {2}, {3, 4}};
+  struct container designated = {.y = 7, .integer = 6, .prefix = 5};
+  printf("%d %d %d %d\n", positional.prefix, positional.integer, positional.x,
+         positional.y);
+  printf("%d %d %d %d\n", designated.prefix, designated.integer, designated.x,
+         designated.y);
   return 0;
 }
