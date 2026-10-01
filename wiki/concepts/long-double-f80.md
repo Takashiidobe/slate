@@ -1,8 +1,26 @@
 # long double (f80) representation
 
-> See [lowerer-internals.md](lowerer-internals.md)'s submodule table:
-> `frontend/lowerer/runtime_support.rs` owns the generated `f80`/long-double
-> shim, `frontend/lowerer/types.rs` handles the type-string parsing.
+> The `LongDouble` prelude, the `__slate_f80_*` shim declarations, and the
+> bridge type tags live in `slate_parser_frontend/long_double.rs`, shared by
+> the slate frontend and the legacy CIR lowerer.
+
+## Slate frontend
+
+`slate_parser_frontend/lowerer.rs` lowers IR `f80` to `LongDouble` and emits
+the prelude when any f80 type is lowered. Constants become
+`LongDouble([10 bytes])` straight from `Number::FloatBits`. Arithmetic,
+negation, and comparisons use the prelude's operator impls. Every `Convert`
+with an f80 side calls `__slate_f80_from_<t>` / `__slate_f80_to_<t>`.
+
+A call to a body-less function whose return or argument holds f80 by value
+(including inside a struct) becomes a call to a C bridge named
+`__slate_<callee>__r<ret>_<arg tags>`. The test harness renders it from the
+name (`c_shim::render_shim_c_source_for_names`) and links it with
+`shims/long_double.c`, and the direct extern declaration is dropped. Barriers
+remain for variadic callees missing from `function_identity::Known` (the
+bridge needs their header), for non-pointer aggregate arguments to a bridge,
+and for `va_arg` of `long double`. Non-variadic bridged callees depend on
+`long_double.c` including `<math.h>`.
 
 ## Why not just `f64`
 
@@ -12,10 +30,10 @@ extended precision (10 bytes of value, padded to 16-byte alignment), with
 different rounding/precision behavior than `f64`. Silently widening it to
 `f64` would pass slate's differential tests on trivial cases and diverge on
 anything precision-sensitive. So slate models it as its own type,
-`LongDouble` (`frontend/lowerer/runtime_support.rs::LONG_DOUBLE_TY`), backed
-by a `[u8; 10]` byte representation, with arithmetic implemented via
-`rustc_apfloat` (the same target-independent arbitrary-precision float crate
-rustc itself uses internally) since Rust has no native 80-bit float type.
+`LongDouble` (`slate_parser_frontend/long_double.rs::LONG_DOUBLE_TY`), backed
+by a `[u8; 10]` byte representation, with every x87 operation delegated to C
+helpers in `frontend/shims/long_double.c` since Rust has no native 80-bit
+float type.
 
 ## ABI varies by target — `uses_f64_long_double_abi()`
 

@@ -50,6 +50,7 @@ mod storage;
 mod types;
 mod values;
 
+use crate::slate_parser_frontend::long_double::*;
 use analysis::*;
 use asm::*;
 use atomic::*;

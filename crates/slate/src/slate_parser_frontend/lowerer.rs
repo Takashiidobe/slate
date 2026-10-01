@@ -1,3 +1,4 @@
+use super::long_double;
 use crate::backend::rust_ast::{self as rust, Attr, BinOp, Expr, FnDef, FnParam, Item, Prim, Stmt};
 use crate::function_identity::CallBinding;
 use crate::function_identity::FunctionIdentity;
@@ -12,6 +13,7 @@ struct FunctionName {
     rust: String,
     is_extern: bool,
     is_unsafe: bool,
+    is_variadic: bool,
 }
 
 struct Context<'a> {
@@ -25,6 +27,8 @@ struct Context<'a> {
     record_names: HashMap<TypeId, String>,
     records: RefCell<BTreeMap<u32, Option<std::result::Result<rust::RecordDef, String>>>>,
     temps: Cell<u32>,
+    long_double: Cell<bool>,
+    bridges: RefCell<BTreeMap<String, rust::ExternFnDecl>>,
 }
 
 impl Context<'_> {
@@ -190,6 +194,13 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
                             function.parameters,
                             ir::Parameters::Prototype { variadic: true, .. }
                         ),
+                    is_variadic: !matches!(
+                        function.parameters,
+                        ir::Parameters::Prototype {
+                            variadic: false,
+                            ..
+                        }
+                    ),
                 },
             )
         })
@@ -235,6 +246,8 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
         record_names: record_names(module),
         records: RefCell::default(),
         temps: Cell::new(0),
+        long_double: Cell::new(false),
+        bridges: RefCell::default(),
     };
     cx.over_aligned = statics
         .iter()
@@ -265,6 +278,9 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
     }
     for function in &module.functions {
         let Some(body) = &function.body else {
+            if passes_long_double(function, &cx) {
+                continue;
+            }
             let decl = lower_extern(function, &cx);
             if let Some(decl) = function_barrier(&mut report, &function.name, false, decl)? {
                 externs.push(decl);
@@ -308,6 +324,19 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
         .filter_map(|record| record.and_then(|record| record.ok()))
         .map(Item::Record);
     items.splice(0..0, records.chain(wrappers));
+    if cx.long_double.get() {
+        items.splice(
+            0..0,
+            long_double::long_double_prelude(rust::Visibility::Private),
+        );
+        externs.extend(
+            long_double::f80_shim_decls()
+                .into_iter()
+                .filter(|decl| decl.name.starts_with("__slate_f80_"))
+                .chain(cx.bridges.take().into_values())
+                .map(rust::ExternDecl::Fn),
+        );
+    }
     if !externs.is_empty() {
         items.insert(
             0,
@@ -427,7 +456,11 @@ fn is_constant_initializer(value: &ir::Value, cx: &Context) -> bool {
             is_constant_initializer(pointer, cx)
                 && matches!(amount.node.value, ValueKind::Constant(_))
         }
-        ValueKind::Convert { operand, .. } => is_constant_initializer(operand, cx),
+        ValueKind::Convert { operand, .. } => {
+            !is_long_double(cx, &operand.ty)
+                && !is_long_double(cx, &value.ty)
+                && is_constant_initializer(operand, cx)
+        }
         ValueKind::Aggregate { members, .. } => members
             .iter()
             .all(|member| is_constant_initializer(&member.value, cx)),
@@ -445,6 +478,132 @@ fn is_constant_address(place: &ir::Place, cx: &Context) -> bool {
         }
         _ => false,
     }
+}
+
+fn is_long_double(cx: &Context, ty: &ir::Type) -> bool {
+    matches!(
+        resolve_type(cx, ty),
+        ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F80))
+    )
+}
+
+fn holds_long_double(cx: &Context, ty: &ir::Type) -> bool {
+    is_long_double(cx, ty)
+        || match resolve_type(cx, ty) {
+            ir::Type::Array { element, .. } => holds_long_double(cx, element),
+            ty => record_fields(cx, ty)
+                .is_some_and(|fields| fields.iter().any(|field| holds_long_double(cx, &field.ty))),
+        }
+}
+
+fn passes_long_double(function: &ir::Function, cx: &Context) -> bool {
+    let ir::Parameters::Prototype { fixed, .. } = &function.parameters else {
+        return false;
+    };
+    fixed
+        .iter()
+        .map(|parameter| &parameter.ty)
+        .chain(&function.return_type)
+        .any(|ty| holds_long_double(cx, ty))
+}
+
+fn long_double_literal(bits: u128) -> Expr {
+    Expr::TupleStructLit {
+        name: long_double::LONG_DOUBLE_TY.into(),
+        fields: vec![Expr::ArrayLit(
+            bits.to_le_bytes()[..10]
+                .iter()
+                .map(|byte| Expr::Value(rust::RustValue::I64(i64::from(*byte))))
+                .collect(),
+        )],
+    }
+}
+
+fn long_double_shim(name: &str, operand: Expr) -> Expr {
+    Expr::Call {
+        func: Box::new(Expr::Var(name.into())),
+        args: vec![operand],
+        binding: CallBinding::Generated,
+    }
+}
+
+fn lower_long_double_conversion(cx: &Context, operand: &ir::Value, ty: &ir::Type) -> Result<Expr> {
+    let lowered = lower_value(operand, cx)?;
+    let (from, to) = (is_long_double(cx, &operand.ty), is_long_double(cx, ty));
+    let shim = match (from, to) {
+        (true, true) => return Ok(lowered),
+        (false, true) => long_double::f80_cast_from_name(&lower_type(cx, &operand.ty)?),
+        _ => long_double::f80_cast_to_name(&lower_type(cx, ty)?),
+    };
+    let shim = shim.ok_or_else(|| {
+        super::Error::Unsupported(format!("long double conversion {} -> {ty}", operand.ty))
+    })?;
+    Ok(long_double_shim(shim, lowered))
+}
+
+fn lower_long_double_bridge(
+    cx: &Context,
+    function: &FunctionName,
+    arguments: &[ir::Value],
+    ret: &ir::Type,
+) -> Result<Expr> {
+    let callee = function.rust.as_str();
+    if (function.is_variadic && crate::function_identity::Known::from_symbol(callee).is_none())
+        || callee.contains("__")
+    {
+        return Err(super::Error::Unsupported(format!(
+            "long double call to {callee}"
+        )));
+    }
+    let params = arguments
+        .iter()
+        .map(|argument| lower_type(cx, &argument.ty))
+        .collect::<Result<Vec<_>>>()?;
+    let ret = lower_type(cx, ret)?;
+    let tags = std::iter::once(&ret)
+        .chain(&params)
+        .map(|ty| match long_double::long_double_shim_type_tag(ty) {
+            tag if tag == "x" => Err(super::Error::Unsupported(format!(
+                "long double call to {callee} passing {}",
+                crate::backend::codegen::type_to_string(ty)
+            ))),
+            tag => Ok(tag),
+        })
+        .collect::<Result<Vec<_>>>()?;
+    let name = format!("__slate_{callee}__r{}", tags.join("_"));
+    cx.bridges
+        .borrow_mut()
+        .entry(name.clone())
+        .or_insert_with(|| rust::ExternFnDecl {
+            attrs: Vec::new(),
+            name: name.clone(),
+            identity: FunctionIdentity::Unknown,
+            declared_type: None,
+            trusted_headers: Default::default(),
+            params: params
+                .into_iter()
+                .enumerate()
+                .map(|(index, ty)| FnParam {
+                    name: format!("_{index}"),
+                    mutable: false,
+                    ty,
+                })
+                .collect(),
+            variadic: false,
+            ret: (!matches!(ret, rust::Type::Unit)).then_some(ret),
+            safe: false,
+        });
+    Ok(Expr::Unsafe(Box::new(rust::Block {
+        stmts: Vec::new(),
+        tail: Some(Box::new(Expr::Call {
+            func: Box::new(Expr::Var(name.into())),
+            args: arguments
+                .iter()
+                .map(|argument| lower_value(argument, cx))
+                .collect::<Result<Vec<_>>>()?,
+            binding: CallBinding::Generated,
+        })),
+    })))
 }
 
 fn lower_extern(function: &ir::Function, cx: &Context) -> Result<rust::ExternDecl> {
@@ -816,6 +975,10 @@ fn lower_type(cx: &Context, ty: &ir::Type) -> Result<rust::Type> {
         }
         ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => Prim::F32,
         ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => Prim::F64,
+        ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F80)) => {
+            cx.long_double.set(true);
+            return Ok(rust::Type::LongDouble);
+        }
         ir::Type::Pointer { pointee, .. } if matches!(**pointee, ir::Type::Function { .. }) => {
             let ir::Type::Function {
                 return_type,
@@ -1397,6 +1560,12 @@ fn lower_condition(value: &ir::Value, cx: &Context) -> Result<Expr> {
     let condition = lower_value(value, cx)?;
     if matches!(value.ty, ir::Type::Bool) {
         Ok(condition)
+    } else if is_long_double(cx, &value.ty) {
+        Ok(Expr::Binary {
+            op: BinOp::Ne,
+            lhs: Box::new(condition),
+            rhs: Box::new(long_double_literal(0)),
+        })
     } else {
         Ok(Expr::Binary {
             op: BinOp::Ne,
@@ -1439,6 +1608,9 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
                     })
                     .collect(),
             )
+        }
+        ValueKind::VaArg { .. } if is_long_double(cx, &value.ty) => {
+            return Err(super::Error::Unsupported("va_arg of long double".into()));
         }
         ValueKind::VaArg { list } => Expr::Unsafe(Box::new(rust::Block {
             stmts: Vec::new(),
@@ -1486,6 +1658,11 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
                 }
             }
         },
+        ValueKind::Convert { operand, .. }
+            if is_long_double(cx, &operand.ty) || is_long_double(cx, &value.ty) =>
+        {
+            lower_long_double_conversion(cx, operand, &value.ty)?
+        }
         ValueKind::Convert { operand, .. } => Expr::Cast {
             expr: Box::new(lower_value(operand, cx)?),
             ty: lower_type(cx, &value.ty)?,
@@ -1581,7 +1758,7 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
         } if matches!(
             value.ty,
             ir::Type::Numeric(ir::NumericType::Float(
-                ir::FloatType::F32 | ir::FloatType::F64
+                ir::FloatType::F32 | ir::FloatType::F64 | ir::FloatType::F80
             ))
         ) =>
         {
@@ -1770,6 +1947,17 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
                 args: Vec::new(),
                 binding: CallBinding::Generated,
             }
+        }
+        ValueKind::Call {
+            callee: ir::Callee::Direct(id),
+            arguments,
+            ..
+        } if cx.names.get(id).is_some_and(|name| name.is_extern)
+            && std::iter::once(&value.ty)
+                .chain(arguments.iter().map(|argument| &argument.ty))
+                .any(|ty| holds_long_double(cx, ty)) =>
+        {
+            lower_long_double_bridge(cx, &cx.names[id], arguments, &value.ty)?
         }
         ValueKind::Call {
             callee, arguments, ..
@@ -1993,6 +2181,10 @@ fn lower_number(cx: &Context, number: &Number, ty: &ir::Type) -> Result<Expr> {
                 ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => {
                     let value = f64::from_bits(*bits as u64);
                     (format!("{value:?}"), value.is_finite(), "f64")
+                }
+                ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F80)) => {
+                    lower_type(cx, ty)?;
+                    return Ok(long_double_literal(*bits));
                 }
                 _ => return Err(super::Error::Unsupported(format!("constant {number:?}"))),
             };
