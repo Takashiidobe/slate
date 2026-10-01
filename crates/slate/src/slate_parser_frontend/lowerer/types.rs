@@ -31,12 +31,24 @@ impl<'m> Tables<'m> {
         };
         match &self.types.get(id)?.kind {
             ir::TypeDefinitionKind::Record {
-                kind: ir::RecordKind::Struct,
                 fields: Some(fields),
                 ..
             } => Some(fields),
             _ => None,
         }
+    }
+
+    pub(super) fn is_union(&self, ty: &ir::Type) -> bool {
+        let ir::Type::Defined(id) = self.resolve_type(ty) else {
+            return false;
+        };
+        matches!(
+            self.types.get(id).map(|definition| &definition.kind),
+            Some(ir::TypeDefinitionKind::Record {
+                kind: ir::RecordKind::Union,
+                ..
+            })
+        )
     }
 
     pub(super) fn storage_of(&self, ty: &ir::Type) -> Option<(u64, u64)> {
@@ -98,13 +110,14 @@ impl FunctionLowerer<'_, '_> {
         name: &str,
     ) -> Result<rust::RecordDef> {
         let ir::TypeDefinitionKind::Record {
-            kind: ir::RecordKind::Struct,
+            kind: record_kind,
             fields,
             layout,
         } = kind
         else {
-            return Err(unsupported_record(name, "union"));
+            return Err(unsupported_record(name, "kind"));
         };
+        let is_union = matches!(record_kind, ir::RecordKind::Union);
         let mut lowered = Vec::new();
         let mut end = 0u64;
         let mut align = 1u64;
@@ -117,11 +130,15 @@ impl FunctionLowerer<'_, '_> {
             let (field_size, field_align) = self.tables.storage_of(&field.ty).ok_or_else(|| {
                 unsupported_record(name, &format!("layout of {}", field.ty)).at(Site::of(field))
             })?;
-            let offset = end.next_multiple_of(field_align);
+            let offset = if is_union {
+                0
+            } else {
+                end.next_multiple_of(field_align)
+            };
             if layout.as_ref().map(|layout| layout.offsets[index]) != Some(offset) {
                 return Err(unsupported_record(name, "layout"));
             }
-            end = offset + field_size;
+            end = end.max(offset + field_size);
             align = align.max(field_align);
             lowered.push(rust::RecordField {
                 comments: Vec::new(),
@@ -140,7 +157,7 @@ impl FunctionLowerer<'_, '_> {
             comments: Vec::new(),
             vis: rust::Visibility::Private,
             field_vis: rust::Visibility::Private,
-            is_union: false,
+            is_union,
             allow_non_camel_case: !is_camel_case(name),
             name: name.to_owned(),
             fields: lowered,

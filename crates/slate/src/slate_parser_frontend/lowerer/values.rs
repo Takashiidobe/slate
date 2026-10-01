@@ -448,7 +448,7 @@ impl FunctionLowerer<'_, '_> {
                 .and_then(|field| field.name.clone())
                 .ok_or_else(unsupported)
         };
-        let complete = !zero_fill && members.iter().enumerate().all(|(position, member)| {
+        let complete = !zero_fill && !self.tables.is_union(ty) && members.iter().enumerate().all(|(position, member)| {
             matches!(
                 (&member.target, fields),
                 (ir::AggregateTarget::Field(index), Some(_)) if *index == position

@@ -4,7 +4,7 @@ impl Tables<'_> {
     pub(super) fn place_is_unsafe(&self, place: &ir::Place) -> bool {
         match &place.kind {
             PlaceKind::Deref(_) => true,
-            PlaceKind::Field { base, .. } => self.place_is_unsafe(base),
+            PlaceKind::Field { base, .. } => self.is_union(&base.ty) || self.place_is_unsafe(base),
             _ => self.place_is_static(place),
         }
     }
