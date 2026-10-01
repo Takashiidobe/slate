@@ -111,11 +111,18 @@ impl Preprocessor<'_> {
         if self.pragma_once.contains(&once_key) {
             return Ok(Vec::new());
         }
+        let file = self.files.intern(resolved.clone(), kind);
+        if self
+            .include_guards
+            .get(&file)
+            .is_some_and(|guard| self.is_defined(guard))
+        {
+            return Ok(Vec::new());
+        }
         if self.open_stack.len() >= MAX_INCLUDE_DEPTH {
             return Err(PPFailure::at(directive, PPErrorKind::IncludeTooDeep));
         }
         let src = read_source(&resolved).map_err(|kind| PPFailure::at(directive, kind))?;
-        let file = self.files.intern(resolved.clone(), kind);
         self.open_stack.push(once_key);
         let enclosing_system_header = self.outermost_system_header;
         if kind == HeaderKind::System {

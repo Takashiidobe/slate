@@ -140,6 +140,13 @@ pub(super) struct FileInput<'s> {
     group: Group,
 }
 
+enum GuardScan {
+    Start,
+    Open(String),
+    Closed(String),
+    Unguarded,
+}
+
 // the physical lines one text line's expansion read, and what they carried besides code
 #[derive(Default)]
 struct Group {
@@ -179,6 +186,7 @@ pub struct Preprocessor<'a> {
     sources: HashMap<FileId, String>,
     pub(crate) line_starts: HashMap<FileId, Vec<usize>>,
     pragma_once: HashSet<PathBuf>,
+    include_guards: HashMap<FileId, String>,
     pushed_macros: HashMap<String, Vec<Option<MacroEntry>>>,
     pub directive_diagnostics: Vec<DirectiveDiagnostic>,
     line_overrides: HashMap<FileId, Vec<LineOverride>>,
@@ -209,6 +217,7 @@ impl<'a> Preprocessor<'a> {
             sources: HashMap::new(),
             line_starts: HashMap::new(),
             pragma_once: HashSet::new(),
+            include_guards: HashMap::new(),
             pushed_macros: HashMap::new(),
             directive_diagnostics: Vec::new(),
             line_overrides: HashMap::new(),
@@ -632,7 +641,7 @@ impl<'a> Preprocessor<'a> {
         self.files.set_line_starts(file, starts.clone());
         self.line_starts.insert(file, starts);
         let tokens = Lexer::new(file, src, self.dialect.features()).tokenize_lines();
-        self.process(TokenSource::new(src, tokens))
+        self.process(file, TokenSource::new(src, tokens))
     }
 
     fn source(&self, file: FileId) -> &str {
@@ -731,24 +740,55 @@ impl<'a> Preprocessor<'a> {
         self.push_line_override(directive.loc, presumed_line, presumed_file);
     }
 
-    fn process(&mut self, source: TokenSource<'_>) -> Result<Vec<PPNode>, PPFailure> {
+    fn process(&mut self, id: FileId, source: TokenSource<'_>) -> Result<Vec<PPNode>, PPFailure> {
         let mut nodes = Vec::new();
         let mut file = FileInput {
             source,
             conditionals: Vec::new(),
             group: Group::default(),
         };
+        let mut guard = GuardScan::Start;
         while let Some(line) = file.source.next_line() {
             let line = match line {
                 Line::Directive(directive, comments) => {
                     self.push_comments(&mut nodes, comments);
                     self.source_position = Some(directive.loc);
+                    let name = directive.name;
+                    let depth = file.conditionals.len();
+                    let guard_macro = match guard {
+                        GuardScan::Start => self
+                            .guard_macro(&directive)
+                            .filter(|guard| !self.is_defined(guard)),
+                        _ => None,
+                    };
                     self.directive(
                         &mut file.source,
                         &mut file.conditionals,
                         directive,
                         &mut nodes,
                     )?;
+                    guard = match guard {
+                        GuardScan::Start if depth == 0 && file.conditionals.len() == 1 => {
+                            guard_macro.map_or(GuardScan::Unguarded, GuardScan::Open)
+                        }
+                        GuardScan::Open(_)
+                            if depth == 1
+                                && matches!(
+                                    name,
+                                    DirectiveName::Elif
+                                        | DirectiveName::Elifdef
+                                        | DirectiveName::Elifndef
+                                        | DirectiveName::Else
+                                ) =>
+                        {
+                            GuardScan::Unguarded
+                        }
+                        GuardScan::Open(guard) if file.conditionals.is_empty() => {
+                            GuardScan::Closed(guard)
+                        }
+                        GuardScan::Open(guard) => GuardScan::Open(guard),
+                        _ => GuardScan::Unguarded,
+                    };
                     continue;
                 }
                 Line::Text(line) => line,
@@ -756,6 +796,9 @@ impl<'a> Preprocessor<'a> {
             self.push_comments(&mut nodes, line.comments);
             if line.tokens.is_empty() {
                 continue;
+            }
+            if !matches!(guard, GuardScan::Open(_)) {
+                guard = GuardScan::Unguarded;
             }
             file.group.extend(&line.tokens);
             self.source_position = line.tokens.last().map(|token| token.spelling);
@@ -770,13 +813,39 @@ impl<'a> Preprocessor<'a> {
             self.push_comments(&mut nodes, group.trailing);
             nodes.extend(group.deferred);
         }
-        match file.conditionals.last() {
-            Some(open) => Err(PPFailure::at(
+        if let Some(open) = file.conditionals.last() {
+            return Err(PPFailure::at(
                 open.opening,
                 PPErrorKind::UnterminatedConditional,
-            )),
-            None => Ok(nodes),
+            ));
         }
+        if let GuardScan::Closed(guard) = guard {
+            self.include_guards.insert(id, guard);
+        }
+        Ok(nodes)
+    }
+
+    fn guard_macro(&self, directive: &Directive) -> Option<String> {
+        let source = self.source(directive.loc.file);
+        let name = match (directive.name, directive.arguments.as_slice()) {
+            (DirectiveName::Ifndef, [name]) => name,
+            (DirectiveName::If, [bang, defined, name])
+                if bang.value == Token::Bang
+                    && identifier(source, defined).as_deref() == Some("defined") =>
+            {
+                name
+            }
+            (DirectiveName::If, [bang, defined, open, name, close])
+                if bang.value == Token::Bang
+                    && identifier(source, defined).as_deref() == Some("defined")
+                    && open.value == Token::LParen
+                    && close.value == Token::RParen =>
+            {
+                name
+            }
+            _ => return None,
+        };
+        identifier(source, name)
     }
 
     fn directive(

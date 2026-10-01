@@ -90,6 +90,12 @@ from `<command line>` ([compiler-arg-rules](compiler-arg-rules.md#forced-files-a
   bracket came from a macro, from the tokens joined with their leading
   spaces.
 - `#pragma once` keys on the canonical path.
+- Multiple-include optimization, as in clang: a file whose only code and
+  directives are one `#ifndef X` / `#if !defined(X)` group with no
+  `#elif`/`#else` at its level (comments may sit outside) records `X`
+  against its `FileId`. A later include of that `FileId` while `X` is
+  defined returns nothing without reading or lexing the file. Repeat
+  includes therefore drop the comments outside the guard.
 - `MAX_INCLUDE_DEPTH = 200`. Cycles are detected only by the limit, as in
   clang and gcc.
 
