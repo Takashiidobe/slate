@@ -21,18 +21,8 @@ autotests = false
 autobenches = false
 description = "library for parsing, manipulating, and serializing target triples."
 documentation = "https://docs.rs/triplers"
-readme = "README.md"
-keywords = [
-    "target-triple",
-    "llvm",
-    "no-std",
-    "architecture",
-]
-categories = [
-    "no-std",
-    "parsing",
-    "development-tools",
-]
+keywords = ["target-triple", "llvm", "no-std", "architecture"]
+categories = ["no-std", "parsing", "development-tools"]
 license = "MIT"
 repository = "https://gitlab.com/viraven/triplers"
 
