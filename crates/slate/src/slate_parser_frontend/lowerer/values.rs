@@ -371,12 +371,29 @@ impl FunctionLowerer<'_, '_> {
                         ..
                     },
             } => match self.tables.names.get(id) {
-                Some(name) if !name.is_extern => Expr::Call {
-                    func: Box::new(Expr::Var("Some".into())),
-                    args: vec![Expr::Var(name.rust.as_str().into())],
-                    binding: CallBinding::Generated,
-                },
-                _ => {
+                Some(name) if !name.is_extern => {
+                    self.dependencies.address_taken.insert(name.rust.clone());
+                    Expr::Call {
+                        func: Box::new(Expr::Var("Some".into())),
+                        args: vec![Expr::Var(name.rust.as_str().into())],
+                        binding: CallBinding::Generated,
+                    }
+                }
+                Some(name) => {
+                    let address = rust::Type::Ptr {
+                        mutable: false,
+                        inner: Box::new(rust::Type::Unit),
+                    };
+                    Expr::Transmute {
+                        from: address.clone(),
+                        to: self.lower_type(&value.ty)?,
+                        expr: Box::new(Expr::Cast {
+                            expr: Box::new(Expr::Var(name.rust.as_str().into())),
+                            ty: address,
+                        }),
+                    }
+                }
+                None => {
                     return Err(unsupported_value(value));
                 }
             },

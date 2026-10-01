@@ -62,6 +62,7 @@ struct Dependencies {
     align_wrappers: BTreeSet<u32>,
     records: BTreeMap<u32, Record>,
     compound_literals: Vec<Item>,
+    address_taken: BTreeSet<String>,
 }
 
 enum Record {
@@ -368,6 +369,14 @@ impl<'m> ModuleLowerer<'m> {
             });
         items.splice(0..0, records.chain(wrappers));
         items.extend(dependencies.compound_literals);
+        for item in &mut items {
+            if let Item::Fn(function) = item
+                && function.abi.is_none()
+                && dependencies.address_taken.contains(&function.name)
+            {
+                function.abi = Some(rust::Abi::CUnwind);
+            }
+        }
         if dependencies.long_double {
             items.splice(
                 0..0,

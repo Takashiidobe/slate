@@ -217,7 +217,7 @@ impl FunctionLowerer<'_, '_> {
                     return Err(unsupported_type(ty));
                 };
                 return Ok(rust::Type::FnPtr {
-                    abi: rust::Abi::Rust,
+                    abi: rust::Abi::CUnwind,
                     params: parameters
                         .iter()
                         .map(|ty| self.lower_type(ty))
