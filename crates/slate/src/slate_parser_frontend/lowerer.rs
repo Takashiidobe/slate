@@ -543,7 +543,13 @@ fn record_names(module: &ir::Module) -> HashMap<TypeId, String> {
 
 fn resolve_type<'a>(cx: &Context<'a>, mut ty: &'a ir::Type) -> &'a ir::Type {
     while let ir::Type::Defined(id) = ty
-        && let Some(ir::TypeDefinitionKind::Alias(inner)) = cx.types.get(id).map(|d| &d.kind)
+        && let Some(
+            ir::TypeDefinitionKind::Alias(inner)
+            | ir::TypeDefinitionKind::Enum {
+                underlying: Some(inner),
+                ..
+            },
+        ) = cx.types.get(id).map(|d| &d.kind)
     {
         ty = inner;
     }
@@ -680,7 +686,13 @@ fn lower_type(cx: &Context, ty: &ir::Type) -> Result<rust::Type> {
         ir::Type::Void => return Ok(rust::Type::Unit),
         ir::Type::Defined(id) => {
             return match cx.types.get(id).map(|definition| &definition.kind) {
-                Some(ir::TypeDefinitionKind::Alias(inner)) => lower_type(cx, inner),
+                Some(
+                    ir::TypeDefinitionKind::Alias(inner)
+                    | ir::TypeDefinitionKind::Enum {
+                        underlying: Some(inner),
+                        ..
+                    },
+                ) => lower_type(cx, inner),
                 Some(ir::TypeDefinitionKind::Record { .. }) => {
                     Ok(rust::Type::Custom(lower_record(cx, *id)?))
                 }
