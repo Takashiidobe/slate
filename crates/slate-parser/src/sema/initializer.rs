@@ -33,6 +33,8 @@ struct Builder {
     ty: Type,
     shape: Shape,
     members: Vec<(AggregateTarget, Entry)>,
+    frontier: u64,
+    tail_disjoint: bool,
 }
 
 type Step = (AggregateTarget, Type);
@@ -176,19 +178,33 @@ impl Builder {
         start <= existing_start && existing_end <= end
     }
 
+    fn append(&mut self, target: AggregateTarget, entry: Entry) {
+        self.frontier = self.frontier.max(bounds(target).1 + 1);
+        self.members.push((target, entry));
+    }
+
     fn write(&mut self, target: AggregateTarget, entry: Entry) {
+        let (start, end) = bounds(target);
+        let indexed = !matches!(target, AggregateTarget::Field(_));
+        self.tail_disjoint = indexed && start >= self.frontier;
+        if self.tail_disjoint {
+            self.append(target, entry);
+            return;
+        }
         if matches!(self.shape, Shape::Union(_)) {
             self.members.clear();
             self.members.push((target, entry));
             return;
         }
-        let (start, end) = bounds(target);
         self.split_out(start, end);
         self.members.retain(|(existing, _)| {
             let (existing_start, existing_end) = bounds(*existing);
             !(start <= existing_start && existing_end <= end)
         });
         self.members.push((target, entry));
+        if indexed {
+            self.frontier = self.frontier.max(end + 1);
+        }
     }
 
     fn partitions(
@@ -196,6 +212,23 @@ impl Builder {
         target: AggregateTarget,
         fresh: &Builder,
     ) -> Result<Vec<usize>, ResolveError> {
+        let indexed = !matches!(target, AggregateTarget::Field(_));
+        if indexed
+            && self.tail_disjoint
+            && self.members.last().is_some_and(|(last, _)| *last == target)
+        {
+            if matches!(self.members[self.members.len() - 1].1, Entry::Leaf(_)) {
+                return Err(ResolveError::Unimplemented(
+                    "designator into initialized scalar or copied aggregate",
+                ));
+            }
+            return Ok(vec![self.members.len() - 1]);
+        }
+        self.tail_disjoint = indexed && bounds(target).0 >= self.frontier;
+        if self.tail_disjoint {
+            self.append(target, Entry::Sub(fresh.clone()));
+            return Ok(vec![self.members.len() - 1]);
+        }
         if matches!(self.shape, Shape::Union(_)) {
             if self.members.iter().any(|(existing, _)| *existing != target) {
                 self.members.clear();
@@ -203,7 +236,7 @@ impl Builder {
             if self.members.is_empty() {
                 self.members.push((target, Entry::Sub(fresh.clone())));
             }
-        } else if matches!(target, AggregateTarget::Field(_)) {
+        } else if !indexed {
             if !self.members.iter().any(|(existing, _)| *existing == target) {
                 self.members.push((target, Entry::Sub(fresh.clone())));
             }
@@ -227,8 +260,7 @@ impl Builder {
                 gaps.push((open, end));
             }
             for (gap_start, gap_end) in gaps {
-                self.members
-                    .push((cover(gap_start, gap_end), Entry::Sub(fresh.clone())));
+                self.append(cover(gap_start, gap_end), Entry::Sub(fresh.clone()));
             }
         }
         let (start, end) = bounds(target);
@@ -1029,6 +1061,8 @@ impl Lowerer {
             shape: self.types.shape(&ty).map_err(ResolveError::checked)?,
             ty,
             members: Vec::new(),
+            frontier: 0,
+            tail_disjoint: false,
         })
     }
 

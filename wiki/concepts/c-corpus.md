@@ -88,8 +88,7 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--jobs N] [--trophies]
 - `--trophies` prints the README trophy-case table: projects where every
   TU is `ok`. A `clang-rejects` disqualifies, since it means the setup
   is wrong, not slate.
-- A full run takes about 3 minutes plus the slowest TU (`tool_hugehelp.c`,
-  slate-parser-6x05.10).
+- A full run takes about 3 minutes.
 
 ## Missing dependencies
 
