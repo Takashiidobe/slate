@@ -703,23 +703,19 @@ fn lower_statement(
                         element,
                         length: Some(length),
                     },
-                ) => Some(Expr::ArrayRepeat {
-                    elem: Box::new(Expr::Cast {
-                        expr: Box::new(Expr::Value(rust::RustValue::I64(0))),
-                        ty: lower_type(cx, element)?,
-                    }),
-                    len: *length as usize,
-                }),
-                (None, ty) if record_fields(cx, ty).is_some() => {
-                    Some(Expr::Unsafe(Box::new(rust::Block {
-                        stmts: Vec::new(),
-                        tail: Some(Box::new(Expr::Call {
-                            func: Box::new(Expr::Var("std::mem::zeroed".into())),
-                            args: Vec::new(),
-                            binding: CallBinding::Generated,
-                        })),
-                    })))
-                }
+                ) => match lower_type(cx, element)? {
+                    ty @ (rust::Type::Prim(_) | rust::Type::Ptr { .. }) => {
+                        Some(Expr::ArrayRepeat {
+                            elem: Box::new(Expr::Cast {
+                                expr: Box::new(Expr::Value(rust::RustValue::I64(0))),
+                                ty,
+                            }),
+                            len: *length as usize,
+                        })
+                    }
+                    _ => Some(zeroed()),
+                },
+                (None, ty) if record_fields(cx, ty).is_some() => Some(zeroed()),
                 (None, _) => None,
             };
             Stmt::Let {
@@ -939,13 +935,14 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
             ty: lower_type(cx, &value.ty)?,
         },
         ValueKind::ArrayDecay { place, .. } => {
-            let PlaceKind::Binding(id) = place.kind else {
-                return Err(super::Error::Unsupported(format!("array decay {place:?}")));
+            let bytes = match place.kind {
+                PlaceKind::Binding(id) => cx.strings.get(&id),
+                _ => None,
             };
-            let Some(bytes) = cx.strings.get(&id) else {
-                return Ok(Expr::Cast {
+            let Some(bytes) = bytes else {
+                let decayed = Expr::Cast {
                     expr: Box::new(Expr::MethodCall {
-                        recv: Box::new(Expr::Var(binding_name(id, &cx.bindings).as_str().into())),
+                        recv: Box::new(lower_place(place, cx)?),
                         method: if matches!(value.ty, ir::Type::Pointer { is_const: true, .. }) {
                             "as_ptr"
                         } else {
@@ -955,6 +952,14 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
                         args: Vec::new(),
                     }),
                     ty: lower_type(cx, &value.ty)?,
+                };
+                return Ok(if place_dereferences(place) {
+                    Expr::Unsafe(Box::new(rust::Block {
+                        stmts: Vec::new(),
+                        tail: Some(Box::new(decayed)),
+                    }))
+                } else {
+                    decayed
                 });
             };
             Expr::Cast {
@@ -1165,9 +1170,7 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
                 binding: CallBinding::unknown(),
             };
             let unsafe_call = match callee {
-                ir::Callee::Direct(id) => {
-                    cx.names.get(id).is_some_and(|name| name.rust == "printf")
-                }
+                ir::Callee::Direct(id) => cx.names.get(id).is_some_and(|name| name.is_extern),
                 ir::Callee::Indirect(_) => true,
             };
             if unsafe_call {
@@ -1179,6 +1182,9 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
                 call
             }
         }
+        ValueKind::Aggregate { members, zero_fill } => {
+            lower_aggregate(cx, &value.ty, members, *zero_fill)?
+        }
         _ => {
             return Err(super::Error::Unsupported(format!(
                 "value {}",
@@ -1186,6 +1192,93 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
             )));
         }
     })
+}
+
+fn zeroed() -> Expr {
+    Expr::Unsafe(Box::new(rust::Block {
+        stmts: Vec::new(),
+        tail: Some(Box::new(Expr::Call {
+            func: Box::new(Expr::Var("std::mem::zeroed".into())),
+            args: Vec::new(),
+            binding: CallBinding::Generated,
+        })),
+    }))
+}
+
+fn lower_aggregate(
+    cx: &Context,
+    ty: &ir::Type,
+    members: &[ir::AggregateMember],
+    zero_fill: bool,
+) -> Result<Expr> {
+    let unsupported = || super::Error::Unsupported(format!("aggregate of {ty}"));
+    let lowered_ty = lower_type(cx, ty)?;
+    let fields = record_fields(cx, ty);
+    let resolved = resolve_type(cx, ty);
+    if fields.is_none() && !matches!(resolved, ir::Type::Array { .. }) {
+        return Err(unsupported());
+    }
+    let field_name = |index: usize| {
+        fields
+            .and_then(|fields| fields.get(index))
+            .and_then(|field| field.name.clone())
+            .ok_or_else(unsupported)
+    };
+    let complete = !zero_fill && members.iter().enumerate().all(|(position, member)| {
+        matches!(
+            (&member.target, fields),
+            (ir::AggregateTarget::Field(index), Some(_)) if *index == position
+        ) || matches!(
+            (&member.target, resolved),
+            (ir::AggregateTarget::Index(index), ir::Type::Array { .. }) if *index == position as u64
+        )
+    });
+    if complete {
+        let values = members
+            .iter()
+            .map(|member| lower_value(&member.value, cx))
+            .collect::<Result<Vec<_>>>()?;
+        return Ok(match (&lowered_ty, fields) {
+            (rust::Type::Custom(name), Some(_)) => Expr::StructLit {
+                name: name.clone(),
+                fields: (0..values.len())
+                    .map(field_name)
+                    .collect::<Result<Vec<_>>>()?
+                    .into_iter()
+                    .zip(values)
+                    .collect(),
+            },
+            _ => Expr::ArrayLit(values),
+        });
+    }
+    let target = "__slate_aggregate";
+    let mut stmts = vec![Stmt::Let {
+        name: target.into(),
+        mutable: true,
+        ty: Some(lowered_ty),
+        init: Some(zeroed()),
+    }];
+    for member in members {
+        let place = match member.target {
+            ir::AggregateTarget::Field(index) => Expr::Field {
+                base: Box::new(Expr::Var(target.into())),
+                field: field_name(index)?,
+            },
+            ir::AggregateTarget::Index(index) => Expr::Index {
+                base: Box::new(Expr::Var(target.into())),
+                index: Box::new(Expr::Value(rust::RustValue::U128(index.into()))),
+            },
+            ir::AggregateTarget::Range { .. } => return Err(unsupported()),
+        };
+        stmts.push(Stmt::Assign {
+            target: place,
+            value: lower_value(&member.value, cx)?,
+        });
+    }
+    Ok(Expr::Block(Box::new(rust::Block {
+        stmts,
+        tail: Some(Box::new(Expr::Var(target.into()))),
+    })))
 }
 
 fn lower_place(place: &ir::Place, cx: &Context) -> Result<Expr> {
