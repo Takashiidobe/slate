@@ -5,7 +5,6 @@ use crate::function_identity::CallBinding;
 use crate::function_identity::FunctionIdentity;
 use slate_parser::ir::{self, BindingId, Number, PlaceKind, TypeId, ValueKind};
 use slate_parser::target_info::TargetInfo;
-use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 mod arithmetic;
@@ -50,16 +49,22 @@ struct Tables<'m> {
 }
 
 #[derive(Default)]
-struct Needs {
+struct Dependencies {
     long_double: bool,
     bridges: BTreeMap<String, rust::ExternFnDecl>,
     align_wrappers: BTreeSet<u32>,
-    records: RefCell<BTreeMap<u32, Option<std::result::Result<rust::RecordDef, String>>>>,
+    records: BTreeMap<u32, Record>,
+}
+
+enum Record {
+    Building,
+    Built(rust::RecordDef),
+    Failed(String),
 }
 
 struct FunctionLowerer<'a, 'm> {
     tables: &'a Tables<'m>,
-    needs: &'a mut Needs,
+    dependencies: &'a mut Dependencies,
     temps: u32,
 }
 
@@ -196,7 +201,7 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
 struct ModuleLowerer<'m> {
     module: &'m ir::Module,
     tables: Tables<'m>,
-    needs: Needs,
+    dependencies: Dependencies,
     statics: Vec<&'m ir::Global>,
     items: Vec<Item>,
     externs: Vec<rust::ExternDecl>,
@@ -301,7 +306,7 @@ impl<'m> ModuleLowerer<'m> {
         Ok(Self {
             module,
             tables,
-            needs: Needs::default(),
+            dependencies: Dependencies::default(),
             statics,
             items: Vec::new(),
             externs: Vec::new(),
@@ -311,7 +316,7 @@ impl<'m> ModuleLowerer<'m> {
     fn lowerer(&mut self) -> FunctionLowerer<'_, 'm> {
         FunctionLowerer {
             tables: &self.tables,
-            needs: &mut self.needs,
+            dependencies: &mut self.dependencies,
             temps: 0,
         }
     }
@@ -367,12 +372,12 @@ impl<'m> ModuleLowerer<'m> {
     fn assemble(self) -> rust::Program {
         let Self {
             tables,
-            needs,
+            dependencies,
             mut items,
             mut externs,
             ..
         } = self;
-        let wrappers = needs.align_wrappers.iter().map(|&alignment| {
+        let wrappers = dependencies.align_wrappers.iter().map(|&alignment| {
             Item::Struct(rust::StructDef {
                 attrs: vec![Attr::Repr(vec![
                     rust::Repr::C,
@@ -388,14 +393,15 @@ impl<'m> ModuleLowerer<'m> {
                 fields: rust::StructFields::Tuple(vec![rust::Type::Custom("T".into())]),
             })
         });
-        let records = needs
+        let records = dependencies
             .records
-            .into_inner()
             .into_values()
-            .filter_map(|record| record.and_then(|record| record.ok()))
-            .map(Item::Record);
+            .filter_map(|record| match record {
+                Record::Built(record) => Some(Item::Record(record)),
+                Record::Building | Record::Failed(_) => None,
+            });
         items.splice(0..0, records.chain(wrappers));
-        if needs.long_double {
+        if dependencies.long_double {
             items.splice(
                 0..0,
                 long_double::long_double_prelude(rust::Visibility::Private),
@@ -404,7 +410,7 @@ impl<'m> ModuleLowerer<'m> {
                 long_double::f80_shim_decls()
                     .into_iter()
                     .filter(|decl| decl.name.starts_with("__slate_f80_"))
-                    .chain(needs.bridges.into_values())
+                    .chain(dependencies.bridges.into_values())
                     .map(rust::ExternDecl::Fn),
             );
         }

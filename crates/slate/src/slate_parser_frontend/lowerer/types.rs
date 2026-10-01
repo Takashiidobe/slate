@@ -67,23 +67,30 @@ impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_record(&mut self, id: TypeId) -> Result<String> {
         let tables = self.tables;
         let name = tables.record_names[&id].clone();
-        match self.needs.records.borrow().get(&id.0) {
-            Some(Some(Err(error))) => return Err(super::Error::Unsupported(error.clone())),
-            Some(_) => return Ok(name),
+        match self.dependencies.records.get(&id.0) {
+            Some(Record::Failed(error)) => return Err(super::Error::Unsupported(error.clone())),
+            Some(Record::Building | Record::Built(_)) => return Ok(name),
             None => {}
         }
-        self.needs.records.borrow_mut().insert(id.0, None);
-        let record =
-            self.build_record(&tables.types[&id].kind, &name)
-                .map_err(|error| match error {
+        self.dependencies.records.insert(id.0, Record::Building);
+        match self.build_record(&tables.types[&id].kind, &name) {
+            Ok(record) => {
+                self.dependencies
+                    .records
+                    .insert(id.0, Record::Built(record));
+                Ok(name)
+            }
+            Err(error) => {
+                let message = match error {
                     super::Error::Unsupported(message) => message,
                     error => error.to_string(),
-                });
-        self.needs
-            .records
-            .borrow_mut()
-            .insert(id.0, Some(record.clone()));
-        record.map(|_| name).map_err(super::Error::Unsupported)
+                };
+                self.dependencies
+                    .records
+                    .insert(id.0, Record::Failed(message.clone()));
+                Err(super::Error::Unsupported(message))
+            }
+        }
     }
 
     pub(super) fn build_record(
@@ -185,7 +192,7 @@ impl FunctionLowerer<'_, '_> {
             ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => Prim::F32,
             ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => Prim::F64,
             ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F80)) => {
-                self.needs.long_double = true;
+                self.dependencies.long_double = true;
                 return Ok(rust::Type::LongDouble);
             }
             ir::Type::Pointer { pointee, .. } if matches!(**pointee, ir::Type::Function { .. }) => {

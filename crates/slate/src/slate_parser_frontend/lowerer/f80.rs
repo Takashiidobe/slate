@@ -162,7 +162,7 @@ impl FunctionLowerer<'_, '_> {
         ret: rust::Type,
         args: Vec<Expr>,
     ) -> Expr {
-        self.needs
+        self.dependencies
             .bridges
             .entry(name.clone())
             .or_insert_with(|| rust::ExternFnDecl {

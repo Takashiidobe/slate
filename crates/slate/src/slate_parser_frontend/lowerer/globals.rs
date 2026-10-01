@@ -106,7 +106,7 @@ impl FunctionLowerer<'_, '_> {
         let Some(&alignment) = tables.over_aligned.get(&variable.id) else {
             return Ok((ty, Some(init)));
         };
-        self.needs.align_wrappers.insert(
+        self.dependencies.align_wrappers.insert(
             u32::try_from(alignment)
                 .map_err(|_| super::Error::Unsupported(format!("alignment {alignment}")))?,
         );
