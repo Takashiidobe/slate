@@ -7,7 +7,7 @@ use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
     ArithOp, BindingId, CompareOp, FloatClassTest, Linkage, MemoryEffects, PointerSpace,
 };
-use crate::target_info::TargetInfo;
+use crate::target_info::{TargetFamily, TargetInfo};
 
 pub(super) fn is_foldable_builtin(name: &str) -> bool {
     FOLDABLE_BUILTINS.binary_search(&name).is_ok()
@@ -39,6 +39,7 @@ pub(super) enum BuiltinAttribute {
     PrintfFormat,
     Pure,
     RequireDeclaration,
+    RequiredVectorWidth,
     ReturnsTwice,
     ScanfFormat,
     UnevaluatedArguments,
@@ -69,10 +70,6 @@ pub(super) enum BuiltinType {
     Void,
     Bool,
     Char,
-    #[expect(
-        dead_code,
-        reason = "no current builtin prototype spells `signed char`"
-    )]
     SChar,
     UChar,
     Int {
@@ -88,6 +85,10 @@ pub(super) enum BuiltinType {
     Pointer(&'static BuiltinParam),
     Reference(&'static BuiltinParam),
     ExtVector {
+        lanes: u32,
+        element: &'static BuiltinParam,
+    },
+    Vector {
         lanes: u32,
         element: &'static BuiltinParam,
     },
@@ -263,16 +264,26 @@ fn elementwise_signature(operation: &str) -> Option<DerivedSignature> {
     })
 }
 
-/// Looks up the builtin a call to `name` names under `flavor`. GCC also
-/// accepts a `__builtin_` prefix on any library builtin (`__builtin_exit`
-/// calls `exit`), where Clang only has the prefixed aliases its registry
-/// spells out.
-pub(super) fn clang_builtin(name: &str, flavor: CompilerFlavor) -> Option<&'static ClangBuiltin> {
-    registered_builtin(name).or_else(|| match flavor {
-        CompilerFlavor::Gcc => registered_builtin(name.strip_prefix("__builtin_")?)
+pub(super) fn clang_builtin(
+    name: &str,
+    flavor: CompilerFlavor,
+    family: TargetFamily,
+) -> Option<&'static ClangBuiltin> {
+    registered_builtin(CLANG_BUILTINS, name).or_else(|| match flavor {
+        CompilerFlavor::Gcc => registered_builtin(CLANG_BUILTINS, name.strip_prefix("__builtin_")?)
             .filter(|builtin| builtin.kind == ClangBuiltinKind::Library),
-        CompilerFlavor::Clang | CompilerFlavor::Msvc => None,
+        CompilerFlavor::Clang => target_builtin(name, family),
+        CompilerFlavor::Msvc => None,
     })
+}
+
+fn target_builtin(name: &str, family: TargetFamily) -> Option<&'static ClangBuiltin> {
+    match family {
+        TargetFamily::X86 => registered_builtin(CLANG_X86_BUILTINS, name),
+        TargetFamily::X86_64 => registered_builtin(CLANG_X86_BUILTINS, name)
+            .or_else(|| registered_builtin(CLANG_X86_64_BUILTINS, name)),
+        TargetFamily::AArch64 | TargetFamily::Arm32 => None,
+    }
 }
 
 const VOID_POINTER: BuiltinParam = BuiltinParam {
@@ -331,11 +342,11 @@ fn gcc_prototype(
     }
 }
 
-fn registered_builtin(name: &str) -> Option<&'static ClangBuiltin> {
-    CLANG_BUILTINS
+fn registered_builtin(table: &'static [ClangBuiltin], name: &str) -> Option<&'static ClangBuiltin> {
+    table
         .binary_search_by_key(&name, |builtin| builtin.name)
         .ok()
-        .map(|index| &CLANG_BUILTINS[index])
+        .map(|index| &table[index])
 }
 
 impl TypeResolver {
@@ -350,7 +361,7 @@ impl TypeResolver {
         let ExprKind::Identifier(name) = &callee.value else {
             return None;
         };
-        let builtin = clang_builtin(name, self.compiler_flavor())?;
+        let builtin = clang_builtin(name, self.compiler_flavor(), self.target_info().family)?;
         let Some(&binding) = self.references.get(&callee.id) else {
             return Some((builtin, None));
         };
@@ -539,6 +550,16 @@ impl TypeResolver {
             BuiltinType::Pointer(pointee) => {
                 let pointee = self.builtin_param(pointee, target)?;
                 CTypeKind::Pointer(pointee, PointerSpace::Default)
+            }
+            BuiltinType::Vector { lanes, element } => {
+                let element = self.builtin_param(element, target)?;
+                let element = self.ctypes.canonical(element).local_unqualified();
+                let element_bytes = self.storage(self.ir_type(element)).ok()?.size_bytes;
+                CTypeKind::Vector {
+                    element,
+                    lanes: *lanes,
+                    bytes: u64::from(*lanes) * element_bytes,
+                }
             }
             BuiltinType::SizeT => return Some(self.ctypes.size_type(target)),
             BuiltinType::PtrdiffT => return Some(self.ctypes.ptrdiff_type(target)),

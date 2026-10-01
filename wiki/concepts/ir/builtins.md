@@ -20,10 +20,19 @@ Part of the [IR spec](../ir-spec.md). Atomic builtins are in
 
 ## Registry
 
-- Clang's `Builtins.td` is expanded through `clang-tblgen` into
-  `src/sema/clang_builtins.rs`. The generator parses each prototype into a
-  typed `BuiltinPrototype` and emits `BuiltinAttribute`/`BuiltinLanguage`
-  enums; an unparseable prototype fails generation.
+- Clang's `Builtins.td`, `BuiltinsX86.td`, and `BuiltinsX86_64.td` are
+  expanded through `clang-tblgen` into one table each in
+  `src/sema/clang_builtins.rs` (`CLANG_BUILTINS`, `CLANG_X86_BUILTINS`,
+  `CLANG_X86_64_BUILTINS`), sharing one prototype pool. The generator parses
+  each prototype into a typed `BuiltinPrototype` and emits
+  `BuiltinAttribute`/`BuiltinLanguage` enums; an unparseable prototype fails
+  generation.
+- Target tables apply only under the clang flavor: x86 gets the x86 table,
+  x86-64 both. `__builtin_ia32_*` and `__rdtsc` are unresolved on other
+  targets and under gcc and MSVC (`clang/linux/x86_64/ir_x86_target_builtins.c`,
+  `error/clang/linux/aarch64/x86_target_builtin.c`). `Features` is recorded
+  but not checked.
+- `_Vector<N, T>` prototypes are GNU `vector_size` vectors (`vector<T, N>`).
 - `TypeResolver::builtin_signature` derives the call signature. None is
   derived (and the call reports an unsupported builtin) for
   `CustomTypeChecking`, variadic prototypes with no named parameters, and

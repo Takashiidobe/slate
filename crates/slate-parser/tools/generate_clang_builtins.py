@@ -24,6 +24,7 @@ INTEGERS = {
 }
 
 FLOATS = {
+    "__bf16": "BFloat16",
     "_Float16": "Float16",
     "__fp16": "Fp16",
     "float": "Float",
@@ -58,6 +59,9 @@ SIMPLE = {
     "__builtin_va_list": "VaList",
     "__builtin_va_list_ref": "VaListRef",
 }
+
+
+VECTORS = {"_ExtVector": "ExtVector", "_Vector": "Vector"}
 
 
 class PrototypeError(ValueError):
@@ -128,14 +132,14 @@ class Parser:
     def at_end(self):
         return self.peek() is None
 
-    def vector(self):
+    def vector(self, variant):
         self.expect("<")
         lanes = self.consume()
         if not lanes.isdigit():
             raise PrototypeError(f"vector lane count `{lanes}`")
         self.expect(",")
         element = Parser(self.take_until(">")).parameter()
-        return f"&BuiltinType::ExtVector {{ lanes: {lanes}, element: &{element} }}"
+        return f"&BuiltinType::{variant} {{ lanes: {lanes}, element: &{element} }}"
 
     def take_until(self, closing):
         taken = []
@@ -145,29 +149,36 @@ class Parser:
         return taken
 
     def base(self):
-        if self.peek() == "_ExtVector":
-            self.consume()
-            return self.vector(), set()
+        if self.peek() in VECTORS:
+            return self.vector(VECTORS[self.consume()]), set(), False
         words = []
         quals = set()
+        constant = False
         while True:
             token = self.peek()
             if token in QUALIFIERS:
                 quals.add(self.consume())
                 continue
+            if token == "_Constant":
+                self.consume()
+                constant = True
+                continue
             if token is None or not re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", token):
                 break
             words.append(self.consume())
+        if words[:1] == ["signed"] and words[1:] != ["char"]:
+            words = words[1:]
         if not words:
             raise PrototypeError("missing type specifier")
-        return base_expr(" ".join(words)), quals
+        return base_expr(" ".join(words)), quals, constant
 
     def parameter(self):
         constant = False
         if self.peek() == "_Constant":
             self.consume()
             constant = True
-        ty, quals = self.base()
+        ty, quals, inner_constant = self.base()
+        constant = constant or inner_constant
         while self.peek() in ("*", "&"):
             wrapper = "Pointer" if self.consume() == "*" else "Reference"
             ty = f"&BuiltinType::{wrapper}(&{param_expr(ty, quals, False)})"
@@ -250,27 +261,27 @@ def language_variant(spelling):
     return "".join(word.capitalize() for word in spelling.split("_"))
 
 
-def expand(record):
+def expand(data, record):
     substitutions = record.get("Substitutions", [None])
     affixes = record.get("Affixes", [""])
     if len(substitutions) != len(affixes):
         raise ValueError(f"mismatched template fields for {record['!name']}")
+    prefix = record.get("RequiredNamePrefix")
+    prefix = "" if prefix is None else data[prefix["def"]]["Spelling"]
     for substitution, affix in zip(substitutions, affixes):
         prototype = record.get("Prototype", "")
         if substitution is not None:
             prototype = prototype.replace("T", substitution)
         for spelling in record.get("Spellings", []):
             name = affix + spelling if record.get("AsPrefix", 0) else spelling + affix
-            yield name, prototype
+            yield prefix + name, prototype
 
 
 def kind(record):
     classes = set(record["!superclasses"])
     if "AtomicBuiltin" in classes:
         return "Atomic"
-    if "TargetBuiltin" in classes:
-        raise ValueError(f"target builtin {record['!name']} requires a target registry")
-    if "LibBuiltin" in classes:
+    if "LibBuiltin" in classes or "TargetLibBuiltin" in classes:
         return "Library"
     if "LangBuiltin" in classes:
         return "Language"
@@ -292,26 +303,27 @@ def attribute_name(data, item):
     return classes[-1]
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--clang-tblgen", type=Path, required=True)
-    parser.add_argument("--llvm-project", type=Path, required=True)
-    parser.add_argument("--output", type=Path, required=True)
-    args = parser.parse_args()
-    clang = args.llvm_project / "clang"
+TABLES = [
+    ("CLANG_BUILTINS", "Builtins.td"),
+    ("CLANG_X86_BUILTINS", "BuiltinsX86.td"),
+    ("CLANG_X86_64_BUILTINS", "BuiltinsX86_64.td"),
+]
+
+
+def table_records(clang_tblgen, clang, source):
     command = [
-        str(args.clang_tblgen),
+        str(clang_tblgen),
         "--dump-json",
         "-I",
         str(clang / "include"),
-        str(clang / "include/clang/Basic/Builtins.td"),
+        str(clang / "include/clang/Basic" / source),
     ]
     data = json.loads(subprocess.run(command, check=True, capture_output=True, text=True).stdout)
     records = []
     for record_name in data["!instanceof"]["Builtin"]:
         record = data[record_name]
         attributes = [attribute_name(data, item) for item in record.get("Attributes", [])]
-        for name, prototype in expand(record):
+        for name, prototype in expand(data, record):
             entries = [(name, prototype, kind(record))]
             if record.get("AddBuiltinPrefixedAlias", 0):
                 entries.append((f"__builtin_{name}", prototype, "Builtin"))
@@ -325,12 +337,26 @@ def main():
                         attributes,
                         record.get("Languages"),
                         record.get("Header"),
-                        record.get("Features"),
+                        record.get("Features") or None,
                     )
                 )
     records.sort(key=lambda item: item[0])
+    return records
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--clang-tblgen", type=Path, required=True)
+    parser.add_argument("--llvm-project", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    clang = args.llvm_project / "clang"
+    tables = [
+        (table, table_records(args.clang_tblgen, clang, source)) for table, source in TABLES
+    ]
     prototypes = {}
-    for spelling in sorted({item[2] for item in records if item[2]}):
+    spellings = {item[2] for _, records in tables for item in records if item[2]}
+    for spelling in sorted(spellings):
         prototypes[spelling] = f"PROTOTYPE_{len(prototypes):04}"
     lines = []
     for spelling, name in prototypes.items():
@@ -339,7 +365,13 @@ def main():
         except PrototypeError as error:
             raise ValueError(f"prototype `{spelling}`: {error}") from error
         lines.append("")
-    lines.append("pub(super) static CLANG_BUILTINS: &[ClangBuiltin] = &[")
+    for table, records in tables:
+        lines.extend(table_lines(table, records, prototypes))
+    args.output.write_text("\n".join(lines) + "\n")
+
+
+def table_lines(table, records, prototypes):
+    lines = [f"pub(super) static {table}: &[ClangBuiltin] = &["]
     for name, record, prototype, builtin_kind, attributes, languages, header, features in records:
         attrs = ", ".join(f"BuiltinAttribute::{attribute}" for attribute in attributes)
         language = (
@@ -360,7 +392,7 @@ def main():
             ]
         )
     lines.append("];")
-    args.output.write_text("\n".join(lines) + "\n")
+    return lines
 
 
 if __name__ == "__main__":
