@@ -3,7 +3,7 @@ use crate::function_identity::CallBinding;
 use crate::function_identity::FunctionIdentity;
 use slate_parser::ir::{self, BindingId, Number, PlaceKind, TypeId, ValueKind};
 use slate_parser::target_info::TargetInfo;
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::collections::{BTreeMap, HashMap, HashSet};
 
 type Result<T> = std::result::Result<T, super::Error>;
@@ -22,6 +22,15 @@ struct Context<'a> {
     types: HashMap<TypeId, &'a ir::TypeDefinition>,
     record_names: HashMap<TypeId, String>,
     records: RefCell<BTreeMap<u32, Option<std::result::Result<rust::RecordDef, String>>>>,
+    temps: Cell<u32>,
+}
+
+impl Context<'_> {
+    fn next_temp(&self) -> String {
+        let index = self.temps.get();
+        self.temps.set(index + 1);
+        format!("__t{index}")
+    }
 }
 
 #[derive(Default)]
@@ -217,6 +226,7 @@ fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<
             .collect(),
         record_names: record_names(module),
         records: RefCell::default(),
+        temps: Cell::new(0),
     };
     let mut items = Vec::new();
     let mut externs = Vec::new();
@@ -392,6 +402,7 @@ fn lower_function(
     body: &[slate_parser::ast::Span<ir::Statement>],
     cx: &Context,
 ) -> Result<Item> {
+    cx.temps.set(0);
     let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
         return Err(super::Error::Unsupported(format!(
             "unprototyped function {}",
@@ -1126,7 +1137,7 @@ fn lower_switch(
             return Err(super::Error::Unsupported("switch fallthrough".into()));
         }
     }
-    let selector = format!("__slate_switch_{}", id.0);
+    let selector = cx.next_temp();
     let lower_arm = |arm: &SwitchArm| -> Result<Vec<Stmt>> {
         arm.body
             .iter()
@@ -1396,6 +1407,32 @@ fn lower_value(value: &ir::Value, cx: &Context) -> Result<Expr> {
                 rhs: Box::new(lower_condition(right, cx)?),
             }
         }
+        ValueKind::Conditional {
+            condition,
+            then_value,
+            else_value,
+        } => {
+            let select = Expr::If {
+                cond: Box::new(lower_condition(condition, cx)?),
+                then_expr: Box::new(lower_value(then_value, cx)?),
+                else_expr: Box::new(lower_value(else_value, cx)?),
+            };
+            match lower_type(cx, &value.ty)? {
+                ty @ rust::Type::FnPtr { .. } => {
+                    let temp = cx.next_temp();
+                    Expr::Block(Box::new(rust::Block {
+                        stmts: vec![Stmt::Let {
+                            name: temp.clone(),
+                            mutable: false,
+                            ty: Some(ty),
+                            init: Some(select),
+                        }],
+                        tail: Some(Box::new(Expr::Var(temp.into()))),
+                    }))
+                }
+                _ => select,
+            }
+        }
         ValueKind::Compare {
             op, left, right, ..
         } => Expr::Binary {
@@ -1589,9 +1626,9 @@ fn lower_aggregate(
             _ => Expr::ArrayLit(values),
         });
     }
-    let target = "__slate_aggregate";
+    let target = cx.next_temp();
     let mut stmts = vec![Stmt::Let {
-        name: target.into(),
+        name: target.clone(),
         mutable: true,
         ty: Some(lowered_ty),
         init: Some(zeroed()),
@@ -1599,11 +1636,11 @@ fn lower_aggregate(
     for member in members {
         let place = match member.target {
             ir::AggregateTarget::Field(index) => Expr::Field {
-                base: Box::new(Expr::Var(target.into())),
+                base: Box::new(Expr::Var(target.as_str().into())),
                 field: field_name(index)?,
             },
             ir::AggregateTarget::Index(index) => Expr::Index {
-                base: Box::new(Expr::Var(target.into())),
+                base: Box::new(Expr::Var(target.as_str().into())),
                 index: Box::new(Expr::Value(rust::RustValue::U128(index.into()))),
             },
             ir::AggregateTarget::Range { .. } => return Err(unsupported()),
@@ -1615,7 +1652,7 @@ fn lower_aggregate(
     }
     Ok(Expr::Block(Box::new(rust::Block {
         stmts,
-        tail: Some(Box::new(Expr::Var(target.into()))),
+        tail: Some(Box::new(Expr::Var(target.as_str().into()))),
     })))
 }
 
