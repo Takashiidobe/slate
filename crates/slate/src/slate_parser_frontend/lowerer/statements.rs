@@ -109,10 +109,7 @@ impl FunctionLowerer<'_, '_> {
                     .transpose()?,
             ),
             ir::Statement::Block(body) => Stmt::Scope {
-                body: body
-                    .iter()
-                    .map(|statement| self.lower_statement(statement))
-                    .collect::<Result<Vec<_>>>()?,
+                body: self.lower_statement_list(body)?,
             },
             ir::Statement::If {
                 condition,
@@ -220,9 +217,11 @@ impl FunctionLowerer<'_, '_> {
             ir::Statement::Continue(id) => Stmt::Break(Some(continue_label(*id))),
             ir::Statement::Null => Stmt::Block(rust::Block::default()),
             _ => {
-                return Err(super::Error::Unsupported(format!(
-                    "statement {statement:?}"
-                )));
+                return Err(Construct::Statement {
+                    kind: variant_name(statement),
+                    ir: format!("{statement:?}"),
+                }
+                .into());
             }
         })
     }
@@ -233,7 +232,15 @@ impl FunctionLowerer<'_, '_> {
     ) -> Result<Vec<Stmt>> {
         statements
             .iter()
-            .map(|statement| self.lower_statement(statement))
+            .map(|statement| self.lower_spanned_statement(statement))
             .collect()
+    }
+
+    pub(super) fn lower_spanned_statement(
+        &mut self,
+        statement: &slate_parser::ast::Span<ir::Statement>,
+    ) -> Result<Stmt> {
+        self.lower_statement(statement)
+            .map_err(|error| error.at(Site::of(statement)))
     }
 }

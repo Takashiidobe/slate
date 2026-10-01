@@ -1,14 +1,15 @@
-use super::Error;
 use super::long_double;
 use crate::backend::rust_ast::{self as rust, Attr, BinOp, Expr, FnDef, FnParam, Item, Prim, Stmt};
 use crate::function_identity::CallBinding;
 use crate::function_identity::FunctionIdentity;
+use slate_parser::ast::Span;
 use slate_parser::ir::{self, BindingId, Number, PlaceKind, TypeId, ValueKind};
 use slate_parser::target_info::TargetInfo;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 mod arithmetic;
 mod calls;
+mod errors;
 mod f80;
 mod functions;
 mod globals;
@@ -22,13 +23,15 @@ mod values;
 
 use arithmetic::*;
 use calls::*;
+pub use errors::{Barrier, Construct, InvalidIr, Invariant, Site};
+use errors::{Failure, variant_name};
 use f80::*;
 use globals::*;
 use names::*;
 use statements::*;
 use values::*;
 
-type Result<T> = std::result::Result<T, super::Error>;
+type Result<T> = std::result::Result<T, Failure>;
 
 struct FunctionName {
     rust: String,
@@ -44,7 +47,7 @@ struct Tables<'m> {
     statics: HashSet<BindingId>,
     over_aligned: HashMap<BindingId, u64>,
     target: &'m TargetInfo,
-    types: HashMap<TypeId, &'m ir::TypeDefinition>,
+    types: HashMap<TypeId, &'m Span<ir::TypeDefinition>>,
     record_names: HashMap<TypeId, String>,
 }
 
@@ -59,7 +62,7 @@ struct Dependencies {
 enum Record {
     Building,
     Built(rust::RecordDef),
-    Failed(String),
+    Failed(Failure),
 }
 
 struct FunctionLowerer<'a, 'm> {
@@ -76,43 +79,25 @@ impl FunctionLowerer<'_, '_> {
     }
 }
 
-#[derive(Default)]
-pub struct Report {
-    pub module: Vec<String>,
-    pub declarations: Vec<(String, String)>,
-    pub functions: Vec<(String, Option<String>)>,
+#[derive(Debug, Default, Clone)]
+pub struct LowerOptions {}
+
+pub struct Lowered {
+    pub program: rust::Program,
+    pub barriers: Vec<Barrier>,
 }
 
-impl Report {
-    pub fn is_clean(&self) -> bool {
-        self.module.is_empty()
-            && self.declarations.is_empty()
-            && self.functions.iter().all(|(_, barrier)| barrier.is_none())
-    }
+pub fn lower(
+    module: &ir::Module,
+    _options: &LowerOptions,
+) -> std::result::Result<Lowered, InvalidIr> {
+    let mut lowerer = ModuleLowerer::new(module)?;
+    lowerer.declare()?;
+    lowerer.lower_bodies()?;
+    Ok(lowerer.assemble())
 }
 
-pub fn lower(module: &ir::Module) -> Result<rust::Program> {
-    lower_module(module, None)
-}
-
-pub fn report(module: &ir::Module) -> Report {
-    let mut report = Report::default();
-    lower_module(module, Some(&mut report)).expect("report mode records barriers");
-    let describe = |error: &mut String| *error = describe_types(error, module);
-    report.module.iter_mut().for_each(describe);
-    report
-        .declarations
-        .iter_mut()
-        .for_each(|(_, error)| describe(error));
-    report
-        .functions
-        .iter_mut()
-        .filter_map(|(_, error)| error.as_mut())
-        .for_each(describe);
-    report
-}
-
-fn describe_types(message: &str, module: &ir::Module) -> String {
+pub fn describe_types(message: &str, module: &ir::Module) -> String {
     let mut out = String::with_capacity(message.len());
     let mut rest = message;
     while let Some(start) = rest.find("@type") {
@@ -151,66 +136,20 @@ fn describe_types(message: &str, module: &ir::Module) -> String {
     out
 }
 
-fn module_barrier(report: &mut Option<&mut Report>, error: super::Error) -> Result<()> {
-    match report {
-        Some(report) => {
-            report.module.push(error.to_string());
-            Ok(())
-        }
-        None => Err(error),
-    }
-}
-
-fn function_barrier<T>(
-    report: &mut Option<&mut Report>,
-    name: &str,
-    defined: bool,
-    result: Result<T>,
-) -> Result<Option<T>> {
-    match (result, report) {
-        (Ok(value), Some(report)) => {
-            if defined {
-                report.functions.push((name.to_owned(), None));
-            }
-            Ok(Some(value))
-        }
-        (Ok(value), None) => Ok(Some(value)),
-        (Err(error), Some(report)) if defined => {
-            report
-                .functions
-                .push((name.to_owned(), Some(error.to_string())));
-            Ok(None)
-        }
-        (Err(error), Some(report)) => {
-            report
-                .declarations
-                .push((name.to_owned(), error.to_string()));
-            Ok(None)
-        }
-        (Err(error), None) => Err(error),
-    }
-}
-
-fn lower_module(module: &ir::Module, mut report: Option<&mut Report>) -> Result<rust::Program> {
-    let mut lowerer = ModuleLowerer::new(module, &mut report)?;
-    lowerer.declare(&mut report)?;
-    lowerer.lower_bodies(&mut report)?;
-    Ok(lowerer.assemble())
-}
-
 struct ModuleLowerer<'m> {
     module: &'m ir::Module,
     tables: Tables<'m>,
     dependencies: Dependencies,
-    statics: Vec<&'m ir::Global>,
     items: Vec<Item>,
     externs: Vec<rust::ExternDecl>,
+    barriers: Vec<Barrier>,
 }
 
 impl<'m> ModuleLowerer<'m> {
-    fn new(module: &'m ir::Module, report: &mut Option<&mut Report>) -> Result<Self> {
-        if !module.asm.is_empty() {
-            module_barrier(report, super::Error::Unsupported("module assembly".into()))?;
+    fn new(module: &'m ir::Module) -> std::result::Result<Self, InvalidIr> {
+        let mut barriers = Vec::new();
+        if let Some(asm) = module.asm.first() {
+            barriers.push(Failure::from(Construct::ModuleAsm).into_public(None, Site::of(asm))?);
         }
         let mut strings = HashMap::new();
         let mut statics = Vec::new();
@@ -219,7 +158,7 @@ impl<'m> ModuleLowerer<'m> {
                 Some(Ok(bytes)) => {
                     strings.insert(global.variable.id, bytes);
                 }
-                Some(Err(error)) => module_barrier(report, error)?,
+                Some(Err(error)) => barriers.push(error.into_public(None, Site::of(global))?),
                 None => statics.push(&global.value),
             }
         }
@@ -292,7 +231,7 @@ impl<'m> ModuleLowerer<'m> {
             types: module
                 .types
                 .iter()
-                .map(|definition| (definition.value.id, &definition.value))
+                .map(|definition| (definition.value.id, definition))
                 .collect(),
             record_names: record_names(module),
         };
@@ -307,9 +246,9 @@ impl<'m> ModuleLowerer<'m> {
             module,
             tables,
             dependencies: Dependencies::default(),
-            statics,
             items: Vec::new(),
             externs: Vec::new(),
+            barriers,
         })
     }
 
@@ -321,8 +260,12 @@ impl<'m> ModuleLowerer<'m> {
         }
     }
 
-    fn declare(&mut self, report: &mut Option<&mut Report>) -> Result<()> {
-        for global in self.statics.clone() {
+    fn declare(&mut self) -> std::result::Result<(), InvalidIr> {
+        let module = self.module;
+        for global in &module.globals {
+            if !self.tables.statics.contains(&global.variable.id) {
+                continue;
+            }
             let name = binding_name(global.variable.id, &self.tables.bindings);
             match self.lowerer().lower_static(global) {
                 Ok((ty, Some(init))) => self.items.push(Item::Static {
@@ -339,42 +282,48 @@ impl<'m> ModuleLowerer<'m> {
                     name,
                     ty,
                 }),
-                Err(error) => module_barrier(report, error)?,
+                Err(error) => self
+                    .barriers
+                    .push(error.into_public(None, Site::of(global))?),
             }
         }
-        let module = self.module;
         for function in &module.functions {
             if function.body.is_some() || self.tables.passes_long_double(function) {
                 continue;
             }
-            let decl = self.lowerer().lower_extern(function);
-            if let Some(decl) = function_barrier(report, &function.name, false, decl)? {
-                self.externs.push(decl);
+            match self.lowerer().lower_extern(function) {
+                Ok(decl) => self.externs.push(decl),
+                Err(error) => self
+                    .barriers
+                    .push(error.into_public(Some(&function.name), Site::of(function))?),
             }
         }
         Ok(())
     }
 
-    fn lower_bodies(&mut self, report: &mut Option<&mut Report>) -> Result<()> {
+    fn lower_bodies(&mut self) -> std::result::Result<(), InvalidIr> {
         let module = self.module;
         for function in &module.functions {
             let Some(body) = &function.body else {
                 continue;
             };
-            let item = self.lowerer().lower_function(function, body);
-            if let Some(item) = function_barrier(report, &function.name, true, item)? {
-                self.items.push(item);
+            match self.lowerer().lower_function(function, body) {
+                Ok(item) => self.items.push(item),
+                Err(error) => self
+                    .barriers
+                    .push(error.into_public(Some(&function.name), Site::of(function))?),
             }
         }
         Ok(())
     }
 
-    fn assemble(self) -> rust::Program {
+    fn assemble(self) -> Lowered {
         let Self {
             tables,
             dependencies,
             mut items,
             mut externs,
+            barriers,
             ..
         } = self;
         let wrappers = dependencies.align_wrappers.iter().map(|&alignment| {
@@ -447,6 +396,9 @@ impl<'m> ModuleLowerer<'m> {
                 })],
             }));
         }
-        rust::Program { items }
+        Lowered {
+            program: rust::Program { items },
+            barriers,
+        }
     }
 }

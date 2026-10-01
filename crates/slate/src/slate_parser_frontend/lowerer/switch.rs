@@ -3,7 +3,7 @@ use super::*;
 pub(super) struct SwitchArm<'a> {
     values: Vec<&'a ir::Value>,
     default: bool,
-    body: Vec<&'a ir::Statement>,
+    body: Vec<&'a slate_parser::ast::Span<ir::Statement>>,
 }
 
 pub(super) fn switch_label<'a>(
@@ -18,7 +18,7 @@ pub(super) fn switch_label<'a>(
             body,
         } if *owner == switch => {
             if end.is_some() {
-                return Err(super::Error::Unsupported("switch case range".into()));
+                return Err(unsupported_switch("case range"));
             }
             (Some(start), body)
         }
@@ -31,15 +31,13 @@ pub(super) fn switch_label<'a>(
     let mut arm = match body.first() {
         Some(first) => match switch_label(first, switch)? {
             Some(mut nested) => {
-                nested
-                    .body
-                    .extend(body[1..].iter().map(|statement| &**statement));
+                nested.body.extend(&body[1..]);
                 nested
             }
             None => SwitchArm {
                 values: Vec::new(),
                 default: false,
-                body: body.iter().map(|statement| &**statement).collect(),
+                body: body.iter().collect(),
             },
         },
         None => SwitchArm {
@@ -129,19 +127,23 @@ impl FunctionLowerer<'_, '_> {
                 None => match arms.last_mut() {
                     Some(arm) => arm.body.push(statement),
                     None => {
-                        return Err(super::Error::Unsupported(
-                            "statement before first switch case".into(),
-                        ));
+                        return Err(unsupported_switch("statement before first case"));
                     }
                 },
             }
         }
         for (index, arm) in arms.iter().enumerate() {
-            if contains_switch_label(&arm.body, id) {
-                return Err(super::Error::Unsupported("nested switch case label".into()));
+            if contains_switch_label(
+                &arm.body
+                    .iter()
+                    .map(|statement| &statement.value)
+                    .collect::<Vec<_>>(),
+                id,
+            ) {
+                return Err(unsupported_switch("nested case label"));
             }
             if !arm.body.last().is_some_and(|last| ends_in_jump(last)) && index + 1 < arms.len() {
-                return Err(super::Error::Unsupported("switch fallthrough".into()));
+                return Err(unsupported_switch("fallthrough"));
             }
         }
         let selector = self.next_temp();
@@ -191,7 +193,14 @@ impl FunctionLowerer<'_, '_> {
     fn lower_switch_arm(&mut self, arm: &SwitchArm) -> Result<Vec<Stmt>> {
         arm.body
             .iter()
-            .map(|statement| self.lower_statement(statement))
+            .map(|statement| self.lower_spanned_statement(statement))
             .collect()
     }
+}
+
+fn unsupported_switch(detail: &str) -> Failure {
+    Construct::Switch {
+        detail: detail.into(),
+    }
+    .into()
 }

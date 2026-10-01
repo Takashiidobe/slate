@@ -19,9 +19,11 @@ C -> slate-parser (preprocess, parse, sema) -> ir::Module
   explicit conversions, hoisted side effects). Slate consumes it directly as a
   library; never parse its printed IR.
 - `src/slate_parser_frontend.rs` drives slate-parser;
-  `src/slate_parser_frontend/lowerer.rs` lowers IR to `rust_ast`. Anything it
-  cannot lower yet returns `Error::Unsupported`, which is a per-function
-  lowering barrier.
+  `src/slate_parser_frontend/lowerer.rs` lowers IR to `rust_ast`.
+  `lower()` collects a `Barrier` (an unsupported `Construct` plus the IR
+  node's `Site`) per function or global it cannot lower yet. A broken IR
+  invariant aborts lowering with `InvalidIr`; it is never a barrier, and any
+  test run that hits it panics.
 - IR semantics are specified in [ir-spec](../../wiki/concepts/ir-spec.md) and
   its `wiki/concepts/ir/` subpages. Read the relevant subpage before lowering
   a new `ValueKind`, `Statement`, `PlaceKind`, or `Type`.

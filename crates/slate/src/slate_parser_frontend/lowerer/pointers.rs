@@ -132,10 +132,7 @@ impl FunctionLowerer<'_, '_> {
             return Ok(Expr::Var("None".into()));
         }
         let rust::Type::Ptr { mutable, inner } = self.lower_type(&value.ty)? else {
-            return Err(super::Error::Unsupported(format!(
-                "value {}",
-                value.display(false)
-            )));
+            return Err(unsupported_value(value));
         };
         Ok(Expr::Call {
             func: Box::new(Expr::Var(

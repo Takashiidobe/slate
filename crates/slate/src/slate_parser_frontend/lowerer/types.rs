@@ -68,7 +68,7 @@ impl FunctionLowerer<'_, '_> {
         let tables = self.tables;
         let name = tables.record_names[&id].clone();
         match self.dependencies.records.get(&id.0) {
-            Some(Record::Failed(error)) => return Err(super::Error::Unsupported(error.clone())),
+            Some(Record::Failed(error)) => return Err(error.clone()),
             Some(Record::Building | Record::Built(_)) => return Ok(name),
             None => {}
         }
@@ -81,14 +81,11 @@ impl FunctionLowerer<'_, '_> {
                 Ok(name)
             }
             Err(error) => {
-                let message = match error {
-                    super::Error::Unsupported(message) => message,
-                    error => error.to_string(),
-                };
+                let error = error.at(Site::of(tables.types[&id]));
                 self.dependencies
                     .records
-                    .insert(id.0, Record::Failed(message.clone()));
-                Err(super::Error::Unsupported(message))
+                    .insert(id.0, Record::Failed(error.clone()));
+                Err(error)
             }
         }
     }
@@ -104,7 +101,7 @@ impl FunctionLowerer<'_, '_> {
             layout,
         } = kind
         else {
-            return Err(super::Error::Unsupported(format!("record {name}")));
+            return Err(unsupported_record(name, "union"));
         };
         let mut lowered = Vec::new();
         let mut end = 0u64;
@@ -113,34 +110,29 @@ impl FunctionLowerer<'_, '_> {
             let (Some(field_name), None, true) =
                 (&field.name, field.bit_width, field.access.is_plain())
             else {
-                return Err(super::Error::Unsupported(format!(
-                    "field {index} of record {name}"
-                )));
+                return Err(unsupported_record(name, &format!("field {index}")).at(Site::of(field)));
             };
-            let (field_size, field_align) = self
-                .tables
-                .storage_of(&field.ty)
-                .ok_or_else(|| super::Error::Unsupported(format!("layout of {}", field.ty)))?;
+            let (field_size, field_align) = self.tables.storage_of(&field.ty).ok_or_else(|| {
+                unsupported_record(name, &format!("layout of {}", field.ty)).at(Site::of(field))
+            })?;
             let offset = end.next_multiple_of(field_align);
             if layout.as_ref().map(|layout| layout.offsets[index]) != Some(offset) {
-                return Err(super::Error::Unsupported(format!(
-                    "layout of record {name}"
-                )));
+                return Err(unsupported_record(name, "layout"));
             }
             end = offset + field_size;
             align = align.max(field_align);
             lowered.push(rust::RecordField {
                 comments: Vec::new(),
                 name: field_name.as_str().into(),
-                ty: self.lower_type(&field.ty)?,
+                ty: self
+                    .lower_type(&field.ty)
+                    .map_err(|error| error.at(Site::of(field)))?,
             });
         }
         if let Some(layout) = layout
             && (layout.align != align || layout.size != end.next_multiple_of(align))
         {
-            return Err(super::Error::Unsupported(format!(
-                "layout of record {name}"
-            )));
+            return Err(unsupported_record(name, "layout"));
         }
         Ok(rust::RecordDef {
             comments: Vec::new(),
@@ -170,7 +162,8 @@ impl FunctionLowerer<'_, '_> {
                     Some(ir::TypeDefinitionKind::Record { .. }) => {
                         Ok(rust::Type::Custom(self.lower_record(*id)?))
                     }
-                    _ => Err(super::Error::Unsupported(format!("type {ty}"))),
+                    Some(_) => Err(unsupported_type(ty)),
+                    None => Err(Invariant::UnresolvedType(*id).into()),
                 };
             }
             ir::Type::Bool => Prim::Bool,
@@ -186,7 +179,7 @@ impl FunctionLowerer<'_, '_> {
                     (32, false) => Prim::U32,
                     (64, false) => Prim::U64,
                     (128, false) => Prim::U128,
-                    _ => return Err(super::Error::Unsupported(format!("integer type {ty}"))),
+                    _ => return Err(unsupported_type(ty)),
                 }
             }
             ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => Prim::F32,
@@ -204,7 +197,7 @@ impl FunctionLowerer<'_, '_> {
                     convention: ir::CallConv::C,
                 } = &**pointee
                 else {
-                    return Err(super::Error::Unsupported(format!("type {ty}")));
+                    return Err(unsupported_type(ty));
                 };
                 return Ok(rust::Type::FnPtr {
                     abi: rust::Abi::Rust,
@@ -236,8 +229,20 @@ impl FunctionLowerer<'_, '_> {
                 });
             }
             ir::Type::VaList => return Ok(rust::Type::VaList),
-            _ => return Err(super::Error::Unsupported(format!("type {ty}"))),
+            _ => return Err(unsupported_type(ty)),
         };
         Ok(rust::Type::Prim(primitive))
     }
+}
+
+fn unsupported_type(ty: &ir::Type) -> Failure {
+    Construct::Type { ty: ty.to_string() }.into()
+}
+
+fn unsupported_record(name: &str, detail: &str) -> Failure {
+    Construct::Record {
+        name: name.into(),
+        detail: detail.into(),
+    }
+    .into()
 }

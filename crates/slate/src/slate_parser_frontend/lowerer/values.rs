@@ -52,14 +52,16 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_value(&mut self, value: &ir::Value) -> Result<Expr> {
+        self.lower_value_node(value)
+            .map_err(|error| error.at(Site::of(&value.node)))
+    }
+
+    fn lower_value_node(&mut self, value: &ir::Value) -> Result<Expr> {
         Ok(match &value.node.value {
             ValueKind::Constant(number) => self.lower_number(number, &value.ty)?,
             ValueKind::CodeUnits(units) => {
                 let ir::Type::Array { element, .. } = &value.ty else {
-                    return Err(super::Error::Unsupported(format!(
-                        "code units of {}",
-                        value.ty
-                    )));
+                    return Err(unsupported_value(value));
                 };
                 let signed_width = match **element {
                     ir::Type::Numeric(ir::NumericType::Integer {
@@ -212,7 +214,10 @@ impl FunctionLowerer<'_, '_> {
                     },
             } => Expr::MethodCall {
                 recv: Box::new(self.lower_value(left)?),
-                method: format!("wrapping_{}", overflow_method(*op)?),
+                method: format!(
+                    "wrapping_{}",
+                    overflow_method(*op).ok_or_else(|| unsupported_value(value))?
+                ),
                 args: vec![self.lower_value(right)?],
             },
             ValueKind::Overflow {
@@ -220,7 +225,7 @@ impl FunctionLowerer<'_, '_> {
                 left,
                 right,
                 result,
-            } => self.lower_overflow(*op, left, right, result)?,
+            } => self.lower_overflow(value, *op, left, right, result)?,
             ValueKind::Arith {
                 op, left, right, ..
             } => Expr::Binary {
@@ -235,7 +240,7 @@ impl FunctionLowerer<'_, '_> {
                     ir::ArithOp::Xor => BinOp::BitXor,
                     ir::ArithOp::Shl => BinOp::Shl,
                     ir::ArithOp::Shr => BinOp::Shr,
-                    _ => return Err(super::Error::Unsupported(format!("arithmetic {op}"))),
+                    _ => return Err(unsupported_value(value)),
                 },
                 lhs: Box::new(self.lower_value(left)?),
                 rhs: Box::new(self.lower_value(right)?),
@@ -291,10 +296,7 @@ impl FunctionLowerer<'_, '_> {
                         args: Vec::new(),
                     },
                     _ => {
-                        return Err(super::Error::Unsupported(format!(
-                            "value {}",
-                            value.display(false)
-                        )));
+                        return Err(unsupported_value(value));
                     }
                 }
             }
@@ -373,10 +375,7 @@ impl FunctionLowerer<'_, '_> {
                     binding: CallBinding::Generated,
                 },
                 _ => {
-                    return Err(super::Error::Unsupported(format!(
-                        "value {}",
-                        value.display(false)
-                    )));
+                    return Err(unsupported_value(value));
                 }
             },
             ValueKind::Null => self.lower_null(value)?,
@@ -420,10 +419,7 @@ impl FunctionLowerer<'_, '_> {
                 self.lower_aggregate(&value.ty, members, *zero_fill)?
             }
             _ => {
-                return Err(super::Error::Unsupported(format!(
-                    "value {}",
-                    value.display(false)
-                )));
+                return Err(unsupported_value(value));
             }
         })
     }
@@ -434,7 +430,12 @@ impl FunctionLowerer<'_, '_> {
         members: &[ir::AggregateMember],
         zero_fill: bool,
     ) -> Result<Expr> {
-        let unsupported = || super::Error::Unsupported(format!("aggregate of {ty}"));
+        let unsupported = || {
+            Failure::from(Construct::Value {
+                kind: "Aggregate".into(),
+                ir: ty.to_string(),
+            })
+        };
         let lowered_ty = self.lower_type(ty)?;
         let fields = self.tables.record_fields(ty);
         let resolved = self.tables.resolve_type(ty);
@@ -505,51 +506,68 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_number(&mut self, number: &Number, ty: &ir::Type) -> Result<Expr> {
-        let value =
-            match number {
-                Number::Bool(value) => rust::RustValue::Bool(*value),
-                Number::Integer(value) => {
-                    rust::RustValue::U128(value.to_string().parse().map_err(|_| {
-                        super::Error::Unsupported(format!("integer constant {value}"))
-                    })?)
-                }
-                Number::SignedInteger(value) => {
-                    rust::RustValue::I128(value.to_string().parse().map_err(|_| {
-                        super::Error::Unsupported(format!("integer constant {value}"))
-                    })?)
-                }
-                Number::FloatBits(bits) => {
-                    let (literal, finite, name) = match ty {
-                        ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => {
-                            let value = f32::from_bits(*bits as u32);
-                            (format!("{value:?}"), value.is_finite(), "f32")
-                        }
-                        ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => {
-                            let value = f64::from_bits(*bits as u64);
-                            (format!("{value:?}"), value.is_finite(), "f64")
-                        }
-                        ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F80)) => {
-                            self.lower_type(ty)?;
-                            return Ok(long_double_literal(*bits));
-                        }
-                        _ => return Err(super::Error::Unsupported(format!("constant {number:?}"))),
-                    };
-                    if !finite {
-                        return Ok(Expr::HexFloat(format!("{name}::from_bits({bits:#x})")));
+        let value = match number {
+            Number::Bool(value) => rust::RustValue::Bool(*value),
+            Number::Integer(value) => rust::RustValue::U128(
+                value
+                    .to_string()
+                    .parse()
+                    .map_err(|_| unsupported_constant(number))?,
+            ),
+            Number::SignedInteger(value) => rust::RustValue::I128(
+                value
+                    .to_string()
+                    .parse()
+                    .map_err(|_| unsupported_constant(number))?,
+            ),
+            Number::FloatBits(bits) => {
+                let (literal, finite, name) = match ty {
+                    ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F32)) => {
+                        let value = f32::from_bits(*bits as u32);
+                        (format!("{value:?}"), value.is_finite(), "f32")
                     }
-                    return Ok(match literal.strip_prefix('-') {
-                        Some(magnitude) => Expr::Unary {
-                            op: rust::UnaryOp::Neg,
-                            expr: Box::new(Expr::HexFloat(format!("{magnitude}{name}"))),
-                        },
-                        None => Expr::HexFloat(format!("{literal}{name}")),
-                    });
+                    ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F64)) => {
+                        let value = f64::from_bits(*bits as u64);
+                        (format!("{value:?}"), value.is_finite(), "f64")
+                    }
+                    ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F80)) => {
+                        self.lower_type(ty)?;
+                        return Ok(long_double_literal(*bits));
+                    }
+                    _ => return Err(unsupported_constant(number)),
+                };
+                if !finite {
+                    return Ok(Expr::HexFloat(format!("{name}::from_bits({bits:#x})")));
                 }
-                _ => return Err(super::Error::Unsupported(format!("constant {number:?}"))),
-            };
+                return Ok(match literal.strip_prefix('-') {
+                    Some(magnitude) => Expr::Unary {
+                        op: rust::UnaryOp::Neg,
+                        expr: Box::new(Expr::HexFloat(format!("{magnitude}{name}"))),
+                    },
+                    None => Expr::HexFloat(format!("{literal}{name}")),
+                });
+            }
+            _ => return Err(unsupported_constant(number)),
+        };
         Ok(Expr::Cast {
             expr: Box::new(Expr::Value(value)),
             ty: self.lower_type(ty)?,
         })
     }
+}
+
+pub(super) fn unsupported_value(value: &ir::Value) -> Failure {
+    Construct::Value {
+        kind: variant_name(&value.node.value),
+        ir: value.display(false).to_string(),
+    }
+    .into()
+}
+
+fn unsupported_constant(number: &Number) -> Failure {
+    Construct::Value {
+        kind: "Constant".into(),
+        ir: format!("{number:?}"),
+    }
+    .into()
 }

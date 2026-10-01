@@ -20,7 +20,9 @@ pub enum Error {
     #[error("lower {path} to slate-parser IR: {message}")]
     Lower { path: PathBuf, message: String },
     #[error("unsupported slate-parser IR: {0}")]
-    Unsupported(String),
+    Unsupported(#[from] Box<lowerer::Barrier>),
+    #[error("invalid slate-parser IR: {0}")]
+    Invalid(#[from] Box<lowerer::InvalidIr>),
 }
 
 pub fn parse_module_with_args(path: &Path, args: &[String]) -> Result<Module, Error> {

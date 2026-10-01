@@ -59,7 +59,10 @@ impl FunctionLowerer<'_, '_> {
                     field: name.clone(),
                 })
             }
-            _ => Err(super::Error::Unsupported(format!("place {place:?}"))),
+            _ => Err(Construct::Place {
+                ir: format!("{place:?}"),
+            }
+            .into()),
         }
     }
 }

@@ -165,20 +165,39 @@ fn lowering_barriers(path: &Path, compiler_args: &[String]) -> ExitCode {
         Ok(module) => module,
         Err(error) => return run(Err(error)),
     };
-    let report = slate::slate_parser_frontend::lowerer::report(&module);
-    for error in &report.module {
-        println!("<module>\t{error}");
+    use slate::slate_parser_frontend::lowerer;
+    let lowered = match lowerer::lower(&module, &lowerer::LowerOptions::default()) {
+        Ok(lowered) => lowered,
+        Err(invalid) => {
+            println!(
+                "<invalid>\t{}",
+                lowerer::describe_types(&invalid.to_string(), &module)
+            );
+            return ExitCode::FAILURE;
+        }
+    };
+    for barrier in &lowered.barriers {
+        println!(
+            "{}\t{}\t{}",
+            barrier.function.as_deref().unwrap_or("<module>"),
+            barrier.construct.kind(),
+            lowerer::describe_types(&barrier.construct.to_string(), &module)
+        );
     }
-    for (declaration, error) in &report.declarations {
-        println!("<declaration {declaration}>\t{error}");
-    }
-    for (function, barrier) in &report.functions {
-        match barrier {
-            Some(error) => println!("{function}\t{error}"),
-            None => println!("{function}\tok"),
+    for function in module
+        .functions
+        .iter()
+        .filter(|function| function.body.is_some())
+    {
+        if !lowered
+            .barriers
+            .iter()
+            .any(|barrier| barrier.function.as_deref() == Some(function.name.as_str()))
+        {
+            println!("{}\tok", function.name);
         }
     }
-    if report.is_clean() {
+    if lowered.barriers.is_empty() {
         ExitCode::SUCCESS
     } else {
         ExitCode::FAILURE

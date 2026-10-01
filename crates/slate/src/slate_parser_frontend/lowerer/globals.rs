@@ -11,7 +11,12 @@ pub(super) fn lower_string_global(global: &ir::Global) -> Option<Result<Vec<u8>>
         units
             .iter()
             .map(|unit| {
-                u8::try_from(*unit).map_err(|_| super::Error::Unsupported("wide string".into()))
+                u8::try_from(*unit).map_err(|_| {
+                    Failure::from(Construct::Global {
+                        name: global.variable.name.clone(),
+                        detail: "wide string".into(),
+                    })
+                })
             })
             .collect(),
     )
@@ -84,10 +89,11 @@ impl FunctionLowerer<'_, '_> {
             || !variable.access.is_plain()
             || global.symbol != ir::SymbolAttributes::default()
         {
-            return Err(super::Error::Unsupported(format!(
-                "global {} attributes",
-                variable.name
-            )));
+            return Err(Construct::Global {
+                name: variable.name.clone(),
+                detail: "attributes".into(),
+            }
+            .into());
         }
         let ty = self.lower_type(&variable.ty)?;
         if !global.definition {
@@ -97,19 +103,22 @@ impl FunctionLowerer<'_, '_> {
             None => zeroed(),
             Some(value) if tables.is_constant_initializer(value) => self.lower_value(value)?,
             Some(_) => {
-                return Err(super::Error::Unsupported(format!(
-                    "initialized global {}",
-                    variable.name
-                )));
+                return Err(Construct::Global {
+                    name: variable.name.clone(),
+                    detail: "non-constant initializer".into(),
+                }
+                .into());
             }
         };
         let Some(&alignment) = tables.over_aligned.get(&variable.id) else {
             return Ok((ty, Some(init)));
         };
-        self.dependencies.align_wrappers.insert(
-            u32::try_from(alignment)
-                .map_err(|_| super::Error::Unsupported(format!("alignment {alignment}")))?,
-        );
+        self.dependencies
+            .align_wrappers
+            .insert(u32::try_from(alignment).map_err(|_| Construct::Global {
+                name: variable.name.clone(),
+                detail: format!("alignment {alignment}"),
+            })?);
         Ok((
             rust::Type::Generic {
                 name: align_wrapper(alignment),

@@ -1,29 +1,30 @@
 use super::*;
 
-pub(super) fn overflow_method(op: ir::ArithOp) -> Result<&'static str> {
-    Ok(match op {
-        ir::ArithOp::Add => "add",
-        ir::ArithOp::Sub => "sub",
-        ir::ArithOp::Mul => "mul",
-        _ => return Err(super::Error::Unsupported(format!("overflow {op}"))),
-    })
+pub(super) fn overflow_method(op: ir::ArithOp) -> Option<&'static str> {
+    match op {
+        ir::ArithOp::Add => Some("add"),
+        ir::ArithOp::Sub => Some("sub"),
+        ir::ArithOp::Mul => Some("mul"),
+        _ => None,
+    }
 }
 
 impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_overflow(
         &mut self,
+        value: &ir::Value,
         op: ir::ArithOp,
         left: &ir::Value,
         right: &ir::Value,
         result: &ir::Place,
     ) -> Result<Expr> {
-        let method = overflow_method(op)?;
+        let method = overflow_method(op).ok_or_else(|| unsupported_value(value))?;
         for ty in [&left.ty, &right.ty, &result.ty] {
             if !matches!(
                 self.tables.resolve_type(ty),
                 ir::Type::Numeric(ir::NumericType::Integer { width, .. }) if *width <= 64
             ) {
-                return Err(super::Error::Unsupported(format!("overflow operand {ty}")));
+                return Err(unsupported_value(value));
             }
         }
         let wide = rust::Type::Prim(Prim::I128);

@@ -164,7 +164,15 @@ pub fn lowered_slate_program_with_args(
     extra_args: &[String],
 ) -> Result<rust_ast::Program, Error> {
     let module = slate_ir_with_args(path, extra_args)?;
-    slate_parser_frontend::lowerer::lower(&module).map_err(Error::from)
+    let lowered = slate_parser_frontend::lowerer::lower(
+        &module,
+        &slate_parser_frontend::lowerer::LowerOptions::default(),
+    )
+    .map_err(|invalid| slate_parser_frontend::Error::from(Box::new(invalid)))?;
+    match lowered.barriers.into_iter().next() {
+        Some(barrier) => Err(slate_parser_frontend::Error::from(Box::new(barrier)).into()),
+        None => Ok(lowered.program),
+    }
 }
 
 /// Translates a C source file for the requested target triples.

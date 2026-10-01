@@ -27,10 +27,13 @@ pub(super) fn long_double_bridge_tags<'a>(
     types
         .into_iter()
         .map(|ty| match long_double::long_double_shim_type_tag(ty) {
-            tag if tag == "x" => Err(super::Error::Unsupported(format!(
-                "long double call to {callee} passing {}",
-                crate::backend::codegen::type_to_string(ty)
-            ))),
+            tag if tag == "x" => Err(Construct::LongDouble {
+                detail: format!(
+                    "call to {callee} passing {}",
+                    crate::backend::codegen::type_to_string(ty)
+                ),
+            }
+            .into()),
             tag => Ok(tag),
         })
         .collect()
@@ -83,7 +86,9 @@ impl FunctionLowerer<'_, '_> {
             _ => long_double::f80_cast_to_name(&self.lower_type(ty)?),
         };
         let shim = shim.ok_or_else(|| {
-            super::Error::Unsupported(format!("long double conversion {} -> {ty}", operand.ty))
+            Failure::from(Construct::LongDouble {
+                detail: format!("conversion {} -> {ty}", operand.ty),
+            })
         })?;
         Ok(long_double_shim(shim, lowered))
     }
@@ -98,9 +103,10 @@ impl FunctionLowerer<'_, '_> {
         if (function.is_variadic && crate::function_identity::Known::from_symbol(callee).is_none())
             || callee.contains("__")
         {
-            return Err(super::Error::Unsupported(format!(
-                "long double call to {callee}"
-            )));
+            return Err(Construct::LongDouble {
+                detail: format!("call to {callee}"),
+            }
+            .into());
         }
         let params = arguments
             .iter()

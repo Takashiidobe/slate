@@ -1416,10 +1416,15 @@ pub fn translate_slate(c_src: &Path, rs_out: &Path, extra_args: &[String]) -> Re
         .output()
         .map_err(|e| format!("spawn slate translate-lowered: {e}"))?;
     if !o.status.success() {
+        let stderr = String::from_utf8_lossy(&o.stderr);
+        assert!(
+            !stderr.contains("invalid slate-parser IR"),
+            "{}: {stderr}",
+            c_src.display()
+        );
         return Err(format!(
-            "slate translate-lowered failed ({}):\n{}",
-            o.status,
-            String::from_utf8_lossy(&o.stderr)
+            "slate translate-lowered failed ({}):\n{stderr}",
+            o.status
         ));
     }
     write_if_changed(rs_out, &o.stdout)

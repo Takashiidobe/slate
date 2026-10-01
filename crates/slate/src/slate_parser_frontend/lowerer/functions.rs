@@ -3,10 +3,11 @@ use super::*;
 impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_extern(&mut self, function: &ir::Function) -> Result<rust::ExternDecl> {
         let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
-            return Err(super::Error::Unsupported(format!(
-                "unprototyped declaration {}",
-                function.name
-            )));
+            return Err(Construct::Function {
+                name: function.name.clone(),
+                detail: "unprototyped declaration".into(),
+            }
+            .into());
         };
         Ok(rust::ExternDecl::Fn(rust::ExternFnDecl {
             attrs: Vec::new(),
@@ -40,10 +41,11 @@ impl FunctionLowerer<'_, '_> {
         body: &[slate_parser::ast::Span<ir::Statement>],
     ) -> Result<Item> {
         let ir::Parameters::Prototype { fixed, variadic } = &function.parameters else {
-            return Err(super::Error::Unsupported(format!(
-                "unprototyped function {}",
-                function.name
-            )));
+            return Err(Construct::Function {
+                name: function.name.clone(),
+                detail: "unprototyped definition".into(),
+            }
+            .into());
         };
         let mut params = fixed
             .iter()

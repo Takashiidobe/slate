@@ -21,7 +21,7 @@ impl FunctionLowerer<'_, '_> {
             ir::Callee::Direct(id) => Expr::Var(
                 names
                     .get(id)
-                    .ok_or_else(|| super::Error::Unsupported(format!("unknown callee %{}", id.0)))?
+                    .ok_or(Invariant::UnknownCallee(*id))?
                     .rust
                     .as_str()
                     .into(),
