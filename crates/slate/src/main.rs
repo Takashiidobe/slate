@@ -438,11 +438,13 @@ fn write_num_complex_support(crate_dir: &Path) -> Result<(), String> {
 fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut paths = Vec::new();
     let mut compile_command_paths = Vec::new();
+    let mut raw = false;
     let mut include_args = Vec::new();
     let current_dir = std::env::current_dir().map_err(|e| format!("current directory: {e}"))?;
     let mut index = 0;
     while index < args.len() {
         match args[index].as_str() {
+            "--raw" => raw = true,
             "--compile-commands" => {
                 index += 1;
                 let commands = args
@@ -486,7 +488,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     for command in &mut commands {
         command.args.extend(include_args.iter().cloned());
     }
-    translate_slate_project(Path::new(paths[1]), commands)
+    translate_slate_project(Path::new(paths[1]), commands, raw)
 }
 
 fn slate_job_count() -> usize {
@@ -623,6 +625,7 @@ fn imported_commons(units: &[SlateUnit]) -> BTreeMap<String, BTreeSet<String>> {
 fn translate_slate_project(
     crate_dir: &Path,
     commands: Vec<compile_commands::CompileCommand>,
+    raw: bool,
 ) -> Result<String, String> {
     use slate::frontend::{self, lowerer};
     let units = parse_slate_units(commands)?;
@@ -659,7 +662,14 @@ fn translate_slate_project(
         jobs.into_par_iter()
             .map(|(unit, options)| {
                 frontend::lower_module(&unit.module, &unit.files, &options)
-                    .map(|program| (unit.stem.clone(), program))
+                    .map(|program| {
+                        let program = if raw {
+                            program
+                        } else {
+                            slate::backend::structure_control_flow(program)
+                        };
+                        (unit.stem.clone(), program)
+                    })
                     .map_err(|error| format!("{}: {error}", unit.path.display()))
             })
             .collect()

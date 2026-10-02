@@ -55,7 +55,7 @@ with `crates/`.
 - Compilation databases supply per-unit flags and targets. Relative paths resolve against each command's `directory`.
 - Project translation requires exactly one unit defining `main`. Library projects, multiple configurations of one unit, and colliding module stems are rejected.
 - External definitions are exported for linker resolution across modules; tentative common globals have one owner.
-- Project generation currently emits raw lowered programs. Target-conditional single-file translation is separate from project generation.
+- Project generation runs the backend control-flow registry; `--raw` emits the baseline. Exported C signatures remain intact. Target-conditional single-file translation is separate.
 
 ## Validation
 

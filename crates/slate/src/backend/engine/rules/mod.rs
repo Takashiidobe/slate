@@ -23,21 +23,27 @@ mod zero_init;
 
 use super::NodeRule;
 
-pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Box<dyn NodeRule>> {
-    let mut rules: Vec<Box<dyn NodeRule>> = vec![
+pub(super) fn control_flow_registry() -> Vec<Box<dyn NodeRule>> {
+    vec![
         Box::new(structure_dispatch::StructureDispatch),
         Box::new(structure_goto::StructureGoto),
         Box::new(structure_goto::reducible::StructureReducible),
         Box::new(label_elide::BreakToElse),
         Box::new(label_elide::TailBreakDrop),
         Box::new(label_elide::LabelElide),
-        Box::new(zero_init::ZeroInitFold),
-        Box::new(param_spills::ParamSpillFold),
-        Box::new(raw_ptr_alias::RawPtrAliasElide),
         Box::new(singleton_scopes::ScopeFlatten),
         Box::new(for_range::ForRangeRecover),
-        Box::new(array_iter::ForArrayIterRecover),
         Box::new(loop_to_while::LoopToWhile),
+    ]
+}
+
+pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Box<dyn NodeRule>> {
+    let mut rules = control_flow_registry();
+    rules.extend(vec![
+        Box::new(zero_init::ZeroInitFold) as Box<dyn NodeRule>,
+        Box::new(param_spills::ParamSpillFold),
+        Box::new(raw_ptr_alias::RawPtrAliasElide),
+        Box::new(array_iter::ForArrayIterRecover),
         Box::new(return_cleanup::ReturnSlotFold),
         Box::new(bool_ternary::BoolTernaryFold),
         Box::new(inline_temps::LateInlineTemps),
@@ -52,7 +58,7 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
         Box::new(compound_assign::CompoundAssignRecover),
         Box::new(dead_store::DeadStore),
         Box::new(return_cleanup::FinalReturnTail),
-    ];
+    ]);
     rules.extend(libc_call::rules(target));
     rules
 }

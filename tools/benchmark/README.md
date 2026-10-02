@@ -16,6 +16,8 @@ python3 tools/benchmark/sqlite.py --label after --compare before
   override with `--compile-commands`.
 - Builds matching Clang `-O2` and Rust release libraries and translated shells
   under `target/sqlite-benchmark/<label>/`. Slate is rebuilt before translation.
+- Project translation applies control-flow rewrites; `--raw` builds the raw baseline.
+  `build.json` records the selected mode.
 - Retains per-unit defines/includes. Clang uses PIC; translation receives the
   matching `__PIC__`/`__pic__` defines because slate-parser rejects `-fPIC`.
 - Runs SQL, error, persistence, CSV, C API, WAL concurrency, and interrupt checks.

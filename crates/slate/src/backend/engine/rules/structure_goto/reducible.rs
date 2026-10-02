@@ -11,15 +11,16 @@ pub(in crate::backend::engine) struct StructureReducible;
 
 enum Term {
     Diverge,
+    Exit,
     Jump(usize),
     Branch {
         cond: Expr,
-        then_target: usize,
-        else_target: usize,
+        then_term: Box<Term>,
+        else_term: Box<Term>,
     },
     Switch {
         selector: Expr,
-        arms: Vec<(Pattern, usize)>,
+        arms: Vec<(Pattern, Term)>,
     },
 }
 
@@ -137,75 +138,110 @@ fn labelled_escape(arena: &Arena, dispatch: &Dispatch, id: NodeId) -> bool {
     }
 }
 
-fn jump_target(
-    arena: &Arena,
-    dispatch: &Dispatch,
-    body: &[NodeId],
-    index_of: &BTreeMap<i64, usize>,
-) -> Option<usize> {
-    let [only] = body[..] else {
-        return None;
-    };
-    index_of
-        .get(&assigned_state(arena, only, dispatch.state)?)
-        .copied()
+struct Extractor<'a> {
+    arena: &'a Arena,
+    dispatch: &'a Dispatch,
+    index_of: &'a BTreeMap<i64, usize>,
 }
 
-fn terminator(
-    arena: &Arena,
-    dispatch: &Dispatch,
-    body: &[NodeId],
-    index_of: &BTreeMap<i64, usize>,
-) -> Option<(usize, Term)> {
-    let (&last, head) = body.split_last()?;
-    let continues = matches!(arena.get(last), Some(NodeKind::Continue(Some(label))) if *label == dispatch.label);
-    if !continues {
-        return tail_diverges(arena, body).then_some((body.len(), Term::Diverge));
-    }
-    let (&exit, prefix) = head.split_last()?;
-    let term = match arena.get(exit)? {
-        NodeKind::Assign { .. } => Term::Jump(
-            index_of
-                .get(&assigned_state(arena, exit, dispatch.state)?)
-                .copied()?,
-        ),
-        NodeKind::If {
-            cond,
-            then_body,
-            else_body,
-        } => Term::Branch {
-            cond: cond.clone(),
-            then_target: jump_target(arena, dispatch, then_body, index_of)?,
-            else_target: jump_target(arena, dispatch, else_body, index_of)?,
-        },
-        NodeKind::Match { expr, arms } => {
-            let mut targets = Vec::with_capacity(arms.len());
-            for arm in arms {
-                targets.push((
-                    arm.pattern.clone(),
-                    jump_target(arena, dispatch, &arm.body, index_of)?,
-                ));
+impl Extractor<'_> {
+    fn target(&self, body: &[NodeId]) -> Option<Term> {
+        let assign = match body {
+            [assign] => Some(*assign),
+            [assign, jump] if matches!(self.arena.get(*jump), Some(NodeKind::Continue(Some(label))) if *label == self.dispatch.label) => {
+                Some(*assign)
             }
-            Term::Switch {
-                selector: expr.clone(),
-                arms: targets,
-            }
+            _ => None,
+        };
+        if let Some(assign) = assign
+            && let Some(state) = assigned_state(self.arena, assign, self.dispatch.state)
+        {
+            return self.index_of.get(&state).copied().map(Term::Jump);
         }
-        _ => return None,
-    };
-    Some((prefix.len(), term))
+        let (prefix_len, term) = self.terminator(body)?;
+        (prefix_len == 0).then_some(term)
+    }
+
+    fn prefix(&self, body: &[NodeId]) -> Option<Vec<Stmt>> {
+        let mut writes = BTreeSet::new();
+        successors(self.arena, self.dispatch, body, &mut writes);
+        if !writes.is_empty() || escapes_dispatch(self.arena, self.dispatch, body) {
+            return None;
+        }
+        Some(arena::reify_bodies(self.arena, body))
+    }
+
+    fn terminator(&self, body: &[NodeId]) -> Option<(usize, Term)> {
+        let (&last, head) = body.split_last()?;
+        if tail_diverges(self.arena, body) {
+            return Some((body.len(), Term::Diverge));
+        }
+        if matches!(self.arena.get(last), Some(NodeKind::Break(Some(label))) if *label == self.dispatch.label)
+        {
+            return Some((head.len(), Term::Exit));
+        }
+        let continues = matches!(self.arena.get(last), Some(NodeKind::Continue(Some(label))) if *label == self.dispatch.label);
+        let (exit, prefix) = if continues {
+            let (&exit, prefix) = head.split_last()?;
+            (exit, prefix)
+        } else {
+            (last, head)
+        };
+        let term = match self.arena.get(exit)? {
+            NodeKind::Assign { .. } if continues => Term::Jump(
+                *self
+                    .index_of
+                    .get(&assigned_state(self.arena, exit, self.dispatch.state)?)?,
+            ),
+            NodeKind::If {
+                cond,
+                then_body,
+                else_body,
+            } => {
+                let cond = cond.clone();
+                let then_body = then_body.clone();
+                let else_body = else_body.clone();
+                Term::Branch {
+                    cond,
+                    then_term: Box::new(self.target(&then_body)?),
+                    else_term: Box::new(self.target(&else_body)?),
+                }
+            }
+            NodeKind::Match { expr, arms } => {
+                let selector = expr.clone();
+                let arms: Vec<_> = arms
+                    .iter()
+                    .map(|arm| (arm.pattern.clone(), arm.body.clone()))
+                    .collect();
+                let mut targets = Vec::with_capacity(arms.len());
+                for (pattern, body) in arms {
+                    targets.push((pattern, self.target(&body)?));
+                }
+                Term::Switch {
+                    selector,
+                    arms: targets,
+                }
+            }
+            _ => return None,
+        };
+        Some((prefix.len(), term))
+    }
 }
 
 fn edges(term: &Term) -> Vec<usize> {
     match term {
-        Term::Diverge => Vec::new(),
+        Term::Diverge | Term::Exit => Vec::new(),
         Term::Jump(target) => vec![*target],
         Term::Branch {
-            then_target,
-            else_target,
+            then_term,
+            else_term,
             ..
-        } => vec![*then_target, *else_target],
-        Term::Switch { arms, .. } => arms.iter().map(|(_, target)| *target).collect(),
+        } => {
+            let mut out = edges(then_term);
+            out.extend(edges(else_term));
+            out
+        }
+        Term::Switch { arms, .. } => arms.iter().flat_map(|(_, term)| edges(term)).collect(),
     }
 }
 
@@ -380,19 +416,22 @@ fn sccs(blocks: &[Block]) -> Vec<Vec<usize>> {
 }
 
 fn retarget_term(term: &mut Term, from: usize, to: usize) {
-    let targets: Vec<&mut usize> = match term {
-        Term::Diverge => Vec::new(),
-        Term::Jump(target) => vec![target],
+    match term {
+        Term::Diverge | Term::Exit => {}
+        Term::Jump(target) if *target == from => *target = to,
+        Term::Jump(_) => {}
         Term::Branch {
-            then_target,
-            else_target,
+            then_term,
+            else_term,
             ..
-        } => vec![then_target, else_target],
-        Term::Switch { arms, .. } => arms.iter_mut().map(|(_, target)| target).collect(),
-    };
-    for target in targets {
-        if *target == from {
-            *target = to;
+        } => {
+            retarget_term(then_term, from, to);
+            retarget_term(else_term, from, to);
+        }
+        Term::Switch { arms, .. } => {
+            for (_, term) in arms {
+                retarget_term(term, from, to);
+            }
         }
     }
 }
@@ -427,7 +466,7 @@ fn split_irreducible(blocks: &mut Vec<Block>, entry: usize, state: Ident) -> Opt
                     true => Pattern::Wildcard,
                     false => Pattern::I64(blocks[target].state),
                 };
-                (pattern, target)
+                (pattern, Term::Jump(target))
             })
             .collect();
         blocks.push(Block {
@@ -476,18 +515,17 @@ fn build(arena: &Arena, dispatch: &Dispatch, entry_state: i64) -> Option<Graph> 
     }
     let entry = index_of.get(&entry_state).copied()?;
 
+    let extractor = Extractor {
+        arena,
+        dispatch,
+        index_of: &index_of,
+    };
     let mut blocks = Vec::with_capacity(dispatch.arms.len());
     for (state, body) in &dispatch.arms {
-        let (prefix_len, term) = terminator(arena, dispatch, body, &index_of)?;
-        let prefix = &body[..prefix_len];
-        let mut writes = BTreeSet::new();
-        successors(arena, dispatch, prefix, &mut writes);
-        if !writes.is_empty() || escapes_dispatch(arena, dispatch, prefix) {
-            return None;
-        }
+        let (prefix_len, term) = extractor.terminator(body)?;
         blocks.push(Block {
             state: *state,
-            prefix: arena::reify_bodies(arena, prefix),
+            prefix: extractor.prefix(&body[..prefix_len])?,
             term,
         });
     }
@@ -701,6 +739,32 @@ fn fold_empty_branches(body: &mut Vec<Stmt>) {
     });
 }
 
+fn elide_local_label(body: &mut [Stmt], label: &Label, blocked: bool) {
+    for stmt in body {
+        if !blocked {
+            match stmt {
+                Stmt::Break(target @ Some(_)) | Stmt::Continue(target @ Some(_))
+                    if target.as_ref() == Some(label) =>
+                {
+                    *target = None
+                }
+                _ => {}
+            }
+        }
+        let blocked = blocked
+            || matches!(
+                stmt,
+                Stmt::LabeledBlock { .. }
+                    | Stmt::Loop { .. }
+                    | Stmt::While { .. }
+                    | Stmt::For { .. }
+            );
+        for nested in stmt.child_bodies_mut() {
+            elide_local_label(nested, label, blocked);
+        }
+    }
+}
+
 fn uses_label(body: &mut [Stmt], label: &Label) -> bool {
     body.iter_mut().any(|stmt| {
         matches!(&*stmt, Stmt::Break(Some(target)) | Stmt::Continue(Some(target)) if target == label)
@@ -713,7 +777,10 @@ fn uses_label(body: &mut [Stmt], label: &Label) -> bool {
 
 impl Graph {
     fn suffix(&self) -> &str {
-        self.label.as_str().trim_start_matches("__dispatch")
+        self.label
+            .as_str()
+            .trim_start_matches("__slate_dispatch")
+            .trim_start_matches("__dispatch")
     }
 
     fn join_label(&self, node: usize) -> Label {
@@ -752,6 +819,7 @@ impl Graph {
         nested.push(node);
         let label = self.loop_label(node);
         let mut body = self.within(node, &self.owned(node, Owner::Inside(node)), &nested);
+        elide_local_label(&mut body, &label, false);
         drop_tail_continue(&mut body);
         fold_empty_branches(&mut body);
         let core = Stmt::Loop {
@@ -798,46 +866,47 @@ impl Graph {
     fn block(&self, node: usize, loops: &[usize]) -> Vec<Stmt> {
         let block = &self.blocks[node];
         let mut out = block.prefix.clone();
-        match &block.term {
-            Term::Diverge => {}
-            Term::Jump(target) => out.extend(self.branch(*target, loops)),
+        out.extend(self.emit_term(&block.term, loops));
+        out
+    }
+
+    fn emit_term(&self, term: &Term, loops: &[usize]) -> Vec<Stmt> {
+        match term {
+            Term::Diverge => Vec::new(),
+            Term::Exit => vec![Stmt::Break(Some(self.label.clone()))],
+            Term::Jump(target) => self.branch(*target, loops),
             Term::Branch {
                 cond,
-                then_target,
-                else_target,
-            } => out.push(Stmt::If {
+                then_term,
+                else_term,
+            } => vec![Stmt::If {
                 cond: cond.clone(),
-                then_body: self.branch(*then_target, loops),
-                else_body: self.branch(*else_target, loops),
-            }),
-            Term::Switch { selector, arms } => out.push(Stmt::Match {
+                then_body: self.emit_term(then_term, loops),
+                else_body: self.emit_term(else_term, loops),
+            }],
+            Term::Switch { selector, arms } => vec![Stmt::Match {
                 expr: selector.clone(),
                 arms: arms
                     .iter()
-                    .map(|(pattern, target)| MatchArm {
+                    .map(|(pattern, term)| MatchArm {
                         pattern: pattern.clone(),
-                        body: self.branch(*target, loops),
+                        body: self.emit_term(term, loops),
                     })
                     .collect(),
-            }),
+            }],
         }
-        out
     }
 
     fn branch(&self, target: usize, loops: &[usize]) -> Vec<Stmt> {
         if self.headers.contains(&target) && loops.contains(&target) {
-            let innermost = loops.last() == Some(&target);
-            return vec![Stmt::Continue(
-                (!innermost).then(|| self.loop_label(target)),
-            )];
+            return vec![Stmt::Continue(Some(self.loop_label(target)))];
         }
         if !self.labeled[target] {
             return self.tree(target, loops);
         }
         match self.owner[target] {
             Some(Owner::AfterLoop(header)) if self.exits_directly(target, header) => {
-                let innermost = loops.last() == Some(&header);
-                vec![Stmt::Break((!innermost).then(|| self.loop_label(header)))]
+                vec![Stmt::Break(Some(self.loop_label(header)))]
             }
             _ => vec![Stmt::Break(Some(self.join_label(target)))],
         }
@@ -910,7 +979,13 @@ impl NodeRule for StructureReducible {
         let stmts = graph.emit();
         arena.discard_subtree(dispatch.match_id);
         let body = arena::insert_stmts(arena, Some(id), stmts);
-        arena.set_kind(id, NodeKind::Scope { body });
+        arena.set_kind(
+            id,
+            NodeKind::LabeledBlock {
+                label: dispatch.label,
+                body,
+            },
+        );
         if !keeps_state {
             remove_stmt(arena, entry);
         }

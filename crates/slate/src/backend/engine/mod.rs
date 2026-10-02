@@ -89,6 +89,13 @@ pub(in crate::backend) fn apply(
     printf_format::rewrite(program);
 }
 
+pub(in crate::backend) fn apply_control_flow(program: &mut Program) {
+    let registry = RuleRegistry::build(rules::control_flow_registry());
+    for item in &mut program.items {
+        apply_item(item, &registry);
+    }
+}
+
 fn apply_item(item: &mut Item, registry: &RuleRegistry) {
     match item {
         Item::Fn(func) => run_function(

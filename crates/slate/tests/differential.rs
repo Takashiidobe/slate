@@ -50,6 +50,14 @@ fn fixtures(root: &Path) -> Vec<Fixture> {
 }
 
 fn run_cases(group: &str, fixtures: &[Fixture]) -> Vec<(String, Result<(), String>)> {
+    run_cases_with_mode(group, fixtures, false)
+}
+
+fn run_cases_with_mode(
+    group: &str,
+    fixtures: &[Fixture],
+    project: bool,
+) -> Vec<(String, Result<(), String>)> {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/difftest-generated")
         .join(group);
@@ -60,7 +68,40 @@ fn run_cases(group: &str, fixtures: &[Fixture]) -> Vec<(String, Result<(), Strin
         let dg_options = support::fixture_dg_options(&f.path);
         let mut extra_args = dg_options.clone();
         extra_args.extend(support::fixture_dg_additional_options(&f.path));
-        support::translate_slate(&f.path, &generated, &extra_args).map(|()| {
+        let result = if project {
+            let crate_dir = tmp.join(&f.name);
+            std::fs::create_dir_all(&crate_dir).expect("create project directory");
+            let database = crate_dir.join("compile_commands.json");
+            let mut arguments = vec!["clang".to_string(), "-std=c23".into()];
+            arguments.extend(extra_args);
+            arguments.push(f.path.display().to_string());
+            std::fs::write(
+                &database,
+                serde_json::to_vec(&serde_json::json!([{
+                    "directory": f.path.parent(), "file": f.path, "arguments": arguments,
+                }]))
+                .unwrap(),
+            )
+            .unwrap();
+            let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+                .arg("translate-project")
+                .arg("--compile-commands")
+                .arg(database)
+                .arg(f.path.parent().unwrap())
+                .arg(&crate_dir)
+                .output()
+                .unwrap();
+            if output.status.success() {
+                std::fs::copy(crate_dir.join("src/main.rs"), &generated)
+                    .map(|_| ())
+                    .map_err(|e| e.to_string())
+            } else {
+                Err(String::from_utf8_lossy(&output.stderr).into_owned())
+            }
+        } else {
+            support::translate_slate(&f.path, &generated, &extra_args)
+        };
+        result.map(|()| {
             let mut config = support::RunConfig::default();
             config.c_args.extend(dg_options);
             support::Case {
@@ -137,6 +178,19 @@ fn generated_differential() {
             failures.join("\n\n")
         );
     }
+}
+
+#[test]
+fn project_control_flow_differential() {
+    let fixtures: Vec<_> = fixtures(&fixtures_dir())
+        .into_iter()
+        .filter(|f| f.name.starts_with("goto_") || f.name.starts_with("switch_"))
+        .collect();
+    let failures: Vec<_> = run_cases_with_mode("project-control-flow", &fixtures, true)
+        .into_iter()
+        .filter_map(|(name, result)| result.err().map(|error| format!("[{name}] {error}")))
+        .collect();
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
 }
 
 #[test]

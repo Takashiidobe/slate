@@ -20,6 +20,11 @@ pub fn apply(program: Program) -> Program {
     apply_with_target(program, &crate::target::active_info())
 }
 
+pub fn structure_control_flow(mut program: Program) -> Program {
+    engine::apply_control_flow(&mut program);
+    program
+}
+
 pub fn apply_with_target(
     program: Program,
     target: &slate_parser::target_info::TargetInfo,

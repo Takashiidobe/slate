@@ -31,16 +31,6 @@ struct Switch {
     arms: Vec<Arm>,
 }
 
-fn scope_body(arena: &Arena, id: NodeId) -> Option<[NodeId; 3]> {
-    let NodeKind::Scope { body } = arena.get(id)? else {
-        return None;
-    };
-    let [value_id, case_id, loop_id] = body[..] else {
-        return None;
-    };
-    Some([value_id, case_id, loop_id])
-}
-
 fn named_let(arena: &Arena, id: NodeId, prefix: &str) -> Option<(Ident, Expr)> {
     let NodeKind::Let {
         name,
@@ -56,9 +46,21 @@ fn named_let(arena: &Arena, id: NodeId, prefix: &str) -> Option<(Ident, Expr)> {
 }
 
 fn parse(arena: &Arena, id: NodeId) -> Option<Switch> {
-    let [value_id, case_id, loop_id] = scope_body(arena, id)?;
-    let (value_name, selector) = named_let(arena, value_id, "__switch_value")?;
-    let (case_name, dispatch) = named_let(arena, case_id, "__switch_case")?;
+    let NodeKind::Scope { body } = arena.get(id)? else {
+        return None;
+    };
+    let (case_name, dispatch, loop_id, value_name) = match body.as_slice() {
+        [value_id, case_id, loop_id] => {
+            let (value_name, selector) = named_let(arena, *value_id, "__switch_value")?;
+            let (case_name, dispatch) = named_let(arena, *case_id, "__switch_case")?;
+            (case_name, dispatch, *loop_id, Some((value_name, selector)))
+        }
+        [case_id, loop_id] => {
+            let (case_name, dispatch) = named_let(arena, *case_id, "__t")?;
+            (case_name, dispatch, *loop_id, None)
+        }
+        _ => return None,
+    };
     let Expr::Match {
         expr,
         arms: sel_arms,
@@ -66,9 +68,14 @@ fn parse(arena: &Arena, id: NodeId) -> Option<Switch> {
     else {
         return None;
     };
-    if **expr != Expr::Var(value_name) {
-        return None;
-    }
+    let selector = if let Some((value_name, selector)) = value_name {
+        if **expr != Expr::Var(value_name) {
+            return None;
+        }
+        selector
+    } else {
+        (**expr).clone()
+    };
 
     let NodeKind::Loop {
         label: Some(label),
@@ -384,8 +391,7 @@ impl NodeRule for StructureDispatch {
     }
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
-        scope_body(arena, id)
-            .is_some_and(|[value_id, ..]| named_let(arena, value_id, "__switch_value").is_some())
+        parse(arena, id).is_some()
     }
 
     fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {

@@ -44,10 +44,14 @@ conversions and layout remain slate-parser responsibilities.
   and irreducible-SCC handling. `structure_dispatch.rs` handles switch recovery.
 - Reuse the retained algorithms and registry; the removed frontend was CIR-specific,
   but these passes consume Rust AST. See [pass porting](pass-porting-workflow.md).
-- Connection work: project generation currently bypasses the backend. The goto
-  recognizer expects `__dispatch` / `__state` and `I64` state literals; current
-  lowering emits `__slate_dispatch` / `__slate_state`, `Usize` values, and an unsafe
-  wrapper. Adapt recognition conservatively and exercise the optimized project path.
+- Project translation runs the control-flow registry after raw basic-block coalescing.
+  It preserves exported C signatures and skips interprocedural representation rewrites.
+  `translate-project --raw` retains the baseline; `translate-lowered` stays raw.
+- Goto recognition accepts legacy and `__slate_dispatch` / `__slate_state` names,
+  integer / `usize` state values, and transfers inside conditional arms.
+  Nested decisions stay in their original blocks; dispatcher exits remain labeled block exits.
+- Keep loop-transfer labels when crossing labeled join blocks.
+- Switch recovery accepts the current two-statement case-selector / dispatch scope.
 - Coalesce before structuring. Choose structured output for reducible regions;
   consider tail calls at the irreducible-SCC decision point before fallback localization.
 
@@ -81,10 +85,10 @@ cargo fmt
 cargo nextest r --release --profile slate
 ```
 
-Run from the workspace root. The Slate profile exercises raw lowering;
-`translate` invokes backend rewriting, while `translate-lowered` and project
-translation emit raw lowered programs. Rewrite changes need differential
-fixtures that execute the backend path. FileCheck shape checks are suspended.
+Run from the workspace root. The Slate profile covers raw lowering, optimized
+project control-flow fixtures, and multi-unit project linkage. `translate` runs
+the full backend; project translation runs its control-flow subset. FileCheck
+shape checks are suspended.
 
 ## Design history
 

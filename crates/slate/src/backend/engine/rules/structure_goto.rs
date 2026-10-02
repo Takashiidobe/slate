@@ -25,6 +25,7 @@ pub(super) struct Uses {
 pub(super) fn state_literal(expr: &Expr) -> Option<i64> {
     match expr {
         Expr::Value(RustValue::I64(value)) => Some(*value),
+        Expr::Value(RustValue::Usize(value)) => i64::try_from(*value).ok(),
         _ => None,
     }
 }
@@ -48,7 +49,8 @@ pub(super) fn parse(arena: &Arena, id: NodeId) -> Option<Dispatch> {
     else {
         return None;
     };
-    if !label.as_str().starts_with("__dispatch") {
+    if !label.as_str().starts_with("__dispatch") && !label.as_str().starts_with("__slate_dispatch")
+    {
         return None;
     }
     let [match_id] = body[..] else {
@@ -61,7 +63,7 @@ pub(super) fn parse(arena: &Arena, id: NodeId) -> Option<Dispatch> {
     else {
         return None;
     };
-    if !state.as_str().starts_with("__state") {
+    if !state.as_str().starts_with("__state") && !state.as_str().starts_with("__slate_state") {
         return None;
     }
     let (wildcard, cases) = arms.split_last()?;
