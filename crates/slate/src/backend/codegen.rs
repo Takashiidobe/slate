@@ -1067,6 +1067,17 @@ impl<W: Write> Codegen<W> {
             Expr::ByteStr(bytes) => self.out.write_str(&byte_string_literal(bytes)),
             Expr::CStr(bytes) => self.out.write_str(&c_string_literal(bytes)),
             Expr::Path(p) => self.path(p),
+            Expr::GenericPath { path, type_args } => {
+                self.path(path)?;
+                self.out.write_str("::<")?;
+                for (i, ty) in type_args.iter().enumerate() {
+                    if i > 0 {
+                        self.out.write_str(", ")?;
+                    }
+                    self.ty(ty)?;
+                }
+                self.out.write_char('>')
+            }
             Expr::Var(s) => self.ident(s.as_str()),
             Expr::Unary { op, expr } => {
                 self.out.write_str(op.spelling())?;

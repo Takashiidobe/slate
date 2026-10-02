@@ -1106,7 +1106,8 @@ impl ClassifyCtx<'_> {
             | Expr::AtomicCompareExchange { .. }
             | Expr::AtomicNew { .. }
             | Expr::Todo(_)
-            | Expr::Path(_) => {}
+            | Expr::Path(_)
+            | Expr::GenericPath { .. } => {}
         }
     }
 
@@ -2185,6 +2186,7 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
         | Expr::ConstBlock(_)
         | Expr::CStr(_)
         | Expr::Path(_)
+        | Expr::GenericPath { .. }
         | Expr::AtomicFence { .. }
         | Expr::Todo(_) => {}
         Expr::Unary { expr, .. }

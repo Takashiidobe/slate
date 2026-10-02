@@ -80,6 +80,7 @@ pub(super) fn child_exprs(expr: &Expr) -> Vec<&Expr> {
         | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
+        | Expr::GenericPath { .. }
         | Expr::Todo(_)
         | Expr::AtomicFence { .. }
         | Expr::AtomicRef { .. }
@@ -166,6 +167,7 @@ pub(super) fn child_exprs_mut(expr: &mut Expr) -> Vec<&mut Expr> {
         | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
+        | Expr::GenericPath { .. }
         | Expr::Todo(_)
         | Expr::AtomicFence { .. }
         | Expr::AtomicRef { .. }

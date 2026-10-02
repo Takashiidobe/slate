@@ -1152,6 +1152,10 @@ pub enum Expr {
     },
     Todo(String),
     Path(Path),
+    GenericPath {
+        path: Path,
+        type_args: Vec<Type>,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -1519,6 +1523,7 @@ impl Expr {
             | Expr::ConstBlock(_)
             | Expr::CStr(_)
             | Expr::Path(_)
+            | Expr::GenericPath { .. }
             | Expr::AtomicFence { .. }
             | Expr::Todo(_) => false,
             Expr::Unary { expr, .. }
@@ -1598,6 +1603,7 @@ impl Expr {
             | Expr::ConstBlock(_)
             | Expr::CStr(_)
             | Expr::Path(_)
+            | Expr::GenericPath { .. }
             | Expr::AtomicFence { .. }
             | Expr::Todo(_) => {}
             Expr::Unary { expr, .. }
@@ -1745,6 +1751,7 @@ impl Expr {
             | Expr::ConstBlock(_)
             | Expr::CStr(_)
             | Expr::Path(_)
+            | Expr::GenericPath { .. }
             | Expr::AtomicFence { .. }
             | Expr::Todo(_) => {}
             Expr::Unary { expr, .. }
@@ -1884,6 +1891,7 @@ impl Expr {
             | Expr::ConstBlock(_)
             | Expr::CStr(_)
             | Expr::Path(_)
+            | Expr::GenericPath { .. }
             | Expr::AtomicFence { .. }
             | Expr::Todo(_) => {}
             Expr::Unary { expr, .. }
@@ -2019,7 +2027,8 @@ impl Expr {
             | Expr::ConstBlock(_)
             | Expr::CStr(_)
             | Expr::Var(_)
-            | Expr::Path(_) => false,
+            | Expr::Path(_)
+            | Expr::GenericPath { .. } => false,
             Expr::Unary { expr, .. }
             | Expr::Cast { expr, .. }
             | Expr::Ref { expr, .. }

@@ -49,7 +49,12 @@
 - Aggregate returns, packed one-bit vectors, and complex dependent IIT types
   require further adaptation.
 - SIMD elements: 8/16/32/64-bit integers, f32/f64; 1/2/4/8/16/32/64 lanes.
-- Vector comparison masks, lane-wise numeric conversions, and ordinary C vector
+- Constant-mask `shuffle` (any result lane count, undef lanes read lane 0) is
+  `std::simd::simd_swizzle!`; vector `~` / `-` are `!` / `-` (unsigned negation
+  is `splat(0) - v`); lane-wise conversions are
+  `std::simd::num::Simd{Int,Uint,Float}::cast::<T>(v)`, chosen by the source
+  element (`Expr::GenericPath` carries the turbofish).
+- Vector comparison masks, dynamic shuffle masks, and ordinary C vector
   function ABI remain barriers; function addresses cannot expose LLVM intrinsics.
 - Only default-address-space pointers participate in intrinsic signatures.
 - TableGen aliases cover direct builtin mappings; builtins Clang expands by

@@ -25,6 +25,7 @@ mod switch;
 mod target_features;
 mod types;
 mod values;
+mod vectors;
 
 use arithmetic::*;
 use calls::*;

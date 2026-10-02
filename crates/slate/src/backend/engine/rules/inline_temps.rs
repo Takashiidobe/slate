@@ -187,6 +187,7 @@ pub(super) fn expr_effects(expr: &Expr) -> Effects {
         | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
+        | Expr::GenericPath { .. }
         | Expr::Todo(_) => Effects::default(),
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
@@ -371,6 +372,7 @@ fn expr_any(expr: &Expr, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
         | Expr::CStr(_)
         | Expr::Var(_)
         | Expr::Path(_)
+        | Expr::GenericPath { .. }
         | Expr::Todo(_)
         | Expr::AtomicFence { .. } => false,
         Expr::Unary { expr, .. }
@@ -613,7 +615,8 @@ fn is_obviously_pure_expr(expr: &Expr) -> bool {
         | Expr::CStr(_)
         | Expr::HexFloat(_)
         | Expr::Var(_)
-        | Expr::Path(_) => true,
+        | Expr::Path(_)
+        | Expr::GenericPath { .. } => true,
         Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => is_obviously_pure_expr(expr),
         _ => false,
     }
@@ -702,6 +705,7 @@ fn e_ident_count(expr: &Expr, name: Ident) -> usize {
         | Expr::ConstBlock(_)
         | Expr::CStr(_)
         | Expr::Path(_)
+        | Expr::GenericPath { .. }
         | Expr::Todo(_)
         | Expr::AtomicFence { .. } => 0,
         Expr::Unary { expr, .. }

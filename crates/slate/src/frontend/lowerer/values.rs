@@ -307,13 +307,21 @@ impl FunctionLowerer<'_, '_> {
             {
                 self.lower_long_double_conversion(operand, &value.ty)?
             }
-            ValueKind::Convert { operand, .. }
+            ValueKind::Convert { kind, operand, .. }
                 if matches!(
                     self.tables.resolve_type(&operand.ty),
                     ir::Type::Vector { .. }
                 ) || matches!(self.tables.resolve_type(&value.ty), ir::Type::Vector { .. }) =>
             {
-                return Err(unsupported_value(value));
+                self.lower_vector_convert(value, *kind, operand)?
+            }
+            ValueKind::Shuffle { left, right, mask } => {
+                self.lower_shuffle(value, left, right.as_deref(), mask)?
+            }
+            ValueKind::Unary { op, operand, .. }
+                if matches!(self.tables.resolve_type(&value.ty), ir::Type::Vector { .. }) =>
+            {
+                self.lower_vector_unary(value, *op, operand)?
             }
             ValueKind::Convert { operand, .. } => {
                 let from = match odd_width(self.tables.resolve_type(&operand.ty)) {
