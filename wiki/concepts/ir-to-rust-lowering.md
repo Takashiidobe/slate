@@ -10,11 +10,14 @@
 | C function pointer | `Option<unsafe extern "C-unwind" fn(...) -> R>` |
 | Variadic C function pointer | Fixed parameters followed by `...` |
 | Const-qualified address | `&raw const`; mutable addresses use `&raw mut` |
+| Volatile read / write | `ptr::read_volatile` / `ptr::write_volatile` on raw addresses |
 
 - Record size, alignment, offsets, and pointer strides must match the C layout.
 - Aggregate initialization must account for zero-length flexible fields even
   though C does not provide initializers for them.
 - Indirect variadic calls use the parser's explicit default argument promotions.
+- Volatile record fields keep ordinary C storage layout; qualification belongs
+  to the memory operation. Volatile bit-field access remains a barrier.
 
 ## Control flow
 

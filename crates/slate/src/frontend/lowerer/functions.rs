@@ -122,8 +122,21 @@ impl FunctionLowerer<'_, '_> {
             .into());
         }
         let ret = self.lower_return(function)?;
+        let attrs = if self
+            .tables
+            .metadata
+            .get(&function.id)
+            .is_some_and(|entries| {
+                entries
+                    .iter()
+                    .any(|(key, value)| key == "c_builtin" && value == "__builtin_abort")
+            }) {
+            vec![Attr::LinkName("abort".into())]
+        } else {
+            Vec::new()
+        };
         Ok(rust::ExternDecl::Fn(rust::ExternFnDecl {
-            attrs: Vec::new(),
+            attrs,
             name: function.name.clone(),
             identity: FunctionIdentity::Unknown,
             declared_type: None,

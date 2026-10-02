@@ -10,6 +10,16 @@ pub(super) fn continue_label(id: BindingId) -> rust::Label {
 
 impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_assignment(&mut self, place: &ir::Place, value: Expr) -> Result<Stmt> {
+        if place.access.volatile {
+            return Ok(Stmt::Expr(Expr::Unsafe(Box::new(rust::Block {
+                stmts: Vec::new(),
+                tail: Some(Box::new(Expr::Call {
+                    func: Box::new(Expr::Var("std::ptr::write_volatile".into())),
+                    args: vec![self.lower_address(place, true)?, value],
+                    binding: CallBinding::Generated,
+                })),
+            }))));
+        }
         let assignment = match self.bit_field_accessor(place, "set")? {
             Some((storage, setter)) => Stmt::Expr(Expr::MethodCall {
                 recv: Box::new(storage),

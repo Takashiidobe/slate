@@ -25,6 +25,20 @@ impl Tables<'_> {
 }
 
 impl FunctionLowerer<'_, '_> {
+    pub(super) fn lower_address(&mut self, place: &ir::Place, mutable: bool) -> Result<Expr> {
+        match &place.kind {
+            PlaceKind::Deref(pointer) => self.lower_value(pointer),
+            PlaceKind::Field { bits: Some(_), .. } => Err(Construct::Place {
+                ir: place.to_string(),
+            }
+            .into()),
+            _ => Ok(Expr::AddrOf {
+                mutable,
+                expr: Box::new(self.lower_place(place)?),
+            }),
+        }
+    }
+
     pub(super) fn lower_place(&mut self, place: &ir::Place) -> Result<Expr> {
         let tables = self.tables;
         match place.kind {

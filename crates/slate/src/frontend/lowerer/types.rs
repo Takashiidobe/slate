@@ -187,7 +187,7 @@ impl FunctionLowerer<'_, '_> {
         let mut align = 1u64;
         let mut units = BTreeSet::new();
         for (index, field) in fields.iter().enumerate() {
-            if !field.access.is_plain() {
+            if field.access.atomic || (field.access.volatile && field.bit_width.is_some()) {
                 return Err(unsupported_record(name, &format!("field {index}")).at(Site::of(field)));
             }
             let (field_name, ty, offset, size, field_align) = if field.bit_width.is_some() {
