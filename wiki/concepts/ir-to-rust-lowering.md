@@ -30,6 +30,14 @@
 - Leading-zero counts preserve the C operand width; zero input is undefined in C.
 - Volatile record fields keep ordinary C storage layout; qualification belongs
   to the memory operation. Volatile bit-field access remains a barrier.
+- A record is `#[repr(C, packed(A))]`, A = the record's IR alignment, when an
+  ordinary field's natural alignment exceeds A or its offset is misaligned
+  (`packed`, `#pragma pack`, packed members). Fields are placed at
+  `min(field_align, A)` plus explicit padding. Packed field updates are read
+  and write of the copied value, never references. Still barriers: packed
+  plus a raised record alignment (`packed, aligned(N)`; Rust rejects
+  `packed` with `align`), and packed records transitively containing a
+  `repr(align)` record (E0588).
 
 ## Atomics
 

@@ -164,7 +164,7 @@ impl FunctionLowerer<'_, '_> {
             return Err(unsupported_record(name, "kind"));
         };
         let is_union = matches!(record_kind, ir::RecordKind::Union);
-        let record = |fields, align: Option<u64>| rust::RecordDef {
+        let record = |fields, packed: Option<u64>, align: Option<u64>| rust::RecordDef {
             comments: Vec::new(),
             vis: rust::Visibility::Private,
             field_vis: rust::Visibility::Private,
@@ -172,16 +172,17 @@ impl FunctionLowerer<'_, '_> {
             allow_non_camel_case: !is_camel_case(name),
             name: name.to_owned(),
             fields,
-            packed: None,
+            packed: packed.map(|packed| packed as u32),
             align: align.map(|align| align as u32),
         };
         let fields = fields.as_deref().unwrap_or_default();
         let Some(layout) = layout else {
             return match fields {
-                [] => Ok(record(Vec::new(), None)),
+                [] => Ok(record(Vec::new(), None, None)),
                 _ => Err(unsupported_record(name, "layout")),
             };
         };
+        let pack = self.record_pack(fields, layout);
         let mut lowered = Vec::new();
         let mut end = 0u64;
         let mut align = 1u64;
@@ -215,12 +216,15 @@ impl FunctionLowerer<'_, '_> {
                 let ty = self
                     .lower_type(&field.ty)
                     .map_err(|error| error.at(Site::of(field)))?;
+                if pack.is_some() && self.contains_raised_align(&field.ty) {
+                    return Err(unsupported_record(name, "layout").at(Site::of(field)));
+                }
                 (
                     field_name(field, index),
                     ty,
                     layout.offsets[index],
                     size,
-                    field_align,
+                    pack.map_or(field_align, |pack| field_align.min(pack)),
                 )
             };
             if is_union {
@@ -248,6 +252,9 @@ impl FunctionLowerer<'_, '_> {
             return Err(unsupported_record(name, "layout"));
         }
         let raised = (layout.align > align).then_some(layout.align);
+        if raised.is_some() && pack.is_some() {
+            return Err(unsupported_record(name, "layout"));
+        }
         if end.next_multiple_of(layout.align) != layout.size {
             if layout.size < end || layout.size % layout.align != 0 {
                 return Err(unsupported_record(name, "layout"));
@@ -259,7 +266,43 @@ impl FunctionLowerer<'_, '_> {
             };
             lowered.push(padding_field(lowered.len(), padding));
         }
-        Ok(record(lowered, raised))
+        Ok(record(lowered, pack, raised))
+    }
+
+    fn record_pack(
+        &self,
+        fields: &[slate_parser::ast::Span<ir::Field>],
+        layout: &ir::RecordLayout,
+    ) -> Option<u64> {
+        fields
+            .iter()
+            .enumerate()
+            .filter(|(_, field)| field.bit_width.is_none())
+            .any(|(index, field)| {
+                self.tables.storage_of(&field.ty).is_some_and(|(_, align)| {
+                    align > layout.align || !layout.offsets[index].is_multiple_of(align)
+                })
+            })
+            .then_some(layout.align)
+    }
+
+    fn contains_raised_align(&self, ty: &ir::Type) -> bool {
+        match self.tables.resolve_type(ty) {
+            ir::Type::Array { element, .. } => self.contains_raised_align(element),
+            ir::Type::Defined(id) => {
+                let raised = matches!(
+                    self.dependencies.records.get(&id.0),
+                    Some(Record::Built(record)) if record.align.is_some()
+                );
+                raised
+                    || matches!(
+                        self.tables.types.get(id).map(|definition| &definition.kind),
+                        Some(ir::TypeDefinitionKind::Record { fields: Some(fields), .. })
+                            if fields.iter().any(|field| self.contains_raised_align(&field.ty))
+                    )
+            }
+            _ => false,
+        }
     }
 
     fn lower_bit_unit(
