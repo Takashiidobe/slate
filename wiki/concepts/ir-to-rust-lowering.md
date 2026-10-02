@@ -54,8 +54,25 @@
 - Preserve byte width and raw-pointer storage, including const pointer values.
 - Volatile atomic operations retain the requested ordering and remain observable
   when their result is unused; raw APIs avoid creating references to I/O memory.
-- Dynamic orders, non-system scopes, atomic aggregates, updates, and compare-exchange
-  remain barriers.
+- `f32` / `f64` atomics use `AtomicU32` / `AtomicU64` on the bit representation
+  (`to_bits` / `from_bits`), for access, updates, and compare-exchange.
+- `update<T, result=old|new, atomic=o>(place, f(old))`: when `f` is
+  `add|sub|and|or|xor(old, x)` (add/and/or/xor also commuted), `not(and(old, x))`,
+  or ignores `old`, x is bound once and the update is `fetch_add` / `fetch_sub` /
+  `fetch_and` / `fetch_or` / `fetch_xor` / `fetch_nand` / `swap` (clang's
+  `atomicrmw`). `result=new` recombines the old value and x (`wrapping_*` for
+  add/sub). Any other `f` (mul, shifts, floats, pointer offsets, `_Atomic`
+  compound assignment) is a `fetch_update` CAS loop with `old` bound to the
+  closure argument; the loop's fetch order drops the release half. It applies
+  only when `f` is pure (constants, `old`, conversions, arithmetic, compares,
+  conditionals, pointer offsets, non-volatile non-atomic reads), since the loop
+  re-evaluates `f`.
+- `compare_exchange` / `compare_exchange_weak`: `form=write_back` assigns the
+  observed value through the expected pointer only on failure; `success` is
+  `is_ok()`; `old` returns either variant's value.
+- Dynamic orders and weakness, non-system scopes, volatile updates, atomic
+  aggregates, fn-pointer and 128-bit updates, and impure non-native update
+  computations remain barriers.
 
 ## Control flow
 

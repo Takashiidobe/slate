@@ -188,6 +188,16 @@ impl FunctionLowerer<'_, '_> {
             ValueKind::Fence { ordering, scope } => self
                 .lower_fence(*scope, ordering)
                 .ok_or_else(|| unsupported_value(value))?,
+            ValueKind::OldValue => self
+                .old_value
+                .clone()
+                .ok_or_else(|| unsupported_value(value))?,
+            ValueKind::Update {
+                ordering: Some(_), ..
+            }
+            | ValueKind::CompareExchange { .. } => self
+                .lower_atomic_rmw(value)?
+                .ok_or_else(|| unsupported_value(value))?,
             ValueKind::Read {
                 place,
                 ordering: Some(ordering),

@@ -88,6 +88,7 @@ struct FunctionLowerer<'a, 'm> {
     temps: u32,
     hoisted: Vec<Stmt>,
     dispatch_bindings: HashSet<BindingId>,
+    old_value: Option<Expr>,
 }
 
 impl FunctionLowerer<'_, '_> {
@@ -333,6 +334,7 @@ impl<'m> ModuleLowerer<'m> {
             temps: 0,
             hoisted: Vec::new(),
             dispatch_bindings: HashSet::new(),
+            old_value: None,
         }
     }
 
