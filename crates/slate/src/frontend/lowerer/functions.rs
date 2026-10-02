@@ -102,6 +102,12 @@ pub(super) fn main_wrapper(arity: usize) -> Item {
     })
 }
 
+impl Tables<'_> {
+    pub(super) fn builtin_name(&self, id: BindingId) -> Option<&str> {
+        self.names.get(&id)?.builtin.as_deref()
+    }
+}
+
 impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_extern(
         &mut self,
@@ -122,19 +128,17 @@ impl FunctionLowerer<'_, '_> {
             .into());
         }
         let ret = self.lower_return(function)?;
-        let attrs = if self
-            .tables
-            .metadata
-            .get(&function.id)
-            .is_some_and(|entries| {
-                entries
-                    .iter()
-                    .any(|(key, value)| key == "c_builtin" && value == "__builtin_abort")
-            }) {
-            vec![Attr::LinkName("abort".into())]
-        } else {
-            Vec::new()
+        let link_name = match self.tables.builtin_name(function.value.id) {
+            Some("__builtin_abort") => Some("abort"),
+            Some("__builtin_nan") => Some("nan"),
+            Some("__builtin_nanf") => Some("nanf"),
+            Some("__builtin_nanl") => Some("nanl"),
+            _ => None,
         };
+        let attrs = link_name
+            .map(|name| Attr::LinkName(name.into()))
+            .into_iter()
+            .collect();
         Ok(rust::ExternDecl::Fn(rust::ExternFnDecl {
             attrs,
             name: function.name.clone(),

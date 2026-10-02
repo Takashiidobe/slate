@@ -12,6 +12,8 @@
 | Const-qualified address | `&raw const`; mutable addresses use `&raw mut` |
 | Volatile read / write | `ptr::read_volatile` / `ptr::write_volatile` on raw addresses |
 | f32 / f64 classification | Float classification methods; zero compares equal to either signed zero |
+| NaN constructors | libc `nan` / `nanf` / `nanl`, preserving payload and argument evaluation |
+| f32 / f64 infinity constructors | `f32::INFINITY` / `f64::INFINITY` |
 
 - Record size, alignment, offsets, and pointer strides must match the C layout.
 - Aggregate initialization must account for zero-length flexible fields even

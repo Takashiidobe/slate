@@ -42,6 +42,7 @@ type Result<T> = std::result::Result<T, Failure>;
 
 struct FunctionName {
     rust: String,
+    builtin: Option<String>,
     is_extern: bool,
     is_unsafe: bool,
     is_variadic: bool,
@@ -236,6 +237,11 @@ impl<'m> ModuleLowerer<'m> {
                     function.value.id,
                     FunctionName {
                         rust: function_rust_name(function),
+                        builtin: module.metadata.get(&function.id).and_then(|entries| {
+                            entries.iter().find_map(|(key, value)| {
+                                (key == "c_builtin").then(|| value.clone())
+                            })
+                        }),
                         is_extern: function.body.is_none(),
                         is_unsafe: function.body.is_none()
                             || matches!(

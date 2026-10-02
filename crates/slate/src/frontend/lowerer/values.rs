@@ -597,6 +597,30 @@ impl FunctionLowerer<'_, '_> {
                 callee: ir::Callee::Direct(id),
                 arguments,
                 ..
+            } if arguments.is_empty()
+                && matches!(
+                    self.tables.builtin_name(*id),
+                    Some(
+                        "__builtin_inf"
+                            | "__builtin_inff"
+                            | "__builtin_huge_val"
+                            | "__builtin_huge_valf"
+                    )
+                ) =>
+            {
+                Expr::Var(
+                    match self.lower_type(&value.ty)? {
+                        rust::Type::Prim(Prim::F32) => "f32::INFINITY",
+                        rust::Type::Prim(Prim::F64) => "f64::INFINITY",
+                        _ => return Err(unsupported_value(value)),
+                    }
+                    .into(),
+                )
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
             } if self.tables.intrinsics.contains_key(id) => {
                 self.lower_intrinsic(*id, self.tables.intrinsics[id], arguments, &value.ty)?
             }
