@@ -170,7 +170,10 @@ impl FunctionLowerer<'_, '_> {
                 PlaceKind::Deref(ref pointer) => self.lower_value(pointer)?,
                 _ => {
                     let address = Expr::AddrOf {
-                        mutable: true,
+                        mutable: !matches!(
+                            self.tables.resolve_type(&value.ty),
+                            ir::Type::Pointer { is_const: true, .. }
+                        ),
                         expr: Box::new(self.lower_place(place)?),
                     };
                     if self.tables.place_is_unsafe(place) {
@@ -278,26 +281,36 @@ impl FunctionLowerer<'_, '_> {
                 let Some(bytes) = bytes else {
                     let array = self.lower_place(place)?;
                     let decayed = Expr::Cast {
-                        expr: Box::new(if self.tables.place_is_static(place) {
-                            Expr::AddrOf {
-                                mutable: true,
-                                expr: Box::new(array),
-                            }
-                        } else {
-                            Expr::MethodCall {
-                                recv: Box::new(array),
-                                method: if matches!(
-                                    value.ty,
-                                    ir::Type::Pointer { is_const: true, .. }
-                                ) {
-                                    "as_ptr"
-                                } else {
-                                    "as_mut_ptr"
+                        expr: Box::new(
+                            if self.tables.place_is_static(place)
+                                || matches!(
+                                    self.tables.resolve_type(&place.ty),
+                                    ir::Type::Array { length: None, .. }
+                                )
+                            {
+                                Expr::AddrOf {
+                                    mutable: !matches!(
+                                        self.tables.resolve_type(&value.ty),
+                                        ir::Type::Pointer { is_const: true, .. }
+                                    ),
+                                    expr: Box::new(array),
                                 }
-                                .into(),
-                                args: Vec::new(),
-                            }
-                        }),
+                            } else {
+                                Expr::MethodCall {
+                                    recv: Box::new(array),
+                                    method: if matches!(
+                                        value.ty,
+                                        ir::Type::Pointer { is_const: true, .. }
+                                    ) {
+                                        "as_ptr"
+                                    } else {
+                                        "as_mut_ptr"
+                                    }
+                                    .into(),
+                                    args: Vec::new(),
+                                }
+                            },
+                        ),
                         ty: self.lower_type(&value.ty)?,
                     };
                     return Ok(if self.tables.place_is_unsafe(place) {
@@ -616,7 +629,7 @@ impl FunctionLowerer<'_, '_> {
                 .map(|field| field_name(field, index))
                 .ok_or_else(unsupported)
         };
-        let complete = !zero_fill && !self.tables.is_union(ty) && !self.tables.has_bit_fields(ty) && members.iter().enumerate().all(|(position, member)| {
+        let complete = !zero_fill && fields.is_none_or(|fields| fields.len() == members.len()) && !self.tables.is_union(ty) && !self.tables.has_bit_fields(ty) && members.iter().enumerate().all(|(position, member)| {
             matches!(
                 (&member.target, fields),
                 (ir::AggregateTarget::Field(index), Some(_)) if *index == position

@@ -118,7 +118,7 @@ def report(binary, compile_commands):
     lines = [
         f"# Slate lowering barriers: {compile_commands}",
         "",
-        "Regenerate with `python3 tools/corpus_barriers.py --output wiki/concepts/chibicc-lowering-barriers.md`.",
+        f"Regenerate from the workspace root with `python3 crates/slate/tools/corpus_barriers.py --compile-commands {compile_commands}`.",
         "",
         f"- slate `{revision(ROOT)}`",
         f"- slate-parser `{revision(ROOT.parent / 'slate-parser')}`",

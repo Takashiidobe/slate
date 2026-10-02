@@ -9,6 +9,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 mod arithmetic;
 mod calls;
+mod control_flow;
 mod errors;
 mod f80;
 mod functions;
@@ -82,6 +83,7 @@ struct FunctionLowerer<'a, 'm> {
     dependencies: &'a mut Dependencies,
     temps: u32,
     hoisted: Vec<Stmt>,
+    dispatch_bindings: HashSet<BindingId>,
 }
 
 impl FunctionLowerer<'_, '_> {
@@ -321,6 +323,7 @@ impl<'m> ModuleLowerer<'m> {
             dependencies: &mut self.dependencies,
             temps: 0,
             hoisted: Vec::new(),
+            dispatch_bindings: HashSet::new(),
         }
     }
 

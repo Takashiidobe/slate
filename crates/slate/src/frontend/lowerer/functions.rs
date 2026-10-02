@@ -178,7 +178,11 @@ impl FunctionLowerer<'_, '_> {
                 ty: rust::Type::Variadic,
             });
         }
-        let mut statements = self.lower_statement_list(body)?;
+        let mut statements = if control_flow::needs_dispatch(body) {
+            self.lower_dispatch(body)?
+        } else {
+            self.lower_statement_list(body)?
+        };
         statements.splice(0..0, std::mem::take(&mut self.hoisted));
         if matches!(function.fallthrough, Some(ir::Fallthrough::ReturnZero))
             && !matches!(statements.last(), Some(Stmt::Return(_)))

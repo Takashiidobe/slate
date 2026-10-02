@@ -108,12 +108,9 @@ impl<'m> Tables<'m> {
                 } => Some((layout.size, layout.align)),
                 _ => None,
             },
-            ir::Type::Array {
-                element,
-                length: Some(length),
-            } => self
+            ir::Type::Array { element, length } => self
                 .storage_of(element)
-                .map(|(size, align)| (size * length, align)),
+                .map(|(size, align)| (size * length.unwrap_or(0), align)),
             ty => self
                 .target
                 .storage_of(ty.clone())
@@ -399,19 +396,23 @@ impl FunctionLowerer<'_, '_> {
                 let ir::Type::Function {
                     return_type,
                     parameters,
-                    variadic: false,
+                    variadic,
                     prototyped: true,
                     convention: ir::CallConv::C,
                 } = &**pointee
                 else {
                     return Err(unsupported_type(ty));
                 };
+                let mut params = parameters
+                    .iter()
+                    .map(|ty| self.lower_type(ty))
+                    .collect::<Result<Vec<_>>>()?;
+                if *variadic {
+                    params.push(rust::Type::Variadic);
+                }
                 return Ok(rust::Type::FnPtr {
                     abi: rust::Abi::CUnwind,
-                    params: parameters
-                        .iter()
-                        .map(|ty| self.lower_type(ty))
-                        .collect::<Result<_>>()?,
+                    params,
                     ret: Box::new(match return_type {
                         Some(ret) => self.lower_type(ret)?,
                         None => rust::Type::Unit,
@@ -426,13 +427,10 @@ impl FunctionLowerer<'_, '_> {
                     inner: Box::new(self.lower_type(pointee)?),
                 });
             }
-            ir::Type::Array {
-                element,
-                length: Some(length),
-            } => {
+            ir::Type::Array { element, length } => {
                 return Ok(rust::Type::Array {
                     elem: Box::new(self.lower_type(element)?),
-                    len: *length,
+                    len: length.unwrap_or(0),
                 });
             }
             ir::Type::Vector { element, lanes } => {

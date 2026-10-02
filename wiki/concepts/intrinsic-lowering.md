@@ -3,7 +3,6 @@
 <!-- toc -->
 - [Catalog](#catalog)
 - [Frontend](#frontend)
-- [Legacy port](#legacy-port)
 - [Limits](#limits)
 <!-- /toc -->
 
@@ -39,20 +38,11 @@
 - Explicit C adapters cover byte swaps, fabs/copysign, and clear-cache calls.
 - x86 f80 fabs/copysign reuse the existing long-double runtime shims.
 
-## Legacy port
-
-- Source: `intrinsics.rs` and `intrinsics_table.rs` before removal commit
-  `c8ad97815`; old entry point: `lower_call_llvm_intrinsic`.
-- Reused overload mangling, unique stdarch matching, signature-based declarations,
-  pointer handling, `clear_cache` override, and long-double shim selection.
-- Old CIR supplied LLVM-shaped calls. Parser IR supplies C builtin signatures;
+- Parser IR supplies C builtin signatures;
   mismatched arity or type shapes require explicit C adapters.
 - Parser `Type::Vector` uses `std::simd::Simd` for layout and intrinsic ABI.
-  The old array-to-SIMD conversions become vector construction and bit casts.
 - Vector constructors, splats, lane reads/writes, bit casts, and integer arithmetic
   support ordinary SIMD operands around intrinsic calls.
-- Fixtures: `x86_scalar_intrinsics.c`, `x86_vector_intrinsics.c`,
-  `intrinsic_{integer,float,pointer}_overloads.c`, `intrinsic_immediate_args.c`.
 
 ## Limits
 

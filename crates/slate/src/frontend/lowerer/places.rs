@@ -29,6 +29,12 @@ impl FunctionLowerer<'_, '_> {
         let tables = self.tables;
         match place.kind {
             PlaceKind::Binding(id) => {
+                if self.dispatch_bindings.contains(&id) {
+                    return Ok(Expr::Unary {
+                        op: rust::UnaryOp::Deref,
+                        expr: Box::new(control_flow::slot_pointer(id)),
+                    });
+                }
                 let binding = Expr::Var(binding_name(id, &tables.bindings).as_str().into());
                 Ok(if tables.over_aligned.contains_key(&id) {
                     Expr::TupleField {
