@@ -13,7 +13,8 @@
 | Volatile read / write | `ptr::read_volatile` / `ptr::write_volatile` on raw addresses |
 | f32 / f64 classification | Float classification methods; zero compares equal to either signed zero |
 | Scalar `__builtin_clz`, `clzl`, `clzll` calls | Unsigned operand's `leading_zeros()`, cast to the C result type |
-| f32 / f64 infinity constructors | `f32::INFINITY` / `f64::INFINITY` |
+| f80 classification | `__slate_f80_is_fp_class(x, llvm fpclass mask)` / `__slate_f80_signbit`; signaling-NaN tests remain barriers |
+| Infinity constructors | `f32::INFINITY` / `f64::INFINITY` / x87 +inf `LongDouble` literal |
 | NaN constructors | libc `nan` / `nanf` / `nanl`, preserving payload and argument evaluation |
 
 - Record size, alignment, offsets, and pointer strides must match the C layout.

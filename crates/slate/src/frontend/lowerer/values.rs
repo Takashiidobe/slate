@@ -581,6 +581,26 @@ impl FunctionLowerer<'_, '_> {
                         ..
                     },
             } => self.lower_function_address(value, *id)?,
+            ValueKind::FloatClass { operand, test } if self.tables.is_long_double(&operand.ty) => {
+                let lowered = self.lower_value(operand)?;
+                let mask = match test {
+                    ir::FloatClassTest::SignBit => {
+                        return Ok(long_double_shim("__slate_f80_signbit", lowered));
+                    }
+                    ir::FloatClassTest::Signaling => return Err(unsupported_value(value)),
+                    ir::FloatClassTest::Nan => 0x3,
+                    ir::FloatClassTest::Infinite => 0x204,
+                    ir::FloatClassTest::Finite => 0x1f8,
+                    ir::FloatClassTest::Normal => 0x108,
+                    ir::FloatClassTest::Subnormal => 0x90,
+                    ir::FloatClassTest::Zero => 0x60,
+                };
+                Expr::Call {
+                    func: Box::new(Expr::Var("__slate_f80_is_fp_class".into())),
+                    args: vec![lowered, Expr::Value(rust::RustValue::I64(mask))],
+                    binding: CallBinding::Generated,
+                }
+            }
             ValueKind::FloatClass { operand, test }
                 if matches!(
                     self.tables.resolve_type(&operand.ty),
@@ -649,17 +669,17 @@ impl FunctionLowerer<'_, '_> {
                             | "__builtin_inff"
                             | "__builtin_huge_val"
                             | "__builtin_huge_valf"
+                            | "__builtin_infl"
+                            | "__builtin_huge_vall"
                     )
                 ) =>
             {
-                Expr::Var(
-                    match self.lower_type(&value.ty)? {
-                        rust::Type::Prim(Prim::F32) => "f32::INFINITY",
-                        rust::Type::Prim(Prim::F64) => "f64::INFINITY",
-                        _ => return Err(unsupported_value(value)),
-                    }
-                    .into(),
-                )
+                match self.lower_type(&value.ty)? {
+                    rust::Type::Prim(Prim::F32) => Expr::Var("f32::INFINITY".into()),
+                    rust::Type::Prim(Prim::F64) => Expr::Var("f64::INFINITY".into()),
+                    rust::Type::LongDouble => long_double_literal(0x7fff_8000_0000_0000_0000),
+                    _ => return Err(unsupported_value(value)),
+                }
             }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),
