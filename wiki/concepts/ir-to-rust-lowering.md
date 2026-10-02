@@ -75,6 +75,8 @@
   invalidate C pointers retained across states.
 - CFG construction borrows parser IR and preserves source sites for ordinary
   statement lowering. Computed goto and asm goto remain unsupported.
+- Statement-level dispatch can retain costly copies of locals at the common
+  loop merge even in release builds; inspect optimized code before relying on elimination.
 - Differential fixtures cover forward/backward jumps, nested and sibling loops,
   irreducible control flow, jumps into switch cases, cross-state locals, skipped
   initializers, and condition/increment effects.
