@@ -57,6 +57,10 @@
   `loop { match state { ... } }` dispatch; other functions retain structured lowering.
 - Switches with statements before their first case also use dispatch: direct
   case entry skips those statements and their initializers.
+- Before emission, thread forwarding jumps, prune unreachable nodes, and coalesce
+  straight-line chains into basic blocks with one terminator each.
+- Function entry, joins, and branch/switch successors start blocks. Forwarding
+  cycles retain a self-loop; effectful cycles retain their operations and backedges.
 
 | IR | CFG behavior |
 | --- | --- |
@@ -75,8 +79,10 @@
   invalidate C pointers retained across states.
 - CFG construction borrows parser IR and preserves source sites for ordinary
   statement lowering. Computed goto and asm goto remain unsupported.
-- Statement-level dispatch can retain costly copies of locals at the common
-  loop merge even in release builds; inspect optimized code before relying on elimination.
+- Dispatch can retain costly copies of locals at the common loop merge even in
+  release builds; inspect optimized code before relying on elimination.
+- Retained Rust-to-Rust structuring and proposed tail-call optimization are in
+  [control-flow rewrites](rewrite-engine-v2.md#control-flow-rewrites).
 - Differential fixtures cover forward/backward jumps, nested and sibling loops,
   irreducible control flow, jumps into switch cases, cross-state locals, skipped
   initializers, and condition/increment effects.

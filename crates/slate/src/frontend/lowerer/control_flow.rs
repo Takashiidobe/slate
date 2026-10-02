@@ -11,6 +11,42 @@ enum Node<'a> {
     Switch(&'a ir::Value, Vec<Case<'a>>, usize),
 }
 
+impl Node<'_> {
+    fn successors(&self) -> Vec<usize> {
+        match self {
+            Self::End | Self::Statement(_, None) => Vec::new(),
+            Self::Jump(next) | Self::Statement(_, Some(next)) | Self::Value(_, next) => {
+                vec![*next]
+            }
+            Self::Branch(_, yes, no) => vec![*yes, *no],
+            Self::Switch(_, cases, default) => cases
+                .iter()
+                .map(|case| case.entry)
+                .chain([*default])
+                .collect(),
+        }
+    }
+
+    fn retarget(&mut self, targets: &[usize]) {
+        match self {
+            Self::End | Self::Statement(_, None) => {}
+            Self::Jump(next) | Self::Statement(_, Some(next)) | Self::Value(_, next) => {
+                *next = targets[*next];
+            }
+            Self::Branch(_, yes, no) => {
+                *yes = targets[*yes];
+                *no = targets[*no];
+            }
+            Self::Switch(_, cases, default) => {
+                for case in cases {
+                    case.entry = targets[case.entry];
+                }
+                *default = targets[*default];
+            }
+        }
+    }
+}
+
 struct Case<'a> {
     start: &'a ir::Value,
     end: Option<&'a ir::Value>,
@@ -98,6 +134,108 @@ pub(super) fn needs_dispatch(statements: &[Statement]) -> bool {
 }
 
 impl<'a> Graph<'a> {
+    fn blocks(&mut self, entry: usize) -> (usize, Vec<Vec<Node<'a>>>) {
+        let count = self.nodes.len();
+        let mut targets = vec![usize::MAX; count];
+        let mut visiting = vec![false; count];
+        for start in 0..count {
+            if targets[start] != usize::MAX {
+                continue;
+            }
+            let mut path = Vec::new();
+            let mut current = start;
+            while targets[current] == usize::MAX && !visiting[current] {
+                let Node::Jump(next) = self.nodes[current] else {
+                    targets[current] = current;
+                    break;
+                };
+                visiting[current] = true;
+                path.push(current);
+                current = next;
+            }
+            let target = if targets[current] == usize::MAX {
+                current
+            } else {
+                targets[current]
+            };
+            for index in path {
+                targets[index] = target;
+                visiting[index] = false;
+            }
+        }
+        let entry = targets[entry];
+        for node in &mut self.nodes {
+            node.retarget(&targets);
+        }
+        let mut reachable = vec![false; count];
+        let mut predecessors = vec![0; count];
+        let mut leaders = vec![false; count];
+        leaders[entry] = true;
+        let mut stack = vec![entry];
+        while let Some(index) = stack.pop() {
+            if reachable[index] {
+                continue;
+            }
+            reachable[index] = true;
+            let node = &self.nodes[index];
+            let mut successors = node.successors();
+            successors.sort_unstable();
+            successors.dedup();
+            for next in successors {
+                predecessors[next] += 1;
+                if matches!(node, Node::Branch(..) | Node::Switch(..)) {
+                    leaders[next] = true;
+                }
+                stack.push(next);
+            }
+        }
+        for (index, predecessors) in predecessors.into_iter().enumerate() {
+            leaders[index] |= predecessors != 1;
+        }
+        let mut blocks = Vec::new();
+        let mut states = vec![usize::MAX; count];
+        for start in 0..count {
+            if !reachable[start] || !leaders[start] {
+                continue;
+            }
+            let mut block = Vec::new();
+            let mut current = start;
+            loop {
+                states[current] = blocks.len();
+                block.push(current);
+                let next = match self.nodes[current] {
+                    Node::Jump(next) | Node::Statement(_, Some(next)) | Node::Value(_, next) => {
+                        next
+                    }
+                    _ => break,
+                };
+                if leaders[next] {
+                    break;
+                }
+                current = next;
+            }
+            blocks.push(block);
+        }
+        let mut nodes: Vec<_> = std::mem::take(&mut self.nodes)
+            .into_iter()
+            .map(Some)
+            .collect();
+        let blocks = blocks
+            .into_iter()
+            .map(|block| {
+                block
+                    .into_iter()
+                    .map(|index| {
+                        let mut node = nodes[index].take().unwrap();
+                        node.retarget(&states);
+                        node
+                    })
+                    .collect()
+            })
+            .collect();
+        (states[entry], blocks)
+    }
+
     fn push(&mut self, node: Node<'a>) -> usize {
         let index = self.nodes.len();
         self.nodes.push(node);
@@ -264,6 +402,7 @@ impl FunctionLowerer<'_, '_> {
         let mut graph = Graph::default();
         let end = graph.push(Node::End);
         let entry = graph.list(statements, end);
+        let (entry, blocks) = graph.blocks(entry);
         self.dispatch_bindings
             .extend(graph.locals.iter().map(|(id, _)| *id));
         let mut lowered = Vec::new();
@@ -301,90 +440,97 @@ impl FunctionLowerer<'_, '_> {
             });
         }
         let mut arms = Vec::new();
-        for (index, node) in graph.nodes.into_iter().enumerate() {
-            let body = match node {
-                Node::End => vec![Stmt::Break(Some(rust::Label::new("__slate_dispatch")))],
-                Node::Jump(next) => jump(next),
-                Node::Statement(statement, next) => {
-                    let local = match &statement.value {
-                        ir::Statement::Temporary {
-                            id, initializer, ..
-                        } => Some((*id, initializer.as_ref())),
-                        ir::Statement::Let(variable) => {
-                            Some((variable.id, variable.initializer.as_ref()))
-                        }
-                        _ => None,
-                    };
-                    let mut body = match local {
-                        Some((id, Some(initializer))) => vec![Stmt::Expr(Expr::Call {
-                            func: Box::new(Expr::Var("std::ptr::write".into())),
-                            args: vec![slot_pointer(id), self.lower_value(initializer)?],
-                            binding: CallBinding::Generated,
-                        })],
-                        Some((_, None)) => Vec::new(),
-                        None => vec![self.lower_statement(statement)?],
-                    };
-                    if let Some(next) = next {
-                        body.extend(jump(next));
-                    }
-                    body
-                }
-                Node::Value(value, next) => {
-                    let mut body = if matches!(value.node.value, ValueKind::Void) {
-                        Vec::new()
-                    } else {
-                        vec![Stmt::Expr(self.lower_value(value)?)]
-                    };
-                    body.extend(jump(next));
-                    body
-                }
-                Node::Branch(condition, yes, no) => vec![Stmt::If {
-                    cond: self.lower_condition(condition)?,
-                    then_body: jump(yes),
-                    else_body: jump(no),
-                }],
-                Node::Switch(value, cases, default) => {
-                    let name = self.next_temp();
-                    let mut dispatch = jump(default);
-                    for case in cases {
-                        let discriminant = Expr::Var(name.as_str().into());
-                        let start = self.lower_value(case.start)?;
-                        let cond = match case.end {
-                            Some(end) => Expr::Binary {
-                                op: BinOp::And,
-                                lhs: Box::new(Expr::Binary {
-                                    op: BinOp::Ge,
-                                    lhs: Box::new(discriminant.clone()),
-                                    rhs: Box::new(start),
-                                }),
-                                rhs: Box::new(Expr::Binary {
-                                    op: BinOp::Le,
-                                    lhs: Box::new(discriminant),
-                                    rhs: Box::new(self.lower_value(end)?),
-                                }),
-                            },
-                            None => Expr::Binary {
-                                op: BinOp::Eq,
-                                lhs: Box::new(discriminant),
-                                rhs: Box::new(start),
-                            },
+        for (index, block) in blocks.into_iter().enumerate() {
+            let last = block.len() - 1;
+            let mut body = Vec::new();
+            for (position, node) in block.into_iter().enumerate() {
+                let terminal = position == last;
+                body.extend(match node {
+                    Node::End => vec![Stmt::Break(Some(rust::Label::new("__slate_dispatch")))],
+                    Node::Jump(next) => jump(next),
+                    Node::Statement(statement, next) => {
+                        let local = match &statement.value {
+                            ir::Statement::Temporary {
+                                id, initializer, ..
+                            } => Some((*id, initializer.as_ref())),
+                            ir::Statement::Let(variable) => {
+                                Some((variable.id, variable.initializer.as_ref()))
+                            }
+                            _ => None,
                         };
-                        dispatch = vec![Stmt::If {
-                            cond,
-                            then_body: jump(case.entry),
-                            else_body: dispatch,
-                        }];
+                        let mut body = match local {
+                            Some((id, Some(initializer))) => vec![Stmt::Expr(Expr::Call {
+                                func: Box::new(Expr::Var("std::ptr::write".into())),
+                                args: vec![slot_pointer(id), self.lower_value(initializer)?],
+                                binding: CallBinding::Generated,
+                            })],
+                            Some((_, None)) => Vec::new(),
+                            None => vec![self.lower_statement(statement)?],
+                        };
+                        if let Some(next) = next.filter(|_| terminal) {
+                            body.extend(jump(next));
+                        }
+                        body
                     }
-                    let mut body = vec![Stmt::Let {
-                        name,
-                        mutable: false,
-                        ty: Some(self.lower_type(&value.ty)?),
-                        init: Some(self.lower_value(value)?),
-                    }];
-                    body.extend(dispatch);
-                    body
-                }
-            };
+                    Node::Value(value, next) => {
+                        let mut body = if matches!(value.node.value, ValueKind::Void) {
+                            Vec::new()
+                        } else {
+                            vec![Stmt::Expr(self.lower_value(value)?)]
+                        };
+                        if terminal {
+                            body.extend(jump(next));
+                        }
+                        body
+                    }
+                    Node::Branch(condition, yes, no) => vec![Stmt::If {
+                        cond: self.lower_condition(condition)?,
+                        then_body: jump(yes),
+                        else_body: jump(no),
+                    }],
+                    Node::Switch(value, cases, default) => {
+                        let name = self.next_temp();
+                        let mut dispatch = jump(default);
+                        for case in cases {
+                            let discriminant = Expr::Var(name.as_str().into());
+                            let start = self.lower_value(case.start)?;
+                            let cond = match case.end {
+                                Some(end) => Expr::Binary {
+                                    op: BinOp::And,
+                                    lhs: Box::new(Expr::Binary {
+                                        op: BinOp::Ge,
+                                        lhs: Box::new(discriminant.clone()),
+                                        rhs: Box::new(start),
+                                    }),
+                                    rhs: Box::new(Expr::Binary {
+                                        op: BinOp::Le,
+                                        lhs: Box::new(discriminant),
+                                        rhs: Box::new(self.lower_value(end)?),
+                                    }),
+                                },
+                                None => Expr::Binary {
+                                    op: BinOp::Eq,
+                                    lhs: Box::new(discriminant),
+                                    rhs: Box::new(start),
+                                },
+                            };
+                            dispatch = vec![Stmt::If {
+                                cond,
+                                then_body: jump(case.entry),
+                                else_body: dispatch,
+                            }];
+                        }
+                        let mut body = vec![Stmt::Let {
+                            name,
+                            mutable: false,
+                            ty: Some(self.lower_type(&value.ty)?),
+                            init: Some(self.lower_value(value)?),
+                        }];
+                        body.extend(dispatch);
+                        body
+                    }
+                });
+            }
             arms.push(rust::MatchArm {
                 pattern: rust::Pattern::I64(index as i64),
                 body,

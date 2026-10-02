@@ -100,6 +100,7 @@ Add these when a sweep or corpus needs them, emulating the flag of the
 same name:
 
 - Layout: `-funsigned-char`, `-fshort-enums`, `-fshort-wchar`, `-fpack-struct`.
+- Codegen: `-fPIC` / `-fpic`; their PIC predefines are not modeled by these flags.
 - Language: gcc's `-fms-extensions`, `-fdollars-in-identifiers`, `-fpermissive`,
   `-ffreestanding`, `-fno-builtin`.
 - Floating point: the fast-math family (`nnan`, `ninf`, `nsz`, `arcp`,

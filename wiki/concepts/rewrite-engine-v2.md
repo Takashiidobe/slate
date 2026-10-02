@@ -3,6 +3,7 @@
 <!-- toc -->
 - [Ownership](#ownership)
 - [Scheduling and facts](#scheduling-and-facts)
+- [Control-flow rewrites](#control-flow-rewrites)
 - [Validation](#validation)
 - [Design history](#design-history)
 <!-- /toc -->
@@ -28,6 +29,49 @@ conversions and layout remain slate-parser responsibilities.
 - Recover safer representations only from conservative evidence; uncertain aliases or escapes retain raw pointers.
 - The rule registry and implementation are authoritative for current ordering and coverage.
 - [Pointer capability lattice](pointer-capability-lattice.md) defines the interprocedural representation choices.
+
+## Control-flow rewrites
+
+| CFG shape | Rust-to-Rust rewrite |
+| --- | --- |
+| Straight-line chain / forwarding states | Coalesce basic blocks / thread jumps |
+| Acyclic region | `if` / `match` and labeled join blocks |
+| Natural loop | Labeled `loop`; existing loop/while/for peepholes refine it |
+| Multi-entry cyclic region | Existing SCC-local dispatch; explicit-tail-call helpers are an optimization candidate |
+
+- Retained rules: `engine/rules/structure_goto.rs` and
+  `structure_goto/reducible.rs` provide normalization, dominators, natural loops,
+  and irreducible-SCC handling. `structure_dispatch.rs` handles switch recovery.
+- Reuse the retained algorithms and registry; the removed frontend was CIR-specific,
+  but these passes consume Rust AST. See [pass porting](pass-porting-workflow.md).
+- Connection work: project generation currently bypasses the backend. The goto
+  recognizer expects `__dispatch` / `__state` and `I64` state literals; current
+  lowering emits `__slate_dispatch` / `__slate_state`, `Usize` values, and an unsafe
+  wrapper. Adapt recognition conservatively and exercise the optimized project path.
+- Coalesce before structuring. Choose structured output for reducible regions;
+  consider tail calls at the irreducible-SCC decision point before fallback localization.
+
+### Explicit-tail-call candidate
+
+- Example: `entry -> A or B`, with `A -> A or B` and `B -> A or B`.
+  Extract each basic block into an internal helper; successor edges become
+  `become a(...)` / `become b(...)`, removing the shared state dispatcher.
+- Use guaranteed tail transfers through experimental
+  [`explicit_tail_calls`](https://doc.rust-lang.org/unstable-book/language-features/explicit-tail-calls.html),
+  rather than assuming an ordinary call will be optimized into a jump.
+- Pass required live scalar values with compatible helper signatures/ABIs;
+  passing a large state aggregate can retain the original copy overhead.
+- Keep address-escaping C locals in stable storage owned by the outer wrapper.
+  Helpers must not tail-transfer pointers into their disappearing local frames.
+- Preserve the original exported function and C ABI, evaluation order, skipped
+  initializers, uninitialized storage, and all region exits.
+- Helper extraction affects function items and call-graph facts; integrate it at
+  that boundary and invalidate/recompute affected analyses.
+- Compare against structured output and SCC-local dispatch: executed C/Rust parity,
+  tail-jump assembly, bounded stack use, live-state copies, code size, and runtime.
+  Keep dispatch when eligibility or profitability is not established.
+- Work: `slate-cgqg.3.1` coalescing, `slate-cgqg.3.3` retained-pass connection,
+  `slate-cgqg.3.4` tail-call evaluation; retained structuring history: `slate-04q.85`.
 
 ## Validation
 
