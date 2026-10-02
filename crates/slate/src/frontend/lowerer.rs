@@ -8,6 +8,7 @@ use slate_parser::target_info::TargetInfo;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 mod arithmetic;
+mod atomics;
 mod calls;
 mod control_flow;
 mod errors;
@@ -61,6 +62,8 @@ struct Tables<'m> {
 
 #[derive(Default)]
 struct Dependencies {
+    atomic_volatile: bool,
+    atomic128: bool,
     long_double: bool,
     simd: bool,
     intrinsics: BTreeMap<String, rust::ExternFnDecl>,
@@ -525,6 +528,19 @@ impl<'m> ModuleLowerer<'m> {
             );
         }
         let mut features = Vec::new();
+        if dependencies.atomic128 {
+            items.insert(
+                0,
+                Item::SupportModule(rust::SupportModule {
+                    name: "__slate_atomic128".into(),
+                    source: include_str!("support/atomic128.rs").into(),
+                    exports: Vec::new(),
+                }),
+            );
+        }
+        if dependencies.atomic_volatile {
+            features.push(rust::CrateAttr::Feature(rust::Feature::AtomicVolatile));
+        }
         if items
             .iter()
             .any(|item| matches!(item, Item::ExternBlock { abi, .. } if abi == "llvm-intrinsic"))

@@ -118,9 +118,19 @@ impl FunctionLowerer<'_, '_> {
                 }
                 _ => Stmt::Expr(self.lower_value(value)?),
             },
-            ir::Statement::Write { place, value, .. } => {
+            ir::Statement::Write {
+                place,
+                value,
+                ordering,
+                ..
+            } => {
                 let value = self.lower_value(value)?;
-                self.lower_assignment(place, value)?
+                match ordering {
+                    Some(ordering) => {
+                        Stmt::Expr(self.lower_atomic_access(place, ordering, Some(value))?)
+                    }
+                    None => self.lower_assignment(place, value)?,
+                }
             }
             ir::Statement::Return(value) => Stmt::Return(
                 value
@@ -237,6 +247,14 @@ impl FunctionLowerer<'_, '_> {
                 .map_err(|error| error.within(Site::of(statement), "in switch".into()))?,
             ir::Statement::Break(id) => Stmt::Break(Some(break_label(*id))),
             ir::Statement::Continue(id) => Stmt::Break(Some(continue_label(*id))),
+            ir::Statement::Fence { ordering, scope } => {
+                Stmt::Expr(self.lower_fence(*scope, ordering).ok_or_else(|| {
+                    Failure::from(Construct::Statement {
+                        kind: "Fence".into(),
+                        ir: statement.display().to_string(),
+                    })
+                })?)
+            }
             ir::Statement::Null => Stmt::Block(rust::Block::default()),
             _ => {
                 return Err(Construct::Statement {

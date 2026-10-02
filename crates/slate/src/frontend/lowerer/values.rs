@@ -139,6 +139,13 @@ impl FunctionLowerer<'_, '_> {
                     args: Vec::new(),
                 })),
             })),
+            ValueKind::Fence { ordering, scope } => self
+                .lower_fence(*scope, ordering)
+                .ok_or_else(|| unsupported_value(value))?,
+            ValueKind::Read {
+                place,
+                ordering: Some(ordering),
+            } => self.lower_atomic_access(place, ordering, None)?,
             ValueKind::Read {
                 place,
                 ordering: None,

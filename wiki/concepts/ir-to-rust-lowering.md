@@ -19,6 +19,24 @@
 - Volatile record fields keep ordinary C storage layout; qualification belongs
   to the memory operation. Volatile bit-field access remains a barrier.
 
+## Atomics
+
+| IR | Rust |
+| --- | --- |
+| Scalar atomic read / write | `Atomic*::from_ptr(address).load(order)` / `.store(value, order)` |
+| Function-pointer atomic access | `AtomicPtr<u8>` with representation-preserving transmutation |
+| Consume ordering | Acquire |
+| Thread / signal fence | `atomic::fence` / `atomic::compiler_fence` |
+| Relaxed fence | Empty block |
+| Volatile atomic access | Nightly `Atomic*::from_ptr_raw` and `load_volatile` / `store_volatile` |
+| 128-bit atomic access on Linux | Opaque calls to libatomic load/store entry points |
+
+- Preserve byte width and raw-pointer storage, including const pointer values.
+- Volatile atomic operations retain the requested ordering and remain observable
+  when their result is unused; raw APIs avoid creating references to I/O memory.
+- Dynamic orders, non-system scopes, atomic aggregates, updates, and compare-exchange
+  remain barriers.
+
 ## Control flow
 
 - Source: `crates/slate/src/frontend/lowerer/control_flow.rs`.

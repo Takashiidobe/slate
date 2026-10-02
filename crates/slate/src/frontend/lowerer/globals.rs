@@ -110,7 +110,7 @@ impl FunctionLowerer<'_, '_> {
             || (variable.alignment.is_some()
                 && !abi_alignment
                 && tables.storage_of(&variable.ty).is_none())
-            || variable.access.atomic
+            || (variable.access.atomic && !tables.atomic_scalar(&variable.ty))
             || global.symbol != ir::SymbolAttributes::default()
         {
             return Err(Construct::Global {
