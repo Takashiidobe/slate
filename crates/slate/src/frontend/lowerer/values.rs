@@ -558,6 +558,40 @@ impl FunctionLowerer<'_, '_> {
                         ..
                     },
             } => self.lower_function_address(value, *id)?,
+            ValueKind::FloatClass { operand, test }
+                if matches!(
+                    self.tables.resolve_type(&operand.ty),
+                    ir::Type::Numeric(ir::NumericType::Float(
+                        ir::FloatType::F32 | ir::FloatType::F64
+                    ))
+                ) =>
+            {
+                let lowered = self.lower_value(operand)?;
+                let method = match test {
+                    ir::FloatClassTest::Nan => "is_nan",
+                    ir::FloatClassTest::Infinite => "is_infinite",
+                    ir::FloatClassTest::Finite => "is_finite",
+                    ir::FloatClassTest::Normal => "is_normal",
+                    ir::FloatClassTest::Subnormal => "is_subnormal",
+                    ir::FloatClassTest::SignBit => "is_sign_negative",
+                    ir::FloatClassTest::Zero => {
+                        return Ok(Expr::Binary {
+                            op: BinOp::Eq,
+                            lhs: Box::new(lowered),
+                            rhs: Box::new(Expr::Cast {
+                                expr: Box::new(Expr::Value(rust::RustValue::I64(0))),
+                                ty: self.lower_type(&operand.ty)?,
+                            }),
+                        });
+                    }
+                    ir::FloatClassTest::Signaling => return Err(unsupported_value(value)),
+                };
+                Expr::MethodCall {
+                    recv: Box::new(lowered),
+                    method: method.into(),
+                    args: Vec::new(),
+                }
+            }
             ValueKind::Null => self.lower_null(value)?,
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),
