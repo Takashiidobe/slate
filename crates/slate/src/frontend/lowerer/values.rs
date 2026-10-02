@@ -597,6 +597,27 @@ impl FunctionLowerer<'_, '_> {
                 callee: ir::Callee::Direct(id),
                 arguments,
                 ..
+            } if matches!(
+                self.tables.builtin_name(*id),
+                Some("__builtin_clz" | "__builtin_clzl" | "__builtin_clzll")
+            ) =>
+            {
+                let [operand] = arguments.as_slice() else {
+                    return Err(unsupported_value(value));
+                };
+                Expr::Cast {
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(self.lower_value(operand)?),
+                        method: "leading_zeros".into(),
+                        args: Vec::new(),
+                    }),
+                    ty: self.lower_type(&value.ty)?,
+                }
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
             } if arguments.is_empty()
                 && matches!(
                     self.tables.builtin_name(*id),
