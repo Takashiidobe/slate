@@ -165,17 +165,28 @@ def compare(directory, baseline):
             raise ValueError(f"baseline benchmark {key} differs")
     comparison = {"baseline": str(baseline), "current": str(directory), "testsets": {},
                   "metrics": {"before": builds[0]["metrics"], "after": builds[1]["metrics"]}}
+    table = ["| Workload | Clang | Rust before | Rust after | Speedup | Rust / Clang |",
+             "|---|---:|---:|---:|---:|---:|"]
     for name, after in reports[1]["testsets"].items():
         if name not in reports[0]["testsets"]:
             raise ValueError(f"baseline has no {name} benchmark")
         before = reports[0]["testsets"][name]
         if before["samples"]["native"][0]["verification"] != after["samples"]["native"][0]["verification"]:
             raise ValueError(f"{name}: baseline verification differs")
-        speedup = before["median_wall_seconds"]["generated"] / after["median_wall_seconds"]["generated"]
+        clang = before["median_wall_seconds"]["native"]
+        rust_before = before["median_wall_seconds"]["generated"]
+        rust_after = after["median_wall_seconds"]["generated"]
+        speedup = rust_before / rust_after
+        ratio = rust_after / clang
         comparison["testsets"][name] = {"generated_speedup": speedup,
+                                        "clang_baseline_seconds": clang,
+                                        "generated_over_clang": ratio,
                                         "before": before["median_wall_seconds"],
                                         "after": after["median_wall_seconds"]}
-        print(f"{name}: generated {speedup:.2f}x faster than {baseline.name}")
+        table.append(f"| {name} | {clang:.3f}s | {rust_before:.3f}s | {rust_after:.3f}s | {speedup:.2f}x | {ratio:.2f}x |")
+    markdown = "\n".join(table) + "\n"
+    print(markdown, end="")
+    (directory / "comparison.md").write_text(markdown)
     (directory / "comparison.json").write_text(json.dumps(comparison, indent=2) + "\n")
 
 
@@ -193,6 +204,7 @@ def main():
     parser.add_argument("--build-only", action="store_true")
     parser.add_argument("--profile", action="store_true")
     parser.add_argument("--compare", help="compare against an earlier label in the same output directory")
+    parser.add_argument("--compare-only", action="store_true", help="report saved results without building or benchmarking")
     args = parser.parse_args()
     if pathlib.Path.cwd().resolve() != ROOT:
         parser.error(f"run from {ROOT}")
@@ -202,11 +214,17 @@ def main():
         parser.error("label must contain only letters, digits, underscores or hyphens")
     if args.compare and (not re.fullmatch(r"[A-Za-z0-9_-]+", args.compare) or args.compare == args.label):
         parser.error("compare must name a different valid label")
+    if args.compare_only and not args.compare:
+        parser.error("compare-only requires --compare")
     args.corpus = args.corpus.expanduser().resolve()
     args.compile_commands = (args.compile_commands or args.corpus / "build-clang/compile_commands.json").expanduser().resolve()
     directory = args.output.expanduser().resolve() / args.label
     directory.mkdir(parents=True, exist_ok=True)
     try:
+        if args.compare_only:
+            compare(directory, directory.parent / args.compare)
+            print(f"Results: {directory}")
+            return
         if not args.skip_build:
             build(args, directory)
         if args.build_only:

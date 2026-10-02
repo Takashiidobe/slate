@@ -28,6 +28,10 @@ python3 tools/benchmark/sqlite.py --label after --compare before
   uncommitted translator changes.
 - Each build retains VDBE disassembly as `clang/vdbe.asm` and `rust/vdbe.asm`.
 - `runtime/runtime.json` retains samples, medians, spread, and hashes.
-  `--compare` checks configuration parity and writes `comparison.json`.
+  `--compare` checks configuration parity and writes `comparison.json` and
+  `comparison.md`. The table uses one Clang median from the baseline run,
+  alongside Rust before/after, optimization speedup, and the remaining Clang gap.
+- Report saved results without rebuilding or benchmarking:
+  `python3 tools/benchmark/sqlite.py --label after --compare before --compare-only`.
 - `--build-only` builds without timing workloads; `--skip-build` reruns existing
   artifacts. `--profile` collects verified CPU profiles and hardware counters.
