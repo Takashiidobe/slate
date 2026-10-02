@@ -189,7 +189,7 @@ tls_model    = "global-dynamic" | "local-dynamic" | "initial-exec" | "local-exec
 function    = "fn" binding "@" c_identifier "(" [ params ] ")" "->" type
               linkage symbol_attrs [ "[inline=" ( "hint" | "always" | "never" ) "]" ]
               [ "[definition=" ( "emitted" | "inline_only" ) "]" ] [ "[noreturn]" ]
-              [ "[naked]" ]
+              [ "[naked]" ] [ "[target=" target_feature { "," target_feature } "]" ]
               [ "[memory=" ( "none" | "read" ) "]" ]
               { "[deallocator=%" int ", argument=" int "]" }
               [ "[abi=" ( abi_signature | "incomplete" ) "]" ]
@@ -202,6 +202,8 @@ array_param = "[array=" ( "static" [ " " extent ] | extent ) "]" ;
 extent      = integer | binding | "*" ;
 fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub"
             | "ret(" value ")" ;
+target_feature = ( "+" | "-" ) feature_name | "arch=" cpu_name | "tune=" cpu_name
+               | "branch-protection=" protection ;
 ```
 
 - One `fn` per function: the body and parameters come from the definition,
@@ -218,6 +220,9 @@ fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub"
   `noreturn` survives compact printing and makes fallthrough unconditionally `ub`.
 - `[naked]` is `__attribute__((naked))` from any declaration: no prologue or
   epilogue, fallthrough `ub`, and its asm statements print no `[options=...]`.
+- `[target=...]` is `__attribute__((target("...")))` split as clang does:
+  comma-separated and trimmed, empty entries dropped, `no-x` is `-x`. The last
+  `target` attribute across declarations wins. Feature names are not validated.
 - `memory=none` (GNU `const`) reads and writes no memory beyond the arguments;
   `memory=read` (`pure`) may read but not write. Absent means unrestricted.
 

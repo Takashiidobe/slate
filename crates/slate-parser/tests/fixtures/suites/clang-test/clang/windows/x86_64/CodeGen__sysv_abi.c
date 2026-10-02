@@ -92,9 +92,9 @@ void use_target_attr_vectors(void) {
 // DEFAULT-NEXT:         let %[[VALUE_v2:[0-9]+]] v2: vector<f32, 16> [storage=automatic] = call<vector<f32, 16>, signature=fn() -> vector<f32, 16>, abi=win64() -> direct>(%[[VALUE_get_m512]]);
 // DEFAULT-NEXT:         call<void, signature=fn(vector<f32, 16>) -> void, abi=win64(direct) -> void>(%[[VALUE_take_m512]], read<vector<f32, 16>>(%[[VALUE_v2]]));
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_get_avx_m256:[0-9]+]] @get_avx_m256() -> vector<f32, 8> [linkage=external] [abi=win64() -> direct];
-// DEFAULT-NEXT:     fn %[[VALUE_take_avx_m256:[0-9]+]] @take_avx_m256(%[[VALUE2:[0-9]+]] <unnamed>: vector<f32, 8>) -> void [linkage=external] [abi=win64(direct) -> void];
-// DEFAULT-NEXT:     fn %[[VALUE_use_target_attr_vectors:[0-9]+]] @use_target_attr_vectors() -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_get_avx_m256:[0-9]+]] @get_avx_m256() -> vector<f32, 8> [linkage=external] [target=+avx] [abi=win64() -> direct];
+// DEFAULT-NEXT:     fn %[[VALUE_take_avx_m256:[0-9]+]] @take_avx_m256(%[[VALUE2:[0-9]+]] <unnamed>: vector<f32, 8>) -> void [linkage=external] [target=+avx] [abi=win64(direct) -> void];
+// DEFAULT-NEXT:     fn %[[VALUE_use_target_attr_vectors:[0-9]+]] @use_target_attr_vectors() -> void [linkage=external] [target=+avx] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         let %[[VALUE_v:[0-9]+]] v: vector<f32, 8> [storage=automatic] = call<vector<f32, 8>, signature=fn() -> vector<f32, 8>, abi=win64() -> direct>(%[[VALUE_get_avx_m256]]);
 // DEFAULT-NEXT:         call<void, signature=fn(vector<f32, 8>) -> void, abi=win64(direct) -> void>(%[[VALUE_take_avx_m256]], read<vector<f32, 8>>(%[[VALUE_v]]));
 // DEFAULT-NEXT:     }

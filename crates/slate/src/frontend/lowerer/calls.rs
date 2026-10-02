@@ -19,14 +19,20 @@ impl FunctionLowerer<'_, '_> {
     ) -> Result<Expr> {
         let names = &self.tables.names;
         let func = match callee {
-            ir::Callee::Direct(id) => Expr::Var(
-                names
-                    .get(id)
-                    .ok_or(Invariant::UnknownCallee(*id))?
-                    .rust
-                    .as_str()
-                    .into(),
-            ),
+            ir::Callee::Direct(id) => {
+                let name = names.get(id).ok_or(Invariant::UnknownCallee(*id))?;
+                if name.is_extern
+                    && name.rust.starts_with("__builtin_")
+                    && builtin_library_name(&name.rust).is_none()
+                {
+                    return Err(Construct::Function {
+                        name: name.rust.clone(),
+                        detail: "builtin without a lowering".into(),
+                    }
+                    .into());
+                }
+                Expr::Var(name.rust.as_str().into())
+            }
             ir::Callee::Indirect(pointer) => Expr::MethodCall {
                 recv: Box::new(self.lower_value(pointer)?),
                 method: "unwrap".into(),

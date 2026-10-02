@@ -1,8 +1,8 @@
 use super::{
     ArrayExtent, AsmConstraintLocation, AsmOperandKind, DllStorage, Evaluation, FloatType,
     InlineAsm, Inlining, Linkage, MemoryEffects, Metadata, Module, NumericType, Parameters,
-    RecordKind, Statement, StorageDuration, SymbolAttributes, TlsModel, Type, TypeDefinitionKind,
-    Variable, Visibility,
+    RecordKind, Statement, StorageDuration, SymbolAttributes, TargetFeature, TlsModel, Type,
+    TypeDefinitionKind, Variable, Visibility,
 };
 use crate::{
     ast::{Loc, NodeId, Span},
@@ -913,6 +913,24 @@ impl fmt::Display for DisplayModule<'_> {
             }
             if function.semantics.naked {
                 f.write_str(" [naked]")?;
+            }
+            if !function.semantics.target.is_empty() {
+                f.write_str(" [target=")?;
+                for (index, feature) in function.semantics.target.iter().enumerate() {
+                    if index > 0 {
+                        f.write_str(",")?;
+                    }
+                    match feature {
+                        TargetFeature::Enable(name) => write!(f, "+{name}")?,
+                        TargetFeature::Disable(name) => write!(f, "-{name}")?,
+                        TargetFeature::Arch(cpu) => write!(f, "arch={cpu}")?,
+                        TargetFeature::Tune(cpu) => write!(f, "tune={cpu}")?,
+                        TargetFeature::BranchProtection(kind) => {
+                            write!(f, "branch-protection={kind}")?
+                        }
+                    }
+                }
+                f.write_str("]")?;
             }
             match function.semantics.memory {
                 Some(MemoryEffects::None) => f.write_str(" [memory=none]")?,

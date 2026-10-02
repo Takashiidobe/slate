@@ -8,7 +8,8 @@ use crate::ast::{Attribute, DeclarationSpecifiers, Expr, ExprKind, Span, Storage
 use crate::compiler_args::CompilerFlavor;
 use crate::compiler_options::InlineSemantics;
 use crate::ir::{
-    BindingId, Deallocator, Fallthrough, FunctionSemantics, Inlining, Linkage, MemoryEffects, Type,
+    BindingId, Deallocator, Fallthrough, FunctionSemantics, Inlining, Linkage, MemoryEffects,
+    TargetFeature, Type,
 };
 use crate::target_info::TargetEnvironment;
 
@@ -22,7 +23,29 @@ pub(super) struct FunctionDeclarations {
     naked: bool,
     memory: Option<MemoryEffects>,
     deallocators: Vec<Deallocator>,
+    target: Vec<TargetFeature>,
     attributes: Vec<Attribute>,
+}
+
+fn target_features(spec: &str) -> Vec<TargetFeature> {
+    spec.split(',')
+        .map(str::trim)
+        .filter_map(|entry| {
+            if let Some(arch) = entry.strip_prefix("arch=") {
+                Some(TargetFeature::Arch(arch.into()))
+            } else if let Some(tune) = entry.strip_prefix("tune=") {
+                Some(TargetFeature::Tune(tune.into()))
+            } else if let Some(protection) = entry.strip_prefix("branch-protection=") {
+                Some(TargetFeature::BranchProtection(protection.into()))
+            } else if entry.is_empty() {
+                None
+            } else if let Some(feature) = entry.strip_prefix("no-") {
+                Some(TargetFeature::Disable(feature.into()))
+            } else {
+                Some(TargetFeature::Enable(entry.into()))
+            }
+        })
+        .collect()
 }
 
 impl FunctionDeclarations {
@@ -167,6 +190,7 @@ impl Lowerer {
                 }
                 Attribute::NoReturn => state.noreturn = true,
                 Attribute::Naked => state.naked = true,
+                Attribute::Target(spec) => state.target = target_features(spec),
                 Attribute::Const => state.restrict_memory(MemoryEffects::None),
                 Attribute::Pure => state.restrict_memory(MemoryEffects::Read),
                 _ => {}
@@ -259,6 +283,7 @@ impl Lowerer {
                 } else {
                     Vec::new()
                 },
+                target: state.target.clone(),
             };
             // a naked function has no epilogue: clang ends its body in `unreachable`.
             if (state.noreturn || state.naked) && function.body.is_some() {

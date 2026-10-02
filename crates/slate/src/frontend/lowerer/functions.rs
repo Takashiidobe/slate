@@ -1,5 +1,19 @@
 use super::*;
 
+pub(super) fn builtin_library_name(builtin: &str) -> Option<&'static str> {
+    Some(match builtin {
+        "__builtin_abort" => "abort",
+        "__builtin_nan" => "nan",
+        "__builtin_nanf" => "nanf",
+        "__builtin_nanl" => "nanl",
+        "__builtin_memcpy" => "memcpy",
+        "__builtin_memmove" => "memmove",
+        "__builtin_memset" => "memset",
+        "__builtin_memcmp" => "memcmp",
+        _ => return None,
+    })
+}
+
 pub(super) fn main_wrapper(arity: usize) -> Item {
     let call = |path: &str, args: Vec<Expr>| Expr::Call {
         func: Box::new(Expr::Var(path.into())),
@@ -128,14 +142,10 @@ impl FunctionLowerer<'_, '_> {
             .into());
         }
         let ret = self.lower_return(function)?;
-        let link_name = match self.tables.builtin_name(function.value.id) {
-            Some("__builtin_abort") => Some("abort"),
-            Some("__builtin_nan") => Some("nan"),
-            Some("__builtin_nanf") => Some("nanf"),
-            Some("__builtin_nanl") => Some("nanl"),
-            _ => None,
-        };
-        let attrs = link_name
+        let attrs = self
+            .tables
+            .builtin_name(function.value.id)
+            .and_then(builtin_library_name)
             .map(|name| Attr::LinkName(name.into()))
             .into_iter()
             .collect();
@@ -211,10 +221,11 @@ impl FunctionLowerer<'_, '_> {
         {
             statements.push(Stmt::Return(Some(zeroed())));
         }
+        let target_feature = self.tables.target_feature_attr(function)?;
         Ok(Item::Fn(FnDef {
-            attrs: Vec::new(),
+            unsafe_: *variadic || target_feature.is_some(),
+            attrs: target_feature.into_iter().collect(),
             vis: rust::Visibility::Private,
-            unsafe_: *variadic,
             abi: variadic.then_some(rust::Abi::CUnwind),
             name: self.tables.names[&function.value.id].rust.clone(),
             params,

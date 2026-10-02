@@ -106,6 +106,16 @@ pub struct FunctionSemantics {
     pub naked: bool,
     pub memory: Option<MemoryEffects>,
     pub deallocators: Vec<Deallocator>,
+    pub target: Vec<TargetFeature>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum TargetFeature {
+    Enable(String),
+    Disable(String),
+    Arch(String),
+    Tune(String),
+    BranchProtection(String),
 }
 
 /// `malloc(function, argument)`: `argument` is the 0-based parameter taking the pointer.

@@ -12,7 +12,12 @@
 | Const-qualified address | `&raw const`; mutable addresses use `&raw mut` |
 | Volatile read / write | `ptr::read_volatile` / `ptr::write_volatile` on raw addresses |
 | f32 / f64 classification | Float classification methods; zero compares equal to either signed zero |
-| Scalar `__builtin_clz`, `clzl`, `clzll` calls | Unsigned operand's `leading_zeros()`, cast to the C result type |
+| Scalar `__builtin_clz*` / `ctz*` / `popcount*` calls | Unsigned operand's `leading_zeros()` / `trailing_zeros()` / `count_ones()`, cast to the C result type |
+| `__builtin_expect`, `expect_with_probability`, `unpredictable` | The first operand (IR operands are side-effect free) |
+| `__builtin_prefetch` | Empty block |
+| `__builtin_abort`, `nan*`, `memcpy`, `memmove`, `memset`, `memcmp` | Extern with the library `link_name` |
+| `target("...")` function | `#[target_feature(enable = ...)] unsafe fn` (clang names mapped to rustc: `bmi`→`bmi1`, `pclmul`→`pclmulqdq`, `cx16`→`cmpxchg16b`, `rdrnd`→`rdrand`); `rtm` adds `#![feature(rtm_target_feature)]` |
+| `__builtin_cpu_supports("x")` / `__builtin_cpu_init()` | `std::arch::is_x86_feature_detected!("x")` / empty block |
 | f80 classification | `__slate_f80_is_fp_class(x, llvm fpclass mask)` / `__slate_f80_signbit`; signaling-NaN tests remain barriers |
 | Infinity constructors | `f32::INFINITY` / `f64::INFINITY` / x87 +inf `LongDouble` literal |
 | NaN constructors | libc `nan` / `nanf` / `nanl`, preserving payload and argument evaluation |
@@ -29,6 +34,12 @@
 - Null-based field-address differences use parser layout offsets, avoiding Rust
   null dereferences and pointer arithmetic.
 - Leading-zero counts preserve the C operand width; zero input is undefined in C.
+- A call to an extern `__builtin_*` with neither a lowering nor a library name
+  is a barrier: clang expands those in codegen, so the symbol never links (and
+  `lowering-barriers` would otherwise report the function as ok).
+- `target` features: `no-x`, `tune=`, `branch-protection=`, and `default` are
+  ignored (codegen only); `arch=` and features without a rustc mapping are
+  barriers. Target functions are `unsafe fn` because callers may lack the feature.
 - Volatile record fields keep ordinary C storage layout; qualification belongs
   to the memory operation. Volatile bit-field access remains a barrier.
 - A record is `#[repr(C, packed(A))]`, A = the record's IR alignment, when an

@@ -33,7 +33,7 @@ int sign_mask(__m128i bytes) {
 // IR-NEXT:     type @type[[TYPE___m128i:[0-9]+]] __m128i = vector<i64, 2>;
 // IR-NEXT:     type @type[[TYPE___v16qi:[0-9]+]] __v16qi = vector<i8, 16>;
 // IR-NEXT:     fn %[[VALUE___builtin_ia32_pmovmskb128:[0-9]+]] @__builtin_ia32_pmovmskb128(%[[VALUE0:[0-9]+]] <unnamed>: vector<i8, 16>) -> i32 [linkage=external] [memory=none] [abi=sysv64(direct) -> scalar];
-// IR-NEXT:     fn %[[VALUE__mm_movemask_epi8:[0-9]+]] @_mm_movemask_epi8(%[[VALUE___a:[0-9]+]] __a: vector<i64, 2>) -> i32 [linkage=internal] [inline=always] [definition=emitted] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] {
+// IR-NEXT:     fn %[[VALUE__mm_movemask_epi8:[0-9]+]] @_mm_movemask_epi8(%[[VALUE___a:[0-9]+]] __a: vector<i64, 2>) -> i32 [linkage=internal] [inline=always] [definition=emitted] [target=+sse2] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] {
 // IR-NEXT:         return call<i32, signature=fn(vector<i8, 16>) -> i32, abi=sysv64(direct) -> scalar>(%[[VALUE___builtin_ia32_pmovmskb128]], vector_bit_cast<vector<i8, 16>, reason=explicit>(read<vector<i64, 2>>(%[[VALUE___a]])));
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_sign_mask:[0-9]+]] @sign_mask(%[[VALUE_bytes:[0-9]+]] bytes: vector<i64, 2>) -> i32 [linkage=external] [abi=sysv64(direct) -> scalar] [fallthrough=ub_if_used] {

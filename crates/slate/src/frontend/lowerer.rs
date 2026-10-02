@@ -22,6 +22,7 @@ mod places;
 mod pointers;
 mod statements;
 mod switch;
+mod target_features;
 mod types;
 mod values;
 
@@ -245,6 +246,7 @@ impl<'m> ModuleLowerer<'m> {
                         }),
                         is_extern: function.body.is_none(),
                         is_unsafe: function.body.is_none()
+                            || !function.semantics.target.is_empty()
                             || matches!(
                                 function.parameters,
                                 ir::Parameters::Prototype { variadic: true, .. }
@@ -554,6 +556,13 @@ impl<'m> ModuleLowerer<'m> {
             .any(|item| matches!(item, Item::ExternBlock { abi, .. } if abi == "llvm-intrinsic"))
         {
             features.push(rust::CrateAttr::Feature(rust::Feature::LinkLlvmIntrinsics));
+        }
+        if items.iter().any(|item| {
+            matches!(item, Item::Fn(definition) if definition.attrs.iter().any(|attr| {
+                matches!(attr, Attr::TargetFeature(enabled) if enabled.split(',').any(|feature| feature == "rtm"))
+            }))
+        }) {
+            features.push(rust::CrateAttr::Feature(rust::Feature::RtmTargetFeature));
         }
         if dependencies.simd {
             features.extend([

@@ -20,6 +20,15 @@ fn odd_width(ty: &ir::Type) -> Option<(u32, bool, Prim)> {
     Some((width, signed, container))
 }
 
+fn bit_count_method(builtin: &str) -> Option<&'static str> {
+    match builtin {
+        "__builtin_clz" | "__builtin_clzl" | "__builtin_clzll" => Some("leading_zeros"),
+        "__builtin_ctz" | "__builtin_ctzl" | "__builtin_ctzll" => Some("trailing_zeros"),
+        "__builtin_popcount" | "__builtin_popcountl" | "__builtin_popcountll" => Some("count_ones"),
+        _ => None,
+    }
+}
+
 fn prim_width(prim: Prim) -> u32 {
     match prim {
         Prim::I8 | Prim::U8 => 8,
@@ -642,19 +651,54 @@ impl FunctionLowerer<'_, '_> {
                 ..
             } if matches!(
                 self.tables.builtin_name(*id),
-                Some("__builtin_clz" | "__builtin_clzl" | "__builtin_clzll")
+                Some("__builtin_cpu_init" | "__builtin_cpu_supports")
             ) =>
             {
-                let [operand] = arguments.as_slice() else {
+                self.lower_cpu_builtin(value, *id, arguments)?
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if self
+                .tables
+                .builtin_name(*id)
+                .and_then(bit_count_method)
+                .is_some() =>
+            {
+                let ([operand], Some(method)) = (
+                    arguments.as_slice(),
+                    self.tables.builtin_name(*id).and_then(bit_count_method),
+                ) else {
                     return Err(unsupported_value(value));
                 };
                 Expr::Cast {
                     expr: Box::new(Expr::MethodCall {
                         recv: Box::new(self.lower_value(operand)?),
-                        method: "leading_zeros".into(),
+                        method: method.into(),
                         args: Vec::new(),
                     }),
                     ty: self.lower_type(&value.ty)?,
+                }
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if matches!(
+                self.tables.builtin_name(*id),
+                Some(
+                    "__builtin_expect"
+                        | "__builtin_expect_with_probability"
+                        | "__builtin_unpredictable"
+                        | "__builtin_prefetch"
+                )
+            ) =>
+            {
+                match (self.tables.builtin_name(*id), arguments.first()) {
+                    (Some("__builtin_prefetch"), _) => Expr::Block(Box::default()),
+                    (_, Some(operand)) => self.lower_value(operand)?,
+                    (_, None) => return Err(unsupported_value(value)),
                 }
             }
             ValueKind::Call {

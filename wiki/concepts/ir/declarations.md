@@ -161,4 +161,7 @@ control-flow facts:
   under clang and dropped under gcc. clang ignores the attribute but
   validates it; it is kept for Slate either way.
 - `naked` is in [asm](asm.md#naked-functions).
-- Fixtures: `ir_inline*.c`, `ir_function_specifiers.c`.
+- `target("...")` becomes `[target=...]` (grammar in
+  [ir-grammar](../ir-grammar.md#functions)); `target_clones`, `cpu_dispatch`,
+  and `cpu_specific` multiversioning are not lowered.
+- Fixtures: `ir_inline*.c`, `ir_function_specifiers.c`, `ir_target_attribute.c`.

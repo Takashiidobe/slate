@@ -73,37 +73,37 @@ void gcs() {}
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_none:[0-9]+]] @none(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_none:[0-9]+]] @none(unprototyped) -> void [linkage=external] [target=branch-protection=none] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_std:[0-9]+]] @std(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_std:[0-9]+]] @std(unprototyped) -> void [linkage=external] [target=branch-protection=standard] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_btionly:[0-9]+]] @btionly(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_btionly:[0-9]+]] @btionly(unprototyped) -> void [linkage=external] [target=branch-protection=bti] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_paconly:[0-9]+]] @paconly(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_paconly:[0-9]+]] @paconly(unprototyped) -> void [linkage=external] [target=branch-protection=pac-ret] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_pacbti0:[0-9]+]] @pacbti0(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_pacbti0:[0-9]+]] @pacbti0(unprototyped) -> void [linkage=external] [target=branch-protection=pac-ret+bti] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_pacbti1:[0-9]+]] @pacbti1(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_pacbti1:[0-9]+]] @pacbti1(unprototyped) -> void [linkage=external] [target=branch-protection=bti+pac-ret] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_leaf:[0-9]+]] @leaf(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_leaf:[0-9]+]] @leaf(unprototyped) -> void [linkage=external] [target=branch-protection=pac-ret+leaf] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_bkey:[0-9]+]] @bkey(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_bkey:[0-9]+]] @bkey(unprototyped) -> void [linkage=external] [target=branch-protection=pac-ret+b-key] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_bkeyleaf0:[0-9]+]] @bkeyleaf0(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_bkeyleaf0:[0-9]+]] @bkeyleaf0(unprototyped) -> void [linkage=external] [target=branch-protection=pac-ret+b-key+leaf] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_bkeyleaf1:[0-9]+]] @bkeyleaf1(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_bkeyleaf1:[0-9]+]] @bkeyleaf1(unprototyped) -> void [linkage=external] [target=branch-protection=pac-ret+leaf+b-key] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_btileaf:[0-9]+]] @btileaf(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_btileaf:[0-9]+]] @btileaf(unprototyped) -> void [linkage=external] [target=branch-protection=pac-ret+leaf+bti] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_pauthlr:[0-9]+]] @pauthlr(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_pauthlr:[0-9]+]] @pauthlr(unprototyped) -> void [linkage=external] [target=branch-protection=pac-ret+pc] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_pauthlr_bkey:[0-9]+]] @pauthlr_bkey(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_pauthlr_bkey:[0-9]+]] @pauthlr_bkey(unprototyped) -> void [linkage=external] [target=branch-protection=pac-ret+pc+b-key] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_pauthlr_leaf:[0-9]+]] @pauthlr_leaf(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_pauthlr_leaf:[0-9]+]] @pauthlr_leaf(unprototyped) -> void [linkage=external] [target=branch-protection=pac-ret+pc+leaf] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_pauthlr_bti:[0-9]+]] @pauthlr_bti(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_pauthlr_bti:[0-9]+]] @pauthlr_bti(unprototyped) -> void [linkage=external] [target=branch-protection=pac-ret+pc+bti] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
-// DEFAULT-NEXT:     fn %[[VALUE_gcs:[0-9]+]] @gcs(unprototyped) -> void [linkage=external] [fallthrough=ret_void] {
+// DEFAULT-NEXT:     fn %[[VALUE_gcs:[0-9]+]] @gcs(unprototyped) -> void [linkage=external] [target=branch-protection=gcs] [fallthrough=ret_void] {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT
