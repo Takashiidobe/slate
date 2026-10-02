@@ -11,13 +11,28 @@ python3 tools/benchmark/sqlite.py --label before
 python3 tools/benchmark/sqlite.py --label after --compare before
 ```
 
+Build a historical translator in an isolated worktree, keeping results in this workspace:
+
+```bash
+git worktree add --detach target/worktrees/sqlite-1a5e11f 1a5e11ffeea2f459aa1f0d7a13709d2986535676
+python3 tools/benchmark/sqlite.py --slate-root target/worktrees/sqlite-1a5e11f \
+  --label historical-1a5e11f --testsets cte
+```
+
+`--slate-root` defaults to this workspace. Cargo builds and translation run from
+that source workspace; `build.json` and `source.patch` identify its revision and
+changes. Historical default translation behavior comes from that revision;
+use `--raw` only with revisions that support it.
+
+- [CTE progression](../../wiki/concepts/sqlite-runtime-performance.md) explains the measured lowering changes; [saved evidence](results/sqlite-cte-2026-10-02.json) retains samples and counters.
+
 - Corpus defaults to `~/c-corpus/sqlite`; pass another directory as the positional argument.
 - Compilation database defaults to `<corpus>/build-clang/compile_commands.json`;
   override with `--compile-commands`.
 - Builds matching Clang `-O2` and Rust release libraries and translated shells
   under `target/sqlite-benchmark/<label>/`. Slate is rebuilt before translation.
 - Project translation applies control-flow rewrites; `--raw` builds the raw baseline.
-  `build.json` records the selected mode.
+  `build.json` records whether `--raw` was requested.
 - Retains per-unit defines/includes. Clang uses PIC; translation receives the
   matching `__PIC__`/`__pic__` defines because slate-parser rejects `-fPIC`.
 - Runs SQL, error, persistence, CSV, C API, WAL concurrency, and interrupt checks.

@@ -52,6 +52,7 @@ conversions and layout remain slate-parser responsibilities.
   Nested decisions stay in their original blocks; dispatcher exits remain labeled block exits.
 - Keep loop-transfer labels when crossing labeled join blocks.
 - Switch recovery accepts the current two-statement case-selector / dispatch scope.
+- [SQLite runtime case study](sqlite-runtime-performance.md) measures the effects of these generic passes.
 - Coalesce before structuring. Choose structured output for reducible regions;
   consider tail calls at the irreducible-SCC decision point before fallback localization.
 

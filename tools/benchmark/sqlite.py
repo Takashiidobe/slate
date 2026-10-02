@@ -15,23 +15,23 @@ import time
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
-def run(command, log=None, env=None):
+def run(command, log=None, env=None, cwd=ROOT):
     print(shlex.join(map(str, command)), flush=True)
     start = time.perf_counter()
     if log:
         with log.open("w") as output:
-            result = subprocess.run(command, cwd=ROOT, env=env, stdout=output,
+            result = subprocess.run(command, cwd=cwd, env=env, stdout=output,
                                     stderr=subprocess.STDOUT)
         if result.returncode:
             print("\n".join(log.read_text().splitlines()[-25:]), flush=True)
             result.check_returncode()
     else:
-        subprocess.run(command, cwd=ROOT, env=env, check=True)
+        subprocess.run(command, cwd=cwd, env=env, check=True)
     return time.perf_counter() - start
 
 
-def capture(command):
-    return subprocess.check_output(command, cwd=ROOT, text=True).strip()
+def capture(command, cwd=ROOT):
+    return subprocess.check_output(command, cwd=cwd, text=True).strip()
 
 
 def absolute(directory, value):
@@ -80,23 +80,23 @@ def configuration(database):
 
 def build(args, directory):
     units = configuration(args.compile_commands)
-    revision = capture(["git", "rev-parse", "HEAD"])
-    (directory / "source.patch").write_text(capture(["git", "diff", "HEAD", "--", "crates/slate", "crates/slate-parser"]) + "\n")
+    revision = capture(["git", "rev-parse", "HEAD"], args.slate_root)
+    (directory / "source.patch").write_text(capture(["git", "diff", "HEAD", "--", "crates/slate", "crates/slate-parser"], args.slate_root) + "\n")
     native = directory / "clang"
     generated = directory / "rust"
     native.mkdir(exist_ok=True)
     timings = {}
-    timings["slate"] = run(["cargo", "build", "--release", "-p", "slate"], directory / "slate-build.log")
+    timings["slate"] = run(["cargo", "build", "--release", "-p", "slate"], directory / "slate-build.log", cwd=args.slate_root)
     commands = [{"directory": str(ROOT), "file": unit["source"],
                  "arguments": [args.clang, *unit["flags"], "-D__PIC__=2", "-D__pic__=2",
                                "-c", unit["source"]]} for unit in units.values()]
     database = directory / "compile_commands.json"
     database.write_text(json.dumps(commands, indent=2) + "\n")
     timings["translation"] = run([
-        str(ROOT / "target/test-cache/release/slate"), "translate-project",
+        str(args.slate_root / "target/test-cache/release/slate"), "translate-project",
         *(["--raw"] if args.raw else []),
         "--compile-commands", str(database), str(args.corpus), str(generated),
-    ], directory / "translation.log")
+    ], directory / "translation.log", cwd=args.slate_root)
     core, shell = units["sqlite3.c"], units["shell.c"]
     timings["clang_core"] = run([
         args.clang, *core["flags"], "-fPIC", "-c", core["source"],
@@ -144,7 +144,7 @@ def build(args, directory):
             run(["objdump", "-d", f"--start-address={address}", f"--stop-address={address + size}",
                  str(path / "libsqlite3.so")], path / "vdbe.asm")
     metadata = {
-        "git_commit": revision, "control_flow_rewrites": not args.raw,
+        "git_commit": revision, "slate_root": str(args.slate_root), "project_raw_requested": args.raw,
         "clang": capture([args.clang, "--version"]), "rustc": capture(["rustc", "-Vv"]),
         "platform": platform.platform(), "cpu": cpu_configuration(pathlib.Path("/proc/cpuinfo").read_text()),
         "sqlite_version": (args.corpus / "VERSION").read_text().strip(),
@@ -194,6 +194,7 @@ def compare(directory, baseline):
 def main():
     parser = argparse.ArgumentParser(description="Build and compare Clang and Slate SQLite from the workspace root.")
     parser.add_argument("corpus", nargs="?", type=pathlib.Path, default=pathlib.Path.home() / "c-corpus/sqlite")
+    parser.add_argument("--slate-root", type=pathlib.Path, default=ROOT, help="build the translator from another workspace/worktree")
     parser.add_argument("--compile-commands", type=pathlib.Path)
     parser.add_argument("--output", type=pathlib.Path, default=ROOT / "target/sqlite-benchmark")
     parser.add_argument("--label", default="current")
@@ -218,6 +219,9 @@ def main():
         parser.error("compare must name a different valid label")
     if args.compare_only and not args.compare:
         parser.error("compare-only requires --compare")
+    args.slate_root = args.slate_root.expanduser().resolve()
+    if not (args.slate_root / "crates/slate/Cargo.toml").is_file():
+        parser.error("slate-root must be a Slate workspace")
     args.corpus = args.corpus.expanduser().resolve()
     args.compile_commands = (args.compile_commands or args.corpus / "build-clang/compile_commands.json").expanduser().resolve()
     directory = args.output.expanduser().resolve() / args.label
