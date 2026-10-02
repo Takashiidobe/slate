@@ -86,6 +86,42 @@ overloadedPositions(ArrayRef<IITDescriptor> descs, unsigned numArgs) {
   return positions;
 }
 
+static std::optional<std::string>
+renderType(ArrayRef<IITDescriptor> descs, unsigned &i) {
+  if (i >= descs.size()) return std::nullopt;
+  const auto &d = descs[i++];
+  switch (d.Kind) {
+  case IITDescriptor::Void: return "void";
+  case IITDescriptor::Half: return "half";
+  case IITDescriptor::BFloat: return "bfloat";
+  case IITDescriptor::Float: return "float";
+  case IITDescriptor::Double: return "double";
+  case IITDescriptor::Quad: return "fp128";
+  case IITDescriptor::Integer: return "i" + std::to_string(d.IntegerWidth);
+  case IITDescriptor::Pointer:
+    if (d.PointerAddressSpace == 0) return "ptr";
+    return std::nullopt;
+  case IITDescriptor::Overloaded: {
+    auto [vectorConstraint, elementConstraint] = d.getOverloadConstraints();
+    std::string vector = vectorConstraint == IITDescriptor::VC_Vector ? "vector" :
+                         vectorConstraint == IITDescriptor::VC_Scalar ? "scalar" : "any";
+    std::string element = elementConstraint == IITDescriptor::EC_Integer ? "int" :
+                          elementConstraint == IITDescriptor::EC_Float ? "float" :
+                          elementConstraint == IITDescriptor::EC_Pointer ? "ptr" : "any";
+    return "overload:" + std::to_string(d.getOverloadIndex()) + ":" + vector + ":" + element;
+  }
+  case IITDescriptor::Match:
+    return "match:" + std::to_string(d.getOverloadIndex());
+  case IITDescriptor::Vector: {
+    if (d.VectorWidth.isScalable()) return std::nullopt;
+    auto element = renderType(descs, i);
+    if (!element) return std::nullopt;
+    return "<" + std::to_string(d.VectorWidth.getFixedValue()) + " x " + *element + ">";
+  }
+  default: return std::nullopt;
+  }
+}
+
 int main(int argc, char **argv) {
   if (argc < 2) {
     fprintf(stderr, "usage: %s <prefix>\n", argv[0]);
@@ -153,10 +189,34 @@ int main(int argc, char **argv) {
       }
       outs() << "]";
     } else {
-      outs() << ", \"ret\": null, \"params\": null";
       SmallVector<IITDescriptor, 8> table;
       auto [descs, numArgs, isVarArg] =
           Intrinsic::getIntrinsicInfoTableEntries(id, table);
+      unsigned cursor = 0;
+      auto ret = renderType(descs, cursor);
+      std::vector<std::string> params;
+      bool complete = ret.has_value() && !isVarArg;
+      for (unsigned n = 0; complete && n < numArgs; ++n) {
+        auto param = renderType(descs, cursor);
+        complete = param.has_value();
+        if (param) params.push_back(*param);
+      }
+      complete = complete && cursor == descs.size();
+      outs() << ", \"ret\": ";
+      if (complete) printEscaped(*ret); else outs() << "null";
+      outs() << ", \"params\": ";
+      if (complete) {
+        outs() << "[";
+        for (unsigned n = 0; n < params.size(); ++n) {
+          if (n) outs() << ", ";
+          outs() << "{\"type\": ";
+          printEscaped(params[n]);
+          outs() << ", \"immarg\": false}";
+        }
+        outs() << "]";
+      } else {
+        outs() << "null";
+      }
       auto positions = isVarArg ? std::nullopt
                                  : overloadedPositions(descs, numArgs);
       outs() << ", \"overloaded_positions\": ";

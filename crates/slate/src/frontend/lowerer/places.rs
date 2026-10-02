@@ -4,6 +4,7 @@ impl Tables<'_> {
     pub(super) fn place_is_unsafe(&self, place: &ir::Place) -> bool {
         match &place.kind {
             PlaceKind::Deref(_) | PlaceKind::CompoundLiteral { .. } => true,
+            PlaceKind::Lane { base, .. } => self.place_is_unsafe(base),
             PlaceKind::Field { base, .. } => self.is_union(&base.ty) || self.place_is_unsafe(base),
             _ => self.place_is_static(place),
         }
@@ -15,7 +16,9 @@ impl Tables<'_> {
             PlaceKind::CompoundLiteral { storage, .. } => {
                 matches!(storage, ir::StorageDuration::Static)
             }
-            PlaceKind::Field { base, .. } => self.place_is_static(base),
+            PlaceKind::Field { base, .. } | PlaceKind::Lane { base, .. } => {
+                self.place_is_static(base)
+            }
             _ => false,
         }
     }
@@ -46,6 +49,16 @@ impl FunctionLowerer<'_, '_> {
             } => Ok(Expr::Index {
                 base: Box::new(self.lower_value(base)?),
                 index: Box::new(self.lower_value(index)?),
+            }),
+            PlaceKind::Lane {
+                ref base,
+                ref index,
+            } => Ok(Expr::Index {
+                base: Box::new(self.lower_place(base)?),
+                index: Box::new(Expr::Cast {
+                    expr: Box::new(self.lower_value(index)?),
+                    ty: rust::Type::Prim(Prim::Usize),
+                }),
             }),
             PlaceKind::Field {
                 ref base,

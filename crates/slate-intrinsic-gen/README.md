@@ -27,5 +27,8 @@ cargo fmt
   from C spellings.
 - Optional `--stdarch-src` retains x86/x86_64 LLVM link-name signature overrides.
   Those describe internal stdarch declarations, not public `core::arch` APIs.
-- The frontend currently consumes non-overloaded scalar signatures without
-  immediate parameters. Other mapped calls produce lowering barriers.
+- The frontend resolves supported overload templates, prefers uniquely matching
+  stdarch signatures, and adapts scalar, pointer, and SIMD calls. Immediate
+  arguments remain compile-time constants. Unsupported shapes produce barriers.
+- Current coverage and the port from the removed CIR lowerer:
+  [intrinsic lowering](../../wiki/concepts/intrinsic-lowering.md).

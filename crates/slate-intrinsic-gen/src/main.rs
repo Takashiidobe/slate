@@ -89,7 +89,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for (_, intrinsics) in &mut sections {
         intrinsics.sort_by(|a, b| a.name.cmp(&b.name));
         for intrinsic in intrinsics {
-            intrinsic.builtins = builtins.get(&intrinsic.name).cloned().unwrap_or_default();
+            if let Some(metadata) = builtins.get(&intrinsic.name) {
+                intrinsic.builtins = metadata.builtins.clone();
+                if let Some(params) = &mut intrinsic.params {
+                    for &index in &metadata.immargs {
+                        if let Some(param) = params.get_mut(index) {
+                            param.immarg = true;
+                        }
+                    }
+                }
+            }
         }
     }
     let source = generate_source(&sections, llvm_commit.as_deref(), &stdarch_overrides);
@@ -394,7 +403,7 @@ fn generate_source(
 fn mine_builtin_names(
     config: &Config,
     llvm_config: &Path,
-) -> Result<BTreeMap<String, Vec<String>>, Box<dyn std::error::Error>> {
+) -> Result<BTreeMap<String, SourceMetadata>, Box<dyn std::error::Error>> {
     let llvm_dir = match &config.llvm_src {
         Some(src) => src.join("llvm"),
         None => PathBuf::from(llvm_config_output(llvm_config, &["--src-root"])?),
@@ -414,8 +423,8 @@ fn mine_builtin_names(
         .into());
     }
     let records: BTreeMap<String, serde_json::Value> = serde_json::from_slice(&output.stdout)?;
-    let mut names = BTreeMap::<String, Vec<String>>::new();
-    for (record_name, record) in records {
+    let mut names = BTreeMap::<String, SourceMetadata>::new();
+    for (record_name, record) in &records {
         let Some(suffix) = record_name.strip_prefix("int_") else {
             continue;
         };
@@ -434,13 +443,52 @@ fn mine_builtin_names(
                 names
                     .entry(llvm_name.clone())
                     .or_default()
+                    .builtins
                     .push(name.to_owned());
             }
         }
+        for property in record
+            .get("IntrProperties")
+            .and_then(|v| v.as_array())
+            .into_iter()
+            .flatten()
+        {
+            let Some(property) = property
+                .get("def")
+                .and_then(|v| v.as_str())
+                .and_then(|name| records.get(name))
+            else {
+                continue;
+            };
+            if !property
+                .get("!superclasses")
+                .and_then(|v| v.as_array())
+                .is_some_and(|classes| classes.iter().any(|class| class.as_str() == Some("ImmArg")))
+            {
+                continue;
+            }
+            if let Some(index) = property
+                .get("ArgNo")
+                .and_then(|v| v.as_u64())
+                .and_then(|index| index.checked_sub(1))
+            {
+                names
+                    .entry(llvm_name.clone())
+                    .or_default()
+                    .immargs
+                    .push(index as usize);
+            }
+        }
     }
-    for aliases in names.values_mut() {
-        aliases.sort();
-        aliases.dedup();
+    for metadata in names.values_mut() {
+        metadata.builtins.sort();
+        metadata.builtins.dedup();
     }
     Ok(names)
+}
+
+#[derive(Default)]
+struct SourceMetadata {
+    builtins: Vec<String>,
+    immargs: Vec<usize>,
 }

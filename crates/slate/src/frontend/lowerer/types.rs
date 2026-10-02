@@ -22,6 +22,32 @@ impl<'m> Tables<'m> {
         ty
     }
 
+    pub(super) fn function_type_has_vector(&self, ty: &ir::Type) -> bool {
+        match self.resolve_type(ty) {
+            ir::Type::Pointer { pointee, .. } => self.function_type_has_vector(pointee),
+            ir::Type::Function {
+                parameters,
+                return_type,
+                ..
+            } => parameters
+                .iter()
+                .chain(return_type.as_deref())
+                .any(|ty| matches!(self.resolve_type(ty), ir::Type::Vector { .. })),
+            _ => false,
+        }
+    }
+
+    pub(super) fn function_has_vector(&self, function: &ir::Function) -> bool {
+        let ir::Parameters::Prototype { fixed, .. } = &function.parameters else {
+            return false;
+        };
+        fixed
+            .iter()
+            .map(|parameter| &parameter.ty)
+            .chain(&function.return_type)
+            .any(|ty| matches!(self.resolve_type(ty), ir::Type::Vector { .. }))
+    }
+
     pub(super) fn record_fields<'a>(
         &self,
         ty: &'a ir::Type,
@@ -366,6 +392,9 @@ impl FunctionLowerer<'_, '_> {
                 self.dependencies.long_double = true;
                 return Ok(rust::Type::LongDouble);
             }
+            ir::Type::Pointer { .. } if self.tables.function_type_has_vector(ty) => {
+                return Err(unsupported_type(ty));
+            }
             ir::Type::Pointer { pointee, .. } if matches!(**pointee, ir::Type::Function { .. }) => {
                 let ir::Type::Function {
                     return_type,
@@ -405,6 +434,15 @@ impl FunctionLowerer<'_, '_> {
                     elem: Box::new(self.lower_type(element)?),
                     len: *length,
                 });
+            }
+            ir::Type::Vector { element, lanes } => {
+                let ty = intrinsics::simd_type(
+                    self.lower_type(&ir::Type::Numeric(*element))?,
+                    (*lanes).into(),
+                )
+                .ok_or_else(|| unsupported_type(ty))?;
+                self.dependencies.simd = true;
+                return Ok(ty);
             }
             ir::Type::VaList => return Ok(rust::Type::VaList),
             _ => return Err(unsupported_type(ty)),

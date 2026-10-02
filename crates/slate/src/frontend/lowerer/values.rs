@@ -183,11 +183,47 @@ impl FunctionLowerer<'_, '_> {
                     }
                 }
             },
+            ValueKind::Convert {
+                kind: ir::ConversionKind::VectorSplat,
+                operand,
+                ..
+            } => {
+                self.lower_type(&value.ty)?;
+                Expr::Call {
+                    func: Box::new(Expr::Var("std::simd::Simd::splat".into())),
+                    args: vec![self.lower_value(operand)?],
+                    binding: CallBinding::Generated,
+                }
+            }
+            ValueKind::Convert {
+                kind: ir::ConversionKind::VectorBitCast,
+                operand,
+                ..
+            } => Expr::Transmute {
+                from: self.lower_type(&operand.ty)?,
+                to: self.lower_type(&value.ty)?,
+                expr: Box::new(self.lower_value(operand)?),
+            },
+            ValueKind::Lane { vector, index } => Expr::Index {
+                base: Box::new(self.lower_value(vector)?),
+                index: Box::new(Expr::Cast {
+                    expr: Box::new(self.lower_value(index)?),
+                    ty: rust::Type::Prim(Prim::Usize),
+                }),
+            },
             ValueKind::Convert { operand, .. }
                 if self.tables.is_long_double(&operand.ty)
                     || self.tables.is_long_double(&value.ty) =>
             {
                 self.lower_long_double_conversion(operand, &value.ty)?
+            }
+            ValueKind::Convert { operand, .. }
+                if matches!(
+                    self.tables.resolve_type(&operand.ty),
+                    ir::Type::Vector { .. }
+                ) || matches!(self.tables.resolve_type(&value.ty), ir::Type::Vector { .. }) =>
+            {
+                return Err(unsupported_value(value));
             }
             ValueKind::Convert { operand, .. } => {
                 let from = match odd_width(self.tables.resolve_type(&operand.ty)) {
@@ -290,14 +326,16 @@ impl FunctionLowerer<'_, '_> {
                     ir::ArithSema::Integer {
                         overflow: ir::Overflow::Wrap,
                     },
-            } => Expr::MethodCall {
-                recv: Box::new(self.lower_value(left)?),
-                method: format!(
-                    "wrapping_{}",
-                    overflow_method(*op).ok_or_else(|| unsupported_value(value))?
-                ),
-                args: vec![self.lower_value(right)?],
-            },
+            } if !matches!(self.tables.resolve_type(&value.ty), ir::Type::Vector { .. }) => {
+                Expr::MethodCall {
+                    recv: Box::new(self.lower_value(left)?),
+                    method: format!(
+                        "wrapping_{}",
+                        overflow_method(*op).ok_or_else(|| unsupported_value(value))?
+                    ),
+                    args: vec![self.lower_value(right)?],
+                }
+            }
             ValueKind::Overflow {
                 op,
                 left,
@@ -414,6 +452,11 @@ impl FunctionLowerer<'_, '_> {
                     _ => select,
                 }
             }
+            ValueKind::Compare { left, .. }
+                if matches!(self.tables.resolve_type(&left.ty), ir::Type::Vector { .. }) =>
+            {
+                return Err(unsupported_value(value));
+            }
             ValueKind::Compare {
                 op, left, right, ..
             } => Expr::Binary {
@@ -446,7 +489,9 @@ impl FunctionLowerer<'_, '_> {
                         kind: PlaceKind::Binding(id),
                         ..
                     },
-            } if self.tables.intrinsics.contains_key(id) => {
+            } if self.tables.intrinsics.contains_key(id)
+                || self.tables.function_type_has_vector(&value.ty) =>
+            {
                 return Err(unsupported_value(value));
             }
             ValueKind::FunctionDecay {
@@ -547,6 +592,18 @@ impl FunctionLowerer<'_, '_> {
                 ir: ty.to_string(),
             })
         };
+        if let ir::Type::Vector { element, lanes } = self.tables.resolve_type(ty) {
+            self.lower_type(ty)?;
+            let array = ir::Type::Array {
+                element: Box::new(ir::Type::Numeric(*element)),
+                length: Some((*lanes).into()),
+            };
+            return Ok(Expr::Call {
+                func: Box::new(Expr::Var("std::simd::Simd::from_array".into())),
+                args: vec![self.lower_aggregate(&array, members, zero_fill)?],
+                binding: CallBinding::Generated,
+            });
+        }
         let lowered_ty = self.lower_type(ty)?;
         let fields = self.tables.record_fields(ty);
         let resolved = self.tables.resolve_type(ty);

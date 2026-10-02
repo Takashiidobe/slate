@@ -61,6 +61,7 @@ struct Tables<'m> {
 #[derive(Default)]
 struct Dependencies {
     long_double: bool,
+    simd: bool,
     intrinsics: BTreeMap<String, rust::ExternFnDecl>,
     bridges: BTreeMap<String, rust::ExternFnDecl>,
     align_wrappers: BTreeSet<u32>,
@@ -400,7 +401,20 @@ impl<'m> ModuleLowerer<'m> {
             let Some(body) = &function.body else {
                 continue;
             };
-            match self.lowerer().lower_function(function, body) {
+            let lowered = if self.options.export_symbols
+                && matches!(function.linkage, ir::Linkage::External)
+                && !function.semantics.inline_only
+                && self.tables.function_has_vector(function)
+            {
+                Err(Construct::Function {
+                    name: function.name.clone(),
+                    detail: "vector C ABI".into(),
+                }
+                .into())
+            } else {
+                self.lowerer().lower_function(function, body)
+            };
+            match lowered {
                 Ok(Item::Fn(mut definition))
                     if self.options.export_symbols
                         && matches!(function.linkage, ir::Linkage::External)
@@ -488,12 +502,6 @@ impl<'m> ModuleLowerer<'m> {
         if !dependencies.intrinsics.is_empty() {
             items.insert(
                 0,
-                Item::CrateAttrs(vec![rust::CrateAttr::Feature(
-                    rust::Feature::LinkLlvmIntrinsics,
-                )]),
-            );
-            items.insert(
-                1,
                 Item::ExternBlock {
                     abi: "llvm-intrinsic".into(),
                     decls: dependencies
@@ -506,12 +514,28 @@ impl<'m> ModuleLowerer<'m> {
         }
         if !externs.is_empty() {
             items.insert(
-                usize::from(matches!(items.first(), Some(Item::CrateAttrs(_)))),
+                0,
                 Item::ExternBlock {
                     abi: "C".into(),
                     decls: externs,
                 },
             );
+        }
+        let mut features = Vec::new();
+        if items
+            .iter()
+            .any(|item| matches!(item, Item::ExternBlock { abi, .. } if abi == "llvm-intrinsic"))
+        {
+            features.push(rust::CrateAttr::Feature(rust::Feature::LinkLlvmIntrinsics));
+        }
+        if dependencies.simd {
+            features.extend([
+                rust::CrateAttr::Feature(rust::Feature::PortableSimd),
+                rust::CrateAttr::Feature(rust::Feature::SimdFfi),
+            ]);
+        }
+        if !features.is_empty() {
+            items.insert(0, Item::CrateAttrs(features));
         }
         if let Some(main) = self
             .module

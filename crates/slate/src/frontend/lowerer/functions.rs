@@ -114,6 +114,13 @@ impl FunctionLowerer<'_, '_> {
             }
             .into());
         };
+        if self.tables.function_has_vector(function) {
+            return Err(Construct::Function {
+                name: function.name.clone(),
+                detail: "vector C ABI".into(),
+            }
+            .into());
+        }
         let ret = self.lower_return(function)?;
         Ok(rust::ExternDecl::Fn(rust::ExternFnDecl {
             attrs: Vec::new(),
